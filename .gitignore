@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# others
+notebooks
+.idea
+.obsidian
+martin
+
+/src/generated/prisma

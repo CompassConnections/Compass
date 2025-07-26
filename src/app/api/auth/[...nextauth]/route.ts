@@ -1,6 +1,28 @@
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
+import NextAuth from 'next-auth';
+import { authConfig } from '@/auth';
 
-const handler = NextAuth(authOptions);
+// Initialize NextAuth with the configuration
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
+  ...authConfig,
+  // Enable debug logs in development
+  debug: process.env.NODE_ENV === 'development',
+  // Ensure cookies are secure in production
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax', // CSRF protection
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
+});
 
-export { handler as GET, handler as POST };
+export { GET, POST, auth, signIn, signOut };

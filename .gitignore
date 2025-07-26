@@ -47,3 +47,4 @@ notebooks
 martin
 
 /src/generated/prisma
+*.db

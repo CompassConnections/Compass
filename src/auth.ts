@@ -1,5 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './lib/prisma';
 import { compare } from 'bcryptjs';
 
@@ -37,7 +39,21 @@ export const authConfig = {
       return session;
     },
   },
+  adapter: PrismaAdapter(prisma),
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
+    }),
     Credentials({
       name: 'Credentials',
       credentials: {
@@ -80,4 +96,16 @@ export const authConfig = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
+  debug: process.env.NODE_ENV === 'development',
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
 } satisfies NextAuthConfig;

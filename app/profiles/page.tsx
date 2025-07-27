@@ -1,7 +1,7 @@
 import {redirect} from "next/navigation";
 import Link from "next/link";
 import { prisma }from "@/lib/prisma";
-import {checkPostTableExists} from "@/lib/db-utils";
+import {checkUserTableExists} from "@/lib/db-utils";
 
 
 // Disable static generation
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PostsPage() {
   // Check if the post table exists
-  const tableExists = await checkPostTableExists();
+  const tableExists = await checkUserTableExists();
 
   // If the post table doesn't exist, redirect to setup page
   if (!tableExists) {
@@ -21,7 +21,7 @@ export default async function PostsPage() {
     orderBy: {
       createdAt: "desc",
     },
-    take: 6,
+    // take: 20,
     // include: {
     //   author: {
     //     select: {

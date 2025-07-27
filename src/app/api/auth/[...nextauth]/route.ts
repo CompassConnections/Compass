@@ -4,9 +4,6 @@ import { authConfig } from '@/auth';
 // Initialize NextAuth with the configuration
 export const {
   handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
 } = NextAuth({
   ...authConfig,
   // Enable debug logs in development
@@ -25,4 +22,4 @@ export const {
   },
 });
 
-export { GET, POST, auth, signIn, signOut };
+export { GET, POST};

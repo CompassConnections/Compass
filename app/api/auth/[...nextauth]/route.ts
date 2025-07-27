@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
     async session({session, token}) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.name = token.name;
+        session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.image = token.picture as string;
       }
@@ -85,18 +85,12 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthOptions;
 
-// Export **named** HTTP handlers (required by App Router)
-console.log("Auth route hit");
-
-// export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
 const authHandler = NextAuth(authOptions);
-// export const GET = handlers.GET;
-// export const POST = handlers.POST;
 export {authHandler as GET, authHandler as POST};
 
 declare module "next-auth" {
   interface Session {
-    user: { id: string; name: string; email: string };
+    user: { id: string; name: string; email: string ; image: string };
   }
 }
 

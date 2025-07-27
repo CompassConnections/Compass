@@ -61,6 +61,7 @@ Run the following commands to set up your database and Prisma schema:
 
 ```bash
 npx prisma migrate dev --name init
+
 ```
 
 

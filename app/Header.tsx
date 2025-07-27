@@ -6,6 +6,8 @@ import {useSession, signOut} from "next-auth/react";
 export default function Header() {
   const {data: session} = useSession();
 
+  console.log(session);
+
   return (
     <header className="w-full bg-white shadow-md py-4 px-8">
       <nav className="flex justify-between items-center">

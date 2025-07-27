@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { prisma }from "@/lib/prisma";
 
 /**
  * Checks if the Post table exists in the database

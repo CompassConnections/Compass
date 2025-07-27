@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create 5 users with hashed passwords
   const users = await Promise.all([
     prisma.user.create({
       data: {

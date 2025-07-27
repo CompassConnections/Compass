@@ -1,11 +1,15 @@
 import NextAuth, {type NextAuthOptions} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {PrismaAdapter} from "@next-auth/prisma-adapter";
+import {PrismaAdapter} from "@auth/prisma-adapter";
 import {prisma} from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -15,7 +19,6 @@ export const authOptions = {
       name: "credentials",
       credentials: {
         email: {label: "Email", type: "email"},
-        name: {label: "Name", type: "name"},
         password: {label: "Password", type: "password"},
       },
       async authorize(credentials) {
@@ -39,28 +42,47 @@ export const authOptions = {
         if (!isCorrectPassword) {
           throw new Error("Invalid email or password");
         }
-        console.log(user);
-        return user;
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
       },
     }),
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
   },
-  session: {
-    strategy: "database",
+  callbacks: {
+    async jwt({token, user}) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
+    },
+    async session({session, token}) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.name = token.name;
+        session.user.email = token.email as string;
+        session.user.image = token.picture as string;
+      }
+      return session;
+    },
+    async redirect({url, baseUrl}) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
-  adapter: PrismaAdapter(prisma),
-  debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
-  // callbacks: {
-  //   async jwt({ token, user }) {
-  //     return { ...token, id: token.id ?? user?.id };
-  //   },
-  //   async session({ session, token }) {
-  //     return { ...session, user: { ...session.user, id: token.id } };
-  //   },
-  // },
+  debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthOptions;
 
 // Export **named** HTTP handlers (required by App Router)
@@ -70,17 +92,16 @@ console.log("Auth route hit");
 const authHandler = NextAuth(authOptions);
 // export const GET = handlers.GET;
 // export const POST = handlers.POST;
-export { authHandler as GET, authHandler as POST };
+export {authHandler as GET, authHandler as POST};
 
-// declare module "next-auth" {
-//   interface Session {
-//     user: { id: string; name: string; email: string };
-//     // user: { id: string };
-//   }
-// }
-//
-// declare module "next-auth/jwt" {
-//   interface JWT {
-//     id: string;
-//   }
-// }
+declare module "next-auth" {
+  interface Session {
+    user: { id: string; name: string; email: string };
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+  }
+}

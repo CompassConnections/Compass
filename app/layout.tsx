@@ -5,7 +5,7 @@ import Providers from "./providers";
 
 export const metadata = {
   title: "BayesBond",
-  description: "A blog app using Next.js and Prisma",
+  description: "A bonding platform for rational thinkers",
 };
 
 export default function RootLayout({

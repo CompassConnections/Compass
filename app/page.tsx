@@ -1,59 +1,39 @@
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
-import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { checkPostTableExists } from "@/lib/db-utils";
 
-export default async function Home() {
-  console.log("Home page rendering");
 
-  // Check if the post table exists
-  const tableExists = await checkPostTableExists();
-
-  // If the post table doesn't exist, redirect to setup page
-  if (!tableExists) {
-    redirect("/setup");
-  }
-
-  const posts = await prisma.post.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 6,
-    include: {
-      author: {
-        select: {
-          name: true,
-        },
-      },
-    },
-  });
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-24 px-8">
-      <h1 className="text-5xl font-extrabold mb-12 text-[#333333]">Recent Posts</h1>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mb-8">
-        {posts.map((post) => (
-          <Link key={post.id} href={`/posts/${post.id}`} className="group">
-            <div className="border rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
-              <h2 className="text-2xl font-semibold text-gray-900 group-hover:underline mb-2">{post.title}</h2>
-              <p className="text-sm text-gray-500">by {post.author ? post.author.name : "Anonymous"}</p>
-              <p className="text-xs text-gray-400 mb-4">
-                {new Date(post.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <div className="relative">
-                <p className="text-gray-700 leading-relaxed line-clamp-2">{post.content || "No content available."}</p>
-                <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-gray-50 to-transparent" />
-              </div>
-            </div>
+    <main className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
+      {/* Header */}
+      <header className="flex justify-between items-center p-6 max-w-6xl mx-auto w-full">
+
+      </header>
+
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
+        <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 max-w-3xl leading-tight">
+          BayesBond
+        </h1>
+        <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl">
+          The bonding platform for rational thinkers
+        </p>
+        <div className="mt-8 flex space-x-4">
+          <Link
+            href="/learn-more"
+            className="px-6 py-3 bg-gray-200 text-gray-800 text-lg rounded-lg hover:bg-gray-300 transition"
+          >
+            Learn More
           </Link>
-        ))}
-      </div>
-    </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="p-6 text-center text-gray-500">
+        © {new Date().getFullYear()} BayesBond. All rights reserved.
+      </footer>
+    </main>
   );
 }
+

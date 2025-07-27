@@ -15,29 +15,6 @@ async function main() {
     }),
   ]);
 
-  const userIdMapping = {
-    alice: users[0].id,
-  };
-
-  // Create 15 posts distributed among users
-  await prisma.post.createMany({
-    data: [
-      // Alice's posts
-      { 
-        title: 'Getting Started with TypeScript and Prisma', 
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id erat a lorem tincidunt ultricies. Vivamus porta bibendum nulla vel accumsan.', 
-        published: true, 
-        authorId: userIdMapping.alice 
-      },
-      { 
-        title: 'How ORMs Simplify Complex Queries', 
-        content: 'Duis sagittis urna ut sapien tristique convallis. Aenean vel ligula felis. Phasellus bibendum sem at elit dictum volutpat.', 
-        published: false, 
-        authorId: userIdMapping.alice 
-      },
-    ],
-  });
-
   console.log('Seeding completed.');
 }
 

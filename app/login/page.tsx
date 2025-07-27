@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function LoginPage() {
+  console.log('LoginPage rendering');
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -17,6 +18,7 @@ export default function LoginPage() {
         ...Object.fromEntries(formData),
         redirect: false,
       });
+      console.log(response);
 
       if (response?.error) {
         setError("Invalid credentials");
@@ -30,6 +32,7 @@ export default function LoginPage() {
     }
   }
 
+  console.log('Form rendering');
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">

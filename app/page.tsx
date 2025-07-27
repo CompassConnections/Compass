@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { checkPostTableExists } from "@/lib/db-utils";
 
 export default async function Home() {
+  console.log("Home page rendering");
+
   // Check if the post table exists
   const tableExists = await checkPostTableExists();
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import {signIn} from "next-auth/react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,18 +13,33 @@ export default function RegisterPage() {
     try {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
-      const signInResult = await signIn("credentials", {
-        ...Object.fromEntries(formData),
-        redirect: false,
+
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const name = formData.get("name") as string;
+
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({ email, password, name }),
+        headers: { "Content-Type": "application/json" },
       });
 
-      if (signInResult?.error) {
-        setError("Failed to sign in after registration");
+      const data = await res.json();
+      if (res.ok) {
+        console.log("User registered:", data);
+      } else {
+        setError(data.error);
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: true,   // redirect user after login (set false to stay on page)
+        callbackUrl: "/", // or wherever you want to redirect after login
+      });
+      console.log(response);
+
     } catch (error) {
       setError(error instanceof Error ? error.message : "Registration failed");
     }

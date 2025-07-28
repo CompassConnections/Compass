@@ -1,35 +1,49 @@
-import {redirect} from "next/navigation";
+'use client';
+
 import Link from "next/link";
-import { prisma }from "@/lib/prisma";
-import {checkUserTableExists} from "@/lib/db-utils";
+import {useEffect, useState} from "react";
+import {notFound} from "next/navigation";
 
 
 // Disable static generation
 export const dynamic = "force-dynamic";
 
+type Profile = {
+  id: string;
+  name: string;
+  createdAt: string;
+};
 
-export default async function PostsPage() {
-  // Check if the post table exists
-  const tableExists = await checkUserTableExists();
 
-  // If the post table doesn't exist, redirect to setup page
-  if (!tableExists) {
-    redirect("/setup");
-  }
+export default function ProfilePage() {
 
-  const profiles = await prisma.user.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    // take: 20,
-    // include: {
-    //   author: {
-    //     select: {
-    //       name: true,
-    //     },
-    //   },
-    // },
-  });
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profiles');
+        console.log(response)
+
+        const data = await response.json();
+        console.log(data)
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failure');
+        }
+
+        const p = data['profiles'];
+        setProfiles(p);
+      } catch (error) {
+        console.error('Upload error:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (!profiles) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-24 px-8">

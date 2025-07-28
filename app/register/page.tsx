@@ -168,11 +168,24 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              <div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  By signing up, I agree to the{" "}
+                  <a href="/terms" className="underline hover:text-blue-600">
+                    Terms and Conditions
+                  </a>{" "}
+                  and{" "}
+                  <a href="/privacy" className="underline hover:text-blue-600">
+                    Privacy Policy
+                  </a>.
+                </p>
+              </div>
+
               {error && (
                 <div className="text-red-500 text-sm text-center">{error}</div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <button
                   type="submit"
                   disabled={isLoading}

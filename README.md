@@ -44,12 +44,6 @@ After cloning the repo and navigating into it, install dependencies:
 npm install
 ```
 
-Create a Prisma Postgres instance by running the following command:
-
-```
-npx prisma init --db
-```
-
 You now need to configure your database connection via an environment variable.
 
 First, create an `.env` file:

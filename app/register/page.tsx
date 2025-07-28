@@ -13,10 +13,15 @@ export default function RegisterPage() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
 
+  function redirect() {
+    // Redirect to complete profile page
+    window.location.href = '/complete-profile';
+  }
+
   const handleGoogleSignUp = async () => {
     try {
       setIsLoading(true);
-      await signIn('google', {callbackUrl: '/'});
+      await signIn('google', {callbackUrl: '/complete-profile'});
     } catch (error) {
       setError('Failed to sign up with Google');
       setIsLoading(false);
@@ -65,8 +70,8 @@ export default function RegisterPage() {
         throw new Error("Failed to sign in after registration");
       }
 
-      // Redirect to complete profile page
-      window.location.href = '/complete-profile';
+     redirect()
+
     } catch (error) {
       setError(error instanceof Error ? error.message : "Registration failed");
       setIsLoading(false);

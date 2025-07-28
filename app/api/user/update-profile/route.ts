@@ -13,7 +13,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const {description, gender} = await req.json();
+    const {description, gender, image} = await req.json();
+    console.log(`Req: ${description}, ${gender}, ${image}`)
 
     // Validate required fields
     if (!gender) {
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
       data: {
         description: description || null,
         gender: gender || null,
+        ...(image && { image }), // Only update image if provided
       },
       select: {
         id: true,
@@ -36,6 +38,7 @@ export async function POST(req: Request) {
         name: true,
         description: true,
         gender: true,
+        image: true,
       },
     });
 

@@ -62,33 +62,6 @@ Run the following commands to set up your database and Prisma schema:
 ```bash
 npx prisma migrate dev --name init
 
-```
-
-
-### 4. Seed the database
-
-Add initial data to your database:
-
-```bash
-npx prisma db seed
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn prisma db seed
-
-# Using pnpm
-pnpm prisma db seed
-
-# Using bun
-bun prisma db seed
-```
-
-</details>
 
 ### 5. Run the app
 
@@ -98,28 +71,5 @@ Start the development server:
 npm run dev
 ```
 
-<details>
 
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn dev
-
-# Using pnpm
-pnpm run dev
-
-# Using bun
-bun run dev
-```
-
-</details>
-
-Once the server is running, visit `http://localhost:3000` to start using the app.
-
-## Next steps
-
-- [Prisma ORM documentation](https://www.prisma.io/docs/orm)
-- [Prisma Client API reference](https://www.prisma.io/docs/orm/prisma-client)
-- [Join our Discord community](https://discord.com/invite/prisma)
-- [Follow us on Twitter](https://twitter.com/prisma)
+Once the server is running, visit http://localhost:3000 to start using the app.

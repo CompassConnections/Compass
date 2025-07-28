@@ -8,6 +8,16 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 
 - 
 
+## To Do
+
+- [x] Authentication (user/password and Google Sign In)
+- [ ] Set up PostgreSQL in Production with supabase (can stick with SQLite in dev / local)
+- [ ] Set up domain name and hosting (vercel?)
+- [ ] Ask for detailed info per profile upon registration (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)
+- [ ] Set up page listing all the profiles
+- [ ] Search through all the profile variables
+- [ ] (Set up chat / direct messaging)
+
 ## Implementation
 
 The web app is coded in Typescript using React as front-end and prisma as back-end. It includes:

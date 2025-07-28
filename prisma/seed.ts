@@ -10,6 +10,7 @@ async function main() {
         email: 'alice@example.com',
         name: 'Alice',
         password: await bcrypt.hash('password123', 10),
+        description: 'Alice in Wonderland'
       },
     }),
   ]);

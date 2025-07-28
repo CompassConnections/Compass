@@ -23,21 +23,14 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       <article className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
         {/* Post Title */}
         <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
-          {profile.email}
+          {profile.name}
         </h1>
-
-        {/* Author Information */}
-        <p className="text-lg text-gray-600 mb-4">
-          by <span className="font-medium text-gray-800">{profile.name}</span>
-        </p>
 
         {/* Content Section */}
         <div className="text-lg text-gray-800 leading-relaxed space-y-6 border-t pt-6">
-          {profile.email ? (
-            <p>{profile.email}</p>
-          ) : (
-            <p className="italic text-gray-500">No content available for this post.</p>
-          )}
+
+          <p>Gender: {profile.gender}</p>
+          <p>{profile.description}</p>
         </div>
       </article>
 

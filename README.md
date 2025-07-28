@@ -18,6 +18,15 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 - [ ] Search through all the profile variables
 - [ ] (Set up chat / direct messaging)
 
+#### Secondary To Do
+
+Any action item is open to anyone for collaboration, but the following ones are particularly easy to do for first-time contributors.
+
+- [ ] Clean up terms and conditions
+- [ ] Clean up privacy notice
+- [ ] Clean up learn more page
+- [ ] Add dark theme
+
 ## Implementation
 
 The web app is coded in Typescript using React as front-end and prisma as back-end. It includes:

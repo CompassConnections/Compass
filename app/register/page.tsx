@@ -58,13 +58,15 @@ export default function RegisterPage() {
       const response = await signIn("credentials", {
         email,
         password,
-        redirect: true,
-        callbackUrl: "/",
+        redirect: false,
       });
 
       if (response?.error) {
         throw new Error("Failed to sign in after registration");
       }
+
+      // Redirect to complete profile page
+      window.location.href = '/complete-profile';
     } catch (error) {
       setError(error instanceof Error ? error.message : "Registration failed");
       setIsLoading(false);

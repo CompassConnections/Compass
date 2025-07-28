@@ -46,7 +46,7 @@ You now need to configure your database connection via an environment variable.
 First, create an `.env` file:
 
 ```bash
-touch .env
+cp .env.example .env
 ```
 
 To ensure your authentication works properly, you'll also need to set [env vars for NextAuth.js](https://next-auth.js.org/configuration/options):

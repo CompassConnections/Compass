@@ -12,8 +12,10 @@ model User {
   name          String?
   email         String?         @unique
   password      String?         // <-- Add this for email/password auth
-  emailVerified DateTime?
-  image         String?
+  emailVerified        DateTime?
+  verificationToken    String?   @unique
+  verificationTokenExpires DateTime?
+  image                String?
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support

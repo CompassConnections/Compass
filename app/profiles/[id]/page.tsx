@@ -4,23 +4,7 @@ import {useEffect, useState} from "react";
 import {notFound, useParams} from "next/navigation";
 import Image from "next/image";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
-
-interface ProfileData {
-  name: string;
-  image: string;
-  profile: {
-    location: string;
-    gender: string;
-    personalityType: string;
-    conflictStyle: string;
-    description: string;
-    contactInfo: string;
-    intellectualInterests: { interest?: {name?: string} }[];
-    causeAreas: { causeArea?: {name?: string} }[];
-    desiredConnections: { connection?: {name?: string} }[];
-    promptAnswers: { prompt?: string; answer?: string }[];
-  };
-}
+import {ProfileData} from "@/lib/client/schema";
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 

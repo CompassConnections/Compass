@@ -1,3 +1,5 @@
+import 'server-only';
+
 import type {NextAuthOptions} from "next-auth";
 import {getServerSession} from "next-auth";
 import {PrismaAdapter} from "@auth/prisma-adapter";

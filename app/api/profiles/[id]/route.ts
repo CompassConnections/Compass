@@ -9,17 +9,21 @@ export async function GET(
     const params = await context.params;
     const { id } = params;
 
-    // Find the user by ID
     const user = await prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
         name: true,
         email: true,
-        image: true,
-        gender: true,
-        description: true,
         createdAt: true,
+        profile: {
+          include: {
+            intellectualInterests: { include: { interest: true } },
+            causeAreas: { include: { causeArea: true } },
+            desiredConnections: { include: { connection: true } },
+            promptAnswers: true,
+          },
+        },
       },
     });
 
@@ -30,6 +34,8 @@ export async function GET(
         headers: { "Content-Type": "application/json" },
       });
     }
+
+    console.log("Fetched user profile:", user);
 
     return new NextResponse(JSON.stringify(user), {
       status: 200,

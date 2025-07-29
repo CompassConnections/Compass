@@ -1,9 +1,21 @@
+'use client';
+
+import ProfilePage from "@/app/profiles/page";
+
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 import Link from "next/link";
 
 
 export default function HomePage() {
+  const profilePage = () => {
+    return (
+      <main className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
+        <ProfilePage />
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
       {/* Header */}
@@ -35,6 +47,9 @@ export default function HomePage() {
           >
             Learn More
           </Link>
+        </div>
+        <div>
+          {profilePage()}
         </div>
       </section>
 

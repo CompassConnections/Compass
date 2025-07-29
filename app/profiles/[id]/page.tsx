@@ -3,19 +3,19 @@
 import {useEffect, useState} from "react";
 import {notFound, useParams} from "next/navigation";
 import Image from "next/image";
+import LoadingSpinner from "@/lib/LoadingSpinner";
 
 interface ProfileData {
   name?: string;
   image?: string;
-  gender?: string;
-  description?: string;
+  profile?: any;
 }
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 export default function Post() {
   const {id} = useParams();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [user, setUser] = useState<ProfileData | null>(null);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,7 @@ export default function Post() {
           notFound();
         }
         const data = await response.json();
-        setProfile(data);
+        setUser(data);
         const img = data.image;
         console.log(`Data image: ${img}`)
 
@@ -56,10 +56,10 @@ export default function Post() {
   }, [id]);
 
   if (loading) {
-    return <div></div>;
+    return <LoadingSpinner />;
   }
 
-  if (!profile) {
+  if (!user) {
     notFound();
   }
 
@@ -76,7 +76,7 @@ export default function Post() {
               <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden bg-white">
                 <Image
                   src={image}
-                  alt={profile.name || 'Profile picture'}
+                  alt={user.name || 'Profile picture'}
                   className="h-full w-full object-cover"
                   width={200}
                   height={200}
@@ -92,7 +92,7 @@ export default function Post() {
             <div
               className="absolute -bottom-16 left-8 h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
               <span className="text-4xl font-bold text-gray-600">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </span>
             </div>
           )}
@@ -101,27 +101,140 @@ export default function Post() {
         {/* Profile Content */}
         <div className="pt-20 px-8 pb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {profile.name}
+            {user.name}
           </h1>
 
           <div className="space-y-6 pt-4 border-t border-gray-200">
-            {profile.gender && (
+
+            {user.profile.desiredConnections && (
+              <div className="mt-3">                <
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Connection</h2>
+
+                <ul className="flex flex-wrap gap-2 mt-1">
+                  {user.profile.desiredConnections.map((value, idx) => (
+                    <li
+                      key={idx}
+                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                    >
+                      {value.connection.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {user.profile.gender && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Gender</h2>
-                <p className="mt-1 capitalize">{profile.gender}</p>
+                <p className="mt-1 capitalize">{user.profile.gender}</p>
               </div>
             )}
 
-            {profile.description && (
+            {user.profile.location && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Location</h2>
+                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.location}</p>
+              </div>
+            )}
+
+            {user.profile.personalityType && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Personality Type</h2>
+                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.personalityType}</p>
+              </div>
+            )}
+
+            {user.profile.conflictStyle && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Conflit Style</h2>
+                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.conflictStyle}</p>
+              </div>
+            )}
+
+            {user.profile.intellectualInterests && (
+              <div className="mt-3">                <
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Interests</h2>
+
+                <ul className="flex flex-wrap gap-2 mt-1">
+                  {user.profile.intellectualInterests.map((value, idx) => (
+                    <li
+                      key={idx}
+                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                    >
+                      {value.interest.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {user.profile.causeAreas && (
+              <div className="mt-3">                <
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Cause Areas</h2>
+
+                <ul className="flex flex-wrap gap-2 mt-1">
+                  {user.profile.causeAreas.map((value, idx) => (
+                    <li
+                      key={idx}
+                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                    >
+                      {value.causeArea.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {user.profile.promptAnswers && (
+              <div className="mt-3">                <
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Prompt Answers</h2>
+
+                <ul className="flex flex-wrap gap-2 mt-1">
+                  {user.profile.promptAnswers.map((value, idx) => (
+                    <li
+                      key={idx}
+                      // className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                    >
+                      • {value.prompt} {value.answer}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {user.profile.description && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">About</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{profile.description}</p>
+                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.description}</p>
               </div>
             )}
-          </div>
-        </div>
-      </article>
 
+            {user.profile.contactInfo && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact</h2>
+                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.contactInfo}</p>
+              </div>
+            )}
+
+            {/*<div>*/}
+            {/*  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Creation Date</h2>*/}
+            {/*  <p className="mt-1 text-gray-800 whitespace-pre-line">*/}
+            {/*    {user.profile.createdAt}*/}
+            {/*    {new Date(user.profile.createdAt).toLocaleDateString("en-US", {*/}
+            {/*      year: "numeric",*/}
+            {/*      month: "long",*/}
+            {/*      day: "numeric",*/}
+            {/*    })}*/}
+            {/*  </p>*/}
+            {/*</div>*/}
+
+
+
+          </div>
+
+        </div>
+
+      </article>
 
     </div>
   );

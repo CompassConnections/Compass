@@ -20,8 +20,7 @@ model User {
   sessions      Session[]
   
   // Profile Information
-  gender       String?
-  description  String?
+  profile       Profile?
   
   // Optional for WebAuthn support
   Authenticator Authenticator[]
@@ -29,6 +28,106 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Profile {
+  id                   String         @id @default(cuid())
+  userId               String         @unique
+  location             String?        // Need to normalize later for geospatial
+  description          String?
+  contactInfo          String?
+  gender               Gender?
+  personalityType      PersonalityType?
+  conflictStyle        ConflictStyle?
+
+  promptAnswers        PromptAnswer[] // See below (list of answers)
+  desiredConnections    ProfileConnection[]
+  intellectualInterests ProfileInterest[]  // Many-to-many (see below)
+  causeAreas            ProfileCauseArea[] // Many-to-many (see below)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  Male
+  Female
+  NonBinary
+  Other
+}
+
+enum PersonalityType {
+  Introvert
+  Extrovert
+  Ambivert
+}
+
+enum ConflictStyle {
+  Competing
+  Avoidant
+  Compromising
+  Accommodating
+  Collaborating
+}
+
+model Connection {
+  id    String @id @default(cuid())
+  name  String @unique
+  users ProfileConnection[]
+}
+
+model Interest {
+  id    String @id @default(cuid())
+  name  String @unique
+  users ProfileInterest[]
+}
+
+model CauseArea {
+  id    String @id @default(cuid())
+  name  String @unique
+  users ProfileCauseArea[]
+}
+
+// Join tables
+model ProfileConnection {
+  profileId String
+  connectionId String
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  connection Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, connectionId])
+}
+
+// Join tables
+model ProfileInterest {
+  profileId String
+  interestId String
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, interestId])
+}
+
+model ProfileCauseArea {
+  profileId String
+  causeAreaId String
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  causeArea CauseArea @relation(fields: [causeAreaId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, causeAreaId])
+}
+
+model PromptAnswer {
+  id        String   @id @default(cuid())
+  profileId String
+  prompt    String
+  answer    String
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+
 
 model Account {
   id                String  @id @default(cuid())

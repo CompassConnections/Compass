@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {useEffect, useState} from "react";
+import LoadingSpinner from "@/lib/LoadingSpinner";
 
 
 // Disable static generation
@@ -11,6 +12,7 @@ type Profile = {
   id: string;
   name: string;
   createdAt: string;
+  profile: any;
 };
 
 
@@ -42,23 +44,21 @@ export default function ProfilePage() {
     fetchProfile();
   }, []);
 
-  if (!profiles) return <p>Loading...</p>;
+  if (!profiles) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-24 px-8">
       <h1 className="text-5xl font-extrabold mb-12 text-[#333333]">Profiles</h1>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mb-8">
-        {profiles.map((profile) => (
-          <Link key={profile.id} href={`/profiles/${profile.id}`} className="group">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1 w-full max-w-6xl mb-8">
+        {profiles.map((user) => (
+          <Link key={user.id} href={`/profiles/${user.id}`} className="group">
             <div className="border rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
-              <h2 className="text-2xl font-semibold text-gray-900 group-hover:underline mb-2">{profile.name}</h2>
-              <p className="text-xs text-gray-400 mb-4">
-                {new Date(profile.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
+              <h2 className="text-2xl font-semibold text-gray-900 group-hover:underline mb-2">{user.name}</h2>
+                {user.profile.description && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-4">{user.profile.description}</p>
+                  </div>
+                )}
             </div>
           </Link>
         ))}

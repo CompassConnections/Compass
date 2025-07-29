@@ -1,13 +1,18 @@
 'use client';
 
-import { useState, useRef, ChangeEvent, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import {ChangeEvent, useEffect, useRef, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {useSession} from 'next-auth/react';
 import Image from 'next/image';
+import {ConflictStyle, Gender, PersonalityType} from "@prisma/client";
 
 export default function CompleteProfile() {
   const [description, setDescription] = useState('');
+  const [contactInfo, setContactInfo] = useState('');
+  const [location, setLocation] = useState('');
   const [gender, setGender] = useState('');
+  const [personalityType, setPersonalityType] = useState('');
+  const [conflictStyle, setConflictStyle] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [key, setKey] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,7 +20,22 @@ export default function CompleteProfile() {
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const {data: session, update} = useSession();
+
+  // const [selected, setSelected] = useState(new Set(selectedInterests));
+  //
+  // const toggleInterest = (interestId) => {
+  //   setSelected((prev) => {
+  //     const newSet = new Set(prev);
+  //     newSet.has(interestId) ? newSet.delete(interestId) : newSet.add(interestId);
+  //     return newSet;
+  //   });
+  // };
+
+  // const handleInterestSubmit = (e) => {
+  //   e.preventDefault();
+  //   onSave(Array.from(selected)); // send to API
+  // };
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,7 +59,7 @@ export default function CompleteProfile() {
     try {
       setIsUploading(true);
       setError('');
-      
+
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -51,7 +71,7 @@ export default function CompleteProfile() {
         return;
       }
 
-      const { url, key } = await response.json();
+      const {url, key} = await response.json();
       setImage(url);
       setKey(key);
     } catch (error) {
@@ -64,7 +84,7 @@ export default function CompleteProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!gender) {
       setError('Please select your gender');
       return;
@@ -75,9 +95,15 @@ export default function CompleteProfile() {
       setError('');
 
       const body = JSON.stringify({
-        description,
-        gender,
-        ...(key && { image: key }),
+        profile: {
+          description,
+          contactInfo,
+          location,
+          gender,
+          personalityType,
+          conflictStyle,
+        },
+        ...(key && {image: key}),
       });
       console.log(`Body: ${body}`)
       // alert(body)
@@ -97,7 +123,7 @@ export default function CompleteProfile() {
 
       // Update the session to reflect the changes
       await update();
-      
+
       // Redirect to the home page or dashboard
       router.push('/');
     } catch (error) {
@@ -115,6 +141,21 @@ export default function CompleteProfile() {
     }
   }, [session]);
 
+  const genderOptions = Object.values(Gender);
+  const personalityOptions = Object.values(PersonalityType);
+  const conflictOptions = Object.values(ConflictStyle);
+
+  // const answers = [
+  //   {
+  //     prompt: 'What is your favorite color?',
+  //     answer: 'Blue',
+  //   },
+  //   {
+  //     prompt: 'What is your favorite animal?',
+  //     answer: 'Dog',
+  //   }
+  // ]
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -122,17 +163,17 @@ export default function CompleteProfile() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Complete Your Profile
           </h2>
-          {/*<p className="mt-2 text-center text-sm text-gray-600">*/}
-          {/*  Help us know you better (this information can be updated later)*/}
-          {/*</p>*/}
         </div>
-        
+
         {error && (
           <div className="bg-red-50 border-l-4 border-red-400 p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                     fill="currentColor">
+                  <path fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"/>
                 </svg>
               </div>
               <div className="ml-3">
@@ -167,7 +208,9 @@ export default function CompleteProfile() {
                 title="Upload photo"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                  <path fillRule="evenodd"
+                        d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                        clipRule="evenodd"/>
                 </svg>
                 <input
                   type="file"
@@ -181,7 +224,8 @@ export default function CompleteProfile() {
             </div>
           </div>
 
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="pt-4">
+
             <div>
               <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
                 Gender <span className="text-red-500">*</span>
@@ -191,17 +235,87 @@ export default function CompleteProfile() {
                 name="gender"
                 required
                 value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                onChange={(e) => setGender(e.target.value as Gender)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
                 <option value="">Select your gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                {/*<option value="non-binary">Non-binary</option>*/}
-                <option value="other">Other</option>
-                {/*<option value="prefer-not-to-say">Prefer not to say</option>*/}
+                {genderOptions.map((g) => (
+                  <option key={g} value={g}>
+                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                  </option>
+                ))}
               </select>
             </div>
+
+            <div className="pt-4">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <textarea
+                id="location"
+                name="location"
+                rows={1}
+                required
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              />
+            </div>
+
+            <div className="pt-4">
+              <label htmlFor="personality" className="block text-sm font-medium text-gray-700 mb-1">
+                Personality <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="personality"
+                name="personality"
+                required
+                value={personalityType}
+                onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              >
+                <option value="">Select your personality</option>
+                {personalityOptions.map((g) => (
+                  <option key={g} value={g}>
+                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="pt-4">
+              <label htmlFor="conflictStyle" className="block text-sm font-medium text-gray-700 mb-1">
+                Conflict / Disagreement Style <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="conflictStyle"
+                name="conflictStyle"
+                required
+                value={conflictStyle}
+                onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              >
+                <option value="">Select your conflictStyle</option>
+                {conflictOptions.map((g) => (
+                  <option key={g} value={g}>
+                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          {/*  <div className="pt-4">*/}
+          {/*  {allInterests.map((interest) => (*/}
+          {/*    <label key={interest.id} className="flex items-center space-x-2">*/}
+          {/*      <input*/}
+          {/*        type="checkbox"*/}
+          {/*        checked={selected.has(interest.id)}*/}
+          {/*        onChange={() => toggleInterest(interest.id)}*/}
+          {/*      />*/}
+          {/*      <span>{interest.name}</span>*/}
+          {/*    </label>*/}
+          {/*  ))}*/}
+          {/*</div>*/}
 
             <div className="pt-4">
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
@@ -215,12 +329,50 @@ export default function CompleteProfile() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Tell us a bit about yourself"
+                placeholder="Tell us a bit about yourself. You can link to social media profiles or dating / connection documents."
               />
+            </div>
+
+            {/*<div className="pt-4">*/}
+            {/*  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">*/}
+            {/*    Prompts*/}
+            {/*  </label>*/}
+            {/*  {answers.map(({ prompt, answer }) => (*/}
+            {/*    <div key={prompt}>*/}
+            {/*      <label className="block font-medium">{prompt}</label>*/}
+            {/*      <input*/}
+            {/*        type="text"*/}
+            {/*        value={answer}*/}
+            {/*        onChange={(e) => handleChange(prompt, e.target.value)}*/}
+            {/*        className="w-full border px-2 py-1"*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  ))}*/}
+            {/*</div>*/}
+
+            <div className="pt-4">
+              <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Info
+              </label>
+              <textarea
+                id="contact"
+                name="contact"
+                rows={4}
+                required
+                value={contactInfo}
+                onChange={(e) => setContactInfo(e.target.value)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Add your contact info here (email, phone, Google Form, etc.) until the chat feature is ready"
+              />
+            </div>
+
+            <div className="pt-4">
               <p className="mt-1 text-xs text-gray-500">
-                This will be visible on your public profile
+                Note that all the information will be public and crawlable for now—in the future, we will add different
+                levels of privacy.
               </p>
             </div>
+
           </div>
 
           <div>
@@ -233,7 +385,7 @@ export default function CompleteProfile() {
             >
               {isSubmitting || isUploading ? 'Saving...' : 'Save and Continue'}
             </button>
-            
+
             {/*<div className="mt-4 text-center">*/}
             {/*  <button*/}
             {/*    type="button"*/}

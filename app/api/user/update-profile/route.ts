@@ -13,33 +13,28 @@ export async function POST(req: Request) {
       );
     }
 
-    const {description, gender, image} = await req.json();
-    console.log(`Req: ${description}, ${gender}, ${image}`)
-
-    // Validate required fields
-    if (!gender) {
-      return NextResponse.json(
-        {error: "Gender is required"},
-        {status: 400}
-      );
-    }
+    const data = await req.json();
+    console.log(`Req: ${data}`)
 
     // Update user with the new profile information
     const updatedUser = await prisma.user.update({
       where: {email: session.user.email},
       data: {
-        description: description || null,
-        gender: gender || null,
-        ...(image && { image }), // Only update image if provided
+        ...(data.image && { image: data.image }),
+        profile: {
+          upsert: {
+            create: data.profile,
+            update: data.profile,
+          },
+        },
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        description: true,
-        gender: true,
-        image: true,
-      },
+        // , // Only update image if provided
+      // select: {
+      //   id: true,
+      //   email: true,
+      //   name: true,
+      //   image: true,
+      // },
     });
 
     return NextResponse.json(updatedUser);

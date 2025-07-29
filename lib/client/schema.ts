@@ -9,9 +9,9 @@ export interface ProfileData {
     conflictStyle: string;
     description: string;
     contactInfo: string;
-    intellectualInterests: { interest?: { name?: string } }[];
-    causeAreas: { causeArea?: { name?: string } }[];
-    desiredConnections: { connection?: { name?: string } }[];
-    promptAnswers: { prompt?: string; answer?: string }[];
+    intellectualInterests: { interest?: { name?: string, id?: string } }[];
+    causeAreas: { causeArea?: { name?: string, id?: string } }[];
+    desiredConnections: { connection?: { name?: string, id?: string } }[];
+    promptAnswers: { prompt?: string; answer?: string, id?: string }[];
   };
 }

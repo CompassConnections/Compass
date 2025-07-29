@@ -106,12 +106,12 @@ export default function Post() {
 
           <div className="space-y-6 pt-4 border-t border-gray-200">
 
-            {user.profile.desiredConnections && (
+            {user?.profile?.desiredConnections && (
               <div className="mt-3">                <
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Connection</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
-                  {user.profile.desiredConnections.map((value, idx) => (
+                  {user?.profile?.desiredConnections.map((value, idx) => (
                     <li
                       key={idx}
                       className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
@@ -123,35 +123,35 @@ export default function Post() {
               </div>
             )}
 
-            {user.profile.gender && (
+            {user?.profile?.gender && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Gender</h2>
                 <p className="mt-1 capitalize">{user.profile.gender}</p>
               </div>
             )}
 
-            {user.profile.location && (
+            {user?.profile?.location && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Location</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.location}</p>
               </div>
             )}
 
-            {user.profile.personalityType && (
+            {user?.profile?.personalityType && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Personality Type</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.personalityType}</p>
               </div>
             )}
 
-            {user.profile.conflictStyle && (
+            {user?.profile?.conflictStyle && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Conflit Style</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.conflictStyle}</p>
               </div>
             )}
 
-            {user.profile.intellectualInterests && (
+            {user?.profile?.intellectualInterests && (
               <div className="mt-3">                <
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Interests</h2>
 
@@ -168,7 +168,7 @@ export default function Post() {
               </div>
             )}
 
-            {user.profile.causeAreas && (
+            {user?.profile?.causeAreas && (
               <div className="mt-3">                <
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Cause Areas</h2>
 
@@ -185,7 +185,7 @@ export default function Post() {
               </div>
             )}
 
-            {user.profile.promptAnswers && (
+            {user?.profile?.promptAnswers && (
               <div className="mt-3">                <
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Prompt Answers</h2>
 
@@ -202,14 +202,14 @@ export default function Post() {
               </div>
             )}
 
-            {user.profile.description && (
+            {user?.profile?.description && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">About</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.description}</p>
               </div>
             )}
 
-            {user.profile.contactInfo && (
+            {user?.profile?.contactInfo && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.contactInfo}</p>

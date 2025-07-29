@@ -50,18 +50,24 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-24 px-8">
       <h1 className="text-5xl font-extrabold mb-12 text-[#333333]">Profiles</h1>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1 w-full max-w-6xl mb-8">
-        {profiles.map((user) => (
+        {profiles.length > 0 ?
+          (profiles.map((user) => (
           <Link key={user.id} href={`/profiles/${user.id}`} className="group">
             <div className="border rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
               <h2 className="text-2xl font-semibold text-gray-900 group-hover:underline mb-2">{user.name}</h2>
-                {user.profile.description && (
+                {user?.profile?.description && (
                   <div>
                     <p className="text-xs text-gray-400 mb-4">{user.profile.description}</p>
                   </div>
                 )}
             </div>
           </Link>
-        ))}
+        ))) : (
+          <div className="flex items-center justify-center">
+            There are no profiles for this search. Relax the filters or come back later.
+          </div>
+        )
+        }
       </div>
     </div>
   );

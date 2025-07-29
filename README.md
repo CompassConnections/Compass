@@ -2,11 +2,18 @@
 
 This repository provides the source code for BayesBond, a web application where thinkers can bond and form deep relationships. It's in active development and will hopefully be live soon.
 
+The full article is available at https://martinbraquet.com/meeting-rational.
+
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
 
 ## Features
 
-- 
+- free, ad-free, not for profit
+- supported by donation
+- open source
+- democratically governed
+- extremely detailed profiles for deep connections
+- radically transparent: user base fully searchable
 
 ## To Do
 

@@ -1,12 +1,7 @@
 import bcrypt from "bcryptjs";
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { Resend } from "resend";
-import { render } from "@react-email/render";
-import { VerificationEmail } from "@/emails/VerificationEmail";
-import { v4 as uuidv4 } from 'uuid';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import {NextResponse} from "next/server";
+import {prisma} from "@/lib/prisma";
+import {v4 as uuidv4} from 'uuid';
 
 // Helper function to generate a verification token
 const generateVerificationToken = () => {
@@ -15,15 +10,15 @@ const generateVerificationToken = () => {
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name } = await req.json();
+    const {email, password, name} = await req.json();
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password required" }, { status: 400 });
+      return NextResponse.json({error: "Email and password required"}, {status: 400});
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findUnique({where: {email}});
     if (existingUser) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 400 });
+      return NextResponse.json({error: "Email already in use"}, {status: 400});
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,9 +28,9 @@ export async function POST(req: Request) {
 
     // Create user with verification token
     const user = await prisma.user.create({
-      data: { 
-        email, 
-        password: hashedPassword, 
+      data: {
+        email,
+        password: hashedPassword,
         name,
         emailVerified: null, // Will be set when email is verified
         verificationToken,
@@ -62,13 +57,13 @@ export async function POST(req: Request) {
     //   console.error('Failed to send verification email:', emailError);
     // }
 
-    return NextResponse.json({ 
-      message: "User created. Please check your email to verify your account.", 
-      userId: user.id 
-    }, { status: 201 });
+    return NextResponse.json({
+      message: "User created. Please check your email to verify your account.",
+      userId: user.id
+    }, {status: 201});
 
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({error: "Internal Server Error"}, {status: 500});
   }
 }

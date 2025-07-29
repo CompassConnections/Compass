@@ -1,12 +1,20 @@
 "use client";
 
-import {useState} from "react";
+import {Suspense, useState} from "react";
 import Link from "next/link";
 import {signIn} from "next-auth/react";
 import {FcGoogle} from "react-icons/fc";
 import {useSearchParams} from "next/navigation";
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div></div>}>
+      <RegisterComponent/>
+    </Suspense>
+  );
+}
+
+function RegisterComponent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(searchParams.get('error'));
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +31,7 @@ export default function RegisterPage() {
       setIsLoading(true);
       await signIn('google', {callbackUrl: '/complete-profile'});
     } catch (error) {
+      console.error('Error signing up with Google:', error);
       setError('Failed to sign up with Google');
       setIsLoading(false);
     }
@@ -57,7 +66,7 @@ export default function RegisterPage() {
 
       // Show a success message with email verification notice
       // setRegistrationSuccess(true);
-      // setRegisteredEmail(email);
+      setRegisteredEmail(email);
 
       // Sign in after successful registration
       const response = await signIn("credentials", {
@@ -67,12 +76,14 @@ export default function RegisterPage() {
       });
 
       if (response?.error) {
+        console.error("Sign-in error:", response.error);
         throw new Error("Failed to sign in after registration");
       }
 
-     redirect()
+      redirect()
 
     } catch (error) {
+      console.error("Registration error:", error);
       setError(error instanceof Error ? error.message : "Registration failed");
       setIsLoading(false);
     }
@@ -102,11 +113,11 @@ export default function RegisterPage() {
               Check your email
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              We've sent a verification link to <span className="font-medium">{registeredEmail}</span>.
+              We have sent a verification link to <span className="font-medium">{registeredEmail}</span>.
               Please click the link in the email to verify your account.
             </p>
             <p className="mt-4 text-sm text-gray-500">
-              Didn't receive the email? Check your spam folder or{' '}
+              Did not receive the email? Check your spam folder or{' '}
               <button
                 type="button"
                 className="font-medium text-blue-600 hover:text-blue-500"

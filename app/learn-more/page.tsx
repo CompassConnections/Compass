@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function LearnMorePage() {
   return (
     <div className="text-gray-600 min-h-screen bg-gray-50 p-6">

@@ -2,6 +2,7 @@
 
 import {useEffect, useState} from "react";
 import {notFound, useParams} from "next/navigation";
+import Image from "next/image";
 
 interface ProfileData {
   name?: string;
@@ -68,7 +69,7 @@ export default function Post() {
           {image ? (
             <div className="absolute -bottom-16 left-8">
               <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden bg-white">
-                <img
+                <Image
                   src={image}
                   alt={profile.name || 'Profile picture'}
                   className="h-full w-full object-cover"

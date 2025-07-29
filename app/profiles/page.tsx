@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {useEffect, useState} from "react";
-import {notFound} from "next/navigation";
 
 
 // Disable static generation

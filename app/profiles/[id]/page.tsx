@@ -73,6 +73,8 @@ export default function Post() {
                   src={image}
                   alt={profile.name || 'Profile picture'}
                   className="h-full w-full object-cover"
+                  width={200}
+                  height={200}
                   // onError={(e) => {
                   //   const target = e.target as HTMLImageElement;
                   //   target.onerror = null;

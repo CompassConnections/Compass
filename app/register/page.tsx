@@ -38,6 +38,11 @@ function RegisterComponent() {
   };
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    function handleError(error: unknown) {
+      console.error("Registration error:", error);
+      setError(error instanceof Error ? error.message : "Registration failed");
+    }
+
     try {
       event.preventDefault();
       setIsLoading(true);
@@ -50,7 +55,7 @@ function RegisterComponent() {
 
       // Basic validation
       if (!email || !password || !name) {
-        throw new Error("All fields are required");
+        handleError("All fields are required");
       }
 
       const res = await fetch("/api/auth/signup", {
@@ -61,7 +66,7 @@ function RegisterComponent() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
+        handleError(data.error || "Registration failed");
       }
 
       // Show a success message with email verification notice
@@ -76,15 +81,14 @@ function RegisterComponent() {
       });
 
       if (response?.error) {
-        console.error("Sign-in error:", response.error);
-        throw new Error("Failed to sign in after registration");
+        handleError("Failed to sign in after registration");
       }
 
       redirect()
 
     } catch (error) {
-      console.error("Registration error:", error);
-      setError(error instanceof Error ? error.message : "Registration failed");
+      handleError(error);
+    } finally {
       setIsLoading(false);
     }
   }
@@ -140,8 +144,9 @@ function RegisterComponent() {
           <div>
             <div>
               <h2 className="mt-6 text-center text-xl font-extrabold text-red-700">
-                The project is still in development, you can still sign up if you want to test it, but your account
-                may be deleted at any time. To get release updates, fill in this <a href='https://forms.gle/tKnXUMAbEreMK6FC6'>form</a>.
+                The project is still in development. You can sign up if you want to test it, but your account
+                may be deleted at any time. To get release updates, fill in this <a
+                href='https://forms.gle/tKnXUMAbEreMK6FC6'>form</a>.
               </h2>
               <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
                 Create your account

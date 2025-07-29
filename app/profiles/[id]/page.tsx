@@ -28,16 +28,21 @@ export default function Post() {
         }
         const data = await response.json();
         setProfile(data);
-        console.log(`Data image: ${data.image}`)
+        const img = data.image;
+        console.log(`Data image: ${img}`)
 
         // If user has an image key, fetch the image
-        if (data.image) {
-          const imageResponse = await fetch(`/api/download?key=${data.image}`);
-          console.log(`imageResponse: ${imageResponse}`)
-          if (imageResponse.ok) {
-            const imageBlob = await imageResponse.json();
-            const imageUrl = imageBlob['url'];
-            setImage(imageUrl);
+        if (img) {
+          if (img.startsWith('http')) {
+            setImage(img);
+          } else {
+            const imageResponse = await fetch(`/api/download?key=${img}`);
+            console.log(`imageResponse: ${imageResponse}`)
+            if (imageResponse.ok) {
+              const imageBlob = await imageResponse.json();
+              const imageUrl = imageBlob['url'];
+              setImage(imageUrl);
+            }
           }
         }
       } catch (error) {

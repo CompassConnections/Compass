@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -47,7 +47,8 @@ export default function CompleteProfile() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to upload image');
+        setError(errorData.error || 'Failed to upload image');
+        return;
       }
 
       const { url, key } = await response.json();
@@ -90,7 +91,8 @@ export default function CompleteProfile() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update profile');
+        setError(errorData.error || 'Failed to update profile');
+        return
       }
 
       // Update the session to reflect the changes
@@ -105,6 +107,13 @@ export default function CompleteProfile() {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const img = session?.user?.image;
+    if (img) {
+      setImage(img);
+    }
+  }, [session]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

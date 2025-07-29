@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import {useEffect, useState} from "react";
-import LoadingSpinner from "@/lib/LoadingSpinner";
+import LoadingSpinner from "@/lib/client/LoadingSpinner";
 
 
 // Disable static generation
 export const dynamic = "force-dynamic";
 
-// type Profile = {
-//   id: string;
-//   name: string;
-//   createdAt: string;
-//   profile: any;
-// };
+type Profile = {
+  id: string;
+  name: string;
+  createdAt: string;
+  profile: any;
+};
 
 
 export default function ProfilePage() {
 
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
 
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import {NextResponse} from "next/server";
-import {prisma} from "@/lib/prisma";
+import {prisma} from "@/lib/server/prisma";
 import {v4 as uuidv4} from 'uuid';
 
 // Helper function to generate a verification token

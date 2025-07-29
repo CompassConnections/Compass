@@ -3,19 +3,30 @@
 import {useEffect, useState} from "react";
 import {notFound, useParams} from "next/navigation";
 import Image from "next/image";
-import LoadingSpinner from "@/lib/LoadingSpinner";
+import LoadingSpinner from "@/lib/client/LoadingSpinner";
 
-// interface ProfileData {
-//   name?: string;
-//   image?: string;
-//   profile?: any;
-// }
+interface ProfileData {
+  name: string;
+  image: string;
+  profile: {
+    location: string;
+    gender: string;
+    personalityType: string;
+    conflictStyle: string;
+    description: string;
+    contactInfo: string;
+    intellectualInterests: { interest?: {name?: string} }[];
+    causeAreas: { causeArea?: {name?: string} }[];
+    desiredConnections: { connection?: {name?: string} }[];
+    promptAnswers: { prompt?: string; answer?: string }[];
+  };
+}
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 export default function Post() {
   const {id} = useParams();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<ProfileData | null>(null);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -116,7 +127,7 @@ export default function Post() {
                       key={idx}
                       className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
                     >
-                      {value.connection.name}
+                      {value?.connection?.name}
                     </li>
                   ))}
                 </ul>
@@ -146,7 +157,7 @@ export default function Post() {
 
             {user?.profile?.conflictStyle && (
               <div>
-                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Conflit Style</h2>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Conflict Style</h2>
                 <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.conflictStyle}</p>
               </div>
             )}
@@ -161,7 +172,7 @@ export default function Post() {
                       key={idx}
                       className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
                     >
-                      {value.interest.name}
+                      {value?.interest?.name}
                     </li>
                   ))}
                 </ul>
@@ -178,7 +189,7 @@ export default function Post() {
                       key={idx}
                       className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
                     >
-                      {value.causeArea.name}
+                      {value?.causeArea?.name}
                     </li>
                   ))}
                 </ul>

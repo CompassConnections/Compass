@@ -1,6 +1,7 @@
 # BayesBond
 
-This repository provides the source code for BayesBond, a web application where thinkers can bond and form deep relationships. It's in active development and will hopefully be live soon.
+This repository provides the source code for BayesBond, a web application where thinkers can bond and form deep 1-1 
+relationships in a fully transparent and efficient way. It's in active development and will hopefully be live soon.
 
 The full article is available at https://martinbraquet.com/meeting-rational.
 

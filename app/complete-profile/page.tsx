@@ -18,36 +18,52 @@ export default function CompleteProfile() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
+  const [allInterests, setAllInterests] = useState<{id: string, name: string}[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
+  const [newInterest, setNewInterest] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const {data: session, update} = useSession();
 
-  // const [selected, setSelected] = useState(new Set(selectedInterests));
-  //
-  // const toggleInterest = (interestId) => {
-  //   setSelected((prev) => {
-  //     const newSet = new Set(prev);
-  //     newSet.has(interestId) ? newSet.delete(interestId) : newSet.add(interestId);
-  //     return newSet;
-  //   });
-  // };
+  // Load existing interests and set up click-outside handler
+  useEffect(() => {
+    async function fetchInterests() {
+      try {
+        const res = await fetch('/api/interests');
+        if (res.ok) {
+          const data = await res.json();
+          setAllInterests(data.interests || []);
+        }
+      } catch (error) {
+        console.error('Error loading interests:', error);
+      }
+    }
+    fetchInterests();
 
-  // const handleInterestSubmit = (e) => {
-  //   e.preventDefault();
-  //   onSave(Array.from(selected)); // send to API
-  // };
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please upload an image file');
       return;
     }
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       setError('Image size must be less than 5MB');
       return;
@@ -82,6 +98,51 @@ export default function CompleteProfile() {
     }
   };
 
+  const toggleInterest = (interestId: string) => {
+    setSelectedInterests(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(interestId)) {
+        newSet.delete(interestId);
+      } else {
+        newSet.add(interestId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addNewInterest();
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
+    }
+  };
+
+  const addNewInterest = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const interestToAdd = newInterest.trim();
+    if (!interestToAdd) return;
+    
+    // Check if interest already exists (case-insensitive)
+    const existingInterest = allInterests.find(
+      i => i.name.toLowerCase() === interestToAdd.toLowerCase()
+    );
+
+    if (existingInterest) {
+      // Toggle selection if it exists
+      toggleInterest(existingInterest.id);
+    } else {
+      // Add new interest
+      const newInterestObj = { id: `new-${Date.now()}`, name: interestToAdd };
+      setAllInterests(prev => [...prev, newInterestObj]);
+      setSelectedInterests(prev => new Set(prev).add(newInterestObj.id));
+    }
+    
+    setNewInterest('');
+    setShowDropdown(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -103,10 +164,14 @@ export default function CompleteProfile() {
           personalityType,
           conflictStyle,
         },
+        interests: Array.from(selectedInterests).map(id => ({
+          id: id.startsWith('new-') ? undefined : id,
+          name: allInterests.find(i => i.id === id)?.name || id.replace('new-', '')
+        })),
         ...(key && {image: key}),
       });
       console.log(`Body: ${body}`)
-      // alert(body)
+
       const response = await fetch('/api/user/update-profile', {
         method: 'POST',
         headers: {
@@ -118,13 +183,10 @@ export default function CompleteProfile() {
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to update profile');
-        return
+        return;
       }
 
-      // Update the session to reflect the changes
       await update();
-
-      // Redirect to the home page or dashboard
       router.push('/');
     } catch (error) {
       console.error('Profile update error:', error);
@@ -144,17 +206,6 @@ export default function CompleteProfile() {
   const genderOptions = Object.values(Gender);
   const personalityOptions = Object.values(PersonalityType);
   const conflictOptions = Object.values(ConflictStyle);
-
-  // const answers = [
-  //   {
-  //     prompt: 'What is your favorite color?',
-  //     answer: 'Blue',
-  //   },
-  //   {
-  //     prompt: 'What is your favorite animal?',
-  //     answer: 'Dog',
-  //   }
-  // ]
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -224,8 +275,7 @@ export default function CompleteProfile() {
             </div>
           </div>
 
-          <div className="pt-4">
-
+          <div className="space-y-4">
             <div>
               <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
                 Gender <span className="text-red-500">*</span>
@@ -241,83 +291,183 @@ export default function CompleteProfile() {
                 <option value="">Select your gender</option>
                 {genderOptions.map((g) => (
                   <option key={g} value={g}>
-                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                    {g.replace(/_/g, ' ')}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="pt-4">
+            <div>
               <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
                 Location
               </label>
-              <textarea
+              <input
                 id="location"
                 name="location"
-                rows={1}
-                required
+                type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="City, Country"
               />
             </div>
 
-            <div className="pt-4">
-              <label htmlFor="personality" className="block text-sm font-medium text-gray-700 mb-1">
-                Personality <span className="text-red-500">*</span>
+            <div>
+              <label htmlFor="personalityType" className="block text-sm font-medium text-gray-700 mb-1">
+                Personality Type
               </label>
               <select
-                id="personality"
-                name="personality"
-                required
+                id="personalityType"
+                name="personalityType"
                 value={personalityType}
                 onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
-                <option value="">Select your personality</option>
-                {personalityOptions.map((g) => (
-                  <option key={g} value={g}>
-                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                <option value="">Select your personality type</option>
+                {personalityOptions.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="pt-4">
+            <div>
               <label htmlFor="conflictStyle" className="block text-sm font-medium text-gray-700 mb-1">
-                Conflict / Disagreement Style <span className="text-red-500">*</span>
+                Conflict Style
               </label>
               <select
                 id="conflictStyle"
                 name="conflictStyle"
-                required
                 value={conflictStyle}
                 onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
-                <option value="">Select your conflictStyle</option>
-                {conflictOptions.map((g) => (
-                  <option key={g} value={g}>
-                    {g.replace(/_/g, ' ')} {/* optional: format label */}
+                <option value="">Select your conflict style</option>
+                {conflictOptions.map((style) => (
+                  <option key={style} value={style}>
+                    {style}
                   </option>
                 ))}
               </select>
             </div>
 
-          {/*  <div className="pt-4">*/}
-          {/*  {allInterests.map((interest) => (*/}
-          {/*    <label key={interest.id} className="flex items-center space-x-2">*/}
-          {/*      <input*/}
-          {/*        type="checkbox"*/}
-          {/*        checked={selected.has(interest.id)}*/}
-          {/*        onChange={() => toggleInterest(interest.id)}*/}
-          {/*      />*/}
-          {/*      <span>{interest.name}</span>*/}
-          {/*    </label>*/}
-          {/*  ))}*/}
-          {/*</div>*/}
+            <div className="relative" ref={dropdownRef}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Interests
+              </label>
+              
+              <div className="relative">
+                <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    value={newInterest}
+                    onChange={(e) => setNewInterest(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                    onKeyDown={handleKeyDown}
+                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Type to search or add new interest"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="px-3 py-2 border-l border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={addNewInterest}
+                    disabled={!newInterest.trim()}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
 
-            <div className="pt-4">
+                {(showDropdown || newInterest) && (
+                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    {/* New interest option */}
+                    {newInterest && !allInterests.some(i => 
+                      i.name.toLowerCase() === newInterest.toLowerCase()
+                    ) && (
+                      <div 
+                        className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                        onClick={() => addNewInterest()}
+                      >
+                        <div className="flex items-center">
+                          <span className="font-normal ml-3 block truncate">
+                            Add "{newInterest}"
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Filtered interests */}
+                    {allInterests
+                      .filter(interest => 
+                        interest.name.toLowerCase().includes(newInterest.toLowerCase())
+                      )
+                      .map((interest) => (
+                        <div
+                          key={interest.id}
+                          className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                          onClick={() => {
+                            toggleInterest(interest.id);
+                            setNewInterest('');
+                          }}
+                        >
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              checked={selectedInterests.has(interest.id)}
+                              onChange={() => {}}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <span className="font-normal ml-3 block truncate">
+                              {interest.name}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Selected interests */}
+              <div className="flex flex-wrap gap-2 mt-3">
+                {Array.from(selectedInterests).map(interestId => {
+                  const interest = allInterests.find(i => i.id === interestId);
+                  if (!interest) return null;
+                  return (
+                    <span
+                      key={interestId}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                    >
+                      {interest.name}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleInterest(interestId);
+                        }}
+                        className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        <span className="sr-only">Remove {interest.name}</span>
+                        <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                          <path d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z" />
+                        </svg>
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                 About You <span className="text-red-500">*</span>
               </label>
@@ -329,72 +479,38 @@ export default function CompleteProfile() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Tell us a bit about yourself. You can link to social media profiles or dating / connection documents."
+                placeholder="Tell us about yourself, your background, and what you're looking for in connections."
               />
             </div>
 
-            {/*<div className="pt-4">*/}
-            {/*  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">*/}
-            {/*    Prompts*/}
-            {/*  </label>*/}
-            {/*  {answers.map(({ prompt, answer }) => (*/}
-            {/*    <div key={prompt}>*/}
-            {/*      <label className="block font-medium">{prompt}</label>*/}
-            {/*      <input*/}
-            {/*        type="text"*/}
-            {/*        value={answer}*/}
-            {/*        onChange={(e) => handleChange(prompt, e.target.value)}*/}
-            {/*        className="w-full border px-2 py-1"*/}
-            {/*      />*/}
-            {/*    </div>*/}
-            {/*  ))}*/}
-            {/*</div>*/}
-
-            <div className="pt-4">
-              <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
-                Contact Info
+            <div>
+              <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Information
               </label>
               <textarea
-                id="contact"
-                name="contact"
-                rows={4}
-                required
+                id="contactInfo"
+                name="contactInfo"
+                rows={2}
                 value={contactInfo}
                 onChange={(e) => setContactInfo(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Add your contact info here (email, phone, Google Form, etc.) until the chat feature is ready"
+                placeholder="How can people reach you? (Email, social media, etc.)"
               />
             </div>
-
-            <div className="pt-4">
-              <p className="mt-1 text-xs text-gray-500">
-                Note that all the information will be public and crawlable for now—in the future, we will add different
-                levels of privacy.
-              </p>
-            </div>
-
           </div>
 
           <div>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
+              disabled={isSubmitting || isUploading}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                isSubmitting || isUploading
+                  ? 'bg-blue-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
             >
-              {isSubmitting || isUploading ? 'Saving...' : 'Save and Continue'}
+              {isSubmitting || isUploading ? 'Saving...' : 'Save Profile'}
             </button>
-
-            {/*<div className="mt-4 text-center">*/}
-            {/*  <button*/}
-            {/*    type="button"*/}
-            {/*    onClick={() => router.push('/')}*/}
-            {/*    className="text-sm font-medium text-blue-600 hover:text-blue-500"*/}
-            {/*  >*/}
-            {/*    Skip for now*/}
-            {/*  </button>*/}
-            {/*</div>*/}
           </div>
         </form>
       </div>

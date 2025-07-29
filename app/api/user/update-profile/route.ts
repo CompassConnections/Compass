@@ -14,30 +14,64 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    console.log(`Req: ${data}`)
+    const { profile, image, interests = [] } = data;
 
-    // Update user with the new profile information
-    const updatedUser = await prisma.user.update({
-      where: {email: session.user.email},
-      data: {
-        ...(data.image && { image: data.image }),
-        profile: {
-          upsert: {
-            create: data.profile,
-            update: data.profile,
+    // Start a transaction to ensure data consistency
+    const result = await prisma.$transaction(async (prisma) => {
+      // First, update/create the profile
+      const updatedUser = await prisma.user.update({
+        where: { email: session.user.email },
+        data: {
+          ...(image && { image }),
+          profile: {
+            upsert: {
+              create: profile,
+              update: profile,
+            },
           },
         },
-      },
-        // , // Only update image if provided
-      // select: {
-      //   id: true,
-      //   email: true,
-      //   name: true,
-      //   image: true,
-      // },
+        include: {
+          profile: true,
+        },
+      });
+
+      // Process interests if any
+      if (interests.length > 0 && updatedUser.profile) {
+        // First, find or create all interests
+        const interestOperations = interests.map((interest: { id?: string; name: string }) =>
+          prisma.interest.upsert({
+            where: { id: interest.id || '' },
+            update: { name: interest.name },
+            create: { name: interest.name },
+          })
+        );
+        
+        const createdInterests = await Promise.all(interestOperations);
+        
+        // Get the IDs of all created/updated interests
+        const interestIds = createdInterests.map(interest => interest.id);
+
+        // First, remove all existing interests for this profile
+        await prisma.profileInterest.deleteMany({
+          where: { profileId: updatedUser.profile.id },
+        });
+
+        // Then, create new connections
+        if (interestIds.length > 0) {
+          await prisma.profileInterest.createMany({
+            data: interestIds.map(interestId => ({
+              profileId: updatedUser.profile!.id,
+              interestId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      return updatedUser;
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Profile update error:', error);
     return NextResponse.json(

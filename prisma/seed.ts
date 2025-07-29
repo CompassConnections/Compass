@@ -2,7 +2,7 @@ import {prisma} from "@/lib/server/prisma";
 
 
 async function main() {
-  // Create some interests & cause areas
+  // Create some interests and cause areas
   await prisma.interest.createMany({
     data: [
       {name: 'Philosophy'},

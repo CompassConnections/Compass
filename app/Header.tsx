@@ -15,19 +15,22 @@ export default function Header() {
           BayesBond
         </Link>
         <div className="flex items-center space-x-4">
-          <Link
-            href="/profiles"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          >
-            Profiles
-          </Link>
+
           {session ? (
             <>
               <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-500">
-                  {session.user?.name && <div>{session.user.name}</div>}
-                  <div>{session.user?.email}</div>
-                </div>
+                <Link
+                  href="/profile"
+                  className="text-blue-600 hover:text-blue-800 px-3 py-2 text-sm font-medium"
+                >
+                  My Profile
+                </Link>
+                <Link
+                  href="/profiles"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                >
+                  Dashboard
+                </Link>
                 <button
                   onClick={() => signOut({callbackUrl: "/"})}
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"

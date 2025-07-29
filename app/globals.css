@@ -7,12 +7,12 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --background: #0a0a0a;*/
+/*    --foreground: #ededed;*/
+/*  }*/
+/*}*/
 
 body {
   color: var(--foreground);
@@ -21,8 +21,12 @@ body {
 }
 
 html, body {
-  background-color: #ffffff;
-  color: #111111; /* for dark text */
+  background-color: var(--background);
+  color: var(--foreground);
   margin: 0;
   padding: 0;
+}
+
+a {
+  color: cornflowerblue;
 }

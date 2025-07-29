@@ -5,7 +5,40 @@ export default function LearnMorePage() {
     <div className="text-gray-600 min-h-screen bg-gray-50 p-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">About BayesBond</h1>
-        <p className="text-gray-600 mb-8">...</p>
+        <div className="et_pb_text_inner"><h1 id="abstract">Abstract</h1>
+          <p>Forming and maintaining close connections is fundamental for most people’s mental health—and hence overall
+            well-being. However, currently available meeting platforms, lacking transparency and searchability, are
+            deeply failing to bring together thoughtful people. This article lays the path for a platform designed to
+            foster close friendships and relationships for people who prioritize learning, curiosity, and critical
+            thinking. The directory of users will be fully transparent and each profile will contain extensive
+            information, allowing searches over all users through powerful filtering and sorting methods. To prevent any
+            value drift from this pro-social mission, the platform will always be free, ad-free, not for profit,
+            donation-supported, open source, and democratically governed. The goal of this article is to better
+            understand the community needs, as well as to gather feedback and collaboration for the suggested
+            implementation.</p>
+          <h3 id="how-to-help">How to Help</h3>
+          <h5 id="give-suggestions-or-contribute">Give Suggestions or Contribute</h5>
+          <p>Give suggestions or show your inclination to contribute through this <a
+            href="https://forms.gle/tKnXUMAbEreMK6FC6">form</a>!</p>
+          <h5 id="join-chats">Join Chats</h5>
+          <p>You can join the community on <a
+            href="https://join.slack.com/t/bayesmeet/shared_invite/zt-3a2k2ybf4-~S8i0hCuUETojxqNHJbB_g">Slack</a> or <a
+            href="https://discord.gg/ZkQ88Gy4">Discord</a> to shape and test the product—or just to chat with
+            like-minded people.</p>
+          <h5 id="share">Share</h5>
+          <p>Share the idea and article with people who identify with the community values and may benefit from the
+            product.</p>
+          <h5 id="donate">Donate</h5>
+          <p>You can already donate to support the initial infrastructure via <a
+            href="https://www.paypal.com/paypalme/MartinBraquet">PayPal</a> or <a
+            href="https://github.com/sponsors/MartinBraquet">GitHub</a> (GitHub has increased transparency, but requires
+            an account).</p>
+          <h5 id="github-repo">GitHub repo</h5>
+          <p>Where all the source code and instructions for development are: <a
+            href="https://github.com/BayesBond/BayesBond">https://github.com/BayesBond/BayesBond</a></p>
+          <p><a
+            href="https://martinbraquet.com/meeting-rational">Full article here</a></p>
+        </div>
       </div>
     </div>
   );

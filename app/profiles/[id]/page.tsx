@@ -5,17 +5,17 @@ import {notFound, useParams} from "next/navigation";
 import Image from "next/image";
 import LoadingSpinner from "@/lib/LoadingSpinner";
 
-interface ProfileData {
-  name?: string;
-  image?: string;
-  profile?: any;
-}
+// interface ProfileData {
+//   name?: string;
+//   image?: string;
+//   profile?: any;
+// }
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 export default function Post() {
   const {id} = useParams();
-  const [user, setUser] = useState<ProfileData | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
 

@@ -8,17 +8,17 @@ import LoadingSpinner from "@/lib/LoadingSpinner";
 // Disable static generation
 export const dynamic = "force-dynamic";
 
-type Profile = {
-  id: string;
-  name: string;
-  createdAt: string;
-  profile: any;
-};
+// type Profile = {
+//   id: string;
+//   name: string;
+//   createdAt: string;
+//   profile: any;
+// };
 
 
 export default function ProfilePage() {
 
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
 
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function ProfilePage() {
         console.log(data)
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failure');
+          console.error(data.error || 'Failure');
         }
 
         const p = data['profiles'];

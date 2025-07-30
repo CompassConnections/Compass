@@ -46,7 +46,7 @@ async function main() {
         profile: {
           create: {
             location: i % 2 === 0 ? 'New York' : 'San Francisco',
-            description: 'I’m a data scientist with a deep interest in decision theory, AI alignment, and effective altruism. When I’m not analyzing models or debating Bayesian reasoning, I enjoy exploring behavioral economics and reading philosophy (Kant and Parfit are favorites). Looking to connect with others who value curiosity, intellectual honesty, and constructive debate. Open to collaborating on research, causal impact projects, or just good conversations over coffee.',
+            description: '[This is dummy profile for demo purposes] I’m a data scientist with a deep interest in decision theory, AI alignment, and effective altruism. When I’m not analyzing models or debating Bayesian reasoning, I enjoy exploring behavioral economics and reading philosophy (Kant and Parfit are favorites). Looking to connect with others who value curiosity, intellectual honesty, and constructive debate. Open to collaborating on research, causal impact projects, or just good conversations over coffee.',
             gender: i % 2 === 0 ? 'Male' : 'Female',
             personalityType: i % 3 === 0 ? 'Extrovert' : 'Introvert',
             conflictStyle: 'Avoidant',

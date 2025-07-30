@@ -1,6 +1,6 @@
 'use client';
 
-import {ChangeEvent, useEffect, useRef, useState} from 'react';
+import {ChangeEvent, Suspense, useEffect, useRef, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useSession} from 'next-auth/react';
 import Image from 'next/image';
@@ -8,6 +8,14 @@ import {ConflictStyle, Gender, PersonalityType} from "@prisma/client";
 import {parseImage} from "@/lib/client/media";
 
 export default function CompleteProfile() {
+  return (
+    <Suspense fallback={<div></div>}>
+      <RegisterComponent/>
+    </Suspense>
+  );
+}
+
+function RegisterComponent() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
 

@@ -49,12 +49,12 @@ export default function Header() {
                 >
                   My Profile
                 </Link>
-                <Link
-                  href="/profiles"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                >
-                  Dashboard
-                </Link>
+                {/*<Link*/}
+                {/*  href="/profiles"*/}
+                {/*  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"*/}
+                {/*>*/}
+                {/*  Dashboard*/}
+                {/*</Link>*/}
                 <button
                   onClick={() => signOut({callbackUrl: "/"})}
                   className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"

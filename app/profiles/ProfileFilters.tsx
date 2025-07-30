@@ -113,7 +113,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
         <div className=" p-4 rounded-lg shadow-sm border space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Gender</label>
               <select
                 className="w-full p-2 border rounded-lg"
                 value={filters.gender}
@@ -129,7 +129,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
             </div>
 
             <div className="relative" ref={dropdownRef}>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Interests
               </label>
 
@@ -147,7 +147,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                   <button
                     type="button"
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="px-3 py-2 border-l border-gray-300  text-gray-500  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border-l border-gray-300  text-gray-500   focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                          fill="currentColor">
@@ -160,7 +160,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
 
                 {(showDropdown) && (
                   <div
-                    className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     {/* Filtered interests */}
                     {allInterests
                       .filter(interest =>
@@ -169,7 +169,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                       .map((interest) => (
                         <div
                           key={interest.id}
-                          className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                          className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
                           onClick={() => {
                             onToggleFilter('interests', interest.name);
                             toggleInterest(interest.id);
@@ -205,7 +205,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                   return (
                     <span
                       key={interestId}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
                     >
                       {interest.name}
                       <button
@@ -215,7 +215,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                           toggleInterest(interestId);
                           onToggleFilter('interests', interest.name);
                         }}
-                        className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         <span className="sr-only">Remove {interest.name}</span>
                         <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
@@ -230,7 +230,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cause Areas</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>
               <div className="flex flex-wrap gap-2">
                 {allCauseAreas.map((cause) => (
                   <button
@@ -238,8 +238,8 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                     onClick={() => onToggleFilter('causeAreas', cause.name)}
                     className={`px-3 py-1 text-sm rounded-full ${
                       filters.causeAreas.includes(cause.name)
-                        ? 'bg-green-100 text-green-800 border border-green-200'
-                        : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
+                        ? 'bg-green-100 dark:text-white dark:bg-green-900 text-green-800 border border-green-200'
+                        : 'bg-gray-100 dark:text-white dark:bg-gray-700 text-gray-800 border border-gray-200 hover:bg-gray-200'
                     }`}
                   >
                     {cause.name}
@@ -255,7 +255,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                 onReset();
                 setSelectedInterests(new Set());
               }}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-sm text-gray-600  dark:text-white hover:text-gray-800"
             >
               Reset Filters
             </button>

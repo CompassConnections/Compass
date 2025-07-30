@@ -14,5 +14,6 @@ export default {
       },
     },
   },
+  darkMode: 'class', // required for next-themes
   plugins: [  ],
 } satisfies Config;

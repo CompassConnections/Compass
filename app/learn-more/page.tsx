@@ -1,9 +1,10 @@
 export default function LearnMorePage() {
   return (
-    <div className="text-gray-600 min-h-screen bg-gray-50 p-6">
+    <div className={`text-gray-600 dark:text-white min-h-screen  p-6 `}>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">About BayesBond</h1>
-        <div className="et_pb_text_inner"><h1 id="abstract">Abstract</h1>
+        <h1 className="text-3xl font-bold  mb-4 text-center">About BayesBond</h1>
+        <div className="et_pb_text_inner">
+          {/*<h1 id="abstract">Abstract</h1>*/}
           <p>Forming and maintaining close connections is fundamental for most people’s mental health—and hence overall
             well-being. However, currently available meeting platforms, lacking transparency and searchability, are
             deeply failing to bring together thoughtful people. This article lays the path for a platform designed to
@@ -14,6 +15,7 @@ export default function LearnMorePage() {
             donation-supported, open source, and democratically governed. The goal of this article is to better
             understand the community needs, as well as to gather feedback and collaboration for the suggested
             implementation.</p>
+          <p className="mt-2">For more information, read the <a href="https://martinbraquet.com/meeting-rational">full article here</a>.</p>
           <h3 id="how-to-help">How to Help</h3>
           <h5 id="give-suggestions-or-contribute">Give Suggestions or Contribute</h5>
           <p>Give suggestions or show your inclination to contribute through this <a
@@ -34,8 +36,6 @@ export default function LearnMorePage() {
           <h5 id="github-repo">GitHub repo</h5>
           <p>Where all the source code and instructions for development are: <a
             href="https://github.com/BayesBond/BayesBond">https://github.com/BayesBond/BayesBond</a></p>
-          <p><a
-            href="https://martinbraquet.com/meeting-rational">Full article here</a></p>
         </div>
       </div>
     </div>

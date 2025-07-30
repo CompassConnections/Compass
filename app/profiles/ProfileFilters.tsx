@@ -98,7 +98,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
 
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
+          className="px-4 py-2 border rounded-lg  flex items-center gap-2 whitespace-nowrap"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                stroke="currentColor">
@@ -110,7 +110,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
       </div>
 
       {showFilters && (
-        <div className="bg-white p-4 rounded-lg shadow-sm border space-y-4">
+        <div className=" p-4 rounded-lg shadow-sm border space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
@@ -147,7 +147,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                   <button
                     type="button"
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="px-3 py-2 border-l border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border-l border-gray-300  text-gray-500  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                          fill="currentColor">
@@ -160,7 +160,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
 
                 {(showDropdown) && (
                   <div
-                    className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    className="absolute z-10 mt-1 w-full  dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     {/* Filtered interests */}
                     {allInterests
                       .filter(interest =>
@@ -169,7 +169,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                       .map((interest) => (
                         <div
                           key={interest.id}
-                          className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                          className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
                           onClick={() => {
                             onToggleFilter('interests', interest.name);
                             toggleInterest(interest.id);

@@ -1,9 +1,9 @@
 export default function TermsPage() {
   return (
-    <main className="max-w-4xl mx-auto p-8 text-gray-800">
+    <main className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white">
       <h1 className="text-3xl font-semibold text-center mb-6">Terms & Conditions</h1>
 
-      <p className="text-center text-gray-500 mb-12">
+      <p className="text-center text-gray-500 dark:text-white mb-12">
         Effective Date: January 1, 2025
       </p>
 

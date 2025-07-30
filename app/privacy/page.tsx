@@ -1,9 +1,9 @@
 export default function PrivacyPage() {
   return (
-    <main className="max-w-4xl mx-auto p-8 text-gray-800">
+    <main className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-semibold text-center mb-6">Privacy Policy</h1>
 
-      <p className="text-center text-gray-500 mb-12">
+      <p className="text-center mb-12">
         Effective Date: January 1, 2025
       </p>
 
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
           support@bayesbond.com.
         </p>
 
-        <p className="text-gray-600 italic mt-8">
+        <p className="italic mt-8">
           For questions about this Privacy Policy, reach out at support@bayesbond.com.
         </p>
       </section>

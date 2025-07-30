@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function VerificationSuccess() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 text-center">
         <div className="rounded-full bg-green-100 p-3 inline-flex items-center justify-center">
           <svg
@@ -19,7 +19,7 @@ export default function VerificationSuccess() {
             />
           </svg>
         </div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-3xl font-extrabold ">
           Email Verified Successfully!
         </h2>
         <p className="mt-2 text-sm text-gray-600">

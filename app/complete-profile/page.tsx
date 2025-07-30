@@ -265,10 +265,10 @@ function RegisterComponent() {
   const conflictOptions = Object.values(ConflictStyle);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold ">
             Complete Your Profile
           </h2>
         </div>
@@ -343,7 +343,7 @@ function RegisterComponent() {
                 required
                 value={gender || ''}
                 onChange={(e) => setGender(e.target.value as Gender)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
                 <option value="">Select your gender</option>
                 {genderOptions.map((g) => (
@@ -364,7 +364,7 @@ function RegisterComponent() {
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="City, Country"
               />
             </div>
@@ -378,7 +378,7 @@ function RegisterComponent() {
                 name="personalityType"
                 value={personalityType || ''}
                 onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
                 <option value="">Select your personality type</option>
                 {personalityOptions.map((type) => (
@@ -398,7 +398,7 @@ function RegisterComponent() {
                 name="conflictStyle"
                 value={conflictStyle || ''}
                 onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
                 <option value="">Select your conflict style</option>
                 {conflictOptions.map((style) => (
@@ -428,7 +428,7 @@ function RegisterComponent() {
                   <button
                     type="button"
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="px-3 py-2 border-l border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border-l border-gray-300  text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                          fill="currentColor">
@@ -449,13 +449,13 @@ function RegisterComponent() {
 
                 {(showDropdown || newInterest) && (
                   <div
-                    className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    className="absolute z-10 mt-1 w-full  shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     {/* New interest option */}
                     {newInterest && !allInterests.some(i =>
                       i.name.toLowerCase() === newInterest.toLowerCase()
                     ) && (
                       <div
-                        className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                        className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
                         onClick={() => addNewInterest()}
                       >
                         <div className="flex items-center">
@@ -474,7 +474,7 @@ function RegisterComponent() {
                       .map((interest) => (
                         <div
                           key={interest.id}
-                          className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                          className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
                           onClick={() => {
                             toggleInterest(interest.id);
                             setNewInterest('');
@@ -541,7 +541,7 @@ function RegisterComponent() {
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Tell us about yourself, your background, and what you're looking for in connections."
               />
             </div>
@@ -556,7 +556,7 @@ function RegisterComponent() {
                 rows={2}
                 value={contactInfo}
                 onChange={(e) => setContactInfo(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="How can people reach you? (Email, social media, etc.)"
               />
             </div>

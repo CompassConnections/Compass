@@ -13,7 +13,6 @@ export default function Post() {
   const {id} = useParams();
   const [user, setUser] = useState<ProfileData | null>(null);
   const [image, setImage] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchImage() {
@@ -37,13 +36,13 @@ export default function Post() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <article className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+      <article className="max-w-3xl mx-auto  shadow-lg rounded-lg overflow-hidden">
         {/* Profile Header with Image */}
         <div className="bg-gradient-to-r h-16 relative">
           {image ? (
             <div className="absolute -bottom-16 left-8">
-              <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden bg-white">
+              <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden ">
                 <Image
                   src={image}
                   alt={user.name || 'Profile picture'}
@@ -70,7 +69,7 @@ export default function Post() {
 
         {/* Profile Content */}
         <div className="pt-20 px-8 pb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold  mb-2">
             {user.name}
           </h1>
 

@@ -43,11 +43,11 @@ export default function ProfilePage() {
     const intellectualInterests: any = profile?.intellectualInterests ?? [];
 
     return (
-      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 ">
+        <div className=" shadow overflow-hidden sm:rounded-lg ">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
             <div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">My Profile</h3>
+              <h3 className="text-lg leading-6 font-medium ">My Profile</h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">View and update your profile information</p>
             </div>
             <Link
@@ -61,7 +61,7 @@ export default function ProfilePage() {
             <dl className="sm:divide-y sm:divide-gray-200">
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Profile Picture</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   <div className="h-24 w-24 rounded-full overflow-hidden bg-gray-100">
                     {image ? (
                       <Image
@@ -82,51 +82,51 @@ export default function ProfilePage() {
                   </div>
                 </dd>
               </div>
-              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
                 <dt className="text-sm font-medium text-gray-500">Name</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {name || 'Not provided'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Email</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {email}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Location</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {location || 'Not provided'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">About</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {description || 'Not provided'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Gender</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {gender || 'Not specified'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Personality Type</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {personalityType || 'Not specified'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Conflict Style</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {conflictStyle || 'Not specified'}
                 </dd>
               </div>
               <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Interests</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd className="mt-1 text-sm  sm:mt-0 sm:col-span-2">
                   {intellectualInterests.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {intellectualInterests.map((value: any, index: number) => (

@@ -5,6 +5,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /*--background: #0a0a0a;*/
+  /*--foreground: #ffffff;*/
 }
 
 /*@media (prefers-color-scheme: dark) {*/
@@ -27,6 +29,34 @@ html, body {
   padding: 0;
 }
 
-a {
-  color: cornflowerblue;
+/* Style all headings globally */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif; /* Clean modern font */
+  font-weight: 600;                 /* Semi-bold for clarity */
+  /*color: #111827;                   !* Near-black text for readability *!*/
+  line-height: 1.25;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
+
+/* Size scaling */
+h1 {
+  font-size: 2rem;  /* ~32px */
+}
+h2 {
+  font-size: 1.5rem; /* ~24px */
+}
+h3 {
+  font-size: 1.25rem; /* ~20px */
+}
+h4 {
+  font-size: 1.125rem; /* ~18px */
+}
+h5 {
+  font-size: 1rem;   /* ~16px */
+}
+h6 {
+  font-size: 0.875rem; /* ~14px */
+  color: #374151;      /* Slightly lighter for subheadings */
+}
+

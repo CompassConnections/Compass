@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {useCallback, useEffect, useState} from "react";
-import {useDebounce} from "use-debounce";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {ProfileData} from "@/lib/client/schema";
 import {ProfileFilters} from "./ProfileFilters";
@@ -76,9 +75,9 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-6xl">
-        <h1 className="text-4xl sm:text-5xl font-extrabold mb-8 text-gray-900">Profiles</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-8">Profiles</h1>
 
         <ProfileFilters
           filters={filters}
@@ -97,14 +96,14 @@ export default function ProfilePage() {
               profiles.map((user) => (
                 <Link key={user.id} href={`/profiles/${user.id}`} className="group">
                   <div
-                    className="border rounded-lg shadow-sm bg-white p-6 hover:shadow-md transition-shadow duration-300 h-full">
+                    className="border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-300 h-full">
                     <div className="flex items-start space-x-4">
                       <div className="flex-1">
-                        <h2 className="text-xl font-semibold text-gray-900 group-hover:underline mb-1">
+                        <h2 className="text-xl font-semibold group-hover:underline mb-1">
                           {user.name}
                         </h2>
                         {user?.profile?.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2">
+                          <p className="text-sm line-clamp-2">
                             {user.profile.description}
                           </p>
                         )}
@@ -140,7 +139,7 @@ export default function ProfilePage() {
             ) : (
               <div className="col-span-full text-center py-12">
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
+                  className="mx-auto h-12 w-12"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -154,8 +153,8 @@ export default function ProfilePage() {
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No profiles found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="mt-2 text-sm font-medium">No profiles found</h3>
+                <p className="mt-1 text-sm ">
                   Try adjusting your search or filter to find what you're looking for.
                 </p>
               </div>

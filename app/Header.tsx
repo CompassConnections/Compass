@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {useSession, signOut} from "next-auth/react";
+import ThemeToggle from "@/lib/client/theme";
 
 export default function Header() {
   const {data: session} = useSession();
@@ -9,11 +10,12 @@ export default function Header() {
   console.log(session);
 
   return (
-    <header className="w-full bg-white shadow-md py-4 px-8">
+    <header className="w-full shadow-md py-4 px-8">
       <nav className="flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold text-gray-800 hover:text-blue-600 transition-colors">
+        <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors">
           BayesBond
         </Link>
+        <ThemeToggle />
         <div className="flex items-center space-x-4">
 
           {session ? (

@@ -13,6 +13,7 @@ export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [images, setImages] = useState<string[] | null>([])
   const [filters, setFilters] = useState({
     gender: '',
     interests: [] as string[],
@@ -21,37 +22,59 @@ export default function ProfilePage() {
   });
 
   const fetchProfiles = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
+        try {
+          setLoading(true);
+          const params = new URLSearchParams();
 
-      if (filters.gender) params.append('gender', filters.gender);
-      if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
-      if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
-      if (filters.searchQuery) params.append('search', filters.searchQuery);
-      
-      // Fetch total users count (unfiltered)
-      const countResponse = await fetch('/api/profiles/count');
-      if (countResponse.ok) {
-        const { count } = await countResponse.json();
-        setTotalUsers(count);
+          if (filters.gender) params.append('gender', filters.gender);
+          if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
+          if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
+          if (filters.searchQuery) params.append('search', filters.searchQuery);
+
+          // Fetch total users count (unfiltered)
+          const countResponse = await fetch('/api/profiles/count');
+          if (countResponse.ok) {
+            const {count} = await countResponse.json();
+            setTotalUsers(count);
+          }
+
+          const response = await fetch(`/api/profiles?${params.toString()}`);
+          const data = await response.json();
+
+          if (!response.ok) {
+            console.error(data.error || 'Failed to fetch profiles');
+            return;
+          }
+
+          setProfiles(data.profiles || []);
+          console.log(data.profiles);
+
+          for (const u of data.profiles) {
+            console.log(u);
+            const img = u.image;
+            let url = img;
+            if (img && !img.startsWith('http')) {
+              const imageResponse = await fetch(`/api/download?key=${img}`);
+              console.log(`imageResponse: ${imageResponse}`)
+              if (imageResponse.ok) {
+                const imageBlob = await imageResponse.json();
+                url = imageBlob['url'];
+              }
+            }
+            setImages(prev => [...prev, url]);
+          }
+          console.log(images);
+        } catch
+          (error) {
+          console.error('Error fetching profiles:', error);
+        } finally {
+          setLoading(false);
+        }
       }
-
-      const response = await fetch(`/api/profiles?${params.toString()}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(data.error || 'Failed to fetch profiles');
-        return;
-      }
-
-      setProfiles(data.profiles || []);
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters]);
+      ,
+      [filters]
+    )
+  ;
 
   useEffect(() => {
     fetchProfiles();
@@ -83,8 +106,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-8">
           <h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>
           <div className="text-lg pb-1">
@@ -92,89 +115,93 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <ProfileFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onToggleFilter={toggleFilter}
-          onReset={resetFilters}
-        />
-
-        {loading ? (
-          <div className="flex justify-center my-12">
-            <LoadingSpinner/>
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Filters Sidebar */}
+          <div className="w-full md:w-80 flex-shrink-0">
+            <div className="sticky top-24">
+              <ProfileFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onToggleFilter={toggleFilter}
+                onReset={resetFilters}
+              />
+            </div>
           </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 w-full">
-            {profiles.length > 0 ? (
-              profiles.map((user) => (
-                <Link key={user.id} href={`/profiles/${user.id}`} className="group">
-                  <div
-                    className="border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-300 h-full">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-1">
-                        <h2 className="text-xl font-semibold group-hover:underline mb-1">
-                          {user.name}
-                        </h2>
-                        {user?.profile?.description && (
-                          <p className="text-sm line-clamp-2">
-                            {user.profile.description}
-                          </p>
-                        )}
 
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {user.profile?.intellectualInterests && user.profile.intellectualInterests.length > 0 && (
-                            <div>
-                              {user.profile.intellectualInterests.slice(0, 3).map(({interest}) => (
-                                <span key={interest?.id}
-                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
+          {/* Profiles Grid */}
+          <div className="flex-1">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner/>
+              </div>
+            ) : profiles.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-6">
+                {profiles.map((user, idx) => (
+                  <Link
+                    key={user.id}
+                    href={`/profiles/${user.id}`}
+                    className="group block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
+                  >
+                    <div className="p-4 h-full flex flex-col">
+                      <div className="flex items-center space-x-4">
+                        {/*<div className="flex-shrink-0">*/}
+                        {/*  <img*/}
+                        {/*    className="h-16 w-16 rounded-full object-cover"*/}
+                        {/*    src={images[idx]}*/}
+                        {/*    alt={``}*/}
+                        {/*  />*/}
+                        {/*</div>*/}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
+                            {user.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                            {user.profile?.description || ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-4 space-y-2 flex-grow">
+                        {user.profile?.intellectualInterests && user.profile.intellectualInterests.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {user.profile.intellectualInterests.slice(0, 3).map(({interest}) => (
+                              <span key={interest?.id}
+                                    className="inline-block text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
                                 {interest?.name}
                               </span>
-                              ))}
-                            </div>
-                          )}
-                          {user.profile?.causeAreas && user.profile.causeAreas.length > 0 && (
-                            <div>
-                              {user.profile.causeAreas.slice(0, 3).map(({causeArea}) => (
-                                <span key={causeArea?.id}
-                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
-                                {causeArea?.name}
-                              </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
+                            ))}
+                          </div>
+                        )}
+                        {/*{user.profile?.causeAreas && user.profile.causeAreas.length > 0 && (*/}
+                        {/*  <div className="flex flex-wrap gap-1">*/}
+                        {/*    {user.profile.causeAreas.slice(0, 3).map(({causeArea}) => (*/}
+                        {/*      <span key={causeArea?.id}*/}
+                        {/*            className="inline-block text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">*/}
+                        {/*        {causeArea?.name}*/}
+                        {/*      </span>*/}
+                        {/*    ))}*/}
+                        {/*  </div>*/}
+                        {/*)}*/}
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))
+                  </Link>
+                ))}
+              </div>
             ) : (
-              <div className="col-span-full text-center py-12">
-                <svg
-                  className="mx-auto h-12 w-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    vectorEffect="non-scaling-stroke"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+              <div className="text-center py-12">
+                <p className="text-gray-500 dark:text-gray-400">No profiles found matching your criteria.</p>
+                <svg className="mx-auto h-12 w-12 mt-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <h3 className="mt-2 text-sm font-medium">No profiles found</h3>
-                <p className="mt-1 text-sm ">
+                <p className="mt-1 text-sm">
                   Try adjusting your search or filter to find what you're looking for.
                 </p>
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </div>
-  );
-}
+  )

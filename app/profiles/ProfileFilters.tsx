@@ -229,24 +229,25 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>
-              <div className="flex flex-wrap gap-2">
-                {allCauseAreas.map((cause) => (
-                  <button
-                    key={cause.name}
-                    onClick={() => onToggleFilter('causeAreas', cause.name)}
-                    className={`px-3 py-1 text-sm rounded-full ${
-                      filters.causeAreas.includes(cause.name)
-                        ? 'bg-green-100 dark:text-white dark:bg-green-900 text-green-800 border border-green-200'
-                        : 'bg-gray-100 dark:text-white dark:bg-gray-700 text-gray-800 border border-gray-200 hover:bg-gray-200'
-                    }`}
-                  >
-                    {cause.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/*<div>*/}
+            {/*  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>*/}
+            {/*  <div className="flex flex-wrap gap-2">*/}
+            {/*    {allCauseAreas.map((cause) => (*/}
+            {/*      <button*/}
+            {/*        key={cause.name}*/}
+            {/*        onClick={() => onToggleFilter('causeAreas', cause.name)}*/}
+            {/*        className={`px-3 py-1 text-sm rounded-full ${*/}
+            {/*          filters.causeAreas.includes(cause.name)*/}
+            {/*            ? 'bg-green-100 dark:text-white dark:bg-green-900 text-green-800 border border-green-200'*/}
+            {/*            : 'bg-gray-100 dark:text-white dark:bg-gray-700 text-gray-800 border border-gray-200 hover:bg-gray-200'*/}
+            {/*        }`}*/}
+            {/*      >*/}
+            {/*        {cause.name}*/}
+            {/*      </button>*/}
+            {/*    ))}*/}
+            {/*  </div>*/}
+            {/*</div>*/}
+
           </div>
 
           <div className="flex justify-end">

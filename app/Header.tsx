@@ -1,21 +1,41 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import {signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { FaHome } from "react-icons/fa";
 import ThemeToggle from "@/lib/client/theme";
 
 export default function Header() {
-  const {data: session} = useSession();
+  const { data: session } = useSession();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  console.log(session);
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640); // Tailwind's 'sm' breakpoint is 640px
+    };
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Clean up the event listener when the component unmounts
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
     <header className="w-full
     {/*shadow-md*/}
      py-4 px-8">
       <nav className="flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors hidden md:block">
-          BayesBond
+        <Link 
+          href="/" 
+          className="text-xl font-bold hover:text-blue-600 transition-colors flex items-center"
+          aria-label={isSmallScreen ? "Home" : "BayesBond"}
+        >
+          {isSmallScreen ? <FaHome className="w-5 h-5" /> : 'BayesBond'}
         </Link>
         <div className="flex items-center space-x-4">
 

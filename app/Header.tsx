@@ -15,9 +15,9 @@ export default function Header() {
         <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors">
           BayesBond
         </Link>
-        <ThemeToggle />
         <div className="flex items-center space-x-4">
 
+          <ThemeToggle />
           {session ? (
             <>
               <div className="flex items-center space-x-4">

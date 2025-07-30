@@ -1,5 +1,7 @@
 'use client';
 
+import Link from "next/link";
+
 export default function LearnMorePage() {
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
@@ -22,7 +24,14 @@ export default function LearnMorePage() {
             donation-supported, open source, and democratically governed. The goal of this article is to better
             understand the community needs, as well as to gather feedback and collaboration for the suggested
             implementation.</p>
-          <p className="mt-2">For more information, read the <a href="https://martinbraquet.com/meeting-rational">full article here</a>.</p>
+          <div className="mt-8 flex space-x-4 justify-center">
+            <Link
+              href="https://martinbraquet.com/meeting-rational"
+              className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+            >
+              Full article
+            </Link>
+          </div>
           <h3 id="how-to-help">How to Help</h3>
           <h5 id="give-suggestions-or-contribute">Give Suggestions or Contribute</h5>
           <p>Give suggestions or show your inclination to contribute through this <a

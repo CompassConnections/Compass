@@ -264,6 +264,8 @@ function RegisterComponent() {
   const personalityOptions = Object.values(PersonalityType);
   const conflictOptions = Object.values(ConflictStyle);
 
+  const headingStyle = "block text-sm font-medium text-gray-700 dark:text-white mb-1";
+
   return (
     <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -334,7 +336,7 @@ function RegisterComponent() {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="gender" className={headingStyle}>
                 Gender <span className="text-red-500">*</span>
               </label>
               <select
@@ -355,7 +357,7 @@ function RegisterComponent() {
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="location" className={headingStyle}>
                 Location
               </label>
               <input
@@ -370,7 +372,7 @@ function RegisterComponent() {
             </div>
 
             <div>
-              <label htmlFor="personalityType" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="personalityType" className={headingStyle}>
                 Personality Type
               </label>
               <select
@@ -390,7 +392,7 @@ function RegisterComponent() {
             </div>
 
             <div>
-              <label htmlFor="conflictStyle" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="conflictStyle" className={headingStyle}>
                 Conflict Style
               </label>
               <select
@@ -410,7 +412,7 @@ function RegisterComponent() {
             </div>
 
             <div className="relative" ref={dropdownRef}>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className={headingStyle}>
                 Interests
               </label>
 
@@ -449,7 +451,7 @@ function RegisterComponent() {
 
                 {(showDropdown || newInterest) && (
                   <div
-                    className="absolute z-10 mt-1 w-full  shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    className="absolute z-10 mt-1 w-full  dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     {/* New interest option */}
                     {newInterest && !allInterests.some(i =>
                       i.name.toLowerCase() === newInterest.toLowerCase()
@@ -531,7 +533,7 @@ function RegisterComponent() {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" className={headingStyle}>
                 About You <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -547,7 +549,7 @@ function RegisterComponent() {
             </div>
 
             <div>
-              <label htmlFor="contactInfo" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="contactInfo" className={headingStyle}>
                 Contact Information
               </label>
               <textarea

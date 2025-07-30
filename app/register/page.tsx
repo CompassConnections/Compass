@@ -226,7 +226,7 @@ function RegisterComponent() {
                     <div className="w-full border-t border-gray-300"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2  text-gray-500">Or sign up with</span>
+                    <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500">Or sign up with</span>
                   </div>
                 </div>
 
@@ -241,7 +241,7 @@ function RegisterComponent() {
                 </button>
               </div>
             </form>
-            <div className="text-center text-sm">
+            <div className="text-center text-sm mt-2">
               <p className="text-gray-600">
                 Already have an account?{' '}
                 <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">

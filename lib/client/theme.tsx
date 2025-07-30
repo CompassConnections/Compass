@@ -2,6 +2,7 @@
 
 import {useTheme} from 'next-themes';
 import {useEffect, useState} from 'react';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
 
 export default function ThemeToggle() {
@@ -17,16 +18,17 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 ${
-        isDark ? 'bg-gray-300' : 'bg-gray-700'
-      }`}
+      className={`relative inline-flex h-8 items-center rounded-full border-4 transition-colors duration-300`}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-gray-200 transition-transform duration-300 ${
-          isDark ? 'translate-x-6' : 'translate-x-1'
-        }`}
-      />
+      <div className="flex items-center justify-between px-2 w-16">
+        <div className={`p-1 rounded-md`}>
+          <SunIcon className={`h-4 w-4 text-yellow-500 ${isDark ? 'hidden' : ''}`} />
+        </div>
+        <div className={`p-1 rounded-md`}>
+          <MoonIcon className={`h-4 w-4 text-yellow-500 ${isDark ? '' : 'hidden'}`} />
+        </div>
+      </div>
     </button>
   );
 }
-

@@ -35,6 +35,7 @@ model Profile {
   location             String?        // Need to normalize later for geospatial
   description          String?
   contactInfo          String?
+  occupation          String?
   gender               Gender?
   personalityType      PersonalityType?
   conflictStyle        ConflictStyle?

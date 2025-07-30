@@ -96,7 +96,7 @@ export default function Post() {
                   {user?.profile?.desiredConnections.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.connection?.name}
                     </li>
@@ -141,7 +141,7 @@ export default function Post() {
                   {user.profile.intellectualInterests.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.interest?.name}
                     </li>
@@ -158,7 +158,7 @@ export default function Post() {
                   {user.profile.causeAreas.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.causeArea?.name}
                     </li>

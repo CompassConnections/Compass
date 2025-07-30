@@ -1,3 +1,5 @@
+import {supportEmail} from "@/lib/client/constants";
+
 export default function TermsPage() {
   return (
     <main className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white">
@@ -28,7 +30,7 @@ export default function TermsPage() {
 
         <h2 className="text-xl font-semibold">3. Intellectual Property & Licensing</h2>
         <p>
-          1. <strong>Ownership and License.</strong> BayesBond is developed and
+          a. <strong>Ownership and License.</strong> BayesBond is developed and
           maintained as a <strong>free and open-source project</strong>. Unless
           otherwise stated, all source code, designs, and related materials
           (“Project Materials”) are licensed under the{" "}
@@ -39,7 +41,7 @@ export default function TermsPage() {
           copies of the Project Materials.
         </p>
         <p>
-          2. <strong>Community Governance.</strong> BayesBond operates under a{" "}
+          b. <strong>Community Governance.</strong> BayesBond operates under a{" "}
           <strong>community-driven governance model</strong>. Any material changes
           to licensing, monetization (including advertisements), or governance
           structures shall require approval through the governance process defined by
@@ -47,7 +49,7 @@ export default function TermsPage() {
           available.
         </p>
         <p>
-          3. <strong>Contributions.</strong> By submitting code, designs,
+          c. <strong>Contributions.</strong> By submitting code, designs,
           documentation, or other contributions (“Contributions”) to BayesBond, you
           agree that such Contributions will be licensed under the same open-source
           license governing the Project Materials at the time of contribution. You
@@ -55,14 +57,14 @@ export default function TermsPage() {
           that your Contributions do not infringe on the rights of any third party.
         </p>
         <p>
-          4. <strong>Trademarks and Branding.</strong> The name “BayesBond,” logos,
+          d. <strong>Trademarks and Branding.</strong> The name “BayesBond,” logos,
           and associated marks (“Marks”) are the exclusive property of the BayesBond
           community or its designated steward. Use of the Marks is only permitted as
           authorized in writing by the BayesBond governance body to avoid confusion
           or misuse.
         </p>
         <p>
-          5. <strong>No Proprietary Restrictions.</strong> BayesBond shall remain{" "}
+          e. <strong>No Proprietary Restrictions.</strong> BayesBond shall remain{" "}
           <strong>free of advertising, proprietary lock-ins, and data monetization</strong>{" "}
           unless explicitly approved by the community in accordance with its
           governance process. Users and contributors must not introduce such
@@ -82,7 +84,7 @@ export default function TermsPage() {
         </p>
 
         <p className="text-gray-600 italic mt-8">
-          For questions regarding these Terms, please contact us at support@bayesbond.com.
+          For questions regarding these Terms, please contact us at {supportEmail}.
         </p>
       </section>
     </main>

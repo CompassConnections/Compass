@@ -1,3 +1,5 @@
+import {supportEmail} from "@/lib/client/constants";
+
 export default function PrivacyPage() {
   return (
     <main className="max-w-4xl mx-auto p-8">
@@ -39,12 +41,11 @@ export default function PrivacyPage() {
 
         <h2 className="text-xl font-semibold">5. Your Rights</h2>
         <p>
-          You can request deletion of your account and data at any time by contacting
-          support@bayesbond.com.
+          You can request deletion of your account and data at any time by contacting {supportEmail}.
         </p>
 
         <p className="italic mt-8">
-          For questions about this Privacy Policy, reach out at support@bayesbond.com.
+          For questions about this Privacy Policy, reach out at {supportEmail}.
         </p>
       </section>
     </main>

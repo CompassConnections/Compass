@@ -1,0 +1,1 @@
+export const supportEmail = 'mysharktrash@gmail.com (official email to be created)';

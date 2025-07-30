@@ -1,6 +1,13 @@
+'use client';
+
 export default function LearnMorePage() {
   return (
-    <div className={`text-gray-600 dark:text-white min-h-screen  p-6 `}>
+    <div className="text-gray-600 dark:text-white min-h-screen p-6">
+      <style jsx global>{`
+        a {
+          color: cornflowerblue;
+        }
+      `}</style>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold  mb-4 text-center">About BayesBond</h1>
         <div className="et_pb_text_inner">

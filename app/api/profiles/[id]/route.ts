@@ -9,6 +9,7 @@ export async function GET(
     const params = await context.params;
     const { id } = params;
 
+    const cacheStrategy = { swr: 3600, ttl: 3600, tags: ["profiles/[id]"] };
     const user = await prisma.user.findUnique({
       where: { id },
       select: {
@@ -26,6 +27,7 @@ export async function GET(
           },
         },
       },
+      cacheStrategy: cacheStrategy,
     });
 
     // If user not found, return 404

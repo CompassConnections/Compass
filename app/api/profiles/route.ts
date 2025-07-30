@@ -84,7 +84,7 @@ export async function GET(request: Request) {
   }
 
   // Fetch paginated and filtered profiles
-  const cacheStrategy = { swr: 3600, ttl: 3600 };
+  const cacheStrategy = { swr: 3600, ttl: 3600 , tags: ["profiles"]};
   const profiles = await prisma.user.findMany({
     skip: offset,
     take: profilesPerPage,

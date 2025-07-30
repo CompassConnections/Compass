@@ -1,7 +1,11 @@
-import {prisma} from "@/lib/server/prisma";
+import {PrismaClient} from "@prisma/client";
+
+// Cannot import from prisma.ts as we are outside the server
+const prisma = new PrismaClient({log: ['query']})
 
 
 async function main() {
+
   // Create some interests and cause areas
   await prisma.interest.createMany({
     data: [
@@ -31,17 +35,25 @@ async function main() {
     skipDuplicates: true,
   });
 
+  const names = [
+    'Alice Wonderland',
+    'Bob the Builder',
+    'Emily McConaughey',
+    'Alex Hepburn',
+    'Laurent Golden'
+  ]
+
   // Get actual Interest & CauseArea objects
   const allInterests = await prisma.interest.findMany();
   const allCauseAreas = await prisma.causeArea.findMany();
   const allConnections = await prisma.connection.findMany();
 
   // Create mock users
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 0; i < 5; i++) {
     const user = await prisma.user.create({
       data: {
-        email: `user${i}@bayesbond.com`,
-        name: `User ${i}`,
+        email: `user${i+1}@bayesbond.com`,
+        name: names[i],
         image: null,
         profile: {
           create: {

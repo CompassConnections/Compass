@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     // Get all interests from the database
-    const cacheStrategy = { swr: 60, ttl: 60 };
+    const cacheStrategy = { swr: 60, ttl: 60, tags: ["interests"] };
     const interests = await prisma.interest.findMany({
       select: {
         id: true,

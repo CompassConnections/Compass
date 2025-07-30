@@ -14,7 +14,7 @@ export default function Header() {
     {/*shadow-md*/}
      py-4 px-8">
       <nav className="flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors">
+        <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors hidden md:block">
           BayesBond
         </Link>
         <div className="flex items-center space-x-4">

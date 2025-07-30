@@ -1,10 +1,11 @@
 'use client';
 
 import {useEffect, useState} from "react";
-import {notFound, useParams} from "next/navigation";
+import {useParams} from "next/navigation";
 import Image from "next/image";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {ProfileData} from "@/lib/client/schema";
+import {parseImage} from "@/lib/client/media";
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
@@ -15,47 +16,21 @@ export default function Post() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`/api/profiles/${id}`);
-        if (!response.ok) {
-          notFound();
-        }
-        const data = await response.json();
-        setUser(data);
-        const img = data.image;
-        console.log(`Data image: ${img}`)
-
-        // If user has an image key, fetch the image
-        if (img) {
-          if (img.startsWith('http')) {
-            setImage(img);
-          } else {
-            const imageResponse = await fetch(`/api/download?key=${img}`);
-            console.log(`imageResponse: ${imageResponse}`)
-            if (imageResponse.ok) {
-              const imageBlob = await imageResponse.json();
-              const imageUrl = imageBlob['url'];
-              setImage(imageUrl);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setLoading(false);
+    async function fetchImage() {
+      const res = await fetch(`/api/profiles/${id}`);
+      const data = await res.json();
+      setUser(data);
+      console.log('userData', data);
+      if (data?.image) {
+        await parseImage(data.image, setImage);
       }
-    };
+    }
 
-    fetchProfile();
-  }, [id]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+    fetchImage();
+  }, []);
 
   if (!user) {
-    notFound();
+    return <LoadingSpinner/>;
   }
 
   console.log(`Image: ${image}`)
@@ -102,7 +77,7 @@ export default function Post() {
           <div className="space-y-6 pt-4 border-t border-gray-200">
 
             {user?.profile?.desiredConnections && (
-              <div className="mt-3">                <
+              <div className="mt-3"><
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Connection</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
@@ -147,7 +122,7 @@ export default function Post() {
             )}
 
             {user?.profile?.intellectualInterests && (
-              <div className="mt-3">                <
+              <div className="mt-3"><
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Interests</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
@@ -164,7 +139,7 @@ export default function Post() {
             )}
 
             {user?.profile?.causeAreas && (
-              <div className="mt-3">                <
+              <div className="mt-3"><
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Cause Areas</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
@@ -181,7 +156,7 @@ export default function Post() {
             )}
 
             {user?.profile?.promptAnswers && (
-              <div className="mt-3">                <
+              <div className="mt-3"><
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Prompt Answers</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
@@ -222,7 +197,6 @@ export default function Post() {
             {/*    })}*/}
             {/*  </p>*/}
             {/*</div>*/}
-
 
 
           </div>

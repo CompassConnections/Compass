@@ -16,6 +16,14 @@ export async function POST(req: Request) {
     const data = await req.json();
     const { profile, image, interests = [] } = data;
 
+    Object.keys(profile).forEach(key => {
+      if (profile[key] === '' || !profile[key]) {
+        delete profile[key];
+      }
+    });
+
+    console.log('profile', profile);
+
     // Start a transaction to ensure data consistency
     const result = await prisma.$transaction(async (prisma) => {
       // First, update/create the profile

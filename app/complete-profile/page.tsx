@@ -1,12 +1,16 @@
 'use client';
 
 import {ChangeEvent, useEffect, useRef, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {useSession} from 'next-auth/react';
 import Image from 'next/image';
 import {ConflictStyle, Gender, PersonalityType} from "@prisma/client";
+import {parseImage} from "@/lib/client/media";
 
 export default function CompleteProfile() {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
+
   const [description, setDescription] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [location, setLocation] = useState('');
@@ -18,14 +22,57 @@ export default function CompleteProfile() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
-  const [allInterests, setAllInterests] = useState<{id: string, name: string}[]>([]);
+  const [allInterests, setAllInterests] = useState<{ id: string, name: string }[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
   const [newInterest, setNewInterest] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const {data: session, update} = useSession();
+
+  console.log('image', image)
+
+  // Fetch user profile data
+  useEffect(() => {
+    async function fetchUserProfile() {
+      if (!session?.user?.email) return;
+
+      try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData?.profile) {
+            const {profile} = userData;
+            setDescription(profile.description || '');
+            setContactInfo(profile.contactInfo || '');
+            setLocation(profile.location || '');
+            setGender(profile.gender || '');
+            setPersonalityType(profile.personalityType || null);
+            setConflictStyle(profile.conflictStyle || '');
+            await parseImage(profile.image, setImage);
+
+            // Set selected interests if any
+            if (profile.intellectualInterests?.length > 0) {
+              const interestIds = profile.intellectualInterests
+                .map((pi: any) => pi.interest.id);
+              setSelectedInterests(new Set(interestIds));
+            }
+          }
+          if (userData?.image) {
+            await parseImage(userData.image, setImage);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchUserProfile();
+  }, [session]);
 
   // Load existing interests and set up click-outside handler
   useEffect(() => {
@@ -40,6 +87,7 @@ export default function CompleteProfile() {
         console.error('Error loading interests:', error);
       }
     }
+
     fetchInterests();
 
     // Close dropdown when clicking outside
@@ -54,6 +102,14 @@ export default function CompleteProfile() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -123,7 +179,7 @@ export default function CompleteProfile() {
     if (e) e.preventDefault();
     const interestToAdd = newInterest.trim();
     if (!interestToAdd) return;
-    
+
     // Check if interest already exists (case-insensitive)
     const existingInterest = allInterests.find(
       i => i.name.toLowerCase() === interestToAdd.toLowerCase()
@@ -134,11 +190,11 @@ export default function CompleteProfile() {
       toggleInterest(existingInterest.id);
     } else {
       // Add new interest
-      const newInterestObj = { id: `new-${Date.now()}`, name: interestToAdd };
+      const newInterestObj = {id: `new-${Date.now()}`, name: interestToAdd};
       setAllInterests(prev => [...prev, newInterestObj]);
       setSelectedInterests(prev => new Set(prev).add(newInterestObj.id));
     }
-    
+
     setNewInterest('');
     setShowDropdown(false);
   };
@@ -187,7 +243,7 @@ export default function CompleteProfile() {
       }
 
       await update();
-      router.push('/');
+      router.push(redirect);
     } catch (error) {
       console.error('Profile update error:', error);
       setError(error instanceof Error ? error.message : 'Failed to update profile');
@@ -195,13 +251,6 @@ export default function CompleteProfile() {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    const img = session?.user?.image;
-    if (img) {
-      setImage(img);
-    }
-  }, [session]);
 
   const genderOptions = Object.values(Gender);
   const personalityOptions = Object.values(PersonalityType);
@@ -284,7 +333,7 @@ export default function CompleteProfile() {
                 id="gender"
                 name="gender"
                 required
-                value={gender}
+                value={gender || ''}
                 onChange={(e) => setGender(e.target.value as Gender)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
@@ -319,7 +368,7 @@ export default function CompleteProfile() {
               <select
                 id="personalityType"
                 name="personalityType"
-                value={personalityType}
+                value={personalityType || ''}
                 onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
@@ -339,7 +388,7 @@ export default function CompleteProfile() {
               <select
                 id="conflictStyle"
                 name="conflictStyle"
-                value={conflictStyle}
+                value={conflictStyle || ''}
                 onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               >
@@ -356,7 +405,7 @@ export default function CompleteProfile() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Interests
               </label>
-              
+
               <div className="relative">
                 <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
                   <input
@@ -373,8 +422,11 @@ export default function CompleteProfile() {
                     onClick={() => setShowDropdown(!showDropdown)}
                     className="px-3 py-2 border-l border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                         fill="currentColor">
+                      <path fillRule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clipRule="evenodd"/>
                     </svg>
                   </button>
                   <button
@@ -388,12 +440,13 @@ export default function CompleteProfile() {
                 </div>
 
                 {(showDropdown || newInterest) && (
-                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <div
+                    className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     {/* New interest option */}
-                    {newInterest && !allInterests.some(i => 
+                    {newInterest && !allInterests.some(i =>
                       i.name.toLowerCase() === newInterest.toLowerCase()
                     ) && (
-                      <div 
+                      <div
                         className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
                         onClick={() => addNewInterest()}
                       >
@@ -407,7 +460,7 @@ export default function CompleteProfile() {
 
                     {/* Filtered interests */}
                     {allInterests
-                      .filter(interest => 
+                      .filter(interest =>
                         interest.name.toLowerCase().includes(newInterest.toLowerCase())
                       )
                       .map((interest) => (
@@ -424,7 +477,8 @@ export default function CompleteProfile() {
                               type="checkbox"
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                               checked={selectedInterests.has(interest.id)}
-                              onChange={() => {}}
+                              onChange={() => {
+                              }}
                               onClick={(e) => e.stopPropagation()}
                             />
                             <span className="font-normal ml-3 block truncate">
@@ -436,7 +490,7 @@ export default function CompleteProfile() {
                   </div>
                 )}
               </div>
-              
+
               {/* Selected interests */}
               <div className="flex flex-wrap gap-2 mt-3">
                 {Array.from(selectedInterests).map(interestId => {
@@ -458,7 +512,8 @@ export default function CompleteProfile() {
                       >
                         <span className="sr-only">Remove {interest.name}</span>
                         <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
-                          <path d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z" />
+                          <path
+                            d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
                         </svg>
                       </button>
                     </span>

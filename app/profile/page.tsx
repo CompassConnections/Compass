@@ -4,34 +4,43 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
+import {parseImage} from "@/lib/client/media";
+import {usePathname} from "next/navigation";
 
 export default function ProfilePage() {
+  const pathname = usePathname(); // Get the current route
   const [userData, setUserData] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
   try {
     useEffect(() => {
-      fetch('/api/profile').then(r => r.json()).then(data => {
+      async function fetchImage() {
+        const res = await fetch('/api/profile');
+        const data = await res.json();
         setUserData(data);
         console.log('userData', data);
-      });
+        if (data?.image) {
+          await parseImage(data.image, setImage);
+        }
+      }
+
+      fetchImage();
     }, []);
 
     if (!userData) {
-      return <LoadingSpinner />;
+      return <LoadingSpinner/>;
     }
 
-    const {
-      name,
-      email,
-      image,
-      profile: {
-        location,
-        description,
-        gender,
-        personalityType,
-        conflictStyle,
-        intellectualInterests
-      }
-    } = userData;
+    console.log('userData', userData);
+    const name = userData?.name ?? '';
+    const email = userData?.email ?? '';
+
+    const profile = userData?.profile;
+    const location = profile?.location ?? '';
+    const description = profile?.description ?? '';
+    const gender = profile?.gender ?? '';
+    const personalityType = profile?.personalityType ?? '';
+    const conflictStyle = profile?.conflictStyle ?? '';
+    const intellectualInterests = profile?.intellectualInterests ?? [];
 
     return (
       <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -42,7 +51,7 @@ export default function ProfilePage() {
               <p className="mt-1 max-w-2xl text-sm text-gray-500">View and update your profile information</p>
             </div>
             <Link
-              href="/complete-profile"
+              href={`/complete-profile?redirect=${encodeURIComponent(pathname)}`}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Edit Profile

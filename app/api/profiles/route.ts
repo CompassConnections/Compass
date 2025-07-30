@@ -1,13 +1,6 @@
-import { prisma } from "@/lib/server/prisma";
-import { NextResponse } from "next/server";
-import { getSession } from "@/lib/server/auth";
-
-type FilterParams = {
-  gender?: string;
-  interests?: string[];
-  causeAreas?: string[];
-  searchQuery?: string;
-};
+import {prisma} from "@/lib/server/prisma";
+import {NextResponse} from "next/server";
+import {getSession} from "@/lib/server/auth";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -16,7 +9,7 @@ export async function GET(request: Request) {
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const searchQuery = url.searchParams.get("search") || "";
-  
+
   const profilesPerPage = 20;
   const offset = (page - 1) * profilesPerPage;
 
@@ -25,7 +18,7 @@ export async function GET(request: Request) {
 
   // Build the where clause based on filters
   const where: any = {
-    id: { not: session?.user?.id },
+    id: {not: session?.user?.id},
   };
 
   if (gender) {
@@ -35,16 +28,33 @@ export async function GET(request: Request) {
     };
   }
 
+  // OR
+  // if (interests.length > 0) {
+  //   where.profile = {
+  //     ...where.profile,
+  //     intellectualInterests: {
+  //       some: {
+  //         interest: {
+  //           name: {in: interests},
+  //         },
+  //       },
+  //     },
+  //   };
+  // }
+
+  // AND
   if (interests.length > 0) {
     where.profile = {
       ...where.profile,
-      intellectualInterests: {
-        some: {
-          interest: {
-            name: { in: interests },
+      AND: interests.map((interestName) => ({
+        intellectualInterests: {
+          some: {
+            interest: {
+              name: interestName,
+            },
           },
         },
-      },
+      })),
     };
   }
 
@@ -54,7 +64,7 @@ export async function GET(request: Request) {
       causeAreas: {
         some: {
           causeArea: {
-            name: { in: causeAreas },
+            name: {in: causeAreas},
           },
         },
       },
@@ -63,11 +73,11 @@ export async function GET(request: Request) {
 
   if (searchQuery) {
     where.OR = [
-      { name: { contains: searchQuery, mode: 'insensitive' } },
-      { email: { contains: searchQuery, mode: 'insensitive' } },
+      {name: {contains: searchQuery, mode: 'insensitive'}},
+      {email: {contains: searchQuery, mode: 'insensitive'}},
       {
         profile: {
-          description: { contains: searchQuery, mode: 'insensitive' },
+          description: {contains: searchQuery, mode: 'insensitive'},
         },
       },
     ];
@@ -77,18 +87,19 @@ export async function GET(request: Request) {
   const profiles = await prisma.user.findMany({
     skip: offset,
     take: profilesPerPage,
-    orderBy: { createdAt: "desc" },
+    orderBy: {createdAt: "desc"},
     where,
     select: {
       id: true,
       name: true,
       email: true,
+      image: true,
       createdAt: true,
       profile: {
         include: {
-          intellectualInterests: { include: { interest: true } },
-          causeAreas: { include: { causeArea: true } },
-          desiredConnections: { include: { connection: true } },
+          intellectualInterests: {include: {interest: true}},
+          causeAreas: {include: {causeArea: true}},
+          desiredConnections: {include: {connection: true}},
           promptAnswers: true,
         },
       },
@@ -98,6 +109,6 @@ export async function GET(request: Request) {
   const totalProfiles = await prisma.user.count();
   const totalPages = Math.ceil(totalProfiles / profilesPerPage);
 
-  console.log({ profiles, totalPages });
-  return NextResponse.json({ profiles, totalPages });
+  console.log({profiles, totalPages});
+  return NextResponse.json({profiles, totalPages});
 }

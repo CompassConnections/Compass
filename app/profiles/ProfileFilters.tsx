@@ -34,7 +34,7 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
           setAllCauseAreas(data.causeAreas || []);
           console.log('All interests:', data.interests);
           console.log('All cause areas:', data.causeAreas);
-          console.log('Gender', Gender);
+          // console.log('Gender', Gender);
         }
       } catch (error) {
         console.error('Error loading interests:', error);

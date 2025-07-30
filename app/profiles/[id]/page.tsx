@@ -34,6 +34,8 @@ export default function Post() {
 
   console.log(`Image: ${image}`)
 
+  const pStyle = "mt-1 text-gray-800 dark:text-white whitespace-pre-line"
+
 
   return (
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
@@ -102,21 +104,21 @@ export default function Post() {
             {user?.profile?.location && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Location</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.location}</p>
+                <p className={pStyle}>{user.profile.location}</p>
               </div>
             )}
 
             {user?.profile?.personalityType && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Personality Type</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.personalityType}</p>
+                <p className={pStyle}>{user.profile.personalityType}</p>
               </div>
             )}
 
             {user?.profile?.conflictStyle && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Conflict Style</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.conflictStyle}</p>
+                <p className={pStyle}>{user.profile.conflictStyle}</p>
               </div>
             )}
 
@@ -128,7 +130,7 @@ export default function Post() {
                   {user.profile.intellectualInterests.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.interest?.name}
                     </li>
@@ -145,7 +147,7 @@ export default function Post() {
                   {user.profile.causeAreas.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.causeArea?.name}
                     </li>
@@ -173,21 +175,21 @@ export default function Post() {
 
             {user?.profile?.description && (
               <div>
-                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">About</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.description}</p>
+                <h2 className="text-sm font-medium text-gray-500  uppercase tracking-wider">About</h2>
+                <p className={pStyle}>{user.profile.description}</p>
               </div>
             )}
 
             {user?.profile?.contactInfo && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact</h2>
-                <p className="mt-1 text-gray-800 whitespace-pre-line">{user.profile.contactInfo}</p>
+                <p className={pStyle}>{user.profile.contactInfo}</p>
               </div>
             )}
 
             {/*<div>*/}
             {/*  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Creation Date</h2>*/}
-            {/*  <p className="mt-1 text-gray-800 whitespace-pre-line">*/}
+            {/*  <p className={pStyle}>*/}
             {/*    {user.profile.createdAt}*/}
             {/*    {new Date(user.profile.createdAt).toLocaleDateString("en-US", {*/}
             {/*      year: "numeric",*/}

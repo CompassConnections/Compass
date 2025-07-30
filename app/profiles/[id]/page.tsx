@@ -18,6 +18,7 @@ export default function Post() {
   useEffect(() => {
     async function fetchImage() {
       const res = await fetch(`/api/profiles/${id}`);
+      console.log('res', res);
       if (res.ok) {
         const data = await res.json();
         setUser(data);

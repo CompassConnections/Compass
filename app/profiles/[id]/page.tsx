@@ -13,23 +13,33 @@ export default function Post() {
   const {id} = useParams();
   const [user, setUser] = useState<ProfileData | null>(null);
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchImage() {
       const res = await fetch(`/api/profiles/${id}`);
-      const data = await res.json();
-      setUser(data);
-      console.log('userData', data);
-      if (data?.image) {
-        await parseImage(data.image, setImage);
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        console.log('userData', data);
+        if (data?.image) {
+          await parseImage(data.image, setImage);
+        }
       }
+      setLoading(false);
     }
 
     fetchImage();
   }, []);
 
-  if (!user) {
+  if (loading) {
     return <LoadingSpinner/>;
+  }
+
+  if (!user) {
+    return <div>
+      <h1 className="text-center">Profile not found</h1>
+    </div>;
   }
 
   console.log(`Image: ${image}`)

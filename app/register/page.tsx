@@ -143,11 +143,11 @@ function RegisterComponent() {
         ) : (
           <div>
             <div>
-              <h2 className="mt-6 text-center text-xl font-extrabold text-red-700">
-                The project is still in development. You can sign up if you want to test it, but your account
-                may be deleted at any time. To get release updates, fill in this <a
-                href='https://forms.gle/tKnXUMAbEreMK6FC6'>form</a>.
-              </h2>
+              {/*<h2 className="mt-6 text-center text-xl font-extrabold text-red-700">*/}
+              {/*  The project is still in development. You can sign up if you want to test it, but your account*/}
+              {/*  may be deleted at any time. To get release updates, fill in this <a*/}
+              {/*  href='https://forms.gle/tKnXUMAbEreMK6FC6'>form</a>.*/}
+              {/*</h2>*/}
               <h2 className="mt-6 text-center text-3xl font-extrabold ">
                 Create your account
               </h2>

@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [filters, setFilters] = useState({
     gender: '',
     interests: [] as string[],
@@ -28,6 +29,13 @@ export default function ProfilePage() {
       if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
       if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
       if (filters.searchQuery) params.append('search', filters.searchQuery);
+      
+      // Fetch total users count (unfiltered)
+      const countResponse = await fetch('/api/profiles/count');
+      if (countResponse.ok) {
+        const { count } = await countResponse.json();
+        setTotalUsers(count);
+      }
 
       const response = await fetch(`/api/profiles?${params.toString()}`);
       const data = await response.json();
@@ -77,7 +85,12 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-6xl">
-        <h1 className="text-4xl sm:text-5xl font-extrabold mb-8">People</h1>
+        <div className="flex justify-between items-end mb-8">
+          <h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>
+          <div className="text-lg pb-1">
+            Users: <span className="font-bold">{totalUsers}</span>
+          </div>
+        </div>
 
         <ProfileFilters
           filters={filters}
@@ -113,7 +126,7 @@ export default function ProfilePage() {
                             <div>
                               {user.profile.intellectualInterests.slice(0, 3).map(({interest}) => (
                                 <span key={interest?.id}
-                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
+                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
                                 {interest?.name}
                               </span>
                               ))}
@@ -123,7 +136,7 @@ export default function ProfilePage() {
                             <div>
                               {user.profile.causeAreas.slice(0, 3).map(({causeArea}) => (
                                 <span key={causeArea?.id}
-                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
+                                      className="text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
                                 {causeArea?.name}
                               </span>
                               ))}

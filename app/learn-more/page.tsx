@@ -16,14 +16,12 @@ export default function LearnMorePage() {
           {/*<h1 id="abstract">Abstract</h1>*/}
           <p>Forming and maintaining close connections is fundamental for most people’s mental health—and hence overall
             well-being. However, currently available meeting platforms, lacking transparency and searchability, are
-            deeply failing to bring together thoughtful people. This article lays the path for a platform designed to
+            deeply failing to bring together thoughtful people. This platform is designed to
             foster close friendships and relationships for people who prioritize learning, curiosity, and critical
-            thinking. The directory of users will be fully transparent and each profile will contain extensive
+            thinking. The directory of users is fully transparent and each profile contains extensive
             information, allowing searches over all users through powerful filtering and sorting methods. To prevent any
             value drift from this pro-social mission, the platform will always be free, ad-free, not for profit,
-            donation-supported, open source, and democratically governed. The goal of this article is to better
-            understand the community needs, as well as to gather feedback and collaboration for the suggested
-            implementation.</p>
+            donation-supported, open source, and democratically governed.</p>
           <div className="mt-8 flex space-x-4 justify-center">
             <Link
               href="https://martinbraquet.com/meeting-rational"
@@ -39,7 +37,7 @@ export default function LearnMorePage() {
           <h5 id="join-chats">Join Chats</h5>
           <p>You can join the community on <a
             href="https://join.slack.com/t/bayesmeet/shared_invite/zt-3a2k2ybf4-~S8i0hCuUETojxqNHJbB_g">Slack</a> or <a
-            href="https://discord.gg/ZkQ88Gy4">Discord</a> to shape and test the product—or just to chat with
+            href="https://discord.gg/8Vd7jzqjun">Discord</a> to shape and test the product—or just to chat with
             like-minded people.</p>
           <h5 id="share">Share</h5>
           <p>Share the idea and article with people who identify with the community values and may benefit from the

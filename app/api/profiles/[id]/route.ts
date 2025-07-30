@@ -9,7 +9,7 @@ export async function GET(
     const params = await context.params;
     const { id } = params;
 
-    const cacheStrategy = { swr: 3600, ttl: 3600, tags: ["profiles/[id]"] };
+    const cacheStrategy = { swr: 3600, ttl: 3600, tags: ["profiles_id"] };
     const user = await prisma.user.findUnique({
       where: { id },
       select: {

@@ -9,7 +9,7 @@ import {usePathname} from "next/navigation";
 
 export default function ProfilePage() {
   const pathname = usePathname(); // Get the current route
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<any>(null);
   const [image, setImage] = useState<string | null>(null);
   try {
     useEffect(() => {
@@ -40,7 +40,7 @@ export default function ProfilePage() {
     const gender = profile?.gender ?? '';
     const personalityType = profile?.personalityType ?? '';
     const conflictStyle = profile?.conflictStyle ?? '';
-    const intellectualInterests = profile?.intellectualInterests ?? [];
+    const intellectualInterests: any = profile?.intellectualInterests ?? [];
 
     return (
       <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -129,7 +129,7 @@ export default function ProfilePage() {
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   {intellectualInterests.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {intellectualInterests.map((value: string, index: number) => (
+                      {intellectualInterests.map((value: any, index: number) => (
                         <span
                           key={index}
                           className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"

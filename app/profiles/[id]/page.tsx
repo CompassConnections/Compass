@@ -79,13 +79,13 @@ export default function Post() {
 
             {user?.profile?.desiredConnections && (
               <div className="mt-3"><
-                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Connection</h2>
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Desired Connections</h2>
 
                 <ul className="flex flex-wrap gap-2 mt-1">
                   {user?.profile?.desiredConnections.map((value, idx) => (
                     <li
                       key={idx}
-                      className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full hover:bg-gray-200 transition"
                     >
                       {value?.connection?.name}
                     </li>

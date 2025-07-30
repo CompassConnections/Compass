@@ -18,11 +18,11 @@ export default function RootLayout(
     children: React.ReactNode;
   }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
-    <body>
+    <html lang="en" suppressHydrationWarning className="dark" >
+    <body className="dark:bg-gray-900 dark:text-white">
     <Providers>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <div className="min-h-screen flex flex-col dark:bg-gray-900 dark:text-white">
+      <div className="min-h-screen flex flex-col ">
         <Header/>
         {children}
 

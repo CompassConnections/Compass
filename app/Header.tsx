@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {useSession, signOut} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import ThemeToggle from "@/lib/client/theme";
 
 export default function Header() {
@@ -10,14 +10,16 @@ export default function Header() {
   console.log(session);
 
   return (
-    <header className="w-full shadow-md py-4 px-8">
+    <header className="w-full
+    {/*shadow-md*/}
+     py-4 px-8">
       <nav className="flex justify-between items-center">
         <Link href="/" className="text-xl font-bold hover:text-blue-600 transition-colors">
           BayesBond
         </Link>
         <div className="flex items-center space-x-4">
 
-          <ThemeToggle />
+          <ThemeToggle/>
           {session ? (
             <>
               <div className="flex items-center space-x-4">
@@ -35,7 +37,7 @@ export default function Header() {
                 </Link>
                 <button
                   onClick={() => signOut({callbackUrl: "/"})}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                  className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"
                 >
                   Sign Out
                 </button>

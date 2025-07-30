@@ -77,7 +77,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-6xl">
-        <h1 className="text-4xl sm:text-5xl font-extrabold mb-8">Profiles</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-8">People</h1>
 
         <ProfileFilters
           filters={filters}

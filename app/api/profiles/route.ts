@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const searchQuery = url.searchParams.get("search") || "";
 
-  const profilesPerPage = 20;
+  const profilesPerPage = 100;
   const offset = (page - 1) * profilesPerPage;
 
   const session = await getSession();
@@ -84,6 +84,7 @@ export async function GET(request: Request) {
   }
 
   // Fetch paginated and filtered profiles
+  const cacheStrategy = { swr: 3600, ttl: 3600 };
   const profiles = await prisma.user.findMany({
     skip: offset,
     take: profilesPerPage,
@@ -104,6 +105,7 @@ export async function GET(request: Request) {
         },
       },
     },
+    cacheStrategy: cacheStrategy,
   });
 
   const totalProfiles = await prisma.user.count();

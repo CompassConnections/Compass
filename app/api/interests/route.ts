@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     // Get all interests from the database
+    const cacheStrategy = { swr: 60, ttl: 60 };
     const interests = await prisma.interest.findMany({
       select: {
         id: true,
@@ -11,7 +12,8 @@ export async function GET() {
       },
       orderBy: {
         name: 'asc'
-      }
+      },
+      cacheStrategy: cacheStrategy,
     });
 
     const causeAreas = await prisma.causeArea.findMany({
@@ -21,7 +23,8 @@ export async function GET() {
       },
       orderBy: {
         name: 'asc'
-      }
+      },
+      cacheStrategy: cacheStrategy,
     });
 
     const connection = await prisma.connection.findMany({
@@ -31,7 +34,8 @@ export async function GET() {
       },
       orderBy: {
         name: 'asc'
-      }
+      },
+      cacheStrategy: cacheStrategy,
     });
 
     return NextResponse.json({ interests, causeAreas, connection });

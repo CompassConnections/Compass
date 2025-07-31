@@ -19,12 +19,17 @@ export async function GET() {
           intellectualInterests: {
             include: {
               interest: true
-            }
-          }
+            },
+          },
+          desiredConnections: {
+            include: {
+              connection: true
+            },
+          },
         }
       }
     }
-  });
+    });
 
   if (!user) {
     notFound();

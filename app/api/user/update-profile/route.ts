@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { profile, image, name, interests = [] } = data;
+    const {profile, image, name, interests = [], connections = []} = data;
 
     Object.keys(profile).forEach(key => {
       if (profile[key] === '' || !profile[key]) {
@@ -28,10 +28,10 @@ export async function POST(req: Request) {
     const result = await prisma.$transaction(async (prisma) => {
       // First, update/create the profile
       const updatedUser = await prisma.user.update({
-        where: { email: session.user.email },
+        where: {email: session.user.email},
         data: {
-          ...(image && { image }),
-          ...(name && { name }),
+          ...(image && {image}),
+          ...(name && {name}),
           profile: {
             upsert: {
               create: profile,
@@ -49,20 +49,20 @@ export async function POST(req: Request) {
         // First, find or create all interests
         const interestOperations = interests.map((interest: { id?: string; name: string }) =>
           prisma.interest.upsert({
-            where: { id: interest.id || '' },
-            update: { name: interest.name },
-            create: { name: interest.name },
+            where: {id: interest.id || ''},
+            update: {name: interest.name},
+            create: {name: interest.name},
           })
         );
-        
+
         const createdInterests = await Promise.all(interestOperations);
-        
+
         // Get the IDs of all created/updated interests
         const interestIds = createdInterests.map(interest => interest.id);
 
         // First, remove all existing interests for this profile
         await prisma.profileInterest.deleteMany({
-          where: { profileId: updatedUser.profile.id },
+          where: {profileId: updatedUser.profile.id},
         });
 
         // Then, create new connections
@@ -71,6 +71,31 @@ export async function POST(req: Request) {
             data: interestIds.map(interestId => ({
               profileId: updatedUser.profile!.id,
               interestId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      if (connections.length > 0 && updatedUser.profile) {
+        // First, find or create all interests
+        const connectionOperations = connections.map((v: { id?: string; name: string }) =>
+          prisma.connection.upsert({
+            where: {id: v.id || ''},
+            update: {name: v.name},
+            create: {name: v.name},
+          })
+        );
+        const createdConnections = await Promise.all(connectionOperations);
+        const connectionIds = createdConnections.map(v => v.id);
+        await prisma.profileConnection.deleteMany({
+          where: {profileId: updatedUser.profile.id},
+        });
+        if (connectionIds.length > 0) {
+          await prisma.profileConnection.createMany({
+            data: connectionIds.map(id => ({
+              profileId: updatedUser.profile!.id,
+              connectionId: id,
             })),
             skipDuplicates: true,
           });

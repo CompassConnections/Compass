@@ -27,7 +27,7 @@ export async function GET() {
       cacheStrategy: cacheStrategy,
     });
 
-    const connection = await prisma.connection.findMany({
+    const connections = await prisma.connection.findMany({
       select: {
         id: true,
         name: true,
@@ -38,7 +38,7 @@ export async function GET() {
       cacheStrategy: cacheStrategy,
     });
 
-    return NextResponse.json({ interests, causeAreas, connection });
+    return NextResponse.json({ interests, causeAreas, connections });
   } catch (error) {
     console.error('Error fetching interests:', error);
     return NextResponse.json(

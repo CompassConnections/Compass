@@ -36,10 +36,15 @@ function RegisterComponent() {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
   const [allInterests, setAllInterests] = useState<{ id: string, name: string }[]>([]);
+  const [allConnections, setAllConnections] = useState<{ id: string, name: string }[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
+  const [selectedConnections, setSelectedConnections] = useState<Set<string>>(new Set());
   const [newInterest, setNewInterest] = useState('');
+  const [newConnection, setNewConnection] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRefC = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdownC, setShowDropdownC] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -74,9 +79,15 @@ function RegisterComponent() {
 
             // Set selected interests if any
             if (profile.intellectualInterests?.length > 0) {
-              const interestIds = profile.intellectualInterests
+              const ids = profile.intellectualInterests
                 .map((pi: any) => pi.interest.id);
-              setSelectedInterests(new Set(interestIds));
+              setSelectedInterests(new Set(ids));
+            }
+
+            if (profile.desiredConnections?.length > 0) {
+              const ids = profile.desiredConnections
+                .map((pi: any) => pi.connection.id);
+              setSelectedConnections(new Set(ids));
             }
 
             setImages([])
@@ -127,6 +138,53 @@ function RegisterComponent() {
     };
   }, []);
 
+  // Load existing connections
+  useEffect(() => {
+    async function fetchConnections() {
+      try {
+        const res = await fetch('/api/interests');
+        if (res.ok) {
+          const data = await res.json();
+          setAllConnections(data.connections || []);
+        }
+      } catch (error) {
+        console.error('Error loading interests:', error);
+      }
+    }
+
+    fetchConnections();
+
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRefC.current && !dropdownRefC.current.contains(event.target as Node)) {
+        setShowDropdownC(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const toggleConnection = (id: string) => {
+    setSelectedConnections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const handleKeyDownC = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowDropdownC(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -134,6 +192,51 @@ function RegisterComponent() {
       </div>
     );
   }
+
+  const toggleInterest = (interestId: string) => {
+    setSelectedInterests(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(interestId)) {
+        newSet.delete(interestId);
+      } else {
+        newSet.add(interestId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addNewInterest();
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
+    }
+  };
+
+  const addNewInterest = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const interestToAdd = newInterest.trim();
+    if (!interestToAdd) return;
+
+    // Check if interest already exists (case-insensitive)
+    const existingInterest = allInterests.find(
+      i => i.name.toLowerCase() === interestToAdd.toLowerCase()
+    );
+
+    if (existingInterest) {
+      // Toggle selection if it exists
+      toggleInterest(existingInterest.id);
+    } else {
+      // Add new interest
+      const newInterestObj = {id: `new-${Date.now()}`, name: interestToAdd};
+      setAllInterests(prev => [...prev, newInterestObj]);
+      setSelectedInterests(prev => new Set(prev).add(newInterestObj.id));
+    }
+
+    setNewInterest('');
+    setShowDropdown(false);
+  };
 
   const handleImagesUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return handleImageUpload(e, false);
@@ -193,51 +296,6 @@ function RegisterComponent() {
     }
   };
 
-  const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(interestId)) {
-        newSet.delete(interestId);
-      } else {
-        newSet.add(interestId);
-      }
-      return newSet;
-    });
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addNewInterest();
-    } else if (e.key === 'Escape') {
-      setShowDropdown(false);
-    }
-  };
-
-  const addNewInterest = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const interestToAdd = newInterest.trim();
-    if (!interestToAdd) return;
-
-    // Check if interest already exists (case-insensitive)
-    const existingInterest = allInterests.find(
-      i => i.name.toLowerCase() === interestToAdd.toLowerCase()
-    );
-
-    if (existingInterest) {
-      // Toggle selection if it exists
-      toggleInterest(existingInterest.id);
-    } else {
-      // Add new interest
-      const newInterestObj = {id: `new-${Date.now()}`, name: interestToAdd};
-      setAllInterests(prev => [...prev, newInterestObj]);
-      setSelectedInterests(prev => new Set(prev).add(newInterestObj.id));
-    }
-
-    setNewInterest('');
-    setShowDropdown(false);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.email) return;
@@ -260,9 +318,14 @@ function RegisterComponent() {
           conflictStyle: conflictStyle as ConflictStyle,
           images: keys,
         },
+        allConnections,
         interests: Array.from(selectedInterests).map(id => ({
           id: id.startsWith('new-') ? undefined : id,
           name: allInterests.find(i => i.id === id)?.name || id.replace('new-', '')
+        })),
+        connections: Array.from(selectedConnections).map(id => ({
+          id: id,
+          name: allConnections.find(i => i.id === id)?.name || id
         })),
         ...(key && {image: key}),
         ...(name && {name}),
@@ -434,6 +497,96 @@ function RegisterComponent() {
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="City, Country"
               />
+            </div>
+
+            <div className="relative" ref={dropdownRefC}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+                Desired Connections
+              </label>
+              <div className="relative">
+                <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    value={newConnection}
+                    onChange={(e) => setNewConnection(e.target.value)}
+                    onFocus={() => setShowDropdownC(true)}
+                    onKeyDown={handleKeyDownC}
+                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Type to search"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDropdownC(!showDropdownC)}
+                    className="px-3 py-2 border-l border-gray-300 text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                         fill="currentColor">
+                      <path fillRule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clipRule="evenodd"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {(showDropdownC) && (<div
+                className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                {allConnections
+                  .filter(v => v.name.toLowerCase().includes(newConnection.toLowerCase()))
+                  .map((v) => (
+                    <div
+                      key={v.id}
+                      className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
+                      onClick={() => {
+                        toggleConnection(v.id);
+                        setNewConnection('');
+                        // setNewInterest('');
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          checked={selectedConnections.has(v.id)}
+                          onChange={() => {
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span className="font-normal ml-3 block truncate">{v.name}</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              )
+              }
+              <div className="flex flex-wrap gap-2 mt-3">
+                {Array.from(selectedConnections).map(id => {
+                  const v = allConnections.find(i => i.id === id);
+                  if (!v) return null;
+                  return (
+                    <span
+                      key={id}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                    >
+                      {v.name}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleConnection(id);
+                        }}
+                        className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        <span className="sr-only">Remove {v.name}</span>
+                        <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                          <path
+                            d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
+                        </svg>
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
             </div>
 
             <div>

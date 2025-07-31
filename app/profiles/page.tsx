@@ -11,27 +11,29 @@ export const dynamic = "force-dynamic";
 
 const renderImages = false;
 
+const initialState = {
+  gender: '',
+  minAge: null as number | null,
+  maxAge: null as number | null,
+  interests: [] as string[],
+  causeAreas: [] as string[],
+  searchQuery: '',
+};
+
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
-  const [filters, setFilters] = useState({
-    gender: '',
-    minAge: null,
-    maxAge: null,
-    interests: [] as string[],
-    causeAreas: [] as string[],
-    searchQuery: '',
-  });
+  const [filters, setFilters] = useState(initialState);
 
 
   useEffect(() => {
     const getCount = async () => {
       const countResponse = await fetch('/api/profiles/count');
       if (countResponse.ok) {
-        const { count } = await countResponse.json();
+        const {count} = await countResponse.json();
         setTotalUsers(count);
       }
     };
@@ -45,8 +47,8 @@ export default function ProfilePage() {
           const params = new URLSearchParams();
 
           if (filters.gender) params.append('gender', filters.gender);
-          if (filters.minAge) params.append('minAge', filters.minAge);
-          if (filters.maxAge) params.append('maxAge', filters.maxAge);
+          if (filters.minAge) params.append('minAge', filters.minAge.toString());
+          if (filters.maxAge) params.append('maxAge', filters.maxAge.toString());
           if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
           if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
           if (filters.searchQuery) params.append('search', filters.searchQuery);
@@ -116,12 +118,7 @@ export default function ProfilePage() {
   };
 
   const resetFilters = () => {
-    setFilters({
-      gender: '',
-      interests: [],
-      causeAreas: [],
-      searchQuery: '',
-    });
+    setFilters(initialState);
   };
 
   return (

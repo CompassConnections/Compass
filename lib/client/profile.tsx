@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {parseImage} from "@/lib/client/media";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 
-export function getProfile(url, header = null) {
+export function getProfile(url: string, header: any = null) {
 
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
@@ -22,7 +22,7 @@ export function getProfile(url, header = null) {
 
       setImages([]);
       await Promise.all(
-        (data?.profile?.images || []).map(async (img) => {
+        (data?.profile?.images || []).map(async (img: string) => {
           await parseImage(img, setImages, true);
         })
       );
@@ -64,7 +64,7 @@ export function getProfile(url, header = null) {
 
                 < ul
                   className="flex flex-wrap gap-2 mt-1">
-                  {userData?.profile?.desiredConnections.map((value, idx) => (
+                  {userData?.profile?.desiredConnections.map((value: any, idx: number) => (
                     <li
                       key={idx}
                       className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
@@ -149,7 +149,7 @@ export function getProfile(url, header = null) {
                   < ul
                     className="flex flex-wrap gap-2 mt-1">
                     {
-                      userData.profile.intellectualInterests.map((value, idx) => (
+                      userData.profile.intellectualInterests.map((value: any, idx: number) => (
                         <li
                           key={idx}
                           className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
@@ -173,7 +173,7 @@ export function getProfile(url, header = null) {
                   < ul
                     className="flex flex-wrap gap-2 mt-1">
                     {
-                      userData.profile.causeAreas.map((value, idx) => (
+                      userData.profile.causeAreas.map((value: any, idx: number) => (
                         <li
                           key={idx}
                           className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
@@ -217,7 +217,7 @@ export function getProfile(url, header = null) {
                   < ul
                     className="flex flex-wrap gap-2 mt-1">
                     {
-                      userData.profile.promptAnswers.map((value, idx) => (
+                      userData.profile.promptAnswers.map((value: any, idx: any) => (
                         <li
                           key={idx}
                           // className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"

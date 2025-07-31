@@ -31,7 +31,7 @@ export async function parseImage(img: string, setImage: any, batch = false) {
   }
   if (url) {
     if (batch) {
-      setImage(prev => [...prev, url]);
+      setImage((prev: any) => [...prev, url]);
     } else {
       setImage(url);
     }

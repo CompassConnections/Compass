@@ -9,8 +9,8 @@ interface FilterProps {
     interests: string[];
     causeAreas: string[];
     searchQuery: string;
-    minAge?: number;
-    maxAge?: number;
+    minAge?: number | null;
+    maxAge?: number | null;
   };
   onFilterChange: (key: string, value: any) => void;
   onShowFilters: (value: boolean) => void;

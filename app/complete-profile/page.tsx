@@ -26,8 +26,8 @@ function RegisterComponent() {
   const [age, setAge] = useState(0);
   const [personalityType, setPersonalityType] = useState('');
   const [conflictStyle, setConflictStyle] = useState('');
-  const [image, setImage] = useState<string | null>(null);
-  const [key, setKey] = useState<string | null>(null);
+  const [image, setImage] = useState<string>('');
+  const [key, setKey] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [keys, setKeys] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +75,7 @@ function RegisterComponent() {
             setImages([])
             setKeys(profile?.images)
             await Promise.all(
-              (profile?.images || []).map(async (img) => {
+              (profile?.images || []).map(async (img: string) => {
                 await parseImage(img, setImages, true);
               })
             );
@@ -390,7 +390,7 @@ function RegisterComponent() {
                 name="age"
                 type="number"
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => setAge(Number(e.target.value))}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 // placeholder=""
               />
@@ -405,7 +405,7 @@ function RegisterComponent() {
                 name="location"
                 type="text"
                 value={location}
-                maxLength="100"
+                maxLength={100}
                 onChange={(e) => setLocation(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="City, Country"
@@ -462,7 +462,7 @@ function RegisterComponent() {
                   <input
                     type="text"
                     value={newInterest}
-                    maxLength="100"
+                    maxLength={100}
                     onChange={(e) => setNewInterest(e.target.value)}
                     onFocus={() => setShowDropdown(true)}
                     onKeyDown={handleKeyDown}
@@ -588,7 +588,7 @@ function RegisterComponent() {
                 rows={4}
                 // required
                 value={description}
-                maxLength="30000"
+                maxLength={30000}
                 onChange={(e) => setDescription(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Tell us about yourself, your background, and what you're looking for."
@@ -604,7 +604,7 @@ function RegisterComponent() {
                 name="contactInfo"
                 rows={2}
                 value={contactInfo}
-                maxLength="5000"
+                maxLength={5000}
                 onChange={(e) => setContactInfo(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="How can people reach you? (Email, social media, phone, Google Forms, etc.)"

@@ -124,11 +124,15 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex justify-between items-end mb-4">
           <h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>
           <div className="text-lg pb-1">
             Users: <span className="font-bold">{totalUsers}</span>
           </div>
+        </div>
+
+        <div className="py-6">
+          All the profiles are searchable, simply filter them below to find your best connections!
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
@@ -186,7 +190,7 @@ export default function ProfilePage() {
                       <div className="mt-4 space-y-2 flex-grow">
                         {user.profile?.intellectualInterests && user.profile.intellectualInterests.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {user.profile.intellectualInterests.slice(0, 3).map(({interest}) => (
+                            {user.profile.intellectualInterests.slice(0, 10).map(({interest}) => (
                               <span key={interest?.id}
                                     className="inline-block text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
                                 {interest?.name}

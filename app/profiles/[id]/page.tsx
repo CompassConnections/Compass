@@ -174,6 +174,20 @@ export default function Post() {
               </div>
             )}
 
+            {user?.profile?.description && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500  uppercase tracking-wider">About</h2>
+                <p className={pStyle}>{user.profile.description}</p>
+              </div>
+            )}
+
+            {user?.profile?.contactInfo && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact</h2>
+                <p className={pStyle}>{user.profile.contactInfo}</p>
+              </div>
+            )}
+
             {user?.profile?.promptAnswers && (
               <div className="mt-3"><
                 h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Prompt Answers</h2>
@@ -188,20 +202,6 @@ export default function Post() {
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-
-            {user?.profile?.description && (
-              <div>
-                <h2 className="text-sm font-medium text-gray-500  uppercase tracking-wider">About</h2>
-                <p className={pStyle}>{user.profile.description}</p>
-              </div>
-            )}
-
-            {user?.profile?.contactInfo && (
-              <div>
-                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact</h2>
-                <p className={pStyle}>{user.profile.contactInfo}</p>
               </div>
             )}
 

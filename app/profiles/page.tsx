@@ -122,7 +122,10 @@ export default function ProfilePage() {
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div className={`w-full md:${showFilters ? 'w-80' : 'w-20'} flex-shrink-0`}>
+          <div className={`w-full 
+          md:w-80
+           flex-shrink-0`}>
+            {/*// md:${showFilters ? 'w-80' : 'w-20'}*/}
             <div className="sticky top-24">
               <ProfileFilters
                 filters={filters}

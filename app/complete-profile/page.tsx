@@ -2,10 +2,11 @@
 
 import {ChangeEvent, Suspense, useEffect, useRef, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {useSession} from 'next-auth/react';
+import {signOut, useSession} from 'next-auth/react';
 import Image from 'next/image';
 import {ConflictStyle, Gender, PersonalityType} from "@prisma/client";
 import {parseImage} from "@/lib/client/media";
+import {DeleteProfileButton} from "@/lib/client/profile";
 
 export default function CompleteProfile() {
   return (
@@ -43,6 +44,10 @@ function RegisterComponent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const {data: session, update} = useSession();
+
+  const id = session?.user.id
+
+  console.log(session)
 
   // Fetch user profile data
   useEffect(() => {
@@ -707,6 +712,15 @@ function RegisterComponent() {
               {isSubmitting || isUploading ? 'Saving...' : 'Save Profile'}
             </button>
           </div>
+
+          {id &&
+              <div>
+                  <DeleteProfileButton
+                      profileId={id}
+                      onDelete={() => signOut({callbackUrl: "/"})}
+                  />
+              </div>
+          }Add
         </form>
       </div>
     </div>

@@ -3,6 +3,59 @@ import {pStyle} from "@/lib/client/constants";
 import {useEffect, useState} from "react";
 import {parseImage} from "@/lib/client/media";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
+import {useRouter} from 'next/navigation';
+
+interface DeleteProfileButtonProps {
+  profileId: string;
+  onDelete?: () => void;
+}
+
+export function DeleteProfileButton({profileId, onDelete}: DeleteProfileButtonProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this profile? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/profiles/${profileId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete profile');
+      }
+
+      // Call the onDelete callback if provided
+      if (onDelete) {
+        onDelete();
+      } else {
+        router.push('/');
+      }
+      console.log('Done deleting')
+
+
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+      alert('Failed to delete profile. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleDelete}
+      disabled={isDeleting}
+      className=" items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-gray-900 dark:text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed group relative w-full justify-center "
+    >
+      {isDeleting ? 'Deleting...' : 'Delete Profile'}
+    </button>
+  );
+}
 
 export function getProfile(url: string, header: any = null) {
 
@@ -225,7 +278,7 @@ export function getProfile(url: string, header: any = null) {
               userData?.profile?.description && (
                 <div>
                   <h2 className="text-sm font-medium text-gray-500  uppercase tracking-wider"> About </h2>
-                  <p className={pStyle} style={{ whiteSpace: 'pre-line' }}>{userData.profile.description}</p>
+                  <p className={pStyle} style={{whiteSpace: 'pre-line'}}>{userData.profile.description}</p>
                 </div>
               )
             }
@@ -234,7 +287,7 @@ export function getProfile(url: string, header: any = null) {
               userData?.profile?.contactInfo && (
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Contact </h2>
-                  <p className={pStyle} style={{ whiteSpace: 'pre-line' }}>{userData.profile.contactInfo}</p>
+                  <p className={pStyle} style={{whiteSpace: 'pre-line'}}>{userData.profile.contactInfo}</p>
                 </div>
               )
             }

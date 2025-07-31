@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[] | null>([])
   const [filters, setFilters] = useState({
@@ -87,6 +88,10 @@ export default function ProfilePage() {
     }));
   };
 
+  const showFilterChange = (value: boolean) => {
+    setShowFilters(value);
+  };
+
   const toggleFilter = (key: 'interests' | 'causeAreas', value: string) => {
     setFilters(prev => ({
       ...prev,
@@ -117,11 +122,12 @@ export default function ProfilePage() {
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div className="w-full md:w-80 flex-shrink-0">
+          <div className={`w-full md:${showFilters ? 'w-80' : 'w-20'} flex-shrink-0`}>
             <div className="sticky top-24">
               <ProfileFilters
                 filters={filters}
                 onFilterChange={handleFilterChange}
+                onShowFilters={showFilterChange}
                 onToggleFilter={toggleFilter}
                 onReset={resetFilters}
               />

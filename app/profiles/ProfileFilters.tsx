@@ -11,11 +11,12 @@ interface FilterProps {
     searchQuery: string;
   };
   onFilterChange: (key: string, value: any) => void;
+  onShowFilters: (value: boolean) => void;
   onToggleFilter: (key: 'interests' | 'causeAreas', value: string) => void;
   onReset: () => void;
 }
 
-export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset}: FilterProps) {
+export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
   const [showFilters, setShowFilters] = useState(true);
   const [allCauseAreas, setAllCauseAreas] = useState<{ id: string, name: string }[]>([]);
   const [allInterests, setAllInterests] = useState<{ id: string, name: string }[]>([]);
@@ -79,33 +80,38 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
   return (
     <div className="w-full mb-8">
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
-        <div className="relative flex-grow">
-          <input
-            type="text"
-            placeholder="Search by name or description..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={filters.searchQuery}
-            onChange={(e) => onFilterChange('searchQuery', e.target.value)}
-          />
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
+        {showFilters && (
+          <div className="relative flex-grow">
+            <input
+              type="text"
+              placeholder="Search by name or description..."
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={filters.searchQuery}
+              onChange={(e) => onFilterChange('searchQuery', e.target.value)}
+            />
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
           </div>
-        </div>
+        )}
 
         <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 border rounded-lg  flex items-center gap-2 whitespace-nowrap"
+          onClick={() => {
+            setShowFilters(!showFilters);
+            onShowFilters(!showFilters);
+          }}
+          className="px-4 py-2 border rounded-lg flex items-center gap-2 whitespace-nowrap hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
           </svg>
-          {showFilters ? 'Hide Filters' : 'Show Filters'}
+          {showFilters ? 'Hide' : 'Show'}
         </button>
       </div>
 
@@ -150,51 +156,54 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                     onClick={() => setShowDropdown(!showDropdown)}
                     className="px-3 py-2 border-l border-gray-300 text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                         fill="currentColor">
+                      <path fillRule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clipRule="evenodd"/>
                     </svg>
                   </button>
                 </div>
               </div>
 
-                {(showDropdown) && (
-                  <div
-                    className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                    {/* Filtered interests */}
-                    {allInterests
-                      .filter(interest =>
-                        interest.name.toLowerCase().includes(newInterest.toLowerCase())
-                      )
-                      .map((interest) => (
-                        <div
-                          key={interest.id}
-                          className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
-                          onClick={() => {
-                            onToggleFilter('interests', interest.name);
-                            toggleInterest(interest.id);
-                            // setNewInterest('');
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                              checked={selectedInterests.has(interest.id)}
-                              onChange={() => {
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                            />
-                            <span className="font-normal ml-3 block truncate">
+              {(showDropdown) && (
+                <div
+                  className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  {/* Filtered interests */}
+                  {allInterests
+                    .filter(interest =>
+                      interest.name.toLowerCase().includes(newInterest.toLowerCase())
+                    )
+                    .map((interest) => (
+                      <div
+                        key={interest.id}
+                        className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
+                        onClick={() => {
+                          onToggleFilter('interests', interest.name);
+                          toggleInterest(interest.id);
+                          // setNewInterest('');
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            checked={selectedInterests.has(interest.id)}
+                            onChange={() => {
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          <span className="font-normal ml-3 block truncate">
                               {interest.name}
                             </span>
-                          </div>
                         </div>
-                      ))}
-                  </div>
-                )}
-              </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
 
 
             {/* Selected interests */}

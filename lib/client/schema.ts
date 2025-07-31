@@ -5,6 +5,7 @@ export interface ProfileData {
   profile: {
     location: string;
     gender: string;
+    occupation: string;
     personalityType: string;
     conflictStyle: string;
     description: string;

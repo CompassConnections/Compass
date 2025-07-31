@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
-  const [images, setImages] = useState<string[] | null>([])
+  const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState({
     gender: '',
     interests: [] as string[],
@@ -62,7 +62,7 @@ export default function ProfilePage() {
                 url = imageBlob['url'];
               }
             }
-            setImages(prev => [...prev, url]);
+            setImages(prev => [...(prev || []), url]);
           }
           console.log(images);
         } catch
@@ -142,7 +142,10 @@ export default function ProfilePage() {
               </div>
             ) : profiles.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-6">
-                {profiles.map((user, idx) => (
+                {profiles.map((
+                  user,
+                  // idx
+                ) => (
                   <Link
                     key={user.id}
                     href={`/profiles/${user.id}`}

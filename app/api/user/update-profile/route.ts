@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { profile, image, interests = [] } = data;
+    const { profile, image, name, interests = [] } = data;
 
     Object.keys(profile).forEach(key => {
       if (profile[key] === '' || !profile[key]) {
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
         where: { email: session.user.email },
         data: {
           ...(image && { image }),
+          ...(name && { name }),
           profile: {
             upsert: {
               create: profile,

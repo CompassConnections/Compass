@@ -22,8 +22,9 @@ function RegisterComponent() {
   const [description, setDescription] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [location, setLocation] = useState('');
+  const [name, setName] = useState('');
   const [gender, setGender] = useState('');
-  const [age, setAge] = useState(0);
+  const [age, setAge] = useState<number | null>(null);
   const [personalityType, setPersonalityType] = useState('');
   const [conflictStyle, setConflictStyle] = useState('');
   const [image, setImage] = useState<string>('');
@@ -53,6 +54,7 @@ function RegisterComponent() {
         if (response.ok) {
           const userData = await response.json();
           await parseImage(userData.image, setImage);
+          setName(userData.name || '');
           if (userData?.profile) {
             const {profile} = userData;
             setDescription(profile.description || '');
@@ -248,7 +250,7 @@ function RegisterComponent() {
           contactInfo,
           location,
           gender: gender as Gender,
-          birthYear: new Date().getFullYear() - age,
+          ...(age && {birthYear: new Date().getFullYear() - age}),
           personalityType: personalityType as PersonalityType,
           conflictStyle: conflictStyle as ConflictStyle,
           images: keys,
@@ -258,6 +260,7 @@ function RegisterComponent() {
           name: allInterests.find(i => i.id === id)?.name || id.replace('new-', '')
         })),
         ...(key && {image: key}),
+        ...(name && {name}),
       };
       console.log('data', data)
       const response = await fetch('/api/user/update-profile', {
@@ -359,6 +362,22 @@ function RegisterComponent() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
 
+          <div>
+            <label htmlFor="name" className={headingStyle}>
+              Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={name}
+              maxLength={100}
+              onChange={(e) => setName(e.target.value)}
+              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              // placeholder=""
+            />
+          </div>
+
           <div className="space-y-4">
             <div>
               <label htmlFor="gender" className={headingStyle}>
@@ -389,7 +408,7 @@ function RegisterComponent() {
                 id="age"
                 name="age"
                 type="number"
-                value={age}
+                value={age ?? ''}
                 onChange={(e) => setAge(Number(e.target.value))}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 // placeholder=""

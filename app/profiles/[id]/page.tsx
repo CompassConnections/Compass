@@ -119,6 +119,13 @@ export default function Post() {
               </div>
             )}
 
+            {user?.profile?.occupation && (
+              <div>
+                <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Occupation</h2>
+                <p className={pStyle}>{user.profile.occupation}</p>
+              </div>
+            )}
+
             {user?.profile?.personalityType && (
               <div>
                 <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Personality Type</h2>

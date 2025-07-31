@@ -226,7 +226,7 @@ export function getProfile(userData: ProfileData, image, header = null) {
             {
               userData?.profile?.images && (
                 <div>
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Contact </h2>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Images </h2>
                   < p
                     className={pStyle}> {userData.profile.images} </p> TODO
                 </div>

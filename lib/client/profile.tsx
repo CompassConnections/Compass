@@ -82,6 +82,16 @@ export function getProfile(userData: ProfileData, image, header = null) {
             }
 
             {
+              userData?.profile?.birthYear && (
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Age </h2>
+                  < p
+                    className="mt-1 capitalize"> {new Date().getFullYear() - userData.profile.birthYear} </p>
+                </div>
+              )
+            }
+
+            {
               userData?.profile?.location && (
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Location </h2>
@@ -204,16 +214,21 @@ export function getProfile(userData: ProfileData, image, header = null) {
                           key={idx}
                           // className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
                         >
-                          • {
-                          value.prompt
-                        }
-                          {
-                            value.answer
-                          }
+                          • {value.prompt} {value.answer}
                         </li>
                       ))
                     }
                   </ul>
+                </div>
+              )
+            }
+
+            {
+              userData?.profile?.images && (
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Contact </h2>
+                  < p
+                    className={pStyle}> {userData.profile.images} </p> TODO
                 </div>
               )
             }

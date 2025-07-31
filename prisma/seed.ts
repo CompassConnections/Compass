@@ -106,10 +106,11 @@ async function main() {
       data: {
         email: `user${i + 1}@bayesbond.com`,
         name: profile.name,
-        image: null,
+        image: 'profile-pictures/57a821c0-cda0-4797-8654-f54f26fed414.jpg',
         profile: {
           create: {
             location: profile.location,
+            birthYear: 2025 - profile.age,
             description: `[Dummy profile for demo purposes] ${profile.bio}`,
             gender: i % 2 === 0 ? 'Male' : 'Female',
             personalityType: i % 3 === 0 ? 'Extrovert' : 'Introvert',

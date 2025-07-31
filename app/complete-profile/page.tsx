@@ -23,6 +23,7 @@ function RegisterComponent() {
   const [contactInfo, setContactInfo] = useState('');
   const [location, setLocation] = useState('');
   const [gender, setGender] = useState('');
+  const [age, setAge] = useState(0);
   const [personalityType, setPersonalityType] = useState('');
   const [conflictStyle, setConflictStyle] = useState('');
   const [image, setImage] = useState<string | null>(null);
@@ -59,6 +60,9 @@ function RegisterComponent() {
             setGender(profile.gender || '');
             setPersonalityType(profile.personalityType || null);
             setConflictStyle(profile.conflictStyle || '');
+            if (profile.birthYear) {
+              setAge(new Date().getFullYear() - profile.birthYear);
+            }
             await parseImage(profile.image, setImage);
 
             // Set selected interests if any
@@ -357,6 +361,21 @@ function RegisterComponent() {
             </div>
 
             <div>
+              <label htmlFor="age" className={headingStyle}>
+                Age
+              </label>
+              <input
+                id="age"
+                name="age"
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                // placeholder=""
+              />
+            </div>
+
+            <div>
               <label htmlFor="location" className={headingStyle}>
                 Location
               </label>
@@ -365,6 +384,7 @@ function RegisterComponent() {
                 name="location"
                 type="text"
                 value={location}
+                maxLength="100"
                 onChange={(e) => setLocation(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="City, Country"
@@ -421,6 +441,7 @@ function RegisterComponent() {
                   <input
                     type="text"
                     value={newInterest}
+                    maxLength="100"
                     onChange={(e) => setNewInterest(e.target.value)}
                     onFocus={() => setShowDropdown(true)}
                     onKeyDown={handleKeyDown}
@@ -546,6 +567,7 @@ function RegisterComponent() {
                 rows={4}
                 // required
                 value={description}
+                maxLength="30000"
                 onChange={(e) => setDescription(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Tell us about yourself, your background, and what you're looking for."
@@ -561,6 +583,7 @@ function RegisterComponent() {
                 name="contactInfo"
                 rows={2}
                 value={contactInfo}
+                maxLength="5000"
                 onChange={(e) => setContactInfo(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="How can people reach you? (Email, social media, phone, Google Forms, etc.)"

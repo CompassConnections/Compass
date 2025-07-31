@@ -35,15 +35,19 @@ model Profile {
   location             String?        // Need to normalize later for geospatial
   description          String?
   contactInfo          String?
-  occupation          String?
+  birthYear            Int?
+  occupation           String?
   gender               Gender?
   personalityType      PersonalityType?
   conflictStyle        ConflictStyle?
+  images               String[]
+  // communicationPreferences     CommunicationPreferences[]
 
-  promptAnswers        PromptAnswer[] // See below (list of answers)
+  // Many-to-many
+  promptAnswers        PromptAnswer[]
   desiredConnections    ProfileConnection[]
-  intellectualInterests ProfileInterest[]  // Many-to-many (see below)
-  causeAreas            ProfileCauseArea[] // Many-to-many (see below)
+  intellectualInterests ProfileInterest[]
+  causeAreas            ProfileCauseArea[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -51,7 +55,6 @@ model Profile {
 enum Gender {
   Male
   Female
-  NonBinary
   Other
 }
 

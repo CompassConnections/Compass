@@ -5,6 +5,7 @@ export interface ProfileData {
   profile: {
     location: string;
     gender: string;
+    birthYear: number;
     occupation: string;
     personalityType: string;
     conflictStyle: string;
@@ -14,5 +15,6 @@ export interface ProfileData {
     causeAreas: { causeArea?: { name?: string, id?: string } }[];
     desiredConnections: { connection?: { name?: string, id?: string } }[];
     promptAnswers: { prompt?: string; answer?: string, id?: string }[];
+    images: string[];
   };
 }

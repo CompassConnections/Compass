@@ -534,17 +534,21 @@ function RegisterComponent() {
 
             <div>
               <label htmlFor="description" className={headingStyle}>
-                About You <span className="text-red-500">*</span>
+                About You
+                <p className="text-xs italic">
+                  Feel free to include any relevant links (dating / friends docs, etc.), but the more text you share,
+                  the easier it will be to find you by keywords in our search.
+                </p>
               </label>
               <textarea
                 id="description"
                 name="description"
                 rows={4}
-                required
+                // required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Tell us about yourself, your background, and what you're looking for in connections."
+                placeholder="Tell us about yourself, your background, and what you're looking for."
               />
             </div>
 
@@ -559,7 +563,7 @@ function RegisterComponent() {
                 value={contactInfo}
                 onChange={(e) => setContactInfo(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="How can people reach you? (Email, social media, etc.)"
+                placeholder="How can people reach you? (Email, social media, phone, Google Forms, etc.)"
               />
             </div>
           </div>

@@ -9,6 +9,8 @@ import {ProfileFilters} from "./ProfileFilters";
 // Disable static generation
 export const dynamic = "force-dynamic";
 
+const renderImages = false;
+
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,19 @@ export default function ProfilePage() {
     searchQuery: '',
   });
 
+
+  useEffect(() => {
+    const getCount = async () => {
+      const countResponse = await fetch('/api/profiles/count');
+      if (countResponse.ok) {
+        const { count } = await countResponse.json();
+        setTotalUsers(count);
+      }
+    };
+
+    getCount();
+  }, []); // <- runs once after initial mount
+
   const fetchProfiles = useCallback(async () => {
         try {
           setLoading(true);
@@ -31,13 +46,6 @@ export default function ProfilePage() {
           if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
           if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
           if (filters.searchQuery) params.append('search', filters.searchQuery);
-
-          // Fetch total users count (unfiltered)
-          const countResponse = await fetch('/api/profiles/count');
-          if (countResponse.ok) {
-            const {count} = await countResponse.json();
-            setTotalUsers(count);
-          }
 
           const response = await fetch(`/api/profiles?${params.toString()}`);
           const data = await response.json();
@@ -50,21 +58,23 @@ export default function ProfilePage() {
           setProfiles(data.profiles || []);
           console.log(data.profiles);
 
-          for (const u of data.profiles) {
-            console.log(u);
-            const img = u.image;
-            let url = img;
-            if (img && !img.startsWith('http')) {
-              const imageResponse = await fetch(`/api/download?key=${img}`);
-              console.log(`imageResponse: ${imageResponse}`)
-              if (imageResponse.ok) {
-                const imageBlob = await imageResponse.json();
-                url = imageBlob['url'];
+          if (renderImages) {
+            for (const u of data.profiles) {
+              console.log(u);
+              const img = u.image;
+              let url = img;
+              if (img && !img.startsWith('http')) {
+                const imageResponse = await fetch(`/api/download?key=${img}`);
+                console.log(`imageResponse: ${imageResponse}`)
+                if (imageResponse.ok) {
+                  const imageBlob = await imageResponse.json();
+                  url = imageBlob['url'];
+                }
               }
+              setImages(prev => [...(prev || []), url]);
             }
-            setImages(prev => [...(prev || []), url]);
+            console.log(images);
           }
-          console.log(images);
         } catch
           (error) {
           console.error('Error fetching profiles:', error);
@@ -147,7 +157,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6">
                 {profiles.map((
                   user,
-                  // idx
+                  idx
                 ) => (
                   <Link
                     key={user.id}
@@ -156,13 +166,13 @@ export default function ProfilePage() {
                   >
                     <div className="p-4 h-full flex flex-col">
                       <div className="flex items-center space-x-4">
-                        {/*<div className="flex-shrink-0">*/}
-                        {/*  <img*/}
-                        {/*    className="h-16 w-16 rounded-full object-cover"*/}
-                        {/*    src={images[idx]}*/}
-                        {/*    alt={``}*/}
-                        {/*  />*/}
-                        {/*</div>*/}
+                        {renderImages && (<div className="flex-shrink-0">
+                          <img
+                            className="h-16 w-16 rounded-full object-cover"
+                            src={images[idx]}
+                            alt={``}
+                          />
+                        </div>)}
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
                             {user.name}

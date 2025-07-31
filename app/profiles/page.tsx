@@ -188,7 +188,7 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400">No profiles found matching your criteria.</p>
+                {/*<p className="text-gray-500 dark:text-gray-400">No profiles found matching your criteria.</p>*/}
                 <svg className="mx-auto h-12 w-12 mt-4 text-gray-400" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}

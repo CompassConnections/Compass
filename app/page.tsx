@@ -48,7 +48,7 @@ export default function HomePage() {
             Learn More
           </Link>
         </div>
-        <div>
+        <div className=" w-full">
           {profilePage()}
         </div>
       </section>

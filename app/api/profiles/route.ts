@@ -6,6 +6,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get("page") || "1");
   const gender = url.searchParams.get("gender");
+  const minAge = url.searchParams.get("minAge");
+  const maxAge = url.searchParams.get("maxAge");
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const searchQuery = url.searchParams.get("search") || "";
@@ -26,6 +28,23 @@ export async function GET(request: Request) {
       ...where.profile,
       gender: gender,
     };
+  }
+
+  // Add age filtering
+  const currentYear = new Date().getFullYear();
+  if (minAge || maxAge) {
+    where.profile = {
+      ...where.profile,
+      birthYear: {}
+    };
+    
+    if (minAge) {
+      where.profile.birthYear.lte = currentYear - parseInt(minAge);
+    }
+    
+    if (maxAge) {
+      where.profile.birthYear.gte = currentYear - parseInt(maxAge);
+    }
   }
 
   // OR

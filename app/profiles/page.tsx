@@ -19,6 +19,8 @@ export default function ProfilePage() {
   const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState({
     gender: '',
+    minAge: null,
+    maxAge: null,
     interests: [] as string[],
     causeAreas: [] as string[],
     searchQuery: '',
@@ -43,6 +45,8 @@ export default function ProfilePage() {
           const params = new URLSearchParams();
 
           if (filters.gender) params.append('gender', filters.gender);
+          if (filters.minAge) params.append('minAge', filters.minAge);
+          if (filters.maxAge) params.append('maxAge', filters.maxAge);
           if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
           if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
           if (filters.searchQuery) params.append('search', filters.searchQuery);

@@ -9,6 +9,8 @@ interface FilterProps {
     interests: string[];
     causeAreas: string[];
     searchQuery: string;
+    minAge?: number;
+    maxAge?: number;
   };
   onFilterChange: (key: string, value: any) => void;
   onShowFilters: (value: boolean) => void;
@@ -134,11 +136,35 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Min Age</label>
+                <input
+                  type="number"
+                  min="18"
+                  max="100"
+                  className="w-full p-2 border rounded-lg"
+                  value={filters.minAge || ''}
+                  onChange={(e) => onFilterChange('minAge', e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="Min"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Max Age</label>
+                <input
+                  type="number"
+                  min="18"
+                  max="100"
+                  className="w-full p-2 border rounded-lg"
+                  value={filters.maxAge || ''}
+                  onChange={(e) => onFilterChange('maxAge', e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="Max"
+                />
+              </div>
             </div>
 
             <div className="relative" ref={dropdownRef}>
               <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
-                Interests
+                Core Interests
               </label>
               <div className="relative">
                 <div className="flex items-center border border-gray-300 rounded-md shadow-sm">

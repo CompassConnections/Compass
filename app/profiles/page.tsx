@@ -144,7 +144,7 @@ export default function ProfilePage() {
                 <LoadingSpinner/>
               </div>
             ) : profiles.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6">
                 {profiles.map((
                   user,
                   // idx
@@ -167,7 +167,7 @@ export default function ProfilePage() {
                           <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
                             {user.name}
                           </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
                             {user.profile?.description || ''}
                           </p>
                         </div>

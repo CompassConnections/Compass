@@ -48,36 +48,47 @@ export function getProfile(url: string, header: any = null) {
   return (
     <article className="max-w-3xl mx-auto shadow-lg rounded-lg overflow-hidden">
       {header}
-      <div className="flex items-start">
-        <div className="pt-20 px-8 pb-8 flex-1">
-          <h1 className="text-3xl font-bold  mb-2">
-            {userData.name}
-          </h1>
-
-          < div
-            className="space-y-6 pt-4 border-t border-gray-200">
-
-            {userData?.profile?.desiredConnections && (
-              <div className="mt-3"><
-                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Desired
-                Connections </h2>
-
-                < ul
-                  className="flex flex-wrap gap-2 mt-1">
-                  {userData?.profile?.desiredConnections.map((value: any, idx: number) => (
-                    <li
-                      key={idx}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
-                    >
-                      {value?.connection?.name
-                      }
-                    </li>
-                  ))
-                  }
-                </ul>
-              </div>
-            )
+      <div>
+        <div className="flex items-start">
+          <div className="pt-20 px-8 pb-8 flex-1">
+            <h1 className="text-3xl font-bold  mb-2">
+              {userData.name}
+            </h1>
+            <div className="space-y-6 pt-4 border-t border-gray-200"></div>
+          </div>
+          <div className="bg-gradient-to-r relative float-right h-auto flex items-start pt-20 px-8 pb-8">
+            {
+              image ? (
+                  <div className="flex-1">
+                    <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden ">
+                      <Image
+                        src={image}
+                        alt={userData.name || 'Profile picture'}
+                        className="h-full w-full object-cover"
+                        width={200}
+                        height={200}
+                        // onError={(e) => {
+                        //   const target = e.target as HTMLImageElement;
+                        //   target.onerror = null;
+                        //   target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'U')}&background=random`;
+                        // }}
+                      />
+                    </div>
+                  </div>
+                ) :
+                (
+                  <div
+                    className="absolute -bottom-16 left-8 h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
+    <span className="text-4xl font-bold text-gray-600">
+      {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+      </span>
+                  </div>
+                )
             }
+          </div>
+        </div>
+        <div className="pt-20 px-8 pb-8 flex-1">
+          <div className="space-y-6 pt-4">
 
             {
               userData?.profile?.gender && (
@@ -141,8 +152,30 @@ export function getProfile(url: string, header: any = null) {
               )
             }
 
+
+            {userData?.profile?.desiredConnections?.length > 0 && (
+              <div className="mt-3"><
+                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Desired Connections </h2>
+
+                < ul
+                  className="flex flex-wrap gap-2 mt-1">
+                  {userData?.profile?.desiredConnections.map((value: any, idx: number) => (
+                    <li
+                      key={idx}
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
+                    >
+                      {value?.connection?.name
+                      }
+                    </li>
+                  ))
+                  }
+                </ul>
+              </div>
+            )
+            }
+
             {
-              userData?.profile?.intellectualInterests && (
+              userData?.profile?.intellectualInterests?.length > 0 && (
                 <div className="mt-3"><
                   h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Interests </h2>
 
@@ -165,7 +198,7 @@ export function getProfile(url: string, header: any = null) {
             }
 
             {
-              userData?.profile?.causeAreas && (
+              userData?.profile?.causeAreas?.length > 0 && (
                 <div className="mt-3"><
                   h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Cause
                   Areas </h2>
@@ -209,10 +242,9 @@ export function getProfile(url: string, header: any = null) {
             }
 
             {
-              userData?.profile?.promptAnswers && (
+              userData?.profile?.promptAnswers?.length > 0 && (
                 <div className="mt-3"><
-                  h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Prompt
-                  Answers </h2>
+                  h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Prompt Answers </h2>
 
                   < ul
                     className="flex flex-wrap gap-2 mt-1">
@@ -277,40 +309,8 @@ export function getProfile(url: string, header: any = null) {
 
 
           </div>
-
-        </div>
-        <div className="bg-gradient-to-r relative float-right h-auto flex items-start pt-20 px-8 pb-8">
-          {
-            image ? (
-                <div className="flex-1">
-                  <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden ">
-                    <Image
-                      src={image}
-                      alt={userData.name || 'Profile picture'}
-                      className="h-full w-full object-cover"
-                      width={200}
-                      height={200}
-                      // onError={(e) => {
-                      //   const target = e.target as HTMLImageElement;
-                      //   target.onerror = null;
-                      //   target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'U')}&background=random`;
-                      // }}
-                    />
-                  </div>
-                </div>
-              ) :
-              (
-                <div
-                  className="absolute -bottom-16 left-8 h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
-    <span className="text-4xl font-bold text-gray-600">
-      {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
-      </span>
-                </div>
-              )
-          }
         </div>
       </div>
-
     </article>
 
   )

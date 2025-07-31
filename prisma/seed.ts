@@ -111,7 +111,7 @@ async function main() {
           create: {
             location: profile.location,
             birthYear: 2025 - profile.age,
-            description: `[Dummy profile for demo purposes] ${profile.bio}`,
+            description: `[Dummy profile for demo purposes]\n${profile.bio}`,
             gender: i % 2 === 0 ? 'Male' : 'Female',
             personalityType: i % 3 === 0 ? 'Extrovert' : 'Introvert',
             conflictStyle: 'Avoidant',

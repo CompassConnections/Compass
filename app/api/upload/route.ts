@@ -20,51 +20,61 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
+    console.log('formData', formData);
+    let files = formData.get('files') as File | null | File[];
 
-    if (!file) {
-      return NextResponse.json({error: 'No file provided'}, {status: 400});
+    if (files?.name) {
+      files = [files];
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({error: 'Only image files are allowed'}, {status: 400});
-    }
+    const results = await Promise.all(
+      files.map(async (file) => {
+        if (!file) {
+          return NextResponse.json({error: 'No file provided'}, {status: 400});
+        }
 
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({error: 'File size must be less than 5MB'}, {status: 400});
-    }
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          return NextResponse.json({error: 'Only image files are allowed'}, {status: 400});
+        }
 
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExtension}`;
-    const fileBuffer = await file.arrayBuffer();
-    const key = `profile-pictures/${fileName}`;
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+          return NextResponse.json({error: 'File size must be less than 5MB'}, {status: 400});
+        }
 
-    const uploadParams = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME!,
-      Key: key,
-      Body: Buffer.from(fileBuffer),
-      ContentType: file.type,
-    };
+        const fileExtension = file.name.split('.').pop();
+        const fileName = `${uuidv4()}.${fileExtension}`;
+        const fileBuffer = await file.arrayBuffer();
+        const key = `profile-pictures/${fileName}`;
 
-    const response = await s3Client.send(new PutObjectCommand(uploadParams));
-    console.log(`Response: ${response}`);
+        const uploadParams = {
+          Bucket: process.env.AWS_S3_BUCKET_NAME!,
+          Key: key,
+          Body: Buffer.from(fileBuffer),
+          ContentType: file.type,
+        };
 
-    // get signed url
-    const url = await getSignedUrl(
-      s3Client,
-      new GetObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME!,
-        Key: key,
-      }),
-      {expiresIn: 300} // 5 minutes
+        const response = await s3Client.send(new PutObjectCommand(uploadParams));
+        console.log(`Response: ${response}`);
+
+        // get signed url
+        const url = await getSignedUrl(
+          s3Client,
+          new GetObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME!,
+            Key: key,
+          }),
+          {expiresIn: 300} // 5 minutes
+        );
+
+        console.log(`Signed URL: ${url}`);
+        // const fileUrl = `${process.env.AWS_S3_BUCKET_NAME}/profile-pictures/${fileName}`;
+        return {url: url, key: key};
+      })
     );
 
-    console.log(`Signed URL: ${url}`);
-    // const fileUrl = `${process.env.AWS_S3_BUCKET_NAME}/profile-pictures/${fileName}`;
-
-    return NextResponse.json({url: url, key: key});
+    return NextResponse.json(results);
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(

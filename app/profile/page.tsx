@@ -1,36 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useState} from "react";
-import LoadingSpinner from "@/lib/client/LoadingSpinner";
-import {parseImage} from "@/lib/client/media";
 import {usePathname} from "next/navigation";
 import {getProfile} from "@/lib/client/profile";
 
 export default function ProfilePage() {
   const pathname = usePathname(); // Get the current route
-  const [userData, setUserData] = useState<any>(null);
-  const [image, setImage] = useState<string | null>(null);
   try {
-    useEffect(() => {
-      async function fetchImage() {
-        const res = await fetch('/api/profile');
-        const data = await res.json();
-        setUserData(data);
-        console.log('userData', data);
-        if (data?.image) {
-          await parseImage(data.image, setImage);
-        }
-      }
-
-      fetchImage();
-    }, []);
-
-    if (!userData) {
-      return <LoadingSpinner/>;
-    }
-
-    console.log('userData', userData);
 
     const header = (
       <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -49,11 +25,12 @@ export default function ProfilePage() {
 
     return (
       <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
-        {getProfile(userData, image, header)}
+        {getProfile('/api/profile', header)}
       </div>
     )
       ;
-  } catch (error) {
+  } catch
+    (error) {
     console.error('Error fetching user data:', error);
     return <div className="text-center py-10">Error loading profile. Please try again later.</div>;
   }

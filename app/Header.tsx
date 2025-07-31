@@ -45,7 +45,7 @@ export default function Header() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/profile"
-                  className="text-blue-600 hover:text-blue-800 px-3 py-2 text-sm font-medium"
+                  className="text-blue-600 dark:text-blue-100 hover:text-blue-800 dark:hover:text-blue-300 px-3 py-2 text-sm font-medium"
                 >
                   My Profile
                 </Link>

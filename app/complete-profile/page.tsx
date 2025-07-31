@@ -28,6 +28,8 @@ function RegisterComponent() {
   const [conflictStyle, setConflictStyle] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [key, setKey] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [keys, setKeys] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
@@ -41,8 +43,6 @@ function RegisterComponent() {
   const router = useRouter();
   const {data: session, update} = useSession();
 
-  console.log('image', image)
-
   // Fetch user profile data
   useEffect(() => {
     async function fetchUserProfile() {
@@ -52,6 +52,7 @@ function RegisterComponent() {
         const response = await fetch('/api/profile');
         if (response.ok) {
           const userData = await response.json();
+          await parseImage(userData.image, setImage);
           if (userData?.profile) {
             const {profile} = userData;
             setDescription(profile.description || '');
@@ -63,7 +64,6 @@ function RegisterComponent() {
             if (profile.birthYear) {
               setAge(new Date().getFullYear() - profile.birthYear);
             }
-            await parseImage(profile.image, setImage);
 
             // Set selected interests if any
             if (profile.intellectualInterests?.length > 0) {
@@ -71,9 +71,14 @@ function RegisterComponent() {
                 .map((pi: any) => pi.interest.id);
               setSelectedInterests(new Set(interestIds));
             }
-          }
-          if (userData?.image) {
-            await parseImage(userData.image, setImage);
+
+            setImages([])
+            setKeys(profile?.images)
+            await Promise.all(
+              (profile?.images || []).map(async (img) => {
+                await parseImage(img, setImages, true);
+              })
+            );
           }
         }
       } catch (error) {
@@ -123,7 +128,11 @@ function RegisterComponent() {
     );
   }
 
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImagesUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    return handleImageUpload(e, false);
+  }
+
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>, headShot = true) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -138,7 +147,7 @@ function RegisterComponent() {
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('files', file);
 
     try {
       setIsUploading(true);
@@ -155,10 +164,23 @@ function RegisterComponent() {
         return;
       }
 
-      const {url, key} = await response.json();
-      setImage(url);
-      setKey(key);
-    } catch (error) {
+      const results = await response.json();
+
+      const {url, key} = results[0]
+      if (headShot) {
+        setImage(url);
+        setKey(key);
+        console.log('headshot', key, url)
+      } else {
+        setImages(prev => [...prev, url]);
+        setKeys(prev => [...prev, key]);
+      }
+      // console.log(url, key);
+      console.log('image', key);
+      console.log('images', keys);
+
+    } catch
+      (error) {
       console.error('Upload error:', error);
       setError(error instanceof Error ? error.message : 'Failed to upload image');
     } finally {
@@ -213,39 +235,39 @@ function RegisterComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!gender) {
-      setError('Please select your gender');
-      return;
-    }
+    if (!session?.user?.email) return;
 
     try {
       setIsSubmitting(true);
       setError('');
 
-      const body = JSON.stringify({
+      console.log('submit image', key);
+      console.log('submit images', keys);
+
+      const data = {
         profile: {
           description,
           contactInfo,
           location,
-          gender,
-          personalityType,
-          conflictStyle,
+          gender: gender as Gender,
+          birthYear: new Date().getFullYear() - age,
+          personalityType: personalityType as PersonalityType,
+          conflictStyle: conflictStyle as ConflictStyle,
+          images: keys,
         },
         interests: Array.from(selectedInterests).map(id => ({
           id: id.startsWith('new-') ? undefined : id,
           name: allInterests.find(i => i.id === id)?.name || id.replace('new-', '')
         })),
         ...(key && {image: key}),
-      });
-      console.log(`Body: ${body}`)
-
+      };
+      console.log('data', data)
       const response = await fetch('/api/user/update-profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -297,56 +319,57 @@ function RegisterComponent() {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-                {image ? (
-                  <Image
-                    src={image}
-                    alt="Profile"
-                    width={128}
-                    height={128}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+              {image ? (
+                <Image
+                  src={image}
+                  alt="Profile"
+                  width={128}
+                  height={128}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full bg-gray-200 flex items-center justify-center">
                     <span className="text-4xl text-gray-500">
                       {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
-                  </div>
-                )}
-              </div>
-              <label
-                className="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors"
-                title="Upload photo"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd"
-                        d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
-                        clipRule="evenodd"/>
-                </svg>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                  disabled={isUploading}
-                />
-              </label>
+                </div>
+              )}
             </div>
+            <label
+              className="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors"
+              title="Upload photo"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd"
+                      d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                      clipRule="evenodd"/>
+              </svg>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                className="hidden"
+                disabled={isUploading}
+              />
+            </label>
           </div>
+        </div>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
 
           <div className="space-y-4">
             <div>
               <label htmlFor="gender" className={headingStyle}>
-                Gender <span className="text-red-500">*</span>
+                Gender
               </label>
               <select
                 id="gender"
                 name="gender"
-                required
+                // required
                 value={gender || ''}
                 onChange={(e) => setGender(e.target.value as Gender)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
@@ -589,6 +612,69 @@ function RegisterComponent() {
                 placeholder="How can people reach you? (Email, social media, phone, Google Forms, etc.)"
               />
             </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Photos</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {Array.from(new Set(images)).map((img, index) => (
+                <div key={index}
+                     className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
+                  <Image
+                    src={img}
+                    alt={`Uploaded image ${index + 1}`}
+                    width={200}
+                    height={200}
+                    className="h-full w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImages(prev => prev.filter((_, i) => i !== index));
+                      setKeys(prev => prev.filter((_, i) => i !== index));
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove image"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"/>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+
+              {Array.from(new Set(images)).length < 9 && (
+                <label
+                  className="aspect-square flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400 mb-1" fill="none"
+                       viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                  <span className="text-sm text-gray-500">
+                    {images.length === 0 ? 'Add photos' : 'Add more'}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {9 - Array.from(new Set(images)).length} remaining
+                  </span>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImagesUpload}
+                    accept="image/*"
+                    className="hidden"
+                    disabled={isUploading || Array.from(new Set(images)).length >= 9}
+                    multiple
+                  />
+                </label>
+              )}
+            </div>
+            {images.length === 0 && (
+              <p className="mt-1 text-sm text-gray-500">
+                Add up to 9 photos to your profile
+              </p>
+            )}
           </div>
 
           <div>

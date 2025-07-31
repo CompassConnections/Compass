@@ -16,20 +16,25 @@ export interface ProfileData {
   };
 }
 
-export async function parseImage(img: string, setImage: any) {
+export async function parseImage(img: string, setImage: any, batch = false) {
   if (!img) {
     return;
   }
-  if (img.startsWith('http')) {
-    console.log(`img: ${img}`)
-    setImage(img);
-  } else {
+  let url = img;
+  if (!img.startsWith('http')) {
     const imageResponse = await fetch(`/api/download?key=${img}`);
     console.log(`imageResponse: ${imageResponse}`)
     if (imageResponse.ok) {
       const imageBlob = await imageResponse.json();
-      const imageUrl = imageBlob['url'];
-      setImage(imageUrl);
+      url = imageBlob['url'];
     }
   }
+  if (url) {
+    if (batch) {
+      setImage(prev => [...prev, url]);
+    } else {
+      setImage(url);
+    }
+  }
+
 }

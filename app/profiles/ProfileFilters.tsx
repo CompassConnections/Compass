@@ -110,29 +110,30 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
       </div>
 
       {showFilters && (
-        <div className=" p-4 rounded-lg shadow-sm border space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Gender</label>
-              <select
-                className="w-full p-2 border rounded-lg"
-                value={filters.gender}
-                onChange={(e) => onFilterChange('gender', e.target.value)}
-              >
-                <option value="">Any Gender</option>
-                {Object.keys(Gender).map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+        <div className="p-4 rounded-lg shadow-sm border space-y-4">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Gender</label>
+                <select
+                  className="w-full p-2 border rounded-lg"
+                  value={filters.gender}
+                  onChange={(e) => onFilterChange('gender', e.target.value)}
+                >
+                  <option value="">Any Gender</option>
+                  {Object.keys(Gender).map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="relative" ref={dropdownRef}>
               <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Interests
               </label>
-
               <div className="relative">
                 <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
                   <input
@@ -147,16 +148,14 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                   <button
                     type="button"
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="px-3 py-2 border-l border-gray-300  text-gray-500   focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border-l border-gray-300 text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                         fill="currentColor">
-                      <path fillRule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clipRule="evenodd"/>
+                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
                     </svg>
                   </button>
                 </div>
+              </div>
 
                 {(showDropdown) && (
                   <div
@@ -197,36 +196,36 @@ export function ProfileFilters({filters, onFilterChange, onToggleFilter, onReset
                 )}
               </div>
 
-              {/* Selected interests */}
-              <div className="flex flex-wrap gap-2 mt-3">
-                {Array.from(selectedInterests).map(interestId => {
-                  const interest = allInterests.find(i => i.id === interestId);
-                  if (!interest) return null;
-                  return (
-                    <span
-                      key={interestId}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
+
+            {/* Selected interests */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {Array.from(selectedInterests).map(interestId => {
+                const interest = allInterests.find(i => i.id === interestId);
+                if (!interest) return null;
+                return (
+                  <span
+                    key={interestId}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
+                  >
+                    {interest.name}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleInterest(interestId);
+                        onToggleFilter('interests', interest.name);
+                      }}
+                      className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
-                      {interest.name}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleInterest(interestId);
-                          onToggleFilter('interests', interest.name);
-                        }}
-                        className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        <span className="sr-only">Remove {interest.name}</span>
-                        <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
-                          <path
-                            d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
-                        </svg>
-                      </button>
-                    </span>
-                  );
-                })}
-              </div>
+                      <span className="sr-only">Remove {interest.name}</span>
+                      <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                        <path
+                          d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
+                      </svg>
+                    </button>
+                  </span>
+                );
+              })}
             </div>
 
             {/*<div>*/}

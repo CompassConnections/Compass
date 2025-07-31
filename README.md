@@ -1,9 +1,7 @@
 # BayesBond
 
-This repository provides the source code for BayesBond, a web application where thinkers can bond and form deep 1-1 
-relationships in a fully transparent and efficient way. It's in active development and will hopefully be live soon.
-
-The full article is available at https://martinbraquet.com/meeting-rational.
+This repository provides the source code for [BayesBond](https://bayesbond.vercel.app), a web application where thinkers can bond and form deep 1-1 
+relationships in a fully transparent and efficient way. It just got released, so feel free to share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
 
@@ -15,6 +13,8 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 - democratically governed
 - extremely detailed profiles for deep connections
 - radically transparent: user base fully searchable
+
+The full description is available [here](https://martinbraquet.com/meeting-rational).
 
 ## To Do
 
@@ -34,7 +34,7 @@ Any action item is open to anyone for collaboration, but the following ones are 
 - [ ] Clean up terms and conditions
 - [ ] Clean up privacy notice
 - [ ] Clean up learn more page
-- [ ] Add dark theme
+- [x] Add dark theme
 - [ ] Cover with tests
 
 ## Implementation

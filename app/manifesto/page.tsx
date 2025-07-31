@@ -37,7 +37,7 @@ export default function PrivacyPage() {
       <h3 id="audience">Audience</h3>
       <p>Now that the core values are defined, I’ll describe some other traits in people that partially correlate with them. (Note that the community is defined based on the core values only; anyone who fits the core value, regardless of the traits below, is already part of the community.)</p>
       <p>So, here are some tendencies that highlight how most potential community members might be.</p>
-      <ul>
+      <ul className="list-disc pl-5 space-y-1">
         <li>Asking clarifying questions, citing evidence, responding thoughtfully, inviting dialogue before delivering facts</li>
         <li>Valuing evidence-based practices (e.g., medicine, economics)</li>
         <li>Attending reading groups, philosophy salons, or academic communities</li>
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
       <h3 id="profile-information">Profile Information</h3>
       <p>The profile page should front-load intellectual and psychological alignment, while still being human and approachable. It should contain as much information as possible—this requires a lot of self-awareness. Naturally, many people would be uncomfortable sharing so many personal things about themselves, especially since everyone in the app could view the profile. One easy way to circumvent this concern is to set different levels of privacy for different parts of the profile; the main screen would be open to everyone, and the other parts would be revealed whenever the profile owner feels like the connection has matured enough.</p>
       <p>The first screen could thus include:</p>
-      <ul>
+      <ul className="list-disc pl-5 space-y-1">
         <li>Name and small headshot (20% of the screen max)</li>
         <li>Intellectual topics currently being explored</li>
         <li>Favorite intellectual topics</li>
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
       <p>Ultimately, we could add modules to raise self-awareness about disagreement styles, thinking styles, intellectual interests, philosophies, etc. I suspect this would add very useful profile information.</p>
       <h5 id="prompt-based-messaging">Prompt-based Messaging</h5>
       <p>Deep open-ended questions are a great way to deepen connections; they can be answered individually, used as openings, or as tags for filtering. Here are some that I find particularly appealing in light of the core values, but they should probably span many more topics (most of them are cherry-picked from ChatGPT).</p>
-      <ul>
+      <ul className="list-disc pl-5 space-y-1">
         <li>How has understanding X helped you suffer less when Y happened?</li>
         <li>How have some ideas changed the way you respond to stress?</li>
         <li>What’s something you recently changed your mind about after seeing stronger evidence or reasoning?</li>
@@ -135,7 +135,7 @@ export default function PrivacyPage() {
       <h3 id="tech">Tech</h3>
       <p>First of all, building free and open source software (FOSS) is a drastic paradigm shift from current meeting apps, which brings its pros and cons. One major positive side effect of FOSS is the attraction of technically skilled contributors.</p>
       <p>The minimum viable product will contain these features:</p>
-      <ul>
+      <ul className="list-disc pl-5 space-y-1">
         <li>Authentication</li>
         <li>Page listing all the profiles</li>
         <li>Search through all the profile variables (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)</li>
@@ -175,7 +175,7 @@ export default function PrivacyPage() {
       <h3 id="viability">Viability</h3>
       <p>Let’s think quantitatively about what would be required to make the app useful and viable.</p>
       <p>By useful, I mean that we consider it a win (for the mission) when every user makes at least one meaningful connection through the app. Let’s make a few assumptions:</p>
-      <ul>
+      <ul className="list-disc pl-5 space-y-1">
         <li>Users will only connect with people within their 20-year range, and people are uniformly aged between 20 and 50. So the probability that two users are aged at most 10 years apart is around 50% (20% for the youngest and oldest people, and 67% for most people in the middle).</li>
         <li>Users will only connect with people in the same geographical area, and they are uniformly spread across 5 of them. That’s a 20% probability to find someone in the same area.</li>
         <li>Users may form a connection with people of any gender (it’s not a dating-only app, after all).</li>

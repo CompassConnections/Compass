@@ -1,4 +1,4 @@
-name: Check Next.js Build
+name: Check Next.js
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build Next.js App
+    name: Build
     runs-on: ubuntu-latest
 
     steps:

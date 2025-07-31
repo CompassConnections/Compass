@@ -147,7 +147,7 @@ function RegisterComponent() {
     }
 
     const formData = new FormData();
-    formData.append('files', file);
+    formData.append('file', file);
 
     try {
       setIsUploading(true);
@@ -164,9 +164,7 @@ function RegisterComponent() {
         return;
       }
 
-      const results = await response.json();
-
-      const {url, key} = results[0]
+      const {url, key} = await response.json();
       if (headShot) {
         setImage(url);
         setKey(key);

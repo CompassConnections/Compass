@@ -1,15 +1,12 @@
 'use client';
 
 import Link from "next/link";
+import {aColor} from "@/lib/client/constants";
 
 export default function LearnMorePage() {
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
-      <style jsx global>{`
-        a {
-          color: cornflowerblue;
-        }
-      `}</style>
+      {aColor}
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold  mb-4 text-center">About BayesBond</h1>
         <div className="et_pb_text_inner">
@@ -24,7 +21,7 @@ export default function LearnMorePage() {
             donation-supported, open source, and democratically governed.</p>
           <div className="mt-8 flex space-x-4 justify-center">
             <Link
-              href="https://martinbraquet.com/meeting-rational"
+              href="/manifesto"
               className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
             >
               Full Article

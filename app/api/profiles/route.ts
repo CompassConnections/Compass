@@ -80,6 +80,21 @@ export async function GET(request: Request) {
           description: {contains: searchQuery, mode: 'insensitive'},
         },
       },
+      {
+        profile: {
+          occupation: {contains: searchQuery, mode: 'insensitive'},
+        },
+      },
+      {
+        profile: {
+          location: {contains: searchQuery, mode: 'insensitive'},
+        },
+      },
+      {
+        profile: {
+          contactInfo: {contains: searchQuery, mode: 'insensitive'},
+        },
+      },
     ];
   }
 

@@ -78,7 +78,7 @@ export function getProfile(url: string, header: any = null) {
                 ) :
                 (
                   <div
-                    className="absolute -bottom-16 left-8 h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
+                    className="-bottom-16 left-8 h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
     <span className="text-4xl font-bold text-gray-600">
       {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
       </span>
@@ -225,8 +225,7 @@ export function getProfile(url: string, header: any = null) {
               userData?.profile?.description && (
                 <div>
                   <h2 className="text-sm font-medium text-gray-500  uppercase tracking-wider"> About </h2>
-                  < p
-                    className={pStyle}> {userData.profile.description} </p>
+                  <p className={pStyle} style={{ whiteSpace: 'pre-line' }}>{userData.profile.description}</p>
                 </div>
               )
             }
@@ -235,8 +234,7 @@ export function getProfile(url: string, header: any = null) {
               userData?.profile?.contactInfo && (
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Contact </h2>
-                  < p
-                    className={pStyle}> {userData.profile.contactInfo} </p>
+                  <p className={pStyle} style={{ whiteSpace: 'pre-line' }}>{userData.profile.contactInfo}</p>
                 </div>
               )
             }

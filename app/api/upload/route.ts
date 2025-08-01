@@ -15,7 +15,8 @@ const s3Client = new S3Client({
 export async function POST(request: Request) {
   try {
     const session = await getSession();
-    if (!session?.user?.email) {
+    const userId = session?.user?.id;
+    if (!userId) {
       return NextResponse.json({error: 'Not authenticated'}, {status: 401});
     }
 
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
     const fileExtension = file.name.split('.').pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
     const fileBuffer = await file.arrayBuffer();
-    const key = `profile-pictures/${fileName}`;
+    const key = `profile-pictures/${userId}/${fileName}`;
 
     const uploadParams = {
       Bucket: process.env.AWS_S3_BUCKET_NAME!,

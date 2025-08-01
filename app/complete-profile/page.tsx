@@ -49,6 +49,7 @@ function RegisterComponent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const {data: session, update} = useSession();
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   const id = session?.user.id
 
@@ -363,7 +364,7 @@ function RegisterComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-3xl w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold ">
             Complete Your Profile
@@ -476,6 +477,8 @@ function RegisterComponent() {
                 id="age"
                 name="age"
                 type="number"
+                min="15"
+                max="100"
                 value={age ?? ''}
                 onChange={(e) => setAge(Number(e.target.value))}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
@@ -676,7 +679,7 @@ function RegisterComponent() {
                       i.name.toLowerCase() === newInterest.toLowerCase()
                     ) && (
                       <div
-                        className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                        className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
                         onClick={() => addNewInterest()}
                       >
                         <div className="flex items-center">
@@ -695,7 +698,7 @@ function RegisterComponent() {
                       .map((interest) => (
                         <div
                           key={interest.id}
-                          className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                          className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
                           onClick={() => {
                             toggleInterest(interest.id);
                             setNewInterest('');
@@ -751,18 +754,55 @@ function RegisterComponent() {
               </div>
             </div>
 
-            <div>
+            <div className="max-w-3xl w-full">
               <label htmlFor="description" className={headingStyle}>
                 About You
                 <p className="text-xs italic">
-                  Feel free to include any relevant links (dating / friends docs, etc.), but the more text you share,
-                  the easier it will be to find you by keywords in our search.
+                  Feel free to include any relevant links (dating / friends docs, etc.), but the more text you write,
+                  the easier it will be to find you by keyword search.
                 </p>
               </label>
+              <div className="mt-2 mb-4">
+                <button 
+                  type="button" 
+                  onClick={() => setShowMoreInfo(!showMoreInfo)}
+                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
+                >
+                  {showMoreInfo ? 'Hide info' : 'Key details for fulfilling encounters'}
+                  <svg 
+                    className={`w-4 h-4 ml-1 transition-transform ${showMoreInfo ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {showMoreInfo && (
+                  <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md text-sm text-gray-700 dark:text-gray-300">
+                    <p className="mt-2">To the extent that you are comfortable sharing, consider writing about:</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Your interests and what you're looking for: type of connection, activities to do, etc.</li>
+                      <li>Your availability and timezone</li>
+                      <li>What makes you unique</li>
+                      <li>Your expectations and boundaries</li>
+                      <li>Your intellectual interests (currently exploring, favorite, and least favorite)</li>
+                      <li>Your core values</li>
+                      <li>Your altruistic values: community engagement, social justice, and other cause areas</li>
+                      <li>Your level of education, hobbies, pets, habits, subcultures, diet, emotional sensitivity, sense of humor, ambition, organization, pet peeves, non-negotiables</li>
+                      <li>Your thinking style, results from evidence-based personality tests (e.g., Big 5)</li>
+                      <li>Your physical and mental health: some traits that rub people the wrong way, triggers, therapy, or what you are trying to improve</li>
+                      <li>If interested in romantic relationships, your love languages (giving and receiving), timeline, romantic orientation, family projects, work-life balance, financial goals / habits, career goals, housing situation (renting vs owning), and whether you would date someone who already has kids</li>
+                      <li>What you would like in your ideal person or connection—where they should be similar or different from your own description</li>
+                      <li>Conversation starters or questions</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
               <textarea
                 id="description"
                 name="description"
-                rows={4}
+                rows={20}
                 // required
                 value={description}
                 maxLength={30000}
@@ -779,7 +819,7 @@ function RegisterComponent() {
               <textarea
                 id="contactInfo"
                 name="contactInfo"
-                rows={2}
+                rows={5}
                 value={contactInfo}
                 maxLength={5000}
                 onChange={(e) => setContactInfo(e.target.value)}
@@ -873,7 +913,7 @@ function RegisterComponent() {
                       onDelete={() => signOut({callbackUrl: "/"})}
                   />
               </div>
-          }Add
+          }
         </form>
       </div>
     </div>

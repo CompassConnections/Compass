@@ -2,6 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {Gender} from "@prisma/client";
+import Dropdown from "@/app/components/dropdown";
 
 interface FilterProps {
   filters: {
@@ -22,6 +23,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
   const [showFilters, setShowFilters] = useState(true);
   const [allCauseAreas, setAllCauseAreas] = useState<{ id: string, name: string }[]>([]);
   const [allInterests, setAllInterests] = useState<{ id: string, name: string }[]>([]);
+  const [allConnections, setAllConnections] = useState<{ id: string, name: string }[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -35,8 +37,10 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
           const data = await res.json();
           setAllInterests(data.interests || []);
           setAllCauseAreas(data.causeAreas || []);
+          setAllConnections(data.desiredConnections || []);
           console.log('All interests:', data.interests);
           console.log('All cause areas:', data.causeAreas);
+          console.log('All Connections:', data.desiredConnections);
           // console.log('Gender', Gender);
         }
       } catch (error) {
@@ -72,12 +76,123 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+  const handleKeyDown = (key: string) => {
+    if (key === 'Escape') {
       setShowDropdown(false);
     }
   };
 
+  const dropdownConfig = [
+    {id: "interests",},
+  ]
+
+  const [values, setValues] = useState<Record<string, string>>({
+    v: "",
+    // showDropdown: false,
+  })
+
+  const handleChange = (id: string, value: string) => {
+    setValues((prev) => ({ ...prev, [id]: value }))
+  }
+
+  const handleFocus = (id: string) => {
+    console.log(`Focused: ${id}`)
+    setShowDropdown[id](true)
+  }
+
+
+  function getDrowDown() {
+    return (
+      <div>
+        <div className="relative" ref={dropdownRef}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+            Core Interests
+          </label>
+
+          {dropdownConfig.map(({ id }) => (
+            <Dropdown
+              key={id}
+              id={id}
+              // options={options}
+              value={values[id]}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              onKeyDown={handleKeyDown}
+              setShowDropdown={() => setShowDropdown[id]}
+              showDropdown={}
+            />
+          ))}
+
+          {(showDropdown) && (
+            <div
+              className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+              {/* Filtered interests */}
+              {allInterests
+                .filter(interest =>
+                  interest.name.toLowerCase().includes(newInterest.toLowerCase())
+                )
+                .map((interest) => (
+                  <div
+                    key={interest.id}
+                    className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
+                    onClick={() => {
+                      onToggleFilter('interests', interest.name);
+                      toggleInterest(interest.id);
+                      // setNewInterest('');
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        checked={selectedInterests.has(interest.id)}
+                        onChange={() => {
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      />
+                      <span className="font-normal ml-3 block truncate">
+                              {interest.name}
+                            </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {Array.from(selectedInterests).map(interestId => {
+            const interest = allInterests.find(i => i.id === interestId);
+            if (!interest) return null;
+            return (
+              <span
+                key={interestId}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
+              >
+                    {interest.name}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleInterest(interestId);
+                    onToggleFilter('interests', interest.name);
+                  }}
+                  className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                      <span className="sr-only">Remove {interest.name}</span>
+                      <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                        <path
+                          d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
+                      </svg>
+                    </button>
+                  </span>
+            );
+          })}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full mb-8">
@@ -104,8 +219,9 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   type="button"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                       stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </button>
               )}
@@ -159,7 +275,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                 <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Min Age</label>
                 <input
                   type="number"
-                  min="18"
+                  min="15"
                   max="100"
                   className="w-full p-2 border rounded-lg"
                   value={filters.minAge || ''}
@@ -181,106 +297,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               </div>
             </div>
 
-            <div className="relative" ref={dropdownRef}>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
-                Core Interests
-              </label>
-              <div className="relative">
-                <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    value={newInterest}
-                    onChange={(e) => setNewInterest(e.target.value)}
-                    onFocus={() => setShowDropdown(true)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Type to search"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="px-3 py-2 border-l border-gray-300 text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                         fill="currentColor">
-                      <path fillRule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clipRule="evenodd"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              {(showDropdown) && (
-                <div
-                  className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                  {/* Filtered interests */}
-                  {allInterests
-                    .filter(interest =>
-                      interest.name.toLowerCase().includes(newInterest.toLowerCase())
-                    )
-                    .map((interest) => (
-                      <div
-                        key={interest.id}
-                        className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
-                        onClick={() => {
-                          onToggleFilter('interests', interest.name);
-                          toggleInterest(interest.id);
-                          // setNewInterest('');
-                        }}
-                      >
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            checked={selectedInterests.has(interest.id)}
-                            onChange={() => {
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          />
-                          <span className="font-normal ml-3 block truncate">
-                              {interest.name}
-                            </span>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-
-
-            {/* Selected interests */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              {Array.from(selectedInterests).map(interestId => {
-                const interest = allInterests.find(i => i.id === interestId);
-                if (!interest) return null;
-                return (
-                  <span
-                    key={interestId}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
-                  >
-                    {interest.name}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleInterest(interestId);
-                        onToggleFilter('interests', interest.name);
-                      }}
-                      className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <span className="sr-only">Remove {interest.name}</span>
-                      <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
-                        <path
-                          d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
-                      </svg>
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
+            {getDrowDown()}
 
             {/*<div>*/}
             {/*  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>*/}

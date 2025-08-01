@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const maxAge = url.searchParams.get("maxAge");
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
+  const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
   const searchQuery = url.searchParams.get("search") || "";
 
   const profilesPerPage = 100;
@@ -37,11 +38,11 @@ export async function GET(request: Request) {
       ...where.profile,
       birthYear: {}
     };
-    
+
     if (minAge) {
       where.profile.birthYear.lte = currentYear - parseInt(minAge);
     }
-    
+
     if (maxAge) {
       where.profile.birthYear.gte = currentYear - parseInt(maxAge);
     }
@@ -65,11 +66,11 @@ export async function GET(request: Request) {
   if (interests.length > 0) {
     where.profile = {
       ...where.profile,
-      AND: interests.map((interestName) => ({
+      AND: interests.map((name) => ({
         intellectualInterests: {
           some: {
             interest: {
-              name: interestName,
+              name: name,
             },
           },
         },
@@ -77,16 +78,43 @@ export async function GET(request: Request) {
     };
   }
 
-  if (causeAreas.length > 0) {
+  // OR
+  if (connections.length > 0) {
     where.profile = {
       ...where.profile,
-      causeAreas: {
+      desiredConnections: {
         some: {
-          causeArea: {
-            name: {in: causeAreas},
+          connection: {
+            name: {in: connections},
           },
         },
       },
+    };
+  }
+
+  if (causeAreas.length > 0) {
+    //   where.profile = {
+    //     ...where.profile,
+    //     causeAreas: {
+    //       some: {
+    //         causeArea: {
+    //           name: {in: causeAreas},
+    //         },
+    //       },
+    //     },
+    //   };
+    // }
+    where.profile = {
+      ...where.profile,
+      AND: causeAreas.map((name) => ({
+        causeAreas: {
+          some: {
+            causeArea: {
+              name: name,
+            },
+          },
+        },
+      })),
     };
   }
 
@@ -118,7 +146,7 @@ export async function GET(request: Request) {
   }
 
   // Fetch paginated and filtered profiles
-  const cacheStrategy = { swr: 60, ttl: 60 , tags: ["profiles"]};
+  const cacheStrategy = {swr: 60, ttl: 60, tags: ["profiles"]};
   const profiles = await prisma.user.findMany({
     skip: offset,
     take: profilesPerPage,
@@ -127,7 +155,7 @@ export async function GET(request: Request) {
     select: {
       id: true,
       name: true,
-      email: true,
+      // email: true,
       image: true,
       createdAt: true,
       profile: {

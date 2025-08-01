@@ -4,7 +4,7 @@ import Link from "next/link";
 import {useCallback, useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {ProfileData} from "@/lib/client/schema";
-import {ProfileFilters} from "./ProfileFilters";
+import {ProfileFilters, dropdownConfig} from "./ProfileFilters";
 
 // Disable static generation
 export const dynamic = "force-dynamic";
@@ -17,6 +17,7 @@ const initialState = {
   maxAge: null as number | null,
   interests: [] as string[],
   causeAreas: [] as string[],
+  connections: [] as string[],
   searchQuery: '',
 };
 
@@ -49,8 +50,12 @@ export default function ProfilePage() {
           if (filters.gender) params.append('gender', filters.gender);
           if (filters.minAge) params.append('minAge', filters.minAge.toString());
           if (filters.maxAge) params.append('maxAge', filters.maxAge.toString());
-          if (filters.interests.length > 0) params.append('interests', filters.interests.join(','));
-          if (filters.causeAreas.length > 0) params.append('causeAreas', filters.causeAreas.join(','));
+
+          for (let i = 0; i < dropdownConfig.length; i++) {
+            const v = dropdownConfig[i];
+            if (filters[v.id].length > 0) params.append(v.id, filters[v.id].join(','))
+          }
+
           if (filters.searchQuery) params.append('search', filters.searchQuery);
 
           const response = await fetch(`/api/profiles?${params.toString()}`);
@@ -108,7 +113,7 @@ export default function ProfilePage() {
     setShowFilters(value);
   };
 
-  const toggleFilter = (key: 'interests' | 'causeAreas', value: string) => {
+  const toggleFilter = (key: string, value: string) => {
     setFilters(prev => ({
       ...prev,
       [key]: prev[key].includes(value)

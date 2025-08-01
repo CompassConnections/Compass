@@ -8,6 +8,7 @@ interface FilterProps {
   filters: {
     gender: string;
     interests: string[];
+    connections: string[];
     causeAreas: string[];
     searchQuery: string;
     minAge?: number | null;
@@ -15,145 +16,147 @@ interface FilterProps {
   };
   onFilterChange: (key: string, value: any) => void;
   onShowFilters: (value: boolean) => void;
-  onToggleFilter: (key: 'interests' | 'causeAreas', value: string) => void;
+  onToggleFilter: (key: string, value: string) => void;
   onReset: () => void;
 }
 
+export const dropdownConfig = [
+  {id: "interests", name: "Core Interests"},
+  {id: "connections", name: "Desired Connections"},
+  {id: "causeAreas", name: "Cause Areas"},
+]
+
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
   const [showFilters, setShowFilters] = useState(true);
-  const [allCauseAreas, setAllCauseAreas] = useState<{ id: string, name: string }[]>([]);
-  const [allInterests, setAllInterests] = useState<{ id: string, name: string }[]>([]);
-  const [allConnections, setAllConnections] = useState<{ id: string, name: string }[]>([]);
-  const [selectedInterests, setSelectedInterests] = useState<Set<string>>(new Set());
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [newInterest, setNewInterest] = useState('');
+
+  const dropDownStates = Object.fromEntries(dropdownConfig.map(({id}) => {
+    const [all, setAll] = useState<{ id: string, name: string }[]>([]);
+    const [selected, setSelected] = useState<Set<string>>(new Set());
+    const [newValue, setNewValue] = useState('');
+    const ref = useRef<HTMLDivElement>(null);
+    const [show, setShow] = useState(false);
+
+    return [id, {
+      options: {value: all, set: setAll},
+      selected: {value: selected, set: setSelected},
+      new: {value: newValue, set: setNewValue},
+      ref: ref,
+      show: {value: show, set: setShow},
+    }]
+  }))
+  console.log(dropDownStates)
 
   useEffect(() => {
-    async function fetchInterests() {
+    async function fetchOptions() {
       try {
         const res = await fetch('/api/interests');
         if (res.ok) {
           const data = await res.json();
-          setAllInterests(data.interests || []);
-          setAllCauseAreas(data.causeAreas || []);
-          setAllConnections(data.desiredConnections || []);
-          console.log('All interests:', data.interests);
-          console.log('All cause areas:', data.causeAreas);
-          console.log('All Connections:', data.desiredConnections);
-          // console.log('Gender', Gender);
+          console.log(data);
+          for (const [id, values] of Object.entries(data)) {
+            dropDownStates[id].options.set(values);
+          }
         }
       } catch (error) {
-        console.error('Error loading interests:', error);
+        console.error('Error loading options:', error);
       }
     }
 
-    fetchInterests();
+    fetchOptions();
 
     // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
+      for (const id in dropDownStates) {
+        const dropdown = dropDownStates[id];
+        const ref = dropdown.ref;
+        if (
+          ref?.current &&
+          !ref.current.contains(event.target as Node)
+        ) {
+          dropdown.show?.set?.(false); // Defensive chaining
+        }
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
 
-  const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => {
+  const toggle = (id: string, optionId: string) => {
+    dropDownStates[id].selected.set(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(interestId)) {
-        newSet.delete(interestId);
+      if (newSet.has(optionId)) {
+        newSet.delete(optionId);
       } else {
-        newSet.add(interestId);
+        newSet.add(optionId);
       }
       return newSet;
     });
   };
 
-  const handleKeyDown = (key: string) => {
-    if (key === 'Escape') {
-      setShowDropdown(false);
-    }
+  const handleKeyDown = (id: string, key: string) => {
+    if (key === 'Escape') dropDownStates[id].show.set(false);
   };
 
-  const dropdownConfig = [
-    {id: "interests",},
-  ]
-
-  const [values, setValues] = useState<Record<string, string>>({
-    v: "",
-    // showDropdown: false,
-  })
-
-  const handleChange = (id: string, value: string) => {
-    setValues((prev) => ({ ...prev, [id]: value }))
+  const handleChange = (id: string, e: string) => {
+    dropDownStates[id].new.set(e);
   }
 
   const handleFocus = (id: string) => {
-    console.log(`Focused: ${id}`)
-    setShowDropdown[id](true)
+    dropDownStates[id].show.set(true);
   }
 
+  const handleClick = (id: string) => {
+    const shown = dropDownStates[id].show.value;
+    dropDownStates[id].show.set(!shown);
+  }
 
-  function getDrowDown() {
+  function getDrowDown(id: string, name: string) {
+
     return (
-      <div>
-        <div className="relative" ref={dropdownRef}>
+      <div key={id + '.div'}>
+        <div className="relative" ref={dropDownStates[id].ref}>
           <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
-            Core Interests
+            {name}
           </label>
+          <Dropdown
+            key={id}
+            id={id}
+            value={dropDownStates[id].new.value}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
+            onClick={handleClick}
+          />
 
-          {dropdownConfig.map(({ id }) => (
-            <Dropdown
-              key={id}
-              id={id}
-              // options={options}
-              value={values[id]}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              onKeyDown={handleKeyDown}
-              setShowDropdown={() => setShowDropdown[id]}
-              showDropdown={}
-            />
-          ))}
-
-          {(showDropdown) && (
+          {(dropDownStates[id].show.value) && (
             <div
               className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-              {/* Filtered interests */}
-              {allInterests
-                .filter(interest =>
-                  interest.name.toLowerCase().includes(newInterest.toLowerCase())
-                )
-                .map((interest) => (
+              {dropDownStates[id].options.value
+                .filter(v => v.name.toLowerCase().includes(dropDownStates[id].new.value.toLowerCase()))
+                .map((v) => (
                   <div
-                    key={interest.id}
+                    key={v.id}
                     className=" dark:text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50  dark:hover:bg-gray-700"
                     onClick={() => {
-                      onToggleFilter('interests', interest.name);
-                      toggleInterest(interest.id);
-                      // setNewInterest('');
+                      onToggleFilter(id, v.name);
+                      toggle(id, v.id);
                     }}
                   >
                     <div className="flex items-center">
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        checked={selectedInterests.has(interest.id)}
-                        onChange={() => {
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
+                        checked={dropDownStates[id].selected.value.has(v.id)}
+                        onChange={() => {}}
+                        onClick={(e) => e.stopPropagation()}
                       />
                       <span className="font-normal ml-3 block truncate">
-                              {interest.name}
+                              {v.name}
                             </span>
                     </div>
                   </div>
@@ -162,25 +165,25 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
           )}
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
-          {Array.from(selectedInterests).map(interestId => {
-            const interest = allInterests.find(i => i.id === interestId);
-            if (!interest) return null;
+          {Array.from(dropDownStates[id].selected.value).map(vId => {
+            const value = dropDownStates[id].options.value.find(i => i.id === vId);
+            if (!value) return null;
             return (
               <span
-                key={interestId}
+                key={vId}
                 className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
               >
-                    {interest.name}
+                    {value.name}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    toggleInterest(interestId);
-                    onToggleFilter('interests', interest.name);
+                    toggle(id, vId);
+                    onToggleFilter(id, value.name);
                   }}
                   className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 dark:text-white dark:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                      <span className="sr-only">Remove {interest.name}</span>
+                      <span className="sr-only">Remove {value.name}</span>
                       <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
                         <path
                           d="M4 3.293L6.646.646a.5.5 0 01.708.708L4.707 4l2.647 2.646a.5.5 0 01-.708.708L4 4.707l-2.646 2.647a.5.5 0 01-.708-.708L3.293 4 .646 1.354a.5.5 0 01.708-.708L4 3.293z"/>
@@ -297,7 +300,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               </div>
             </div>
 
-            {getDrowDown()}
+            {dropdownConfig.map(({ id, name }) => getDrowDown(id, name))}
 
             {/*<div>*/}
             {/*  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>*/}
@@ -324,7 +327,9 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
             <button
               onClick={() => {
                 onReset();
-                setSelectedInterests(new Set());
+                Object.values(dropDownStates).map((v) => {
+                  v.selected.set(new Set());
+                });
               }}
               className="px-4 py-2 text-sm text-gray-600  dark:text-white hover:text-gray-800"
             >

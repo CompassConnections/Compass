@@ -3,6 +3,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Gender} from "@prisma/client";
 import Dropdown from "@/app/components/dropdown";
+import {FilterKey} from "@/app/profiles/page";
 
 interface FilterProps {
   filters: {
@@ -16,21 +17,26 @@ interface FilterProps {
   };
   onFilterChange: (key: string, value: any) => void;
   onShowFilters: (value: boolean) => void;
-  onToggleFilter: (key: string, value: string) => void;
+  onToggleFilter: (key: FilterKey, value: string) => void;
   onReset: () => void;
 }
 
-export const dropdownConfig = [
+export const dropdownConfig: { id: FilterKey, name: string }[] = [
   {id: "connections", name: "Desired Connections"},
   {id: "interests", name: "Core Interests"},
   {id: "causeAreas", name: "Cause Areas"},
 ]
 
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
+  interface Item {
+    id: FilterKey;
+    name: string;
+  }
+
   const [showFilters, setShowFilters] = useState(true);
 
   const dropDownStates = Object.fromEntries(dropdownConfig.map(({id}) => {
-    const [all, setAll] = useState<{ id: string, name: string }[]>([]);
+    const [all, setAll] = useState<Item[]>([]);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [newValue, setNewValue] = useState('');
     const ref = useRef<HTMLDivElement>(null);
@@ -51,7 +57,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
       try {
         const res = await fetch('/api/interests');
         if (res.ok) {
-          const data = await res.json();
+          const data = await res.json() as Record<string, Item[]>;
           console.log(data);
           for (const [id, values] of Object.entries(data)) {
             dropDownStates[id].options.set(values);
@@ -86,7 +92,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
   }, []);
 
 
-  const toggle = (id: string, optionId: string) => {
+  const toggle = (id: FilterKey, optionId: string) => {
     dropDownStates[id].selected.set(prev => {
       const newSet = new Set(prev);
       if (newSet.has(optionId)) {
@@ -98,24 +104,24 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     });
   };
 
-  const handleKeyDown = (id: string, key: string) => {
+  const handleKeyDown = (id: FilterKey, key: string) => {
     if (key === 'Escape') dropDownStates[id].show.set(false);
   };
 
-  const handleChange = (id: string, e: string) => {
+  const handleChange = (id: FilterKey, e: string) => {
     dropDownStates[id].new.set(e);
   }
 
-  const handleFocus = (id: string) => {
+  const handleFocus = (id: FilterKey) => {
     dropDownStates[id].show.set(true);
   }
 
-  const handleClick = (id: string) => {
+  const handleClick = (id: FilterKey) => {
     const shown = dropDownStates[id].show.value;
     dropDownStates[id].show.set(!shown);
   }
 
-  function getDrowDown(id: string, name: string) {
+  function getDrowDown(id: FilterKey, name: string) {
 
     return (
       <div key={id + '.div'}>

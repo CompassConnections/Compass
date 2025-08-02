@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/server/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/server/auth";
+import {retrieveUser} from "@/lib/server/db-utils";
 
 // Handler for GET /api/profiles/[id]
 export async function GET(
@@ -12,37 +13,15 @@ export async function GET(
     const params = await context.params;
     const { id } = params;
 
-    const cacheStrategy = { swr: 60, ttl: 60, tags: ["profiles_id"] };
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        // email: true,
-        image: true,
-        createdAt: true,
-        profile: {
-          include: {
-            intellectualInterests: { include: { interest: true } },
-            causeAreas: { include: { causeArea: true } },
-            coreValues: { include: { value: true } },
-            desiredConnections: { include: { connection: true } },
-            promptAnswers: true,
-          },
-        },
-      },
-      cacheStrategy: cacheStrategy,
-    });
+    const user = await retrieveUser(id)
 
     // If user not found, return 404
     if (!user) {
-      return new NextResponse(JSON.stringify({ error: "User not found" }), {
+      return new NextResponse(JSON.stringify({error: "User not found"}), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
       });
     }
-
-    console.log("Fetched user profile:", user);
 
     return new NextResponse(JSON.stringify(user), {
       status: 200,
@@ -94,6 +73,9 @@ export async function DELETE(
       }),
       // Delete intellectual interests
       prisma.profileInterest.deleteMany({
+        where: { profileId: id },
+      }),
+      prisma.profileValue.deleteMany({
         where: { profileId: id },
       }),
       // Delete cause areas

@@ -2,6 +2,7 @@ import {prisma} from "@/lib/server/prisma";
 import {NextResponse} from "next/server";
 import {getSession} from "@/lib/server/auth";
 import {notFound, redirect} from "next/navigation";
+import {retrieveUser} from "@/lib/server/db-utils";
 
 
 export async function GET() {
@@ -11,35 +12,16 @@ export async function GET() {
   if (!session?.user?.email)
     redirect('/login');
 
-  const user = await prisma.user.findUnique({
-    where: {email: session.user.email},
-    include: {
-      profile: {
-        include: {
-          intellectualInterests: {
-            include: {
-              interest: true
-            },
-          },
-          desiredConnections: {
-            include: {
-              connection: true
-            },
-          },
-          coreValues: {
-            include: {
-              value: true
-            },
-          },
-        }
-      }
-    }
-    });
+  const id = session.user.id;
+
+  const user = await retrieveUser(id);
 
   if (!user) {
-    notFound();
+    return new NextResponse(JSON.stringify({ error: "User not found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  console.log('user', user);
   return NextResponse.json(user);
 }

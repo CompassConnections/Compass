@@ -44,9 +44,8 @@ export default function LearnMorePage() {
             href="https://www.paypal.com/paypalme/MartinBraquet">PayPal</a> or <a
             href="https://github.com/sponsors/MartinBraquet">GitHub</a> (GitHub has increased transparency, but requires
             an account).</p>
-          <h5 id="github-repo">GitHub repo</h5>
-          <p>Where all the source code and instructions for development are: <a
-            href="https://github.com/BayesBond/BayesBond">https://github.com/BayesBond/BayesBond</a></p>
+          <h5 id="github-repo">Source Code</h5>
+          <p>The source code and instructions for development are available on <a href="https://github.com/BayesBond/BayesBond">GitHub</a>.</p>
         </div>
       </div>
     </div>

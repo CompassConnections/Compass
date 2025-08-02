@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const {profile, image, name, interests = [], connections = [], coreValues = []} = data;
+    const {profile, image, name, interests = [], connections = [], coreValues = [], causeAreas = []} = data;
 
     Object.keys(profile).forEach(key => {
       if (profile[key] === '' || !profile[key]) {
@@ -71,6 +71,8 @@ export async function POST(req: Request) {
         profileConnection: prisma.profileConnection,
         value: prisma.value,
         profileValue: prisma.profileValue,
+        causeArea: prisma.causeArea,
+        profileCauseArea: prisma.profileCauseArea,
       } as const;
 
       async function handleFeatures(features, attribute: string, profileAttribute: string, idName: string) {
@@ -112,6 +114,7 @@ export async function POST(req: Request) {
       await handleFeatures(interests, 'interest', 'profileInterest', 'interestId')
       await handleFeatures(connections, 'connection', 'profileConnection', 'connectionId')
       await handleFeatures(coreValues, 'value', 'profileValue', 'valueId')
+      await handleFeatures(causeAreas, 'causeArea', 'profileCauseArea', 'causeAreaId')
 
       return updatedUser
     });

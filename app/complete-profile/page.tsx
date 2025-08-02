@@ -142,7 +142,7 @@ function RegisterComponent() {
         const res = await fetch('/api/profiles/prompts');
         if (res.ok) {
           const data = await res.json();
-          console.log('uniquePrompts', data.uniquePrompts);
+          // console.log('uniquePrompts', data.uniquePrompts);
           setPromptOptions(data.uniquePrompts);
         }
       } catch (error) {
@@ -283,7 +283,7 @@ function RegisterComponent() {
         ...(key && {image: key}),
         ...(name && {name}),
       };
-      for (const name of ['interests', 'connections', 'coreValues']) {
+      for (const name of ['interests', 'connections', 'coreValues', 'causeAreas']) {
         data[name] = Array.from(hooks[name].selectedFeatures).map(id => ({
           id: id.startsWith('new-') ? undefined : id,
           name: hooks[name].allFeatures.find(i => i.id === id)?.name || id.replace('new-', '')

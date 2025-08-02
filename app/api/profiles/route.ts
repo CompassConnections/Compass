@@ -27,6 +27,9 @@ export async function GET(request: Request) {
     id: {not: session?.user?.id},
   };
 
+  where.profile = {};
+  where.profile.AND = [];
+
   if (gender) {
     where.profile = {
       ...where.profile,
@@ -83,9 +86,9 @@ export async function GET(request: Request) {
 
   // AND
   if (interests.length > 0) {
-    where.profile = {
-      ...where.profile,
-      AND: interests.map((name) => ({
+    where.profile.AND = [
+      ...where.profile.AND,
+      ...interests.map((name) => ({
         intellectualInterests: {
           some: {
             interest: {
@@ -94,14 +97,14 @@ export async function GET(request: Request) {
           },
         },
       })),
-    };
+    ];
   }
 
   // AND
   if (coreValues.length > 0) {
-    where.profile = {
-      ...where.profile,
-      AND: coreValues.map((name) => ({
+    where.profile.AND = [
+      ...where.profile.AND,
+      ...coreValues.map((name) => ({
         coreValues: {
           some: {
             value: {
@@ -110,7 +113,22 @@ export async function GET(request: Request) {
           },
         },
       })),
-    };
+    ];
+  }
+
+  if (causeAreas.length > 0) {
+    where.profile.AND = [
+      ...where.profile.AND,
+      ...causeAreas.map((name) => ({
+        causeAreas: {
+          some: {
+            causeArea: {
+              name: name,
+            },
+          },
+        },
+      })),
+    ];
   }
 
   // OR
@@ -124,32 +142,6 @@ export async function GET(request: Request) {
           },
         },
       },
-    };
-  }
-
-  if (causeAreas.length > 0) {
-    //   where.profile = {
-    //     ...where.profile,
-    //     causeAreas: {
-    //       some: {
-    //         causeArea: {
-    //           name: {in: causeAreas},
-    //         },
-    //       },
-    //     },
-    //   };
-    // }
-    where.profile = {
-      ...where.profile,
-      AND: causeAreas.map((name) => ({
-        causeAreas: {
-          some: {
-            causeArea: {
-              name: name,
-            },
-          },
-        },
-      })),
     };
   }
 
@@ -179,6 +171,8 @@ export async function GET(request: Request) {
       },
     ];
   }
+
+  console.log(where.profile);
 
   // Fetch paginated and filtered profiles
   const cacheStrategy = {swr: 60, ttl: 60, tags: ["profiles"]};

@@ -69,7 +69,7 @@ export function getProfile(url: string, header: any = null) {
       const data = await res.json();
       setUserData(data);
       console.log('userData', data);
-      document.title = 'BayesBond | ' + data.name;
+      document.title = data.name;
       if (data?.image) {
         await parseImage(data.image, setImage);
 

@@ -11,6 +11,7 @@ interface FilterProps {
   filters: {
     gender: string;
     interests: string[];
+    coreValues: string[];
     connections: string[];
     causeAreas: string[];
     searchQuery: string;
@@ -28,6 +29,7 @@ interface FilterProps {
 export const dropdownConfig: { id: DropdownKey, name: string }[] = [
   {id: "connections", name: "Desired Connections"},
   {id: "interests", name: "Core Interests"},
+  {id: "coreValues", name: "Core Values"},
   {id: "causeAreas", name: "Cause Areas"},
 ]
 
@@ -69,6 +71,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
           const data = await res.json() as Record<string, Item[]>;
           console.log(data);
           for (const [id, values] of Object.entries(data)) {
+            console.log(id)
             dropDownStates[id].options.set(values);
           }
         }

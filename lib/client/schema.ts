@@ -15,6 +15,7 @@ export interface ProfileData {
     description: string;
     contactInfo: string;
     intellectualInterests: { interest?: { name?: string, id?: string } }[];
+    coreValues: { value?: { name?: string, id?: string } }[];
     causeAreas: { causeArea?: { name?: string, id?: string } }[];
     desiredConnections: { connection?: { name?: string, id?: string } }[];
     promptAnswers: { prompt?: string; answer?: string, id?: string }[];

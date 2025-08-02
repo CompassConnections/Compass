@@ -45,9 +45,10 @@ model Profile {
   // communicationPreferences     CommunicationPreferences[]
 
   // Many-to-many
-  promptAnswers        PromptAnswer[]
+  promptAnswers         PromptAnswer[]
   desiredConnections    ProfileConnection[]
   intellectualInterests ProfileInterest[]
+  coreValues            ProfileValue[]
   causeAreas            ProfileCauseArea[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -85,6 +86,12 @@ model Interest {
   users ProfileInterest[]
 }
 
+model Value {
+  id    String @id @default(cuid())
+  name  String @unique
+  users ProfileValue[]
+}
+
 model CauseArea {
   id    String @id @default(cuid())
   name  String @unique
@@ -111,6 +118,16 @@ model ProfileInterest {
   interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
 
   @@id([profileId, interestId])
+}
+
+model ProfileValue {
+  profileId String
+  valueId String
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  value Value @relation(fields: [valueId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, valueId])
 }
 
 model ProfileCauseArea {

@@ -15,6 +15,7 @@ async function main() {
     location: string;
     bio: string;
     interests: string[];
+    values: string[];
   };
 
   const profiles: ProfileBio[] = [
@@ -25,7 +26,8 @@ async function main() {
       occupation: "Cognitive Science Researcher",
       location: "Berlin, Germany",
       bio: "I’m passionate about understanding the limits and mechanics of human reasoning. I spend weekends dissecting papers on decision theory and evenings debating moral uncertainty. If you know your way around LessWrong and thought experiments, we’ll get along.",
-      interests: ["Bayesian epistemology", "AI alignment", "Effective Altruism", "Meditation", "Game Theory"]
+      interests: ["Bayesian epistemology", "AI alignment", "Effective Altruism", "Meditation", "Game Theory"],
+      values: ["Intellectualism", "Rationality", "Autonomy"]
     },
     {
       name: "Marcus",
@@ -34,7 +36,8 @@ async function main() {
       occupation: "Software Engineer",
       location: "San Francisco, USA",
       bio: "Practicing instrumental rationality one well-calibrated belief at a time. Stoicism and startup life have taught me a lot about tradeoffs. Looking for someone who can argue in good faith and loves truth-seeking as much as I do.",
-      interests: ["Stoicism", "Predictive processing", "Rational fiction", "Startups", "Causal inference"]
+      interests: ["Stoicism", "Predictive processing", "Rational fiction", "Startups", "Causal inference"],
+      values: ["Diplomacy", "Rationality", "Community"]
     },
     {
       name: "Aya",
@@ -43,7 +46,8 @@ async function main() {
       occupation: "Philosophy PhD Candidate",
       location: "Oxford, UK",
       bio: "My research focuses on metaethics and formal logic, but my heart belongs to moral philosophy. I think a lot about personhood, consciousness, and the ethics of future civilizations. Let's talk about Rawls or Parfit over tea.",
-      interests: ["Metaethics", "Consciousness", "Transhumanism", "Moral realism", "Formal logic"]
+      interests: ["Metaethics", "Consciousness", "Transhumanism", "Moral realism", "Formal logic"],
+      values: ["Radical Honesty", "Structure", "Sufficiency"]
     },
     {
       name: "David",
@@ -52,7 +56,8 @@ async function main() {
       occupation: "Data Scientist",
       location: "Toronto, Canada",
       bio: "Former humanities major turned quant. Still fascinated by existential risk, the philosophy of science, and how to stay sane in an uncertain world. I'm here to meet people who think weird is a compliment.",
-      interests: ["Probability theory", "Longtermism", "Epistemic humility", "Futurology", "Meditation"]
+      interests: ["Probability theory", "Longtermism", "Epistemic humility", "Futurology", "Meditation"],
+      values: ["Conservatism", "Ambition", "Idealism"]
     },
     {
       name: "Mei",
@@ -61,23 +66,32 @@ async function main() {
       occupation: "Independent Writer",
       location: "Singapore",
       bio: "Writing essays on intellectual humility, the philosophy of language, and how thinking styles shape our lives. I appreciate calm reasoning, rigorous curiosity, and the beauty of well-defined concepts. Let's try to model each other's minds.",
-      interests: ["Philosophy of language", "Bayesian reasoning", "Writing", "Dialectics", "Systems thinking"]
+      interests: ["Philosophy of language", "Bayesian reasoning", "Writing", "Dialectics", "Systems thinking"],
+      values: ["Emotional Merging", "Sufficiency", "Pragmatism"]
     }
   ];
 
   const interests = new Set<string>();
+  const values = new Set<string>();
 
   profiles.forEach(profile => {
-    profile.interests.forEach(interest => {
-      interests.add(interest);
-    });
+    profile.interests.forEach(v => interests.add(v));
+  });
+
+  profiles.forEach(profile => {
+    profile.values.forEach(v => values.add(v));
   });
 
   console.log('Interests:', [...interests]);
+  console.log('Values:', [...values]);
 
-  // Create some interests and cause areas
   await prisma.interest.createMany({
-    data: [...interests].map(interest => ({name: interest})),
+    data: [...interests].map(v => ({name: v})),
+    skipDuplicates: true,
+  });
+
+  await prisma.value.createMany({
+    data: [...values].map(v => ({name: v})),
     skipDuplicates: true,
   });
 
@@ -102,6 +116,7 @@ async function main() {
 
   // Get actual Interest & CauseArea objects
   const allInterests = await prisma.interest.findMany();
+  const allValues = await prisma.value.findMany();
   const allCauseAreas = await prisma.causeArea.findMany();
   const allConnections = await prisma.connection.findMany();
 
@@ -130,10 +145,14 @@ async function main() {
               ],
             },
             intellectualInterests: {
-              // create: [...allInterests].map(interest => ({interestId: interest.id}) && Set(profile.interests))
               create: allInterests
-                .filter(e => (new Set(profile.interests)).has(e.name)) // keep only elements in the set
-                .map(e => ({interestId: e.id})) // map to object with `a` key
+                .filter(e => (new Set(profile.interests)).has(e.name))
+                .map(e => ({interestId: e.id}))
+            },
+            coreValues: {
+              create: allValues
+                .filter(e => (new Set(profile.values)).has(e.name))
+                .map(e => ({valueId: e.id}))
             },
             causeAreas: {
               create: [

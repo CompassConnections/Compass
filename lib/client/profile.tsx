@@ -118,6 +118,7 @@ export function getProfile(url: string, header: any = null) {
   const tagsConfig: Tags[] = [
     {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Desired Connections'},
     {profileAttribute: 'intellectualInterests', attribute: 'interest', title: 'Core Interests'},
+    {profileAttribute: 'coreValues', attribute: 'value', title: 'Core Values'},
     {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},
   ]
 
@@ -293,7 +294,7 @@ export function getProfile(url: string, header: any = null) {
                           key={idx}
                           // className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
                         >
-                          • {value.prompt} {value.answer}
+                          <i>{value.prompt}</i><br/>{value.answer}
                         </li>
                       ))
                     }

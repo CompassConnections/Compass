@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   const minIntroversion = url.searchParams.get("minIntroversion");
   const maxIntroversion = url.searchParams.get("maxIntroversion");
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
+  const coreValues = url.searchParams.get("coreValues")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
   const searchQuery = url.searchParams.get("search") || "";
@@ -88,6 +89,22 @@ export async function GET(request: Request) {
         intellectualInterests: {
           some: {
             interest: {
+              name: name,
+            },
+          },
+        },
+      })),
+    };
+  }
+
+  // AND
+  if (coreValues.length > 0) {
+    where.profile = {
+      ...where.profile,
+      AND: coreValues.map((name) => ({
+        coreValues: {
+          some: {
+            value: {
               name: name,
             },
           },
@@ -179,6 +196,7 @@ export async function GET(request: Request) {
       profile: {
         include: {
           intellectualInterests: {include: {interest: true}},
+          coreValues: {include: {value: true}},
           causeAreas: {include: {causeArea: true}},
           desiredConnections: {include: {connection: true}},
           promptAnswers: true,

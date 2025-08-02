@@ -18,13 +18,14 @@ const initialState = {
   minIntroversion: null as number | null,
   maxIntroversion: null as number | null,
   interests: [] as string[],
+  coreValues: [] as string[],
   causeAreas: [] as string[],
   connections: [] as string[],
   searchQuery: '',
   forceRun: false,
 };
 
-export type DropdownKey = 'interests' | 'causeAreas' | 'connections';
+export type DropdownKey = 'interests' | 'causeAreas' | 'connections' | 'coreValues';
 export type RangeKey = 'age' | 'introversion';
 // type OtherKey = 'gender' | 'searchQuery';
 

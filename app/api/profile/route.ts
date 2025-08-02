@@ -26,6 +26,11 @@ export async function GET() {
               connection: true
             },
           },
+          coreValues: {
+            include: {
+              value: true
+            },
+          },
         }
       }
     }

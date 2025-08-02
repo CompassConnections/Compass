@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const {profile, image, name, interests = [], connections = []} = data;
+    const {profile, image, name, interests = [], connections = [], coreValues = []} = data;
 
     Object.keys(profile).forEach(key => {
       if (profile[key] === '' || !profile[key]) {
@@ -44,65 +44,56 @@ export async function POST(req: Request) {
         },
       });
 
-      // Process interests if any
-      if (interests.length > 0 && updatedUser.profile) {
-        // First, find or create all interests
-        const interestOperations = interests.map((interest: { id?: string; name: string }) =>
-          prisma.interest.upsert({
-            where: {id: interest.id || ''},
-            update: {name: interest.name},
-            create: {name: interest.name},
-          })
-        );
+      const modelMap = {
+        interest: prisma.interest,
+        profileInterest: prisma.profileInterest,
+        connection: prisma.connection,
+        profileConnection: prisma.profileConnection,
+        value: prisma.value,
+        profileValue: prisma.profileValue,
+      } as const;
 
-        const createdInterests = await Promise.all(interestOperations);
+      async function handleFeatures(features, attribute: string, profileAttribute: string, idName: string) {
+        // Process interests if any
+        if (features.length > 0 && updatedUser.profile) {
+          // First, find or create all features
+          console.log('profile', profileAttribute, profileAttribute);
+          const operations = features.map((feat: { id?: string; name: string }) =>
+            modelMap[attribute].upsert({
+              where: {id: feat.id || ''},
+              update: {name: feat.name},
+              create: {name: feat.name},
+            })
+          );
 
-        // Get the IDs of all created/updated interests
-        const interestIds = createdInterests.map(interest => interest.id);
+          const createdFeatures = await Promise.all(operations);
 
-        // First, remove all existing interests for this profile
-        await prisma.profileInterest.deleteMany({
-          where: {profileId: updatedUser.profile.id},
-        });
+          // Get the IDs of all created/updated features
+          const ids = createdFeatures.map(v => v.id);
 
-        // Then, create new connections
-        if (interestIds.length > 0) {
-          await prisma.profileInterest.createMany({
-            data: interestIds.map(interestId => ({
-              profileId: updatedUser.profile!.id,
-              interestId,
-            })),
-            skipDuplicates: true,
+          // First, remove all existing interests for this profile
+          await modelMap[profileAttribute].deleteMany({
+            where: {profileId: updatedUser.profile.id},
           });
+
+          // Then, create new connections
+          if (ids.length > 0) {
+            await modelMap[profileAttribute].createMany({
+              data: ids.map(id => ({
+                profileId: updatedUser.profile!.id,
+                [idName]: id,
+              })),
+              skipDuplicates: true,
+            });
+          }
         }
       }
 
-      if (connections.length > 0 && updatedUser.profile) {
-        // First, find or create all interests
-        const connectionOperations = connections.map((v: { id?: string; name: string }) =>
-          prisma.connection.upsert({
-            where: {id: v.id || ''},
-            update: {name: v.name},
-            create: {name: v.name},
-          })
-        );
-        const createdConnections = await Promise.all(connectionOperations);
-        const connectionIds = createdConnections.map(v => v.id);
-        await prisma.profileConnection.deleteMany({
-          where: {profileId: updatedUser.profile.id},
-        });
-        if (connectionIds.length > 0) {
-          await prisma.profileConnection.createMany({
-            data: connectionIds.map(id => ({
-              profileId: updatedUser.profile!.id,
-              connectionId: id,
-            })),
-            skipDuplicates: true,
-          });
-        }
-      }
+      await handleFeatures(interests, 'interest', 'profileInterest', 'interestId')
+      await handleFeatures(connections, 'connection', 'profileConnection', 'connectionId')
+      await handleFeatures(coreValues, 'value', 'profileValue', 'valueId')
 
-      return updatedUser;
+      return updatedUser
     });
 
     return NextResponse.json(result);

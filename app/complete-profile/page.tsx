@@ -26,6 +26,7 @@ function RegisterComponent() {
   const [name, setName] = useState('');
   const [gender, setGender] = useState('');
   const [age, setAge] = useState<number | null>(null);
+  const [introversion, setIntroversion] = useState<number | null>(null);
   const [personalityType, setPersonalityType] = useState('');
   const [conflictStyle, setConflictStyle] = useState('');
   const [image, setImage] = useState<string>('');
@@ -74,6 +75,7 @@ function RegisterComponent() {
             setGender(profile.gender || '');
             setPersonalityType(profile.personalityType || null);
             setConflictStyle(profile.conflictStyle || '');
+            setIntroversion(profile.introversion || null);
             if (profile.birthYear) {
               setAge(new Date().getFullYear() - profile.birthYear);
             }
@@ -315,6 +317,7 @@ function RegisterComponent() {
           location,
           gender: gender as Gender,
           ...(age && {birthYear: new Date().getFullYear() - age}),
+          introversion,
           personalityType: personalityType as PersonalityType,
           conflictStyle: conflictStyle as ConflictStyle,
           images: keys,
@@ -592,49 +595,9 @@ function RegisterComponent() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="personalityType" className={headingStyle}>
-                Personality Type
-              </label>
-              <select
-                id="personalityType"
-                name="personalityType"
-                value={personalityType || ''}
-                onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              >
-                <option value="">Select your personality type</option>
-                {personalityOptions.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="conflictStyle" className={headingStyle}>
-                Conflict Style
-              </label>
-              <select
-                id="conflictStyle"
-                name="conflictStyle"
-                value={conflictStyle || ''}
-                onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              >
-                <option value="">Select your conflict style</option>
-                {conflictOptions.map((style) => (
-                  <option key={style} value={style}>
-                    {style}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div className="relative" ref={dropdownRef}>
               <label className={headingStyle}>
-                Interests
+                Core Interests
               </label>
 
               <div className="relative">
@@ -752,6 +715,63 @@ function RegisterComponent() {
                   );
                 })}
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="introversion" className={headingStyle}>
+                Introversion (in %)
+              </label>
+              <input
+                id="introversion"
+                name="introversion"
+                type="number"
+                min="0"
+                max="100"
+                value={introversion ?? ''}
+                onChange={(e) => setIntroversion(Number(e.target.value))}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                // placeholder=""
+              />
+            </div>
+
+            {/*<div>*/}
+            {/*  <label htmlFor="personalityType" className={headingStyle}>*/}
+            {/*    Personality Type*/}
+            {/*  </label>*/}
+            {/*  <select*/}
+            {/*    id="personalityType"*/}
+            {/*    name="personalityType"*/}
+            {/*    value={personalityType || ''}*/}
+            {/*    onChange={(e) => setPersonalityType(e.target.value as PersonalityType)}*/}
+            {/*    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"*/}
+            {/*  >*/}
+            {/*    <option value="">Select your personality type</option>*/}
+            {/*    {personalityOptions.map((type) => (*/}
+            {/*      <option key={type} value={type}>*/}
+            {/*        {type}*/}
+            {/*      </option>*/}
+            {/*    ))}*/}
+            {/*  </select>*/}
+            {/*</div>*/}
+
+            <div>
+              <label htmlFor="conflictStyle" className={headingStyle}>
+                Conflict Style
+              </label>
+              <select
+                id="conflictStyle"
+                name="conflictStyle"
+                value={conflictStyle || ''}
+                onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              >
+                <option value="">Select your conflict style</option>
+                {conflictOptions.map((style) => (
+                  <option key={style} value={style}>
+                    {style}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="max-w-3xl w-full">

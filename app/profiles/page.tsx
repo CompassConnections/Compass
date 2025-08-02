@@ -4,7 +4,7 @@ import Link from "next/link";
 import {useCallback, useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {ProfileData} from "@/lib/client/schema";
-import {ProfileFilters, dropdownConfig} from "./ProfileFilters";
+import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
 
 // Disable static generation
 export const dynamic = "force-dynamic";
@@ -21,10 +21,11 @@ const initialState = {
   causeAreas: [] as string[],
   connections: [] as string[],
   searchQuery: '',
+  forceRun: false,
 };
 
 export type DropdownKey = 'interests' | 'causeAreas' | 'connections';
-export type RangeKey = 'age';
+export type RangeKey = 'age' | 'introversion';
 type OtherKey = 'gender' | 'searchQuery';
 
 export default function ProfilePage() {
@@ -49,63 +50,61 @@ export default function ProfilePage() {
   }, []); // <- runs once after initial mount
 
   const fetchProfiles = useCallback(async () => {
-        try {
-          setLoading(true);
-          const params = new URLSearchParams();
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
 
-          if (filters.gender) params.append('gender', filters.gender);
-          if (filters.minAge) params.append('minAge', filters.minAge.toString());
-          if (filters.maxAge) params.append('maxAge', filters.maxAge.toString());
+      if (filters.gender) params.append('gender', filters.gender);
+      if (filters.minAge) params.append('minAge', filters.minAge.toString());
+      if (filters.maxAge) params.append('maxAge', filters.maxAge.toString());
+      if (filters.minIntroversion) params.append('minIntroversion', filters.minIntroversion.toString());
+      if (filters.maxIntroversion) params.append('maxIntroversion', filters.maxIntroversion.toString());
 
-          for (let i = 0; i < dropdownConfig.length; i++) {
-            const v = dropdownConfig[i];
-            const filterKey = v.id as DropdownKey;
-            if (filters[filterKey] && filters[filterKey].length > 0) {
-              params.append(v.id, filters[filterKey].join(','));
-            }
-          }
-
-          if (filters.searchQuery) params.append('search', filters.searchQuery);
-
-          const response = await fetch(`/api/profiles?${params.toString()}`);
-          const data = await response.json();
-
-          if (!response.ok) {
-            console.error(data.error || 'Failed to fetch profiles');
-            return;
-          }
-
-          setProfiles(data.profiles || []);
-          console.log(data.profiles);
-
-          if (renderImages) {
-            for (const u of data.profiles) {
-              console.log(u);
-              const img = u.image;
-              let url = img;
-              if (img && !img.startsWith('http')) {
-                const imageResponse = await fetch(`/api/download?key=${img}`);
-                console.log(`imageResponse: ${imageResponse}`)
-                if (imageResponse.ok) {
-                  const imageBlob = await imageResponse.json();
-                  url = imageBlob['url'];
-                }
-              }
-              setImages(prev => [...(prev || []), url]);
-            }
-            console.log(images);
-          }
-        } catch
-          (error) {
-          console.error('Error fetching profiles:', error);
-        } finally {
-          setLoading(false);
+      for (let i = 0; i < dropdownConfig.length; i++) {
+        const v = dropdownConfig[i];
+        const filterKey = v.id as DropdownKey;
+        if (filters[filterKey] && filters[filterKey].length > 0) {
+          params.append(v.id, filters[filterKey].join(','));
         }
       }
-      ,
-      [filters]
-    )
-  ;
+
+      if (filters.searchQuery) params.append('search', filters.searchQuery);
+
+      const response = await fetch(`/api/profiles?${params.toString()}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(data.error || 'Failed to fetch profiles');
+        return;
+      }
+
+      setProfiles(data.profiles || []);
+      console.log(data.profiles);
+
+      if (renderImages) {
+        for (const u of data.profiles) {
+          console.log(u);
+          const img = u.image;
+          let url = img;
+          if (img && !img.startsWith('http')) {
+            const imageResponse = await fetch(`/api/download?key=${img}`);
+            console.log(`imageResponse: ${imageResponse}`)
+            if (imageResponse.ok) {
+              const imageBlob = await imageResponse.json();
+              url = imageBlob['url'];
+            }
+          }
+          setImages(prev => [...(prev || []), url]);
+        }
+        console.log(images);
+      }
+    } catch
+      (error) {
+      console.error('Error fetching profiles:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
   useEffect(() => {
     fetchProfiles();

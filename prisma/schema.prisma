@@ -39,6 +39,7 @@ model Profile {
   occupation           String?
   gender               Gender?
   personalityType      PersonalityType?
+  introversion         Int?
   conflictStyle        ConflictStyle?
   images               String[]
   // communicationPreferences     CommunicationPreferences[]

@@ -8,6 +8,8 @@ export async function GET(request: Request) {
   const gender = url.searchParams.get("gender");
   const minAge = url.searchParams.get("minAge");
   const maxAge = url.searchParams.get("maxAge");
+  const minIntroversion = url.searchParams.get("minIntroversion");
+  const maxIntroversion = url.searchParams.get("maxIntroversion");
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
@@ -45,6 +47,22 @@ export async function GET(request: Request) {
 
     if (maxAge) {
       where.profile.birthYear.gte = currentYear - parseInt(maxAge);
+    }
+  }
+
+  // Add introversion filtering
+  if (minIntroversion || maxIntroversion) {
+    where.profile = {
+      ...where.profile,
+      introversion: {}
+    };
+
+    if (minIntroversion) {
+      where.profile.introversion.gte = parseInt(minIntroversion);
+    }
+
+    if (maxIntroversion) {
+      where.profile.introversion.lte = parseInt(maxIntroversion);
     }
   }
 

@@ -5,6 +5,7 @@ import {Gender} from "@prisma/client";
 import Dropdown from "@/app/components/dropdown";
 import Slider from '@mui/material/Slider';
 import {DropdownKey, RangeKey} from "@/app/profiles/page";
+import {capitalize} from "@/lib/format";
 
 interface FilterProps {
   filters: {
@@ -31,7 +32,8 @@ export const dropdownConfig: { id: DropdownKey, name: string }[] = [
 ]
 
 export const rangeConfig: { id: RangeKey, name: string, min: number, max: number }[] = [
-  {id: "age", name: "Age Range", min: 15, max: 60},
+  {id: "age", name: "Age", min: 15, max: 60},
+  {id: "introversion", name: "Introversion (%)", min: 0, max: 100},
 ]
 
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
@@ -212,18 +214,26 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
   }
 
   function getSlider(id: RangeKey, name: string, min: number, max: number) {
-
+    const minStr = 'min' + capitalize(id);
+    const maxStr = 'max' + capitalize(id);
+    const [minVal, setMinVal] = useState<number | undefined>(undefined);
+    const [maxVal, setMaxVal] = useState<number | undefined>(undefined);
     return (
       <div key={id + '.div'}>
 
         <div className="w-full px-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">{name}</label>
           <Slider
-            value={[filters.minAge || min, filters.maxAge || max]}
-            onChange={(_, newValue) => {
-              let [_min, _max] = newValue as number[];
-              onFilterChange('minAge', (_min || min) > min ? _min : undefined);
-              onFilterChange('maxAge', (_max || max) < max ? _max : undefined);
+            value={[minVal || min, maxVal || max]}
+            onChange={(e, value) => {
+              let [_min, _max] = value;
+              setMinVal((_min || min) > min ? _min : undefined);
+              setMaxVal((_max || max) < max ? _max : undefined);
+            }}
+            onChangeCommitted={(e, value) => {
+              let [_min, _max] = value;
+              onFilterChange(minStr, (_min || min) > min ? _min : undefined);
+              onFilterChange(maxStr, (_max || max) < max ? _max : undefined);
             }}
             valueLabelDisplay="auto"
             min={min}
@@ -245,8 +255,12 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               min={min}
               max={max}
               className="w-full p-2 border rounded-lg"
-              value={filters.minAge || ''}
-              onChange={(e) => onFilterChange('minAge', e.target.value ? parseInt(e.target.value) : undefined)}
+              value={minVal || ''}
+              onChange={(e) => {
+                const value = e.target.value ? parseInt(e.target.value) : undefined;
+                onFilterChange(minStr, value);
+                setMinVal(value);
+              }}
               placeholder="Min"
             />
           </div>
@@ -257,8 +271,12 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               min={min}
               max={max}
               className="w-full p-2 border rounded-lg"
-              value={filters.maxAge || ''}
-              onChange={(e) => onFilterChange('maxAge', e.target.value ? parseInt(e.target.value) : undefined)}
+              value={maxVal || ''}
+              onChange={(e) => {
+                const value = e.target.value ? parseInt(e.target.value) : undefined;
+                onFilterChange(maxStr, value);
+                setMaxVal(value);
+              }}
               placeholder="Max"
             />
           </div>
@@ -266,6 +284,8 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
       </div>
     )
   }
+
+  const [text, setText] = useState<string>('');
 
   return (
     <div className="w-full mb-8">
@@ -277,8 +297,8 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                 type="text"
                 placeholder="Search by name or description..."
                 className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                // value={filters.searchQuery}
-                // onChange={(e) => onFilterChange('searchQuery', e.target.value)}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const value = (e.target as HTMLInputElement).value;
@@ -288,7 +308,10 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               />
               {filters.searchQuery && (
                 <button
-                  onClick={() => onFilterChange('searchQuery', '')}
+                  onClick={() => {
+                    onFilterChange('searchQuery', '');
+                    setText('');
+                  }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   type="button"
                 >

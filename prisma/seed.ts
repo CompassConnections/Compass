@@ -10,6 +10,7 @@ async function main() {
   type ProfileBio = {
     name: string;
     age: number;
+    introversion: number;
     occupation: string;
     location: string;
     bio: string;
@@ -20,6 +21,7 @@ async function main() {
     {
       name: "Elena",
       age: 29,
+      introversion: 75,
       occupation: "Cognitive Science Researcher",
       location: "Berlin, Germany",
       bio: "I’m passionate about understanding the limits and mechanics of human reasoning. I spend weekends dissecting papers on decision theory and evenings debating moral uncertainty. If you know your way around LessWrong and thought experiments, we’ll get along.",
@@ -28,6 +30,7 @@ async function main() {
     {
       name: "Marcus",
       age: 34,
+      introversion: 34,
       occupation: "Software Engineer",
       location: "San Francisco, USA",
       bio: "Practicing instrumental rationality one well-calibrated belief at a time. Stoicism and startup life have taught me a lot about tradeoffs. Looking for someone who can argue in good faith and loves truth-seeking as much as I do.",
@@ -36,6 +39,7 @@ async function main() {
     {
       name: "Aya",
       age: 26,
+      introversion: 56,
       occupation: "Philosophy PhD Candidate",
       location: "Oxford, UK",
       bio: "My research focuses on metaethics and formal logic, but my heart belongs to moral philosophy. I think a lot about personhood, consciousness, and the ethics of future civilizations. Let's talk about Rawls or Parfit over tea.",
@@ -44,6 +48,7 @@ async function main() {
     {
       name: "David",
       age: 41,
+      introversion: 71,
       occupation: "Data Scientist",
       location: "Toronto, Canada",
       bio: "Former humanities major turned quant. Still fascinated by existential risk, the philosophy of science, and how to stay sane in an uncertain world. I'm here to meet people who think weird is a compliment.",
@@ -52,6 +57,7 @@ async function main() {
     {
       name: "Mei",
       age: 31,
+      introversion: 12,
       occupation: "Independent Writer",
       location: "Singapore",
       bio: "Writing essays on intellectual humility, the philosophy of language, and how thinking styles shape our lives. I appreciate calm reasoning, rigorous curiosity, and the beauty of well-defined concepts. Let's try to model each other's minds.",
@@ -67,7 +73,7 @@ async function main() {
     });
   });
 
-  console.log([...interests]);
+  console.log('Interests:', [...interests]);
 
   // Create some interests and cause areas
   await prisma.interest.createMany({
@@ -111,6 +117,7 @@ async function main() {
           create: {
             location: profile.location,
             birthYear: 2025 - profile.age,
+            introversion: profile.introversion,
             description: `[Dummy profile for demo purposes]\n${profile.bio}`,
             gender: i % 2 === 0 ? 'Male' : 'Female',
             personalityType: i % 3 === 0 ? 'Extrovert' : 'Introvert',
@@ -135,8 +142,13 @@ async function main() {
             },
             promptAnswers: {
               create: [
-                {prompt: 'What motivates you?', answer: 'Curiosity and truth.'},
-                {prompt: 'How do you relate to your closest friends?', answer: 'By sharing our passions.'},
+                {prompt: 'What’s a belief you’ve changed your mind about after encountering strong evidence?', answer: 'I used to think willpower was the key to habit change. But research on environment design and cue-based behavior shifted my perspective. Now I optimize context, not just grit.'},
+                {prompt: 'What does thinking rationally mean to you in practice?', answer: 'It means being more committed to updating my beliefs than defending them — even if it’s uncomfortable. Especially when I’m wrong.'},
+                {prompt: 'What’s a concept or topic that recently captivated you?', answer: 'Emergent complexity in ant colonies — how simple rules lead to intelligent systems. It made me rethink centralized control.'},
+                {prompt: 'If you could master any discipline outside your current field, what would it be and why?', answer: 'Philosophy of science. I love questioning the assumptions behind how we know what we know.'},
+                {prompt: 'What do you most value in a deep connection with someone?', answer: 'Shared intellectual honesty — the ability to explore truth collaboratively, without ego or defensiveness.'},
+                {prompt: 'When have you felt most deeply understood by someone?', answer: 'During a multi-hour conversation where we dissected a disagreement, not to ‘win’ but to understand each other’s frameworks'},
+                {prompt: 'How do rationality and emotional closeness coexist for you?', answer: 'They reinforce each other. Being clear-headed helps me show up honestly and empathetically. I want to be close to people who care about truth — including emotional truth.'},
               ],
             },
           },

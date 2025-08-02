@@ -109,6 +109,40 @@ export function getProfile(url: string, header: any = null) {
 
   console.log('userData', userData);
 
+  interface Tags {
+    profileAttribute: string;
+    attribute: string;
+    title: string;
+  }
+
+  const tagsConfig: Tags[] = [
+    {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Desired Connections'},
+    {profileAttribute: 'intellectualInterests', attribute: 'interest', title: 'Core Interests'},
+    {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},
+  ]
+
+  function getTags({profileAttribute, attribute, title}: Tags) {
+    const values = userData?.profile?.[profileAttribute];
+    return <div key={profileAttribute + '.div'}>
+      {values?.length > 0 && (
+        <div className="mt-3"><
+          h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> {title} </h2>
+          <div className="flex flex-wrap gap-2 mt-1">
+            {values.map((a: any) => (
+              <span
+                key={a?.[attribute]?.id}
+                className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 transition"
+              >
+                {a?.[attribute]?.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )
+      }
+    </div>;
+  }
+
   return (
     <article className="max-w-3xl mx-auto shadow-lg rounded-lg overflow-hidden">
       {header}
@@ -226,74 +260,7 @@ export function getProfile(url: string, header: any = null) {
               )
             }
 
-
-            {userData?.profile?.desiredConnections?.length > 0 && (
-              <div className="mt-3"><
-                h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Desired Connections </h2>
-
-                < ul
-                  className="flex flex-wrap gap-2 mt-1">
-                  {userData?.profile?.desiredConnections.map((value: any, idx: number) => (
-                    <li
-                      key={idx}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
-                    >
-                      {value?.connection?.name
-                      }
-                    </li>
-                  ))
-                  }
-                </ul>
-              </div>
-            )
-            }
-
-            {
-              userData?.profile?.intellectualInterests?.length > 0 && (
-                <div className="mt-3"><
-                  h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Interests </h2>
-
-                  < ul
-                    className="flex flex-wrap gap-2 mt-1">
-                    {
-                      userData.profile.intellectualInterests.map((value: any, idx: number) => (
-                        <li
-                          key={idx}
-                          className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
-                        >
-                          {value?.interest?.name
-                          }
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </div>
-              )
-            }
-
-            {
-              userData?.profile?.causeAreas?.length > 0 && (
-                <div className="mt-3"><
-                  h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Cause
-                  Areas </h2>
-
-                  < ul
-                    className="flex flex-wrap gap-2 mt-1">
-                    {
-                      userData.profile.causeAreas.map((value: any, idx: number) => (
-                        <li
-                          key={idx}
-                          className="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700  rounded-full hover:bg-gray-200 transition"
-                        >
-                          {value?.causeArea?.name
-                          }
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </div>
-              )
-            }
+            {tagsConfig.map((tag: any) => getTags(tag))}
 
             {
               userData?.profile?.description && (

@@ -8,6 +8,7 @@ export interface ProfileData {
     location: string;
     gender: string;
     birthYear: number;
+    introversion: number;
     occupation: string;
     personalityType: string;
     conflictStyle: string;

@@ -287,7 +287,7 @@ export function getProfile(url: string, header: any = null) {
                   h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Prompt Answers </h2>
 
                   < ul
-                    className="flex flex-wrap gap-2 mt-1">
+                    className="gap-2 mt-1">
                     {
                       userData.profile.promptAnswers.map((value: any, idx: any) => (
                         <li

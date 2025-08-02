@@ -26,6 +26,23 @@ export async function POST(req: Request) {
 
     // Start a transaction to ensure data consistency
     const result = await prisma.$transaction(async (prisma) => {
+
+      if (profile.promptAnswers) {
+        const profileData = await prisma.profile.findUnique({
+          where: {
+            userId: session.user.id,
+          },
+        });
+        console.log('profileData:', profileData);
+
+        const deleted = await prisma.promptAnswer.deleteMany({
+          where: {
+            profileId: profileData?.id,
+          },
+        });
+        console.log('Deleted prompt answers:', deleted);
+      }
+
       // First, update/create the profile
       const updatedUser = await prisma.user.update({
         where: {email: session.user.email},
@@ -54,7 +71,7 @@ export async function POST(req: Request) {
       } as const;
 
       async function handleFeatures(features, attribute: string, profileAttribute: string, idName: string) {
-        // Process interests if any
+        // Add new features
         if (features.length > 0 && updatedUser.profile) {
           // First, find or create all features
           console.log('profile', profileAttribute, profileAttribute);

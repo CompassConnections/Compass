@@ -7,6 +7,7 @@ import Image from 'next/image';
 import {ConflictStyle, Gender, PersonalityType} from "@prisma/client";
 import {parseImage} from "@/lib/client/media";
 import {DeleteProfileButton} from "@/lib/client/profile";
+import PromptAnswer from '@/components/ui/PromptAnswer';
 
 export default function CompleteProfile() {
   return (
@@ -14,6 +15,11 @@ export default function CompleteProfile() {
       <RegisterComponent/>
     </Suspense>
   );
+}
+
+interface Prompt {
+  prompt: string
+  answer: string
 }
 
 function RegisterComponent() {
@@ -29,6 +35,7 @@ function RegisterComponent() {
   const [introversion, setIntroversion] = useState<number | null>(null);
   const [personalityType, setPersonalityType] = useState('');
   const [conflictStyle, setConflictStyle] = useState('');
+  const [promptAnswers, setPromptAnswers] = useState<any>({});
   const [image, setImage] = useState<string>('');
   const [key, setKey] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
@@ -87,6 +94,9 @@ function RegisterComponent() {
             setGender(profile.gender || '');
             setPersonalityType(profile.personalityType || null);
             setConflictStyle(profile.conflictStyle || '');
+            if (profile.promptAnswers) {
+              setPromptAnswers(Object.fromEntries(profile.promptAnswers.map(item => [item.prompt, item.answer])));
+            }
             setIntroversion(profile.introversion || null);
             if (profile.birthYear) {
               setAge(new Date().getFullYear() - profile.birthYear);
@@ -231,6 +241,9 @@ function RegisterComponent() {
       setIsSubmitting(true);
       setError('');
 
+      const promptAnswersList = Object.entries(promptAnswers).map(([prompt, answer]) => ({ prompt, answer }));
+      console.log('promptAnswersList', promptAnswersList)
+
       console.log('submit image', key);
       console.log('submit images', keys);
 
@@ -244,6 +257,7 @@ function RegisterComponent() {
           introversion,
           personalityType: personalityType as PersonalityType,
           conflictStyle: conflictStyle as ConflictStyle,
+          promptAnswers: {create: promptAnswersList},
           images: keys,
         },
         ...(key && {image: key}),
@@ -440,7 +454,7 @@ function RegisterComponent() {
             <button
               type="button"
               onClick={() => setShowDropdown(!showDropdown)}
-              className="px-3 py-2 border-l border-gray-300  text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 border-l border-gray-300  text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 "
             >
               <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                    fill="currentColor">
@@ -497,7 +511,7 @@ function RegisterComponent() {
                     <div className="flex items-center">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded "
                         checked={selectedFeatures.has(interest.id)}
                         onChange={(e) => {
                           e.stopPropagation()
@@ -519,7 +533,7 @@ function RegisterComponent() {
             return (
               <span
                 key={featureId}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:text-white dark:bg-gray-700"
               >
                       {interest.name}
                 <button
@@ -528,7 +542,7 @@ function RegisterComponent() {
                     e.stopPropagation();
                     toggleFeature(featureId);
                   }}
-                  className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-blue-200 dark:bg-gray-500 hover:bg-blue-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                         <span className="sr-only">Remove {interest.name}</span>
                         <svg className="h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
@@ -543,6 +557,12 @@ function RegisterComponent() {
       </div>
     </>
   }
+
+  const prompts = [
+    { id: "1", text: "What are your hobbies and interests?" },
+    { id: "2", text: "What are you looking for in a partner?" },
+    { id: "3", text: "What's your favorite way to spend a weekend?" },
+  ]
 
   return (
     <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
@@ -816,6 +836,22 @@ function RegisterComponent() {
                 placeholder="How can people reach you? (Email, social media, phone, Google Forms, etc.)"
               />
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="contactInfo" className={headingStyle}>
+              Prompts
+            </label>
+            <PromptAnswer
+              prompts={prompts}
+              // initialValues={promptAnswers}
+              onAnswerChange={(e) => {
+                console.log(e.promptId, e.prompt, e.text);
+                promptAnswers[e.prompt] = e.text;
+                setPromptAnswers(promptAnswers);
+                console.log(promptAnswers);
+              }}
+            />
           </div>
 
           <div className="mb-6">

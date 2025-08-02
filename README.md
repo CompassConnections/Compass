@@ -7,12 +7,12 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 
 ## Features
 
-- free, ad-free, not for profit
-- supported by donation
-- open source
-- democratically governed
-- extremely detailed profiles for deep connections
-- radically transparent: user base fully searchable
+- Extremely detailed profiles for deep connections
+- Radically transparent: user base fully searchable
+- Free, ad-free, not for profit
+- Supported by donation
+- Open source
+- Democratically governed
 
 The full description is available [here](https://martinbraquet.com/meeting-rational).
 
@@ -22,8 +22,8 @@ The full description is available [here](https://martinbraquet.com/meeting-ratio
 - [x] Set up PostgreSQL in Production with supabase or prisma console (can stick with SQLite in dev / local)
 - [x] Set up hosting (vercel)
 - [ ] Ask for detailed info per profile upon registration (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)
-- [ ] Set up page listing all the profiles
-- [ ] Search through all the profile variables
+- [x] Set up page listing all the profiles
+- [x] Search through all the profile variables
 - [ ] (Set up chat / direct messaging)
 - [ ] Set up domain name (https://bayesbond.com)
 

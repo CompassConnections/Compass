@@ -12,6 +12,7 @@ To add a profile variable (personality type, etc.), make modifications here:
 * [page.tsx](../app/profiles/page.tsx)
 * [ProfileFilters.tsx](../app/profiles/ProfileFilters.tsx)
 * [route.ts](../app/api/profiles/route.ts)
+* [route.ts](../app/api/profiles/%5Bid%5D/route.ts)
 * [route.ts](../app/api/user/update-profile/route.ts)
 
 Then update the database:

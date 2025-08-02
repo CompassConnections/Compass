@@ -216,7 +216,14 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     )
   }
 
-  function getSlider(id: RangeKey, name: string, min: number, max: number) {
+  interface Range {
+    id: RangeKey;
+    name: string;
+    min: number;
+    max: number;
+  }
+
+  function getSlider({id, name, min, max}: Range) {
     const minStr = 'min' + capitalize(id);
     const maxStr = 'max' + capitalize(id);
     const [minVal, setMinVal] = useState<number | undefined>(undefined);
@@ -372,8 +379,9 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               </div>
             </div>
 
-            {rangeConfig.map(({id, name, min, max}) => getSlider(id, name, min, max))}
+            {getSlider(rangeConfig[0])}
             {dropdownConfig.map(({id, name}) => getDrowDown(id, name))}
+            {getSlider(rangeConfig[1])}
 
             {/*<div>*/}
             {/*  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>*/}

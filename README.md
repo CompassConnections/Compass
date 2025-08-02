@@ -68,7 +68,7 @@ To ensure your authentication works properly, you'll also need to set [env vars 
 AUTH_SECRET="RANDOM_32_CHARACTER_STRING"
 ```
 
-You can generate a random 32 character string for the `AUTH_SECRET` secret with this command:
+You can generate a random 32-character string for the `AUTH_SECRET` secret with this command:
 
 ```
 npx auth secret

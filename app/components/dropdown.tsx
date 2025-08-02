@@ -15,7 +15,7 @@ type DropdownProps = {
 export default function Dropdown(
   {
     id,
-    options,
+    // options,
     value,
     onChange,
     onFocus,
@@ -37,7 +37,7 @@ export default function Dropdown(
         />
         <button
           type="button"
-          onClick={(e) => onClick?.(id)}
+          onClick={(_) => onClick?.(id)}
           className="px-3 py-2 border-l border-gray-300 text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
         >
           <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"

@@ -360,7 +360,7 @@ function RegisterComponent() {
   };
 
   const genderOptions = Object.values(Gender);
-  const personalityOptions = Object.values(PersonalityType);
+  // const personalityOptions = Object.values(PersonalityType);
   const conflictOptions = Object.values(ConflictStyle);
 
   const headingStyle = "block text-sm font-medium text-gray-700 dark:text-white mb-1";

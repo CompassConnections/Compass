@@ -337,7 +337,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
             setShowFilters(!showFilters);
             onShowFilters(!showFilters);
           }}
-          className="px-4 py-2 border rounded-lg flex items-center gap-2 whitespace-nowrap hidden"
+          className="px-4 py-2 border rounded-lg items-center gap-2 whitespace-nowrap hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                stroke="currentColor">

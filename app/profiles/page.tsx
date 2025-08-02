@@ -26,12 +26,12 @@ const initialState = {
 
 export type DropdownKey = 'interests' | 'causeAreas' | 'connections';
 export type RangeKey = 'age' | 'introversion';
-type OtherKey = 'gender' | 'searchQuery';
+// type OtherKey = 'gender' | 'searchQuery';
 
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showFilters, setShowFilters] = useState(true);
+  const [_, setShowFilters] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState(initialState);

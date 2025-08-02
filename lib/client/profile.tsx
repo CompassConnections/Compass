@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import {pStyle} from "@/lib/client/constants";
 import {useEffect, useState} from "react";
@@ -188,6 +190,16 @@ export function getProfile(url: string, header: any = null) {
                   <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Occupation </h2>
                   < p
                     className={pStyle}> {userData.profile.occupation} </p>
+                </div>
+              )
+            }
+
+            {
+              userData?.profile?.introversion && (
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion </h2>
+                  < p
+                    className="mt-1 capitalize"> {userData.profile.introversion}% </p>
                 </div>
               )
             }

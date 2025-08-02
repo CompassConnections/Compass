@@ -1,3 +1,5 @@
+'use client';
+
 export interface ProfileData {
   id: string;
   name: string;

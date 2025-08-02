@@ -60,3 +60,9 @@ h6 {
   color: #374151;      /* Slightly lighter for subheadings */
 }
 
+ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+}
+

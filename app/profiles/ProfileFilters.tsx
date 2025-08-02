@@ -3,7 +3,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {Gender} from "@prisma/client";
 import Dropdown from "@/app/components/dropdown";
-import {FilterKey} from "@/app/profiles/page";
+import Slider from '@mui/material/Slider';
+import {DropdownKey, RangeKey} from "@/app/profiles/page";
 
 interface FilterProps {
   filters: {
@@ -14,22 +15,28 @@ interface FilterProps {
     searchQuery: string;
     minAge?: number | null;
     maxAge?: number | null;
+    minIntroversion?: number | null;
+    maxIntroversion?: number | null;
   };
   onFilterChange: (key: string, value: any) => void;
   onShowFilters: (value: boolean) => void;
-  onToggleFilter: (key: FilterKey, value: string) => void;
+  onToggleFilter: (key: DropdownKey, value: string) => void;
   onReset: () => void;
 }
 
-export const dropdownConfig: { id: FilterKey, name: string }[] = [
+export const dropdownConfig: { id: DropdownKey, name: string }[] = [
   {id: "connections", name: "Desired Connections"},
   {id: "interests", name: "Core Interests"},
   {id: "causeAreas", name: "Cause Areas"},
 ]
 
+export const rangeConfig: { id: RangeKey, name: string, min: number, max: number }[] = [
+  {id: "age", name: "Age Range", min: 15, max: 60},
+]
+
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
   interface Item {
-    id: FilterKey;
+    id: DropdownKey;
     name: string;
   }
 
@@ -92,7 +99,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
   }, []);
 
 
-  const toggle = (id: FilterKey, optionId: string) => {
+  const toggle = (id: DropdownKey, optionId: string) => {
     dropDownStates[id].selected.set(prev => {
       const newSet = new Set(prev);
       if (newSet.has(optionId)) {
@@ -104,24 +111,24 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     });
   };
 
-  const handleKeyDown = (id: FilterKey, key: string) => {
+  const handleKeyDown = (id: DropdownKey, key: string) => {
     if (key === 'Escape') dropDownStates[id].show.set(false);
   };
 
-  const handleChange = (id: FilterKey, e: string) => {
+  const handleChange = (id: DropdownKey, e: string) => {
     dropDownStates[id].new.set(e);
   }
 
-  const handleFocus = (id: FilterKey) => {
+  const handleFocus = (id: DropdownKey) => {
     dropDownStates[id].show.set(true);
   }
 
-  const handleClick = (id: FilterKey) => {
+  const handleClick = (id: DropdownKey) => {
     const shown = dropDownStates[id].show.value;
     dropDownStates[id].show.set(!shown);
   }
 
-  function getDrowDown(id: FilterKey, name: string) {
+  function getDrowDown(id: DropdownKey, name: string) {
 
     return (
       <div key={id + '.div'}>
@@ -158,7 +165,8 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                         type="checkbox"
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         checked={dropDownStates[id].selected.value.has(v.id)}
-                        onChange={() => {}}
+                        onChange={() => {
+                        }}
                         onClick={(e) => e.stopPropagation()}
                       />
                       <span className="font-normal ml-3 block truncate">
@@ -198,6 +206,62 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                   </span>
             );
           })}
+        </div>
+      </div>
+    )
+  }
+
+  function getSlider(id: RangeKey, name: string, min: number, max: number) {
+
+    return (
+      <div key={id + '.div'}>
+
+        <div className="w-full px-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">{name}</label>
+          <Slider
+            value={[filters.minAge || min, filters.maxAge || max]}
+            onChange={(_, newValue) => {
+              let [_min, _max] = newValue as number[];
+              onFilterChange('minAge', (_min || min) > min ? _min : undefined);
+              onFilterChange('maxAge', (_max || max) < max ? _max : undefined);
+            }}
+            valueLabelDisplay="auto"
+            min={min}
+            max={max}
+            sx={{
+              color: '#3B82F6',
+              '& .MuiSlider-valueLabel': {
+                backgroundColor: '#3B82F6',
+                color: '#fff',
+              },
+            }}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            {/*<label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Min Age</label>*/}
+            <input
+              type="number"
+              min={min}
+              max={max}
+              className="w-full p-2 border rounded-lg"
+              value={filters.minAge || ''}
+              onChange={(e) => onFilterChange('minAge', e.target.value ? parseInt(e.target.value) : undefined)}
+              placeholder="Min"
+            />
+          </div>
+          <div>
+            {/*<label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Max Age</label>*/}
+            <input
+              type="number"
+              min={min}
+              max={max}
+              className="w-full p-2 border rounded-lg"
+              value={filters.maxAge || ''}
+              onChange={(e) => onFilterChange('maxAge', e.target.value ? parseInt(e.target.value) : undefined)}
+              placeholder="Max"
+            />
+          </div>
         </div>
       </div>
     )
@@ -264,7 +328,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
       {showFilters && (
         <div className="p-4 rounded-lg shadow-sm border space-y-4">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Gender</label>
                 <select
@@ -280,33 +344,10 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Min Age</label>
-                <input
-                  type="number"
-                  min="15"
-                  max="100"
-                  className="w-full p-2 border rounded-lg"
-                  value={filters.minAge || ''}
-                  onChange={(e) => onFilterChange('minAge', e.target.value ? parseInt(e.target.value) : undefined)}
-                  placeholder="Min"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Max Age</label>
-                <input
-                  type="number"
-                  min="18"
-                  max="100"
-                  className="w-full p-2 border rounded-lg"
-                  value={filters.maxAge || ''}
-                  onChange={(e) => onFilterChange('maxAge', e.target.value ? parseInt(e.target.value) : undefined)}
-                  placeholder="Max"
-                />
-              </div>
             </div>
 
-            {dropdownConfig.map(({ id, name }) => getDrowDown(id, name))}
+            {rangeConfig.map(({id, name, min, max}) => getSlider(id, name, min, max))}
+            {dropdownConfig.map(({id, name}) => getDrowDown(id, name))}
 
             {/*<div>*/}
             {/*  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Cause Areas</label>*/}

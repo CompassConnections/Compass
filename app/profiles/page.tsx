@@ -15,14 +15,17 @@ const initialState = {
   gender: '',
   minAge: null as number | null,
   maxAge: null as number | null,
+  minIntroversion: null as number | null,
+  maxIntroversion: null as number | null,
   interests: [] as string[],
   causeAreas: [] as string[],
   connections: [] as string[],
   searchQuery: '',
 };
 
-export type FilterKey = 'interests' | 'causeAreas' | 'connections';
-type FilterKeyNonArray = 'gender' | 'minAge' | 'maxAge' | 'searchQuery';
+export type DropdownKey = 'interests' | 'causeAreas' | 'connections';
+export type RangeKey = 'age';
+type OtherKey = 'gender' | 'searchQuery';
 
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
@@ -56,7 +59,7 @@ export default function ProfilePage() {
 
           for (let i = 0; i < dropdownConfig.length; i++) {
             const v = dropdownConfig[i];
-            const filterKey = v.id as FilterKey;
+            const filterKey = v.id as DropdownKey;
             if (filters[filterKey] && filters[filterKey].length > 0) {
               params.append(v.id, filters[filterKey].join(','));
             }
@@ -119,7 +122,7 @@ export default function ProfilePage() {
     setShowFilters(value);
   };
 
-  const toggleFilter = (key: FilterKey, value: string) => {
+  const toggleFilter = (key: DropdownKey, value: string) => {
     setFilters(prev => ({
       ...prev,
       [key]: prev[key].includes(value)

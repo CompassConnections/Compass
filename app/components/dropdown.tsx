@@ -1,15 +1,15 @@
 'use client';
 
-import {FilterKey} from "@/app/profiles/page";
+import {DropdownKey} from "@/app/profiles/page";
 
 type DropdownProps = {
-  id: FilterKey
+  id: DropdownKey
   options?: string[]
   value: string
-  onChange: (id: FilterKey, value: string) => void
-  onFocus?: (id: FilterKey) => void
-  onKeyDown?: (id: FilterKey, key: string) => void
-  onClick: (id: FilterKey) => void
+  onChange: (id: DropdownKey, value: string) => void
+  onFocus?: (id: DropdownKey) => void
+  onKeyDown?: (id: DropdownKey, key: string) => void
+  onClick: (id: DropdownKey) => void
 }
 
 export default function Dropdown(

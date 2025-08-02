@@ -1,6 +1,6 @@
 # BayesBond
 
-This repository provides the source code for [BayesBond](https://bayesbond.vercel.app), a web application where thinkers can bond and form deep 1-1 
+This repository provides the source code for [BayesBond](https://bayesbond.vercel.app), a web application where rational thinkers can bond and form deep 1-1 
 relationships in a fully transparent and efficient way. It just got released, so feel free to share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.

@@ -71,6 +71,14 @@ export function getProfile(url: string, header: any = null) {
       console.log('userData', data);
       if (data?.image) {
         await parseImage(data.image, setImage);
+
+        // const link: HTMLLinkElement =
+        //   document.querySelector("link[rel~='icon']") || document.createElement("link");
+        // link.rel = "icon";
+        // console.log('image for cover', image);
+        // link.href = image || "";
+        // link.type = "image/png"; // Or adjust based on actual image type
+        // document.head.appendChild(link);
       }
 
       setImages([]);

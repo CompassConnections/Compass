@@ -70,7 +70,7 @@ export function getProfile(url: string, header: any = null) {
       const res = await fetch(url);
       const data = await res.json();
       setUserData(data);
-      console.log('userData', data);
+      // console.log('userData', data);
       document.title = data.name;
       if (data?.image) {
         await parseImage(data.image, setImage);

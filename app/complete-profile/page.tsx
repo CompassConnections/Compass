@@ -31,6 +31,7 @@ function RegisterComponent() {
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
   const [gender, setGender] = useState('');
+  const [promptOptions, setPromptOptions] = useState([]);
   const [age, setAge] = useState<number | null>(null);
   const [introversion, setIntroversion] = useState<number | null>(null);
   const [personalityType, setPersonalityType] = useState('');
@@ -48,7 +49,7 @@ function RegisterComponent() {
   const router = useRouter();
   const {data: session, update} = useSession();
 
-  const hooks = Object.fromEntries(['interests', 'coreValues', 'description', 'connections'].map((id) => {
+  const hooks = Object.fromEntries(['interests', 'coreValues', 'description', 'connections', 'causeAreas'].map((id) => {
     const [showMoreInfo, setShowMoreInfo] = useState(false);
     const [newFeature, setNewFeature] = useState('');
     const [allFeatures, setAllFeatures] = useState<{ id: string, name: string }[]>([]);
@@ -73,7 +74,7 @@ function RegisterComponent() {
 
   const id = session?.user.id
 
-  console.log(session)
+  // console.log(session)
 
   // Fetch user profile data
   useEffect(() => {
@@ -114,6 +115,7 @@ function RegisterComponent() {
             setSelectedFeatures('interests', 'intellectualInterests', 'interest')
             setSelectedFeatures('coreValues', 'coreValues', 'value')
             setSelectedFeatures('connections', 'desiredConnections', 'connection')
+            setSelectedFeatures('causeAreas', 'causeAreas', 'causeArea')
 
             setImages([])
             setKeys(profile?.images)
@@ -134,38 +136,56 @@ function RegisterComponent() {
     fetchUserProfile();
   }, [session]);
 
-  // Load existing interests and set up click-outside handler
-  for (const id of ['interests', 'coreValues', 'connections']) {
-    useEffect(() => {
-      async function fetchFeatures() {
-        try {
-          const res = await fetch('/api/interests');
-          if (res.ok) {
-            const data = await res.json();
-            hooks[id].setAllFeatures(data[id] || []);
-          }
-        } catch (error) {
-          console.error('Error loading' + id, error);
+  useEffect(() => {
+    async function asyncRun() {
+      try {
+        const res = await fetch('/api/profiles/prompts');
+        if (res.ok) {
+          const data = await res.json();
+          console.log('uniquePrompts', data.uniquePrompts);
+          setPromptOptions(data.uniquePrompts);
         }
+      } catch (error) {
+        console.error('Error from /api/prompts:', error);
       }
+    }
 
-      fetchFeatures();
+    asyncRun();
 
-      // Close dropdown when clicking outside
-      const handleClickOutside = (event: MouseEvent) => {
-        const hook = hooks[id];
-        const current = hook.dropdownRef.current;
-        if (current && !current.contains(event.target as Node)) {
-          hook.setShowDropdown(false);
+  }, []);
+
+  // Load existing interests and set up click-outside handler
+  useEffect(() => {
+    async function fetchFeatures() {
+      try {
+        const res = await fetch('/api/interests');
+        if (res.ok) {
+          const data = await res.json();
+          for (const id of ['interests', 'coreValues', 'connections', 'causeAreas']) {
+            hooks[id].setAllFeatures(data[id] || []);
+
+            // Close dropdown when clicking outside
+            const handleClickOutside = (event: MouseEvent) => {
+              const hook = hooks[id];
+              const current = hook.dropdownRef.current;
+              if (current && !current.contains(event.target as Node)) {
+                hook.setShowDropdown(false);
+              }
+            };
+
+            document.addEventListener('mousedown', handleClickOutside);
+            // return () => {
+            //   document.removeEventListener('mousedown', handleClickOutside);
+            // };
+          }
         }
-      };
+      } catch (error) {
+        console.error('Error loading' + id, error);
+      }
+    }
 
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, []);
-  }
+    fetchFeatures();
+  }, []);
 
   if (isLoading) {
     return (
@@ -241,7 +261,7 @@ function RegisterComponent() {
       setIsSubmitting(true);
       setError('');
 
-      const promptAnswersList = Object.entries(promptAnswers).map(([prompt, answer]) => ({ prompt, answer }));
+      const promptAnswersList = Object.entries(promptAnswers).map(([prompt, answer]) => ({prompt, answer}));
       console.log('promptAnswersList', promptAnswersList)
 
       console.log('submit image', key);
@@ -373,6 +393,14 @@ function RegisterComponent() {
         </p>
       </>
     },
+    {
+      id: 'causeAreas', title: 'Cause Areas', allowAdd: true,
+      content: <>
+        <p className="mt-2">
+          ...
+        </p>
+      </>
+    },
   ]
 
   function getDropdown({id, title, allowAdd, content}: DropdownConfig) {
@@ -477,7 +505,7 @@ function RegisterComponent() {
 
           {(showDropdown || newFeature) && (
             <div
-              className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+              className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
               {/* New interest option */}
               {allowAdd && newFeature && !allFeatures.some(i =>
                 i.name.toLowerCase() === newFeature.toLowerCase()
@@ -502,7 +530,7 @@ function RegisterComponent() {
                 .map((interest) => (
                   <div
                     key={interest.id}
-                    className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
+                    className="cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
                     onClick={() => {
                       toggleFeature(interest.id);
                       setNewFeature('');
@@ -557,12 +585,6 @@ function RegisterComponent() {
       </div>
     </>
   }
-
-  const prompts = [
-    { id: "1", text: "What are your hobbies and interests?" },
-    { id: "2", text: "What are you looking for in a partner?" },
-    { id: "3", text: "What's your favorite way to spend a weekend?" },
-  ]
 
   return (
     <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
@@ -707,6 +729,7 @@ function RegisterComponent() {
             {getDropdown(dropdownConfig[0])}
             {getDropdown(dropdownConfig[1])}
             {getDropdown(dropdownConfig[2])}
+            {getDropdown(dropdownConfig[3])}
 
             <div>
               <label htmlFor="introversion" className={headingStyle}>
@@ -787,21 +810,18 @@ function RegisterComponent() {
                     <li>Your core values</li>
                     <li>Your altruistic values: community engagement, social justice, and other cause areas</li>
                     <li>Your level of education, hobbies, pets, habits, subcultures, diet, emotional sensitivity, sense
-                      of
-                      humor, ambition, organization, pet peeves, non-negotiables
+                      of humor, ambition, organization, pet peeves, non-negotiables
                     </li>
                     <li>Your thinking style, results from evidence-based personality tests (e.g., Big 5)</li>
                     <li>Your physical and mental health: some traits that rub people the wrong way, triggers, therapy,
-                      or what
-                      you are trying to improve
+                      or what you are trying to improve
                     </li>
                     <li>If interested in romantic relationships, your love languages (giving and receiving), timeline,
                       romantic orientation, family projects, work-life balance, financial goals / habits, career goals,
                       housing situation (renting vs owning), and whether you would date someone who already has kids
                     </li>
                     <li>What you would like in your ideal person or connection—where they should be similar or different
-                      from
-                      your own description
+                      from your own description
                     </li>
                     <li>Conversation starters or questions</li>
                   </ul>
@@ -842,11 +862,15 @@ function RegisterComponent() {
             <label htmlFor="contactInfo" className={headingStyle}>
               Prompts
             </label>
+            <p className="text-sm italic">
+              As of now, you can only answer 1 prompt at a time—just save your profile after answering each prompt.
+            </p>
             <PromptAnswer
-              prompts={prompts}
-              // initialValues={promptAnswers}
+              prompts={promptOptions}
+              initialValues={promptAnswers}
               onAnswerChange={(e) => {
                 console.log(e.promptId, e.prompt, e.text);
+                if (!e.prompt) return;
                 promptAnswers[e.prompt] = e.text;
                 setPromptAnswers(promptAnswers);
                 console.log(promptAnswers);

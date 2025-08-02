@@ -3,6 +3,7 @@
 import {useEffect, useState} from 'react';
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
+import {cons} from "effect/List";
 
 type Prompt = {
   id: string;
@@ -16,9 +17,10 @@ type Answer = {
 };
 
 interface PromptAnswerProps {
-  prompts: Prompt[];
+  prompts: string[];
   onAnswerChange: (answer: Answer) => void;
   initialAnswer?: string;
+  initialValues?;
   initialPromptId?: string;
   className?: string;
 }
@@ -27,47 +29,51 @@ export function PromptAnswer(
   {
     prompts,
     onAnswerChange,
+    initialValues = null,
     initialAnswer = '',
     initialPromptId = '',
     className = '',
   }: PromptAnswerProps
 ) {
-  const [selectedPromptId, setSelectedPromptId] = useState(initialPromptId);
+  // const [selectedPromptId, setSelectedPromptId] = useState(initialPromptId);
   const [answer, setAnswer] = useState(initialAnswer);
   const [isCustomPrompt, setIsCustomPrompt] = useState(false);
-  const [customPrompt, setCustomPrompt] = useState('');
-  const idToPrompt = Object.fromEntries(prompts.map(item => [item.id, item.text]));
-  console.log('dictPrompts', idToPrompt)
+  const [selectedPrompt, setSelectedPrompt] = useState('');
+  const idToPrompt = Object.fromEntries(prompts.map((item, idx) => [idx, item]));
+  // console.log('dictPrompts', idToPrompt)
   useEffect(() => {
     if (initialPromptId === 'custom') {
       setIsCustomPrompt(true);
-      setCustomPrompt(initialAnswer);
+      setSelectedPrompt(initialAnswer);
     }
   }, [initialPromptId, initialAnswer]);
 
-  const handlePromptChange = (id: string) => {
-    if (id === 'custom') {
+  const handlePromptChange = (prompt: string) => {
+    console.log('handlePromptChange', prompt)
+    if (prompt === 'custom') {
       setIsCustomPrompt(true);
-      setSelectedPromptId('');
-      // onAnswerChange({promptId: 'custom', prompt: customPrompt, text: customPrompt});
+      setSelectedPrompt('');
+      // onAnswerChange({promptId: 'custom', prompt: selectedPrompt, text: selectedPrompt});
     } else {
       setIsCustomPrompt(false);
-      setSelectedPromptId(id);
+      setSelectedPrompt(prompt);
       // onAnswerChange({promptId: id, prompt: idToPrompt[id], text: answer});
     }
+    setAnswer(initialValues[prompt] || '')
   };
 
   const handleAnswerChange = (text: string) => {
     setAnswer(text);
+    console.log('handleAnswerChange', text)
     onAnswerChange({
-      promptId: isCustomPrompt ? 'custom' : selectedPromptId,
-      prompt: isCustomPrompt ? customPrompt : idToPrompt[selectedPromptId],
+      promptId: '...',
+      prompt: selectedPrompt,
       text: text,
     });
   };
 
   const handleCustomPromptChange = (text: string) => {
-    setCustomPrompt(text);
+    setSelectedPrompt(text);
     // onAnswerChange({
     //   promptId: 'custom',
     //   prompt: text,
@@ -81,14 +87,14 @@ export function PromptAnswer(
         <label className="block text-sm font-medium text-gray-700">
           Select a prompt
         </label>
-        <Select value={isCustomPrompt ? 'custom' : selectedPromptId} onValueChange={handlePromptChange}>
+        <Select value={isCustomPrompt ? 'custom' : selectedPrompt} onValueChange={handlePromptChange}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Choose a prompt..."/>
           </SelectTrigger>
-          <SelectContent>
-            {prompts.map((prompt) => (
-              <SelectItem key={prompt.id} value={prompt.id}>
-                {prompt.text}
+          <SelectContent className="max-h-60 overflow-auto">
+            {prompts.map((prompt, idx) => (
+              <SelectItem key={idx} value={prompt}>
+                {prompt}
               </SelectItem>
             ))}
             <SelectItem value="custom">Write your own prompt</SelectItem>
@@ -102,7 +108,7 @@ export function PromptAnswer(
             Your custom prompt
           </label>
           <Textarea
-            value={customPrompt}
+            value={selectedPrompt}
             onChange={(e) => handleCustomPromptChange(e.target.value)}
             placeholder="Write your own prompt..."
             className="min-h-[100px]"

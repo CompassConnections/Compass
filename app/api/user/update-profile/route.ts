@@ -35,12 +35,15 @@ export async function POST(req: Request) {
         });
         console.log('profileData:', profileData);
 
-        const deleted = await prisma.promptAnswer.deleteMany({
-          where: {
-            profileId: profileData?.id,
-          },
-        });
-        console.log('Deleted prompt answers:', deleted);
+        const profileId = profileData?.id;
+        if (profileId) {
+          const deleted = await prisma.promptAnswer.deleteMany({
+            where: {
+              profileId: profileData?.id,
+            },
+          });
+          console.log('Deleted prompt answers:', deleted);
+        }
       }
 
       // First, update/create the profile

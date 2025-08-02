@@ -21,8 +21,8 @@ interface FilterProps {
 }
 
 export const dropdownConfig = [
-  {id: "interests", name: "Core Interests"},
   {id: "connections", name: "Desired Connections"},
+  {id: "interests", name: "Core Interests"},
   {id: "causeAreas", name: "Cause Areas"},
 ]
 

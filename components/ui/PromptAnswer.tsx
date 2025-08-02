@@ -20,7 +20,7 @@ interface PromptAnswerProps {
   prompts: string[];
   onAnswerChange: (answer: Answer) => void;
   initialAnswer?: string;
-  initialValues?;
+  initialValues?: any;
   initialPromptId?: string;
   className?: string;
 }

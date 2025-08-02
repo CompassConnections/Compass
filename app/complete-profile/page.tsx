@@ -96,7 +96,7 @@ function RegisterComponent() {
             setPersonalityType(profile.personalityType || null);
             setConflictStyle(profile.conflictStyle || '');
             if (profile.promptAnswers) {
-              setPromptAnswers(Object.fromEntries(profile.promptAnswers.map(item => [item.prompt, item.answer])));
+              setPromptAnswers(Object.fromEntries(profile.promptAnswers.map((item: Prompt)  => [item.prompt, item.answer])));
             }
             setIntroversion(profile.introversion || null);
             if (profile.birthYear) {
@@ -267,7 +267,7 @@ function RegisterComponent() {
       console.log('submit image', key);
       console.log('submit images', keys);
 
-      const data = {
+      const data: any = {
         profile: {
           description,
           contactInfo,

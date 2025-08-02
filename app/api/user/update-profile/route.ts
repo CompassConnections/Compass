@@ -64,7 +64,7 @@ export async function POST(req: Request) {
         },
       });
 
-      const modelMap = {
+      const modelMap: any = {
         interest: prisma.interest,
         profileInterest: prisma.profileInterest,
         connection: prisma.connection,
@@ -75,7 +75,9 @@ export async function POST(req: Request) {
         profileCauseArea: prisma.profileCauseArea,
       } as const;
 
-      async function handleFeatures(features, attribute: string, profileAttribute: string, idName: string) {
+      type ModelKey = keyof typeof modelMap;
+
+      async function handleFeatures(features: any, attribute: ModelKey, profileAttribute: string, idName: string) {
         // Add new features
         if (features.length > 0 && updatedUser.profile) {
           // First, find or create all features

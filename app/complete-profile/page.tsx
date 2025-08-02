@@ -758,8 +758,8 @@ function RegisterComponent() {
               <label htmlFor="description" className={headingStyle}>
                 About You
                 <p className="text-xs italic">
-                  Feel free to include any relevant links (dating / friends docs, etc.), but the more text you write,
-                  the easier it will be to find you by keyword search.
+                  Feel free to include any relevant links (dating / friends docs, etc.), but consider copy-pasting
+                  the content here so that people can find you by keyword search.
                 </p>
               </label>
               <div className="mt-2 mb-4">

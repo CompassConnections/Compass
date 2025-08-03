@@ -9,6 +9,8 @@ import {parseImage} from "@/lib/client/media";
 import {DeleteProfileButton} from "@/lib/client/profile";
 import PromptAnswer from '@/components/ui/PromptAnswer';
 
+import imageCompression from 'browser-image-compression';
+
 export default function CompleteProfile() {
   return (
     <Suspense fallback={<div></div>}>
@@ -213,19 +215,32 @@ function RegisterComponent() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
+    // Compression options
+    const options = {
+      maxSizeMB: 10,              // Target max size in MB
+      maxWidthOrHeight: 1024,    // Resize to fit within this dimension
+      useWebWorker: true,
+    };
 
     try {
       setIsUploading(true);
       setError('');
+
+      const compressedFile = await imageCompression(file, options);
+
+      console.log(`Original: ${file.size / 1024} KB`);
+      console.log(`Compressed: ${compressedFile.size / 1024} KB`);
+
+      // Send via FormData
+      const formData = new FormData();
+      formData.append('file', compressedFile);
 
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
-      console.log('response:', response);
+      console.log('response:', response.headers);
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to upload image');

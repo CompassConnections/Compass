@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const ip = request.ip || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
 
-  console.log('middleware', path, ip)
+  // console.log('middleware', path, ip)
 
 
   // Only apply rate limiting to specified paths

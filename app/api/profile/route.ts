@@ -1,7 +1,5 @@
-import {prisma} from "@/lib/server/prisma";
 import {NextResponse} from "next/server";
 import {getSession} from "@/lib/server/auth";
-import {notFound, redirect} from "next/navigation";
 import {retrieveUser} from "@/lib/server/db-utils";
 
 
@@ -10,9 +8,9 @@ export async function GET() {
   console.log(`Session: ${session?.user?.name}`);
 
   if (!session?.user?.id)
-    return new NextResponse(JSON.stringify({ error: "User not found" }), {
+    return new NextResponse(JSON.stringify({error: "User not found"}), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
     });
 
   const id = session.user.id;
@@ -20,9 +18,9 @@ export async function GET() {
   const user = await retrieveUser(id);
 
   if (!user) {
-    return new NextResponse(JSON.stringify({ error: "User not found" }), {
+    return new NextResponse(JSON.stringify({error: "User not found"}), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
     });
   }
 

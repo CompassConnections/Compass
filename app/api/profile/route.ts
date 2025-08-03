@@ -9,8 +9,11 @@ export async function GET() {
   const session = await getSession();
   console.log(`Session: ${session?.user?.name}`);
 
-  if (!session?.user?.email)
-    redirect('/login');
+  if (!session?.user?.id)
+    return new NextResponse(JSON.stringify({ error: "User not found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
 
   const id = session.user.id;
 

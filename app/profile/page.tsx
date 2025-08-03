@@ -1,11 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import {usePathname} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {getProfile} from "@/lib/client/profile";
+import {useEffect} from "react";
+import {useSession} from "next-auth/react";
 
 export default function ProfilePage() {
   const pathname = usePathname(); // Get the current route
+  const router = useRouter();
+  const {data: session} = useSession();
+
+  useEffect(() => {
+    async function asyncRun() {
+      if (!session?.user?.id)
+        router.push('/login');
+    }
+
+    asyncRun();
+  }, []);
+
   try {
 
     const header = (

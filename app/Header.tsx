@@ -35,9 +35,9 @@ export default function Header() {
         <Link 
           href="/" 
           className="text-xl font-bold hover:text-blue-600 transition-colors flex items-center"
-          aria-label={isSmallScreen ? "Home" : "BayesBond"}
+          aria-label={isSmallScreen ? "Home" : "IntentionalBond"}
         >
-          {isSmallScreen ? <FaHome className="w-5 h-5" /> : 'BayesBond'}
+          {isSmallScreen ? <FaHome className="w-5 h-5" /> : 'IntentionalBond'}
         </Link>
         <div className="flex items-center space-x-2">
 

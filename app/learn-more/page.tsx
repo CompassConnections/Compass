@@ -8,7 +8,7 @@ export default function LearnMorePage() {
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
       {aColor}
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold  mb-4 text-center">About BayesBond</h1>
+        <h1 className="text-3xl font-bold  mb-4 text-center">About IntentionalBond</h1>
         <div className="et_pb_text_inner">
           {/*<h1 id="abstract">Abstract</h1>*/}
           <p>Forming and maintaining close connections is fundamental for most people’s mental health—and hence overall

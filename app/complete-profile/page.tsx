@@ -208,7 +208,7 @@ function RegisterComponent() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       setError('Image size must be less than 5MB');
       return;
     }

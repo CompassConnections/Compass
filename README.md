@@ -94,3 +94,5 @@ npm run dev
 ```
 
 Once the server is running, visit http://localhost:3000 to start using the app.
+
+See [development.md](docs/development.md) for additional instructions, such as adding new profile features.

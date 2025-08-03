@@ -96,7 +96,7 @@ function RegisterComponent() {
             setPersonalityType(profile.personalityType || null);
             setConflictStyle(profile.conflictStyle || '');
             if (profile.promptAnswers) {
-              setPromptAnswers(Object.fromEntries(profile.promptAnswers.map((item: Prompt)  => [item.prompt, item.answer])));
+              setPromptAnswers(Object.fromEntries(profile.promptAnswers.map((item: Prompt) => [item.prompt, item.answer])));
             }
             setIntroversion(profile.introversion || null);
             if (profile.birthYear) {
@@ -397,7 +397,15 @@ function RegisterComponent() {
       id: 'causeAreas', title: 'Cause Areas', allowAdd: true,
       content: <>
         <p className="mt-2">
-          ...
+          When choosing your cause areas on a platform designed for deep, lasting connection, focus on the issues that
+          you feel personally compelled to engage with—not just what’s socially approved or intellectually interesting.
+          Good cause areas reveal what breaks your heart, what energizes your long-term thinking, or what you’d
+          willingly struggle for even if no one noticed. Be honest about what genuinely matters to you: that might be
+          existential risk reduction, prison abolition, mental health reform, animal welfare, epistemic integrity, or
+          education equity. You don’t need to be an expert or activist to list a cause—just sincerely invested. The
+          point isn’t to posture but to expose what kind of future you want to help shape, and to find others whose
+          moral intuitions and sense of responsibility resonate with your own. That kind of alignment creates not just
+          shared goals, but durable trust.
         </p>
       </>
     },
@@ -477,7 +485,7 @@ function RegisterComponent() {
               onFocus={() => setShowDropdown(true)}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Type to search"
+              placeholder={allowAdd ? "Type to search or add" : "Type to search"}
             />
             <button
               type="button"
@@ -798,7 +806,7 @@ function RegisterComponent() {
               </label>
               {getDetails(
                 'description',
-                'Key details for fulfilling encounters',
+                'Guidance',
                 <>
                   <p className="mt-2">To the extent that you are comfortable sharing, consider writing about:</p>
                   <ul className="list-disc pl-5 space-y-1">

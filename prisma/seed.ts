@@ -122,7 +122,7 @@ async function main() {
 
   // Create mock users
   for (let i = 0; i < 5; i++) {
-    const profile = profiles[i];
+    const profile = profiles[i % profiles.length];
     const user = await prisma.user.create({
       data: {
         email: `user${i + 1}@bayesbond.com`,

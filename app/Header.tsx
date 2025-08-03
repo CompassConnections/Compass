@@ -25,6 +25,8 @@ export default function Header() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
+  const fontStyle = "transition px-2 py-2 text-sm font-medium xs:text-xs"
+
   return (
     <header className="w-full
     {/*shadow-md*/}
@@ -44,7 +46,7 @@ export default function Header() {
           <div className="flex items-center space-x-2">
             <Link
               href="/learn-more"
-              className="px-2 py-2 text-sm xs:text-xs font-medium bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+              className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500`}
             >
               Learn More
             </Link>
@@ -54,7 +56,7 @@ export default function Header() {
               <div className="flex items-center space-x-2">
                 <Link
                   href="/profile"
-                  className="text-blue-600 dark:text-blue-100 hover:text-blue-800 dark:hover:text-blue-300 px-2 py-2 text-sm font-medium xs:text-xs"
+                  className={`${fontStyle} text-blue-600 dark:text-blue-100 hover:text-blue-800 dark:hover:text-blue-300`}
                 >
                   My Profile
                 </Link>
@@ -66,7 +68,7 @@ export default function Header() {
                 {/*</Link>*/}
                 <button
                   onClick={() => signOut({callbackUrl: "/"})}
-                  className="bg-red-500 text-white px-2 py-2 rounded-lg hover:bg-red-600 transition text-sm xs:text-xs font-medium"
+                  className={`${fontStyle} bg-red-500 text-white rounded-lg hover:bg-red-600`}
                 >
                   Sign Out
                 </button>
@@ -74,11 +76,11 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition xs:text-xs">
+              <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600 `}>
                 Sign In
               </Link>
               <Link href="/register"
-                    className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition xs:text-xs">
+                    className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600`}>
                 Sign Up
               </Link>
             </>

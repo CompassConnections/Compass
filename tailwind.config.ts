@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      screens: {
+        'xs': {'max': '450px'},
+      },
     },
   },
   darkMode: 'class', // required for next-themes

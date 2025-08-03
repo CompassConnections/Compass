@@ -945,6 +945,7 @@ function RegisterComponent() {
             {images.length === 0 && (
               <p className="mt-1 text-sm text-gray-500">
                 Add up to 9 photos to your profile
+                <br/>Note: uploads may only work on desktop
               </p>
             )}
           </div>

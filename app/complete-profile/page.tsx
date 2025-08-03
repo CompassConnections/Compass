@@ -741,7 +741,7 @@ function RegisterComponent() {
 
             <div>
               <label htmlFor="introversion" className={headingStyle}>
-                Introversion (in %)
+                Introversion - Extroversion
               </label>
               <input
                 id="introversion"
@@ -750,7 +750,7 @@ function RegisterComponent() {
                 min="0"
                 max="100"
                 value={introversion ?? ''}
-                onChange={(e) => setIntroversion(Number(e.target.value))}
+                onChange={(e) => setIntroversion(100 - Number(e.target.value))}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 // placeholder=""
               />

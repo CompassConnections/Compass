@@ -145,7 +145,7 @@ export default function ProfilePage() {
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-4">
-          <h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>
+          {/*<h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>*/}
           <div className="text-lg pb-1">
             Users: <span className="font-bold">{totalUsers}</span>
           </div>

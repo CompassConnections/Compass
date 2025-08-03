@@ -54,7 +54,7 @@ export async function GET(request: Request) {
     }
   }
 
-  // Add introversion filtering
+  // Add introversion filtering (careful: the query value is actually extroversion
   if (minIntroversion || maxIntroversion) {
     where.profile = {
       ...where.profile,
@@ -62,11 +62,11 @@ export async function GET(request: Request) {
     };
 
     if (minIntroversion) {
-      where.profile.introversion.gte = parseInt(minIntroversion);
+      where.profile.introversion.lte = 100 - parseInt(minIntroversion);
     }
 
     if (maxIntroversion) {
-      where.profile.introversion.lte = parseInt(maxIntroversion);
+      where.profile.introversion.gte = 100 - parseInt(maxIntroversion);
     }
   }
 

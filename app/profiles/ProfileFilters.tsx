@@ -35,7 +35,7 @@ export const dropdownConfig: { id: DropdownKey, name: string }[] = [
 
 export const rangeConfig: { id: RangeKey, name: string, min: number, max: number }[] = [
   {id: "age", name: "Age", min: 15, max: 60},
-  {id: "introversion", name: "Introversion (%)", min: 0, max: 100},
+  {id: "introversion", name: "Introversion - Extroversion", min: 0, max: 100},
 ]
 
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {

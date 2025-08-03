@@ -232,9 +232,9 @@ export function getProfile(url: string, header: any = null) {
             {
               userData?.profile?.introversion && (
                 <div>
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion </h2>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion - Extroversion </h2>
                   < p
-                    className="mt-1 capitalize"> {userData.profile.introversion}% </p>
+                    className="mt-1 capitalize"> {100 - userData.profile.introversion}% </p>
                 </div>
               )
             }

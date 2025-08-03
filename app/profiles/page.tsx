@@ -32,6 +32,7 @@ export type RangeKey = 'age' | 'introversion';
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [_, setShowFilters] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
@@ -73,6 +74,10 @@ export default function ProfilePage() {
 
       const response = await fetch(`/api/profiles?${params.toString()}`);
       const data = await response.json();
+      if (!response.ok) {
+        console.log(response);
+        throw Error(data?.message);
+      }
 
       if (!response.ok) {
         console.error(data.error || 'Failed to fetch profiles');
@@ -100,8 +105,9 @@ export default function ProfilePage() {
         console.log(images);
       }
     } catch
-      (error) {
+      (error: Error) {
       console.error('Error fetching profiles:', error);
+      setError('Error: ' + error.message)
     } finally {
       setLoading(false);
     }
@@ -171,6 +177,10 @@ export default function ProfilePage() {
             {loading ? (
               <div className="flex justify-center py-12">
                 <LoadingSpinner/>
+              </div>
+            ) : error ? (
+              <div className="flex justify-center py-12">
+                <p>{error}</p>
               </div>
             ) : profiles.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6">

@@ -18,5 +18,5 @@ To add a profile variable (personality type, etc.), make modifications here:
 Then update the database:
 
 ```bash
-npx prisma migrate dev --name add-some-provile-variable
+npx prisma migrate dev --name add-some-profile-variable
 ```

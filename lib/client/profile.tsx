@@ -286,19 +286,19 @@ export function getProfile(url: string, header: any = null) {
                 <div className="mt-3"><
                   h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Prompt Answers </h2>
 
-                  < ul
+                  < div
                     className="gap-2 mt-1">
                     {
                       userData.profile.promptAnswers.map((value: any, idx: any) => (
-                        <li
+                        <div
                           key={idx}
-                          // className="px-3 py-1 text-sm bg-gray-100 rounded-full hover:bg-gray-200 transition"
+                          className="py-2"
                         >
                           <i>{value.prompt}</i><br/>{value.answer}
-                        </li>
+                        </div>
                       ))
                     }
-                  </ul>
+                  </div>
                 </div>
               )
             }

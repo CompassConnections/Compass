@@ -34,7 +34,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [_, setShowFilters] = useState(true);
-  const [_totalUsers, setTotalUsers] = useState<number>(0);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState(initialState);
 
@@ -152,7 +152,8 @@ export default function ProfilePage() {
         {/*<div className="flex justify-between items-end mb-4">*/}
         {/*  /!*<h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>*!/*/}
         {/*  <div className="text-lg pb-1">*/}
-        {/*    Users: <span className="font-bold">{totalUsers}</span>*/}
+        {/*    /!*Users: <span className="font-bold">{totalUsers}</span>*!/*/}
+        {/*    {totalUsers} users*/}
         {/*  </div>*/}
         {/*</div>*/}
 
@@ -164,7 +165,7 @@ export default function ProfilePage() {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search anything..."
+              placeholder={totalUsers > 0 ? `Search anything among the ${totalUsers} users...` : "Search anything..."}
               className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={text}
               onChange={(e) => setText(e.target.value)}

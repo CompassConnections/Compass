@@ -4,14 +4,12 @@ import ProfilePage from "@/app/profiles/page";
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
-import Link from "next/link";
-
 
 export default function HomePage() {
   const profilePage = () => {
     return (
       <main className="min-h-screen flex flex-col">
-        <ProfilePage />
+        <ProfilePage/>
       </main>
     )
   }
@@ -38,7 +36,7 @@ export default function HomePage() {
           BayesBond
         </h1>
         <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
-          Tired of swiping? Just search what you are looking for!
+          Tired of swiping? Just search what you're looking for!
         </p>
         <div className=" w-full">
           {profilePage()}

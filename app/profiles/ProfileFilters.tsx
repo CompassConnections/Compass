@@ -223,11 +223,21 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     max: number;
   }
 
+  const rangeStates = Object.fromEntries(rangeConfig.map(({id}) => {
+    const [minVal, setMinVal] = useState<number | undefined>(undefined);
+    const [maxVal, setMaxVal] = useState<number | undefined>(undefined);
+    return [id, {
+      minVal,
+      maxVal,
+      setMinVal,
+      setMaxVal,
+    }];
+  }))
+
   function getSlider({id, name, min, max}: Range) {
     const minStr = 'min' + capitalize(id);
     const maxStr = 'max' + capitalize(id);
-    const [minVal, setMinVal] = useState<number | undefined>(undefined);
-    const [maxVal, setMaxVal] = useState<number | undefined>(undefined);
+    const {minVal, maxVal, setMinVal, setMaxVal} = rangeStates[id];
     return (
       <div key={id + '.div'}>
 
@@ -295,52 +305,10 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     )
   }
 
-  const [text, setText] = useState<string>('');
-
   return (
     <div className="w-full mb-8">
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
-        {showFilters && (
-          <div className="relative flex-grow">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by name or description..."
-                className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const value = (e.target as HTMLInputElement).value;
-                    onFilterChange('searchQuery', value);
-                  }
-                }}
-              />
-              {filters.searchQuery && (
-                <button
-                  onClick={() => {
-                    onFilterChange('searchQuery', '');
-                    setText('');
-                  }}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                       stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
-            </div>
-          </div>
-        )}
+        {/*{showFilters && ()}*/}
 
         <button
           onClick={() => {
@@ -410,6 +378,10 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                 onReset();
                 Object.values(dropDownStates).map((v) => {
                   v.selected.set(new Set());
+                });
+                Object.values(rangeStates).map((v) => {
+                  v.setMaxVal(undefined);
+                  v.setMinVal(undefined);
                 });
               }}
               className="px-4 py-2 text-sm text-gray-600  dark:text-white hover:text-gray-800"

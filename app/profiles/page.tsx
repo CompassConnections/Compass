@@ -139,29 +139,72 @@ export default function ProfilePage() {
 
   const resetFilters = () => {
     setFilters(initialState);
+    setText('');
   };
 
+  const [text, setText] = useState<string>('');
+
+  const onFilterChange = handleFilterChange
+
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-4">
-          {/*<h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>*/}
-          <div className="text-lg pb-1">
-            Users: <span className="font-bold">{totalUsers}</span>
+        {/*<div className="flex justify-between items-end mb-4">*/}
+        {/*  /!*<h1 className="text-4xl sm:text-5xl font-extrabold">People</h1>*!/*/}
+        {/*  <div className="text-lg pb-1">*/}
+        {/*    Users: <span className="font-bold">{totalUsers}</span>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
+        {/*<div className="py-6">*/}
+        {/*  All the profiles are searchable, simply filter them below to find your best connections!*/}
+        {/*</div>*/}
+
+        <div className="relative flex-grow py-6 w-2/4 xs:w-full mx-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search anything..."
+              className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const value = (e.target as HTMLInputElement).value;
+                  onFilterChange('searchQuery', value);
+                }
+              }}
+            />
+            {filters.searchQuery && (
+              <button
+                onClick={() => {
+                  onFilterChange('searchQuery', '');
+                  setText('');
+                }}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            )}
+          </div>
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
           </div>
         </div>
 
-        <div className="py-6">
-          All the profiles are searchable, simply filter them below to find your best connections!
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-8 xs:gap-0">
           {/* Filters Sidebar */}
-          <div className={`w-full 
-          md:w-80
-           flex-shrink-0`}>
+          <div className={`w-full md:w-80 flex-shrink-0`}>
             {/*// md:${showFilters ? 'w-80' : 'w-20'}*/}
-            <div className="sticky top-24">
+            <div className="top-24">
               <ProfileFilters
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -175,15 +218,15 @@ export default function ProfilePage() {
           {/* Profiles Grid */}
           <div className="flex-1">
             {loading ? (
-              <div className="flex justify-center py-12">
+              <div className="flex justify-center py-2">
                 <LoadingSpinner/>
               </div>
             ) : error ? (
-              <div className="flex justify-center py-12">
+              <div className="flex justify-center py-2">
                 <p>{error}</p>
               </div>
             ) : profiles.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6 py-4">
                 {profiles.map((
                   user,
                   idx

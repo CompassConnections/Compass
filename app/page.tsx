@@ -38,7 +38,7 @@ export default function HomePage() {
           BayesBond
         </h1>
         <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
-          The bonding platform for rational thinkers
+          Tired of swiping? Just search what you are looking for!
         </p>
         <div className="mt-8 flex space-x-4">
           <Link

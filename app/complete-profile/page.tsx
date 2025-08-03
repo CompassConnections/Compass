@@ -209,7 +209,7 @@ function RegisterComponent() {
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setError('Image size must be less than 5MB');
+      setError('Image size must be less than 10MB');
       return;
     }
 
@@ -225,6 +225,7 @@ function RegisterComponent() {
         body: formData,
       });
 
+      console.log('response:', response);
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to upload image');

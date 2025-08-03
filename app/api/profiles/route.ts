@@ -169,6 +169,68 @@ export async function GET(request: Request) {
           contactInfo: {contains: searchQuery, mode: 'insensitive'},
         },
       },
+      {
+        profile: {
+          intellectualInterests: {
+            some: {
+              interest: {
+                name: {contains: searchQuery, mode: "insensitive"},
+              },
+            },
+          },
+        },
+      },
+      {
+        profile: {
+          coreValues: {
+            some: {
+              value: {
+                name: {contains: searchQuery, mode: "insensitive"},
+              },
+            },
+          },
+        },
+      },
+      {
+        profile: {
+          causeAreas: {
+            some: {
+              causeArea: {
+                name: {contains: searchQuery, mode: "insensitive"},
+              },
+            },
+          },
+        },
+      },
+      {
+        profile: {
+          desiredConnections: {
+            some: {
+              connection: {
+                name: {contains: searchQuery, mode: "insensitive"},
+              },
+            },
+          },
+        },
+      },
+      {
+        profile: {
+          promptAnswers: {
+            some: {
+              answer: {contains: searchQuery, mode: "insensitive"},
+            },
+          },
+        },
+      },
+      {
+        profile: {
+          promptAnswers: {
+            some: {
+              prompt: {contains: searchQuery, mode: "insensitive"},
+            },
+          },
+        },
+      },
     ];
   }
 

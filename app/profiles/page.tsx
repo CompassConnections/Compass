@@ -34,7 +34,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [_, setShowFilters] = useState(true);
-  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [_totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState(initialState);
 
@@ -170,8 +170,9 @@ export default function ProfilePage() {
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  const value = (e.target as HTMLInputElement).value;
-                  onFilterChange('searchQuery', value);
+                  const input = e.target as HTMLInputElement;
+                  onFilterChange('searchQuery', input.value);
+                  input.blur(); // This dismisses the keyboard
                 }
               }}
             />

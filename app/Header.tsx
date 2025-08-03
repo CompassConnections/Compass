@@ -40,6 +40,15 @@ export default function Header() {
         <div className="flex items-center space-x-4">
 
           <ThemeToggle/>
+
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/learn-more"
+              className="px-3 py-2 text-sm font-medium bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+            >
+              Learn More
+            </Link>
+          </div>
           {session ? (
             <>
               <div className="flex items-center space-x-4">

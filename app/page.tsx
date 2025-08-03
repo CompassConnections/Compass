@@ -40,14 +40,6 @@ export default function HomePage() {
         <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
           Tired of swiping? Just search what you are looking for!
         </p>
-        <div className="mt-8 flex space-x-4">
-          <Link
-            href="/learn-more"
-            className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
-          >
-            Learn More
-          </Link>
-        </div>
         <div className=" w-full">
           {profilePage()}
         </div>

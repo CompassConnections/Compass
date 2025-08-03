@@ -28,8 +28,8 @@ interface FilterProps {
 
 export const dropdownConfig: { id: DropdownKey, name: string }[] = [
   {id: "connections", name: "Desired Connections"},
-  {id: "interests", name: "Core Interests"},
   {id: "coreValues", name: "Core Values"},
+  {id: "interests", name: "Core Interests"},
   {id: "causeAreas", name: "Cause Areas"},
 ]
 

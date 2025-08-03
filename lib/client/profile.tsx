@@ -160,6 +160,7 @@ export function getProfile(url: string, header: any = null) {
               image ? (
                   <div className="flex-1">
                     <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden ">
+                      <a href={image} target="_blank" rel="noopener noreferrer">
                       <Image
                         src={image}
                         alt={userData.name || 'Profile picture'}
@@ -172,6 +173,7 @@ export function getProfile(url: string, header: any = null) {
                         //   target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'U')}&background=random`;
                         // }}
                       />
+                      </a>
                     </div>
                   </div>
                 ) :
@@ -232,7 +234,8 @@ export function getProfile(url: string, header: any = null) {
             {
               userData?.profile?.introversion && (
                 <div>
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion - Extroversion </h2>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion -
+                    Extroversion </h2>
                   < p
                     className="mt-1 capitalize"> {100 - userData.profile.introversion}% </p>
                 </div>
@@ -311,13 +314,15 @@ export function getProfile(url: string, header: any = null) {
                       {Array.from(new Set(images)).map((img, index) => ( // Set is a hack to avoid a bug where duplicates fill in images when we navigate different pages
                         <div key={index}
                              className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 ">
-                          <Image
-                            src={img}
-                            alt={`Uploaded image ${index + 1}`}
-                            width={150}
-                            height={150}
-                            className="h-full w-full object-cover"
-                          />
+                          <a href={img} target="_blank" rel="noopener noreferrer">
+                            <Image
+                              src={img}
+                              alt={`Uploaded image ${index + 1}`}
+                              width={150}
+                              height={150}
+                              className="h-full w-full object-cover"
+                            />
+                          </a>
                         </div>
                       ))}
                     </div>

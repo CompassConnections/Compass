@@ -384,7 +384,7 @@ function RegisterComponent() {
       content: null
     },
     {
-      id: 'coreValues', title: 'Core Values', allowAdd: true,
+      id: 'coreValues', title: 'Values', allowAdd: true,
       content: <>
         <p className="mt-2">
           When defining your core values on a platform meant for forming deep, lasting bonds, focus on what governs your
@@ -400,7 +400,7 @@ function RegisterComponent() {
       </>
     },
     {
-      id: 'interests', title: 'Core Interests', allowAdd: true,
+      id: 'interests', title: 'Interests', allowAdd: true,
       content: <>
         <p className="mt-2">
           When selecting your core interests on a platform designed to foster deep, lasting

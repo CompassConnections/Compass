@@ -485,7 +485,7 @@ function RegisterComponent() {
         <label className={headingStyle}>
           {title}
         </label>
-        {content && getDetails(id, 'More Tips', content)}
+        {content && getDetails(id, 'Tips', content)}
 
         <div className="relative">
           <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
@@ -819,7 +819,7 @@ function RegisterComponent() {
               </label>
               {getDetails(
                 'description',
-                'More Tips',
+                'Tips',
                 <>
                   <p className="mt-2">Consider adding:</p>
                   <ul className="list-disc pl-5 space-y-1">

@@ -67,6 +67,8 @@ export default function ProfilePage() {
         else if (['interests', 'coreValues', 'causeAreas', 'connections'].includes(key)) {
           const arrayKey = filterKey as 'interests' | 'coreValues' | 'causeAreas' | 'connections';
           newFilters[arrayKey] = [...newFilters[arrayKey], value];
+        } else {
+          newFilters[filterKey] = value as never;
         }
       }
     }

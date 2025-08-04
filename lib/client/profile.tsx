@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import {pStyle} from "@/lib/client/constants";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {parseImage} from "@/lib/client/media";
-import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {useRouter} from 'next/navigation';
 
 interface DeleteProfileButtonProps {
@@ -98,7 +97,12 @@ export function Profile(url: string, header: any = null) {
   }, [url]);
 
   if (loading) {
-    return <LoadingSpinner/>;
+    return (
+      <div className="flex justify-center min-h-screen py-8">
+        <div data-testid="spinner"
+             className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
   }
 
   if (!userData) {
@@ -161,18 +165,18 @@ export function Profile(url: string, header: any = null) {
                   <div className="flex-1">
                     <div className="h-32 w-32 rounded-full border-4 border-white overflow-hidden ">
                       <a href={image} target="_blank" rel="noopener noreferrer">
-                      <Image
-                        src={image}
-                        alt={userData.name || 'Profile picture'}
-                        className="h-full w-full object-cover"
-                        width={200}
-                        height={200}
-                        // onError={(e) => {
-                        //   const target = e.target as HTMLImageElement;
-                        //   target.onerror = null;
-                        //   target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'U')}&background=random`;
-                        // }}
-                      />
+                        <Image
+                          src={image}
+                          alt={userData.name || 'Profile picture'}
+                          className="h-full w-full object-cover"
+                          width={200}
+                          height={200}
+                          // onError={(e) => {
+                          //   const target = e.target as HTMLImageElement;
+                          //   target.onerror = null;
+                          //   target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || 'U')}&background=random`;
+                          // }}
+                        />
                       </a>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {DropdownKey, ProfileData} from "@/lib/client/schema";
 import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
@@ -219,7 +219,9 @@ export default function ProfilePage() {
           <div className="flex-1">
             {loading ? (
               <div className="flex justify-center py-8">
-                <LoadingSpinner/>
+                  <div className="flex justify-center min-h-screen py-8">
+                  <div data-testid="spinner" className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                  </div>
               </div>
             ) : error ? (
               <div className="flex justify-center py-2">

@@ -11,7 +11,6 @@ import PromptAnswer from '@/components/ui/PromptAnswer';
 
 import imageCompression from 'browser-image-compression';
 import {Item} from '@/lib/client/schema';
-import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {fetchFeatures} from "@/lib/client/fetching";
 
 
@@ -203,7 +202,12 @@ function RegisterComponent() {
   }, [showDropdown]);
 
   if (isLoading) {
-    return <LoadingSpinner/>
+    return (
+      <div className="flex justify-center min-h-screen py-8">
+        <div data-testid="spinner"
+             className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
   }
 
   const handleImagesUpload = async (e: ChangeEvent<HTMLInputElement>) => {

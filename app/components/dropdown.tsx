@@ -1,6 +1,7 @@
 'use client';
 
-import {DropdownKey} from "@/app/profiles/page";
+import { DropdownKey } from "@/lib/client/schema";
+
 
 type DropdownProps = {
   id: DropdownKey

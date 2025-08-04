@@ -1,11 +1,13 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Gender} from "@prisma/client";
 import Dropdown from "@/app/components/dropdown";
 import Slider from '@mui/material/Slider';
-import {DropdownKey, RangeKey} from "@/app/profiles/page";
+import {DropdownKey, RangeKey} from "@/lib/client/schema";
 import {capitalize} from "@/lib/format";
+import {Item} from "@/lib/client/schema";
+import {fetchFeatures} from "@/lib/client/fetching";
 
 interface FilterProps {
   filters: {
@@ -39,59 +41,49 @@ export const rangeConfig: { id: RangeKey, name: string, min: number, max: number
 ]
 
 export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggleFilter, onReset}: FilterProps) {
-  interface Item {
-    id: DropdownKey;
-    name: string;
-  }
 
   const [showFilters, setShowFilters] = useState(true);
 
-  const dropDownStates = Object.fromEntries(dropdownConfig.map(({id}) => {
-    const [all, setAll] = useState<Item[]>([]);
-    const [selected, setSelected] = useState<Set<string>>(new Set());
-    const [newValue, setNewValue] = useState('');
-    const ref = useRef<HTMLDivElement>(null);
-    const [show, setShow] = useState(false);
+  // Initialize state for all dropdowns as an object with keys from dropdownConfig ids
+  const [optionsDropdown, setOptionsDropdown] = useState(() =>
+    Object.fromEntries(dropdownConfig.map(({id}) => [id, [] as Item[]]))
+  );
+  const setOptionsDropdownId = (id: string, value: any) => {
+    setOptionsDropdown((prev) => ({...prev, [id]: value}));
+  };
 
-    return [id, {
-      options: {value: all, set: setAll},
-      selected: {value: selected, set: setSelected},
-      new: {value: newValue, set: setNewValue},
-      ref: ref,
-      show: {value: show, set: setShow},
-    }]
-  }))
-  console.log(dropDownStates)
+  const [selectedDropdown, setSelectedDropdown] = useState(() =>
+    Object.fromEntries(dropdownConfig.map(({id}) => [id, new Set<string>()]))
+  );
+
+  const [newDropdown, setNewDropdown] = useState(() =>
+    Object.fromEntries(dropdownConfig.map(({id}) => [id, '']))
+  );
+
+  const [showDropdown, setShowDropdown] = useState(() =>
+    Object.fromEntries(dropdownConfig.map(({id}) => [id, false]))
+  );
+
+  // refs cannot be in state; create refs map outside state
+  const refDropdown = useRef<any>(
+    Object.fromEntries(dropdownConfig.map(({id}) => [id, React.createRef<HTMLDivElement>()]))
+  );
+
 
   useEffect(() => {
-    async function fetchOptions() {
-      try {
-        const res = await fetch('/api/interests');
-        if (res.ok) {
-          const data = await res.json() as Record<string, Item[]>;
-          console.log(data);
-          for (const [id, values] of Object.entries(data)) {
-            console.log(id)
-            dropDownStates[id].options.set(values);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading options:', error);
-      }
-    }
+    fetchFeatures(setOptionsDropdownId)
+  }, []);
 
-    fetchOptions();
-
+  useEffect(() => {
     // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
-      for (const id in dropDownStates) {
-        const dropdown = dropDownStates[id];
-        const ref = dropdown.ref;
+      for (const id in showDropdown) {
+        const ref = refDropdown.current[id];
         if (
           ref?.current &&
           !ref.current.contains(event.target as Node)
         ) {
-          dropdown.show?.set?.(false); // Defensive chaining
+          setShowDropdown(prev => ({...prev, [id]: false}));
         }
       }
     };
@@ -101,61 +93,60 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [showDropdown]);
 
 
   const toggle = (id: DropdownKey, optionId: string) => {
-    dropDownStates[id].selected.set(prev => {
-      const newSet = new Set(prev);
+    setSelectedDropdown(prev => {
+      const newSet = new Set(prev[id]);
       if (newSet.has(optionId)) {
         newSet.delete(optionId);
       } else {
         newSet.add(optionId);
       }
-      return newSet;
+      return {...prev, [id]: newSet};
     });
   };
 
   const handleKeyDown = (id: DropdownKey, key: string) => {
-    if (key === 'Escape') dropDownStates[id].show.set(false);
+    if (key === 'Escape') setShowDropdown(prev => ({...prev, [id]: false}));
   };
 
   const handleChange = (id: DropdownKey, e: string) => {
-    dropDownStates[id].new.set(e);
+    setNewDropdown(prev => ({...prev, [id]: e}));
   }
 
   const handleFocus = (id: DropdownKey) => {
-    dropDownStates[id].show.set(true);
+    setShowDropdown(prev => ({...prev, [id]: true}))
   }
 
   const handleClick = (id: DropdownKey) => {
-    const shown = dropDownStates[id].show.value;
-    dropDownStates[id].show.set(!shown);
+    setShowDropdown(prev => ({...prev, [id]: !showDropdown[id]}))
   }
 
   function getDrowDown(id: DropdownKey, name: string) {
 
     return (
       <div key={id + '.div'}>
-        <div className="relative" ref={dropDownStates[id].ref}>
+        <div className="relative" ref={refDropdown.current[id]}>
           <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
             {name}
           </label>
           <Dropdown
             key={id}
             id={id}
-            value={dropDownStates[id].new.value}
+            value={newDropdown[id]}
             onChange={handleChange}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
             onClick={handleClick}
           />
 
-          {(dropDownStates[id].show.value) && (
+          {(showDropdown[id]) && (
             <div
               className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-white ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-              {dropDownStates[id].options.value
-                .filter(v => v.name.toLowerCase().includes(dropDownStates[id].new.value.toLowerCase()))
+              {optionsDropdown[id]
+                .filter(v => v.name.toLowerCase().includes(newDropdown[id].toLowerCase()))
                 .map((v) => (
                   <div
                     key={v.id}
@@ -169,7 +160,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        checked={dropDownStates[id].selected.value.has(v.id)}
+                        checked={selectedDropdown[id].has(v.id)}
                         onChange={() => {
                         }}
                         onClick={(e) => e.stopPropagation()}
@@ -184,8 +175,8 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
           )}
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
-          {Array.from(dropDownStates[id].selected.value).map(vId => {
-            const value = dropDownStates[id].options.value.find(i => i.id === vId);
+          {Array.from(selectedDropdown[id]).map(vId => {
+            const value = optionsDropdown[id].find(i => i.id === vId);
             if (!value) return null;
             return (
               <span
@@ -223,21 +214,20 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     max: number;
   }
 
-  const rangeStates = Object.fromEntries(rangeConfig.map(({id}) => {
-    const [minVal, setMinVal] = useState<number | undefined>(undefined);
-    const [maxVal, setMaxVal] = useState<number | undefined>(undefined);
-    return [id, {
-      minVal,
-      maxVal,
-      setMinVal,
-      setMaxVal,
-    }];
-  }))
+  const [minRange, setMinRange] = useState(() =>
+    Object.fromEntries(rangeConfig.map(({id}) => [id, undefined]))
+  );
+  const [maxRange, setMaxRange] = useState(() =>
+    Object.fromEntries(rangeConfig.map(({id}) => [id, undefined]))
+  );
 
   function getSlider({id, name, min, max}: Range) {
     const minStr = 'min' + capitalize(id);
     const maxStr = 'max' + capitalize(id);
-    const {minVal, maxVal, setMinVal, setMaxVal} = rangeStates[id];
+    const minVal = minRange[id];
+    const maxVal = maxRange[id];
+    const setMinVal = (v: any) => setMinRange({...minRange, [id]: v});
+    const setMaxVal = (v: any) => setMaxRange({...maxRange, [id]: v});
     return (
       <div key={id + '.div'}>
 
@@ -376,13 +366,15 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
             <button
               onClick={() => {
                 onReset();
-                Object.values(dropDownStates).map((v) => {
-                  v.selected.set(new Set());
-                });
-                Object.values(rangeStates).map((v) => {
-                  v.setMaxVal(undefined);
-                  v.setMinVal(undefined);
-                });
+                setSelectedDropdown(() =>
+                  Object.fromEntries(dropdownConfig.map(({id}) => [id, new Set<string>()]))
+                );
+                setMinRange(() =>
+                  Object.fromEntries(rangeConfig.map(({id}) => [id, undefined]))
+                );
+                setMaxRange(() =>
+                  Object.fromEntries(rangeConfig.map(({id}) => [id, undefined]))
+                );
               }}
               className="px-4 py-2 text-sm text-gray-600  dark:text-white hover:text-gray-800"
             >

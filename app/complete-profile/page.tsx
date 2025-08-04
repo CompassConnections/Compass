@@ -1,6 +1,6 @@
 'use client';
 
-import {ChangeEvent, ReactNode, Suspense, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, ReactNode, Suspense, useEffect, useRef, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {signOut, useSession} from 'next-auth/react';
 import Image from 'next/image';
@@ -10,6 +10,10 @@ import {DeleteProfileButton} from "@/lib/client/profile";
 import PromptAnswer from '@/components/ui/PromptAnswer';
 
 import imageCompression from 'browser-image-compression';
+import {Item} from '@/lib/client/schema';
+import LoadingSpinner from "@/lib/client/LoadingSpinner";
+import {fetchFeatures} from "@/lib/client/fetching";
+
 
 export default function CompleteProfile() {
   return (
@@ -51,28 +55,46 @@ function RegisterComponent() {
   const router = useRouter();
   const {data: session, update} = useSession();
 
-  const hooks = Object.fromEntries(['interests', 'coreValues', 'description', 'connections', 'causeAreas'].map((id) => {
-    const [showMoreInfo, setShowMoreInfo] = useState(false);
-    const [newFeature, setNewFeature] = useState('');
-    const [allFeatures, setAllFeatures] = useState<{ id: string, name: string }[]>([]);
-    const [selectedFeatures, setSelectedFeatures] = useState<Set<string>>(new Set());
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [showDropdown, setShowDropdown] = useState(false);
+  const featureNames = ['interests', 'coreValues', 'description', 'connections', 'causeAreas'];
 
-    return [id, {
-      showMoreInfo,
-      setShowMoreInfo,
-      newFeature,
-      setNewFeature,
-      allFeatures,
-      setAllFeatures,
-      selectedFeatures,
-      setSelectedFeatures,
-      dropdownRef,
-      showDropdown,
-      setShowDropdown
-    }]
-  }));
+  const [showMoreInfo, _setShowMoreInfo] = useState(() =>
+    Object.fromEntries(featureNames.map((id) => [id, false]))
+  );
+  const setShowMoreInfo = (id: string, value: boolean) => {
+    _setShowMoreInfo((prev) => ({...prev, [id]: value}));
+  };
+
+  const [newFeature, _setNewFeature] = useState(() =>
+    Object.fromEntries(featureNames.map((id) => [id, '']))
+  );
+  const setNewFeature = (id: string, value: string) => {
+    _setNewFeature((prev) => ({...prev, [id]: value}));
+  };
+
+  const [allFeatures, _setAllFeatures] = useState(() =>
+    Object.fromEntries(featureNames.map((id) => [id, [] as Item[]]))
+  );
+  const setAllFeatures = (id: string, value: any) => {
+    _setAllFeatures((prev) => ({...prev, [id]: value}));
+  };
+
+  const [selectedFeatures, _setSelectedFeatures] = useState(() =>
+    Object.fromEntries(featureNames.map((id) => [id, new Set<string>()]))
+  );
+  const setSelectedFeatures = (id: string, value: Set<string>) => {
+    _setSelectedFeatures((prev) => ({...prev, [id]: value}));
+  }
+
+  const [showDropdown, _setShowDropdown] = useState(() =>
+    Object.fromEntries(featureNames.map((id) => [id, false]))
+  );
+  const setShowDropdown = (id: string, value: boolean) => {
+    _setShowDropdown((prev) => ({...prev, [id]: value}));
+  };
+
+  const refDropdown = useRef<any>(
+    Object.fromEntries(featureNames.map((id) => [id, React.createRef<HTMLDivElement>()]))
+  );
 
   const id = session?.user.id
 
@@ -106,18 +128,18 @@ function RegisterComponent() {
             }
 
             // Set selected interests if any
-            function setSelectedFeatures(id: string, attribute: string, subAttribute: string) {
+            function setSelFeat(id: string, attribute: string, subAttribute: string) {
               const feature = profile[attribute];
               if (feature?.length > 0) {
                 const ids = feature.map((pi: any) => pi[subAttribute].id);
-                hooks[id].setSelectedFeatures(new Set(ids));
+                setSelectedFeatures(id, new Set(ids));
               }
             }
 
-            setSelectedFeatures('interests', 'intellectualInterests', 'interest')
-            setSelectedFeatures('coreValues', 'coreValues', 'value')
-            setSelectedFeatures('connections', 'desiredConnections', 'connection')
-            setSelectedFeatures('causeAreas', 'causeAreas', 'causeArea')
+            setSelFeat('interests', 'intellectualInterests', 'interest')
+            setSelFeat('coreValues', 'coreValues', 'value')
+            setSelFeat('connections', 'desiredConnections', 'connection')
+            setSelFeat('causeAreas', 'causeAreas', 'causeArea')
 
             setImages([])
             setKeys(profile?.images)
@@ -156,45 +178,32 @@ function RegisterComponent() {
 
   }, []);
 
-  // Load existing interests and set up click-outside handler
   useEffect(() => {
-    async function fetchFeatures() {
-      try {
-        const res = await fetch('/api/interests');
-        if (res.ok) {
-          const data = await res.json();
-          for (const id of ['interests', 'coreValues', 'connections', 'causeAreas']) {
-            hooks[id].setAllFeatures(data[id] || []);
-
-            // Close dropdown when clicking outside
-            const handleClickOutside = (event: MouseEvent) => {
-              const hook = hooks[id];
-              const current = hook.dropdownRef.current;
-              if (current && !current.contains(event.target as Node)) {
-                hook.setShowDropdown(false);
-              }
-            };
-
-            document.addEventListener('mousedown', handleClickOutside);
-            // return () => {
-            //   document.removeEventListener('mousedown', handleClickOutside);
-            // };
-          }
-        }
-      } catch (error) {
-        console.error('Error loading' + id, error);
-      }
-    }
-
-    fetchFeatures();
+    fetchFeatures(setAllFeatures)
   }, []);
 
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      for (const id in showDropdown) {
+        const ref = refDropdown.current[id];
+        if (
+          ref?.current &&
+          !ref.current.contains(event.target as Node)
+        ) {
+          setShowDropdown(id, false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner/>
   }
 
   const handleImagesUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -295,9 +304,9 @@ function RegisterComponent() {
         ...(name && {name}),
       };
       for (const name of ['interests', 'connections', 'coreValues', 'causeAreas']) {
-        data[name] = Array.from(hooks[name].selectedFeatures).map(id => ({
+        data[name] = Array.from(selectedFeatures[name]).map(id => ({
           id: id.startsWith('new-') ? undefined : id,
-          name: hooks[name].allFeatures.find(i => i.id === id)?.name || id.replace('new-', '')
+          name: allFeatures[name].find(i => i.id === id)?.name || id.replace('new-', '')
         }));
       }
       console.log('data', data)
@@ -327,24 +336,21 @@ function RegisterComponent() {
 
   const genderOptions = Object.values(Gender);
   // const personalityOptions = Object.values(PersonalityType);
-  const conflictOptions = Object.values(ConflictStyle);
+  // const conflictOptions = Object.values(ConflictStyle);
 
   const headingStyle = "block text-base font-medium text-gray-700 dark:text-white mb-1";
 
   function getDetails(id: string, brief: string, text: ReactNode) {
-    const hook = hooks[id];
-    const showMoreInfo = hook.showMoreInfo;
-    const setShowMoreInfo = hook.setShowMoreInfo;
     return <>
       <div className="mt-2 mb-4">
         <button
           type="button"
-          onClick={() => setShowMoreInfo(!showMoreInfo)}
+          onClick={() => setShowMoreInfo(id, !showMoreInfo[id])}
           className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
         >
-          {showMoreInfo ? 'Hide info' : brief}
+          {showMoreInfo[id] ? 'Hide info' : brief}
           <svg
-            className={`w-4 h-4 ml-1 transition-transform ${showMoreInfo ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 ml-1 transition-transform ${showMoreInfo[id] ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -352,7 +358,7 @@ function RegisterComponent() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-        {showMoreInfo && (
+        {showMoreInfo[id] && (
           <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md text-sm text-gray-700 dark:text-gray-300">
             {text}
           </div>
@@ -423,27 +429,18 @@ function RegisterComponent() {
   ]
 
   function getDropdown({id, title, allowAdd, content}: DropdownConfig) {
-    const hook = hooks[id];
-    const newFeature = hook.newFeature;
-    const setNewFeature = hook.setNewFeature;
-    const showDropdown = hook.showDropdown;
-    const setShowDropdown = hook.setShowDropdown;
-    const allFeatures = hook.allFeatures;
-    const setSelectedFeatures = hook.setSelectedFeatures;
-    const setAllFeatures = hook.setAllFeatures;
-    const dropdownRef = hook.dropdownRef;
-    const selectedFeatures = hook.selectedFeatures;
+    const newFeat = newFeature[id];
+    const allFeat = allFeatures[id];
+    const selectedFeat = selectedFeatures[id];
 
     const toggleFeature = (featureId: string) => {
-      setSelectedFeatures(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(featureId)) {
-          newSet.delete(featureId);
-        } else {
-          newSet.add(featureId);
-        }
-        return newSet;
-      });
+      const newSet = new Set(selectedFeat);
+      if (newSet.has(featureId)) {
+        newSet.delete(featureId);
+      } else {
+        newSet.add(featureId);
+      }
+      setSelectedFeatures(id, newSet);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -451,17 +448,17 @@ function RegisterComponent() {
         e.preventDefault();
         addNewFeature();
       } else if (e.key === 'Escape') {
-        setShowDropdown(false);
+        setShowDropdown(id, false);
       }
     };
 
     const addNewFeature = (e?: React.FormEvent) => {
       if (e) e.preventDefault();
-      const toAdd = newFeature.trim();
+      const toAdd = newFeat.trim();
       if (!toAdd) return;
 
       // Check if interest already exists (case-insensitive)
-      const existingFeature = allFeatures.find(
+      const existingFeature = allFeat.find(
         i => i.name.toLowerCase() === toAdd.toLowerCase()
       );
 
@@ -471,16 +468,16 @@ function RegisterComponent() {
       } else {
         // Add new feature
         const newObj = {id: `new-${Date.now()}`, name: toAdd};
-        setAllFeatures(prev => [...prev, newObj]);
-        setSelectedFeatures(prev => new Set(prev).add(newObj.id));
+        setAllFeatures(id, [...allFeat, newObj]);
+        setSelectedFeatures(id, new Set(selectedFeat).add(newObj.id));
       }
 
-      setNewFeature('');
-      setShowDropdown(false);
+      setNewFeature(id, '');
+      setShowDropdown(id, false);
     };
 
     return <>
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative" ref={refDropdown.current[id]}>
         <label className={headingStyle}>
           {title}
         </label>
@@ -490,17 +487,17 @@ function RegisterComponent() {
           <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
             <input
               type="text"
-              value={newFeature}
+              value={newFeat}
               maxLength={100}
-              onChange={(e) => setNewFeature(e.target.value)}
-              onFocus={() => setShowDropdown(true)}
+              onChange={(e) => setNewFeature(id, e.target.value)}
+              onFocus={() => setShowDropdown(id, true)}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder={allowAdd ? "Type to search or add" : "Type to search"}
             />
             <button
               type="button"
-              onClick={() => setShowDropdown(!showDropdown)}
+              onClick={() => setShowDropdown(id, !showDropdown[id])}
               className="px-3 py-2 border-l border-gray-300  text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 "
             >
               <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -514,7 +511,7 @@ function RegisterComponent() {
                 <button
                     type="button"
                     onClick={addNewFeature}
-                    disabled={!newFeature.trim()}
+                    disabled={!newFeat.trim()}
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Add
@@ -522,12 +519,12 @@ function RegisterComponent() {
             }
           </div>
 
-          {(showDropdown || newFeature) && (
+          {(showDropdown[id] || newFeat) && (
             <div
               className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
               {/* New interest option */}
-              {allowAdd && newFeature && !allFeatures.some(i =>
-                i.name.toLowerCase() === newFeature.toLowerCase()
+              {allowAdd && newFeat && !allFeat.some(i =>
+                i.name.toLowerCase() === newFeat.toLowerCase()
               ) && (
                 <div
                   className=" cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
@@ -535,36 +532,36 @@ function RegisterComponent() {
                 >
                   <div className="flex items-center">
                           <span className="font-normal ml-3 block truncate">
-                            Add "{newFeature}"
+                            Add "{newFeat}"
                           </span>
                   </div>
                 </div>
               )}
 
-              {/* Filtered interests */}
-              {allFeatures
-                .filter(interest =>
-                  interest.name.toLowerCase().includes(newFeature.toLowerCase())
+              {/* Filtered features */}
+              {allFeat
+                .filter(feature =>
+                  feature.name.toLowerCase().includes(newFeat.toLowerCase())
                 )
-                .map((interest) => (
+                .map((feature) => (
                   <div
-                    key={interest.id}
+                    key={feature.id}
                     className="cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-gray-700"
                     onClick={() => {
-                      toggleFeature(interest.id);
-                      setNewFeature('');
+                      toggleFeature(feature.id);
+                      setNewFeature(id, '');
                     }}
                   >
                     <div className="flex items-center">
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded "
-                        checked={selectedFeatures.has(interest.id)}
+                        checked={selectedFeat.has(feature.id)}
                         onChange={(e) => {
                           e.stopPropagation()
                         }}
                       />
-                      <span className="font-normal ml-3 block truncate">{interest.name}</span>
+                      <span className="font-normal ml-3 block truncate">{feature.name}</span>
                     </div>
                   </div>
                 ))}
@@ -574,8 +571,8 @@ function RegisterComponent() {
 
         {/* Selected interests */}
         <div className="flex flex-wrap gap-2 mt-3">
-          {Array.from(selectedFeatures).map(featureId => {
-            const interest = allFeatures.find(i => i.id === featureId);
+          {Array.from(selectedFeat).map(featureId => {
+            const interest = allFeat.find(i => i.id === featureId);
             if (!interest) return null;
             return (
               <span
@@ -789,25 +786,25 @@ function RegisterComponent() {
             {/*  </select>*/}
             {/*</div>*/}
 
-            <div>
-              <label htmlFor="conflictStyle" className={headingStyle}>
-                Conflict Style
-              </label>
-              <select
-                id="conflictStyle"
-                name="conflictStyle"
-                value={conflictStyle || ''}
-                onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              >
-                <option value="">Select your conflict style</option>
-                {conflictOptions.map((style) => (
-                  <option key={style} value={style}>
-                    {style}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/*<div>*/}
+            {/*  <label htmlFor="conflictStyle" className={headingStyle}>*/}
+            {/*    Conflict Style*/}
+            {/*  </label>*/}
+            {/*  <select*/}
+            {/*    id="conflictStyle"*/}
+            {/*    name="conflictStyle"*/}
+            {/*    value={conflictStyle || ''}*/}
+            {/*    onChange={(e) => setConflictStyle(e.target.value as ConflictStyle)}*/}
+            {/*    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"*/}
+            {/*  >*/}
+            {/*    <option value="">Select your conflict style</option>*/}
+            {/*    {conflictOptions.map((style) => (*/}
+            {/*      <option key={style} value={style}>*/}
+            {/*        {style}*/}
+            {/*      </option>*/}
+            {/*    ))}*/}
+            {/*  </select>*/}
+            {/*</div>*/}
 
             <div className="max-w-3xl w-full">
               <label htmlFor="description" className={headingStyle}>

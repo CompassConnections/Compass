@@ -1,6 +1,7 @@
 'use client';
 
 import {aColor, supportEmail} from "@/lib/client/constants";
+import Image from 'next/image';
 
 export default function PrivacyPage() {
   return (
@@ -169,7 +170,7 @@ export default function PrivacyPage() {
       <p>If the platform is very selective, there will be only a couple people with very aligned values. Their well-being will increase a lot, but there are only a few of them. So there is not much overall benefit for society.</p>
       <p>If the platform is fully open (everyone can join), there are two possibilities depending on the connection mechanism. If the list of members is opaque and poorly searchable, as in traditional dating apps, it becomes very unlikely to find value-aligned people. Hence, each individual’s increase in well-being is negligible, even though there are plenty of people, and there is not much overall benefit for society either.</p>
       <p>Qualitatively, the figure below illustrates this trade-off between selectivity and openness for poorly searchable (i.e., Tinder-type) platforms. The quality is the individual increase in well-being, which increases as the platform selects for people strictly following the core values. The quantity is simply the number of users. The platform’s overall benefit (read, increase in total well-being) is then the product of quantity and quality—reaching a maximum with a non-extreme selectivity.</p>
-      <p><img src="https://martinbraquet.com/wp-content/uploads/rational_qualitative.png" alt="" /></p>
+      <p><Image src="https://martinbraquet.com/wp-content/uploads/rational_qualitative.png" alt="" /></p>
       <p>The second possibility appears when the members are fully visible and searchable by anyone. In that case, each member can filter and meaningfully engage with the few people aligning with their values. Each individual’s increase in well-being becomes important, and there are plenty of people. So, a fully open and searchable platform may bring a lot of overall benefit for society.</p>
       <p>Of course, in practice, there will always be interferences within big communities. And, more importantly, a larger platform requires more resources (i.e., funding) and moderation. That’s why the focus of this article is on a specific community for now. Not only do I identify with the rational / intellectual community, but it is also composed of members who are much more likely to contribute (especially on the tech side), making it a very convenient community. But if it creates much greater good, I think it would be worth considering extending the platform at some point in the far future—provided that it doesn’t negatively dilute the community or create brand identity confusion. More than just creating a higher good, a larger user base means economy of scale: donations may scale proportionally while expense per user would diminish—making the platform more likely to survive financially.</p>
       <h3 id="viability">Viability</h3>

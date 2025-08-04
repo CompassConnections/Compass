@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useCallback, useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
-import {ProfileData} from "@/lib/client/schema";
+import {DropdownKey, ProfileData} from "@/lib/client/schema";
 import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
 import Image from "next/image";
 
@@ -26,9 +26,6 @@ const initialState = {
   forceRun: false,
 };
 
-export type DropdownKey = 'interests' | 'causeAreas' | 'connections' | 'coreValues';
-export type RangeKey = 'age' | 'introversion';
-// type OtherKey = 'gender' | 'searchQuery';
 
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);

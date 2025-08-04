@@ -22,3 +22,13 @@ export interface ProfileData {
     images: string[];
   };
 }
+
+export type DropdownKey = 'interests' | 'causeAreas' | 'connections' | 'coreValues';
+export type RangeKey = 'age' | 'introversion';
+
+// type OtherKey = 'gender' | 'searchQuery';
+
+export interface Item {
+  id: DropdownKey;
+  name: string;
+}

@@ -220,7 +220,7 @@ export default function ProfilePage() {
           {/* Profiles Grid */}
           <div className="flex-1">
             {loading ? (
-              <div className="flex justify-center py-2">
+              <div className="flex justify-center py-8">
                 <LoadingSpinner/>
               </div>
             ) : error ? (

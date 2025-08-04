@@ -17,6 +17,9 @@ export default {
       },
     },
   },
+  corePlugins: {
+    animation: true,
+  },
   darkMode: 'class', // required for next-themes
   plugins: [  ],
 } satisfies Config;

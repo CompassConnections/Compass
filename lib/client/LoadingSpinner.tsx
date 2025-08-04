@@ -1,17 +1,8 @@
-'use client';
-
-import React from "react";
+import React from 'react'
 
 export default function LoadingSpinner() {
   return (
-    <div 
-      data-testid="spinner-container" 
-      className="flex items-center justify-center min-h-screen"
-    >
-      <div 
-        data-testid="spinner"
-        className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin" 
-      />
-    </div>
-  );
+    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', paddingTop: '2rem' }} >
+      <div className="spinner border-gray-300 border-t-gray-800" /></div>
+  )
 }

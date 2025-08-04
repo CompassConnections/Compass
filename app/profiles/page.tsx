@@ -32,22 +32,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [_, setShowFilters] = useState(true);
-  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [images, setImages] = useState<string[]>([])
   const [filters, setFilters] = useState(initialState);
-
-
-  useEffect(() => {
-    const getCount = async () => {
-      const countResponse = await fetch('/api/profiles/count');
-      if (countResponse.ok) {
-        const {count} = await countResponse.json();
-        setTotalUsers(count);
-      }
-    };
-
-    getCount();
-  }, []); // <- runs once after initial mount
 
   const fetchProfiles = useCallback(async () => {
     try {

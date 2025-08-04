@@ -337,7 +337,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               </div>
             </div>
 
-            {getSlider(rangeConfig[0])}
+            {/*{getSlider(rangeConfig[0])}*/}
             {dropdownConfig.map(({id, name}) => getDrowDown(id, name))}
             {getSlider(rangeConfig[1])}
 

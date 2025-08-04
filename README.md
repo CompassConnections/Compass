@@ -80,13 +80,16 @@ npx prisma migrate dev --name init
 ```
 Note that your local database will be made of synthetic data, not real users. This is fine for development and testing.
 
-Start the development server:
+Make sure the tests pass:
+```bash
+npm run test
+```
 
+Start the development server:
 ```bash
 npm run dev
 ```
 
-Once the server is running, visit http://localhost:3000 to start using the app. Now you can start contributing by 
-making changes and submitting pull requests!
+Once the server is running, visit http://localhost:3000 to start using the app. Now you can start contributing by making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.

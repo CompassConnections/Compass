@@ -53,7 +53,7 @@ The web app is coded in Typescript using React as front-end and Prisma as back-e
 
 ## Development
 
-After cloning the repo and navigating into it, install dependencies:
+After cloning the repo and navigating into it, install the dependencies:
 
 ```
 npm install
@@ -61,7 +61,7 @@ npm install
 
 You now need to configure your database connection via an environment variable.
 
-First, create an `.env` file:
+Create an `.env` file:
 
 ```bash
 cp .env.example .env

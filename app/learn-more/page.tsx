@@ -38,7 +38,7 @@ export default function LearnMorePage() {
               href="/manifesto"
               className="px-6 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white text-lg rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition"
             >
-              Manifesto
+              The Deeper Why
             </Link>
           </div>
           <h3 id="how-to-help">How to Help</h3>

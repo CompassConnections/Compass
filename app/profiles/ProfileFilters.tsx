@@ -221,7 +221,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     Object.fromEntries(rangeConfig.map(({id}) => [id, undefined]))
   );
 
-  function getSlider({id, name, min, max}: Range) {
+  function getSlider({id, name, min, max}: Range, showSlider: boolean = true) {
     const minStr = 'min' + capitalize(id);
     const maxStr = 'max' + capitalize(id);
     const minVal = minRange[id];
@@ -231,32 +231,33 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
     return (
       <div key={id + '.div'}>
 
-        <div className="w-full px-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">{name}</label>
-          <Slider
-            value={[minVal || min, maxVal || max]}
-            onChange={(e, value) => {
-              let [_min, _max] = value;
-              setMinVal((_min || min) > min ? _min : undefined);
-              setMaxVal((_max || max) < max ? _max : undefined);
-            }}
-            onChangeCommitted={(e, value) => {
-              let [_min, _max] = value;
-              onFilterChange(minStr, (_min || min) > min ? _min : undefined);
-              onFilterChange(maxStr, (_max || max) < max ? _max : undefined);
-            }}
-            valueLabelDisplay="auto"
-            min={min}
-            max={max}
-            sx={{
-              color: '#3B82F6',
-              '& .MuiSlider-valueLabel': {
-                backgroundColor: '#3B82F6',
-                color: '#fff',
-              },
-            }}
-          />
-        </div>
+        {showSlider &&
+            <div className="w-full px-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">{name}</label>
+                <Slider
+                    value={[minVal || min, maxVal || max]}
+                    onChange={(e, value) => {
+                      let [_min, _max] = value;
+                      setMinVal((_min || min) > min ? _min : undefined);
+                      setMaxVal((_max || max) < max ? _max : undefined);
+                    }}
+                    onChangeCommitted={(e, value) => {
+                      let [_min, _max] = value;
+                      onFilterChange(minStr, (_min || min) > min ? _min : undefined);
+                      onFilterChange(maxStr, (_max || max) < max ? _max : undefined);
+                    }}
+                    valueLabelDisplay="auto"
+                    min={min}
+                    max={max}
+                    sx={{
+                      color: '#3B82F6',
+                      '& .MuiSlider-valueLabel': {
+                        backgroundColor: '#3B82F6',
+                        color: '#fff',
+                      },
+                    }}
+                />
+            </div>}
         <div className="grid grid-cols-2 gap-4">
           <div>
             {/*<label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Min Age</label>*/}
@@ -337,7 +338,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
               </div>
             </div>
 
-            {getSlider(rangeConfig[0])}
+            {getSlider(rangeConfig[0], false)}
             {dropdownConfig.map(({id, name}) => getDrowDown(id, name))}
             {getSlider(rangeConfig[1])}
 

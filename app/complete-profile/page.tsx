@@ -414,22 +414,22 @@ function RegisterComponent() {
         </p>
       </>
     },
-    {
-      id: 'causeAreas', title: 'Cause Areas', allowAdd: true,
-      content: <>
-        <p className="mt-2">
-          When choosing your cause areas on a platform designed for deep, lasting connection, focus on the issues that
-          you feel personally compelled to engage with—not just what’s socially approved or intellectually interesting.
-          Good cause areas reveal what breaks your heart, what energizes your long-term thinking, or what you’d
-          willingly struggle for even if no one noticed. Be honest about what genuinely matters to you: that might be
-          existential risk reduction, prison abolition, mental health reform, animal welfare, epistemic integrity, or
-          education equity. You don’t need to be an expert or activist to list a cause—just sincerely invested. The
-          point isn’t to posture but to expose what kind of future you want to help shape, and to find others whose
-          moral intuitions and sense of responsibility resonate with your own. That kind of alignment creates not just
-          shared goals, but durable trust.
-        </p>
-      </>
-    },
+    // {
+    //   id: 'causeAreas', title: 'Cause Areas', allowAdd: true,
+    //   content: <>
+    //     <p className="mt-2">
+    //       When choosing your cause areas on a platform designed for deep, lasting connection, focus on the issues that
+    //       you feel personally compelled to engage with—not just what’s socially approved or intellectually interesting.
+    //       Good cause areas reveal what breaks your heart, what energizes your long-term thinking, or what you’d
+    //       willingly struggle for even if no one noticed. Be honest about what genuinely matters to you: that might be
+    //       existential risk reduction, prison abolition, mental health reform, animal welfare, epistemic integrity, or
+    //       education equity. You don’t need to be an expert or activist to list a cause—just sincerely invested. The
+    //       point isn’t to posture but to expose what kind of future you want to help shape, and to find others whose
+    //       moral intuitions and sense of responsibility resonate with your own. That kind of alignment creates not just
+    //       shared goals, but durable trust.
+    //     </p>
+    //   </>
+    // },
   ]
 
   function getDropdown({id, title, allowAdd, content}: DropdownConfig) {
@@ -748,10 +748,10 @@ function RegisterComponent() {
               />
             </div>
 
-            {getDropdown(dropdownConfig[0])}
-            {getDropdown(dropdownConfig[1])}
-            {getDropdown(dropdownConfig[2])}
-            {getDropdown(dropdownConfig[3])}
+            {dropdownConfig.map((v, i) => (
+              <React.Fragment key={i}>{getDropdown(v)}</React.Fragment>
+            ))}
+
 
             <div>
               <label htmlFor="introversion" className={headingStyle}>

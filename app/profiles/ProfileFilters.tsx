@@ -32,7 +32,7 @@ export const dropdownConfig: { id: DropdownKey, name: string }[] = [
   {id: "connections", name: "Type of Connection"},
   {id: "coreValues", name: "Values"},
   {id: "interests", name: "Interests"},
-  {id: "causeAreas", name: "Cause Areas"},
+  // {id: "causeAreas", name: "Cause Areas"},
 ]
 
 export const rangeConfig: { id: RangeKey, name: string, min: number, max: number }[] = [

@@ -123,7 +123,7 @@ export function Profile(url: string, header: any = null) {
     {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Type of Connection'},
     {profileAttribute: 'coreValues', attribute: 'value', title: 'Values'},
     {profileAttribute: 'intellectualInterests', attribute: 'interest', title: 'Interests'},
-    {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},
+    // {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},
   ]
 
   function getTags({profileAttribute, attribute, title}: Tags) {

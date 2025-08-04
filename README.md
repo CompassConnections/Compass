@@ -21,7 +21,7 @@ The full description is available [here](https://martinbraquet.com/meeting-ratio
 - [x] Authentication (user/password and Google Sign In)
 - [x] Set up PostgreSQL in Production with supabase or prisma console (can stick with SQLite in dev / local)
 - [x] Set up hosting (vercel)
-- [ ] Ask for detailed info per profile upon registration (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)
+- [x] Ask for detailed info per profile upon registration (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)
 - [x] Set up page listing all the profiles
 - [x] Search through all the profile variables
 - [ ] (Set up chat / direct messaging)
@@ -39,7 +39,7 @@ Any action item is open to anyone for collaboration, but the following ones are 
 
 ## Implementation
 
-The web app is coded in Typescript using React as front-end and prisma as back-end. It includes:
+The web app is coded in Typescript using React as front-end and Prisma as back-end. It includes:
 
 - [NextAuth.js v4](https://next-auth.js.org/)
 - [Prisma Postgres](https://www.prisma.io/postgres)
@@ -62,30 +62,23 @@ First, create an `.env` file:
 cp .env.example .env
 ```
 
-To ensure your authentication works properly, you'll also need to set [env vars for NextAuth.js](https://next-auth.js.org/configuration/options):
-
+To ensure your authentication works properly, you'll also need to set the `AUTH_SECRET` [env var for NextAuth.js]
+(https://next-auth.js.org/configuration/options). You can generate such a random 32-character string with:
 ```bash
-AUTH_SECRET="RANDOM_32_CHARACTER_STRING"
-```
-
-You can generate a random 32-character string for the `AUTH_SECRET` secret with this command:
-
-```
 npx auth secret
 ```
 
 In the end, your entire `.env` file should look similar to this (but using _your own values_ for the env vars):
-
 ```bash
-DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=..."
+DATABASE_URL="file:./dev.db"
 AUTH_SECRET="gTwLSXFeNWFRpUTmxlRniOfegXYw445pd0k6JqXd7Ag="
 ```
 
-Run the following commands to set up your database and Prisma schema:
-
+Run the following commands to set up your local development database and Prisma schema:
 ```bash
 npx prisma migrate dev --name init
 ```
+Note that your local database will be made of synthetic data, not real users. This is fine for development and testing.
 
 Start the development server:
 

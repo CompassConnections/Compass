@@ -59,7 +59,7 @@ export function DeleteProfileButton({profileId, onDelete}: DeleteProfileButtonPr
   );
 }
 
-export function getProfile(url: string, header: any = null) {
+export function Profile(url: string, header: any = null) {
 
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
@@ -95,7 +95,7 @@ export function getProfile(url: string, header: any = null) {
     }
 
     fetchImage();
-  }, []);
+  }, [url]);
 
   if (loading) {
     return <LoadingSpinner/>;

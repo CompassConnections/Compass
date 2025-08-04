@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
-import {getProfile} from "@/lib/client/profile";
+import {Profile} from "@/lib/client/profile";
 import {useEffect} from "react";
 import {useSession} from "next-auth/react";
 
@@ -39,7 +39,7 @@ export default function ProfilePage() {
 
     return (
       <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
-        {getProfile('/api/profile', header)}
+        {Profile('/api/profile', header)}
       </div>
     )
       ;

@@ -5,6 +5,7 @@ import {useCallback, useEffect, useState} from "react";
 import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {ProfileData} from "@/lib/client/schema";
 import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
+import Image from "next/image";
 
 // Disable static generation
 export const dynamic = "force-dynamic";
@@ -111,7 +112,7 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, images]);
 
   useEffect(() => {
     fetchProfiles();
@@ -241,7 +242,7 @@ export default function ProfilePage() {
                     <div className="p-4 h-full flex flex-col">
                       <div className="flex items-center space-x-4">
                         {renderImages && (<div className="flex-shrink-0">
-                          <img
+                          <Image
                             className="h-16 w-16 rounded-full object-cover"
                             src={images[idx]}
                             alt={``}
@@ -294,7 +295,7 @@ export default function ProfilePage() {
                 </svg>
                 <h3 className="mt-2 text-sm font-medium">No profiles found</h3>
                 <p className="mt-1 text-sm">
-                  Try adjusting your search or filter to find what you're looking for.
+                  {"Try adjusting your search or filter to find what you're looking for."}
                 </p>
               </div>
             )}

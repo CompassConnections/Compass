@@ -35,7 +35,7 @@ Any action item is open to anyone for collaboration, but the following ones are 
 - [ ] Clean up privacy notice
 - [ ] Clean up learn more page
 - [x] Add dark theme
-- [ ] Cover with tests
+- [ ] Cover with tests (almost nothing is covered right now)
 
 ## Implementation
 

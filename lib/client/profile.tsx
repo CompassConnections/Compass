@@ -257,16 +257,15 @@ export function Profile(url: string, header: any = null) {
               )
             }
 
-            {
-              userData?.profile?.conflictStyle && (
-                <div>
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Conflict
-                    Style </h2>
-                  < p
-                    className={pStyle}> {userData.profile.conflictStyle} </p>
-                </div>
-              )
-            }
+            {/*{*/}
+            {/*  userData?.profile?.conflictStyle && (*/}
+            {/*    <div>*/}
+            {/*      <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Conflict Style </h2>*/}
+            {/*      < p*/}
+            {/*        className={pStyle}> {userData.profile.conflictStyle} </p>*/}
+            {/*    </div>*/}
+            {/*  )*/}
+            {/*}*/}
 
             {tagsConfig.map((tag: any) => getTags(tag))}
 

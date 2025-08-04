@@ -36,7 +36,7 @@ export default function HomePage() {
           IntentionalBond
         </h1>
         <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
-          Tired of swiping? Just search what you're looking for!
+          {"Tired of swiping? Search what you're looking for!"}
         </p>
         <div className=" w-full">
           {profilePage()}

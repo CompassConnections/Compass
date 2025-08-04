@@ -41,7 +41,7 @@ export default function HomePage() {
         {/*  {"Tired of swiping? Search what you're looking for!"}*/}
         {/*</p>*/}
 
-        <div className="py-4">
+        <div className="py-8">
           <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600`}>
             Sign In
           </Link>

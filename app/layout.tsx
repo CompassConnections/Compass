@@ -7,7 +7,7 @@ import Providers from "@/app/providers";
 
 export const metadata: Metadata = {
   title: "Compass",
-  description: "A bonding platform for rational thinkers",
+  description: "A platform to form intentional bonds",
 };
 
 

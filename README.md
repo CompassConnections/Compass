@@ -86,6 +86,7 @@ Start the development server:
 npm run dev
 ```
 
-Once the server is running, visit http://localhost:3000 to start using the app.
+Once the server is running, visit http://localhost:3000 to start using the app. Now you can start contributing by 
+making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.

@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react';
-import LoadingSpinner from '../lib/client/LoadingSpinner';
+import LoadingSpinner from '../../lib/client/LoadingSpinner';
 import '@testing-library/jest-dom';
 
 describe('LoadingSpinner', () => {

@@ -1,6 +1,7 @@
 'use client';
 
 import ProfilePage from "@/app/profiles/page";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
@@ -13,6 +14,7 @@ export default function HomePage() {
       </main>
     )
   }
+  const fontStyle = "transition px-6 py-4 text-4xl font-medium xs:text-xs"
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -32,13 +34,20 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
-        <h1 className="text-5xl md:text-6xl xs:text-4xl font-extrabold max-w-3xl leading-tight">
-          Compass
+        <h1 className="py-4 text-5xl md:text-6xl xs:text-4xl font-extrabold max-w-3xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
+          Don't swipe. Just search.
         </h1>
-        <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
-          {"Tired of swiping? Search what you're looking for!"}
-        </p>
-        <div className=" w-full">
+        {/*<p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">*/}
+        {/*  {"Tired of swiping? Search what you're looking for!"}*/}
+        {/*</p>*/}
+
+        <div className="py-4">
+          <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600`}>
+            Sign In
+          </Link>
+
+        </div>
+        <div className=" w-full py-4">
           {profilePage()}
         </div>
       </section>

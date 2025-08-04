@@ -380,7 +380,7 @@ function RegisterComponent() {
 
   const dropdownConfig: DropdownConfig[] = [
     {
-      id: 'connections', title: 'Desired Connections', allowAdd: false,
+      id: 'connections', title: 'Type of Connection', allowAdd: false,
       content: null
     },
     {

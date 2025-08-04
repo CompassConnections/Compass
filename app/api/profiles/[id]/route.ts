@@ -82,7 +82,7 @@ export async function DELETE(
       prisma.profileCauseArea.deleteMany({
         where: { profileId: id },
       }),
-      // Delete desired connections
+      // Delete Type of Connection
       prisma.profileConnection.deleteMany({
         where: { profileId: id },
       }),

@@ -1,3 +1,8 @@
+
+[![CI](https://github.com/BayesBond/BayesBond/actions/workflows/ci.yml/badge.svg)](https://github.com/BayesBond/BayesBond/actions/workflows/ci.yml)
+[![CD](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml/badge.svg)](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml)
+![Vercel](https://deploy-badge.vercel.app/vercel/bayesbond)
+
 # BayesBond
 
 This repository provides the source code for [BayesBond](https://bayesbond.vercel.app), a web application where rational thinkers can bond and form deep 1-1 
@@ -14,7 +19,7 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 - Open source
 - Democratically governed
 
-The full description is available [here](https://martinbraquet.com/meeting-rational).
+The full description is available [here](https://BayesBond.com/meeting-rational).
 
 ## To Do
 

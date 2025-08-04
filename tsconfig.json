@@ -26,5 +26,6 @@
   "exclude": ["node_modules"],
   "types": ["jest", "@testing-library/jest-dom"],
   "typeRoots": ["./node_modules/@types", "./types"],
+  "jsx": "react-jsx",
   "sourceMap": true
 }

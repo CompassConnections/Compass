@@ -33,7 +33,6 @@ export default function LearnMorePage() {
             href="https://forms.gle/tKnXUMAbEreMK6FC6">form</a>!</p>
           <h5 id="join-chats">Join Chats</h5>
           <p>You can join the community on <a
-            href="https://join.slack.com/t/bayesmeet/shared_invite/zt-3a2k2ybf4-~S8i0hCuUETojxqNHJbB_g">Slack</a> or <a
             href="https://discord.gg/8Vd7jzqjun">Discord</a> to shape and test the product—or just to chat with
             like-minded people.</p>
           <h5 id="share">Share</h5>

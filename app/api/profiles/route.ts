@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const coreValues = url.searchParams.get("coreValues")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
-  const searchQuery = url.searchParams.get("search") || "";
+  const searchQuery = url.searchParams.get("searchQuery") || "";
 
   const profilesPerPage = 100;
   const offset = (page - 1) * profilesPerPage;
@@ -147,6 +147,7 @@ export async function GET(request: Request) {
 
   if (searchQuery) {
     where.OR = [
+      ...(where.OR ?? []),
       {name: {contains: searchQuery, mode: 'insensitive'}},
       // {email: {contains: searchQuery, mode: 'insensitive'}},
       {

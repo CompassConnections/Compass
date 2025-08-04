@@ -4,9 +4,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Gender} from "@prisma/client";
 import Dropdown from "@/app/components/dropdown";
 import Slider from '@mui/material/Slider';
-import {DropdownKey, RangeKey} from "@/lib/client/schema";
+import {DropdownKey, Item, RangeKey} from "@/lib/client/schema";
 import {capitalize} from "@/lib/format";
-import {Item} from "@/lib/client/schema";
 import {fetchFeatures} from "@/lib/client/fetching";
 
 interface FilterProps {
@@ -71,8 +70,46 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
 
 
   useEffect(() => {
-    fetchFeatures(setOptionsDropdownId)
+    fetchFeatures(setOptionsDropdownId);
   }, []);
+
+  useEffect(() => {
+    console.log('selectedDropdown changed:', selectedDropdown);
+  }, [selectedDropdown]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    console.log('optionsDropdown changed:', optionsDropdown, params);
+
+    for (const [key, value] of params.entries()) {
+      let v: any = value
+      if (key === 'minAge') {
+        setMinRange({...minRange, age: v});
+      } else if (key === 'maxAge') {
+        setMaxRange({...maxRange, age: v});
+      } else if (key === 'minIntroversion') {
+        setMinRange({...minRange, introversion: v});
+      } else if (key === 'maxIntroversion') {
+        setMaxRange({...maxRange, introversion: v});
+      } else if (['interests', 'coreValues', 'causeAreas', 'connections'].includes(key)) {
+        v = v.split(",").filter(Boolean) || []
+        console.log(v)
+        for (const n of v) {
+          const option = optionsDropdown[key].find(i => i.name === n);
+          if (option) {
+            console.log(option);
+            setSelectedDropdown(prev => {
+              const newSet = new Set(prev[key]);
+              newSet.add(option.id);
+              return {...prev, [key]: newSet};
+            });
+          }
+
+        }
+      }
+    }
+  }, [optionsDropdown]);
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -104,6 +141,7 @@ export function ProfileFilters({filters, onFilterChange, onShowFilters, onToggle
       } else {
         newSet.add(optionId);
       }
+      // console.log(newSet);
       return {...prev, [id]: newSet};
     });
   };

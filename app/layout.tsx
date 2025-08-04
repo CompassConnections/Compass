@@ -6,7 +6,7 @@ import Header from "@/app/Header";
 import Providers from "@/app/providers";
 
 export const metadata: Metadata = {
-  title: "IntentionalBond",
+  title: "Compass",
   description: "A bonding platform for rational thinkers",
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout(
               View on GitHub
             </a>
           </div>
-          <div>© {new Date().getFullYear()} IntentionalBond. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Compass. All rights reserved.</div>
         </footer>
       </div>
       </ThemeProvider>

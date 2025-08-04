@@ -33,7 +33,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
         <h1 className="text-5xl md:text-6xl xs:text-4xl font-extrabold max-w-3xl leading-tight">
-          IntentionalBond
+          Compass
         </h1>
         <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">
           {"Tired of swiping? Search what you're looking for!"}

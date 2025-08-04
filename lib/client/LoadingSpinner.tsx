@@ -2,7 +2,8 @@ import React from 'react'
 
 export default function LoadingSpinner() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', paddingTop: '2rem' }} >
-      <div className="spinner border-gray-300 border-t-gray-800" /></div>
+    <div className="flex justify-center min-h-screen py-8">
+      <div data-testid="spinner" className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
   )
 }

@@ -42,6 +42,14 @@ jobs:
       # Optional: Playwright E2E tests
       - name: Install Playwright deps
         run: npx playwright install --with-deps
+#        npm install @playwright/test
+#       npx playwright install
 
       - name: Run E2E tests
-        run: npx playwright test
+        run: |
+          npm start &
+          npx wait-on http://localhost:3000
+          npx playwright test tests/playwright
+          SERVER_PID=$(fuser -k 3000/tcp)
+          echo $SERVER_PID
+          kill $SERVER_PID

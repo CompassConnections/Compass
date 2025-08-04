@@ -485,7 +485,7 @@ function RegisterComponent() {
         <label className={headingStyle}>
           {title}
         </label>
-        {content && getDetails(id, 'Guidance', content)}
+        {content && getDetails(id, 'More Tips', content)}
 
         <div className="relative">
           <div className="flex items-center border border-gray-300 rounded-md shadow-sm">
@@ -497,7 +497,7 @@ function RegisterComponent() {
               onFocus={() => setShowDropdown(id, true)}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border-0 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder={allowAdd ? "Type to search or add" : "Type to search"}
+              placeholder={allowAdd ? "Search or add your own" : "Type to search"}
             />
             <button
               type="button"
@@ -814,15 +814,14 @@ function RegisterComponent() {
               <label htmlFor="description" className={headingStyle}>
                 About You
                 <p className="text-sm italic">
-                  Feel free to include any relevant links (dating / friends docs, etc.), but consider copy-pasting
-                  the content here so that people can find you by keyword search.
+                  People search by keyword, so include as many words that feel true to you!
                 </p>
               </label>
               {getDetails(
                 'description',
-                'Guidance',
+                'More Tips',
                 <>
-                  <p className="mt-2">To the extent that you are comfortable sharing, consider writing about:</p>
+                  <p className="mt-2">Consider adding:</p>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>Your interests and what you're looking for: type of connection, activities to do, etc.</li>
                     <li>Your availability and timezone</li>

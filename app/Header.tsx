@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { FaHome } from "react-icons/fa";
 import ThemeToggle from "@/lib/client/theme";
+import Image from "next/image";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -39,7 +40,7 @@ export default function Header() {
         >
           {isSmallScreen ? <FaHome className="w-5 h-5" /> : (
             <span className="flex items-center gap-2">
-              <img src="/favicon.ico" alt="Compass logo" className="w-12 h-12 dark:invert"/>
+              <Image src="/favicon.ico" alt="Compass logo" className="w-12 h-12 dark:invert"/>
               Compass
             </span>
           )}

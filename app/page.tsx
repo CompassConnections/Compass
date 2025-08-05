@@ -22,7 +22,7 @@ React.useEffect(() => {
   const text = "Search.";
   const typewriter = document.getElementById("typewriter");
   let i = 0;
-  let timeoutId;
+  let timeoutId: any;
   let intervalId;
   
   // Clear any existing content

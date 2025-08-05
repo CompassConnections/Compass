@@ -5,6 +5,8 @@ import Link from "next/link";
 import {signIn} from "next-auth/react";
 import {FcGoogle} from "react-icons/fc";
 import {useSearchParams} from "next/navigation";
+import Image from "next/image";
+
 
 export default function RegisterPage() {
   return (
@@ -147,7 +149,7 @@ function RegisterComponent() {
               {/*  The project is still in development...*/}
               {/*</h2>*/}
               <div className="flex justify-center mb-6">
-                <img src="/favicon.ico" alt="Compass logo" className="w-24 h-24 dark:invert" />
+                <Image src="/favicon.ico" alt="Compass logo" className="w-24 h-24 dark:invert" />
               </div>
               <h2 className="text-center text-3xl font-extrabold ">
                 Get Started

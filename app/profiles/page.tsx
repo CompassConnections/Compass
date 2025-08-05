@@ -201,7 +201,7 @@ export default function ProfilePage() {
           <div className="relative">
             <input
               type="text"
-              placeholder='Try "meditation", "hiking", or "chess"'
+              placeholder='Try "meditation", "hiking", or multiple words like "writing, nature"'
               className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={text}
               onChange={(e) => setText(e.target.value)}

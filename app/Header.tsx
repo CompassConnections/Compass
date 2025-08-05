@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import ThemeToggle from "@/lib/client/theme";
-import {favIcon} from "@/lib/client/media";
+import FavIcon from "@/components/FavIcon";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -37,7 +37,7 @@ export default function Header() {
           className="text-4xl font-bold hover:text-blue-600 transition-colors flex items-center"
           aria-label={isSmallScreen ? "Home" : "Compass"}
         >
-          {favIcon()}
+          <FavIcon className="dark:invert"/>
           {!isSmallScreen && (
             <span className="flex items-center gap-2">
               Compass

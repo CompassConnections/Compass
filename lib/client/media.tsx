@@ -21,9 +21,4 @@ export async function parseImage(img: string, setImage: any, batch = false) {
       setImage(url);
     }
   }
-
-}
-
-export function favIcon() {
-  return <Image src="/favicon.ico" alt="Compass logo" width={500} height={500} className="w-12 h-12 dark:invert"/>
 }

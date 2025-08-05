@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { FaHome } from "react-icons/fa";
 import ThemeToggle from "@/lib/client/theme";
+import Image from "next/image";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -30,25 +31,30 @@ export default function Header() {
   return (
     <header className="w-full
     {/*shadow-md*/}
-     py-4 px-8 xs:px-4">
+     py-5 px-8 xs:px-4">
       <nav className="flex justify-between items-center">
         <Link 
           href="/" 
-          className="text-xl font-bold hover:text-blue-600 transition-colors flex items-center"
+          className="text-4xl font-bold hover:text-blue-600 transition-colors flex items-center"
           aria-label={isSmallScreen ? "Home" : "Compass"}
         >
-          {isSmallScreen ? <FaHome className="w-5 h-5" /> : 'Compass'}
+          {isSmallScreen ? <FaHome className="w-5 h-5" /> : (
+            <span className="flex items-center gap-2">
+              <Image src="/favicon.ico" alt="Compass logo" className="w-12 h-12 dark:invert"/>
+              Compass
+            </span>
+          )}
         </Link>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
 
           <ThemeToggle/>
 
           <div className="flex items-center space-x-2">
             <Link
-              href="/learn-more"
-              className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500`}
+              href="/About"
+              className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-500`}
             >
-              Learn More
+              About
             </Link>
           </div>
           {session ? (
@@ -62,13 +68,13 @@ export default function Header() {
                 </Link>
                 {/*<Link*/}
                 {/*  href="/profiles"*/}
-                {/*  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"*/}
+                {/*  className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition"*/}
                 {/*>*/}
                 {/*  Dashboard*/}
                 {/*</Link>*/}
                 <button
                   onClick={() => signOut({callbackUrl: "/"})}
-                  className={`${fontStyle} bg-red-500 text-white rounded-lg hover:bg-red-600`}
+                  className={`${fontStyle} bg-red-500 text-white rounded-full hover:bg-red-600`}
                 >
                   Sign Out
                 </button>
@@ -76,13 +82,13 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600 `}>
+              <Link href="/login" className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-500`}>
                 Sign In
               </Link>
-              <Link href="/register"
-                    className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600`}>
+              {/*<Link href="/register"
+                    className={`${fontStyle} bg-blue-500 text-white rounded-full hover:bg-blue-600`}>
                 Sign Up
-              </Link>
+              </Link> */}
             </>
           )}
         </div>

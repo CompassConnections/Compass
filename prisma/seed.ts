@@ -108,7 +108,8 @@ async function main() {
     data: [
       {name: 'Debate Partner'},
       {name: 'Friendship'},
-      {name: 'Relationship'},
+      {name: 'Short-Term Relationship'},
+      {name: 'Long-Term Relationship'},
     ],
     skipDuplicates: true,
   });

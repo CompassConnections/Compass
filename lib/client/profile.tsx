@@ -120,7 +120,7 @@ export function Profile(url: string, header: any = null) {
   }
 
   const tagsConfig: Tags[] = [
-    {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Type of Connection'},
+    {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Connection Type'},
     {profileAttribute: 'coreValues', attribute: 'value', title: 'Values'},
     {profileAttribute: 'intellectualInterests', attribute: 'interest', title: 'Interests'},
     // {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},

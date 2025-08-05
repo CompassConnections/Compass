@@ -1,5 +1,4 @@
 'use client';
-import Image from "next/image";
 
 export async function parseImage(img: string, setImage: any, batch = false) {
   if (!img) {

@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { FaHome } from "react-icons/fa";
 import ThemeToggle from "@/lib/client/theme";
-import Image from "next/image";
+import {favIcon} from "@/lib/client/media";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -38,7 +37,7 @@ export default function Header() {
           className="text-4xl font-bold hover:text-blue-600 transition-colors flex items-center"
           aria-label={isSmallScreen ? "Home" : "Compass"}
         >
-          <Image src="/favicon.ico" alt="Compass logo" width={500} height={500} className="w-12 h-12 dark:invert"/>
+          {favIcon()}
           {!isSmallScreen && (
             <span className="flex items-center gap-2">
               Compass

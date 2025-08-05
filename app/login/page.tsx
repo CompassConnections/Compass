@@ -5,7 +5,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 import {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
 import {FcGoogle} from "react-icons/fc";
-import Image from "next/image";
+import {favIcon} from "@/lib/client/media";
 
 export default function LoginPage() {
   return (
@@ -72,7 +72,7 @@ function RegisterComponent() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-6">
-            <Image src="/favicon.ico" alt="Compass logo" className="w-24 h-24 dark:invert" />
+            {favIcon()}
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold ">
             Sign in to your account

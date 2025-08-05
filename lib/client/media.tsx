@@ -1,4 +1,5 @@
 'use client';
+import Image from "next/image";
 
 export async function parseImage(img: string, setImage: any, batch = false) {
   if (!img) {
@@ -21,4 +22,8 @@ export async function parseImage(img: string, setImage: any, batch = false) {
     }
   }
 
+}
+
+export function favIcon() {
+  return <Image src="/favicon.ico" alt="Compass logo" width={500} height={500} className="w-12 h-12 dark:invert"/>
 }

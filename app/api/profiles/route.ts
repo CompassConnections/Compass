@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const coreValues = url.searchParams.get("coreValues")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
-  const searchQuery = url.searchParams.get("search") || "";
+  const searchQueries = url.searchParams.get("searchQuery")?.split(",").map(q => q.trim()).filter(Boolean) || [];
 
   const profilesPerPage = 100;
   const offset = (page - 1) * profilesPerPage;
@@ -145,93 +145,99 @@ export async function GET(request: Request) {
     };
   }
 
-  if (searchQuery) {
-    where.OR = [
-      {name: {contains: searchQuery, mode: 'insensitive'}},
-      // {email: {contains: searchQuery, mode: 'insensitive'}},
-      {
-        profile: {
-          description: {contains: searchQuery, mode: 'insensitive'},
-        },
-      },
-      {
-        profile: {
-          occupation: {contains: searchQuery, mode: 'insensitive'},
-        },
-      },
-      {
-        profile: {
-          location: {contains: searchQuery, mode: 'insensitive'},
-        },
-      },
-      {
-        profile: {
-          contactInfo: {contains: searchQuery, mode: 'insensitive'},
-        },
-      },
-      {
-        profile: {
-          intellectualInterests: {
-            some: {
-              interest: {
-                name: {contains: searchQuery, mode: "insensitive"},
+  if (searchQueries.length > 0) {
+    where.AND = [
+      ...(where.AND ?? []),
+      ...searchQueries.map(query => ({
+        OR: [
+          {name: {contains: query, mode: 'insensitive'}},
+          // {email: {contains: searchQuery, mode: 'insensitive'}},
+          {
+            profile: {
+              description: {contains: query, mode: 'insensitive'},
+            },
+          },
+          {
+            profile: {
+              occupation: {contains: query, mode: 'insensitive'},
+            },
+          },
+          {
+            profile: {
+              location: {contains: query, mode: 'insensitive'},
+            },
+          },
+          {
+            profile: {
+              contactInfo: {contains: query, mode: 'insensitive'},
+            },
+          },
+          {
+            profile: {
+              intellectualInterests: {
+                some: {
+                  interest: {
+                    name: {contains: query, mode: "insensitive"},
+                  },
+                },
               },
             },
           },
-        },
-      },
-      {
-        profile: {
-          coreValues: {
-            some: {
-              value: {
-                name: {contains: searchQuery, mode: "insensitive"},
+          {
+            profile: {
+              coreValues: {
+                some: {
+                  value: {
+                    name: {contains: query, mode: "insensitive"},
+                  },
+                },
               },
             },
           },
-        },
-      },
-      {
-        profile: {
-          causeAreas: {
-            some: {
-              causeArea: {
-                name: {contains: searchQuery, mode: "insensitive"},
+          {
+            profile: {
+              causeAreas: {
+                some: {
+                  causeArea: {
+                    name: {contains: query, mode: "insensitive"},
+                  },
+                },
               },
             },
           },
-        },
-      },
-      {
-        profile: {
-          desiredConnections: {
-            some: {
-              connection: {
-                name: {contains: searchQuery, mode: "insensitive"},
+          {
+            profile: {
+              desiredConnections: {
+                some: {
+                  connection: {
+                    name: {contains: query, mode: "insensitive"},
+                  },
+                },
               },
             },
           },
-        },
-      },
-      {
-        profile: {
-          promptAnswers: {
-            some: {
-              answer: {contains: searchQuery, mode: "insensitive"},
+          {
+            profile: {
+              promptAnswers: {
+                some: {
+                  answer: {contains: query, mode: "insensitive"},
+                },
+              },
             },
           },
-        },
-      },
-      {
-        profile: {
-          promptAnswers: {
-            some: {
-              prompt: {contains: searchQuery, mode: "insensitive"},
+          {
+            profile: {
+              promptAnswers: {
+                some: {
+                  prompt: {contains: query, mode: "insensitive"},
+                },
+              },
             },
           },
-        },
-      },
-    ];
+        ]
+      }))
+    ]
+
   }
 
   console.log(where.profile);

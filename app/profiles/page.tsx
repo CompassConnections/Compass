@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import React, {useCallback, useEffect, useState} from "react";
-import LoadingSpinner from "@/lib/client/LoadingSpinner";
 import {DropdownKey, ProfileData} from "@/lib/client/schema";
 import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
 import Image from "next/image";
@@ -26,19 +25,70 @@ const initialState = {
   forceRun: false,
 };
 
+type ProfileFilters = {
+  gender: string;
+  minAge: number | null;
+  maxAge: number | null;
+  minIntroversion: number | null;
+  maxIntroversion: number | null;
+  interests: string[];
+  coreValues: string[];
+  causeAreas: string[];
+  connections: string[];
+  searchQuery: string;
+  forceRun: boolean;
+};
+
 
 export default function ProfilePage() {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [_, setShowFilters] = useState(true);
-  const [images, setImages] = useState<string[]>([])
+  const [images, setImages] = useState<string[]>([]);
+
+  const [text, setText] = useState<string>('');
+
   const [filters, setFilters] = useState(initialState);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const newFilters = {...initialState};
+
+    for (const [key, value] of params.entries()) {
+      // Type guard to check if the key is a valid filter key
+      if (key in newFilters) {
+        const filterKey = key as keyof ProfileFilters;
+
+        if (key === 'searchQuery') {
+          setText(value);
+          newFilters[filterKey] = value as never;
+        }
+        else if (['interests', 'coreValues', 'causeAreas', 'connections'].includes(key)) {
+          const arrayKey = filterKey as 'interests' | 'coreValues' | 'causeAreas' | 'connections';
+          newFilters[arrayKey] = [...newFilters[arrayKey], value];
+        } else {
+          newFilters[filterKey] = value as never;
+        }
+      }
+    }
+
+    console.log(newFilters);
+
+    setFilters(newFilters);
+  }, []);
+
+  const [isStart, setIsStart] = useState(true);
 
   const fetchProfiles = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
+      let params = new URLSearchParams();
+      if (isStart) {
+        params = new URLSearchParams(window.location.search);
+        setIsStart(false);
+      }
+      console.log('fetchProfiles', params);
 
       if (filters.gender) params.append('gender', filters.gender);
       if (filters.minAge) params.append('minAge', filters.minAge.toString());
@@ -54,9 +104,12 @@ export default function ProfilePage() {
         }
       }
 
-      if (filters.searchQuery) params.append('search', filters.searchQuery);
+      if (filters.searchQuery) params.append('searchQuery', filters.searchQuery);
 
-      const response = await fetch(`/api/profiles?${params.toString()}`);
+      let s = params.toString();
+      window.history.pushState({}, '', `?${s}`);
+
+      const response = await fetch(`/api/profiles?${s}`);
       const data = await response.json();
       if (!response.ok) {
         console.log(response);
@@ -124,9 +177,8 @@ export default function ProfilePage() {
   const resetFilters = () => {
     setFilters(initialState);
     setText('');
+    // window.history.pushState({}, '', '');
   };
-
-  const [text, setText] = useState<string>('');
 
   const onFilterChange = handleFilterChange
 
@@ -149,7 +201,7 @@ export default function ProfilePage() {
           <div className="relative">
             <input
               type="text"
-              placeholder='Try "meditation", "hiking", or "chess"'
+              placeholder='Try "meditation", "hiking", or multiple words like "writing, nature"'
               className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -205,9 +257,10 @@ export default function ProfilePage() {
           <div className="flex-1">
             {loading ? (
               <div className="flex justify-center py-8">
-                  <div className="flex justify-center min-h-screen py-8">
-                  <div data-testid="spinner" className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
+                <div className="flex justify-center min-h-screen py-8">
+                  <div data-testid="spinner"
+                       className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
               </div>
             ) : error ? (
               <div className="flex justify-center py-2">

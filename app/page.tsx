@@ -82,6 +82,7 @@ React.useEffect(() => {
         <div className="py-18">
           <Link href="/register" className={`${fontStyle} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full hover:from-red-700 hover:to-red-900`}>
             Join Compass
+            
           </Link>
         {/* Spacer */}
         <div className="h-52"></div>

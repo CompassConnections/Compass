@@ -4,7 +4,7 @@ import Link from "next/link";
 import {aColor} from "@/lib/client/constants";
 import {useEffect, useState} from "react";
 
-export default function LearnMorePage() {
+export default function About() {
 
   const [totalUsers, setTotalUsers] = useState<number>(0);
   useEffect(() => {
@@ -43,17 +43,16 @@ export default function LearnMorePage() {
           </div>
           <h3 id="how-to-help">How to Help</h3>
           <h5 id="give-suggestions-or-contribute">Give Suggestions or Contribute</h5>
-          <p>Give suggestions or show your inclination to contribute through this <a
+          <p>Give suggestions or let us know you want to help through this <a
             href="https://forms.gle/tKnXUMAbEreMK6FC6">form</a>!</p>
           <h5 id="join-chats">Join Chats</h5>
-          <p>You can join the community on <a
-            href="https://discord.gg/8Vd7jzqjun">Discord</a> to shape and test the product—or just to chat with
+          <p>Join the community on <a
+            href="https://discord.gg/8Vd7jzqjun">Discord</a> to shape and test the product—or just chat with
             like-minded people.</p>
           <h5 id="share">Share</h5>
-          <p>Share the idea and article with people who identify with the community values and may benefit from the
-            product.</p>
+          <p>Share the app and article with people who may benefit from the product.</p>
           <h5 id="donate">Donate</h5>
-          <p>You can already donate to support the initial infrastructure via <a
+          <p>Donate to support the initial infrastructure via <a
             href="https://www.paypal.com/paypalme/MartinBraquet">PayPal</a> or <a
             href="https://github.com/sponsors/MartinBraquet">GitHub</a> (GitHub has increased transparency, but requires
             an account).</p>

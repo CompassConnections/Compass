@@ -14,7 +14,7 @@ export default function HomePage() {
       </main>
     )
   }
-  const fontStyle = "transition px-6 py-4 text-4xl font-medium xs:text-xs"
+  const fontStyle = "transition px-5 py-3 text-3xl font-medium xs:text-sm"
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -33,21 +33,21 @@ export default function HomePage() {
       {/*</header>*/}
 
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center flex-1 text-center px-4">
-        <h1 className="py-4 text-5xl md:text-6xl xs:text-4xl font-extrabold max-w-3xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
-          Don't swipe. Just search.
+      <section className="flex flex-col items-center justify-start flex-1 text-center px-4">
+        <h1 className="pt-48 pb-8 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
+          Don't Swipe. Search.
         </h1>
         {/*<p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">*/}
         {/*  {"Tired of swiping? Search what you're looking for!"}*/}
         {/*</p>*/}
 
-        <div className="py-4">
-          <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-lg hover:bg-blue-600`}>
-            Sign In
+        <div className="py-8">
+          <Link href="/register" className={`${fontStyle} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full hover:from-red-700 hover:to-red-900`}>
+            Join Compass
           </Link>
 
         </div>
-        <div className=" w-full py-4">
+        <div className=" w-full py-40">
           {profilePage()}
         </div>
       </section>

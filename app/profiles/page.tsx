@@ -5,6 +5,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {DropdownKey, ProfileData} from "@/lib/client/schema";
 import {dropdownConfig, ProfileFilters} from "./ProfileFilters";
 import Image from "next/image";
+import {useSession} from "next-auth/react";
 
 // Disable static generation
 export const dynamic = "force-dynamic";
@@ -41,6 +42,12 @@ type ProfileFilters = {
 
 
 export default function ProfilePage() {
+  const {data: session} = useSession();
+  const userId = session?.user?.id
+  console.log("session:", userId)
+
+  // if (!userId) return <div/>
+
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -63,8 +70,7 @@ export default function ProfilePage() {
         if (key === 'searchQuery') {
           setText(value);
           newFilters[filterKey] = value as never;
-        }
-        else if (['interests', 'coreValues', 'causeAreas', 'connections'].includes(key)) {
+        } else if (['interests', 'coreValues', 'causeAreas', 'connections'].includes(key)) {
           const arrayKey = filterKey as 'interests' | 'coreValues' | 'causeAreas' | 'connections';
           newFilters[arrayKey] = [...newFilters[arrayKey], value];
         } else {
@@ -181,6 +187,8 @@ export default function ProfilePage() {
   };
 
   const onFilterChange = handleFilterChange
+
+  if (!userId) return <div/>
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8">

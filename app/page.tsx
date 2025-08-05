@@ -2,56 +2,48 @@
 
 import ProfilePage from "@/app/profiles/page";
 import Link from "next/link";
-import React from 'react';  // ← Add this line here
+import {useEffect} from 'react';
+import {useSession} from "next-auth/react"; // ← Add this line here
 
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
 
 export default function HomePage() {
-  const profilePage = () => {
-    return (
-      <main className="min-h-screen flex flex-col">
-        <ProfilePage/>
-      </main>
-    )
-  }
+  const {data: session} = useSession();
+  const userId = session?.user?.id
+  console.log("session:", userId)
+
   const fontStyle = "transition px-5 py-3 text-3xl font-medium xs:text-sm"
 
-  
-React.useEffect(() => {
-  const text = "Search.";
-  const typewriter = document.getElementById("typewriter");
-  let i = 0;
-  let timeoutId: any;
-  let intervalId;
-  
-  // Clear any existing content
-  if (typewriter) {
-    typewriter.textContent = "";
-  }
-  
-  function typeWriter() {
-    if (i < text.length && typewriter) {
-      typewriter.textContent = text.substring(0, i + 1);
-      i++;
-      timeoutId = setTimeout(typeWriter, 150);
+  useEffect(() => {
+    const text = "Search.";
+    const typewriter = document.getElementById("typewriter");
+    let i = 0;
+    let timeoutId: any;
+    let intervalId;
+
+    // Clear any existing content
+    if (typewriter) typewriter.textContent = ""
+
+    function typeWriter() {
+      if (i < text.length && typewriter) {
+        typewriter.textContent = text.substring(0, i + 1);
+        i++;
+        timeoutId = setTimeout(typeWriter, 150);
+      }
     }
-  }
-  
-  // Start typing after delay
-  intervalId = setTimeout(() => {
-    typeWriter();
-  }, 500);
-  
-  // Cleanup function - this runs when component unmounts
-  return () => {
-    clearTimeout(timeoutId);
-    clearTimeout(intervalId);
-    if (typewriter) {
-      typewriter.textContent = "Search."; // Just show the full text
-    }
-  };
-}, []);
+
+    // Start typing after delay
+    intervalId = setTimeout(() => typeWriter(), 500);
+
+    // Cleanup function - this runs when component unmounts
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(intervalId);
+      if (typewriter) typewriter.textContent = "Search."
+    };
+  }, []);
+
   return (
     <main className="min-h-screen flex flex-col">
       {/* Header */}
@@ -70,8 +62,9 @@ React.useEffect(() => {
 
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-start flex-1 text-center px-4">
-        <div className="h-20"></div>
-        <h1 className="pt-48 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
+        <div className="h-10"></div>
+        <h1
+          className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
           Don't Swipe. <span id="typewriter"></span><span id="cursor" className="animate-pulse">|</span>
         </h1>
         {/*<p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl">*/}
@@ -79,16 +72,16 @@ React.useEffect(() => {
         {/*</p>*/}
         {/* Spacer */}
         <div className="h-10"></div>
-        <div className="py-18">
-          <Link href="/register" className={`${fontStyle} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full hover:from-red-700 hover:to-red-900`}>
+        <div className="py-8">
+          <Link href="/register"
+                className={`${fontStyle} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full hover:from-red-700 hover:to-red-900`}>
             Join Compass
-            
           </Link>
-        {/* Spacer */}
-        <div className="h-52"></div>
+          {/* Spacer */}
+          {/*<div className="h-16"></div>*/}
         </div>
         {/* Why Compass Bar */}
-        <div className="w-full bg-gray-50 dark:bg-gray-900 py-16 mt-20">
+        <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div className="space-y-2">
@@ -97,14 +90,14 @@ React.useEffect(() => {
                   No algorithms. Every profile searchable.
                 </p>
               </div>
-              
+
               <div className="space-y-2">
                 <h3 className="text-lg font-bold">Built for Depth</h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Filter by any keyword and what matters most.
                 </p>
               </div>
-              
+
               <div className="space-y-2">
                 <h3 className="text-lg font-bold">Community Owned</h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -115,10 +108,16 @@ React.useEffect(() => {
           </div>
         </div>
         {/* Spacer */}
-        <div className="h-20"></div>
-        <div className=" w-full py-18">
-          {profilePage()}
-        </div>
+        {userId &&
+            <>
+                {/*<div className="h-20"></div>*/}
+                <div className=" w-full py-10">
+                    <main className="min-h-screen flex flex-col">
+                        <ProfilePage/>
+                    </main>
+                </div>
+            </>
+        }
       </section>
     </main>
   );

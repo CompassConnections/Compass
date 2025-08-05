@@ -81,7 +81,7 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className={`${fontStyle} bg-blue-500 text-white rounded-full hover:bg-blue-600 `}>
+              <Link href="/login" className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-500`}>
                 Sign In
               </Link>
               {/*<Link href="/register"

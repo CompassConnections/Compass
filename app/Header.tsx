@@ -38,9 +38,9 @@ export default function Header() {
           className="text-4xl font-bold hover:text-blue-600 transition-colors flex items-center"
           aria-label={isSmallScreen ? "Home" : "Compass"}
         >
-          {isSmallScreen ? <FaHome className="w-5 h-5" /> : (
+          <Image src="/favicon.ico" alt="Compass logo" width={500} height={500} className="w-12 h-12 dark:invert"/>
+          {!isSmallScreen && (
             <span className="flex items-center gap-2">
-              <Image src="/favicon.ico" alt="Compass logo" className="w-12 h-12 dark:invert"/>
               Compass
             </span>
           )}

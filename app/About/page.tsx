@@ -2,22 +2,21 @@
 
 import Link from "next/link";
 import {aColor} from "@/lib/client/constants";
-import {useEffect, useState} from "react";
 
 export default function About() {
 
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  useEffect(() => {
-    const getCount = async () => {
-      const countResponse = await fetch('/api/profiles/count');
-      if (countResponse.ok) {
-        const {count} = await countResponse.json();
-        setTotalUsers(count);
-      }
-    };
-
-    getCount();
-  }, []); // <- runs once after initial mount
+  // const [totalUsers, setTotalUsers] = useState<number>(0);
+  // useEffect(() => {
+  //   const getCount = async () => {
+  //     const countResponse = await fetch('/api/profiles/count');
+  //     if (countResponse.ok) {
+  //       const {count} = await countResponse.json();
+  //       setTotalUsers(count);
+  //     }
+  //   };
+  //
+  //   getCount();
+  // }, []); // <- runs once after initial mount
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
       {aColor}
@@ -59,8 +58,8 @@ export default function About() {
           <h5 id="github-repo">Source Code</h5>
           <p>The source code and instructions for development are available on <a href="https://github.com/BayesBond/BayesBond">GitHub</a>.</p>
         </div>
-        <h3 id="how-to-help">Statistics</h3>
-        <p>{totalUsers} total users</p>
+        {/*<h3 id="how-to-help">Statistics</h3>*/}
+        {/*<p>{totalUsers} total users</p>*/}
       </div>
     </div>
   );

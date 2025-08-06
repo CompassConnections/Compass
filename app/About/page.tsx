@@ -25,7 +25,7 @@ export default function About() {
         <h1 className="text-3xl font-bold  mb-4 text-center">About Compass</h1>
         <div className="et_pb_text_inner">
           {/*<h1 id="abstract">Abstract</h1>*/}
-          <p>Forming and maintaining close connections is fundamental for most people’s mental health—and hence overall
+          <p>Close connections is fundamental for most people’s mental health—and hence overall
             well-being. However, currently available meeting platforms, lacking transparency and searchability, are
             deeply failing to bring together thoughtful people. This platform is designed to
             foster close friendships and relationships for people who prioritize learning, curiosity, and critical

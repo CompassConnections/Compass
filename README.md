@@ -3,9 +3,9 @@
 [![CD](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml/badge.svg)](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml)
 ![Vercel](https://deploy-badge.vercel.app/vercel/bayesbond)
 
-# BayesBond
+# Compass
 
-This repository provides the source code for [BayesBond](https://bayesbond.vercel.app), a web application where rational thinkers can bond and form deep 1-1 
+This repository provides the source code for [Compass](https://bayesbond.vercel.app), a web application where rational thinkers can bond and form deep 1-1 
 relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
@@ -19,7 +19,7 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 - Open source
 - Democratically governed
 
-The full description is available [here](https://BayesBond.com/meeting-rational).
+The full description is available [here](https://martinbraquet.com/meeting-rational).
 
 ## To Do
 
@@ -53,48 +53,87 @@ The web app is coded in Typescript using React as front-end and Prisma as back-e
 
 ## Development
 
-After cloning the repo and navigating into it, install the dependencies:
+Clone the repo and navigating into it:
+```bash
+git clone git@github.com:BayesBond/BayesBond.git
+cd BayesBond
+```
 
+Install the dependencies:
 ```
 npm install
 ```
 
-You now need to configure your database connection via an environment variable.
+### Environment Variables
 
-Create an `.env` file:
-
+Configure your database connection via an environment variable. Create an `.env` file:
 ```bash
 cp .env.example .env
 ```
 
-To ensure your authentication works properly, you'll also need to set the `AUTH_SECRET` [env var for NextAuth.js]
-(https://next-auth.js.org/configuration/options). You can generate such a random 32-character string with:
+To ensure your authentication works properly, you'll also need to set the `AUTH_SECRET`. You can generate such a random 32-character string with:
 ```bash
 npx auth secret
 ```
 
-In the end, your entire `.env` file should look similar to this (but using _your own values_ for the env vars):
+In the end, your `.env` file should look similar to this (but using _your own values_ for the secret):
 ```bash
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/compass"
 AUTH_SECRET="gTwLSXFeNWFRpUTmxlRniOfegXYw445pd0k6JqXd7Ag="
 ```
 
-Run the following commands to set up your local development database and Prisma schema:
+### Installing PostgreSQL
+
+Run the following commands to set up your local development database and Prisma schema. Run only the section that corresponds to your operating system.
+
+On macOS:
 ```bash
-npx prisma migrate dev --name init
+brew install postgresql
+brew services start postgresql
+```
+
+On Linux:
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+````
+
+On Windows, you can download PostgreSQL from the [official website](https://www.postgresql.org/download/windows/).
+
+### Database Initialization
+
+Create a database named `compass` and set the password for the `postgres` user:
+```bash
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'password';  
+\q
+```
+
+Create the database
+```bash
+npx prisma generate
+npx prisma db push
+npx prisma db seed
 ```
 Note that your local database will be made of synthetic data, not real users. This is fine for development and testing.
+
+### Tests
 
 Make sure the tests pass:
 ```bash
 npm run test
 ```
 
+### Running the Development Server
+
 Start the development server:
 ```bash
 npm run dev
 ```
 
-Once the server is running, visit http://localhost:3000 to start using the app. Now you can start contributing by making changes and submitting pull requests!
+Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles; you should see 5 synthetic profiles.
+
+Now you can start contributing by making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.

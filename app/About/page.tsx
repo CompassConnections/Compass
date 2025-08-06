@@ -2,22 +2,9 @@
 
 import Link from "next/link";
 import {aColor} from "@/lib/client/constants";
-import {useEffect, useState} from "react";
 
 export default function About() {
 
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  useEffect(() => {
-    const getCount = async () => {
-      const countResponse = await fetch('/api/profiles/count');
-      if (countResponse.ok) {
-        const {count} = await countResponse.json();
-        setTotalUsers(count);
-      }
-    };
-
-    getCount();
-  }, []); // <- runs once after initial mount
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
       {aColor}

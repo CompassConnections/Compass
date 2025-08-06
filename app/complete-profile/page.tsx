@@ -543,7 +543,7 @@ function RegisterComponent() {
               )}
 
               {/* Filtered features */}
-              {allFeat
+              {(!allowAdd || newFeat.length >= 3) && allFeat
                 .filter(feature =>
                   feature.name.toLowerCase().includes(newFeat.toLowerCase())
                 )

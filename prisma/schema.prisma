@@ -1,62 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String?         @unique
-  password      String?         // <-- Add this for email/password auth
-  emailVerified        DateTime?
-  verificationToken    String?   @unique
+  id                       String          @id @default(cuid())
+  name                     String?
+  email                    String?         @unique
+  password                 String?
+  emailVerified            DateTime?
+  verificationToken        String?         @unique
   verificationTokenExpires DateTime?
-  image                String?
-  accounts      Account[]
-  sessions      Session[]
-  
-  // Profile Information
-  profile       Profile?
-  
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  image                    String?
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  accounts                 Account[]
+  Authenticator            Authenticator[]
+  profile                  Profile?
+  sessions                 Session[]
 }
 
 model Profile {
-  id                   String         @id @default(cuid())
-  userId               String         @unique
-  location             String?        // Need to normalize later for geospatial
-  description          String?
-  contactInfo          String?
-  birthYear            Int?
-  occupation           String?
-  gender               Gender?
-  personalityType      PersonalityType?
-  introversion         Int?
-  conflictStyle        ConflictStyle?
-  images               String[]
-  // communicationPreferences     CommunicationPreferences[]
-
-  // Many-to-many
-  promptAnswers         PromptAnswer[]
+  id                    String              @id @default(cuid())
+  userId                String              @unique
+  location              String?
+  description           String?
+  contactInfo           String?
+  birthYear             Int?
+  occupation            String?
+  gender                Gender?
+  personalityType       PersonalityType?
+  introversion          Int?
+  conflictStyle         ConflictStyle?
+  images                String[]
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  causeAreas            ProfileCauseArea[]
   desiredConnections    ProfileConnection[]
   intellectualInterests ProfileInterest[]
   coreValues            ProfileValue[]
-  causeAreas            ProfileCauseArea[]
+  promptAnswers         PromptAnswer[]
+}
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Connection {
+  id    String              @id @default(cuid())
+  name  String              @unique
+  users ProfileConnection[]
+}
+
+model Interest {
+  id    String            @id @default(cuid())
+  name  String            @unique
+  users ProfileInterest[]
+}
+
+model Value {
+  id    String         @id @default(cuid())
+  name  String         @unique
+  users ProfileValue[]
+}
+
+model CauseArea {
+  id    String             @id @default(cuid())
+  name  String             @unique
+  users ProfileCauseArea[]
+}
+
+model ProfileConnection {
+  profileId    String
+  connectionId String
+  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  profile      Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, connectionId])
+}
+
+model ProfileInterest {
+  profileId  String
+  interestId String
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, interestId])
+}
+
+model ProfileValue {
+  profileId String
+  valueId   String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  value     Value   @relation(fields: [valueId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, valueId])
+}
+
+model ProfileCauseArea {
+  profileId   String
+  causeAreaId String
+  causeArea   CauseArea @relation(fields: [causeAreaId], references: [id], onDelete: Cascade)
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, causeAreaId])
+}
+
+model PromptAnswer {
+  id        String  @id @default(cuid())
+  profileId String
+  prompt    String
+  answer    String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
 }
 
 enum Gender {
-  Man
-  Woman
+  Male
+  Female
   Other
 }
 
@@ -72,138 +183,4 @@ enum ConflictStyle {
   Compromising
   Accommodating
   Collaborating
-}
-
-model Connection {
-  id    String @id @default(cuid())
-  name  String @unique
-  users ProfileConnection[]
-}
-
-model Interest {
-  id    String @id @default(cuid())
-  name  String @unique
-  users ProfileInterest[]
-}
-
-model Value {
-  id    String @id @default(cuid())
-  name  String @unique
-  users ProfileValue[]
-}
-
-model CauseArea {
-  id    String @id @default(cuid())
-  name  String @unique
-  users ProfileCauseArea[]
-}
-
-// Join tables
-model ProfileConnection {
-  profileId String
-  connectionId String
-
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  connection Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@id([profileId, connectionId])
-}
-
-// Join tables
-model ProfileInterest {
-  profileId String
-  interestId String
-
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
-
-  @@id([profileId, interestId])
-}
-
-model ProfileValue {
-  profileId String
-  valueId String
-
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  value Value @relation(fields: [valueId], references: [id], onDelete: Cascade)
-
-  @@id([profileId, valueId])
-}
-
-model ProfileCauseArea {
-  profileId String
-  causeAreaId String
-
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  causeArea CauseArea @relation(fields: [causeAreaId], references: [id], onDelete: Cascade)
-
-  @@id([profileId, causeAreaId])
-}
-
-model PromptAnswer {
-  id        String   @id @default(cuid())
-  profileId String
-  prompt    String
-  answer    String
-
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-}
-
-
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-// Optional for WebAuthn support
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, credentialID])
 }

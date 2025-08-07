@@ -1,26 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import {useSession} from "next-auth/react";
 import ThemeToggle from "@/lib/client/theme";
 import FavIcon from "@/components/FavIcon";
 
 export default function Header() {
-  const { data: session } = useSession();
+  const {data: session} = useSession();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 640); // Tailwind's 'sm' breakpoint is 640px
     };
-    
+
     // Initial check
     checkScreenSize();
-    
+
     // Add event listener for window resize
     window.addEventListener('resize', checkScreenSize);
-    
+
     // Clean up the event listener when the component unmounts
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
@@ -32,8 +32,8 @@ export default function Header() {
     {/*shadow-md*/}
      py-5 px-8 xs:px-4">
       <nav className="flex justify-between items-center">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="text-4xl font-bold hover:text-blue-600 transition-colors flex items-center"
           aria-label={isSmallScreen ? "Home" : "Compass"}
         >
@@ -71,17 +71,12 @@ export default function Header() {
                 {/*>*/}
                 {/*  Dashboard*/}
                 {/*</Link>*/}
-                <button
-                  onClick={() => signOut({callbackUrl: "/"})}
-                  className={`${fontStyle} bg-red-500 text-white rounded-full hover:bg-red-600`}
-                >
-                  Sign Out
-                </button>
               </div>
             </>
           ) : (
             <>
-              <Link href="/login" className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-500`}>
+              <Link href="/login"
+                    className={`${fontStyle} bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-500`}>
                 Sign In
               </Link>
               {/*<Link href="/register"

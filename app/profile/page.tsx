@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {usePathname, useRouter} from "next/navigation";
 import {Profile} from "@/lib/client/profile";
 import {useEffect} from "react";
-import {useSession} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 
 export default function ProfilePage() {
   const pathname = usePathname(); // Get the current route
@@ -30,10 +30,16 @@ export default function ProfilePage() {
         </div>
         <Link
           href={`/complete-profile?redirect=${encodeURIComponent(pathname)}`}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mx-1 transition px-2 py-2 text-sm font-medium xs:text-xs bg-blue-500 text-white rounded-full hover:bg-blue-600 min-w-20"
         >
           Edit Profile
         </Link>
+        <button
+          onClick={() => signOut({callbackUrl: "/"})}
+          className="mx-1 transition px-2 py-2 text-sm font-medium xs:text-xs bg-red-500 text-white rounded-full hover:bg-red-600 min-w-20"
+        >
+          Sign Out
+        </button>
       </div>
     )
 

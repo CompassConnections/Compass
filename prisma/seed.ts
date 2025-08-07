@@ -108,8 +108,7 @@ async function main() {
     data: [
       {name: 'Debate Partner'},
       {name: 'Friendship'},
-      {name: 'Short-Term Relationship'},
-      {name: 'Long-Term Relationship'},
+      {name: 'Relationship'},
     ],
     skipDuplicates: true,
   });
@@ -135,7 +134,7 @@ async function main() {
             birthYear: 2025 - profile.age,
             introversion: profile.introversion,
             description: `[Dummy profile for demo purposes]\n${profile.bio}`,
-            gender: i % 2 === 0 ? 'Male' : 'Female',
+            gender: i % 2 === 0 ? 'Man' : 'Woman',
             personalityType: i % 3 === 0 ? 'Extrovert' : 'Introvert',
             conflictStyle: 'Avoidant',
             contactInfo: `Email: user${i}@bayesbond.com\nPhone: +1 (123) 456-7890`,

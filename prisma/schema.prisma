@@ -55,8 +55,8 @@ model Profile {
 }
 
 enum Gender {
-  Male
-  Female
+  Man
+  Woman
   Other
 }
 

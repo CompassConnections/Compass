@@ -16,6 +16,8 @@ export default function RegisterPage() {
   );
 }
 
+const href = '/onboarding';
+
 function RegisterComponent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(searchParams.get('error'));
@@ -25,13 +27,13 @@ function RegisterComponent() {
 
   function redirect() {
     // Redirect to complete profile page
-    window.location.href = '/complete-profile';
+    window.location.href = href;
   }
 
   const handleGoogleSignUp = async () => {
     try {
       setIsLoading(true);
-      await signIn('google', {callbackUrl: '/complete-profile'});
+      await signIn('google', {callbackUrl: href});
     } catch (error) {
       console.error('Error signing up with Google:', error);
       setError('Failed to sign up with Google');

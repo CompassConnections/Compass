@@ -72,14 +72,14 @@ export default function HomePage() {
         {/*</p>*/}
         {/* Spacer */}
         <div className="h-10"></div>
-        <div className="py-8">
+        {!userId && <div className="py-8">
           <Link href="/register"
                 className={`${fontStyle} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-full hover:from-red-700 hover:to-red-900`}>
             Join Compass
           </Link>
           {/* Spacer */}
           {/*<div className="h-16"></div>*/}
-        </div>
+        </div>}
         {/* Why Compass Bar */}
         <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
           <div className="max-w-6xl mx-auto px-4">

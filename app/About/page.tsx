@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import {aColor} from "@/lib/client/constants";
+import {useSession} from "next-auth/react";
 
 export default function About() {
+  const {data: session} = useSession();
+  const userId = session?.user?.id
 
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
@@ -17,14 +20,14 @@ export default function About() {
                 <h3 className="text-3xl font-bold mb-2">To find your people with ease.</h3>
               </div>
             </div>
-            <div className="flex justify-center mb-8">
+            {!userId && <div className="flex justify-center mb-8">
               <Link
                 href="/register"
                 className="px-8 py-3 text-white text-lg rounded-full font-bold shadow transition bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950"
               >
                 Join Now
               </Link>
-            </div>
+            </div>}
           </div>
         </div>
         <div className="et_pb_text_inner">
@@ -53,14 +56,14 @@ export default function About() {
             </div>
           </div>
         </div>
-        <div className="flex justify-center mt-8 mb-8">
+        {!userId && <div className="flex justify-center mt-8 mb-8">
           <Link
             href="/register"
             className="px-8 py-3 text-white text-lg rounded-full font-bold shadow transition bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950"
           >
             Get Started
           </Link>
-        </div>
+        </div>}
         <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-gray-100 dark:bg-gray-800 py-8 mt-12 overflow-hidden">
           <div className="relative z-10 max-w-3xl mx-auto px-4">
             <h3 className="text-4xl font-bold text-center mt-8 mb-8">Help Compass</h3>
@@ -125,14 +128,14 @@ export default function About() {
                 <p className="mb-4 text-center">Thank you for supporting us!</p>
               </div>
             </div>
-            <div className="flex justify-center mt-12 mb-16">
+            {!userId && <div className="flex justify-center mt-12 mb-16">
               <Link
                 href="/register"
                 className="px-8 py-3 text-white text-lg rounded-full font-bold shadow transition bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950"
               >
                 Join Compass
               </Link>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

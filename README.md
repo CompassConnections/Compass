@@ -53,6 +53,10 @@ The web app is coded in Typescript using React as front-end and Prisma as back-e
 
 ## Development
 
+Below are all the steps to contribute. If you have any trouble or questions, please don't hesitate to open an issue or contact us on [Discord](https://discord.gg/8Vd7jzqjun)!
+
+### Installation
+
 Clone the repo and navigating into it:
 ```bash
 git clone git@github.com:BayesBond/BayesBond.git

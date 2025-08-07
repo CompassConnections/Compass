@@ -166,8 +166,8 @@ model Authenticator {
 }
 
 enum Gender {
-  Male
-  Female
+  Man
+  Woman
   Other
 }
 

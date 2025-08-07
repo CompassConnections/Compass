@@ -2,22 +2,9 @@
 
 import Link from "next/link";
 import {aColor} from "@/lib/client/constants";
-import {useEffect, useState} from "react";
 
 export default function About() {
 
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  useEffect(() => {
-    const getCount = async () => {
-      const countResponse = await fetch('/api/profiles/count');
-      if (countResponse.ok) {
-        const {count} = await countResponse.json();
-        setTotalUsers(count);
-      }
-    };
-
-    getCount();
-  }, []); // <- runs once after initial mount
   return (
     <div className="text-gray-600 dark:text-white min-h-screen p-6">
       {aColor}
@@ -27,7 +14,7 @@ export default function About() {
             <h1 className="text-3xl font-bold mb-4 text-center">Why Choose Compass?</h1>
             <div className="flex flex-col md:flex-row items-center justify-center mb-8 gap-8">
               <div className="w-full text-center">
-                <h3 className="text-3xl font-bold mb-2">To find your people, not be addicted.</h3>
+                <h3 className="text-3xl font-bold mb-2">To find your people with ease.</h3>
               </div>
             </div>
             <div className="flex justify-center mb-8">

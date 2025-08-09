@@ -206,7 +206,7 @@ const getVisibleQuestions = (values: FormValues) =>
   questions.filter((q) => !q.condition || q.condition(values));
 
 
-const onboardingForm: React.FC = () => {
+const OnboardingForm: React.FC = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
   const router = useRouter();
@@ -690,4 +690,4 @@ const onboardingForm: React.FC = () => {
 };
 
 
-export default onboardingForm;
+export default OnboardingForm;

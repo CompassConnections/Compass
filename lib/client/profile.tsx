@@ -238,10 +238,21 @@ export function Profile(url: string, header: any = null) {
             {
               userData?.profile?.introversion && (
                 <div>
-                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider"> Introversion -
-                    Extroversion </h2>
-                  < p
-                    className="mt-1 capitalize"> {100 - userData.profile.introversion}% </p>
+                  <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    Social Style
+                  </h2>
+                  <div className="flex items-center w-full max-w-xl gap-4">
+                    <span className={pStyle}>Introverted</span>
+                    <div className="mt-1 flex items-center gap-4 w-32">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-200"
+                          style={{width: `${100 - userData.profile.introversion}%`}}
+                        />
+                      </div>
+                    </div>
+                    <span className={pStyle}>Extroverted</span>
+                  </div>
                 </div>
               )
             }

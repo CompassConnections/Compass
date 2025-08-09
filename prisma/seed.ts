@@ -106,9 +106,10 @@ async function main() {
 
   await prisma.connection.createMany({
     data: [
-      {name: 'Debate Partner'},
+      // {name: 'Debate Partner'},
       {name: 'Friendship'},
-      {name: 'Relationship'},
+      {name: 'Short-term relationship'},
+      {name: 'Long-term relationship'},
     ],
     skipDuplicates: true,
   });

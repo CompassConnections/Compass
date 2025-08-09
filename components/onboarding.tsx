@@ -42,37 +42,37 @@ const questions: Question[] = [
     name: "gender",
     label: "What's your gender?",
     type: "select",
-    options: ["Man", "Woman", "See all"],
+    options: ["Man", "Woman", "Other"],
   },
-  {
-    name: "genderOther",
-    label: "How do you identify?",
-    type: "select",
-    options: [
-      "Agender",
-      "Androgynous",
-      "Bigender",
-      "Cis Man",
-      "Cis Woman",
-      "Genderfluid",
-      "Genderqueer",
-      "Gender Nonconforming",
-      "Hijra",
-      "Intersex",
-      "Non-binary",
-      "Other gender",
-      "Pangender",
-      "Transfeminine",
-      "Transgender",
-      "Trans Man",
-      "Transmasculine",
-      "Transsexual",
-      "Trans Woman",
-      "Two Spirit"
-    ],
-    optional: true,
-    condition: (values) => values.gender === "See all",
-  },
+  // {
+  //   name: "genderOther",
+  //   label: "How do you identify?",
+  //   type: "select",
+  //   options: [
+  //     "Agender",
+  //     "Androgynous",
+  //     "Bigender",
+  //     "Cis Man",
+  //     "Cis Woman",
+  //     "Genderfluid",
+  //     "Genderqueer",
+  //     "Gender Nonconforming",
+  //     "Hijra",
+  //     "Intersex",
+  //     "Non-binary",
+  //     "Other gender",
+  //     "Pangender",
+  //     "Transfeminine",
+  //     "Transgender",
+  //     "Trans Man",
+  //     "Transmasculine",
+  //     "Transsexual",
+  //     "Trans Woman",
+  //     "Two Spirit"
+  //   ],
+  //   optional: true,
+  //   condition: (values) => values.gender === "See all",
+  // },
   {
     name: "birthday",
     label: "When's your birthday?",
@@ -83,43 +83,43 @@ const questions: Question[] = [
     label: "What kind of relationship are you looking for?",
     type: "multiselect",
     options: [
-      "Debate Partner",
+      // "Debate Partner",
       "Friendship",
-      // "Short-term relationship",
-      "Relationship",
-      "Other",
+      "Short-term relationship",
+      "Long-term Relationship",
+      // "Other",
     ],
   },
-  {
-    name: "kids",
-    label: "What are your ideal plans for children? (optional)",
-    type: "select",
-    options: [
-      "Skip",
-      "Want someday",
-      "Don't want",
-      "Have and want more",
-      "Have and don't want more",
-      "Not sure yet",
-      "Have kids",
-      "Open to kids",
-    ],
-    optional: true,
-    condition: (values) =>
-      ["Short-term dating", "Hookups", "Long-term dating"].includes(
-        values.relationshipType
-      ),
-  },
-  {
-    name: "nonMonogamy",
-    label: "Non-Monogamy Options",
-    type: "select",
-    options: ["Monogamous", "Non-monogamous", "Open to either"],
-    condition: (values) =>
-      ["Short-term dating", "Hookups", "Long-term dating"].includes(
-        values.relationshipType
-      ),
-  },
+  // {
+  //   name: "kids",
+  //   label: "What are your ideal plans for children? (optional)",
+  //   type: "select",
+  //   options: [
+  //     "Skip",
+  //     "Want someday",
+  //     "Don't want",
+  //     "Have and want more",
+  //     "Have and don't want more",
+  //     "Not sure yet",
+  //     "Have kids",
+  //     "Open to kids",
+  //   ],
+  //   optional: true,
+  //   condition: (values) =>
+  //     ["Short-term dating", "Hookups", "Long-term dating"].includes(
+  //       values.relationshipType
+  //     ),
+  // },
+  // {
+  //   name: "nonMonogamy",
+  //   label: "Non-Monogamy Options",
+  //   type: "select",
+  //   options: ["Monogamous", "Non-monogamous", "Open to either"],
+  //   condition: (values) =>
+  //     ["Short-term dating", "Hookups", "Long-term dating"].includes(
+  //       values.relationshipType
+  //     ),
+  // },
   // {
   //   name: "photos",
   //   label: "Add photos (optional)",
@@ -137,37 +137,37 @@ const questions: Question[] = [
     type: "textarea",
   },
   // Personality questions
-  {
-    name: "intenseOrCarefree",
-    label: "Which word describes you better?",
-    type: "select",
-    options: ["Intense", "Carefree"],
-  },
-  {
-    name: "religion",
-    label: "How important is religion/God in your life?",
-    type: "select",
-    options: [
-      "Not at all important",
-      "Slightly important",
-      "Moderately important",
-      "Very important",
-      "Extremely important"
-    ]
-  },
-  {
-    name: "politics",
-    label: "Which best describes your political beliefs?",
-    type: "select",
-    options: [
-      "Very liberal",
-      "Liberal",
-      "Moderate",
-      "Conservative",
-      "Very conservative",
-      "Other"
-    ]
-  },
+  // {
+  //   name: "intenseOrCarefree",
+  //   label: "Which word describes you better?",
+  //   type: "select",
+  //   options: ["Intense", "Carefree"],
+  // },
+  // {
+  //   name: "religion",
+  //   label: "How important is religion/God in your life?",
+  //   type: "select",
+  //   options: [
+  //     "Not at all important",
+  //     "Slightly important",
+  //     "Moderately important",
+  //     "Very important",
+  //     "Extremely important"
+  //   ]
+  // },
+  // {
+  //   name: "politics",
+  //   label: "Which best describes your political beliefs?",
+  //   type: "select",
+  //   options: [
+  //     "Very liberal",
+  //     "Liberal",
+  //     "Moderate",
+  //     "Conservative",
+  //     "Very conservative",
+  //     "Other"
+  //   ]
+  // },
   {
     name: "introversion",
     label: "How would you describe your social style?",
@@ -206,7 +206,7 @@ const getVisibleQuestions = (values: FormValues) =>
   questions.filter((q) => !q.condition || q.condition(values));
 
 
-const MultiStepForm: React.FC = () => {
+const onboardingForm: React.FC = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
   const router = useRouter();
@@ -274,6 +274,7 @@ const MultiStepForm: React.FC = () => {
         name: allValues.name,
       };
       for (const t of ['connections']) {
+        if (!allValues[t]) continue;
         data[t] = Array.from(allValues[t]).map(name => ({
           id: allFeatures[t].find(i => i.name === name)?.id,
           name: name
@@ -314,7 +315,6 @@ const MultiStepForm: React.FC = () => {
   // Questions where skip is allowed (from 'relationshipDuration' onward)
   const skipFrom = visibleQuestions.findIndex(q => q.name === 'relationshipDuration');
   const canSkip = step >= skipFrom && skipFrom !== -1;
-
 
   return (
     <div>
@@ -668,10 +668,9 @@ const MultiStepForm: React.FC = () => {
           )}
           {!isLastStep ? (
             <button
+              key={currentQuestion.name}
               type="button"
-              onClick={() => {
-                handleSubmit(() => nextStep())();
-              }}
+              onClick={nextStep}
               className="rounded-full px-6 py-2 font-semibold bg-red-700 text-white hover:bg-red-800 transition-colors"
             >
               Next
@@ -691,4 +690,4 @@ const MultiStepForm: React.FC = () => {
 };
 
 
-export default MultiStepForm;
+export default onboardingForm;

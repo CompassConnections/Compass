@@ -1,7 +1,7 @@
 "use client";
 
 import {Suspense} from "react";
-import MultiStepForm from "@/components/MultiStepForm";
+import OnboardingForm from "@/components/onboarding";
 
 
 export default function RegisterPage() {
@@ -17,7 +17,7 @@ function RegisterComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-      <MultiStepForm/>
+      <OnboardingForm/>
     </div>
   );
 }

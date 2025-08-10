@@ -13,6 +13,7 @@ import imageCompression from 'browser-image-compression';
 import {Item} from '@/lib/client/schema';
 import {fetchFeatures} from "@/lib/client/fetching";
 import {errorBlock} from "@/lib/client/errors";
+import Slider from "@mui/material/Slider";
 
 
 export default function CompleteProfile() {
@@ -737,20 +738,26 @@ function RegisterComponent() {
 
 
             <div>
-              <label htmlFor="introversion" className={headingStyle}>
-                Introversion (0) - Extroversion (100)
-              </label>
-              <input
-                id="introversion"
-                name="introversion"
-                type="number"
-                min="0"
-                max="100"
-                value={introversion ? 100 - introversion : ''}
-                onChange={(e) => setIntroversion(100 - Number(e.target.value))}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                // placeholder=""
-              />
+              <label htmlFor="introversion" className={headingStyle}>Social Style</label>
+              <div className="flex items-center w-full max-w-xl gap-4">
+                <span className={headingStyle}>Introverted</span>
+                <Slider
+                  value={introversion ? 100 - introversion : 50}
+                  onChange={(e, value) => setIntroversion(100 - Number(value))}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={100}
+                  sx={{
+                    color: '#3B82F6',
+                    '& .MuiSlider-valueLabel': {
+                      backgroundColor: '#3B82F6',
+                      color: '#fff',
+                    },
+                  }}
+                  className="flex-1"
+                />
+                <span className={headingStyle}>Extroverted</span>
+              </div>
             </div>
 
             {/*<div>*/}

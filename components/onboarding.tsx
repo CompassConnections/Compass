@@ -218,6 +218,7 @@ const OnboardingForm: React.FC = () => {
   const [formValues, setFormValues] = useState<FormValues>({});
   const [showGenderDefs, setShowGenderDefs] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const featureNames = ['connections'];
   const [allFeatures, _setAllFeatures] = useState(() =>
@@ -256,6 +257,7 @@ const OnboardingForm: React.FC = () => {
   const currentQuestion = visibleQuestions[step];
 
   const onSubmit: SubmitHandler<FormValues> = async () => {
+    setIsSubmitting(true);
     setError('');
     const allValues = {...formValues, ...getValues()};
     console.log(JSON.stringify(allValues, null, 2));
@@ -680,7 +682,7 @@ const OnboardingForm: React.FC = () => {
               type="submit"
               className="rounded-full px-6 py-2 font-semibold bg-red-700 text-white hover:bg-red-800 transition-colors"
             >
-              Submit
+              {isSubmitting ? 'Saving...' : 'Submit'}
             </button>
           )}
         </div>

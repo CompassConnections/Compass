@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     // Get all interests from the database
-    const cacheStrategy = { swr: 60, ttl: 60, tags: ["interests"] };
+    // Disable cache for now as it bugs when saving profile with new interest and clicking on "Edit Profile" just after
+    const cacheStrategy = {swr: 0, ttl: 0, tags: ["interests"]};
     const interests = await prisma.interest.findMany({
       select: {
         id: true,

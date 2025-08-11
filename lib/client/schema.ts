@@ -16,6 +16,7 @@ export interface ProfileData {
     contactInfo: string;
     intellectualInterests: { interest?: { name?: string, id?: string } }[];
     coreValues: { value?: { name?: string, id?: string } }[];
+    books: { value?: { name?: string, id?: string } }[];
     causeAreas: { causeArea?: { name?: string, id?: string } }[];
     desiredConnections: { connection?: { name?: string, id?: string } }[];
     promptAnswers: { prompt?: string; answer?: string, id?: string }[];
@@ -23,7 +24,7 @@ export interface ProfileData {
   };
 }
 
-export type DropdownKey = 'interests' | 'causeAreas' | 'connections' | 'coreValues';
+export type DropdownKey = 'interests' | 'causeAreas' | 'connections' | 'coreValues' | 'books';
 export type RangeKey = 'age' | 'introversion';
 
 // type OtherKey = 'gender' | 'searchQuery';

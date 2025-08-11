@@ -14,8 +14,9 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const {profile, image, name, interests = [], connections = [], coreValues = [], causeAreas = []} = data;
+    const {profile, image, name, interests = [], connections = [], coreValues = [], books = [], causeAreas = []} = data;
 
+    console.log('books: ', books)
     Object.keys(profile).forEach(key => {
       if (profile[key] === '' || !profile[key]) {
         delete profile[key];
@@ -71,6 +72,8 @@ export async function POST(req: Request) {
         profileConnection: prisma.profileConnection,
         value: prisma.value,
         profileValue: prisma.profileValue,
+        book: prisma.book,
+        profileBook: prisma.profileBook,
         causeArea: prisma.causeArea,
         profileCauseArea: prisma.profileCauseArea,
       } as const;
@@ -79,7 +82,7 @@ export async function POST(req: Request) {
 
       async function handleFeatures(features: any, attribute: ModelKey, profileAttribute: string, idName: string) {
         // Add new features
-        if (features.length > 0 && updatedUser.profile) {
+        if (features !== null && updatedUser.profile) {
           // First, find or create all features
           console.log('profile', profileAttribute, profileAttribute);
           const operations = features.map((feat: { id?: string; name: string }) =>
@@ -95,25 +98,31 @@ export async function POST(req: Request) {
           // Get the IDs of all created/updated features
           const ids = createdFeatures.map(v => v.id);
 
-          // First, remove all existing interests for this profile
-          await modelMap[profileAttribute].deleteMany({
-            where: {profileId: updatedUser.profile.id},
-          });
+          const profileId = updatedUser.profile.id;
+          console.log('profile ID:', profileId);
 
-          // Then, create new connections
+          // First, remove all existing features for this profile
+          const res = await modelMap[profileAttribute].deleteMany({
+            where: {profileId: profileId},
+          });
+          console.log('deleted profile:', profileAttribute, res);
+
+          // Then, create new features
           if (ids.length > 0) {
-            await modelMap[profileAttribute].createMany({
+            const create_res =await modelMap[profileAttribute].createMany({
               data: ids.map(id => ({
-                profileId: updatedUser.profile!.id,
+                profileId: profileId,
                 [idName]: id,
               })),
               skipDuplicates: true,
             });
+            console.log('created many:', profileAttribute, create_res);
           }
         }
       }
 
       await handleFeatures(interests, 'interest', 'profileInterest', 'interestId')
+      await handleFeatures(books, 'book', 'profileBook', 'valueId')
       await handleFeatures(connections, 'connection', 'profileConnection', 'connectionId')
       await handleFeatures(coreValues, 'value', 'profileValue', 'valueId')
       await handleFeatures(causeAreas, 'causeArea', 'profileCauseArea', 'causeAreaId')

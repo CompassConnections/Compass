@@ -29,6 +29,7 @@ export async function retrieveUser(id: string) {
           intellectualInterests: {include: {interest: true}},
           causeAreas: {include: {causeArea: true}},
           coreValues: {include: {value: true}},
+          books: {include: {value: true}},
           desiredConnections: {include: {connection: true}},
           promptAnswers: true,
         },

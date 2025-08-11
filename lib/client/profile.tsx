@@ -115,19 +115,21 @@ export function Profile(url: string, header: any = null) {
 
   interface Tags {
     profileAttribute: string;
-    attribute: string;
+    attribute?: string;
     title: string;
   }
 
   const tagsConfig: Tags[] = [
     {profileAttribute: 'desiredConnections', attribute: 'connection', title: 'Connection Type'},
-    {profileAttribute: 'coreValues', attribute: 'value', title: 'Values'},
+    {profileAttribute: 'coreValues', title: 'Values'},
     {profileAttribute: 'intellectualInterests', attribute: 'interest', title: 'Interests'},
+    {profileAttribute: 'books', title: 'Works to Discuss'},
     // {profileAttribute: 'causeAreas', attribute: 'causeArea', title: 'Cause Areas'},
   ]
 
-  function getTags({profileAttribute, attribute, title}: Tags) {
+  function getTags({profileAttribute, attribute = 'value', title}: Tags) {
     const values = userData?.profile?.[profileAttribute];
+    console.log('values', values);
     return <div key={profileAttribute + '.div'}>
       {values?.length > 0 && (
         <div className="mt-3"><

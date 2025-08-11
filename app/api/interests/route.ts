@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/server/prisma";
-import { NextResponse } from "next/server";
+import {prisma} from "@/lib/server/prisma";
+import {NextResponse} from "next/server";
 
 export async function GET() {
   try {
@@ -18,6 +18,17 @@ export async function GET() {
     });
 
     const coreValues = await prisma.value.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: 'asc'
+      },
+      cacheStrategy: cacheStrategy,
+    });
+
+    const books = await prisma.book.findMany({
       select: {
         id: true,
         name: true,
@@ -50,12 +61,12 @@ export async function GET() {
       cacheStrategy: cacheStrategy,
     });
 
-    return NextResponse.json({ interests, coreValues, causeAreas, connections });
+    return NextResponse.json({interests, coreValues, books, causeAreas, connections});
   } catch (error) {
     console.error('Error fetching interests:', error);
     return NextResponse.json(
-      { error: "Failed to fetch interests" },
-      { status: 500 }
+      {error: "Failed to fetch interests"},
+      {status: 500}
     );
   }
 }

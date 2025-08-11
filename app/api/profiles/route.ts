@@ -12,6 +12,7 @@ export async function GET(request: Request) {
   const maxIntroversion = url.searchParams.get("maxIntroversion");
   const interests = url.searchParams.get("interests")?.split(",").filter(Boolean) || [];
   const coreValues = url.searchParams.get("coreValues")?.split(",").filter(Boolean) || [];
+  const books = url.searchParams.get("books")?.split(",").filter(Boolean) || [];
   const causeAreas = url.searchParams.get("causeAreas")?.split(",").filter(Boolean) || [];
   const connections = url.searchParams.get("connections")?.split(",").filter(Boolean) || [];
   const searchQueries = url.searchParams.get("searchQuery")?.split(",").map(q => q.trim()).filter(Boolean) || [];
@@ -116,6 +117,22 @@ export async function GET(request: Request) {
     ];
   }
 
+  // AND
+  if (books.length > 0) {
+    where.profile.AND = [
+      ...where.profile.AND,
+      ...books.map((name) => ({
+        books: {
+          some: {
+            value: {
+              name: name,
+            },
+          },
+        },
+      })),
+    ];
+  }
+
   if (causeAreas.length > 0) {
     where.profile.AND = [
       ...where.profile.AND,
@@ -196,6 +213,17 @@ export async function GET(request: Request) {
           },
           {
             profile: {
+              books: {
+                some: {
+                  value: {
+                    name: {contains: query, mode: "insensitive"},
+                  },
+                },
+              },
+            },
+          },
+          {
+            profile: {
               causeAreas: {
                 some: {
                   causeArea: {
@@ -259,6 +287,7 @@ export async function GET(request: Request) {
         include: {
           intellectualInterests: {include: {interest: true}},
           coreValues: {include: {value: true}},
+          books: {include: {value: true}},
           causeAreas: {include: {causeArea: true}},
           desiredConnections: {include: {connection: true}},
           promptAnswers: true,

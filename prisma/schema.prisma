@@ -42,6 +42,7 @@ model Profile {
   desiredConnections    ProfileConnection[]
   intellectualInterests ProfileInterest[]
   coreValues            ProfileValue[]
+  books                 ProfileBook[]
   promptAnswers         PromptAnswer[]
 }
 
@@ -61,6 +62,12 @@ model Value {
   id    String         @id @default(cuid())
   name  String         @unique
   users ProfileValue[]
+}
+
+model Book {
+  id    String         @id @default(cuid())
+  name  String         @unique
+  users ProfileBook[]
 }
 
 model CauseArea {
@@ -90,8 +97,17 @@ model ProfileInterest {
 model ProfileValue {
   profileId String
   valueId   String
-  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   value     Value   @relation(fields: [valueId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, valueId])
+}
+
+model ProfileBook {
+  profileId String
+  valueId   String
+  value     Book   @relation(fields: [valueId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@id([profileId, valueId])
 }

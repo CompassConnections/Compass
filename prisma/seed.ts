@@ -16,6 +16,7 @@ async function main() {
     bio: string;
     interests: string[];
     values: string[];
+    books: string[];
   };
 
   const profiles: ProfileBio[] = [
@@ -27,7 +28,8 @@ async function main() {
       location: "Berlin, Germany",
       bio: "I’m passionate about understanding the limits and mechanics of human reasoning. I spend weekends dissecting papers on decision theory and evenings debating moral uncertainty. If you know your way around LessWrong and thought experiments, we’ll get along.",
       interests: ["Bayesian epistemology", "AI alignment", "Effective Altruism", "Meditation", "Game Theory"],
-      values: ["Intellectualism", "Rationality", "Autonomy"]
+      values: ["Intellectualism", "Rationality", "Autonomy"],
+      books: ["Daniel Kahneman - Thinking, Fast and Slow"]
     },
     {
       name: "Marcus",
@@ -37,7 +39,8 @@ async function main() {
       location: "San Francisco, USA",
       bio: "Practicing instrumental rationality one well-calibrated belief at a time. Stoicism and startup life have taught me a lot about tradeoffs. Looking for someone who can argue in good faith and loves truth-seeking as much as I do.",
       interests: ["Stoicism", "Predictive processing", "Rational fiction", "Startups", "Causal inference"],
-      values: ["Diplomacy", "Rationality", "Community"]
+      values: ["Diplomacy", "Rationality", "Community"],
+      books: ["Daniel Kahneman - Thinking, Fast and Slow"]
     },
     {
       name: "Aya",
@@ -47,7 +50,8 @@ async function main() {
       location: "Oxford, UK",
       bio: "My research focuses on metaethics and formal logic, but my heart belongs to moral philosophy. I think a lot about personhood, consciousness, and the ethics of future civilizations. Let's talk about Rawls or Parfit over tea.",
       interests: ["Metaethics", "Consciousness", "Transhumanism", "Moral realism", "Formal logic"],
-      values: ["Radical Honesty", "Structure", "Sufficiency"]
+      values: ["Radical Honesty", "Structure", "Sufficiency"],
+      books: ["Daniel Kahneman - Thinking, Fast and Slow"]
     },
     {
       name: "David",
@@ -57,7 +61,8 @@ async function main() {
       location: "Toronto, Canada",
       bio: "Former humanities major turned quant. Still fascinated by existential risk, the philosophy of science, and how to stay sane in an uncertain world. I'm here to meet people who think weird is a compliment.",
       interests: ["Probability theory", "Longtermism", "Epistemic humility", "Futurology", "Meditation"],
-      values: ["Conservatism", "Ambition", "Idealism"]
+      values: ["Conservatism", "Ambition", "Idealism"],
+      books: ["Daniel Kahneman - Thinking, Fast and Slow"]
     },
     {
       name: "Mei",
@@ -67,12 +72,14 @@ async function main() {
       location: "Singapore",
       bio: "Writing essays on intellectual humility, the philosophy of language, and how thinking styles shape our lives. I appreciate calm reasoning, rigorous curiosity, and the beauty of well-defined concepts. Let's try to model each other's minds.",
       interests: ["Philosophy of language", "Bayesian reasoning", "Writing", "Dialectics", "Systems thinking"],
-      values: ["Emotional Merging", "Sufficiency", "Pragmatism"]
+      values: ["Emotional Merging", "Sufficiency", "Pragmatism"],
+      books: ["Daniel Kahneman - Thinking, Fast and Slow"]
     }
   ];
 
   const interests = new Set<string>();
   const values = new Set<string>();
+  const books = new Set<string>();
 
   profiles.forEach(profile => {
     profile.interests.forEach(v => interests.add(v));
@@ -82,8 +89,13 @@ async function main() {
     profile.values.forEach(v => values.add(v));
   });
 
+  profiles.forEach(profile => {
+    profile.books.forEach(v => books.add(v));
+  });
+
   console.log('Interests:', [...interests]);
   console.log('Values:', [...values]);
+  console.log('Books:', [...books]);
 
   await prisma.interest.createMany({
     data: [...interests].map(v => ({name: v})),
@@ -92,6 +104,11 @@ async function main() {
 
   await prisma.value.createMany({
     data: [...values].map(v => ({name: v})),
+    skipDuplicates: true,
+  });
+
+  await prisma.book.createMany({
+    data: [...books].map(v => ({name: v})),
     skipDuplicates: true,
   });
 
@@ -118,6 +135,7 @@ async function main() {
   // Get actual Interest & CauseArea objects
   const allInterests = await prisma.interest.findMany();
   const allValues = await prisma.value.findMany();
+  const allBooks = await prisma.book.findMany();
   const allCauseAreas = await prisma.causeArea.findMany();
   const allConnections = await prisma.connection.findMany();
 
@@ -153,6 +171,11 @@ async function main() {
             coreValues: {
               create: allValues
                 .filter(e => (new Set(profile.values)).has(e.name))
+                .map(e => ({valueId: e.id}))
+            },
+            books: {
+              create: allBooks
+                .filter(e => (new Set(profile.books)).has(e.name))
                 .map(e => ({valueId: e.id}))
             },
             causeAreas: {

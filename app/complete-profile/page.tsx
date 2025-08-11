@@ -56,7 +56,7 @@ function RegisterComponent() {
   const router = useRouter();
   const {data: session, update} = useSession();
 
-  const featureNames = ['interests', 'coreValues', 'description', 'connections', 'causeAreas'];
+  const featureNames = ['interests', 'coreValues', 'description', 'connections', 'causeAreas', 'books'];
 
   const [showMoreInfo, _setShowMoreInfo] = useState(() =>
     Object.fromEntries(featureNames.map((id) => [id, false]))
@@ -141,6 +141,7 @@ function RegisterComponent() {
             setSelFeat('coreValues', 'coreValues', 'value')
             setSelFeat('connections', 'desiredConnections', 'connection')
             setSelFeat('causeAreas', 'causeAreas', 'causeArea')
+            setSelFeat('books', 'books', 'value')
 
             setImages([])
             setKeys(profile?.images)
@@ -309,10 +310,11 @@ function RegisterComponent() {
         ...(key && {image: key}),
         ...(name && {name}),
       };
-      for (const name of ['interests', 'connections', 'coreValues', 'causeAreas']) {
+      for (const name of ['books', 'interests', 'connections', 'coreValues', 'causeAreas']) {
+        // if (!selectedFeatures[name].size) continue;
         data[name] = Array.from(selectedFeatures[name]).map(id => ({
           id: id.startsWith('new-') ? undefined : id,
-          name: allFeatures[name].find(i => i.id === id)?.name || id.replace('new-', '')
+          name: allFeatures[name].find(i => i.id === id)?.name
         }));
       }
       console.log('data', data)
@@ -413,6 +415,20 @@ function RegisterComponent() {
           wrestle with, or areas where you're actively growing. Don’t be afraid to show complexity or
           contradiction; honesty invites resonance. The goal isn’t to impress, but to be understood—by the
           kind of person who wants to know you for who you actually are, not just what you do for fun.
+        </p>
+      </>
+    },
+    {
+      id: 'books', title: 'Works to discuss', allowAdd: true,
+      content: <>
+        <p className="mt-2">
+          List the works (books, articles, essays, reports, etc.) you would like to bring up.
+          For each work, include the exact title (as it appears on the cover), the
+          author’s full name, and, if necessary, the edition or publication year. For example: <i>Peter Singer - Animal
+          Liberation</i>. If you want to focus on specific
+          chapters, themes, or questions, note them in your description—it helps keep the discussion targeted. Don’t just write
+          “something by Orwell” or “that new mystery”; vague entries waste time and make it harder for others to find
+          the right work. Be explicit so everyone is literally on the same page!
         </p>
       </>
     },

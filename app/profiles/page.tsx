@@ -20,6 +20,7 @@ const initialState = {
   maxIntroversion: null as number | null,
   interests: [] as string[],
   coreValues: [] as string[],
+  books: [] as string[],
   causeAreas: [] as string[],
   connections: [] as string[],
   searchQuery: '',
@@ -33,6 +34,7 @@ type ProfileFilters = {
   minIntroversion: number | null;
   maxIntroversion: number | null;
   interests: string[];
+  books: string[];
   coreValues: string[];
   causeAreas: string[];
   connections: string[];
@@ -322,6 +324,18 @@ export default function ProfilePage() {
                               <span key={interest?.id}
                                     className="inline-block text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
                                 {interest?.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-4 space-y-2 flex-grow">
+                        {user.profile.books?.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {user.profile.books.slice(0, 6).map(({value}) => (
+                              <span key={value?.id}
+                                    className="inline-block text-xs px-2 py-1 bg-blue-50 text-blue-700 dark:text-white dark:bg-gray-700 rounded-full">
+                                {value?.name}
                               </span>
                             ))}
                           </div>

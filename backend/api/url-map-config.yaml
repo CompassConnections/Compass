@@ -1,0 +1,23 @@
+name: aou-kb
+defaultService: global/backendServices/api-lb-service-0
+hostRules:
+  - hosts:
+      - '*'
+    pathMatcher: matcher-1
+pathMatchers:
+  - name: matcher-1
+    defaultService: global/backendServices/api-lb-service-0
+    routeRules:
+      - priority: 1
+        routeAction:
+          weightedBackendServices:
+            - backendService: global/backendServices/api-lb-service-0
+              weight: 25
+            - backendService: global/backendServices/api-lb-service-1
+              weight: 25
+            - backendService: global/backendServices/api-lb-service-2
+              weight: 25
+            - backendService: global/backendServices/api-lb-service-3
+              weight: 25
+# redeploy this by running:
+# gcloud compute url-maps import aou-kb --source=url-map-config.yaml --project polylove --global

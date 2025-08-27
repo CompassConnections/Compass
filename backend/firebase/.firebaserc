@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "polylove",
+    "prod": "polylove",
+    "dev": "polylove-dev"
+  }
+}

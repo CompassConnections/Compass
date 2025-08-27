@@ -1,0 +1,16 @@
+# Compiled JavaScript files
+lib/
+dist/
+
+# Node.js dependency directory
+node_modules/
+
+# Terraform
+.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc

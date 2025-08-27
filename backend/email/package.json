@@ -1,0 +1,22 @@
+{
+  "name": "react-email-starter",
+  "version": "0.1.9",
+  "private": true,
+  "scripts": {
+    "dev": "email dev",
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@react-email/components": "0.0.33",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-email": "3.0.7",
+    "resend": "4.1.2"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "9.0.4",
+    "@types/prismjs": "1.26.5",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4"
+  }
+}

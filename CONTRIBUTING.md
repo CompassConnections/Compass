@@ -13,13 +13,13 @@ We welcome pull requests, but only if they meet the project's quality and design
 1. **Fork the repository** using the GitHub UI.
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/your-username/BayesBond.git
+   git clone https://github.com/your-username/Compass.git
    cd your-fork
 
 3. **Add the upstream remote**:
 
    ```bash
-   git remote add upstream https://github.com/BayesBond/BayesBond.git
+   git remote add upstream https://github.com/CompassMeet/Compass.git
    ```
 
 ## Create a New Branch

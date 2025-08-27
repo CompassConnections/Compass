@@ -1,11 +1,11 @@
 
-[![CI](https://github.com/BayesBond/BayesBond/actions/workflows/ci.yml/badge.svg)](https://github.com/BayesBond/BayesBond/actions/workflows/ci.yml)
-[![CD](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml/badge.svg)](https://github.com/BayesBond/BayesBond/actions/workflows/cd.yml)
+[![CI](https://github.com/CompassMeet/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassMeet/Compass/actions/workflows/ci.yml)
+[![CD](https://github.com/CompassMeet/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassMeet/Compass/actions/workflows/cd.yml)
 ![Vercel](https://deploy-badge.vercel.app/vercel/bayesbond)
 
 # Compass
 
-This repository provides the source code for [Compass](https://bayesbond.vercel.app), a web application where rational thinkers can bond and form deep 1-1 
+This repository provides the source code for [Compass](https://compassmeet.com), a web application where rational thinkers can bond and form deep 1-1 
 relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
@@ -30,7 +30,7 @@ The full description is available [here](https://martinbraquet.com/meeting-ratio
 - [x] Set up page listing all the profiles
 - [x] Search through all the profile variables
 - [ ] (Set up chat / direct messaging)
-- [ ] Set up domain name (https://bayesbond.com)
+- [x] Set up domain name (https://compassmeet.com)
 
 #### Secondary To Do
 
@@ -59,13 +59,13 @@ Below are all the steps to contribute. If you have any trouble or questions, ple
 
 Clone the repo and navigating into it:
 ```bash
-git clone git@github.com:BayesBond/BayesBond.git
-cd BayesBond
+git clone git@github.com:CompassMeet/Compass.git
+cd Compass
 ```
 
 Install the dependencies:
 ```
-npm install
+npm install @tiptap/core@2.3.2   @tiptap/starter-kit@2.3.2   @tiptap/extension-link@2.3.2   @tiptap/extension-image@2.3.2   @tiptap/extension-blockquote@2.3.2   @tiptap/extension-bold@2.3.2   @tiptap/extension-mention@2.3.2   @tiptap/extension-floating-menu@2.3.2   @tiptap/extension-bubble-menu@2.3.2   @tiptap/suggestion@2.3.2   @tiptap/html@2.3.2 --save-exact
 ```
 
 ### Environment Variables

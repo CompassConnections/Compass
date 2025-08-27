@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env
 .env.local
+.env.*
+.envrc
+supabase/*
 
 # vercel
 .vercel
@@ -41,6 +44,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.idea/
+node_modules
+yarn-error.log
+dev
+firebase-debug.log
+tsconfig.tsbuildinfo
+
 *.db
 
 *prisma/migrations
@@ -48,3 +58,5 @@ martin
 .obsidian
 .idea
 *.last-run.json
+
+*lock.hcl

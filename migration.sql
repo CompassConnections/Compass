@@ -1,0 +1,22 @@
+BEGIN;
+\i backend/supabase/functions.sql
+\i backend/supabase/firebase.sql
+\i backend/supabase/lovers.sql
+\i backend/supabase/users.sql
+\i backend/supabase/private_user_message_channels.sql
+\i backend/supabase/private_user_message_channel_members.sql
+\i backend/supabase/private_users.sql
+\i backend/supabase/private_user_messages.sql
+\i backend/supabase/private_user_seen_message_channels.sql
+\i backend/supabase/love_answers.sql
+\i backend/supabase/lover_comments.sql
+\i backend/supabase/love_compatibility_answers.sql
+\i backend/supabase/love_likes.sql
+\i backend/supabase/love_questions.sql
+\i backend/supabase/love_ships.sql
+\i backend/supabase/love_stars.sql
+\i backend/supabase/love_waitlist.sql
+\i backend/supabase/user_events.sql
+\i backend/supabase/user_notifications.sql
+\i backend/supabase/functions_others.sql
+COMMIT;

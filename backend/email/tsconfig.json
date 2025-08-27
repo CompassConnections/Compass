@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "rootDir": "emails",
+    "composite": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "outDir": "lib",
+    "tsBuildInfoFile": "lib/tsconfig.tsbuildinfo",
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+    "declaration": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "common/*": ["../../common/src/*", "../../../common/lib/*"],
+      "shared/*": ["../shared/src/*", "../../shared/lib/*"],
+      "email/*": ["./emails/*"]
+    }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "references": [{ "path": "../../common" }, { "path": "../shared" }],
+  "include": ["emails/**/*.ts", "emails/**/*.tsx"]
+}

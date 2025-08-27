@@ -1,0 +1,26 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b && yarn --cwd=../../common tsc-alias && tsc-alias",
+    "compile": "tsc -b",
+    "verify": "yarn --cwd=../.. verify",
+    "verify:dir": "npx eslint . --max-warnings 0"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@google-cloud/monitoring": "4.0.0",
+    "@google-cloud/secret-manager": "4.2.1",
+    "@tiptap/core": "2.3.2",
+    "@tiptap/html": "2.3.2",
+    "colors": "1.4.0",
+    "dayjs": "1.11.4",
+    "firebase-admin": "11.11.1",
+    "gcp-metadata": "6.1.0",
+    "lodash": "4.17.21",
+    "pg-promise": "11.4.1",
+    "posthog-node": "4.11.0",
+    "string-similarity": "4.0.4"
+  }
+}

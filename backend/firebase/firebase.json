@@ -1,0 +1,12 @@
+{
+  "storage": [
+    {
+      "bucket": "polylove.firebasestorage.app",
+      "rules": "storage.rules"
+    },
+    {
+      "bucket": "polylove-private.firebasestorage.app",
+      "rules": "private-storage.rules"
+    }
+  ]
+}

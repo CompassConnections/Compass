@@ -116,7 +116,7 @@ export const PrivateChat = (props: {
       .map((message) => message.userId)
   )
 
-  // Note: we may have messages from users not in the channel, e.g. a system message from manifold
+  // Note: we may have messages from users not in the channel, e.g. a system message
   const otherUsers = useUsersInStore(
     uniq(messageUserIds.concat(memberIds)),
     `${channelId}`,

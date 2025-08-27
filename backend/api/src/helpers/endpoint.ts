@@ -74,7 +74,7 @@ export const lookupUser = async (creds: Credentials): Promise<AuthedUser> => {
   switch (creds.kind) {
     case 'jwt': {
       if (typeof creds.data.user_id !== 'string') {
-        throw new APIError(401, 'JWT must contain Manifold user ID.')
+        throw new APIError(401, 'JWT must contain user ID.')
       }
       return { uid: creds.data.user_id, creds }
     }

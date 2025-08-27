@@ -16,11 +16,11 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
     (ogProps &&
       buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint))
 
-  const absUrl = 'https://manifold.love' + url
+  const absUrl = 'https://compassmeet.com' + url
 
   return (
     <Head>
-      <title>{`${title} | Manifold`}</title>
+      <title>{`${title} | Compass`}</title>
 
       <meta
         property="og:title"

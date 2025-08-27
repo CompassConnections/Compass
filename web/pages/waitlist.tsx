@@ -13,8 +13,7 @@ export default function ManifoldLove() {
             <HeartIcon className="text-scarlet-600 h-8 w-8" />
             <HeartIcon className="text-scarlet-600 h-8 w-8" />
             <h1 className="mx-auto text-3xl">
-              Manifold
-              <span className="text-scarlet-600 font-semibold">.love</span>
+              CompassMeet.com
             </h1>
             <HeartIcon className="text-scarlet-600 h-8 w-8" />
             <HeartIcon className="text-scarlet-600 h-8 w-8" />

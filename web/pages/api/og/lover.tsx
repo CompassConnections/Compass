@@ -96,11 +96,7 @@ function OgLover(props: LoveOgProps) {
           height={48}
         />
         <span className="text-2xl font-thin">
-          manifold
-          <span className="mx-[1px]">.</span>
-          <span className="font-semibold text-pink-700 dark:text-pink-300">
-            love/{username}
-          </span>
+          compassmeet.com/{username}
         </span>
       </div>
     </div>

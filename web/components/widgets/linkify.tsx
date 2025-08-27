@@ -55,7 +55,7 @@ export const getLinkTarget = (href: string, newTab?: boolean) => {
   // TODO: make this more robust against domain changes?
   if (
     href.startsWith('http') &&
-    !href.startsWith(`https://manifold`) // covers manifold.markets and manifold.love
+    !href.startsWith(`https://compassmeet`)
   )
     return '_blank'
   return newTab ? '_blank' : '_self'

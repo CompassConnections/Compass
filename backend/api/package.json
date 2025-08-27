@@ -1,6 +1,6 @@
 {
   "name": "@compass/api",
-  "description": "Backend API endpoints for the Manifold Love website.",
+  "description": "Backend API endpoints",
   "version": "0.1.0",
   "private": true,
   "scripts": {

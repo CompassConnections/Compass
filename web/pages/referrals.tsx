@@ -18,7 +18,7 @@ export default function ReferralsPage() {
     <LovePage trackPageView={'love referrals'} className="items-center">
       <SEO
         title="Share the love"
-        description={`Invite someone to join Manifold Love!`}
+        description={`Invite someone to join Compass!`}
       />
 
       <Col className="bg-canvas-0 rounded-lg p-4 sm:p-8">

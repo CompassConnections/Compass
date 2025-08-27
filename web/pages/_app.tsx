@@ -61,7 +61,7 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
     }
   }, [])
 
-  const title = 'manifold love'
+  const title = 'Compass'
   const description = 'Questionable dating site'
 
   return (

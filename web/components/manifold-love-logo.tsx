@@ -3,6 +3,7 @@ import LoveLogo from '../public/manifold_love_logo.svg'
 import clsx from 'clsx'
 import { ENV } from 'common/envs/constants'
 import { Row } from 'web/components/layout/row'
+import FavIcon from "web/public/FavIcon";
 
 export default function ManifoldLoveLogo(props: {
   noLink?: boolean
@@ -11,16 +12,9 @@ export default function ManifoldLoveLogo(props: {
   const { noLink, className } = props
   const inner = (
     <>
-      <LoveLogo
-        className="h-10 w-10 shrink-0 stroke-pink-700 transition-transform dark:stroke-pink-300"
-        aria-hidden
-      />
+      <FavIcon className="dark:invert"/>
       <div className={clsx('my-auto text-xl font-thin')}>
-        {ENV == 'DEV' ? 'devifold' : 'manifold'}
-        <span className="mx-[1px]">.</span>
-        <span className="font-semibold text-pink-700 dark:text-pink-300">
-          love
-        </span>
+        {ENV == 'DEV' ? 'Compass' : 'Compass'}
       </div>
     </>
   )

@@ -7,116 +7,144 @@
     -webkit-tap-highlight-color: transparent;
   }
   :root {
-    --color-ink-0: 255 255 255;
-    --color-ink-50: 249 245 249;
-    --color-ink-100: 231 223 230;
-    --color-ink-200: 206 192 206;
-    --color-ink-300: 162 142 164;
-    --color-ink-400: 130 109 136;
-    --color-ink-500: 96 82 102;
-    --color-ink-600: 79 68 85;
-    --color-ink-700: 62 54 58;
-    --color-ink-800: 46 41 51;
-    --color-ink-900: 32 30 37;
-    --color-ink-950: 22 20 25;
-    --color-ink-1000: 0 0 0;
+      /* Text / Ink Grey Scale */
+      --color-ink-0: 255 255 255;       /* white */
+      --color-ink-50: 245 245 245;
+      --color-ink-100: 230 230 230;
+      --color-ink-200: 200 200 200;
+      --color-ink-300: 170 170 170;
+      --color-ink-400: 140 140 140;
+      --color-ink-500: 110 110 110;
+      --color-ink-600: 85 85 85;
+      --color-ink-700: 60 60 60;
+      --color-ink-800: 40 40 40;
+      --color-ink-900: 25 25 25;
+      --color-ink-950: 12 12 12;
+      --color-ink-1000: 0 0 0;         /* black */
 
-    --color-canvas-0: 255 255 255;
-    --color-canvas-50: 247 238 249;
-    --color-canvas-100: 231 223 230;
+      /* Background / Canvas Grey Scale */
+      --color-canvas-0: 255 255 255;    /* white */
+      --color-canvas-50: 245 245 245;
+      --color-canvas-100: 230 230 230;
+      --color-canvas-200: 210 210 210;
+      --color-canvas-300: 190 190 190;
+      --color-canvas-400: 160 160 160;
+      --color-canvas-500: 130 130 130;
+      --color-canvas-600: 100 100 100;
+      --color-canvas-700: 75 75 75;
+      --color-canvas-800: 50 50 50;
+      --color-canvas-900: 30 30 30;
+      --color-canvas-950: 15 15 15;
+      --color-canvas-1000: 0 0 0;      /* black */
 
-    --color-primary-50: 253 242 248;
-    --color-primary-100: 252 231 243;
-    --color-primary-200: 251 207 232;
-    --color-primary-300: 249 168 212;
-    --color-primary-400: 244 114 182;
-    --color-primary-500: 236 72 153;
-    --color-primary-600: 219 39 119;
-    --color-primary-700: 190 24 93;
-    --color-primary-800: 157 23 77;
-    --color-primary-900: 157 23 77;
-    --color-primary-950: 131 24 67;
 
-    --color-no-50: 255 243 241;
-    --color-no-100: 255 235 231;
-    --color-no-200: 255 208 194;
-    --color-no-300: 255 164 151;
-    --color-no-400: 255 124 102;
-    --color-no-500: 247 88 54;
-    --color-no-600: 239 48 19;
-    --color-no-700: 209 30 12;
-    --color-no-800: 166 27 10;
-    --color-no-900: 132 29 13;
-    --color-no-950: 73 15 6;
 
-    --color-yes-50: 240 253 250;
-    --color-yes-100: 204 251 241;
-    --color-yes-200: 153 246 228;
-    --color-yes-300: 94 234 212;
-    --color-yes-400: 45 212 191;
-    --color-yes-500: 20 184 166;
-    --color-yes-600: 13 148 136;
-    --color-yes-700: 15 118 110;
-    --color-yes-800: 17 94 89;
-    --color-yes-900: 19 78 74;
-    --color-yes-950: 4 47 46;
+      /* Unified grey gradient for all scales */
+      --color-primary-0: 255 255 255;
+      --color-primary-50: 249 249 249;
+      --color-primary-100: 242 242 242;
+      --color-primary-200: 217 217 217;
+      --color-primary-300: 191 191 191;
+      --color-primary-400: 166 166 166;
+      --color-primary-500: 140 140 140;
+      --color-primary-600: 115 115 115;
+      --color-primary-700: 89 89 89;
+      --color-primary-800: 64 64 64;
+      --color-primary-900: 34 34 34;
+      --color-primary-950: 17 17 17;
+      --color-primary-1000: 0 0 0;
+
+      --color-yes-0: 255 255 255;
+      --color-yes-50: 249 249 249;
+      --color-yes-100: 242 242 242;
+      --color-yes-200: 217 217 217;
+      --color-yes-300: 191 191 191;
+      --color-yes-400: 166 166 166;
+      --color-yes-500: 140 140 140;
+      --color-yes-600: 115 115 115;
+      --color-yes-700: 89 89 89;
+      --color-yes-800: 64 64 64;
+      --color-yes-900: 34 34 34;
+      --color-yes-950: 17 17 17;
+      --color-yes-1000: 0 0 0;
+
+      --color-no-0: 255 255 255;
+      --color-no-50: 249 249 249;
+      --color-no-100: 242 242 242;
+      --color-no-200: 217 217 217;
+      --color-no-300: 191 191 191;
+      --color-no-400: 166 166 166;
+      --color-no-500: 140 140 140;
+      --color-no-600: 115 115 115;
+      --color-no-700: 89 89 89;
+      --color-no-800: 64 64 64;
+      --color-no-900: 34 34 34;
+      --color-no-950: 17 17 17;
+      --color-no-1000: 0 0 0;
+
   }
   .dark {
     color-scheme: dark;
 
-    --color-ink-1000: 255 255 255;
-    --color-ink-950: 249 245 249;
-    --color-ink-900: 231 223 230;
-    --color-ink-800: 206 192 206;
-    --color-ink-700: 162 142 164;
-    --color-ink-600: 130 109 136;
-    --color-ink-500: 96 82 102;
-    --color-ink-400: 79 68 85;
-    --color-ink-300: 62 54 58;
-    --color-ink-200: 46 41 51;
-    --color-ink-100: 32 30 37;
-    --color-ink-50: 22 20 25;
-    --color-ink-0: 0 0 0;
+  --color-ink-1000: 255 255 255;  /* white */
+  --color-ink-950: 250 250 250;   /* #FAFAFA */
+  --color-ink-900: 242 242 242;   /* #F2F2F2 */
+  --color-ink-800: 217 217 217;   /* #D9D9D9 */
+  --color-ink-700: 191 191 191;   /* #BFBFBF */
+  --color-ink-600: 166 166 166;   /* #A6A6A6 */
+  --color-ink-500: 140 140 140;   /* #8C8C8C */
+  --color-ink-400: 115 115 115;   /* #737373 */
+  --color-ink-300: 89 89 89;      /* #595959 */
+  --color-ink-200: 64 64 64;      /* #404040 */
+  --color-ink-100: 34 34 34;      /* #222222 */
+  --color-ink-50: 17 17 17;       /* #111111 */
+  --color-ink-0: 0 0 0;           /* black */
 
-    --color-canvas-0: 32 30 37;
-    --color-canvas-50: 22 20 25;
-    --color-canvas-100: 46 41 51;
+      --color-canvas-0: 32 30 37;
+      --color-canvas-50: 22 20 25;
+      --color-canvas-100: 46 41 51;
 
-    --color-primary-950: 253 242 248;
-    --color-primary-900: 252 231 243;
-    --color-primary-800: 251 207 232;
-    --color-primary-700: 249 168 212;
-    --color-primary-600: 244 114 182;
-    --color-primary-500: 236 72 153;
-    --color-primary-400: 219 39 119;
-    --color-primary-300: 190 24 93;
-    --color-primary-200: 157 23 77;
-    --color-primary-100: 157 23 77;
-    --color-primary-50: 131 24 67;
+      --color-primary-950: 255 255 255;  /* white */
+      --color-primary-900: 242 242 242;
+      --color-primary-800: 217 217 217;
+      --color-primary-700: 191 191 191;
+      --color-primary-600: 166 166 166;
+      --color-primary-500: 140 140 140;
+      --color-primary-400: 115 115 115;
+      --color-primary-300: 89 89 89;
+      --color-primary-200: 64 64 64;
+      --color-primary-100: 34 34 34;
+      --color-primary-50: 17 17 17;
+      --color-primary-0: 0 0 0;          /* black */
 
-    --color-no-950: 255 243 241;
-    --color-no-900: 255 235 231;
-    --color-no-800: 255 208 194;
-    --color-no-700: 255 164 151;
-    --color-no-600: 255 124 102;
-    --color-no-500: 247 88 54;
-    --color-no-400: 239 48 19;
-    --color-no-300: 209 30 12;
-    --color-no-200: 166 27 10;
-    --color-no-100: 132 29 13;
-    --color-no-50: 73 15 6;
 
-    --color-yes-950: 240 253 250;
-    --color-yes-900: 204 251 241;
-    --color-yes-800: 153 246 228;
-    --color-yes-700: 94 234 212;
-    --color-yes-600: 45 212 191;
-    --color-yes-500: 20 184 166;
-    --color-yes-400: 13 148 136;
-    --color-yes-300: 15 118 110;
-    --color-yes-200: 17 94 89;
-    --color-yes-100: 19 78 74;
-    --color-yes-50: 4 47 46;
+      --color-no-950: 255 255 255;  /* white */
+      --color-no-900: 242 242 242;
+      --color-no-800: 217 217 217;
+      --color-no-700: 191 191 191;
+      --color-no-600: 166 166 166;
+      --color-no-500: 140 140 140;
+      --color-no-400: 115 115 115;
+      --color-no-300: 89 89 89;
+      --color-no-200: 64 64 64;
+      --color-no-100: 34 34 34;
+      --color-no-50: 17 17 17;
+      --color-no-0: 0 0 0;          /* black */
+
+
+      --color-yes-950: 255 255 255;  /* white */
+      --color-yes-900: 242 242 242;
+      --color-yes-800: 217 217 217;
+      --color-yes-700: 191 191 191;
+      --color-yes-600: 166 166 166;
+      --color-yes-500: 140 140 140;
+      --color-yes-400: 115 115 115;
+      --color-yes-300: 89 89 89;
+      --color-yes-200: 64 64 64;
+      --color-yes-100: 34 34 34;
+      --color-yes-50: 17 17 17;
+      --color-yes-0: 0 0 0;          /* black */
+
   }
 }
 

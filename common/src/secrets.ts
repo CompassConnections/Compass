@@ -76,7 +76,7 @@ export const getServiceAccountCredentials = (env: 'PROD' | 'DEV') => {
     env === 'PROD'
       ? process.env.PROD_FIREBASE_SERVICE_ACCOUNT_KEY
       : process.env.DEV_FIREBASE_SERVICE_ACCOUNT_KEY
-  if (value) {
+  if (value && !process.env.LOCAL) {
     return JSON.parse(value)
   }
 

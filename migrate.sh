@@ -1,4 +1,4 @@
-PGPASSWORD="eVxjrghGhtP9FpCc" psql \
+psql \
   -h db.ltzepxnhhnrnvovqblfr.supabase.co \
   -p 5432 \
   -d postgres \

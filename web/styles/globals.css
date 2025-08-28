@@ -37,22 +37,17 @@
       --color-canvas-950: 15 15 15;
       --color-canvas-1000: 0 0 0;      /* black */
 
-
-
-      /* Unified grey gradient for all scales */
-      --color-primary-0: 255 255 255;
-      --color-primary-50: 249 249 249;
-      --color-primary-100: 242 242 242;
-      --color-primary-200: 217 217 217;
-      --color-primary-300: 191 191 191;
-      --color-primary-400: 166 166 166;
-      --color-primary-500: 140 140 140;
-      --color-primary-600: 115 115 115;
-      --color-primary-700: 89 89 89;
-      --color-primary-800: 64 64 64;
-      --color-primary-900: 34 34 34;
-      --color-primary-950: 17 17 17;
-      --color-primary-1000: 0 0 0;
+      --color-primary-950: 239 246 255;   /* very light blue */
+      --color-primary-900: 219 234 254;   /* light blue */
+      --color-primary-800: 191 219 254;
+      --color-primary-700: 147 197 253;
+      --color-primary-600: 96 165 250;
+      --color-primary-500: 59 130 246;    /* standard blue */
+      --color-primary-400: 37 99 235;
+      --color-primary-300: 29 78 216;
+      --color-primary-200: 30 64 175;
+      --color-primary-100: 30 58 138;
+      --color-primary-50: 23 37 84;       /* very dark navy */
 
       --color-yes-0: 255 255 255;
       --color-yes-50: 249 249 249;
@@ -104,18 +99,17 @@
       --color-canvas-50: 22 20 25;
       --color-canvas-100: 46 41 51;
 
-      --color-primary-950: 255 255 255;  /* white */
-      --color-primary-900: 242 242 242;
-      --color-primary-800: 217 217 217;
-      --color-primary-700: 191 191 191;
-      --color-primary-600: 166 166 166;
-      --color-primary-500: 140 140 140;
-      --color-primary-400: 115 115 115;
-      --color-primary-300: 89 89 89;
-      --color-primary-200: 64 64 64;
-      --color-primary-100: 34 34 34;
-      --color-primary-50: 17 17 17;
-      --color-primary-0: 0 0 0;          /* black */
+      --color-primary-950: 239 246 255;   /* very light blue */
+      --color-primary-900: 219 234 254;   /* light blue */
+      --color-primary-800: 191 219 254;
+      --color-primary-700: 147 197 253;
+      --color-primary-600: 96 165 250;
+      --color-primary-500: 59 130 246;    /* standard blue */
+      --color-primary-400: 37 99 235;
+      --color-primary-300: 29 78 216;
+      --color-primary-200: 30 64 175;
+      --color-primary-100: 30 58 138;
+      --color-primary-50: 23 37 84;       /* very dark navy */
 
 
       --color-no-950: 255 255 255;  /* white */

@@ -4,7 +4,7 @@ import { zip } from 'lodash'
 
 // List of secrets that are available to backend (api, functions, scripts, etc.)
 // Edit them at:
-// https://console.cloud.google.com/security/secret-manager?project=polylove
+// https://console.cloud.google.com/security/secret-manager?project=compass-130ba
 export const secrets = (
   [
     // 'STRIPE_APIKEY',

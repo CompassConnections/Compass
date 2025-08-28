@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import LoveLogo from '../public/manifold_love_logo.svg'
 import clsx from 'clsx'
 import { ENV } from 'common/envs/constants'
 import { Row } from 'web/components/layout/row'
@@ -14,7 +13,7 @@ export default function ManifoldLoveLogo(props: {
     <>
       <FavIcon className="dark:invert"/>
       <div className={clsx('my-auto text-xl font-thin')}>
-        {ENV == 'DEV' ? 'Compass' : 'Compass'}
+        {ENV == 'DEV' ? 'Compass dev' : 'Compass'}
       </div>
     </>
   )

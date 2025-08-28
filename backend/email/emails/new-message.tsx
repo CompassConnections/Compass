@@ -52,7 +52,7 @@ export const NewMessageEmail = ({
               src="https://manifold.love/manifold-love-banner.png"
               width="550"
               height="auto"
-              alt="manifold.love"
+              alt="compassmeet.com"
             />
           </Section>
 

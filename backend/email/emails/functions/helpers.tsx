@@ -6,8 +6,9 @@ import { NewMessageEmail } from '../new-message'
 import { NewEndorsementEmail } from '../new-endorsement'
 import { Test } from '../test'
 import { getLover } from 'shared/love/supabase'
+import {renderToStaticMarkup} from "react-dom/server";
 
-const from = 'Love <no-reply@poly.love>'
+const from = 'Compass <no-reply@compassmeet.com>'
 
 export const sendNewMatchEmail = async (
   privateUser: PrivateUser,
@@ -51,15 +52,30 @@ export const sendNewMessageEmail = async (
   const lover = await getLover(fromUser.id)
 
   if (!lover) {
-    console.error('Could not send email notification: Lover not found')
+    console.error('Could not send email notification: User not found')
     return
   }
+
+  console.log({
+    from,
+    subject: `${fromUser.name} sent you a message!`,
+    to: privateUser.email,
+    html: renderToStaticMarkup(
+      <NewMessageEmail
+        fromUser={fromUser}
+        fromUserLover={lover}
+        toUser={toUser}
+        channelId={channelId}
+        unsubscribeUrl={unsubscribeUrl}
+      />
+    ),
+  })
 
   return await sendEmail({
     from,
     subject: `${fromUser.name} sent you a message!`,
     to: privateUser.email,
-    react: (
+    html: renderToStaticMarkup(
       <NewMessageEmail
         fromUser={fromUser}
         fromUserLover={lover}
@@ -101,8 +117,8 @@ export const sendNewEndorsementEmail = async (
 export const sendTestEmail = async (toEmail: string) => {
   return await sendEmail({
     from,
-    subject: 'Test email from Love',
+    subject: 'Test email from Compass',
     to: toEmail,
-    react: <Test name="Test User" />,
+    html: renderToStaticMarkup(<Test name="Test User" />),
   })
 }

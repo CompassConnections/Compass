@@ -86,6 +86,7 @@ export const createPrivateUserMessageMain = async (
   pg: SupabaseDirectClient,
   visibility: ChatVisibility
 ) => {
+  log('createPrivateUserMessageMain', creator, channelId, content)
   // Normally, users can only submit messages to channels that they are members of
   const authorized = await pg.oneOrNone(
     `select 1
@@ -162,6 +163,7 @@ const notifyOtherUserInChannelIfInactive = async (
   // TODO: notification only for active user
 
   const otherUser = await getUser(otherUserId.user_id)
+  console.log('otherUser:', otherUser)
   if (!otherUser) return
 
   await createNewMessageNotification(creator, otherUser, channelId)
@@ -173,6 +175,7 @@ const createNewMessageNotification = async (
   channelId: number
 ) => {
   const privateUser = await getPrivateUser(toUser.id)
+  console.log('privateUser:', privateUser)
   if (!privateUser) return
   await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
 }

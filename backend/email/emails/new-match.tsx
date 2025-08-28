@@ -44,7 +44,7 @@ export const NewMatchEmail = ({
               src="https://manifold.love/manifold-love-banner.png"
               width="550"
               height="auto"
-              alt="manifold.love"
+              alt="compassmeet.com"
             />
           </Section>
 
@@ -91,7 +91,7 @@ NewMatchEmail.PreviewProps = {
   onUser: sinclairUser,
   matchedWithUser: jamesUser,
   matchedLover: jamesLover,
-  unsubscribeUrl: 'https://manifold.love/unsubscribe',
+  unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMatchEmailProps
 
 const main = {

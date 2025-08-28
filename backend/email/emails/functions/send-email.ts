@@ -13,10 +13,12 @@ export const sendEmail = async (
   options?: CreateEmailRequestOptions
 ) => {
   const resend = getResend()
+  console.log(resend, payload, options)
   const { data, error } = await resend.emails.send(
-    { replyTo: 'love@sincl.ai', ...payload },
+    { replyTo: 'Compass <no-reply@compassmeet.com>', ...payload },
     options
   )
+  console.log('resend.emails.send', data, error)
 
   if (error) {
     log.error(
@@ -35,6 +37,7 @@ const getResend = () => {
   if (resend) return resend
 
   const apiKey = process.env.RESEND_KEY as string
+  console.log(`RESEND_KEY: ${apiKey}`)
   resend = new Resend(apiKey)
   return resend
 }

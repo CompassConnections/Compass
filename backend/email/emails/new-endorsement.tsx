@@ -44,7 +44,7 @@ export const NewEndorsementEmail = ({
               src="https://manifold.love/manifold-love-banner.png"
               width="550"
               height="auto"
-              alt="manifold.love"
+              alt="compassmeet.com"
             />
           </Section>
 
@@ -95,7 +95,7 @@ NewEndorsementEmail.PreviewProps = {
   onUser: sinclairUser,
   endorsementText:
     "Sinclair is someone you want to have around because she injects creativity and humor into every conversation, and her laugh is infectious! Not to mention that she's a great employee, treats everyone with respect, and is even-tempered.",
-  unsubscribeUrl: 'https://manifold.love/unsubscribe',
+  unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewEndorsementEmailProps
 
 const main = {

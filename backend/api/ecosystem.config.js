@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'serve',
-      script: 'backend/api/src/serve.ts',
+      script: 'backend/api/lib/serve.js',
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,

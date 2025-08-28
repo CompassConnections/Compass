@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "polylove",
-    "prod": "polylove",
-    "dev": "polylove-dev"
+    "default": "compass-130ba",
+    "prod": "compass-130ba",
+    "dev": "compass-130ba"
   }
 }

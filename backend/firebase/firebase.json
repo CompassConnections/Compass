@@ -1,11 +1,11 @@
 {
   "storage": [
     {
-      "bucket": "polylove.firebasestorage.app",
+      "bucket": "compass-130ba-public",
       "rules": "storage.rules"
     },
     {
-      "bucket": "polylove-private.firebasestorage.app",
+      "bucket": "compass-130ba-private.firebasestorage.app",
       "rules": "private-storage.rules"
     }
   ]

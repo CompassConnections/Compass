@@ -11,16 +11,12 @@
 
 set -e
 
-if [[ ! "$1" =~ ^(dev|prod)$ ]]; then
-  echo "Usage: $0 [dev|prod]"
-  exit 1
-fi
+ENV=${1:-prod}
 
 # Config
-ENV=$1
 REGION="us-west1"
 ZONE="us-west1-b"
-PROJECT="polylove"
+PROJECT="compass-130ba"
 SERVICE_NAME="api"
 
 GIT_REVISION=$(git rev-parse --short HEAD)
@@ -31,6 +27,7 @@ IMAGE_URL="${REGION}-docker.pkg.dev/${PROJECT}/builds/${SERVICE_NAME}:${IMAGE_TA
 echo "🚀 Deploying ${SERVICE_NAME} to ${ENV} ($(date "+%Y-%m-%d %I:%M:%S %p"))"
 yarn build
 docker build . --tag ${IMAGE_URL} --platform linux/amd64
+echo "docker push ${IMAGE_URL}"
 docker push ${IMAGE_URL}
 
 export TF_VAR_image_url=$IMAGE_URL

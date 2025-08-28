@@ -13,14 +13,14 @@ fi
 
 SERVICE_NAME="api"
 SERVICE_GROUP="${SERVICE_NAME}-group"
-ZONE="us-west1-b"
+ZONE="us-west1-c"
 ENV=${1:-dev}
 
 case $ENV in
     dev)
-        GCLOUD_PROJECT=polylove ;;
+        GCLOUD_PROJECT=compass-130ba ;;
     prod)
-        GCLOUD_PROJECT=polylove ;;
+        GCLOUD_PROJECT=compass-130ba ;;
     *)
         echo "Invalid environment; must be dev or prod."
         exit 1

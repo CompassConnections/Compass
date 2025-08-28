@@ -1,9 +1,7 @@
-# written by claude 3.7 lol
-
 variable "image_url" {
   description = "Docker image URL"
   type        = string
-  default     = "us-west1-docker.pkg.dev/polylove/builds/api:latest"
+  default     = "us-west1-docker.pkg.dev/compass-130ba/builds/api:latest"
 }
 
 variable "env" {
@@ -13,7 +11,7 @@ variable "env" {
 }
 
 locals {
-  project = "polylove"
+  project = "compass-130ba"
   region  = "us-west1"
   zone         = "us-west1-b"
   service_name = "api"
@@ -22,7 +20,7 @@ locals {
 
 terraform {
   backend "gcs" {
-    bucket = "polylove-terraform-state"
+    bucket = "compass-130ba-terraform-state"
     prefix = "api"
   }
 }
@@ -36,8 +34,8 @@ provider "google" {
 # Firebase Storage Buckets
 # Note you still have to deploy the rules: `firebase deploy --only storage`
 resource "google_storage_bucket" "public_storage" {
-  name          = "polylove.firebasestorage.app"
-  location      = "US-WEST1"
+  name          = "compass-130ba-public"
+  location      = "US"
   force_destroy = false
 
   uniform_bucket_level_access = true
@@ -50,6 +48,7 @@ resource "google_storage_bucket" "public_storage" {
   }
 }
 
+
 # static IPs
 resource "google_compute_global_address" "api_lb_ip" {
   name = "api-lb-ip-2"
@@ -60,7 +59,7 @@ resource "google_compute_managed_ssl_certificate" "api_cert" {
   name = "api-lb-cert-2"
 
   managed {
-    domains = ["api.poly.love"]
+    domains = ["api.compassmeet.com"]
   }
 }
 
@@ -99,6 +98,16 @@ spec:
         value: ${upper(var.env)}
       - name: GOOGLE_CLOUD_PROJECT
         value: ${local.project}
+      - name: SUPABASE_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: "SUPABASE_PASSWORD"
+            key: "latest"
+      - name: GEODB_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: "GEODB_API_KEY"
+            key: "latest"
       ports:
         - containerPort: 80
 EOF
@@ -253,53 +262,53 @@ resource "google_compute_firewall" "default_allow_https" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-resource "google_compute_firewall" "default_allow_ssh" {
-  name        = "default-allow-ssh"
-  network     = "default"
-  priority    = 65534
-  direction   = "INGRESS"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-}
-
-resource "google_compute_firewall" "default_allow_internal" {
-  name        = "default-allow-internal"
-  network     = "default"
-  priority    = 65534
-  direction   = "INGRESS"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["0-65535"]
-  }
-
-  allow {
-    protocol = "udp"
-    ports    = ["0-65535"]
-  }
-
-  allow {
-    protocol = "icmp"
-  }
-
-  source_ranges = ["10.128.0.0/9"]
-}
-
-# Allow ICMP (ping)
-resource "google_compute_firewall" "default_allow_icmp" {
-  name        = "default-allow-icmp"
-  network     = "default"
-  priority    = 65534
-  direction   = "INGRESS"
-
-  allow {
-    protocol = "icmp"
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-}
+# resource "google_compute_firewall" "default_allow_ssh" {
+#   name        = "default-allow-ssh"
+#   network     = "default"
+#   priority    = 65534
+#   direction   = "INGRESS"
+#
+#   allow {
+#     protocol = "tcp"
+#     ports    = ["22"]
+#   }
+#
+#   source_ranges = ["0.0.0.0/0"]
+# }
+#
+# resource "google_compute_firewall" "default_allow_internal" {
+#   name        = "default-allow-internal"
+#   network     = "default"
+#   priority    = 65534
+#   direction   = "INGRESS"
+#
+#   allow {
+#     protocol = "tcp"
+#     ports    = ["0-65535"]
+#   }
+#
+#   allow {
+#     protocol = "udp"
+#     ports    = ["0-65535"]
+#   }
+#
+#   allow {
+#     protocol = "icmp"
+#   }
+#
+#   source_ranges = ["10.128.0.0/9"]
+# }
+#
+# # Allow ICMP (ping)
+# resource "google_compute_firewall" "default_allow_icmp" {
+#   name        = "default-allow-icmp"
+#   network     = "default"
+#   priority    = 65534
+#   direction   = "INGRESS"
+#
+#   allow {
+#     protocol = "icmp"
+#   }
+#
+#   source_ranges = ["0.0.0.0/0"]
+# }

@@ -33,25 +33,11 @@ export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(
 )}`
 
 export const MOD_IDS = [
-  'HTbxWFlzWGeHUTiwZvvF0qm8W433', // Conflux
-  '9dAaZrNSx5OT0su6rpusDoG9WPN2', // dglid
-  '5XMvQhA3YgcTzyoJRiNqGWyuB9k2', // dreev
-  '2VhlvfTaRqZbFn2jqxk2Am9jgsE2', // Gabrielle
-  'XeQf3ygmrGM1MxdsE3JSlmq8vL42', // Jacy
-  'JlVpsgzLsbOUT4pajswVMr0ZzmM2', // Joshua
-  'sA7V30Ic73XZtniboy2eKr6ekkn1', // MartinRandall
-  'jO7sUhIDTQbAJ3w86akzncTlpRG2', // MichaelWheatley
-  'lkkqZxiWCpOgtJ9ztJcAKz4d9y33', // NathanpmYoung
-  'YOILpFNyg0gGj79zBIBUpJigHQ83', // SneakySly
-  'KHX2ThSFtLQlau58hrjtCX7OL2h2', // shankypanky (stefanie)
+  '...',
 ]
 
 export const VERIFIED_USERNAMES = [
-  'ScottAlexander',
-  'Aella',
-  'Roko',
-  'KatjaGrace',
-  'patrissimo',
+  'Martin',
 ]
 
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10

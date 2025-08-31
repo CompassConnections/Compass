@@ -141,3 +141,6 @@ Once the server is running, visit http://localhost:3000 to start using the app. 
 Now you can start contributing by making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.
+
+# Acknowledgements
+This project is built on top of [manifold.love](github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

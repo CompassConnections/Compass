@@ -32,7 +32,7 @@ jobs:
         run: npm run lint
 
       - name: Run Jest tests
-        run: npm run test
+        run: npm run test tests/jest
 
       - name: Build app
         env:
@@ -47,7 +47,7 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          npm start &
+          NEXT_PUBLIC_API_URL=localhost:8088 NEXT_PUBLIC_FIREBASE_ENV=PROD yarn --cwd=web serve &
           npx wait-on http://localhost:3000
           npx playwright test tests/playwright
           SERVER_PID=$(fuser -k 3000/tcp)

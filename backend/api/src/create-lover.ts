@@ -24,7 +24,7 @@ export const createLover: APIHandler<'create-lover'> = async (body, auth) => {
   const user = await getUser(auth.uid)
   if (!user) throw new APIError(401, 'Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {
-    // If they just signed up for manifold via manifold.love, set their avatar to be their pinned photo
+    // If they just signed up, set their avatar to be their pinned photo
     updateUser(pg, auth.uid, { avatarUrl: body.pinned_url })
   }
 

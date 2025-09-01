@@ -2,7 +2,6 @@ export const SITE_ORDER = [
   'site', // personal site
   'x', // twitter
   'discord',
-  'manifold',
   'bluesky',
   'mastodon',
   'substack',
@@ -30,11 +29,6 @@ const stripper: { [key in Site]: (input: string) => string } = {
       .replace(/^@/, '')
       .replace(/\/$/, ''),
   discord: (s) => s,
-  manifold: (s) =>
-    s
-      .replace(/^(https?:\/\/)?(manifold\.markets\/)/, '')
-      .replace(/^@/, '')
-      .replace(/\/$/, ''),
   bluesky: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?bsky\.app\/profile\//, '')
@@ -78,8 +72,7 @@ const urler: { [key in Site]: (handle: string) => string } = {
   discord: (s) =>
     (s.length === 17 || s.length === 18) && !isNaN(parseInt(s, 10))
       ? `https://discord.com/users/${s}` // discord user id
-      : 'https://discord.com/invite/AYDw8dbrGS', // our server
-  manifold: (s) => `https://manifold.markets/${s}`,
+      : 'https://discord.gg/8Vd7jzqjun', // our server
   bluesky: (s) => `https://bsky.app/profile/${s}`,
   mastodon: (s) =>
     s.includes('@') ? `https://${s.split('@')[1]}/@${s.split('@')[0]}` : s,
@@ -96,7 +89,6 @@ export const PLATFORM_LABELS: { [key in Site]: string } = {
   site: 'Website',
   x: 'Twitter/X',
   discord: 'Discord',
-  manifold: 'Manifold',
   bluesky: 'Bluesky',
   mastodon: 'Mastodon',
   substack: 'Substack',

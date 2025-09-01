@@ -47,14 +47,14 @@ export const NewMessageEmail = ({
       <Preview>New message from {creatorName}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={logoContainer}>
-            <Img
-              src="https://manifold.love/manifold-love-banner.png"
-              width="550"
-              height="auto"
-              alt="compassmeet.com"
-            />
-          </Section>
+          {/*<Section style={logoContainer}>*/}
+          {/*  <Img*/}
+          {/*    src="..."*/}
+          {/*    width="550"*/}
+          {/*    height="auto"*/}
+          {/*    alt="compassmeet.com"*/}
+          {/*  />*/}
+          {/*</Section>*/}
 
           <Section style={content}>
             <Text style={paragraph}>Hi {name},</Text>
@@ -98,7 +98,7 @@ NewMessageEmail.PreviewProps = {
   fromUserLover: jamesLover,
   toUser: sinclairUser,
   channelId: 1,
-  unsubscribeUrl: 'https://manifold.love/unsubscribe',
+  unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMessageEmailProps
 
 const main = {
@@ -141,7 +141,7 @@ const profileImage = {
 }
 
 const button = {
-  backgroundColor: '#ec489a',
+  backgroundColor: '#4887ec',
   borderRadius: '12px',
   color: '#ffffff',
   fontFamily: 'Helvetica, Arial, sans-serif',

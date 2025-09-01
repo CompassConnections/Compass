@@ -77,7 +77,6 @@ export const RESERVED_PATHS = [
   'live',
   'login',
   'manifest',
-  'manifold',
   'market',
   'markets',
   'message',

@@ -16,7 +16,6 @@ ENVIRONMENT=$ENV
 NEXT_PUBLIC_FIREBASE_ENV="${ENVIRONMENT}"
 
 DIR=web
-export IS_MANIFOLD_LOVE=true
 source .env
 
 npx dotenv -e .env -- npx concurrently \

@@ -4,7 +4,6 @@ import { filterDefined } from './util/array'
 export type notification_destination_types = 'email' | 'browser' | 'mobile'
 export type notification_preference = keyof notification_preferences
 export type notification_preferences = {
-  // Manifold.love
   new_match: notification_destination_types[]
   new_endorsement: notification_destination_types[]
   new_love_like: notification_destination_types[]
@@ -37,7 +36,6 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
     ]) as notification_destination_types[]
   }
   const defaults: notification_preferences = {
-    // Manifold.love
     new_match: constructPref(true, true, true),
     new_endorsement: constructPref(true, true, true),
     new_love_like: constructPref(true, false, false),

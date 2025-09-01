@@ -49,9 +49,8 @@ function OgLover(props: LoveOgProps) {
       className="flex h-full w-full flex-col items-center justify-center"
       style={{
         fontFamily: 'var(--font-main), Figtree',
-        // Pink radial gradient
         background:
-          'radial-gradient(circle at top left, #fdf2f8 0%, #fbcfe8 85%, #ec4899 100%)',
+          'radial-gradient(circle at top left, #ffffff 0%, #ffffff 85%, #ffffff 100%)',
       }}
     >
       <div className="flex flex-col">
@@ -91,7 +90,7 @@ function OgLover(props: LoveOgProps) {
       >
         <img
           className="mr-1.5 h-12 w-12"
-          src="https://manifold.love/manifold_love_logo.svg"
+          src="https://www.compassmeet.com/favicon.ico"
           width={48}
           height={48}
         />

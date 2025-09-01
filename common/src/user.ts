@@ -48,9 +48,6 @@ export type PrivateUser = {
 
 export type UserAndPrivateUser = { user: User; privateUser: PrivateUser }
 
-export const MANIFOLD_LOVE_LOGO =
-  'https://manifold.markets/manifold_love_logo.svg'
-
 export function getCurrentUtcTime(): Date {
   const currentDate = new Date()
   const utcDate = currentDate.toISOString()

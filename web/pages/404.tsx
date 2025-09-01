@@ -27,7 +27,7 @@ export function Custom404Content(props: { customText?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             className="items-center hover:text-indigo-400 hover:underline"
-            href="https://discord.com/invite/AYDw8dbrGS"
+            href="https://discord.gg/8Vd7jzqjun"
           >
             on Discord!
             <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 " />

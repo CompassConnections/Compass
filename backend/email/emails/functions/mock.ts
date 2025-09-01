@@ -10,7 +10,6 @@ export const sinclairUser: User = {
   avatarUrl:
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FSinclair%2FbqSXdzkn1z.JPG?alt=media&token=7779230a-9f5d-42b5-839f-fbdfef31a3ac',
   idVerified: true,
-  // fromManifold: true,
   discordHandle: 'sinclaether#5570',
   twitterHandle: 'singularitttt',
   verifiedPhone: true,

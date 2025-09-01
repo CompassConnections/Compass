@@ -739,7 +739,7 @@ export function createClient(
 }
 
 export const ENV_CONFIG = {
-  domain: 'dev.manifold.love',
+  domain: 'dev.compassmeet.com',
   firebaseConfig: {
     apiKey: "AIzaSyAxzhj6bZuZ1TCw9xzibGccRHXiRWq6iy0",
     authDomain: "compass-130ba.firebaseapp.com",
@@ -749,15 +749,15 @@ export const ENV_CONFIG = {
     appId: "1:253367029065:web:b338785af99d4145095e98",
     measurementId: "G-2LSQYJQE6P",
     region: 'us-west1',
-    privateBucket: 'polylove-private.firebasestorage.app',
+    privateBucket: 'compass-130ba.firebasestorage.app',
   },
   cloudRunId: 'w3txbmd3ba',
   cloudRunRegion: 'uc',
   supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0emVweG5oaG5ybnZvdnFibGZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjczNjgsImV4cCI6MjA3MTU0MzM2OH0.pbazcrVOG7Kh_IgblRu2VAfoBe3-xheNfRzAto7xvzY',
-  apiEndpoint: 'api.dev.manifold.love',
+  apiEndpoint: 'api.dev.compassmeet.com',
   adminIds: [
-    '2cO953kN1sTBpfbhPVnTjRNqLJh2', // Sinclair
+    '...',
   ],
 }
 

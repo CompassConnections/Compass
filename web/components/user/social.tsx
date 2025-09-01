@@ -22,7 +22,6 @@ export const PLATFORM_ICONS: {
   site: LinkIcon,
   x: TbBrandX,
   discord: TbBrandDiscord,
-  manifold: Foldy,
   bluesky: TbBrandBluesky,
   mastodon: TbBrandMastodon,
   substack: LuBookmark,

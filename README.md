@@ -28,7 +28,7 @@ The full description is available [here](https://martinbraquet.com/meeting-ratio
 - [x] Ask for detailed info per profile upon registration (intellectual interests, location, cause areas, personality type, conflict style, desired type of connection, prompt answers, gender, etc.)
 - [x] Set up page listing all the profiles
 - [x] Search through all the profile variables
-- [ ] (Set up chat / direct messaging)
+- [x] (Set up chat / direct messaging)
 - [x] Set up domain name (https://compassmeet.com)
 
 #### Secondary To Do
@@ -62,7 +62,7 @@ git clone git@github.com:CompassMeet/Compass.git
 cd Compass
 ```
 
-Install `opentofu`, `docker`, and `yarn`. Try running on Linux or macOS:
+Install `opentofu`, `docker`, and `yarn`. Try running this on Linux or macOS for a faster install:
 ```bash
 ./setup.sh
 ```
@@ -130,7 +130,7 @@ Note that your local database will be made of synthetic data, not real users. Th
 
 Make sure the tests pass:
 ```bash
-npm run test
+yarn test
 ```
 
 ### Running the Development Server

@@ -52,25 +52,20 @@ const newClient = (
 ) => {
   const { instanceId, password, ...settings } = props
 
-  console.log({
+  const config = {
     host: 'db.ltzepxnhhnrnvovqblfr.supabase.co',
     port: 5432,
     user: `postgres`,
     password: password,
     database: 'postgres',
     ssl: { rejectUnauthorized: false },
+    family: 4, // <- forces IPv4
     ...settings,
-  })
+  }
 
-  return pgp({
-    host: 'db.ltzepxnhhnrnvovqblfr.supabase.co',
-    port: 5432,
-    user: `postgres`,
-    password: password,
-    database: 'postgres',
-    ssl: { rejectUnauthorized: false },
-    ...settings,
-  })
+  console.log(config)
+
+  return pgp(config)
 }
 
 // Use one connection to avoid WARNING: Creating a duplicate database object for the same connection.
@@ -89,7 +84,7 @@ export function createSupabaseDirectClient(
   password = password ?? process.env.SUPABASE_DB_PASSWORD
   if (!password) {
     throw new Error(
-      "Can't connect to Supabase; no process.env.SUPABASE_PASSWORD."
+      "Can't connect to Supabase; no process.env.SUPABASE_DB_PASSWORD."
     )
   }
   const client = newClient({

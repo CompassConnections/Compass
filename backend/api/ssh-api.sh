@@ -6,11 +6,6 @@
 
 set -e
 
-if [ -z "$1" ]; then
-    echo "Usage: the first argument should be 'dev' or 'prod'"
-    exit 1
-fi
-
 SERVICE_NAME="api"
 SERVICE_GROUP="${SERVICE_NAME}-group"
 ZONE="us-west1-c"
@@ -27,11 +22,16 @@ case $ENV in
 esac
 
 echo "Looking for API instance on ${GCLOUD_PROJECT} to talk to..."
-INSTANCE_ID=$(gcloud compute instance-groups list-instances ${SERVICE_GROUP} --format="value(NAME)" --zone=${ZONE} --project=${GCLOUD_PROJECT})
+INSTANCE_ID=$(gcloud compute instances list \
+  --filter="zone:(us-west1-c)" \
+  --sort-by="~creationTimestamp" \
+  --format="value(name)" \
+  --limit=1)
 
 echo "Forwarding debugging port 9229 to ${INSTANCE_ID}. Open chrome://inspect in Chrome to connect."
+echo gcloud compute ssh ${INSTANCE_ID} --project=${GCLOUD_PROJECT} --zone=${ZONE}
 gcloud compute ssh ${INSTANCE_ID} \
        --project=${GCLOUD_PROJECT} \
        --zone=${ZONE} \
-       -- \
-       -NL 9229:localhost:9229
+#       -- \
+#       -NL 9229:localhost:9229

@@ -5,8 +5,7 @@
 
 # Compass
 
-This repository provides the source code for [Compass](https://compassmeet.com), a web application where rational thinkers can bond and form deep 1-1 
-relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
+This repository provides the source code for [Compass](https://compassmeet.com), a web application where rational thinkers can bond and form deep 1-1 relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
 
@@ -63,9 +62,14 @@ git clone git@github.com:CompassMeet/Compass.git
 cd Compass
 ```
 
-Install the dependencies:
+Install `opentofu`, `docker`, and `yarn`. Try running on Linux or macOS:
+```bash
+./setup.sh
 ```
-npm install @tiptap/core@2.3.2   @tiptap/starter-kit@2.3.2   @tiptap/extension-link@2.3.2   @tiptap/extension-image@2.3.2   @tiptap/extension-blockquote@2.3.2   @tiptap/extension-bold@2.3.2   @tiptap/extension-mention@2.3.2   @tiptap/extension-floating-menu@2.3.2   @tiptap/extension-bubble-menu@2.3.2   @tiptap/suggestion@2.3.2   @tiptap/html@2.3.2 --save-exact
+
+Install the dependencies:
+```bash
+yarn install
 ```
 
 ### Environment Variables
@@ -133,7 +137,7 @@ npm run test
 
 Start the development server:
 ```bash
-npm run dev
+yarn dev
 ```
 
 Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles; you should see 5 synthetic profiles.

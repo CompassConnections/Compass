@@ -25,7 +25,9 @@ export default function About() {
                 </section>
                 <section className="mb-12">
                   <h2 className="text-3xl font-bold mb-4">Get Notified About Searches</h2>
-                  <p className="text-lg text-gray-500">No need to constantly check an app!</p>
+                  <p className="text-lg text-gray-500">
+                    No need to constantly check an app! We'll contact you when new users fit your searches.
+                  </p>
                 </section>
                 <section className="mb-12">
                   <h2 className="text-3xl font-bold mb-4">Free</h2>
@@ -72,7 +74,7 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="share" className="font-bold mb-4 text-xl text-center">Develop the App</h5>
-                  <p className="mb-4 text-center">The source code and instructions are available on GitHub.</p>
+                  <p className="mb-4 text-center">The full source code and instructions are available on GitHub.</p>
                   <a
                     href="https://github.com/CompassMeet/Compass"
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"

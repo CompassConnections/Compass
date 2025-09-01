@@ -6,7 +6,7 @@ export default function About() {
       <div className="text-gray-600 dark:text-white min-h-screen p-6">
         {aColor}
         <div className="w-full">
-          <div className="w-screen relative bg-gray-100 dark:bg-gray-800 py-8 mb-8 overflow-hidden">
+          <div className="relative py-8 mb-8 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">
               <h1 className="text-3xl font-bold mb-4 text-center">Why Choose Compass?</h1>
               <div className="flex flex-col md:flex-row items-center justify-center mb-8 gap-8">
@@ -42,11 +42,11 @@ export default function About() {
               </div>
             </div>
           </div>
-          <div className="w-screen relative bg-gray-100 dark:bg-gray-800 py-8 mt-12 overflow-hidden">
+          <div className="relative py-8 mt-12 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">
               <h3 className="text-4xl font-bold text-center mt-8 mb-8">Help Compass</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center">
+                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="give-suggestions-or-contribute" className="font-bold mb-4 text-xl text-center">Give Suggestions or Contribute</h5>
                   <p className="mb-4 text-center">Give suggestions or let us know you want to help through this form!</p>
                   <a
@@ -57,7 +57,7 @@ export default function About() {
                     Suggest Here
                   </a>
                 </div>
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center">
+                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
                   <p className="mb-4 text-center">Shape the product or chat with like-minded people.</p>
                   <a
@@ -68,7 +68,7 @@ export default function About() {
                     Join the Discord
                   </a>
                 </div>
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center">
+                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="share" className="font-bold mb-4 text-xl text-center">Develop the App</h5>
                   <p className="mb-4 text-center">The source code and instructions are available on GitHub.</p>
                   <a
@@ -78,7 +78,7 @@ export default function About() {
                     View Code
                   </a>
                 </div>
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center">
+                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
                   <p className="mb-4 text-center">Support our not-for-profit infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
@@ -108,7 +108,7 @@ export default function About() {
                   </span>
                   </div>
                 </div>
-                <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center md:col-span-2">
+                <div className="rounded-xl shadow p-6 flex flex-col items-center md:col-span-2">
                   <h5 id="github-repo" className="font-bold mb-4 text-xl text-center">Tell Your Friends and Family</h5>
                   <p className="mb-4 text-center">Thank you for supporting us!</p>
                 </div>

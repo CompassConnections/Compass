@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENV=${1:-dev}
+ENV=${1:-prod}
 PROJECT=$2
 case $ENV in
     dev)

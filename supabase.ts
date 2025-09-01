@@ -762,11 +762,11 @@ export const ENV_CONFIG = {
 }
 
 export function initSupabaseClient() {
-  console.log(
-    'Initializing supabase client',
-    ENV_CONFIG.supabaseInstanceId,
-    ENV_CONFIG.supabaseAnonKey
-  )
+  // console.log(
+  //   'Initializing supabase client',
+  //   ENV_CONFIG.supabaseInstanceId,
+  //   ENV_CONFIG.supabaseAnonKey
+  // )
   return createClient(ENV_CONFIG.supabaseInstanceId, ENV_CONFIG.supabaseAnonKey)
 }
 

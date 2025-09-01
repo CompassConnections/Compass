@@ -4,7 +4,7 @@ import { ENV_CONFIG } from 'common/envs/constants'
 let currentToken: string | undefined
 
 export function initSupabaseClient() {
-  console.log('Initializing supabase client', ENV_CONFIG.supabaseInstanceId, ENV_CONFIG.supabaseAnonKey)
+  // console.log('Initializing supabase client', ENV_CONFIG.supabaseInstanceId, ENV_CONFIG.supabaseAnonKey)
   return createClient(ENV_CONFIG.supabaseInstanceId, ENV_CONFIG.supabaseAnonKey)
 }
 

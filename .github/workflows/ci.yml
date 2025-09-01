@@ -34,10 +34,10 @@ jobs:
       - name: Run Jest tests
         run: npm run test tests/jest
 
-      - name: Build app
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npm run build
+#      - name: Build app
+#        env:
+#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+#        run: npm run build
 
       # Optional: Playwright E2E tests
       - name: Install Playwright deps

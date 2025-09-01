@@ -1,10 +1,9 @@
-import { LovePage } from 'web/components/love-page'
+import {LovePage} from 'web/components/love-page'
 
 export default function About() {
   return (
     <LovePage trackPageView={'user profiles'}>
       <div className="text-gray-600 dark:text-white min-h-screen p-6">
-        {aColor}
         <div className="w-full">
           <div className="relative py-8 mb-8 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">
@@ -21,7 +20,8 @@ export default function About() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <section className="mb-12">
                   <h2 className="text-3xl font-bold mb-4">Keyword Search the Database</h2>
-                  <p className="text-lg text-gray-500">"Cats", "Hiking", "Introvert", "Rock Climbing".<br />Access any profile and get niche.</p>
+                  <p className="text-lg text-gray-500">"Cats", "Hiking", "Introvert", "Rock Climbing".<br/>Access any
+                    profile and get niche.</p>
                 </section>
                 <section className="mb-12">
                   <h2 className="text-3xl font-bold mb-4">Get Notified About Searches</h2>
@@ -47,8 +47,10 @@ export default function About() {
               <h3 className="text-4xl font-bold text-center mt-8 mb-8">Help Compass</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
-                  <h5 id="give-suggestions-or-contribute" className="font-bold mb-4 text-xl text-center">Give Suggestions or Contribute</h5>
-                  <p className="mb-4 text-center">Give suggestions or let us know you want to help through this form!</p>
+                  <h5 id="give-suggestions-or-contribute" className="font-bold mb-4 text-xl text-center">Give
+                    Suggestions or Contribute</h5>
+                  <p className="mb-4 text-center">Give suggestions or let us know you want to help through this
+                    form!</p>
                   <a
                     href="https://forms.gle/tKnXUMAbEreMK6FC6"
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
@@ -104,7 +106,7 @@ export default function About() {
                       Donate on GitHub
                     </a>
                     <span className="text-sm text-gray-400 mt-2 text-center block">
-                    GitHub has increased transparency,<br />but requires an account.
+                    GitHub has increased transparency,<br/>but requires an account.
                   </span>
                   </div>
                 </div>
@@ -120,10 +122,3 @@ export default function About() {
     </LovePage>
   )
 }
-
-export const aColor = <style jsx global>{`
-  a {
-    color: cornflowerblue;
-  }
-`}</style>;
-

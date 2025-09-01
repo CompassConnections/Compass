@@ -72,7 +72,7 @@ function OgLover(props: LoveOgProps) {
           // Equivalent to bg-gradient-to-t from-black/70 via-black/70 to-transparent
           style={{
             background:
-              'linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 100%)',
+              'linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%)',
           }}
         >
           <div className="flex flex-row flex-wrap text-gray-50">

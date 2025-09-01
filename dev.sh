@@ -22,6 +22,6 @@ npx dotenv -e .env -- npx concurrently \
   -n API,NEXT,TS \
   -c white,magenta,cyan \
   "cross-env ENV=$NEXT_ENV yarn --cwd=backend/api dev" \
-  "cross-env NEXT_PUBLIC_API_URL=localhost:8088 NEXT_PUBLIC_FIREBASE_ENV=$NEXT_ENV yarn --cwd=$DIR serve" \
+  "cross-env NEXT_PUBLIC_FIREBASE_ENV=$NEXT_ENV yarn --cwd=$DIR serve" \
   "cross-env yarn --cwd=$DIR ts-watch"
 

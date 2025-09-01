@@ -137,7 +137,7 @@ const imageContainer = {
 }
 
 const profileImage = {
-  border: '1px solid #ec489a',
+  // border: '1px solid #ec489a',
 }
 
 const button = {

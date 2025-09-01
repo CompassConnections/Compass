@@ -56,7 +56,7 @@ resource "google_compute_global_address" "api_lb_ip" {
 }
 
 resource "google_compute_managed_ssl_certificate" "api_cert" {
-  name = "api-lb-cert-2"
+  name = "api-lb-cert-1"
 
   managed {
     domains = ["api.compassmeet.com"]
@@ -98,16 +98,6 @@ spec:
         value: ${upper(var.env)}
       - name: GOOGLE_CLOUD_PROJECT
         value: ${local.project}
-      - name: SUPABASE_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: "SUPABASE_PASSWORD"
-            key: "latest"
-      - name: GEODB_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: "GEODB_API_KEY"
-            key: "latest"
       ports:
         - containerPort: 80
 EOF

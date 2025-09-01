@@ -37,17 +37,17 @@
       --color-canvas-950: 15 15 15;
       --color-canvas-1000: 0 0 0;      /* black */
 
-      --color-primary-950: 239 246 255;   /* very light blue */
-      --color-primary-900: 219 234 254;   /* light blue */
-      --color-primary-800: 191 219 254;
-      --color-primary-700: 147 197 253;
-      --color-primary-600: 96 165 250;
+      --color-primary-950: 23 37 84;       /* very dark navy */
+      --color-primary-900: 30 58 138;
+      --color-primary-800: 30 64 175;
+      --color-primary-700: 29 78 216;
+      --color-primary-600: 37 99 235;
       --color-primary-500: 59 130 246;    /* standard blue */
-      --color-primary-400: 37 99 235;
-      --color-primary-300: 29 78 216;
-      --color-primary-200: 30 64 175;
-      --color-primary-100: 30 58 138;
-      --color-primary-50: 23 37 84;       /* very dark navy */
+      --color-primary-400: 96 165 250;
+      --color-primary-300: 147 197 253;
+      --color-primary-200: 191 219 254;
+      --color-primary-100: 219 234 254;
+      --color-primary-50: 239 246 255;     /* very light blue */
 
       --color-yes-0: 255 255 255;
       --color-yes-50: 249 249 249;

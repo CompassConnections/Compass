@@ -1,8 +1,8 @@
 #!/bin/bash
 
 (
-# Set your database connection details
-export PGPASSWORD=$SUPABASE_PASSWORD
+# Set PGPASSWORD
+source ../../.env
 
 # Target database connection info - replace with your target DB
 

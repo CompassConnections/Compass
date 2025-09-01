@@ -53,11 +53,13 @@ const newClient = (
   const { instanceId, password, ...settings } = props
 
   const config = {
-    host: 'db.ltzepxnhhnrnvovqblfr.supabase.co',
+    // This host is IPV4 compatible, for the google cloud VM
+    host: 'aws-1-us-west-1.pooler.supabase.com',
     port: 5432,
-    user: `postgres`,
+    user: `postgres.ltzepxnhhnrnvovqblfr`,
     password: password,
     database: 'postgres',
+    pool_mode: 'session',
     ssl: { rejectUnauthorized: false },
     family: 4, // <- forces IPv4
     ...settings,

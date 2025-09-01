@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "api",
             script: "node",
-            args: "-r tsconfig-paths/register backend/api/lib/serve.js",
+            args: "-r tsconfig-paths/register --dns-result-order=ipv4first backend/api/lib/serve.js",
             env: {
                 NODE_ENV: "production",
                 NODE_PATH: "/usr/src/app/node_modules",  // <- ensures Node finds tsconfig-paths

@@ -154,5 +154,7 @@ const getDesktopNav = (user: User | null | undefined) => {
 
 // No sidebar when signed out
 const getSidebarNavigation = (_toggleModal: () => void) => {
-  return buildArray()
+  return buildArray(
+    { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
+  )
 }

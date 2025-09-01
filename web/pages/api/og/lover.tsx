@@ -47,11 +47,11 @@ function OgLover(props: LoveOgProps) {
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center"
-      style={{
-        fontFamily: 'var(--font-main), Figtree',
-        background:
-          'radial-gradient(circle at top left, #ffffff 0%, #ffffff 85%, #ffffff 100%)',
-      }}
+      // style={{
+      //   fontFamily: 'var(--font-main), Figtree',
+      //   background:
+      //     'radial-gradient(circle at top left, #ffffff 0%, #ffffff 85%, #ffffff 100%)',
+      // }}
     >
       <div className="flex flex-col">
         <img
@@ -63,6 +63,7 @@ function OgLover(props: LoveOgProps) {
             objectPosition: 'center',
             objectFit: 'cover',
           }}
+          alt='Compass logo'
         />
 
         {/* Details */}
@@ -93,6 +94,7 @@ function OgLover(props: LoveOgProps) {
           src="https://www.compassmeet.com/favicon.ico"
           width={48}
           height={48}
+          alt='Compass logo'
         />
         <span className="text-2xl font-thin">
           compassmeet.com/{username}

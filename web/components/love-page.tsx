@@ -142,11 +142,12 @@ const getDesktopNav = (user: User | null | undefined) => {
         name: 'Messages',
         href: '/messages',
         icon: PrivateMessagesIcon,
-      }
+      },
+      { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
     )
 
   return buildArray(
-    { name: 'Profiles', href: '/', icon: HomeIcon },
+    // { name: 'Profiles', href: '/', icon: HomeIcon },
     { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
   )
 }

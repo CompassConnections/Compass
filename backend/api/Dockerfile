@@ -6,6 +6,9 @@ WORKDIR /usr/src/app
 # Install PM2 globally
 RUN yarn global add pm2
 
+# Remove?
+COPY tsconfig.json ./
+
 # first get dependencies in for efficient docker layering
 COPY dist/package.json dist/yarn.lock ./
 RUN yarn install --frozen-lockfile --production

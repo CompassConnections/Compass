@@ -5,7 +5,7 @@
 
 # Compass
 
-This repository provides the source code for [Compass](https://compassmeet.com), a web application where rational thinkers can bond and form deep 1-1 relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
+This repository provides the source code for [Compass](https://compassmeet.com), a web application where people can bond and form deep 1-on-1 relationships in a fully transparent and efficient way. It just got released—please share it with anyone who would benefit from it!
 
 To contribute, please submit a pull request or issue, or fill out this [form](https://forms.gle/tKnXUMAbEreMK6FC6) for suggestions and collaborations.
 
@@ -146,5 +146,5 @@ Now you can start contributing by making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.
 
-# Acknowledgements
-This project is built on top of [manifold.love](github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.
+## Acknowledgements
+This project is built on top of [manifold.love](https://github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

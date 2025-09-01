@@ -19,7 +19,7 @@ export default function About() {
       <span>
         Join the{' '}
         <a
-          href="https://discord.gg/AcCVcEEw7N"
+          href="https://discord.gg/8Vd7jzqjun"
           className="hover:text-primary-700 cursor-pointer underline"
         >
           discord

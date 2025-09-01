@@ -159,7 +159,6 @@ export default function ProfilesPage() {
     const typewriter = document.getElementById("typewriter");
     let i = 0;
     let timeoutId: any;
-    let intervalId;
     if (typewriter) typewriter.textContent = ""
 
     function typeWriter() {
@@ -170,7 +169,7 @@ export default function ProfilesPage() {
       }
     }
 
-    intervalId = setTimeout(() => typeWriter(), 500);
+    const intervalId = setTimeout(() => typeWriter(), 500);
     return () => {
       clearTimeout(timeoutId);
       clearTimeout(intervalId);

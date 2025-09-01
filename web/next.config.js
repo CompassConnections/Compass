@@ -40,8 +40,7 @@ module.exports = {
     dangerouslyAllowSVG: true,
     remotePatterns: [
       { hostname: 'manifold.markets' },
-      { hostname: 'manifold.love' },
-      { hostname: 'poly.love' },
+      { hostname: 'compassmeet.com' },
       { hostname: 'lh3.googleusercontent.com' },
       { hostname: 'i.imgur.com' },
       { hostname: 'firebasestorage.googleapis.com' },

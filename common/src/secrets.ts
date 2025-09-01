@@ -11,7 +11,7 @@ export const secrets = (
     // 'STRIPE_WEBHOOKSECRET',
     'SUPABASE_KEY',
     'SUPABASE_JWT_SECRET',
-    'SUPABASE_PASSWORD',
+    'SUPABASE_DB_PASSWORD',
     'TEST_CREATE_USER_KEY',
     'GEODB_API_KEY',
     'RESEND_KEY',

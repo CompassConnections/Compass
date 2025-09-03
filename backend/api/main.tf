@@ -34,7 +34,11 @@ provider "google" {
 # Firebase Storage Buckets
 # Note you still have to deploy the rules: `firebase deploy --only storage`
 resource "google_storage_bucket" "public_storage" {
-  name          = "compass-130ba-public"
+  # /!\ That bucket is different from the one in firebase (compass-130ba.firebasestorage.app)
+  # as it errors when trying to do so:
+  # Error: googleapi: Error 403: Another user owns the domain compass-130ba.firebasestorage.app or a parent domain. You can either verify domain ownership at https://search.google.com/search-console/welcome?new_domain_name=compass-130ba.firebasestorage.app or find the current owner and ask that person to create the bucket for you, forbidden
+  # To be fixed later if they must be the same bucket (shared resources)
+  name          = "compass-130ba"
   location      = "US"
   force_destroy = false
 

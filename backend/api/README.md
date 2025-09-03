@@ -105,7 +105,7 @@ For Compass, the name of the secrets are in [secrets.ts](../../common/src/secret
 In root directory, run the local api with hot reload, along with all the other backend and web code.
 
 ```bash
-./dev.sh prod
+./run_local.sh prod
 ```
 
 ### Deploy

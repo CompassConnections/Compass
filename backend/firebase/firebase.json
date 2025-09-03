@@ -1,7 +1,7 @@
 {
   "storage": [
     {
-      "bucket": "compass-130ba-public",
+      "bucket": "compass-130ba.firebasestorage.app",
       "rules": "storage.rules"
     },
     {

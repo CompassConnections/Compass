@@ -13,8 +13,8 @@ To contribute, please submit a pull request or issue, or fill out this [form](ht
 
 - Extremely detailed profiles for deep connections
 - Radically transparent: user base fully searchable
-- Free, ad-free, not for profit
-- Supported by donation
+- Free, ad-free, not for profit (supported by donations)
+- Created, hosted, maintained, and moderated by volunteers
 - Open source
 - Democratically governed
 

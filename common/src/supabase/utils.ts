@@ -6,8 +6,8 @@ import {
   SupabaseClientOptions as SupabaseClientOptionsGeneric,
 } from '@supabase/supabase-js'
 
-import { Database } from './schema'
-import { User } from '../user'
+import {Database} from './schema'
+import {User} from '../user'
 
 export type Schema = Database['public']
 export type Tables = Schema['Tables']
@@ -18,8 +18,8 @@ export type Selectable = TableName | ViewName
 export type Row<T extends Selectable> = T extends TableName
   ? Tables[T]['Row']
   : T extends ViewName
-  ? Views[T]['Row']
-  : never
+    ? Views[T]['Row']
+    : never
 export type Column<T extends Selectable> = keyof Row<T> & string
 
 export type SupabaseClient = SupabaseClientGeneric<Database, 'public', Schema>
@@ -30,7 +30,23 @@ export function createClient(
   opts?: SupabaseClientOptionsGeneric<'public'>
 ) {
   const url = `https://${instanceId}.supabase.co`
-  return createClientGeneric(url, key, opts) as SupabaseClient
+  console.log('createClient', instanceId, key, opts)
+  return createClientGeneric(
+    url,
+    key,
+    opts
+    // {
+    //   auth: {
+    //     persistSession: false,    // ✅ No localStorage
+    //     autoRefreshToken: false,  // ✅ No token refresh
+    //   },
+    //   global: {
+    //     headers: {
+    //       Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0emVweG5oaG5ybnZvdnFibGZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjczNjgsImV4cCI6MjA3MTU0MzM2OH0.pbazcrVOG7Kh_IgblRu2VAfoBe3-xheNfRzAto7xvzY`, // ✅ Force anon
+    //     },
+    //   },
+    // }
+  ) as SupabaseClient
 }
 
 export type QueryResponse<T> = PostgrestResponse<T> | PostgrestSingleResponse<T>
@@ -46,11 +62,11 @@ export async function run<T>(
 export async function run<T>(
   q: PromiseLike<PostgrestSingleResponse<T> | PostgrestResponse<T>>
 ) {
-  const { data, count, error } = await q
+  const {data, count, error} = await q
   if (error != null) {
     throw error
   } else {
-    return { data, count }
+    return {data, count}
   }
 }
 
@@ -115,7 +131,7 @@ export const convertSQLtoTS = <
   expandData = true,
   shouldCamelize = true
 ) => {
-  const { data = {}, ...rows } = sqlData
+  const {data = {}, ...rows} = sqlData
 
   const entries = Object.entries(rows)
 
@@ -132,8 +148,8 @@ export const convertSQLtoTS = <
     .filter((x) => x != null)
 
   const newRows = Object.fromEntries(m as any)
-  if (expandData) return { ...data, ...newRows } as T
-  else return { ...newRows } as T
+  if (expandData) return {...data, ...newRows} as T
+  else return {...newRows} as T
 }
 
 export const convertObjectToSQLRow = <

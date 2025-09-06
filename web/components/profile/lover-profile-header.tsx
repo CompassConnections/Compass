@@ -44,6 +44,8 @@ export default function LoverProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
+  console.log('LoverProfileHeader', { user, lover, currentUser })
+
   return (
     <Col className="w-full">
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>

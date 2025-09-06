@@ -9,6 +9,6 @@ export const isProd = () => {
     // For local scripts and cloud functions
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const admin = require('firebase-admin')
-    return admin.app().options.projectId === 'polylove'
+    return admin.app().options.projectId === 'compass-130ba'
   }
 }

@@ -14,7 +14,7 @@ import { ProfileSummary } from './love-profile-summary'
 import { Item, SidebarItem } from './love-sidebar-item'
 import ManifoldLoveLogo from '../manifold-love-logo'
 import { Button, ColorType, SizeType } from 'web/components/buttons/button'
-import { signupThenMaybeRedirectToSignup } from 'web/lib/util/signup'
+import {signupRedirect} from 'web/lib/util/signup'
 import { useLover } from 'web/hooks/use-lover'
 import { useTheme } from 'web/hooks/use-theme'
 
@@ -56,7 +56,7 @@ export default function Sidebar(props: {
         ))}
 
         {user === null && <SignUpButton className="mt-4" text="Sign up" />}
-        {user === null && <SignUpAsMatchmaker className="mt-2" />}
+        {/*{user === null && <SignUpAsMatchmaker className="mt-2" />}*/}
 
         {user && lover === null && (
           <Button className="mt-2" onClick={() => router.push('signup')}>
@@ -86,7 +86,7 @@ const bottomNav = (
   toggleTheme: () => void
 ) =>
   buildArray<Item>(
-    !loggedIn && { name: 'Sign in', icon: LoginIcon, onClick: firebaseLogin },
+    !loggedIn && { name: 'Sign in', icon: LoginIcon, href: '/signin' },
     {
       name: theme ?? 'auto',
       children:
@@ -129,7 +129,7 @@ export const SignUpButton = (props: {
     <Button
       color={color ?? 'gradient'}
       size={size ?? 'xl'}
-      onClick={signupThenMaybeRedirectToSignup}
+      onClick={signupRedirect}
       className={clsx('w-full', className)}
     >
       {text ?? 'Sign up now'}

@@ -26,15 +26,16 @@ export const createUser: APIHandler<'create-user'> = async (
 
   const testUserAKAEmailPasswordUser =
     firebaseUser.providerData[0].providerId === 'password'
-  if (
-    testUserAKAEmailPasswordUser &&
-    adminToken !== process.env.TEST_CREATE_USER_KEY
-  ) {
-    throw new APIError(
-      401,
-      'Must use correct TEST_CREATE_USER_KEY to create user with email/password'
-    )
-  }
+
+  // if (
+  //   testUserAKAEmailPasswordUser &&
+  //   adminToken !== process.env.TEST_CREATE_USER_KEY
+  // ) {
+  //   throw new APIError(
+  //     401,
+  //     'Must use correct TEST_CREATE_USER_KEY to create user with email/password'
+  //   )
+  // }
 
   const host = req.get('referer')
   log(`Create user from: ${host}`)

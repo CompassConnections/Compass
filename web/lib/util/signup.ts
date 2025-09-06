@@ -10,6 +10,12 @@ export const signupThenMaybeRedirectToSignup = async () => {
     const lover = await getLoverRow(userId, db)
     if (!lover) {
       await Router.push('/signup')
+    } else {
+      await Router.push('/')
     }
   }
+}
+
+export async function signupRedirect() {
+  await Router.push('/register')
 }

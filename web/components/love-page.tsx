@@ -1,27 +1,26 @@
-import { HomeIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import {HomeIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
 import {
-  QuestionMarkCircleIcon as SolidQuestionIcon,
   HomeIcon as SolidHomeIcon,
+  QuestionMarkCircleIcon as SolidQuestionIcon,
   UserCircleIcon,
 } from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { User } from 'common/user'
-import { buildArray } from 'common/util/array'
-import { useOnline } from 'web/hooks/use-online'
-import { ReactNode, useState } from 'react'
-import { Toaster } from 'react-hot-toast'
-import { Col } from 'web/components/layout/col'
-import { PrivateMessagesIcon } from 'web/components/messaging/messages-icon'
-import { BottomNavBar } from 'web/components/nav/love-bottom-nav-bar'
-import { useIsMobile } from 'web/hooks/use-is-mobile'
-import { useTracking } from 'web/hooks/use-tracking'
-import { useUser } from 'web/hooks/use-user'
-import { GoogleOneTapLogin } from 'web/lib/firebase/google-onetap-login'
+import {User} from 'common/user'
+import {buildArray} from 'common/util/array'
+import {useOnline} from 'web/hooks/use-online'
+import {ReactNode, useState} from 'react'
+import {Toaster} from 'react-hot-toast'
+import {Col} from 'web/components/layout/col'
+import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
+import {BottomNavBar} from 'web/components/nav/love-bottom-nav-bar'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useTracking} from 'web/hooks/use-tracking'
+import {useUser} from 'web/hooks/use-user'
+import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
 import Sidebar from './nav/love-sidebar'
-import { signupThenMaybeRedirectToSignup } from 'web/lib/util/signup'
-import { useLover } from 'web/hooks/use-lover'
-import { Lover } from 'common/love/lover'
-import { NotificationsIcon, SolidNotificationsIcon } from './notifications-icon'
+import {useLover} from 'web/hooks/use-lover'
+import {Lover} from 'common/love/lover'
+import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 
 export function LovePage(props: {
   trackPageView: string | false
@@ -123,11 +122,7 @@ function getBottomNavigation(user: User, lover: Lover | null | undefined) {
 const signedOutNavigation = () => [
   { name: 'Profiles', href: '/', icon: SolidHomeIcon },
   { name: 'About', href: '/about', icon: SolidQuestionIcon },
-  {
-    name: 'Sign in',
-    onClick: signupThenMaybeRedirectToSignup,
-    icon: UserCircleIcon,
-  },
+  { name: 'Sign in', href: '/signin', icon: UserCircleIcon },
 ]
 const getDesktopNav = (user: User | null | undefined) => {
   if (user)

@@ -2,11 +2,9 @@ import {Lover} from 'common/love/lover'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
 import {LovePage} from 'web/components/love-page'
-import {SignUpAsMatchmaker} from 'web/components/nav/love-sidebar'
 import {useLover} from 'web/hooks/use-lover'
 import {useCompatibleLovers} from 'web/hooks/use-lovers'
 import {getStars} from 'web/lib/supabase/stars'
-import {signupThenMaybeRedirectToSignup} from 'web/lib/util/signup'
 import Router from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
@@ -23,6 +21,8 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {debounce, omit} from 'lodash'
 import {PREF_AGE_MAX, PREF_AGE_MIN,} from 'web/components/filters/location-filter'
+import {signupRedirect} from "web/lib/util/signup";
+
 
 export default function ProfilesPage() {
   const you = useLover()
@@ -197,44 +197,44 @@ export default function ProfilesPage() {
                 className="flex-1"
                 color="gradient"
                 size="xl"
-                onClick={signupThenMaybeRedirectToSignup}
+                onClick={signupRedirect}
               >
                 Sign up
               </Button>
-              <SignUpAsMatchmaker className="flex-1"/>
+              {/*<SignUpAsMatchmaker className="flex-1"/>*/}
             </Col>
           )}
           {!user && <>
-            <h1
-              className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
-              Don't Swipe.<br/><span id="typewriter"></span><span id="cursor" className="animate-pulse">|</span>
-            </h1>
-            <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
-              <div className="max-w-6xl mx-auto px-4">
-                <div className="grid md:grid-cols-3 gap-8 text-center">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold">Radically Transparent</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      No algorithms. Every profile searchable.
-                    </p>
-                  </div>
+              <h1
+                  className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap ">
+                  Don't Swipe.<br/><span id="typewriter"></span><span id="cursor" className="animate-pulse">|</span>
+              </h1>
+              <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
+                  <div className="max-w-6xl mx-auto px-4">
+                      <div className="grid md:grid-cols-3 gap-8 text-center">
+                          <div className="space-y-2">
+                              <h3 className="text-lg font-bold">Radically Transparent</h3>
+                              <p className="text-gray-600 dark:text-gray-400">
+                                  No algorithms. Every profile searchable.
+                              </p>
+                          </div>
 
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold">Built for Depth</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Filter by any keyword and what matters most.
-                    </p>
-                  </div>
+                          <div className="space-y-2">
+                              <h3 className="text-lg font-bold">Built for Depth</h3>
+                              <p className="text-gray-600 dark:text-gray-400">
+                                  Filter by any keyword and what matters most.
+                              </p>
+                          </div>
 
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold">Community Owned</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Free forever. Built by users, for users.
-                    </p>
+                          <div className="space-y-2">
+                              <h3 className="text-lg font-bold">Community Owned</h3>
+                              <p className="text-gray-600 dark:text-gray-400">
+                                  Free forever. Built by users, for users.
+                              </p>
+                          </div>
+                      </div>
                   </div>
-                </div>
               </div>
-            </div>
           </>}
           {user &&
               <>

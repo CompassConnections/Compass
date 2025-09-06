@@ -33,7 +33,7 @@ export const PROD_CONFIG: EnvConfig = {
   posthogKey: 'phc_xT16KyBj7GsWnAwifoH4HiWKTFhuohRrfy3t5DK6ZIv',
   domain: 'compassmeet.com',
   firebaseConfig: {
-    apiKey: "AIzaSyAxzhj6bZuZ1TCw9xzibGccRHXiRWq6iy0",
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: "compass-130ba.firebaseapp.com",
     projectId: "compass-130ba",
     storageBucket: "compass-130ba.firebasestorage.app",

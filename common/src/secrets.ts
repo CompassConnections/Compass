@@ -15,6 +15,7 @@ export const secrets = (
     'TEST_CREATE_USER_KEY',
     'GEODB_API_KEY',
     'RESEND_KEY',
+    'NEXT_PUBLIC_FIREBASE_API_KEY',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

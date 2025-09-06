@@ -28,6 +28,7 @@ export function LoverProfile(props: {
   fromLoverPage?: Lover
   fromSignup?: boolean
 }) {
+  console.log('Rendering LoverProfile for ', props)
   const { lover, user, refreshLover, fromLoverPage, fromSignup } = props
 
   const currentUser = useUser()
@@ -64,7 +65,6 @@ export function LoverProfile(props: {
 
   return (
     <>
-      {lover.photo_urls && <ProfileCarousel lover={lover} />}
       <LoverProfileHeader
         user={user}
         lover={lover}
@@ -118,6 +118,7 @@ export function LoverProfile(props: {
             />
           </Row>
         )}
+      {lover.photo_urls && <ProfileCarousel lover={lover} />}
     </>
   )
 }

@@ -1,30 +1,31 @@
-import { useState } from 'react'
+import {useState} from 'react'
 import Router from 'next/router'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { LovePage } from 'web/components/love-page'
-import { useLoverByUser } from 'web/hooks/use-lover'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { SEO } from 'web/components/SEO'
-import { useUser } from 'web/hooks/use-user'
-import { useTracking } from 'web/hooks/use-tracking'
-import { BackButton } from 'web/components/back-button'
-import { useSaveReferral } from 'web/hooks/use-save-referral'
-import { getLoveOgImageUrl } from 'common/love/og-image'
-import { getLoverRow, LoverRow } from 'common/love/lover'
-import { db } from 'web/lib/supabase/db'
-import { LoverProfile } from 'web/components/profile/lover-profile'
-import { User } from 'common/user'
-import { getUserForStaticProps } from 'common/supabase/users'
-import { type GetStaticProps } from 'next'
+import {useRouter} from 'next/router'
+import {LovePage} from 'web/components/love-page'
+import {useLoverByUser} from 'web/hooks/use-lover'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {SEO} from 'web/components/SEO'
+import {useUser} from 'web/hooks/use-user'
+import {useTracking} from 'web/hooks/use-tracking'
+import {BackButton} from 'web/components/back-button'
+import {useSaveReferral} from 'web/hooks/use-save-referral'
+import {getLoveOgImageUrl} from 'common/love/og-image'
+import {getLoverRow, LoverRow} from 'common/love/lover'
+import {db} from 'web/lib/supabase/db'
+import {LoverProfile} from 'web/components/profile/lover-profile'
+import {User} from 'common/user'
+import {getUserForStaticProps} from 'common/supabase/users'
+import {type GetStaticProps} from 'next'
 
 export const getStaticProps: GetStaticProps<
   UserPageProps,
   { username: string }
 > = async (props) => {
-  const { username } = props.params!
+  console.log('Starting getStaticProps in /[username]')
+  const {username} = props.params!
 
   const user = await getUserForStaticProps(db, username)
 
@@ -33,7 +34,7 @@ export const getStaticProps: GetStaticProps<
       notFound: true,
       props: {
         customText:
-          'The One you are looking for is not on this site 😔\n...or perhaps you just mistyped?',
+          'The profile you are looking for is not on this site... or perhaps you just mistyped?',
       },
     }
   }
@@ -69,7 +70,7 @@ export const getStaticProps: GetStaticProps<
 }
 
 export const getStaticPaths = () => {
-  return { paths: [], fallback: 'blocking' }
+  return {paths: [], fallback: 'blocking'}
 }
 
 type UserPageProps = DeletedUserPageProps | ActiveUserPageProps
@@ -85,6 +86,7 @@ type ActiveUserPageProps = {
 }
 
 export default function UserPage(props: UserPageProps) {
+  console.log('Starting UserPage in /[username]')
   if (!props.user) {
     return <div>This account has been deleted</div>
   }
@@ -97,27 +99,29 @@ export default function UserPage(props: UserPageProps) {
 }
 
 function UserPageInner(props: ActiveUserPageProps) {
-  const { user, username } = props
+  console.log('Starting UserPageInner in /[username]')
+  const {user, username} = props
   const router = useRouter()
-  const { query } = router
+  const {query} = router
   const fromSignup = query.fromSignup === 'true'
 
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user?.id
 
-  useSaveReferral(currentUser, { defaultReferrerUsername: username })
-  useTracking('view love profile', { username: user?.username })
+  useSaveReferral(currentUser, {defaultReferrerUsername: username})
+  useTracking('view love profile', {username: user?.username})
 
   const [staticLover] = useState(
-    props.lover && user ? { ...props.lover, user: user } : null
+    props.lover && user ? {...props.lover, user: user} : null
   )
-  const { lover: clientLover, refreshLover } = useLoverByUser(user)
-  const lover = clientLover ?? staticLover
+  const {lover: clientLover, refreshLover} = useLoverByUser(user)
+  const lover = clientLover // ?? staticLover
+  console.log('lover:', user?.username, lover, clientLover, staticLover)
 
   return (
     <LovePage
       trackPageView={'user page'}
-      trackPageProps={{ username: user.username }}
+      trackPageProps={{username: user.username}}
       className={'relative p-2 sm:pt-0'}
     >
       <SEO
@@ -128,10 +132,10 @@ function UserPageInner(props: ActiveUserPageProps) {
       />
       {(user.isBannedFromPosting || user.userDeleted) && (
         <Head>
-          <meta name="robots" content="noindex, nofollow" />
+          <meta name="robots" content="noindex, nofollow"/>
         </Head>
       )}
-      <BackButton className="-ml-2 mb-2 self-start" />
+      <BackButton className="-ml-2 mb-2 self-start"/>
 
       {currentUser !== undefined && (
         <Col className={'gap-4'}>

@@ -14,24 +14,6 @@ import {getLoverRow} from "common/love/lover";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 
-const handleEmailPasswordSignUp = async (email: string, password: string) => {
-  try {
-    const creds = await createUserWithEmailAndPassword(auth, email, password);
-    console.log("User signed up:", creds.user);
-    const userId = creds?.user.uid
-    if (userId) {
-      const lover = await getLoverRow(userId, db)
-      if (!lover) {
-        await Router.push('/signup')
-      } else {
-        await Router.push('/')
-      }
-    }
-  } catch (error) {
-    console.error("Error signing up:", error);
-  }
-};
-
 
 export default function RegisterPage() {
   return (
@@ -41,7 +23,7 @@ export default function RegisterPage() {
   );
 }
 
-const href = '/signup';
+// const href = '/signup';
 
 function RegisterComponent() {
   const searchParams = useSearchParams();
@@ -54,6 +36,26 @@ function RegisterComponent() {
   //   // Redirect to complete profile page
   //   window.location.href = href;
   // }
+
+  const handleEmailPasswordSignUp = async (email: string, password: string) => {
+    try {
+      const creds = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User signed up:", creds.user);
+      await Router.push('/')
+      const userId = creds?.user.uid
+      if (userId) {
+        const lover = await getLoverRow(userId, db)
+        if (!lover) {
+          await Router.push('/signup')
+        }
+      }
+    } catch (error) {
+      console.error("Error signing up:", error);
+      if (error instanceof Error && error.message.includes("email-already-in-use")) {
+        throw new Error("This email is already registered");
+      }
+    }
+  };
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     function handleError(error: unknown) {

@@ -5,13 +5,12 @@ import { getLoverRow } from 'common/love/lover'
 
 export const signupThenMaybeRedirectToSignup = async () => {
   const creds = await firebaseLogin()
+  await Router.push('/')
   const userId = creds?.user.uid
   if (userId) {
     const lover = await getLoverRow(userId, db)
     if (!lover) {
       await Router.push('/signup')
-    } else {
-      await Router.push('/')
     }
   }
 }

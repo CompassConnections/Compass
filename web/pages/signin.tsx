@@ -61,9 +61,10 @@ function RegisterComponent() {
       const creds = await firebaseLogin();
       await redirectSignin(creds)
     } catch (error) {
-      let message = 'Failed to sign in with Google';
       console.error("Error signing in:", error);
+      const message = 'Failed to sign in with Google';
       setError(message);
+      setIsLoading(false);
       setIsLoadingGoogle(false);
     }
   };
@@ -73,10 +74,11 @@ function RegisterComponent() {
       const creds = await signInWithEmailAndPassword(auth, email, password);
       await redirectSignin(creds)
     } catch (error) {
-      let message = 'Failed to sign in with your email and password';
-      console.error("Error signing in:", message);
+      console.error("Error signing in:", error);
+      const message = 'Failed to sign in with your email and password';
       setError(message);
       setIsLoading(false);
+      setIsLoadingGoogle(false);
     }
   };
 

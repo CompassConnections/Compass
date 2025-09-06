@@ -151,13 +151,6 @@ function LoverContent(props: {
 
   return (
     <>
-      <LikesDisplay
-        likesGiven={likesGiven}
-        likesReceived={likesReceived}
-        ships={ships}
-        refreshShips={refreshShips}
-        profileLover={lover}
-      />
       <LoverAbout lover={lover} />
       <LoverBio
         isCurrentUser={isCurrentUser}
@@ -177,6 +170,13 @@ function LoverContent(props: {
         lover={lover}
         currentUser={currentUser}
         simpleView={!!fromLoverPage}
+      />
+      <LikesDisplay
+        likesGiven={likesGiven}
+        likesReceived={likesReceived}
+        ships={ships}
+        refreshShips={refreshShips}
+        profileLover={lover}
       />
     </>
   )

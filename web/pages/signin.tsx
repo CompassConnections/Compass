@@ -14,7 +14,7 @@ import Router from "next/router";
 import {LovePage} from "web/components/love-page";
 
 
-async function redirectSignin(creds) {
+async function redirectSignin(creds: any) {
   console.log("User signed in:", creds.user);
   const userId = creds?.user.uid
   if (userId) {

@@ -74,8 +74,7 @@ export default function Journeys() {
       <div className="text-ink-900 mx-8">
         <div className={'text-primary-700 my-1 text-2xl'}>User Journeys</div>
         <Row className={'items-center gap-2'}>
-          Viewing journeys from {unBannedUsers.length} users. You're not seeing{' '}
-          {bannedUsers.length} more that are banned. Showing users created:{' '}
+          Viewing journeys from {unBannedUsers.length} unbanned users ({bannedUsers.length} banned). Showing users created:{' '}
           {hoursFromNow}h ago.
           <Button
             color={'indigo-outline'}

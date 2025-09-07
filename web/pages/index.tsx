@@ -177,7 +177,9 @@ export default function ProfilesPage() {
     };
   }, []);
 
-  if (user === undefined) return <div/>
+  // This makes document.getElementById("typewriter") null and prevents typeWriter from running.
+  // Should not be needed anyway.
+  // if (user === undefined) return <div/>
 
   return (
     <LovePage trackPageView={'user profiles'}>

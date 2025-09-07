@@ -47,14 +47,13 @@ export function parseMentions(data: JSONContent): string[] {
 }
 
 export const extensions = [
-  StarterKit.configure({}), // ✅ instantiate
-  Link.configure({ openOnClick: true }),
+  StarterKit,
+  Link,
   Image.extend({ renderText: () => '[image]' }),
-  Mention.configure({}),
+  Mention, // user @mention
   Iframe.extend({
-    renderText: ({ node }) => {
-      return `[embed]${node.attrs.src ? `(${node.attrs.src})` : ''}`
-    },
+    renderText: ({ node }) =>
+      '[embed]' + node.attrs.src ? `(${node.attrs.src})` : '',
   }),
 ]
 

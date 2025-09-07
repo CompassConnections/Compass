@@ -30,6 +30,7 @@ export const useCompatibleLovers = (
     } else if (userId === null) setData(null)
   }, [userId])
 
+  console.log('debug', data)
   if (data && lover && options?.sortWithModifiers) {
     data.compatibleLovers = sortBy(data.compatibleLovers, (l) => {
       const modifier = !lover ? 1 : getLoversCompatibilityFactor(lover, l)

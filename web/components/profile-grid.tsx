@@ -14,6 +14,9 @@ import { CompatibleBadge } from './widgets/compatible-badge'
 import { StarButton } from './widgets/star-button'
 import clsx from 'clsx'
 import Image from 'next/image'
+import {JSONContent} from "@tiptap/core";
+import {Content} from "web/components/widgets/editor";
+import React from "react";
 
 export const ProfileGrid = (props: {
   lovers: Lover[]
@@ -38,7 +41,7 @@ export const ProfileGrid = (props: {
     <div className="relative">
       <div
         className={clsx(
-          'grid grid-cols-2 gap-2 opacity-100 transition-opacity duration-75 sm:grid-cols-3 md:grid-cols-4',
+          'grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6 py-4',
           isReloading && 'animate-pulse opacity-80'
         )}
       >
@@ -75,7 +78,7 @@ function ProfilePreview(props: {
   refreshStars: () => Promise<void>
 }) {
   const { lover, compatibilityScore, hasStar, refreshStars } = props
-  const { user, gender, age, pinned_url, city } = lover
+  const { user, gender, age, pinned_url, city, bio } = lover
   const currentUser = useUser()
 
   return (
@@ -84,54 +87,58 @@ function ProfilePreview(props: {
       onClick={() => {
         track('click love profile preview')
       }}
+      className="group block dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
     >
-      <Col className="relative h-60 w-full overflow-hidden rounded text-white transition-all hover:z-20 hover:scale-110 hover:drop-shadow">
-        {pinned_url ? (
-          <Image
-            src={pinned_url}
-            width={180}
-            height={240}
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-            priority={false}
-          />
-        ) : (
-          <Col className="bg-ink-300 h-full w-full items-center justify-center">
-            <UserIcon className="h-20 w-20" />
-          </Col>
-        )}
+      <Col className="relative h-40 w-full overflow-hidden rounded text-white transition-all hover:z-10 hover:scale-105 hover:drop-shadow">
+        {/*{pinned_url ? (*/}
+        {/*  <Image*/}
+        {/*    src={pinned_url}*/}
+        {/*    width={180}*/}
+        {/*    height={240}*/}
+        {/*    alt=""*/}
+        {/*    className="h-full w-full object-cover"*/}
+        {/*    loading="lazy"*/}
+        {/*    priority={false}*/}
+        {/*  />*/}
+        {/*) : (*/}
+        {/*  <Col className="bg-ink-300 h-full w-full items-center justify-center">*/}
+        {/*    <UserIcon className="h-20 w-20" />*/}
+        {/*  </Col>*/}
+        {/*)}*/}
 
-        <Row className="absolute inset-x-0 right-0 top-0 items-start justify-between bg-gradient-to-b from-black/70 via-black/70 to-transparent px-2 pb-3 pt-2">
-          {currentUser ? (
-            <StarButton
-              className="!pt-0"
-              isStarred={hasStar}
-              refresh={refreshStars}
-              targetLover={lover}
-              hideTooltip
-            />
-          ) : (
-            <div />
-          )}
-          {compatibilityScore && (
-            <CompatibleBadge compatibility={compatibilityScore} />
-          )}
-        </Row>
+        {/*<Row className="absolute inset-x-0 right-0 top-0 items-start justify-between bg-gradient-to-b from-black/70 via-black/70 to-transparent px-2 pb-3 pt-2">*/}
+        {/*  {currentUser ? (*/}
+        {/*    <StarButton*/}
+        {/*      className="!pt-0"*/}
+        {/*      isStarred={hasStar}*/}
+        {/*      refresh={refreshStars}*/}
+        {/*      targetLover={lover}*/}
+        {/*      hideTooltip*/}
+        {/*    />*/}
+        {/*  ) : (*/}
+        {/*    <div />*/}
+        {/*  )}*/}
+        {/*  {compatibilityScore && (*/}
+        {/*    <CompatibleBadge compatibility={compatibilityScore} />*/}
+        {/*  )}*/}
+        {/*</Row>*/}
 
-        <Col className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/70 to-transparent px-4 pb-2 pt-6">
+        <Col className="absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent px-4 pb-2 pt-6">
           <div>
-            <div className="flex flex-wrap items-center gap-x-1">
+            <div className="flex-1 min-w-0">
               {/* <OnlineIcon last_online_time={last_online_time} /> */}
-              <span>
-                <span className="break-words font-semibold">{user.name}</span>,
-              </span>
-              {age}
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
+                {user.name}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <Content className="w-full line-clamp-4" content={lover.bio as JSONContent} />
+              </p>
+              {/*{age}*/}
             </div>
           </div>
-          <Row className="gap-1 text-xs">
-            {city} • {capitalize(convertGender(gender as Gender))}
-          </Row>
+          {/*<Row className="gap-1 text-xs">*/}
+          {/*  {city} • {capitalize(convertGender(gender as Gender))}*/}
+          {/*</Row>*/}
         </Col>
       </Col>
     </Link>

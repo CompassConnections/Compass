@@ -22,6 +22,7 @@ import {api} from 'web/lib/api'
 import {debounce, omit} from 'lodash'
 import {PREF_AGE_MAX, PREF_AGE_MIN,} from 'web/components/filters/location-filter'
 import {signupRedirect} from "web/lib/util/signup";
+import {AboutBox} from "web/components/about/box";
 
 
 export default function ProfilesPage() {
@@ -214,26 +215,18 @@ export default function ProfilesPage() {
               <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
                   <div className="max-w-6xl mx-auto px-4">
                       <div className="grid md:grid-cols-3 gap-8 text-center">
-                          <div className="space-y-2">
-                              <h3 className="text-lg font-bold">Radically Transparent</h3>
-                              <p className="text-gray-600 dark:text-gray-400">
-                                  No algorithms. Every profile searchable.
-                              </p>
-                          </div>
-
-                          <div className="space-y-2">
-                              <h3 className="text-lg font-bold">Built for Depth</h3>
-                              <p className="text-gray-600 dark:text-gray-400">
-                                  Filter by any keyword and what matters most.
-                              </p>
-                          </div>
-
-                          <div className="space-y-2">
-                              <h3 className="text-lg font-bold">Community Owned</h3>
-                              <p className="text-gray-600 dark:text-gray-400">
-                                  Free forever. Built by users, for users.
-                              </p>
-                          </div>
+                          <AboutBox
+                              title='Radically Transparent'
+                              text='No algorithms. Every profile searchable.'
+                          />
+                          <AboutBox
+                              title='Built for Depth'
+                              text='Filter by any keyword and what matters most.'
+                          />
+                          <AboutBox
+                              title='Community Owned'
+                              text='Free forever. Built by users, for users.'
+                          />
                       </div>
                   </div>
               </div>

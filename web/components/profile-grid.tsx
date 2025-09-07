@@ -89,7 +89,7 @@ function ProfilePreview(props: {
       }}
       className="group block dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
     >
-      <Col className="relative h-40 w-full overflow-hidden rounded text-white transition-all hover:z-10 hover:scale-105 hover:drop-shadow">
+      <Col className="relative h-40 w-full overflow-hidden rounded text-white transition-all hover:scale-y-105 hover:drop-shadow">
         {/*{pinned_url ? (*/}
         {/*  <Image*/}
         {/*    src={pinned_url}*/}

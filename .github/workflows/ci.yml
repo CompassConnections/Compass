@@ -47,7 +47,10 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          NEXT_PUBLIC_API_URL=localhost:8088 NEXT_PUBLIC_FIREBASE_ENV=PROD yarn --cwd=web serve &
+          NEXT_PUBLIC_API_URL=localhost:8088 \
+          NEXT_PUBLIC_FIREBASE_ENV=PROD \
+          NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }} \
+          yarn --cwd=web serve &
           npx wait-on http://localhost:3000
           npx playwright test tests/playwright
           SERVER_PID=$(fuser -k 3000/tcp)

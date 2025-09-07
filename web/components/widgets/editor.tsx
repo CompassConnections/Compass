@@ -184,8 +184,9 @@ export function TextEditor(props: {
   children?: ReactNode // additional toolbar buttons
   className?: string
   onBlur?: () => void
+  onChange?: () => void
 }) {
-  const { editor, simple, hideEmbed, children, className, onBlur } = props
+  const { editor, simple, hideEmbed, children, className, onBlur, onChange } = props
 
   return (
     // matches input styling
@@ -197,7 +198,7 @@ export function TextEditor(props: {
     >
       <FloatingFormatMenu editor={editor} advanced={!simple} />
       <div className={clsx('max-h-[69vh] overflow-auto')}>
-        <EditorContent editor={editor} onBlur={onBlur} />
+        <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 
       <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>

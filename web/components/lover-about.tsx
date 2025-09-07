@@ -236,6 +236,7 @@ function Drinks(props: { lover: Lover }) {
 function WantsKids(props: { lover: Lover }) {
   const { lover } = props
   const wantsKidsStrength = lover.wants_kids_strength
+  if (wantsKidsStrength == null || wantsKidsStrength < 0) return null
   const wantsKidsText =
     wantsKidsStrength == 0
       ? 'Does not want children'

@@ -60,3 +60,26 @@ export function EditableBio(props: {
     </Col>
   )
 }
+
+export function SignupBio(props: {
+  onChange: (e: JSONContent) => void
+}) {
+  const { onChange } = props
+  const editor = useTextEditor({
+    max: MAX_DESCRIPTION_LENGTH,
+    defaultValue: '',
+    placeholder: "Tell us about yourself — and what you're looking for!",
+  })
+
+  return (
+    <Col className="relative w-full">
+      <TextEditor
+        editor={editor}
+        onBlur={() => {
+          // console.log('onchange', editor?.getText())
+          if (editor) onChange(editor.getJSON())
+        }}
+      />
+    </Col>
+  )
+}

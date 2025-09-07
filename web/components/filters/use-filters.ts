@@ -50,7 +50,7 @@ const initialFilters: Partial<FilterFields> = {
   is_smoker: undefined,
   pref_relation_styles: undefined,
   pref_gender: undefined,
-  orderBy: 'compatibility_score',
+  orderBy: 'created_time',
 }
 
 export const useFilters = (you: Lover | undefined) => {

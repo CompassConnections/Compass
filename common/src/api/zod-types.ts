@@ -57,10 +57,12 @@ export const baseLoversSchema = z.object({
       z.literal('other'),
     ])
   ),
-  wants_kids_strength: z.number().min(0),
+  wants_kids_strength: z.number(),
   looking_for_matches: z.boolean(),
   photo_urls: z.array(z.string()),
   visibility: z.union([z.literal('public'), z.literal('member')]),
+
+  bio: contentSchema.optional().nullable(),
 
   geodb_city_id: z.string().optional(),
   city: z.string(),

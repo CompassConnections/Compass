@@ -1,28 +1,31 @@
-import { Fragment, useState } from 'react'
-import { Title } from 'web/components/widgets/title'
-import { Col } from 'web/components/layout/col'
+import {Fragment, useEffect, useRef, useState} from 'react'
+import {Title} from 'web/components/widgets/title'
+import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
-import { MultiCheckbox } from 'web/components/multi-checkbox'
-import { Row } from 'web/components/layout/row'
-import { Input } from 'web/components/widgets/input'
-import { ChoicesToggleGroup } from 'web/components/widgets/choices-toggle-group'
-import { Button, IconButton } from 'web/components/buttons/button'
-import { colClassName, labelClassName } from 'web/pages/signup'
-import { useRouter } from 'next/router'
-import { updateLover, updateUser } from 'web/lib/api'
-import { Column } from 'common/supabase/utils'
-import { User } from 'common/user'
-import { track } from 'web/lib/service/analytics'
-import { Races } from './race'
-import { Carousel } from 'web/components/widgets/carousel'
-import { tryCatch } from 'common/util/try-catch'
-import { LoverRow } from 'common/love/lover'
-import { removeNullOrUndefinedProps } from 'common/util/object'
-import { isEqual } from 'lodash'
-import { PlatformSelect } from 'web/components/widgets/platform-select'
-import { type Site, PLATFORM_LABELS, SITE_ORDER } from 'common/socials'
-import { PlusIcon, XIcon } from '@heroicons/react/solid'
-import { SocialIcon } from './user/social'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {Row} from 'web/components/layout/row'
+import {Input} from 'web/components/widgets/input'
+import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
+import {Button, IconButton} from 'web/components/buttons/button'
+import {colClassName, labelClassName} from 'web/pages/signup'
+import {useRouter} from 'next/router'
+import {updateLover, updateUser} from 'web/lib/api'
+import {Column} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {track} from 'web/lib/service/analytics'
+import {Races} from './race'
+import {Carousel} from 'web/components/widgets/carousel'
+import {tryCatch} from 'common/util/try-catch'
+import {LoverRow} from 'common/love/lover'
+import {removeNullOrUndefinedProps} from 'common/util/object'
+import {isEqual, range} from 'lodash'
+import {PlatformSelect} from 'web/components/widgets/platform-select'
+import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
+import {PlusIcon, XIcon} from '@heroicons/react/solid'
+import {SocialIcon} from './user/social'
+import {Select} from 'web/components/widgets/select'
+import {City, CityRow, loverToCity, useCitySearch} from "web/components/search-location";
+import {AddPhotosWidget} from './widgets/add-photos'
 
 export const OptionalLoveUserForm = (props: {
   lover: LoverRow
@@ -32,7 +35,7 @@ export const OptionalLoveUserForm = (props: {
   fromSignup?: boolean
   onSubmit?: () => Promise<void>
 }) => {
-  const { lover, user, buttonLabel, setLover, fromSignup, onSubmit } = props
+  const {lover, user, buttonLabel, setLover, fromSignup, onSubmit} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -56,8 +59,8 @@ export const OptionalLoveUserForm = (props: {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const { bio: _, ...otherLoverProps } = lover
-    const { error } = await tryCatch(
+    const {bio: _, ...otherLoverProps} = lover
+    const {error} = await tryCatch(
       updateLover(removeNullOrUndefinedProps(otherLoverProps) as any)
     )
     if (error) {
@@ -65,7 +68,7 @@ export const OptionalLoveUserForm = (props: {
       return
     }
     if (!isEqual(newLinks, user.link)) {
-      const { error } = await tryCatch(updateUser({ link: newLinks }))
+      const {error} = await tryCatch(updateUser({link: newLinks}))
       if (error) {
         console.error(error)
         return
@@ -81,7 +84,7 @@ export const OptionalLoveUserForm = (props: {
   }
 
   const updateUserLink = (platform: string, value: string | null) => {
-    setNewLinks((links) => ({ ...links, [platform]: value }))
+    setNewLinks((links) => ({...links, [platform]: value}))
   }
 
   const addNewLink = () => {
@@ -92,12 +95,227 @@ export const OptionalLoveUserForm = (props: {
     }
   }
 
+  const [trans, setTrans] = useState<boolean | undefined>(
+    lover['gender'].includes('trans')
+  )
+
+  function setLoverCity(inputCity: City | undefined) {
+    if (!inputCity) {
+      setLover('geodb_city_id', null)
+      setLover('city', '')
+      setLover('region_code', null)
+      setLover('country', null)
+      setLover('city_latitude', null)
+      setLover('city_longitude', null)
+    } else {
+      const {
+        geodb_city_id,
+        city,
+        region_code,
+        country,
+        latitude: city_latitude,
+        longitude: city_longitude,
+      } = inputCity
+      setLover('geodb_city_id', geodb_city_id)
+      setLover('city', city)
+      setLover('region_code', region_code)
+      setLover('country', country)
+      setLover('city_latitude', city_latitude)
+      setLover('city_longitude', city_longitude)
+    }
+  }
+
+  useEffect(() => {
+    const currentState = lover['gender']
+    if (currentState === 'non-binary') {
+      setTrans(undefined)
+    } else if (trans && !currentState.includes('trans-')) {
+      setLover('gender', 'trans-' + currentState.replace('trans-', ''))
+    } else if (!trans && currentState.includes('trans-')) {
+      setLover('gender', currentState.replace('trans-', ''))
+    }
+  }, [trans, lover['gender']])
+
   return (
     <>
+      <Row className={'justify-end'}>
+        <Button
+          disabled={isSubmitting}
+          loading={isSubmitting}
+          onClick={handleSubmit}
+        >
+          {buttonLabel ?? 'Next / Skip'}
+        </Button>
+      </Row>
       <Title>More about me</Title>
       <div className="text-ink-500 mb-6 text-lg">Optional information</div>
 
       <Col className={'gap-8'}>
+
+        {/*<Col className={clsx(colClassName)}>*/}
+        {/*  <label className={clsx(labelClassName)}>Looking for matches</label>*/}
+        {/*  <ChoicesToggleGroup*/}
+        {/*    currentChoice={lover.looking_for_matches}*/}
+        {/*    choicesMap={{*/}
+        {/*      Yes: true,*/}
+        {/*      No: false,*/}
+        {/*    }}*/}
+        {/*    setChoice={(c) => setLover('looking_for_matches', c)}*/}
+        {/*  />*/}
+        {/*</Col>*/}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Your location</label>
+          {lover.city ? (
+            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
+              <CityRow
+                city={loverToCity(lover)}
+                onSelect={() => {
+                }}
+                className="pointer-events-none"
+              />
+              <button
+                className="text-ink-700 hover:text-primary-700 text-sm underline"
+                onClick={() => {
+                  setLoverCity(undefined)
+                }}
+              >
+                Change
+              </button>
+            </Row>
+          ) : (
+            <CitySearchBox
+              onCitySelected={(city: City | undefined) => {
+                setLoverCity(city)
+              }}
+            />
+          )}
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Age</label>
+          <Input
+            type="number"
+            placeholder="Age"
+            value={lover['age'] > 0 ? lover['age'] : undefined}
+            min={18}
+            max={100}
+            onChange={(e) => setLover('age', Number(e.target.value))}
+          />
+        </Col>
+
+        <Row className={'items-center gap-2'}>
+          <Col className={'gap-1'}>
+            <label className={clsx(labelClassName)}>Gender</label>
+            <ChoicesToggleGroup
+              currentChoice={lover['gender'].replace('trans-', '')}
+              choicesMap={{
+                Woman: 'female',
+                Man: 'male',
+                Other: 'other',
+              }}
+              setChoice={(c) => setLover('gender', c)}
+            />
+          </Col>
+        </Row>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Interested in</label>
+          <MultiCheckbox
+            choices={{
+              Women: 'female',
+              Men: 'male',
+              Other: 'other',
+            }}
+            selected={lover['pref_gender']}
+            onChange={(selected) => setLover('pref_gender', selected)}
+          />
+        </Col>
+
+        {/*<Col className={clsx(colClassName)}>*/}
+        {/*  <label className={clsx(labelClassName)}>Relationship style</label>*/}
+        {/*  <MultiCheckbox*/}
+        {/*    choices={{*/}
+        {/*      Monogamous: 'mono',*/}
+        {/*      Polyamorous: 'poly',*/}
+        {/*      'Open Relationship': 'open',*/}
+        {/*      Other: 'other',*/}
+        {/*    }}*/}
+        {/*    selected={lover['pref_relation_styles']}*/}
+        {/*    onChange={(selected) =>*/}
+        {/*      setLover('pref_relation_styles', selected)*/}
+        {/*    }*/}
+        {/*  />*/}
+        {/*</Col>*/}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Partner age range</label>
+          <Row className={'gap-2'}>
+            <Col>
+              <span>Min</span>
+              <Select
+                value={lover['pref_age_min']}
+                onChange={(e) =>
+                  setLover('pref_age_min', Number(e.target.value))
+                }
+                className={'w-18 border-ink-300 rounded-md'}
+              >
+                {range(18, 100).map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </Select>
+            </Col>
+            <Col>
+              <span>Max</span>
+              <Select
+                value={lover['pref_age_max']}
+                onChange={(e) =>
+                  setLover('pref_age_max', Number(e.target.value))
+                }
+                className={'w-18 border-ink-300 rounded-md'}
+              >
+                {range(18, 100).map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </Select>
+            </Col>
+          </Row>
+        </Col>
+
+        {/*<Col className={clsx(colClassName)}>*/}
+        {/*  <label className={clsx(labelClassName)}>*/}
+        {/*    You want to have kids*/}
+        {/*  </label>*/}
+        {/*  <RadioToggleGroup*/}
+        {/*    className={'w-44'}*/}
+        {/*    choicesMap={MultipleChoiceOptions}*/}
+        {/*    setChoice={(choice) => {*/}
+        {/*      setLover('wants_kids_strength', choice)*/}
+        {/*    }}*/}
+        {/*    currentChoice={lover.wants_kids_strength ?? -1}*/}
+        {/*  />*/}
+        {/*</Col>*/}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Photos</label>
+
+          {/*<div className="mb-1">*/}
+          {/*  A real or stylized photo of you is required.*/}
+          {/*</div>*/}
+
+          <AddPhotosWidget
+            user={user}
+            photo_urls={lover.photo_urls}
+            pinned_url={lover.pinned_url}
+            setPhotoUrls={(urls) => setLover('photo_urls', urls)}
+            setPinnedUrl={(url) => setLover('pinned_url', url)}
+          />
+        </Col>
+
         <Col className={clsx(colClassName, 'pb-4')}>
           <label className={clsx(labelClassName)}>Socials</label>
 
@@ -120,14 +338,14 @@ export const OptionalLoveUserForm = (props: {
                     className="col-span-2 sm:col-span-1"
                   />
                   <IconButton onClick={() => updateUserLink(platform, null)}>
-                    <XIcon className="h-6 w-6" />
+                    <XIcon className="h-6 w-6"/>
                     <div className="sr-only">Remove</div>
                   </IconButton>
                 </Fragment>
               ))}
 
             {/* Spacer */}
-            <div className="col-span-3 h-4" />
+            <div className="col-span-3 h-4"/>
 
             <PlatformSelect
               value={newLinkPlatform}
@@ -156,7 +374,7 @@ export const OptionalLoveUserForm = (props: {
               onClick={addNewLink}
               disabled={!newLinkPlatform || !newLinkValue}
             >
-              <PlusIcon className="h-6 w-6" />
+              <PlusIcon className="h-6 w-6"/>
               <div className="sr-only">Add</div>
             </Button>
           </div>
@@ -357,3 +575,50 @@ export const OptionalLoveUserForm = (props: {
     </>
   )
 }
+
+const CitySearchBox = (props: {
+  onCitySelected: (city: City | undefined) => void
+}) => {
+  // search results
+  const {cities, query, setQuery} = useCitySearch()
+  const [focused, setFocused] = useState(false)
+
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <>
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={'Search city...'}
+        onFocus={() => setFocused(true)}
+        onBlur={(e) => {
+          // Do not hide the dropdown if clicking inside the dropdown
+          if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(e.relatedTarget)
+          ) {
+            setFocused(false)
+          }
+        }}
+      />
+      <div className="relative w-full" ref={dropdownRef}>
+        <Col className="bg-canvas-50 absolute left-0 right-0 top-1 z-10 w-full overflow-hidden rounded-md">
+          {focused &&
+            cities.map((c) => (
+              <CityRow
+                key={c.geodb_city_id}
+                city={c}
+                onSelect={() => {
+                  props.onCitySelected(c)
+                  setQuery('')
+                }}
+                className="hover:bg-primary-200 justify-between gap-1 px-4 py-2 transition-colors"
+              />
+            ))}
+        </Col>
+      </div>
+    </>
+  )
+}
+

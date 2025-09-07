@@ -28,6 +28,8 @@ export const createLover: APIHandler<'create-lover'> = async (body, auth) => {
     updateUser(pg, auth.uid, { avatarUrl: body.pinned_url })
   }
 
+  console.log('body', body)
+
   const { data, error } = await tryCatch(
     insert(pg, 'lovers', { user_id: auth.uid, ...body })
   )

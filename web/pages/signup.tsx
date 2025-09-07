@@ -68,6 +68,7 @@ export default function SignupPage() {
                   : undefined
 
                 setIsSubmitting(true)
+                console.log('loverForm', loverForm)
                 const lover = await api(
                   'create-lover',
                   removeUndefinedProps({

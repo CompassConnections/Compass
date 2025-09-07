@@ -76,7 +76,7 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     from('lovers'),
     join('users on users.id = lovers.user_id'),
     where('looking_for_matches = true'),
-    where(`pinned_url is not null and pinned_url != ''`),
+    // where(`pinned_url is not null and pinned_url != ''`),
     where(
       `(data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)`
     ),

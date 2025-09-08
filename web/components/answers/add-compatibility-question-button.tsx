@@ -57,6 +57,7 @@ function AddCompatibilityQuestionModal(props: {
   )
   const afterAddQuestion = (newQuestion: rowFor<'love_questions'>) => {
     setDbQuestion(newQuestion)
+    console.log('setDbQuestion', newQuestion)
   }
 
   return (
@@ -72,12 +73,12 @@ function AddCompatibilityQuestionModal(props: {
             compatibilityQuestion={dbQuestion as QuestionWithCountType}
             user={user}
             onSubmit={() => {
-              setOpen(false)
+              // setOpen(false)
               setDbQuestion(null)
             }}
             isLastQuestion
             onNext={() => {
-              setOpen(false)
+              // setOpen(false)
               setDbQuestion(null)
             }}
           />
@@ -134,14 +135,12 @@ function CreateCompatibilityModalContent(props: {
         question: question,
         options: generateJson(),
       })
-      if (
-        newQuestion &&
-        newQuestion.status == 'success' &&
-        newQuestion.question
-      ) {
-        afterAddQuestion(newQuestion.question as rowFor<'love_questions'>)
+      console.log('create-compatibility-question', newQuestion)
+      const q = newQuestion?.question
+      if (q) {
+        afterAddQuestion(q as rowFor<'love_questions'>)
       }
-      track('create love compatibilty question')
+      track('create love compatibility question')
     } catch (e) {
       toast.error('Error creating compatibility question. Try again?')
     }

@@ -2,7 +2,7 @@ import {LovePage} from 'web/components/love-page'
 
 export default function About() {
   return (
-    <LovePage trackPageView={'user profiles'}>
+    <LovePage trackPageView={'about'}>
       <div className="text-gray-600 dark:text-white min-h-screen p-6">
         <div className="w-full">
           <div className="relative py-8 mb-8 overflow-hidden">

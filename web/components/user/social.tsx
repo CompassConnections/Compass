@@ -10,7 +10,7 @@ import {
   TbBrandInstagram,
   TbBrandLinkedin,
   TbBrandMastodon,
-  TbBrandOnlyfans,
+  // TbBrandOnlyfans,
   TbBrandSpotify,
   TbBrandX,
 } from 'react-icons/tb'
@@ -25,7 +25,7 @@ export const PLATFORM_ICONS: {
   bluesky: TbBrandBluesky,
   mastodon: TbBrandMastodon,
   substack: LuBookmark,
-  onlyfans: TbBrandOnlyfans,
+  // onlyfans: TbBrandOnlyfans,
   instagram: TbBrandInstagram,
   github: TbBrandGithub,
   linkedin: TbBrandLinkedin,

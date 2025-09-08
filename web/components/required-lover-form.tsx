@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
@@ -85,6 +85,7 @@ export const RequiredLoveUserForm = (props: {
   return (
     <>
       <Title>The Basics</Title>
+      {!loverCreatedAlready && <div className="text-ink-500 mb-6 text-lg">No endless forms—write your own bio, your own way.</div>}
       <Col className={'gap-8'}>
         <Col>
           <label className={clsx(labelClassName)}>Display name</label>
@@ -104,35 +105,38 @@ export const RequiredLoveUserForm = (props: {
           {errorName && <span className="text-error text-sm">{errorName}</span>}
         </Col>
 
-        <Col>
-          <label className={clsx(labelClassName)}>Username</label>
-          <Row className={'items-center gap-2'}>
-            <Input
-              disabled={loadingUsername}
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => {
-                updateUserState({username: e.target.value || ''})
-              }}
-              onBlur={updateUsername}
-            />
-            {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
-          </Row>
-          {errorUsername && (
-            <span className="text-error text-sm">{errorUsername}</span>
-          )}
-        </Col>
+        {!loverCreatedAlready && <>
+            <Col>
+                <label className={clsx(labelClassName)}>Username</label>
+                <Row className={'items-center gap-2'}>
+                    <Input
+                        disabled={loadingUsername}
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => {
+                          updateUserState({username: e.target.value || ''})
+                        }}
+                        onBlur={updateUsername}
+                    />
+                  {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
+                </Row>
+              {errorUsername && (
+                <span className="text-error text-sm">{errorUsername}</span>
+              )}
+            </Col>
 
-        <Col>
-          <label className={clsx(labelClassName)}>Bio</label>
-          <SignupBio
-            onChange={(e: JSONContent) => {
-              console.log('bio changed', e, lover.bio)
-              setLover('bio', e)
-            }}
-          />
-        </Col>
+            <Col>
+                <label className={clsx(labelClassName)}>Bio</label>
+                <SignupBio
+                    onChange={(e: JSONContent) => {
+                      console.log('bio changed', e, lover.bio)
+                      setLover('bio', e)
+                    }}
+                />
+            </Col>
+        </>
+        }
 
         {onSubmit && (
           <Row className={'justify-end'}>

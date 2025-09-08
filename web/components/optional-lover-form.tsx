@@ -26,6 +26,8 @@ import {SocialIcon} from './user/social'
 import {Select} from 'web/components/widgets/select'
 import {City, CityRow, loverToCity, useCitySearch} from "web/components/search-location";
 import {AddPhotosWidget} from './widgets/add-photos'
+import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
+import {MultipleChoiceOptions} from "common/love/multiple-choice";
 
 export const OptionalLoveUserForm = (props: {
   lover: LoverRow
@@ -38,6 +40,7 @@ export const OptionalLoveUserForm = (props: {
   const {lover, user, buttonLabel, setLover, fromSignup, onSubmit} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [lookingRelationship, setlookingRelationship] = useState(false)
   const router = useRouter()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
     lover.height_in_inches
@@ -138,34 +141,23 @@ export const OptionalLoveUserForm = (props: {
 
   return (
     <>
-      <Row className={'justify-end'}>
-        <Button
-          disabled={isSubmitting}
-          loading={isSubmitting}
-          onClick={handleSubmit}
-        >
-          {buttonLabel ?? 'Next / Skip'}
-        </Button>
-      </Row>
+      {/*<Row className={'justify-end'}>*/}
+      {/*  <Button*/}
+      {/*    disabled={isSubmitting}*/}
+      {/*    loading={isSubmitting}*/}
+      {/*    onClick={handleSubmit}*/}
+      {/*  >*/}
+      {/*    {buttonLabel ?? 'Next / Skip'}*/}
+      {/*  </Button>*/}
+      {/*</Row>*/}
+
       <Title>More about me</Title>
       <div className="text-ink-500 mb-6 text-lg">Optional information</div>
 
       <Col className={'gap-8'}>
 
-        {/*<Col className={clsx(colClassName)}>*/}
-        {/*  <label className={clsx(labelClassName)}>Looking for matches</label>*/}
-        {/*  <ChoicesToggleGroup*/}
-        {/*    currentChoice={lover.looking_for_matches}*/}
-        {/*    choicesMap={{*/}
-        {/*      Yes: true,*/}
-        {/*      No: false,*/}
-        {/*    }}*/}
-        {/*    setChoice={(c) => setLover('looking_for_matches', c)}*/}
-        {/*  />*/}
-        {/*</Col>*/}
-
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Your location</label>
+          <label className={clsx(labelClassName)}>Location</label>
           {lover.city ? (
             <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
               <CityRow
@@ -220,7 +212,7 @@ export const OptionalLoveUserForm = (props: {
         </Row>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Interested in</label>
+          <label className={clsx(labelClassName)}>Interested in connecting with</label>
           <MultiCheckbox
             choices={{
               Women: 'female',
@@ -232,24 +224,8 @@ export const OptionalLoveUserForm = (props: {
           />
         </Col>
 
-        {/*<Col className={clsx(colClassName)}>*/}
-        {/*  <label className={clsx(labelClassName)}>Relationship style</label>*/}
-        {/*  <MultiCheckbox*/}
-        {/*    choices={{*/}
-        {/*      Monogamous: 'mono',*/}
-        {/*      Polyamorous: 'poly',*/}
-        {/*      'Open Relationship': 'open',*/}
-        {/*      Other: 'other',*/}
-        {/*    }}*/}
-        {/*    selected={lover['pref_relation_styles']}*/}
-        {/*    onChange={(selected) =>*/}
-        {/*      setLover('pref_relation_styles', selected)*/}
-        {/*    }*/}
-        {/*  />*/}
-        {/*</Col>*/}
-
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Partner age range</label>
+          <label className={clsx(labelClassName)}>Aged between</label>
           <Row className={'gap-2'}>
             <Col>
               <span>Min</span>
@@ -284,36 +260,6 @@ export const OptionalLoveUserForm = (props: {
               </Select>
             </Col>
           </Row>
-        </Col>
-
-        {/*<Col className={clsx(colClassName)}>*/}
-        {/*  <label className={clsx(labelClassName)}>*/}
-        {/*    You want to have kids*/}
-        {/*  </label>*/}
-        {/*  <RadioToggleGroup*/}
-        {/*    className={'w-44'}*/}
-        {/*    choicesMap={MultipleChoiceOptions}*/}
-        {/*    setChoice={(choice) => {*/}
-        {/*      setLover('wants_kids_strength', choice)*/}
-        {/*    }}*/}
-        {/*    currentChoice={lover.wants_kids_strength ?? -1}*/}
-        {/*  />*/}
-        {/*</Col>*/}
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Photos</label>
-
-          {/*<div className="mb-1">*/}
-          {/*  A real or stylized photo of you is required.*/}
-          {/*</div>*/}
-
-          <AddPhotosWidget
-            user={user}
-            photo_urls={lover.photo_urls}
-            pinned_url={lover.pinned_url}
-            setPhotoUrls={(urls) => setLover('photo_urls', urls)}
-            setPinnedUrl={(url) => setLover('pinned_url', url)}
-          />
         </Col>
 
         <Col className={clsx(colClassName, 'pb-4')}>
@@ -405,21 +351,6 @@ export const OptionalLoveUserForm = (props: {
             onChange={(e) => setLover('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
             value={lover['religious_beliefs'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Current number of kids</label>
-          <Input
-            type="number"
-            onChange={(e) => {
-              const value =
-                e.target.value === '' ? null : Number(e.target.value)
-              setLover('has_kids', value)
-            }}
-            className={'w-20'}
-            min={0}
-            value={lover['has_kids'] ?? undefined}
           />
         </Col>
 
@@ -562,8 +493,83 @@ export const OptionalLoveUserForm = (props: {
             value={lover['occupation_title'] ?? undefined}
           />
         </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Current number of kids</label>
+          <Input
+            type="number"
+            onChange={(e) => {
+              const value =
+                e.target.value === '' ? null : Number(e.target.value)
+              setLover('has_kids', value)
+            }}
+            className={'w-20'}
+            min={0}
+            value={lover['has_kids'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Looking for a relationship?</label>
+          <ChoicesToggleGroup
+            currentChoice={lookingRelationship}
+            choicesMap={{Yes: true, No: false}}
+            setChoice={(c) => setlookingRelationship(c)}
+          />
+        </Col>
+
+        {lookingRelationship && <>
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>
+                    You want to have kids
+                </label>
+                <RadioToggleGroup
+                    className={'w-44'}
+                    choicesMap={MultipleChoiceOptions}
+                    setChoice={(choice) => {
+                      setLover('wants_kids_strength', choice)
+                    }}
+                    currentChoice={lover.wants_kids_strength ?? -1}
+                />
+            </Col>
+
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>Relationship style</label>
+                <MultiCheckbox
+                    choices={{
+                      Monogamous: 'mono',
+                      Polyamorous: 'poly',
+                      'Open Relationship': 'open',
+                      Other: 'other',
+                    }}
+                    selected={lover['pref_relation_styles']}
+                    onChange={(selected) =>
+                      setLover('pref_relation_styles', selected)
+                    }
+                />
+            </Col>
+        </>}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Photos</label>
+
+          {/*<div className="mb-1">*/}
+          {/*  A real or stylized photo of you is required.*/}
+          {/*</div>*/}
+
+          <AddPhotosWidget
+            user={user}
+            photo_urls={lover.photo_urls}
+            pinned_url={lover.pinned_url}
+            setPhotoUrls={(urls) => setLover('photo_urls', urls)}
+            setPinnedUrl={(url) => setLover('pinned_url', url)}
+          />
+        </Col>
+
+
         <Row className={'justify-end'}>
           <Button
+            className="fixed bottom-4 right-4 z-50 text-xl"
             disabled={isSubmitting}
             loading={isSubmitting}
             onClick={handleSubmit}

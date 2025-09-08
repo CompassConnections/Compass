@@ -314,6 +314,7 @@ export const OptionalLoveUserForm = (props: {
               data-lpignore="true"
               data-bwignore="true"
               data-protonpass-ignore="true"
+              className="w-full"
             />
             <Button
               color="gray-outline"

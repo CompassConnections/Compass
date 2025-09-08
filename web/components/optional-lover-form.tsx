@@ -569,7 +569,7 @@ export const OptionalLoveUserForm = (props: {
 
         <Row className={'justify-end'}>
           <Button
-            className="fixed bottom-4 right-4 z-50 text-xl"
+            className="fixed bottom-[90px] lg:bottom-6 right-4 z-50 text-xl"
             disabled={isSubmitting}
             loading={isSubmitting}
             onClick={handleSubmit}

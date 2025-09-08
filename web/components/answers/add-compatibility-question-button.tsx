@@ -131,11 +131,12 @@ function CreateCompatibilityModalContent(props: {
 
   const onAddQuestion = useEvent(async () => {
     try {
-      const newQuestion = await api('create-compatibility-question', {
+      const data = {
         question: question,
         options: generateJson(),
-      })
-      console.log('create-compatibility-question', newQuestion)
+      };
+      const newQuestion = await api('create-compatibility-question', data)
+      console.log('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question
       if (q) {
         afterAddQuestion(q as rowFor<'love_questions'>)

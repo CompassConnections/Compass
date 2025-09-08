@@ -49,7 +49,7 @@ export function LoggedOutHome() {
     <>
       <Col className="mb-4 gap-2 lg:hidden">
         <Button
-          className="flex-1"
+          className="flex-1 fixed top-4 left-1/2 transform -translate-x-1/2 w-full"
           color="gradient"
           size="xl"
           onClick={signupRedirect}
@@ -59,11 +59,16 @@ export function LoggedOutHome() {
         {/*<SignUpAsMatchmaker className="flex-1"/>*/}
       </Col>
       <h1
-        className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap">
+        className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">
         Don't Swipe.<br/>
         <span id="typewriter"></span>
         <span id="cursor" className="animate-pulse">|</span>
       </h1>
+      <div className="py-8"></div>
+      <h3
+        className="text-2xl font-bold text-center">
+        A focused platform for real connections—built with purpose and speed.
+      </h3>
       <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">

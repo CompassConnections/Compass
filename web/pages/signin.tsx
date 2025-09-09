@@ -12,24 +12,7 @@ import {getLoverRow} from "common/love/lover";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {LovePage} from "web/components/love-page";
-
-
-async function redirectSignin(creds: any) {
-  console.log("User signed in:", creds.user);
-  const userId = creds?.user.uid
-  await Router.push('/')
-  if (userId) {
-    try {
-      const lover = await getLoverRow(userId, db)
-      if (!lover) {
-        await Router.push('/signup')
-      }
-    } catch (error) {
-      console.error("Error fetching lover profile:", error);
-    }
-  }
-}
-
+import {useUser} from "web/hooks/use-user";
 
 export default function LoginPage() {
   return (
@@ -44,6 +27,7 @@ function RegisterComponent() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+  const user = useUser()
 
   useEffect(() => {
     const error = searchParams.get('error');
@@ -54,12 +38,32 @@ function RegisterComponent() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const checkAndRedirect = async () => {
+      if (user) {
+        console.log("User signed in:", user);
+        try {
+          const lover = await getLoverRow(user.id, db)
+          if (lover) {
+            await Router.push('/')
+          } else {
+            await Router.push('/signup')
+          }
+        } catch (error) {
+          console.error("Error fetching lover profile:", error);
+        }
+        setIsLoading(false);
+        setIsLoadingGoogle(false);
+      }
+    }
+    checkAndRedirect()
+  }, [user]);
+
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
     setError(null);
     try {
       const creds = await firebaseLogin();
-      await redirectSignin(creds)
     } catch (error) {
       console.error("Error signing in:", error);
       const message = 'Failed to sign in with Google';
@@ -72,7 +76,6 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password);
-      await redirectSignin(creds)
     } catch (error) {
       console.error("Error signing in:", error);
       const message = 'Failed to sign in with your email and password';

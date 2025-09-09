@@ -2,14 +2,13 @@ import {Lover} from 'common/love/lover'
 import {CompatibilityScore} from 'common/love/compatibility-score'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
-import {useUser} from 'web/hooks/use-user'
 import {track} from 'web/lib/service/analytics'
 import {Col} from './layout/col'
 import clsx from 'clsx'
 import {JSONContent} from "@tiptap/core";
 import {Content} from "web/components/widgets/editor";
 import React from "react";
-import Router from "next/router";
+import Link from "next/link";
 
 export const ProfileGrid = (props: {
   lovers: Lover[]
@@ -75,11 +74,9 @@ function ProfilePreview(props: {
   // const currentUser = useUser()
 
   return (
-    <div
-      onClick={() => {
-        track('click love profile preview')
-        Router.push(`/${user.username}`)
-      }}
+    <Link
+      onClick={() => track('click love profile preview')}
+      href={`/${user.username}`}
       className="cursor-pointer group block dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
     >
       <Col
@@ -125,6 +122,7 @@ function ProfilePreview(props: {
                 {user.name}
               </h3>
               <div className="text-sm text-gray-500 dark:text-gray-400">
+                {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
                 <Content className="w-full line-clamp-4" content={lover.bio as JSONContent}/>
               </div>
               {/*{age}*/}
@@ -135,6 +133,6 @@ function ProfilePreview(props: {
           {/*</Row>*/}
         </Col>
       </Col>
-    </div>
+    </Link>
   )
 }

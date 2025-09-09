@@ -11,6 +11,8 @@
 
 set -e
 
+cd "$(dirname "$0")"
+
 source ../../.env
 
 ENV=${1:-prod}

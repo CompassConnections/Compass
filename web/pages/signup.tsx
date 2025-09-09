@@ -4,10 +4,9 @@ import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/requir
 import {OptionalLoveUserForm} from 'web/components/optional-lover-form'
 import {useUser} from 'web/hooks/use-user'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {GoogleSignInButton} from 'web/components/buttons/sign-up-button'
-import {CACHED_REFERRAL_USERNAME_KEY, firebaseLogin,} from 'web/lib/firebase/users'
+import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
-import {useRouter} from 'next/router'
+import Router, {useRouter} from 'next/router'
 import ManifoldLoveLogo from 'web/components/manifold-love-logo'
 import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
@@ -15,10 +14,13 @@ import {safeLocalStorage} from 'web/lib/util/local'
 import {removeUndefinedProps} from 'common/util/object'
 import {useLoverByUserId} from 'web/hooks/use-lover'
 import {LoverRow} from 'common/love/lover'
+import {LovePage} from "web/components/love-page";
+import {Button} from "web/components/buttons/button";
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
   const user = useUser()
+  console.log('user:', user)
   const router = useRouter()
   useTracking('view love signup page')
 
@@ -40,17 +42,38 @@ export default function SignupPage() {
     }
   }, [existingLover])
 
+  if (step === 1 && user) {
+    return <LovePage trackPageView={'register'}>
+      <Col className={'w-full px-6 py-4'}>
+        <OptionalLoveUserForm
+          setLover={setLoverState}
+          lover={loverForm}
+          user={user}
+          fromSignup
+        />
+      </Col>
+    </LovePage>
+  }
+
   return (
     <Col className="items-center">
       {user === undefined ? (
         <div/>
       ) : user === null ? (
         <Col className={'items-center justify-around gap-4 pt-[20vh]'}>
-          <ManifoldLoveLogo noLink/>
-          <GoogleSignInButton onClick={firebaseLogin}/>
+          <ManifoldLoveLogo/>
+          <Button
+            color={'gray-outline'}
+            size={'2xl'}
+            className={''}
+            onClick={() => {
+              Router.push('register')
+            }}>
+            Sign up
+          </Button>
         </Col>
       ) : (
-        <Col className={'bg-canvas-0 w-full max-w-2xl px-6 py-4'}>
+        <Col className={'w-full max-w-2xl px-6 py-4'}>
           {step === 0 ? (
             <RequiredLoveUserForm
               user={user}
@@ -89,12 +112,7 @@ export default function SignupPage() {
               }}
             />
           ) : step === 1 ? (
-            <OptionalLoveUserForm
-              setLover={setLoverState}
-              lover={loverForm}
-              user={user}
-              fromSignup
-            />
+            <></>
           ) : (
             <LoadingIndicator/>
           )}

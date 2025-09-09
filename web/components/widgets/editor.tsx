@@ -259,7 +259,7 @@ export function Content(props: {
   return typeof content === 'string' ? (
     <Linkify
       className={clsx('whitespace-pre-line', proseClass(size), className)}
-      text={content}
+      text={content || ''}
     />
   ) : (
     <RichContent {...(props as any)} />

@@ -20,7 +20,7 @@ import { getPrivateUserSafe, getUserSafe } from 'web/lib/supabase/users'
 import { useWebsocketPrivateUser, useWebsocketUser } from 'web/hooks/use-user'
 import { identifyUser, setUserProperty } from 'web/lib/service/analytics'
 
-// Either we haven't looked up the logged in user yet (undefined), or we know
+// Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
 export type AuthUser =
   | undefined

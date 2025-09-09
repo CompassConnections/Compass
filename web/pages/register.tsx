@@ -1,6 +1,6 @@
 "use client";
 
-import {Suspense, useState} from "react";
+import {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
 import {FcGoogle} from "react-icons/fc";
 import {useSearchParams} from "next/navigation";
@@ -13,6 +13,7 @@ import {LovePage} from "web/components/love-page";
 import {getLoverRow} from "common/love/lover";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
+import {useUser} from "web/hooks/use-user";
 
 
 export default function RegisterPage() {
@@ -31,24 +32,32 @@ function RegisterComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const user = useUser()
 
   // function redirect() {
   //   // Redirect to complete profile page
   //   window.location.href = href;
   // }
 
+  useEffect(() => {
+    const checkLoverAndRedirect = async () => {
+      if (user) {
+        const lover = await getLoverRow(user.id, db)
+        if (lover) {
+          await Router.push('/')
+        } else {
+          await Router.push('/signup')
+        }
+        setIsLoading(false);
+      }
+    }
+    checkLoverAndRedirect()
+  }, [user]);
+
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
       const creds = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User signed up:", creds.user);
-      await Router.push('/')
-      const userId = creds?.user.uid
-      if (userId) {
-        const lover = await getLoverRow(userId, db)
-        if (!lover) {
-          await Router.push('/signup')
-        }
-      }
     } catch (error) {
       console.error("Error signing up:", error);
       if (error instanceof Error && error.message.includes("email-already-in-use")) {
@@ -94,7 +103,6 @@ function RegisterComponent() {
 
     } catch (error) {
       handleError(error);
-    } finally {
       setIsLoading(false);
     }
   }

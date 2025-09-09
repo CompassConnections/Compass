@@ -114,6 +114,7 @@ function getBottomNavigation(user: User, lover: Lover | null | undefined) {
     {
       name: 'Profile',
       href: lover === null ? '/signup' : `/${user.username}`,
+      icon: SolidHomeIcon,
     },
     {
       name: 'Messages',

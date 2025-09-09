@@ -1,5 +1,6 @@
 import {LovePage} from 'web/components/love-page'
 import {ReactNode} from "react";
+import Link from "next/link";
 
 
 export const AboutBlock = (props: {
@@ -58,8 +59,8 @@ export default function About() {
 
                 <AboutBlock
                   title="Democratic"
-                  text={<span>Governed by the community, while ensuring no drift through our <a href="/constitution"
-                                                                                                className="text-blue-600 dark:text-blue-400">constitution</a>.</span>}
+                  text={<span>Governed by the community, while ensuring no drift through our <Link href="/constitution"
+                                                                                                className="text-blue-600 dark:text-blue-400">constitution</Link>.</span>}
                 />
 
                 <AboutBlock

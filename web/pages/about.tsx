@@ -1,4 +1,17 @@
 import {LovePage} from 'web/components/love-page'
+import {ReactNode} from "react";
+
+
+export const AboutBlock = (props: {
+  text: ReactNode
+  title: string
+}) => {
+  const {text, title} = props
+  return <section className="mb-12">
+    <h2 className="text-3xl font-bold mb-4">{title}</h2>
+    <p className="text-lg text-gray-500">{text}</p>
+  </section>;
+}
 
 export default function About() {
   return (
@@ -10,7 +23,7 @@ export default function About() {
               <h1 className="text-3xl font-bold mb-4 text-center">Why Choose Compass?</h1>
               <div className="flex flex-col md:flex-row items-center justify-center mb-8 gap-8">
                 <div className="w-full text-center">
-                  <h3 className="text-3xl font-bold mb-2">To find your people with ease.</h3>
+                  <h3 className="text-3xl mb-2">To find your people with ease.</h3>
                 </div>
               </div>
             </div>
@@ -18,29 +31,41 @@ export default function About() {
           <div className="et_pb_text_inner">
             <div className="max-w-3xl mx-auto mt-20 mb-8 ">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <section className="mb-12">
-                  <h2 className="text-3xl font-bold mb-4">Keyword Search the Database</h2>
-                  <p className="text-lg text-gray-500">"Cats", "Hiking", "Introvert", "Rock Climbing".<br/>Access any
-                    profile and get niche.</p>
-                </section>
-                <section className="mb-12">
-                  <h2 className="text-3xl font-bold mb-4">Get Notified About Searches</h2>
-                  <p className="text-lg text-gray-500">
-                    No need to constantly check an app! We'll contact you when new users fit your searches.
-                  </p>
-                </section>
-                <section className="mb-12">
-                  <h2 className="text-3xl font-bold mb-4">Free</h2>
-                  <p className="text-lg text-gray-500">Subscription-free. Paywall-free. Ad-free.</p>
-                </section>
-                <section className="mb-12">
-                  <h2 className="text-3xl font-bold mb-4">Personality-Centered</h2>
-                  <p className="text-lg text-gray-500">Values and interests first, photos are secondary.</p>
-                </section>
-                <section className="mb-12">
-                  <h2 className="text-3xl font-bold mb-4">Transparent</h2>
-                  <p className="text-lg text-gray-500">Open source code and community designed.</p>
-                </section>
+                <AboutBlock
+                  title="Keyword Search the Database"
+                  text={`"Meditation", "Hiking", "Neuroscience", "Nietzsche". Access any profile and get niche.`}
+                />
+
+                <AboutBlock
+                  title="Get Notified About Searches"
+                  text="No need to constantly check an app! We'll contact you when new users fit your searches."
+                />
+
+                <AboutBlock
+                  title="Free"
+                  text="Subscription-free. Paywall-free. Ad-free."
+                />
+
+                <AboutBlock
+                  title="Personality-Centered"
+                  text="Values and interests first, photos are secondary."
+                />
+
+                <AboutBlock
+                  title="Transparent"
+                  text="Open source code and community designed."
+                />
+
+                <AboutBlock
+                  title="Democratic"
+                  text={<span>Governed by the community, while ensuring no drift through our <a href="/constitution"
+                                                                                                className="text-blue-600 dark:text-blue-400">constitution</a>.</span>}
+                />
+
+                <AboutBlock
+                  title='One Mission'
+                  text='Our only mission is to create more genuine human connections, and every decision must serve that goal.'
+                />
               </div>
             </div>
           </div>
@@ -114,7 +139,7 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center md:col-span-2">
                   <h5 id="github-repo" className="font-bold mb-4 text-xl text-center">Tell Your Friends and Family</h5>
-                  <p className="mb-4 text-center">Thank you for supporting us!</p>
+                  <p className="mb-4 text-center">Thank you for supporting our mission!</p>
                 </div>
               </div>
             </div>

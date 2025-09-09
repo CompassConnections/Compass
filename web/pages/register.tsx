@@ -201,13 +201,13 @@ function RegisterComponent() {
                 <div>
                   <p className="text-xs mt-2 text-center">
                     By signing up, I agree to the{" "}
-                    <a href="/terms" className="underline hover:text-blue-600">
+                    <Link href="/terms" className="underline hover:text-blue-600">
                       Terms and Conditions
-                    </a>{" "}
+                    </Link>{" "}
                     and{" "}
-                    <a href="/privacy" className="underline hover:text-blue-600">
+                    <Link href="/privacy" className="underline hover:text-blue-600">
                       Privacy Policy
-                    </a>.
+                    </Link>.
                   </p>
                 </div>
 

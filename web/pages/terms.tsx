@@ -1,8 +1,12 @@
-import {supportEmail} from "@/lib/client/constants";
+import {supportEmail} from "../../old/lib/client/constants";
+import {LovePage} from "web/components/love-page";
 
 export default function TermsPage() {
   return (
-    <main className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white">
+    <LovePage
+      trackPageView={'terms'}
+      className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white"
+    >
       <h1 className="text-3xl font-semibold text-center mb-6">Terms & Conditions</h1>
 
       <p className="text-center text-gray-500 dark:text-white mb-12">
@@ -11,8 +15,8 @@ export default function TermsPage() {
 
       <section className="space-y-6 text-base leading-relaxed">
         <p>
-          Welcome to <span className="font-semibold">Compass</span>, a platform designed for
-          rational thinkers to connect, collaborate, and build meaningful interactions.
+          Welcome to <span className="font-semibold">Compass</span>, a platform to connect, collaborate, and build
+          meaningful interactions.
           By accessing or using our service, you agree to the following Terms and Conditions.
         </p>
 
@@ -30,15 +34,12 @@ export default function TermsPage() {
 
         <h2 className="text-xl font-semibold">3. Intellectual Property & Licensing</h2>
         <p>
-          a. <strong>Ownership and License.</strong> Compass is developed and
-          maintained as a <strong>free and open-source project</strong>. Unless
-          otherwise stated, all source code, designs, and related materials
-          (“Project Materials”) are licensed under the{" "}
-          <strong>MIT License</strong> or another permissive open-source license
-          determined by the community. Subject to the applicable license terms, you
-          are granted a worldwide, royalty-free, non-exclusive, irrevocable license
-          to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-          copies of the Project Materials.
+          a. <strong>Ownership and License.</strong> Compass is developed and maintained as a free and open-source
+          project. Unless otherwise stated, all source code, designs, and related materials (“Project Materials”) are
+          licensed under the AGPL-3.0 License. Certain components may be licensed under permissive open-source licenses,
+          as explicitly indicated. Subject to the applicable license terms, you are granted a worldwide, royalty-free,
+          non-exclusive, irrevocable license to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+          copies of the Project Materials in accordance with the terms of the applicable license.
         </p>
         <p>
           b. <strong>Community Governance.</strong> Compass operates under a{" "}
@@ -56,15 +57,15 @@ export default function TermsPage() {
           represent and warrant that you have the right to grant such a license and
           that your Contributions do not infringe on the rights of any third party.
         </p>
+        {/*<p>*/}
+        {/*  d. <strong>Trademarks and Branding.</strong> The name “Compass,” logos,*/}
+        {/*  and associated marks (“Marks”) are the exclusive property of the Compass*/}
+        {/*  community or its designated steward. Use of the Marks is only permitted as*/}
+        {/*  authorized in writing by the Compass governance body to avoid confusion*/}
+        {/*  or misuse.*/}
+        {/*</p>*/}
         <p>
-          d. <strong>Trademarks and Branding.</strong> The name “Compass,” logos,
-          and associated marks (“Marks”) are the exclusive property of the Compass
-          community or its designated steward. Use of the Marks is only permitted as
-          authorized in writing by the Compass governance body to avoid confusion
-          or misuse.
-        </p>
-        <p>
-          e. <strong>No Proprietary Restrictions.</strong> Compass shall remain{" "}
+          d. <strong>No Proprietary Restrictions.</strong> Compass shall remain{" "}
           <strong>free of advertising, proprietary lock-ins, and data monetization</strong>{" "}
           unless explicitly approved by the community in accordance with its
           governance process. Users and contributors must not introduce such
@@ -83,10 +84,10 @@ export default function TermsPage() {
           constitutes acceptance of the new Terms.
         </p>
 
-        <p className="text-gray-600 italic mt-8">
+        <p className="italic mt-8">
           For questions regarding these Terms, please contact us at {supportEmail}.
         </p>
       </section>
-    </main>
+    </LovePage>
   );
 }

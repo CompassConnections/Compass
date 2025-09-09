@@ -191,7 +191,7 @@ function RegisterComponent() {
                 </div>
 
                 <div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
+                  <p className="text-xs mt-2 text-center">
                     By signing up, I agree to the{" "}
                     <a href="/terms" className="underline hover:text-blue-600">
                       Terms and Conditions
@@ -229,15 +229,15 @@ function RegisterComponent() {
                     type="button"
                     onClick={signupThenMaybeRedirectToSignup}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700  hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     <FcGoogle className="w-5 h-5"/>
-                    Continue with Google
+                    Google
                   </button>
                 </div>
               </form>
               <div className="text-center text-sm mt-2">
-                <p className="text-gray-600">
+                <p className="">
                   Already have an account?{' '}
                   <Link href="/signin" className="font-medium text-blue-600 hover:text-blue-500">
                     Sign in

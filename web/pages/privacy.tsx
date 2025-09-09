@@ -1,8 +1,12 @@
-import {supportEmail} from "@/lib/client/constants";
+import {supportEmail} from "../../old/lib/client/constants";
+import {LovePage} from "web/components/love-page";
 
 export default function PrivacyPage() {
   return (
-    <main className="max-w-4xl mx-auto p-8">
+    <LovePage
+      trackPageView={'terms'}
+      className="max-w-4xl mx-auto p-8"
+    >
       <h1 className="text-3xl font-semibold text-center mb-6">Privacy Policy</h1>
 
       <p className="text-center mb-12">
@@ -48,6 +52,6 @@ export default function PrivacyPage() {
           For questions about this Privacy Policy, reach out at {supportEmail}.
         </p>
       </section>
-    </main>
+    </LovePage>
   );
 }

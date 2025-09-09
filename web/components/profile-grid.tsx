@@ -9,6 +9,9 @@ import {JSONContent} from "@tiptap/core";
 import {Content} from "web/components/widgets/editor";
 import React from "react";
 import Link from "next/link";
+import {Row} from "web/components/layout/row";
+import {CompatibleBadge} from "web/components/widgets/compatible-badge";
+import {useUser} from "web/hooks/use-user";
 
 export const ProfileGrid = (props: {
   lovers: Lover[]
@@ -29,6 +32,8 @@ export const ProfileGrid = (props: {
     refreshStars,
   } = props
 
+  const user = useUser()
+
   return (
     <div className="relative">
       <div
@@ -37,7 +42,9 @@ export const ProfileGrid = (props: {
           isReloading && 'animate-pulse opacity-80'
         )}
       >
-        {lovers.map((lover) => (
+        {lovers
+          .filter((lover) => lover.user_id !== user?.id)
+          .map((lover) => (
           <ProfilePreview
             key={lover.id}
             lover={lover}
@@ -97,22 +104,23 @@ function ProfilePreview(props: {
         {/*  </Col>*/}
         {/*)}*/}
 
-        {/*<Row className="absolute inset-x-0 right-0 top-0 items-start justify-between bg-gradient-to-b from-black/70 via-black/70 to-transparent px-2 pb-3 pt-2">*/}
-        {/*  {currentUser ? (*/}
-        {/*    <StarButton*/}
-        {/*      className="!pt-0"*/}
-        {/*      isStarred={hasStar}*/}
-        {/*      refresh={refreshStars}*/}
-        {/*      targetLover={lover}*/}
-        {/*      hideTooltip*/}
-        {/*    />*/}
-        {/*  ) : (*/}
-        {/*    <div />*/}
-        {/*  )}*/}
-        {/*  {compatibilityScore && (*/}
-        {/*    <CompatibleBadge compatibility={compatibilityScore} />*/}
-        {/*  )}*/}
-        {/*</Row>*/}
+        <Row
+          className="absolute top-2 right-2 items-start justify-end px-2 pb-3">
+          {/*  {currentUser ? (*/}
+          {/*    <StarButton*/}
+          {/*      className="!pt-0"*/}
+          {/*      isStarred={hasStar}*/}
+          {/*      refresh={refreshStars}*/}
+          {/*      targetLover={lover}*/}
+          {/*      hideTooltip*/}
+          {/*    />*/}
+          {/*  ) : (*/}
+          {/*    <div />*/}
+          {/*  )}*/}
+          {compatibilityScore && (
+            <CompatibleBadge compatibility={compatibilityScore}/>
+          )}
+        </Row>
 
         <Col className="absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent px-4 pb-2 pt-6">
           <div>

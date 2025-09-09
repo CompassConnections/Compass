@@ -19,6 +19,7 @@ export function useNearbyCities(
         cityId: referenceCityId,
         radius,
       }).then((result) => {
+        console.log('search-near-city', result)
         if (thisSearchCount == searchCount.current) {
           if (result.status === 'failure') {
             setNearbyCities(null)

@@ -1,4 +1,5 @@
 import { APIHandler } from './helpers/endpoint'
+import { geodbHost } from 'common/constants'
 
 export const searchNearCity: APIHandler<'search-near-city'> = async (body) => {
   const { cityId, radius } = body
@@ -11,27 +12,29 @@ const searchNearCityMain = async (cityId: string, radius: number) => {
   if (!apiKey) {
     return { status: 'failure', data: 'Missing GEODB API key' }
   }
-  const host = 'wft-geo-db.p.rapidapi.com'
-  const baseUrl = `https://${host}/v1/geo`
-  const url = `${baseUrl}/cities/${cityId}/nearbyCities?radius=${radius}&offset=0&sort=-population&limit=100`
+  const baseUrl = `https://${geodbHost}/v1/geo`
+  // Limit to 10 cities for now for free plan, was 100 before (may need to buy plan)
+  const url = `${baseUrl}/cities/${cityId}/nearbyCities?radius=${radius}&offset=0&sort=-population&limit=10`
 
   try {
     const res = await fetch(url, {
       method: 'GET',
       headers: {
         'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': host,
+        'X-RapidAPI-Host': geodbHost,
       },
     })
 
     if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`)
+      throw new Error(`HTTP error! Status: ${res.status} ${await res.text()}`)
     }
 
     const data = await res.json()
+    console.log('searchNearCityMain', data)
 
     return { status: 'success', data: data }
   } catch (error) {
+    console.log('failure', error)
     return { status: 'failure', data: error }
   }
 }

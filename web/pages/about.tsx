@@ -59,8 +59,7 @@ export default function About() {
 
                 <AboutBlock
                   title="Democratic"
-                  text={<span>Governed by the community, while ensuring no drift through our <Link href="/constitution"
-                                                                                                className="text-blue-600 dark:text-blue-400">constitution</Link>.</span>}
+                  text={<span>Governed by the community, while ensuring no drift through our <Link href="/md/constitution">constitution</Link>.</span>}
                 />
 
                 <AboutBlock

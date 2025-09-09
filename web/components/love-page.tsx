@@ -97,14 +97,20 @@ export function LovePage(props: {
   )
 }
 
+const Profiles = { name: 'Profiles', href: '/', icon: SolidHomeIcon };
+const ProfilesHome = { name: 'Profiles', href: '/', icon: HomeIcon };
+const faq = { name: 'FAQ', href: '/md/faq', icon: QuestionMarkCircleIcon };
+const About = { name: 'About', href: '/about', icon: SolidQuestionIcon };
+const AboutQuestionMark = { name: 'About', href: '/about', icon: QuestionMarkCircleIcon };
+const Signin = { name: 'Sign in', href: '/signin', icon: UserCircleIcon };
+const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon};
+const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon};
+const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon};
+
 function getBottomNavigation(user: User, lover: Lover | null | undefined) {
   return buildArray(
-    { name: 'Profiles', href: '/', icon: SolidHomeIcon },
-    {
-      name: 'Notifs',
-      href: `/notifications`,
-      icon: SolidNotificationsIcon,
-    },
+    Profiles,
+    NotifsSolid,
     {
       name: 'Profile',
       href: lover === null ? '/signup' : `/${user.username}`,
@@ -120,36 +126,32 @@ function getBottomNavigation(user: User, lover: Lover | null | undefined) {
 }
 
 const signedOutNavigation = () => [
-  { name: 'Profiles', href: '/', icon: SolidHomeIcon },
-  { name: 'About', href: '/about', icon: SolidQuestionIcon },
-  { name: 'Sign in', href: '/signin', icon: UserCircleIcon },
+  Profiles,
+  About,
+  faq,
+  Signin,
 ]
 const getDesktopNav = (user: User | null | undefined) => {
   if (user)
     return buildArray(
-      { name: 'Profiles', href: '/', icon: HomeIcon },
-      {
-        name: 'Notifs',
-        href: `/notifications`,
-        icon: NotificationsIcon,
-      },
-      {
-        name: 'Messages',
-        href: '/messages',
-        icon: PrivateMessagesIcon,
-      },
-      { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
+      ProfilesHome,
+      Notifs,
+      Messages,
+      AboutQuestionMark,
+      faq
     )
 
   return buildArray(
     // { name: 'Profiles', href: '/', icon: HomeIcon },
-    { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
+    AboutQuestionMark,
+    faq
   )
 }
 
 // No sidebar when signed out
 const getSidebarNavigation = (_toggleModal: () => void) => {
   return buildArray(
-    { name: 'About', href: '/about', icon: QuestionMarkCircleIcon }
+    AboutQuestionMark,
+    faq
   )
 }

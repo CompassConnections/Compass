@@ -4,7 +4,8 @@ const isPreferredGender = (
   preferredGenders: string[] | undefined,
   gender: string | undefined
 ) => {
-  if (preferredGenders === undefined || gender === undefined) return true
+  // console.log('isPreferredGender', preferredGenders, gender)
+  if (preferredGenders === undefined || preferredGenders.length === 0 || gender === undefined) return true
 
   // If simple gender preference, don't include non-binary.
   if (
@@ -17,6 +18,7 @@ const isPreferredGender = (
 }
 
 export const areGenderCompatible = (lover1: LoverRow, lover2: LoverRow) => {
+  // console.log('areGenderCompatible', isPreferredGender(lover1.pref_gender, lover2.gender), isPreferredGender(lover2.pref_gender, lover1.gender))
   return (
     isPreferredGender(lover1.pref_gender, lover2.gender) &&
     isPreferredGender(lover2.pref_gender, lover1.gender)

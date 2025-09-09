@@ -60,3 +60,4 @@ martin
 *.last-run.json
 
 *lock.hcl
+/web/pages/test.tsx

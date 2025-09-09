@@ -29,7 +29,7 @@ A detailed description of the vision is available [here](https://martinbraquet.c
 - [x] Ask for detailed info upon registration (location, desired type of connection, prompt answers, gender, etc.)
 - [x] Set up page listing all the profiles
 - [x] Search through most profile variables
-- [x] (Set up chat / direct messaging)
+- [x] Set up chat / direct messaging
 - [x] Set up domain name (https://compassmeet.com)
 
 #### Secondary To Do

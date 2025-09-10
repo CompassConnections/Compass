@@ -41,6 +41,8 @@ export function CopyLinkOrShareButton(props: {
     setTimeout(() => setIsSuccess(false), 2000) // Reset after 2 seconds
   }
 
+  const content = isSuccess ? 'Copied!' : children
+
   return (
     <ToolTipOrDiv
       hasChildren={!!children}
@@ -72,7 +74,7 @@ export function CopyLinkOrShareButton(props: {
             aria-hidden="true"
           />
         )}
-        {children}
+        {content}
       </Button>
     </ToolTipOrDiv>
   )

@@ -20,6 +20,9 @@ import { LikeData, ShipData } from 'common/api/love-types'
 import { useAPIGetter } from 'web/hooks/use-api-getter'
 import { useGetter } from 'web/hooks/use-getter'
 import { getStars } from 'web/lib/supabase/stars'
+import {Content} from "web/components/widgets/editor";
+import {JSONContent} from "@tiptap/core";
+import React from "react";
 
 export function LoverProfile(props: {
   lover: Lover
@@ -63,6 +66,8 @@ export function LoverProfile(props: {
 
   const showMessageButton = liked || likedBack || !areCompatible
 
+  const isProfileVisible = currentUser || lover.visibility === 'public'
+
   return (
     <>
       <LoverProfileHeader
@@ -74,7 +79,7 @@ export function LoverProfile(props: {
         showMessageButton={showMessageButton}
         refreshLover={refreshLover}
       />
-      {currentUser || lover.visibility === 'public' ? (
+      {isProfileVisible ? (
         <LoverContent
           user={user}
           lover={lover}
@@ -88,6 +93,9 @@ export function LoverProfile(props: {
         />
       ) : (
         <Col className="bg-canvas-0 w-full gap-4 rounded p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <Content className="w-full line-clamp-6" content={lover.bio as JSONContent}/>
+          </div>
           <Col className="relative gap-4">
             <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
             <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
@@ -118,7 +126,7 @@ export function LoverProfile(props: {
             />
           </Row>
         )}
-      {lover.photo_urls && <ProfileCarousel lover={lover} />}
+      {isProfileVisible && lover.photo_urls && <ProfileCarousel lover={lover} />}
     </>
   )
 }

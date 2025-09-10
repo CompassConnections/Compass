@@ -86,22 +86,22 @@ export function MobileFilters(props: {
         <GenderFilter filters={filters} updateFilter={updateFilter} />
       </MobileFilterSection>
       {/* PREFERRED GENDER */}
-      <MobileFilterSection
-        title="Interested in"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.pref_gender)}
-        selection={
-          <PrefGenderFilterText
-            pref_gender={filters.pref_gender as Gender[]}
-            highlightedClass={
-              hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-400'
-            }
-          />
-        }
-      >
-        <PrefGenderFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      {/*<MobileFilterSection*/}
+      {/*  title="Interested in"*/}
+      {/*  openFilter={openFilter}*/}
+      {/*  setOpenFilter={setOpenFilter}*/}
+      {/*  isActive={hasAny(filters.pref_gender)}*/}
+      {/*  selection={*/}
+      {/*    <PrefGenderFilterText*/}
+      {/*      pref_gender={filters.pref_gender as Gender[]}*/}
+      {/*      highlightedClass={*/}
+      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-400'*/}
+      {/*      }*/}
+      {/*    />*/}
+      {/*  }*/}
+      {/*>*/}
+      {/*  <PrefGenderFilter filters={filters} updateFilter={updateFilter} />*/}
+      {/*</MobileFilterSection>*/}
       {/* AGE RANGE */}
       <MobileFilterSection
         title="Age"

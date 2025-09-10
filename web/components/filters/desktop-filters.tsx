@@ -72,25 +72,25 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
       />
       {/* PREFERRED GENDER */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <PrefGenderFilterText
-                pref_gender={filters.pref_gender as Gender[]}
-                highlightedClass={open ? 'text-primary-500' : undefined}
-              />
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <Col>
-            <PrefGenderFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-      />
+      {/*<CustomizeableDropdown*/}
+      {/*  buttonContent={(open: boolean) => (*/}
+      {/*    <DropdownButton*/}
+      {/*      content={*/}
+      {/*        <PrefGenderFilterText*/}
+      {/*          pref_gender={filters.pref_gender as Gender[]}*/}
+      {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
+      {/*        />*/}
+      {/*      }*/}
+      {/*      open={open}*/}
+      {/*    />*/}
+      {/*  )}*/}
+      {/*  dropdownMenuContent={*/}
+      {/*    <Col>*/}
+      {/*      <PrefGenderFilter filters={filters} updateFilter={updateFilter} />*/}
+      {/*    </Col>*/}
+      {/*  }*/}
+      {/*  popoverClassName="bg-canvas-50"*/}
+      {/*/>*/}
       {/* AGE RANGE */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (

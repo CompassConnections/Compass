@@ -99,7 +99,7 @@ export function LovePage(props: {
 
 const Profiles = { name: 'Profiles', href: '/', icon: SolidHomeIcon };
 const ProfilesHome = { name: 'Profiles', href: '/', icon: HomeIcon };
-const faq = { name: 'FAQ', href: '/md/faq', icon: QuestionMarkCircleIcon };
+const faq = { name: 'FAQ', href: '/faq', icon: SolidQuestionIcon };
 const About = { name: 'About', href: '/about', icon: SolidQuestionIcon };
 const AboutQuestionMark = { name: 'About', href: '/about', icon: QuestionMarkCircleIcon };
 const Signin = { name: 'Sign in', href: '/signin', icon: UserCircleIcon };

@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import {Col} from "web/components/layout/col";
-import {Button} from "web/components/buttons/button";
-import {signupRedirect} from "web/lib/util/signup";
+import {SignUpButton} from "web/components/nav/love-sidebar";
 
 export function AboutBox(props: {
   title: string
@@ -48,18 +47,15 @@ export function LoggedOutHome() {
   return (
     <>
       <Col className="mb-4 gap-2 lg:hidden">
-        <Button
-          className="flex-1 fixed top-4 left-1/2 transform -translate-x-1/2 w-full"
-          color="gradient"
+        <SignUpButton
+          className="mt-4 flex-1 fixed bottom-[55px] w-full left-0 right-0 z-10 mx-auto px-4"
           size="xl"
-          onClick={signupRedirect}
-        >
-          Sign up
-        </Button>
+          text="Sign up"
+        />
         {/*<SignUpAsMatchmaker className="flex-1"/>*/}
       </Col>
       <h1
-        className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold max-w-4xl leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">
+        className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">
         Don't Swipe.<br/>
         <span id="typewriter"></span>
         <span id="cursor" className="animate-pulse">|</span>
@@ -67,9 +63,9 @@ export function LoggedOutHome() {
       <div className="py-8"></div>
       <h3
         className="text-2xl font-bold text-center">
-        A focused platform for real connections—built with purpose and speed.
+        Find people who share your values, not just your photos.
       </h3>
-      <div className="w-full bg-gray-50 dark:bg-gray-900 py-8 mt-20">
+      <div className="w-full bg-gray-50 dark:bg-gray-950 py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <AboutBox title="Radically Transparent" text="No algorithms. Every profile searchable."/>

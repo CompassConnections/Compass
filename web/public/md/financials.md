@@ -1,5 +1,7 @@
 # Financials
 
+See [this spreadsheet](https://docs.google.com/spreadsheets/d/18GJr-xSi_ypkgQIxfwPTMaKgQsfLLTjrZBtYd-TeGbc/edit?usp=sharing) for the most updated information. 
+
 ### Expenses
 
 - Hosting & Infrastructure: $100

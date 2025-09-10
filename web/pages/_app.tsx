@@ -100,11 +100,15 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
           name="viewport"
           content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <PostHogProvider client={posthog}>
         <div
           className={clsx(
-            'font-figtree contents font-normal',
+            'contents font-normal',
             logoFont.variable,
             mainFont.variable
           )}

@@ -20,4 +20,7 @@ BEGIN;
 \i backend/supabase/user_notifications.sql
 \i backend/supabase/functions_others.sql
 \i backend/supabase/reports.sql
+\i backend/supabase/migrations/20250910_bio_to_jsonb.sql
+\i backend/supabase/migrations/20250910_add_bio_text.sql
+\i backend/supabase/migrations/20250910_pg_trgm.sql
 COMMIT;

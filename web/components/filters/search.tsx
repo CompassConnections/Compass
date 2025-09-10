@@ -61,7 +61,7 @@ export const Search = (props: {
       <Row className={'mb-2 justify-between gap-2'}>
         <Input
           value={filters.name ?? ''}
-          placeholder={'Search name'}
+          placeholder={'Search anything...'}
           className={'w-full max-w-xs'}
           onChange={(e) => {
             updateFilter({ name: e.target.value })

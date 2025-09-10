@@ -83,7 +83,7 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
 
     name &&
-      where(`lower(users.name) ilike '%' || lower($(name)) || '%'`, { name }),
+      where(`lower(users.name) ilike '%' || lower($(name)) || '%' or lower(bio::text) ilike '%' || lower($(name)) || '%'`, { name }),
 
     genders?.length && where(`gender = ANY($(gender))`, { gender: genders }),
 

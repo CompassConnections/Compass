@@ -53,7 +53,11 @@ export function ProfilesHome() {
     if (!user) return;
     setIsReloading(true);
     const current = ++id.current;
-    api('get-lovers', removeNullOrUndefinedProps({limit: 20, compatibleWithUserId: user?.id, ...filters}) as any)
+    api('get-lovers', removeNullOrUndefinedProps({
+      limit: 20,
+      compatibleWithUserId: user?.id,
+      ...filters
+    }) as any)
       .then(({lovers}) => {
         if (current === id.current) setLovers(lovers);
       })
@@ -74,7 +78,8 @@ export function ProfilesHome() {
       const result = await api('get-lovers', removeNullOrUndefinedProps({
         limit: 20,
         compatibleWithUserId: user?.id,
-        after: lastLover?.id.toString(), ...filters
+        after: lastLover?.id.toString(),
+        ...filters
       }) as any);
       if (result.lovers.length === 0) return false;
       setLovers((prev) => (prev ? [...prev, ...result.lovers] : result.lovers));

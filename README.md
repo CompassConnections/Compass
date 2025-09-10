@@ -39,8 +39,9 @@ Any action item is open to anyone for collaboration, but the following ones are 
 - [ ] Add profile features (intellectual interests, cause areas, personality type, conflict style, etc.)
 - [ ] Add filters to search through remaining profile features (politics, religion, education level, etc.)
 - [ ] Cover with tests (very important, just the test template and framework are ready)
-- [ ] Clean up terms and conditions
-- [ ] Clean up privacy notice
+- [ ] Make the app more user-friendly and appealing (UI/UX)
+- [ ] Clean up terms and conditions (convert to Markdown)
+- [ ] Clean up privacy notice (convert to Markdown)
 - [x] Clean up learn more page
 - [x] Add dark theme
 

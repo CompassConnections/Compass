@@ -12,7 +12,7 @@ export default function ManifoldLoveLogo(props: {
   const inner = (
     <>
       <FavIcon className="dark:invert"/>
-      <div className={clsx('my-auto text-xl font-thin')}>
+      <div className={clsx('my-auto text-xl font-thin logo')}>
         {ENV == 'DEV' ? 'Compass dev' : 'Compass'}
       </div>
     </>

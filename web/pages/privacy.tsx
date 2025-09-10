@@ -6,7 +6,7 @@ export default function PrivacyPage() {
   return (
     <LovePage
       trackPageView={'terms'}
-      className="max-w-4xl mx-auto p-8"
+      className="max-w-4xl mx-auto p-8 col-span-8 bg-canvas-0"
     >
       <h1 className="text-3xl font-semibold text-center mb-6">Privacy Policy</h1>
 

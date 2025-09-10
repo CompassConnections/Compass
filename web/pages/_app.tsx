@@ -122,7 +122,7 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
           </div>
         </div>
       </PostHogProvider>
-      {/* LOVE TODO: Reenable one tap setup */}
+      {/* TODO: Reenable one tap setup */}
       {/* <GoogleOneTapSetup /> */}
     </>
   )

@@ -134,7 +134,7 @@ function RegisterComponent() {
                   name="email"
                   type="email"
                   required
-                  className="bg-primary-50 appearance-none rounded-none relative block w-full px-3 py-2 border  rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Email"
                 />
               </div>
@@ -147,7 +147,7 @@ function RegisterComponent() {
                   name="password"
                   type="password"
                   required
-                  className="bg-primary-50 appearance-none rounded-none relative block w-full px-3 py-2 border  rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                 />
               </div>
@@ -171,7 +171,7 @@ function RegisterComponent() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500">Or continue with</span>
+                  <span className="px-2 bg-canvas-50 text-gray-500">Or continue with</span>
                 </div>
               </div>
 
@@ -186,8 +186,8 @@ function RegisterComponent() {
               </button>
             </div>
           </form>
-          <div className="text-center">
-            <Link href="/register" className="text-blue-600 hover:underline">
+          <div className="text-center customlink">
+            <Link href="/register">
               No account? Register.
             </Link>
           </div>

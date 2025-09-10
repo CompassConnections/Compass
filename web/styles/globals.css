@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.logo {
+    font-family: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
+}
+
 @layer base {
     body {
         font-family: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
@@ -274,7 +278,7 @@ ul {
 }
 
 .customlink a {
-    color: cornflowerblue;
+    color: rgb(var(--color-primary-500));
     text-decoration: none;
 }
 
@@ -284,4 +288,8 @@ ul {
 
 .customlink a:hover {
     text-decoration: underline;
+}
+
+.sidebar-nav {
+    font-family: "Inter", sans-serif; /* clean and legible */
 }

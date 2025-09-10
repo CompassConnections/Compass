@@ -109,8 +109,8 @@ function RegisterComponent() {
 
   return (
     <LovePage trackPageView={'register'}>
-      <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
+      <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full">
           {registrationSuccess ? (
             <div className="text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
@@ -179,7 +179,7 @@ function RegisterComponent() {
                       name="email"
                       type="email"
                       required
-                      className="bg-primary-50 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                      className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                       placeholder="Email"
                     />
                   </div>
@@ -192,20 +192,20 @@ function RegisterComponent() {
                       name="password"
                       type="password"
                       required
-                      className="bg-primary-50 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                      className="bg-canvas-50 bg-input appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                       placeholder="Password"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-xs mt-2 text-center">
+                  <p className="text-sm mt-2 text-center customlink">
                     By signing up, I agree to the{" "}
-                    <Link href="/terms" className="underline hover:text-blue-600">
+                    <Link href="/terms">
                       Terms and Conditions
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="underline hover:text-blue-600">
+                    <Link href="/privacy">
                       Privacy Policy
                     </Link>.
                   </p>
@@ -229,7 +229,7 @@ function RegisterComponent() {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500">Or sign up with</span>
+                      <span className="px-2 bg-canvas-50 text-gray-500">Or sign up with</span>
                     </div>
                   </div>
 
@@ -244,10 +244,10 @@ function RegisterComponent() {
                   </button>
                 </div>
               </form>
-              <div className="text-center text-sm mt-2">
+              <div className="text-center text-sm mt-2 customlink">
                 <p className="">
                   Already have an account?{' '}
-                  <Link href="/signin" className="font-medium text-blue-600 hover:text-blue-500">
+                  <Link href="/signin">
                     Sign in
                   </Link>
                 </p>

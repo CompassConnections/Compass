@@ -27,7 +27,7 @@ We, the community of Compass, commit to building and maintaining this project in
     - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
     - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Members.
 
-[Current members and administrators](/md/members)
+[Current members and administrators](/members)
 
 ## Article III: Governance Structure
 

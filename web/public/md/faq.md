@@ -33,7 +33,7 @@ Martin continues to serve as an initiator and steward of Compass, but its direct
 
 ### How does governance work?
 
-Compass is run democratically under a [constitution](/md/constitution) that prevents central control and ensures long-term alignment with its mission.
+Compass is run democratically under a [constitution](/constitution) that prevents central control and ensures long-term alignment with its mission.
 
 * Major decisions (scope, funding, rules) are voted on by **active contributors**.
 * The full constitution is **public and transparent**.
@@ -57,7 +57,7 @@ Through **donations from the community**. Options include:
 * PayPal
 * GitHub Sponsors
 
-All funding and expenses are **publicly documented** [here](/md/financials).
+All funding and expenses are **publicly documented** [here](/financials).
 
 ### Is my data safe?
 

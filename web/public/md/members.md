@@ -1,6 +1,6 @@
 # Current Members and Administrators
 
-See the [full constitution](/md/constitution) for details on membership criteria and governance structure.
+See the [full constitution](/constitution) for details on membership criteria and governance structure.
 
 ### Members
 

@@ -27,12 +27,13 @@ We, the community of Compass, commit to building and maintaining this project in
     - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
     - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Members.
 
+[Current members and administrators](/md/members)
 
 ## Article III: Governance Structure
 
 ### Section 1: Interim Governance
-- Until the community reaches **5 voting members**, governance decisions shall be made by **unanimous agreement** of the *Founding Maintainers*.
-- The Founding Maintainers may appoint temporary coordinators for specific tasks.
+- Until the community reaches **5 voting members**, governance decisions shall be made by the *Founding Maintainer*.
+- The Founding Maintainer may appoint temporary coordinators for specific tasks.
 - Once the community reaches **5 voting members**, leadership positions will be filled via community election as described below.
 
 ### Section 2: Democratic Governance
@@ -81,4 +82,4 @@ If the project is dissolved, the platform will be shut down and made unavailable
 
 
 *Adopted on: August 11, 2025*  
-*Founding Maintainers: Martin, Emily*
+*Founding Maintainer: Martin Braquet*

@@ -1,26 +1,25 @@
-import { PencilIcon, EyeIcon, LockClosedIcon } from '@heroicons/react/outline'
-import { DotsHorizontalIcon } from '@heroicons/react/outline'
+import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Router from 'next/router'
 import Link from 'next/link'
-import { User } from 'common/user'
-import { Button } from 'web/components/buttons/button'
-import { MoreOptionsUserButton } from 'web/components/buttons/more-options-user-button'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { SendMessageButton } from 'web/components/messaging/send-message-button'
+import {User} from 'common/user'
+import {Button} from 'web/components/buttons/button'
+import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import LoverPrimaryInfo from './lover-primary-info'
-import { OnlineIcon } from '../online-icon'
-import { track } from 'web/lib/service/analytics'
+import {OnlineIcon} from '../online-icon'
+import {track} from 'web/lib/service/analytics'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { ShareProfileButton } from '../widgets/share-profile-button'
-import { Lover } from 'common/love/lover'
-import { useUser } from 'web/hooks/use-user'
-import { linkClass } from 'web/components/widgets/site-link'
-import { StarButton } from '../widgets/star-button'
-import { api, updateLover } from 'web/lib/api'
-import { useState } from 'react'
-import { VisibilityConfirmationModal } from './visibility-confirmation-modal'
+import {ShareProfileButton} from '../widgets/share-profile-button'
+import {Lover} from 'common/love/lover'
+import {useUser} from 'web/hooks/use-user'
+import {linkClass} from 'web/components/widgets/site-link'
+import {StarButton} from '../widgets/star-button'
+import {api, updateLover} from 'web/lib/api'
+import React, {useState} from 'react'
+import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 
 export default function LoverProfileHeader(props: {
   user: User
@@ -44,7 +43,7 @@ export default function LoverProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
-  console.log('LoverProfileHeader', { user, lover, currentUser })
+  console.log('LoverProfileHeader', {user, lover, currentUser})
 
   return (
     <Col className="w-full">
@@ -52,7 +51,7 @@ export default function LoverProfileHeader(props: {
         <Row className="items-center gap-1">
           <Col className="gap-1">
             <Row className="items-center gap-1 text-xl">
-              <OnlineIcon last_online_time={lover.last_online_time} />
+              <OnlineIcon last_online_time={lover.last_online_time}/>
               <span>
                 {simpleView ? (
                   <Link className={linkClass} href={`/${user.username}`}>
@@ -64,7 +63,7 @@ export default function LoverProfileHeader(props: {
                 , {lover.age}
               </span>
             </Row>
-            <LoverPrimaryInfo lover={lover} />
+            <LoverPrimaryInfo lover={lover}/>
           </Col>
         </Row>
         {currentUser && isCurrentUser ? (
@@ -81,13 +80,13 @@ export default function LoverProfileHeader(props: {
               }}
               size="sm"
             >
-              <PencilIcon className=" h-4 w-4" />
+              <PencilIcon className=" h-4 w-4"/>
             </Button>
 
             <DropdownMenu
               menuWidth={'w-52'}
               icon={
-                <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+                <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true"/>
               }
               items={[
                 {
@@ -97,9 +96,9 @@ export default function LoverProfileHeader(props: {
                       : 'Limit to Members Only',
                   icon:
                     lover.visibility === 'member' ? (
-                      <EyeIcon className="h-4 w-4" />
+                      <EyeIcon className="h-4 w-4"/>
                     ) : (
-                      <LockClosedIcon className="h-4 w-4" />
+                      <LockClosedIcon className="h-4 w-4"/>
                     ),
                   onClick: () => setShowVisibilityModal(true),
                 },
@@ -112,7 +111,7 @@ export default function LoverProfileHeader(props: {
                     )
                     if (confirmed) {
                       track('delete love profile')
-                      await api('me/delete', { username: user.username })
+                      await api('me/delete', {username: user.username})
                       window.location.reload()
                     }
                   },
@@ -122,8 +121,10 @@ export default function LoverProfileHeader(props: {
           </Row>
         ) : (
           <Row className="items-center gap-1 sm:gap-2">
+            {/*TODO: Add score to profile page once we can efficiently compute it (i.e., not recomputing it for every profile)*/}
+            {/*<CompatibleBadge compatibility={compatibilityScore}/>*/}
             <ShareProfileButton
-              className="hidden sm:flex"
+              className="sm:flex"
               username={user.username}
             />
             {currentUser && (
@@ -134,16 +135,16 @@ export default function LoverProfileHeader(props: {
               />
             )}
             {currentUser && showMessageButton && (
-              <SendMessageButton toUser={user} currentUser={currentUser} />
+              <SendMessageButton toUser={user} currentUser={currentUser}/>
             )}
-            <MoreOptionsUserButton user={user} />
+            <MoreOptionsUserButton user={user}/>
           </Row>
         )}
       </Row>
 
-      <Row className="justify-end sm:hidden">
-        <ShareProfileButton username={user.username} />
-      </Row>
+      {/*<Row className="justify-end sm:hidden">*/}
+      {/*  <ShareProfileButton username={user.username} />*/}
+      {/*</Row>*/}
 
       <VisibilityConfirmationModal
         open={showVisibilityModal}
@@ -152,7 +153,7 @@ export default function LoverProfileHeader(props: {
         onConfirm={async () => {
           const newVisibility =
             lover.visibility === 'member' ? 'public' : 'member'
-          await updateLover({ visibility: newVisibility })
+          await updateLover({visibility: newVisibility})
           refreshLover()
         }}
       />

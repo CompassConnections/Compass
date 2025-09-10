@@ -14,7 +14,7 @@ export default function MarkdownPage({ content, filename }: Props) {
   return (
     <LovePage trackPageView={filename}>
       <Col className="items-center">
-        <Col className={'bg-canvas-0 w-full rounded px-3 py-4 sm:px-6 space-y-4'}>
+        <Col className='bg-canvas-0 w-full rounded px-3 py-4 sm:px-6 space-y-4 customlink'>
           <ReactMarkdown>{content}</ReactMarkdown>
         </Col>
       </Col>

@@ -260,9 +260,14 @@ ul {
     margin-top: 0.5rem;
 }
 
-a {
-    color: rgb(var(--color-primary-500));
+.customlink a {
+    color: cornflowerblue;
+    text-decoration: none;
 }
-.dark a {
+.dark .customlink a {
     color: rgb(var(--color-primary-700));
+}
+
+.customlink a:hover {
+    text-decoration: underline;
 }

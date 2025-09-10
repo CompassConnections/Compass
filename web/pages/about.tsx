@@ -10,7 +10,7 @@ export const AboutBlock = (props: {
   const {text, title} = props
   return <section className="mb-12">
     <h2 className="text-3xl font-bold mb-4">{title}</h2>
-    <p className="text-lg text-gray-500">{text}</p>
+    <p className="text-lg">{text}</p>
   </section>;
 }
 
@@ -59,7 +59,7 @@ export default function About() {
 
                 <AboutBlock
                   title="Democratic"
-                  text={<span>Governed by the community, while ensuring no drift through our <Link href="/md/constitution">constitution</Link>.</span>}
+                  text={<span className="customlink">Governed by the community, while ensuring no drift through our <Link href="/md/constitution">constitution</Link>.</span>}
                 />
 
                 <AboutBlock

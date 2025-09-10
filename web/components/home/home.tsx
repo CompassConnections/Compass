@@ -65,7 +65,7 @@ export function LoggedOutHome() {
         className="text-2xl font-bold text-center">
         Find people who share your values, not just your photos.
       </h3>
-      <div className="w-full bg-gray-50 dark:bg-gray-950 py-8 mt-20">
+      <div className="w-full py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <AboutBox title="Radically Transparent" text="No algorithms. Every profile searchable."/>
@@ -74,6 +74,7 @@ export function LoggedOutHome() {
           </div>
         </div>
       </div>
+      <div className="block lg:hidden h-12"></div>
     </>
   );
 }

@@ -38,7 +38,7 @@ export function BottomNavBar(props: {
   }
 
   return (
-    <nav className="border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-0 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav">
+    <nav className="border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav">
       {navigationOptions.map((item) => (
         <NavBarItem
           key={item.name}
@@ -206,7 +206,7 @@ export function MobileSidebar(props: {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="bg-canvas-0 relative flex w-full max-w-xs flex-1 flex-col">
+            <div className="bg-canvas-25 relative flex w-full max-w-xs flex-1 flex-col">
               <div className="mx-2 h-0 flex-1 overflow-y-auto">
                 <Sidebar
                   navigationOptions={sidebarNavigationOptions}

@@ -17,7 +17,7 @@ export const AboutBlock = (props: {
 export default function About() {
   return (
     <LovePage trackPageView={'about'}>
-      <div className="bg-canvas-0 text-gray-600 dark:text-white min-h-screen p-6">
+      <div className="text-gray-600 dark:text-white min-h-screen p-6">
         <div className="w-full">
           <div className="relative py-8 mb-8 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">

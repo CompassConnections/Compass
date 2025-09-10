@@ -12,7 +12,7 @@ export default function ProfilesPage() {
   return (
     <LovePage trackPageView={'user profiles'}>
       <Col className="items-center">
-        <Col className={'bg-canvas-0 w-full rounded px-3 py-4 sm:px-6'}>
+        <Col className={'w-full rounded px-3 py-4 sm:px-6'}>
           {user ? <ProfilesHome/> : <LoggedOutHome/>}
         </Col>
       </Col>

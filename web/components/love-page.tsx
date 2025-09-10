@@ -62,7 +62,7 @@ export function LovePage(props: {
       <Col
         className={clsx(
           'pb-[58px] lg:pb-0', // bottom bar padding
-          'text-ink-1000 mx-auto min-h-screen w-full max-w-[1440px] lg:grid lg:grid-cols-12'
+          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12'
         )}
       >
         <Toaster
@@ -74,13 +74,13 @@ export function LovePage(props: {
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
-            className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav"
-          />
+            className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
+            />
         )}
         <main
           className={clsx(
             'flex flex-1 flex-col lg:mt-6 xl:px-2',
-            'col-span-10',
+            'col-span-8',
             className
           )}
         >
@@ -100,8 +100,7 @@ export function LovePage(props: {
 const Profiles = { name: 'Profiles', href: '/', icon: SolidHomeIcon };
 const ProfilesHome = { name: 'Profiles', href: '/', icon: HomeIcon };
 const faq = { name: 'FAQ', href: '/faq', icon: SolidQuestionIcon };
-const About = { name: 'About', href: '/about', icon: SolidQuestionIcon };
-const AboutQuestionMark = { name: 'About', href: '/about', icon: QuestionMarkCircleIcon };
+const About = { name: 'About', href: '/about', icon: QuestionMarkCircleIcon };
 const Signin = { name: 'Sign in', href: '/signin', icon: UserCircleIcon };
 const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon};
 const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon};
@@ -138,13 +137,13 @@ const getDesktopNav = (user: User | null | undefined) => {
       ProfilesHome,
       Notifs,
       Messages,
-      AboutQuestionMark,
+      About,
       faq
     )
 
   return buildArray(
     // { name: 'Profiles', href: '/', icon: HomeIcon },
-    AboutQuestionMark,
+    About,
     faq
   )
 }
@@ -152,7 +151,7 @@ const getDesktopNav = (user: User | null | undefined) => {
 // No sidebar when signed out
 const getSidebarNavigation = (_toggleModal: () => void) => {
   return buildArray(
-    AboutQuestionMark,
+    About,
     faq
   )
 }

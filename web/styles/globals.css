@@ -37,8 +37,9 @@
 
         /* Background / Canvas Grey Scale */
         --color-canvas-0: 255 255 255; /* white */
+        --color-canvas-25: 245 245 245;
         --color-canvas-50: 245 245 245;
-        --color-canvas-100: 230 230 230;
+        --color-canvas-100: 245 245 245;
         --color-canvas-200: 210 210 210;
         --color-canvas-300: 190 190 190;
         --color-canvas-400: 160 160 160;
@@ -109,9 +110,10 @@
         --color-ink-50: 17 17 17; /* #111111 */
         --color-ink-0: 0 0 0; /* black */
 
-        --color-canvas-0: 32 30 37;
-        --color-canvas-50: 22 20 25;
-        --color-canvas-100: 46 41 51;
+        --color-canvas-25: 0 0 0;
+        --color-canvas-0: 20 20 20;
+        --color-canvas-50: 20 20 20;
+        --color-canvas-100: 40 40 40;
 
         --color-primary-950: 239 246 255; /* very light blue */
         --color-primary-900: 219 234 254; /* light blue */

@@ -84,10 +84,10 @@ function ProfilePreview(props: {
     <Link
       onClick={() => track('click love profile preview')}
       href={`/${user.username}`}
-      className="cursor-pointer group block dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
+      className="cursor-pointer group block bg-canvas-100 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
     >
       <Col
-        className="relative h-40 w-full overflow-hidden rounded text-white transition-all hover:scale-y-105 hover:drop-shadow">
+        className="relative h-40 w-full overflow-hidden rounded transition-all hover:scale-y-105 hover:drop-shadow">
         {/*{pinned_url ? (*/}
         {/*  <Image*/}
         {/*    src={pinned_url}*/}

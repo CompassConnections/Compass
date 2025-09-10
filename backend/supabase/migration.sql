@@ -19,4 +19,5 @@ BEGIN;
 \i backend/supabase/user_events.sql
 \i backend/supabase/user_notifications.sql
 \i backend/supabase/functions_others.sql
+\i backend/supabase/reports.sql
 COMMIT;

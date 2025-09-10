@@ -21,6 +21,16 @@ Anyone who wants more than small talk or casual networking. If you value **depth
 
 Both. You can specify whether you’re looking for **platonic, romantic, or collaborative connections**.
 
+### Who started Compass?
+
+Compass was founded by [Martin Braquet](https://www.martinbraquet.com), an engineer and researcher passionate about tackling humanity’s most pressing challenges — from climate change and AI safety to animal welfare.
+
+Martin has lived across Europe, the U.S., India, and Indonesia, immersing himself in diverse practices ranging from meditation retreats to sustainability-focused forest co-ops. These experiences shaped his conviction that deep one-to-one human connections are among the most meaningful drivers of well-being and positive change.
+
+Compass grew out of that conviction. While Martin has long been driven to reduce global risks and suffering, he also recognized that his own life — and the lives of many others — would be greatly enriched by more profound, close, and supportive relationships. Compass is his attempt to build an open, transparent, and community-driven platform where people can connect around shared values, curiosity, and care, without the distractions of swipes, ads, or superficiality.
+
+Martin continues to serve as an initiator and steward of Compass, but its direction is intentionally placed in the hands of the community through the Compass Constitution (as detailed in the next section).
+
 ### How does governance work?
 
 Compass is run democratically under a [constitution](/md/constitution) that prevents central control and ensures long-term alignment with its mission.

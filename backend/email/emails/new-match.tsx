@@ -1,51 +1,43 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
-import { DOMAIN } from 'common/envs/constants'
-import { type LoverRow } from 'common/love/lover'
-import { getLoveOgImageUrl } from 'common/love/og-image'
-import { type User } from 'common/user'
-import { jamesLover, jamesUser, sinclairUser } from './functions/mock'
+import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
+import {DOMAIN} from 'common/envs/constants'
+import {type LoverRow} from 'common/love/lover'
+import {type User} from 'common/user'
+import {jamesLover, jamesUser, sinclairUser} from './functions/mock'
+import {Footer} from "email/utils";
 
 interface NewMatchEmailProps {
   onUser: User
   matchedWithUser: User
   matchedLover: LoverRow
   unsubscribeUrl: string
+  email?: string
 }
 
 export const NewMatchEmail = ({
-  onUser,
-  matchedWithUser,
-  matchedLover,
-  unsubscribeUrl,
-}: NewMatchEmailProps) => {
+                                onUser,
+                                matchedWithUser,
+                                matchedLover,
+                                unsubscribeUrl,
+                                email
+                              }: NewMatchEmailProps) => {
   const name = onUser.name.split(' ')[0]
-  const userImgSrc = getLoveOgImageUrl(matchedWithUser, matchedLover)
+  // const userImgSrc = getLoveOgImageUrl(matchedWithUser, matchedLover)
   const userUrl = `https://${DOMAIN}/${matchedWithUser.username}`
 
   return (
     <Html>
-      <Head />
+      <Head/>
       <Preview>You have a new match!</Preview>
       <Body style={main}>
         <Container style={container}>
+
           {/*<Section style={logoContainer}>*/}
-          {/*  <Img*/}
-          {/*    src="..."*/}
-          {/*    width="550"*/}
-          {/*    height="auto"*/}
-          {/*    alt="compassmeet.com"*/}
-          {/*  />*/}
+          {/*<Img*/}
+          {/*  src="..."*/}
+          {/*  width="550"*/}
+          {/*  height="auto"*/}
+          {/*  alt="compassmeet.com"*/}
+          {/*/>*/}
           {/*</Section>*/}
 
           <Section style={content}>
@@ -56,31 +48,21 @@ export const NewMatchEmail = ({
             </Text>
 
             <Section style={imageContainer}>
-              <Link href={userUrl}>
-                <Img
-                  src={userImgSrc}
-                  width="375"
-                  height="200"
-                  alt=""
-                  style={profileImage}
-                />
-              </Link>
-
+              {/*<Link href={userUrl}>*/}
+              {/*  <Img*/}
+              {/*    src={userImgSrc}*/}
+              {/*    width="375"*/}
+              {/*    height="200"*/}
+              {/*    alt=""*/}
+              {/*    style={profileImage}*/}
+              {/*  />*/}
+              {/*</Link>*/}
               <Button href={userUrl} style={button}>
                 View profile
               </Button>
             </Section>
           </Section>
-
-          <Section style={footer}>
-            <Text style={footerText}>
-              This e-mail has been sent to {name},{' '}
-              {/* <Link href={unsubscribeUrl} style={footerLink}>
-                click here to unsubscribe from this type of notification
-              </Link>
-              . */}
-            </Text>
-          </Section>
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name}/>
         </Container>
       </Body>
     </Html>
@@ -91,11 +73,12 @@ NewMatchEmail.PreviewProps = {
   onUser: sinclairUser,
   matchedWithUser: jamesUser,
   matchedLover: jamesLover,
+  email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMatchEmailProps
 
 const main = {
-  backgroundColor: '#f4f4f4',
+  // backgroundColor: '#f4f4f4',
   fontFamily: 'Arial, sans-serif',
   wordSpacing: 'normal',
 }
@@ -145,23 +128,6 @@ const button = {
   display: 'inline-block',
   padding: '6px 10px',
   margin: '10px 0',
-}
-
-const footer = {
-  margin: '20px 0',
-  textAlign: 'center' as const,
-}
-
-const footerText = {
-  fontSize: '11px',
-  lineHeight: '22px',
-  color: '#000000',
-  fontFamily: 'Ubuntu, Helvetica, Arial, sans-serif',
-}
-
-const footerLink = {
-  color: 'inherit',
-  textDecoration: 'none',
 }
 
 export default NewMatchEmail

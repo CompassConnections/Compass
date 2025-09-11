@@ -37,7 +37,7 @@ const getResend = () => {
   if (resend) return resend
 
   const apiKey = process.env.RESEND_KEY as string
-  console.log(`RESEND_KEY: ${apiKey}`)
+  // console.log(`RESEND_KEY: ${apiKey}`)
   resend = new Resend(apiKey)
   return resend
 }

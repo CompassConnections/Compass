@@ -29,6 +29,7 @@ export const sendNewMatchEmail = async (
     react: (
       <NewMatchEmail
         onUser={lover.user}
+        email={privateUser.email}
         matchedWithUser={matchedWithUser}
         matchedLover={lover}
         unsubscribeUrl={unsubscribeUrl}
@@ -67,6 +68,7 @@ export const sendNewMessageEmail = async (
         toUser={toUser}
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
       />
     ),
   })
@@ -82,6 +84,7 @@ export const sendNewMessageEmail = async (
         toUser={toUser}
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
       />
     ),
   })
@@ -109,6 +112,7 @@ export const sendNewEndorsementEmail = async (
         onUser={onUser}
         endorsementText={text}
         unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
       />
     ),
   })

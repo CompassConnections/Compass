@@ -16,7 +16,7 @@ export const Test = (props: { name: string }) => {
 }
 
 Test.PreviewProps = {
-  name: 'Clarity',
+  name: 'Friend',
 }
 
 export default Test

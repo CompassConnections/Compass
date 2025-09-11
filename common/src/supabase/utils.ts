@@ -30,7 +30,7 @@ export function createClient(
   opts?: SupabaseClientOptionsGeneric<'public'>
 ) {
   const url = `https://${instanceId}.supabase.co`
-  console.log('createClient', instanceId, key, opts)
+  // console.log('createClient', instanceId, key, opts)
   return createClientGeneric(
     url,
     key,

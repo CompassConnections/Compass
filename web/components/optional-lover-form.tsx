@@ -28,6 +28,7 @@ import {City, CityRow, loverToCity, useCitySearch} from "web/components/search-l
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/love/multiple-choice";
+import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
 
 export const OptionalLoveUserForm = (props: {
   lover: LoverRow
@@ -225,7 +226,7 @@ export const OptionalLoveUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Aged between</label>
+          <label className={clsx(labelClassName)}>Who are aged between</label>
           <Row className={'gap-2'}>
             <Col>
               <span>Min</span>
@@ -260,6 +261,17 @@ export const OptionalLoveUserForm = (props: {
               </Select>
             </Col>
           </Row>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Connection type</label>
+          <MultiCheckbox
+            choices={RELATIONSHIP_CHOICES}
+            selected={lover['pref_relation_styles']}
+            onChange={(selected) =>
+              setLover('pref_relation_styles', selected)
+            }
+          />
         </Col>
 
         <Col className={clsx(colClassName, 'pb-4')}>
@@ -522,7 +534,7 @@ export const OptionalLoveUserForm = (props: {
         {lookingRelationship && <>
             <Col className={clsx(colClassName)}>
                 <label className={clsx(labelClassName)}>
-                    You want to have kids
+                    I would like to have kids
                 </label>
                 <RadioToggleGroup
                     className={'w-44'}
@@ -531,22 +543,6 @@ export const OptionalLoveUserForm = (props: {
                       setLover('wants_kids_strength', choice)
                     }}
                     currentChoice={lover.wants_kids_strength ?? -1}
-                />
-            </Col>
-
-            <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>Relationship style</label>
-                <MultiCheckbox
-                    choices={{
-                      Monogamous: 'mono',
-                      Polyamorous: 'poly',
-                      'Open Relationship': 'open',
-                      Other: 'other',
-                    }}
-                    selected={lover['pref_relation_styles']}
-                    onChange={(selected) =>
-                      setLover('pref_relation_styles', selected)
-                    }
                 />
             </Col>
         </>}

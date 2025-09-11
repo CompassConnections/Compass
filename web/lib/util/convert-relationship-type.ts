@@ -1,11 +1,7 @@
-export type RelationshipType = 'mono' | 'poly' | 'open' | 'other'
+import {REVERTED_RELATIONSHIP_CHOICES} from "web/components/filters/choices";
+
+export type RelationshipType = keyof typeof REVERTED_RELATIONSHIP_CHOICES
 
 export function convertRelationshipType(relationshipType: RelationshipType) {
-  if (relationshipType == 'mono') {
-    return 'monogamous'
-  }
-  if (relationshipType == 'poly') {
-    return 'polyamorous'
-  }
-  return relationshipType
+  return REVERTED_RELATIONSHIP_CHOICES[relationshipType]
 }

@@ -1,22 +1,21 @@
 import clsx from 'clsx'
-import {
-  RelationshipType,
-  convertRelationshipType,
-} from 'web/lib/util/convert-relationship-type'
+import {convertRelationshipType, RelationshipType,} from 'web/lib/util/convert-relationship-type'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import { FilterFields } from './search'
-import { MultiCheckbox } from 'web/components/multi-checkbox'
+import {FilterFields} from './search'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+
+import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
 
 export function RelationshipFilterText(props: {
   relationship: RelationshipType[] | undefined
   highlightedClass?: string
 }) {
-  const { relationship, highlightedClass } = props
+  const {relationship, highlightedClass} = props
   const relationshipLength = (relationship ?? []).length
 
   if (!relationship || relationshipLength < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any style</span>
+      <span className={clsx('text-semibold', highlightedClass)}>Any connection</span>
     )
   }
 
@@ -49,20 +48,13 @@ export function RelationshipFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
-  const { filters, updateFilter } = props
+  const {filters, updateFilter} = props
   return (
     <MultiCheckbox
       selected={filters.pref_relation_styles ?? []}
-      choices={
-        {
-          Monogamous: 'mono',
-          Polyamorous: 'poly',
-          'Open Relationship': 'open',
-          Other: 'other',
-        } as any
-      }
+      choices={RELATIONSHIP_CHOICES as any}
       onChange={(c) => {
-        updateFilter({ pref_relation_styles: c })
+        updateFilter({pref_relation_styles: c})
       }}
     />
   )

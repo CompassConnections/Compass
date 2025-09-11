@@ -64,6 +64,10 @@ function RegisterComponent() {
     setError(null);
     try {
       const creds = await firebaseLogin();
+      if (creds){
+        setIsLoading(true)
+        setIsLoadingGoogle(true);
+      }
     } catch (error) {
       console.error("Error signing in:", error);
       const message = 'Failed to sign in with Google';

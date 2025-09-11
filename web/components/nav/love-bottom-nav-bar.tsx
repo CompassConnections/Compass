@@ -206,7 +206,7 @@ export function MobileSidebar(props: {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="bg-canvas-25 relative flex w-full max-w-xs flex-1 flex-col">
+            <div className="bg-canvas-25 relative flex w-full max-w-[200px] flex-1 flex-col">
               <div className="mx-2 h-0 flex-1 overflow-y-auto">
                 <Sidebar
                   navigationOptions={sidebarNavigationOptions}

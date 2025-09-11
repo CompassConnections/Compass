@@ -67,6 +67,20 @@ Yes.
 * You can **control what is visible publicly**.
 * Messaging may move toward **end-to-end encryption** in future versions.
 
+### How is the compatibility score calculated?
+
+The **compatibility score** comes from answers to **compatibility prompts**. Each user provides:
+
+* **Their answer**
+* **Answers they would accept from others**
+* **A degree of importance** for each question
+
+Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance.
+
+The [full implementation](https://github.com/CompassMeet/Compass/blob/main/common/src/love/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
+
+
+
 ### How can I help?
 
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)

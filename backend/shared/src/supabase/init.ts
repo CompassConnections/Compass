@@ -65,7 +65,7 @@ const newClient = (
     ...settings,
   }
 
-  console.log(config)
+  // console.log(config)
 
   return pgp(config)
 }

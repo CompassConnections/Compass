@@ -117,7 +117,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   const {lover: clientLover, refreshLover} = useLoverByUser(user)
   // Show previous profile while loading another one
   const lover = clientLover ?? staticLover
-  console.log('lover:', user?.username, lover, clientLover, staticLover)
+  // console.log('lover:', user?.username, lover, clientLover, staticLover)
 
   return (
     <LovePage

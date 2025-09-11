@@ -22,22 +22,12 @@
   },
   "dependencies": {
     "@playwright/test": "^1.54.2",
-    "@tiptap/core": "2.3.2",
-    "@tiptap/extension-blockquote": "2.3.2",
-    "@tiptap/extension-bold": "2.3.2",
-    "@tiptap/extension-bubble-menu": "2.3.2",
-    "@tiptap/extension-floating-menu": "2.3.2",
-    "@tiptap/extension-image": "2.3.2",
-    "@tiptap/extension-link": "2.3.2",
-    "@tiptap/extension-mention": "2.3.2",
-    "@tiptap/html": "2.3.2",
-    "@tiptap/starter-kit": "2.3.2",
-    "@tiptap/suggestion": "2.3.2",
     "colorette": "^2.0.20",
     "react-markdown": "*",
     "prismjs": "^1.30.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -67,6 +57,7 @@
     "@tiptap/extension-mention": "2.3.2",
     "@tiptap/html": "2.3.2",
     "@tiptap/starter-kit": "2.3.2",
+    "@tiptap/pm": "2.3.2",
     "@tiptap/suggestion": "2.3.2"
   },
   "resolutions": {

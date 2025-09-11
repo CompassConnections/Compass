@@ -69,7 +69,7 @@ export const LikeButton = (props: {
           <div className="p-2 pb-0 pt-0">{liked ? <>Liked!</> : <>Like</>}</div>
         </Col>
       </button>
-      <LikeConfimationDialog
+      <LikeConfirmationDialog
         targetLover={targetLover}
         hasFreeLike={hasFreeLike}
         submit={like}
@@ -86,7 +86,7 @@ export const LikeButton = (props: {
   )
 }
 
-const LikeConfimationDialog = (props: {
+const LikeConfirmationDialog = (props: {
   targetLover: Lover
   hasFreeLike: boolean
   open: boolean

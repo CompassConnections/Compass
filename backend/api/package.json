@@ -66,8 +66,5 @@
   "devDependencies": {
     "@types/cors": "2.8.17",
     "@types/ws": "8.5.10"
-  },
-  "resolutions": {
-    "glob": "10.4.5"
   }
 }

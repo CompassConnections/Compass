@@ -1,7 +1,7 @@
 {
   "name": "@compass/api",
   "description": "Backend API endpoints",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "watch:compile": "npx concurrently \"tsc -b --watch --preserveWatchOutput\" \"(cd ../../common && tsc-alias --watch)\" \"(cd ../shared && tsc-alias --watch)\" \"(cd ../email && tsc-alias --watch)\" \"tsc-alias --watch\"",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@google-cloud/monitoring": "4.0.0",
     "@google-cloud/secret-manager": "4.2.1",
-    "@react-email/components": "0.0.33",
+    "@react-email/components": "0.5.3",
     "@supabase/supabase-js": "2.38.5",
     "@tiptap/core": "2.3.2",
     "@tiptap/extension-blockquote": "2.3.2",
@@ -41,6 +41,8 @@
     "@tiptap/pm": "2.3.2",
     "@tiptap/starter-kit": "2.3.2",
     "@tiptap/suggestion": "2.3.2",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
     "colors": "1.4.0",
     "cors": "2.8.5",
     "dayjs": "1.11.4",
@@ -51,8 +53,8 @@
     "lodash": "4.17.21",
     "pg-promise": "11.4.1",
     "posthog-node": "4.11.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-email": "3.0.7",
     "resend": "4.1.2",
     "string-similarity": "4.0.4",

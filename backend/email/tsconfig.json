@@ -20,6 +20,8 @@
     "isolatedModules": false,
     "declaration": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "types": ["react", "react-dom"],
     "paths": {
       "common/*": ["../../common/src/*", "../../../common/lib/*"],
       "shared/*": ["../shared/src/*", "../../shared/lib/*"],

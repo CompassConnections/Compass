@@ -1,19 +1,17 @@
 'use server'
 
-import { Head, Html, Preview, Tailwind, Text } from '@react-email/components'
-import React from 'react'
+import * as React from 'react'
+import { Html, Head, Preview, Tailwind, Text } from '@react-email/components'
 
-export const Test = (props: { name: string }) => {
-  return (
-    <Html>
-      <Head />
-      <Preview>Helloo {props.name}</Preview>
-      <Tailwind>
-        <Text className="text-xl text-blue-800">Hello {props.name}</Text>
-      </Tailwind>
-    </Html>
-  )
-}
+export const Test = ({ name }: { name: string }) => (
+  <Html>
+    <Head />
+    <Preview>Hello {name}</Preview>
+    <Tailwind>
+      <Text className="text-xl text-blue-800">Hello {name}</Text>
+    </Tailwind>
+  </Html>
+)
 
 Test.PreviewProps = {
   name: 'Friend',

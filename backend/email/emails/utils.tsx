@@ -1,5 +1,5 @@
 import {Link, Row, Section, Text} from "@react-email/components";
-import {TbBrandDiscord, TbBrandGithub, TbBrandPatreon, TbBrandPaypal} from "react-icons/tb";
+import {SocialIcon} from "web/components/user/social";
 
 interface Props {
   email?: string
@@ -17,17 +17,18 @@ export const Footer = ({
         Compass © {new Date().getFullYear()}
       </Text>
       <Row>
+        <div></div>
         <Link href="https://github.com/CompassMeet/Compass">
-          <TbBrandGithub size={36} color={'black'}/>
+          <SocialIcon site={'github'} size={36} color={'black'} />
         </Link>
         <Link href="https://discord.gg/8Vd7jzqjun">
-          <TbBrandDiscord size={36} color={'black'}/>
+          <SocialIcon site={'discord'} size={36} color={'black'}/>
         </Link>
         <Link href="https://patreon.com/CompassMeet">
-          <TbBrandPatreon size={36} color={'black'}/>
+          <SocialIcon site={'patreon'} size={36} color={'black'}/>
         </Link>
         <Link href="https://www.paypal.com/paypalme/MartinBraquet">
-          <TbBrandPaypal size={36} color={'black'}/>
+          <SocialIcon site={'paypal'} size={36} color={'black'}/>
         </Link>
       </Row>
       <Text style={footerText}>

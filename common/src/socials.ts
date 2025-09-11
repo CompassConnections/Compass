@@ -5,11 +5,12 @@ export const SITE_ORDER = [
   'bluesky',
   'mastodon',
   'substack',
-  // 'onlyfans',
+  'paypal',
   'instagram',
   'github',
   'linkedin',
   'facebook',
+  'patreon',
   'spotify',
 ] as const
 
@@ -29,6 +30,8 @@ const stripper: { [key in Site]: (input: string) => string } = {
       .replace(/^@/, '')
       .replace(/\/$/, ''),
   discord: (s) => s,
+  paypal: (s) => s,
+  patreon: (s) => s,
   bluesky: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?bsky\.app\/profile\//, '')
@@ -83,6 +86,8 @@ const urler: { [key in Site]: (handle: string) => string } = {
   linkedin: (s) => `https://linkedin.com/in/${s}`,
   facebook: (s) => `https://facebook.com/${s}`,
   spotify: (s) => `https://open.spotify.com/user/${s}`,
+  paypal: (s) => `https://paypal.com/user/${s}`,
+  patreon: (s) => `https://patreon.com/user/${s}`,
 }
 
 export const PLATFORM_LABELS: { [key in Site]: string } = {
@@ -98,4 +103,6 @@ export const PLATFORM_LABELS: { [key in Site]: string } = {
   linkedin: 'LinkedIn',
   facebook: 'Facebook',
   spotify: 'Spotify',
+  paypal: 'Paypal',
+  patreon: 'Patreon',
 }

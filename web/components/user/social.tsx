@@ -10,7 +10,8 @@ import {
   TbBrandInstagram,
   TbBrandLinkedin,
   TbBrandMastodon,
-  // TbBrandOnlyfans,
+  TbBrandPatreon,
+  TbBrandPaypal,
   TbBrandSpotify,
   TbBrandX,
 } from 'react-icons/tb'
@@ -24,15 +25,21 @@ export const PLATFORM_ICONS: {
   bluesky: TbBrandBluesky,
   mastodon: TbBrandMastodon,
   substack: LuBookmark,
-  // onlyfans: TbBrandOnlyfans,
   instagram: TbBrandInstagram,
   github: TbBrandGithub,
   linkedin: TbBrandLinkedin,
   facebook: TbBrandFacebook,
   spotify: TbBrandSpotify,
+  patreon: TbBrandPatreon,
+  paypal: TbBrandPaypal,
 }
 
-export const SocialIcon = (props: { site: string; className?: string }) => {
+export const SocialIcon = (props: {
+  site: string;
+  className?: string;
+  size?: number;
+  color?: string;
+}) => {
   const { site, ...rest } = props
   const Icon = PLATFORM_ICONS[site as Site] || PLATFORM_ICONS.site
 

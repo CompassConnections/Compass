@@ -29,6 +29,7 @@ import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/love/multiple-choice";
 import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
+import toast from "react-hot-toast";
 
 export const OptionalLoveUserForm = (props: {
   lover: LoverRow
@@ -69,6 +70,10 @@ export const OptionalLoveUserForm = (props: {
     )
     if (error) {
       console.error(error)
+      toast.error(
+        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`
+      )
+      setIsSubmitting(false)
       return
     }
     if (!isEqual(newLinks, user.link)) {

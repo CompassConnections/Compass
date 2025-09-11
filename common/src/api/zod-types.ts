@@ -51,10 +51,9 @@ export const baseLoversSchema = z.object({
   pref_age_max: z.number().min(18).max(1000),
   pref_relation_styles: z.array(
     z.union([
-      z.literal('mono'),
-      z.literal('poly'),
-      z.literal('open'),
-      z.literal('other'),
+      z.literal('collaboration'),
+      z.literal('friendship'),
+      z.literal('relationship'),
     ])
   ),
   wants_kids_strength: z.number(),

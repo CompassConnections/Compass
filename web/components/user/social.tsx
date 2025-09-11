@@ -14,7 +14,6 @@ import {
   TbBrandSpotify,
   TbBrandX,
 } from 'react-icons/tb'
-import Foldy from 'web/public/manifold-logo.svg'
 
 export const PLATFORM_ICONS: {
   [key in Site]: (props: { className?: string }) => ReactNode

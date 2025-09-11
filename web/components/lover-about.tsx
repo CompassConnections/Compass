@@ -131,13 +131,13 @@ function RelationshipType(props: { lover: Lover }) {
   const relationshipTypes = lover.pref_relation_styles
   const seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes.map((rel) =>
-      convertRelationshipType(rel as RelationshipType)
-    ),
+      convertRelationshipType(rel as RelationshipType).toLowerCase()
+    ).sort(),
     preText: 'Seeking',
-    postText:
-      relationshipTypes.length == 1 && relationshipTypes[0] == 'mono'
-        ? 'relationship'
-        : 'relationships',
+    // postText:
+    //   relationshipTypes.length == 1 && relationshipTypes[0] == 'mono'
+    //     ? 'relationship'
+    //     : 'relationships',
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })

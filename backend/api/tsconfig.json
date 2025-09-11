@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "target": "esnext",
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "paths": {
       "common/*": ["../../common/src/*", "../../../common/lib/*"],
@@ -28,5 +29,6 @@
     { "path": "../email" }
   ],
   "compileOnSave": true,
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["../../node_modules/@types/glob"]
 }

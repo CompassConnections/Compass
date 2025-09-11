@@ -1,5 +1,21 @@
 import {Link, Row, Section, Text} from "@react-email/components";
-import {SocialIcon} from "web/components/user/social";
+import {
+  TbBrandBluesky,
+  TbBrandDiscord,
+  TbBrandFacebook,
+  TbBrandGithub,
+  TbBrandInstagram,
+  TbBrandLinkedin,
+  TbBrandMastodon,
+  TbBrandPatreon,
+  TbBrandPaypal,
+  TbBrandSpotify,
+  TbBrandX
+} from "react-icons/tb";
+
+import {LinkIcon} from '@heroicons/react/solid'
+import {Site} from 'common/src/socials'
+import {LuBookmark} from 'react-icons/lu'
 
 interface Props {
   email?: string
@@ -19,7 +35,7 @@ export const Footer = ({
       <Row>
         <div></div>
         <Link href="https://github.com/CompassMeet/Compass">
-          <SocialIcon site={'github'} size={36} color={'black'} />
+          <SocialIcon site={'github'} size={36} color={'black'}/>
         </Link>
         <Link href="https://discord.gg/8Vd7jzqjun">
           <SocialIcon site={'discord'} size={36} color={'black'}/>
@@ -40,6 +56,37 @@ export const Footer = ({
       </Text>
     </Row>
   </Section>
+}
+
+
+export const PLATFORM_ICONS: {
+  [key in Site]: (props: { className?: string }) => any
+} = {
+  site: LinkIcon,
+  x: TbBrandX,
+  discord: TbBrandDiscord,
+  bluesky: TbBrandBluesky,
+  mastodon: TbBrandMastodon,
+  substack: LuBookmark,
+  instagram: TbBrandInstagram,
+  github: TbBrandGithub,
+  linkedin: TbBrandLinkedin,
+  facebook: TbBrandFacebook,
+  spotify: TbBrandSpotify,
+  patreon: TbBrandPatreon,
+  paypal: TbBrandPaypal,
+}
+
+export const SocialIcon = (props: {
+  site: string;
+  className?: string;
+  size?: number;
+  color?: string;
+}): React.ReactElement | null => {
+  const {site, ...rest} = props
+  const Icon = PLATFORM_ICONS[site as Site] || PLATFORM_ICONS.site
+
+  return <Icon {...rest} />
 }
 
 export const footer = {

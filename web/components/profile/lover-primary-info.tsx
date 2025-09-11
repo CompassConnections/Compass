@@ -18,7 +18,7 @@ export default function LoverPrimaryInfo(props: { lover: Lover }) {
   return (
     <Row className="text-ink-700 gap-4 text-sm">
       <IconWithInfo
-        text={`${lover.city}, ${stateOrCountry}`}
+        text={`${lover.city ?? ''}, ${stateOrCountry ?? ''}`}
         icon={<IoLocationOutline className="h-4 w-4" />}
       />
       <IconWithInfo

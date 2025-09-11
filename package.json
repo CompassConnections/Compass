@@ -34,11 +34,8 @@
     "@tiptap/starter-kit": "2.3.2",
     "@tiptap/suggestion": "2.3.2",
     "colorette": "^2.0.20",
-    "prismjs": "^1.30.0",
     "react-markdown": "*",
-    "react-email": "3.0.7",
-    "@react-email/components": "^0.5.3",
-    "@react-email/render": "^1.2.3"
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",

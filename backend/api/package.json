@@ -27,7 +27,7 @@
   "dependencies": {
     "@google-cloud/monitoring": "4.0.0",
     "@google-cloud/secret-manager": "4.2.1",
-    "@react-email/components": "0.5.3",
+    "@react-email/components": "0.0.33",
     "@supabase/supabase-js": "2.38.5",
     "@tiptap/core": "2.3.2",
     "@tiptap/extension-blockquote": "2.3.2",

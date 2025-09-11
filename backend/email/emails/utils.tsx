@@ -1,5 +1,4 @@
 import {Link, Row, Section, Text} from "@react-email/components";
-import {SocialIcon} from "web/components/user/social";
 
 interface Props {
   email?: string
@@ -16,21 +15,20 @@ export const Footer = ({
       <Text style={footerText}>
         Compass © {new Date().getFullYear()}
       </Text>
-      <Row>
-        <div></div>
-        <Link href="https://github.com/CompassMeet/Compass">
-          <SocialIcon site={'github'} size={36} color={'black'} />
-        </Link>
-        <Link href="https://discord.gg/8Vd7jzqjun">
-          <SocialIcon site={'discord'} size={36} color={'black'}/>
-        </Link>
-        <Link href="https://patreon.com/CompassMeet">
-          <SocialIcon site={'patreon'} size={36} color={'black'}/>
-        </Link>
-        <Link href="https://www.paypal.com/paypalme/MartinBraquet">
-          <SocialIcon site={'paypal'} size={36} color={'black'}/>
-        </Link>
-      </Row>
+      {/*<Row>*/}
+      {/*  <Link href="https://github.com/CompassMeet/Compass">*/}
+      {/*    <TbBrandGithub size={36} color={'black'}/>*/}
+      {/*  </Link>*/}
+      {/*  <Link href="https://discord.gg/8Vd7jzqjun">*/}
+      {/*    <TbBrandDiscord size={36} color={'black'}/>*/}
+      {/*  </Link>*/}
+      {/*  <Link href="https://patreon.com/CompassMeet">*/}
+      {/*    <TbBrandPatreon size={36} color={'black'}/>*/}
+      {/*  </Link>*/}
+      {/*  <Link href="https://www.paypal.com/paypalme/MartinBraquet">*/}
+      {/*    <TbBrandPaypal size={36} color={'black'}/>*/}
+      {/*  </Link>*/}
+      {/*</Row>*/}
       <Text style={footerText}>
         The email was sent to {email}. To no longer receive these emails, unsubscribe {' '}
         <Link href={unsubscribeUrl}>

@@ -46,10 +46,12 @@ jobs:
 #       npx playwright install
 
       - name: Run E2E tests
+        env:
+          NEXT_PUBLIC_API_URL: localhost:8088
+          NEXT_PUBLIC_FIREBASE_ENV: PROD
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-          NEXT_PUBLIC_API_URL=localhost:8088 \
-          NEXT_PUBLIC_FIREBASE_ENV=PROD \
-          NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }} \
           yarn --cwd=web serve &
           npx wait-on http://localhost:3000
           npx playwright test tests/playwright

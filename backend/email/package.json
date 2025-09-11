@@ -1,6 +1,6 @@
 {
   "name": "react-email-starter",
-  "version": "0.1.9",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "email dev --port 3001",

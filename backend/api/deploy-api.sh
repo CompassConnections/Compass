@@ -30,7 +30,6 @@ IMAGE_TAG="${TIMESTAMP}-${GIT_REVISION}"
 IMAGE_URL="${REGION}-docker.pkg.dev/${PROJECT}/builds/${SERVICE_NAME}:${IMAGE_TAG}"
 
 echo "🚀 Deploying ${SERVICE_NAME} to ${ENV} ($(date "+%Y-%m-%d %I:%M:%S %p"))"
-yarn add tsconfig-paths
 yarn build
 
 gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-west1-docker.pkg.dev

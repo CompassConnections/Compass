@@ -68,7 +68,7 @@ export const getNotificationDestinationsForUser = (
       destinations.includes('browser') && !opt_out.includes('browser'),
     sendToMobile:
       destinations.includes('mobile') && !opt_out.includes('mobile'),
-    unsubscribeUrl: 'TODO',
+    unsubscribeUrl: 'https://compassmeet.com/notifications',
     urlToManageThisNotification: '/notifications',
   }
 }

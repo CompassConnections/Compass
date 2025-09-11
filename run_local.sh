@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e
+
+cd "$(dirname "$0")"
+
 ENV=${1:-prod}
 PROJECT=$2
 case $ENV in

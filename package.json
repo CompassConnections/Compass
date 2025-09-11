@@ -46,7 +46,7 @@
     "tsconfig-paths": "4.1.2",
     "typescript": "5.5.4"
   },
-  "overrides": {
+  "resolutions": {
     "@tiptap/core": "2.3.2",
     "@tiptap/extension-blockquote": "2.3.2",
     "@tiptap/extension-bold": "2.3.2",
@@ -58,9 +58,7 @@
     "@tiptap/html": "2.3.2",
     "@tiptap/starter-kit": "2.3.2",
     "@tiptap/pm": "2.3.2",
-    "@tiptap/suggestion": "2.3.2"
-  },
-  "resolutions": {
+    "@tiptap/suggestion": "2.3.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "@types/react": "18.3.5",

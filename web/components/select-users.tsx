@@ -71,7 +71,7 @@ export function SelectUsers(props: {
               id="user name"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. Ian Philips"
+              placeholder="Search users..."
             />
           </Col>
           {queryReady && (

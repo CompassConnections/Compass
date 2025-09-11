@@ -3,7 +3,6 @@
 import {useSearchParams} from "next/navigation";
 import {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
-import {FcGoogle} from "react-icons/fc";
 import {auth, firebaseLogin} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
 
@@ -13,6 +12,7 @@ import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {LovePage} from "web/components/love-page";
 import {useUser} from "web/hooks/use-user";
+import {GoogleButton} from "web/components/buttons/sign-up-button";
 
 export default function LoginPage() {
   return (
@@ -171,25 +171,19 @@ function RegisterComponent() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-canvas-50 text-gray-500">Or continue with</span>
+                  <span className="px-2 body-bg text-gray-500">Or continue with</span>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium  hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                <FcGoogle className="w-5 h-5"/>
-                Google
-              </button>
+              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading}/>
             </div>
           </form>
           <div className="text-center customlink">
-            <Link href="/register">
-              No account? Register.
-            </Link>
+            <p className="">
+              No account?{' '}
+              <Link href="/register">
+                Register
+              </Link>
+            </p>
           </div>
         </div>
       </div>

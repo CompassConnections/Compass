@@ -295,3 +295,7 @@ ul {
 .sidebar-nav {
     font-family: "Inter", sans-serif; /* clean and legible */
 }
+
+.body-bg {
+    background-color: rgb(var(--color-canvas-0));
+}

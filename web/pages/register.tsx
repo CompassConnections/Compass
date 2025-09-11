@@ -14,6 +14,7 @@ import {getLoverRow} from "common/love/lover";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {useUser} from "web/hooks/use-user";
+import {GoogleButton} from "web/components/buttons/sign-up-button";
 
 
 export default function RegisterPage() {
@@ -109,8 +110,8 @@ function RegisterComponent() {
 
   return (
     <LovePage trackPageView={'register'}>
-      <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
           {registrationSuccess ? (
             <div className="text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
@@ -164,7 +165,7 @@ function RegisterComponent() {
                 <div className="flex justify-center mb-6">
                   <FavIcon className="dark:invert"/>
                 </div>
-                <h2 className="text-center text-3xl font-extrabold ">
+                <h2 className="mt-6 text-center text-3xl font-extrabold ">
                   Get Started
                 </h2>
               </div>
@@ -215,7 +216,7 @@ function RegisterComponent() {
                   <div className="text-red-500 text-sm text-center">{error}</div>
                 )}
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -229,22 +230,14 @@ function RegisterComponent() {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-canvas-50 text-gray-500">Or sign up with</span>
+                      <span className="px-2 body-bg text-gray-500">Or sign up with</span>
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={signupThenMaybeRedirectToSignup}
-                    disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    <FcGoogle className="w-5 h-5"/>
-                    Google
-                  </button>
+                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading} />
                 </div>
               </form>
-              <div className="text-center text-sm mt-2 customlink">
+              <div className="my-8" />
+              <div className="text-center customlink">
                 <p className="">
                   Already have an account?{' '}
                   <Link href="/signin">

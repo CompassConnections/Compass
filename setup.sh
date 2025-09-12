@@ -1,3 +1,6 @@
+# Description: Automated setup script for OpenTofu, Docker, and Yarn on Linux and macOS
+# If it fails, please help us improve it by creating an issue or a PR. Otherwise, you can install them manually.
+
 #!/usr/bin/env bash
 set -e
 

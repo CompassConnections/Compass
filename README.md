@@ -18,7 +18,8 @@ This repository provides the source code for [Compass](https://compassmeet.com),
 - Open source
 - Democratically governed
 
-A detailed description of the vision is available [here](https://martinbraquet.com/meeting-rational).
+You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and the [FAQ](https://www.compassmeet.com/faq) as well.
+A detailed description of the early vision is also available in this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass shifted to a more general audience).
 
 ## To Do
 

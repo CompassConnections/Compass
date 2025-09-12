@@ -1,9 +1,10 @@
 # FAQ – Compass
 
+Compass is a **gift from the community** — built by people like you who care about deep, meaningful connections. Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
+
 ### What is Compass?
 
-Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether platonic, romantic, or collaborative.
-Unlike typical apps, Compass prioritizes **values, interests, and personality over swipes and ads**, giving you full control over who you discover and how you connect.
+Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes **values, interests, and personality over swipes and ads**, giving you full control over who you discover and how you connect.
 
 ### Who is Compass for?
 
@@ -27,7 +28,7 @@ Compass was founded by [Martin Braquet](https://www.martinbraquet.com), an engin
 
 Martin has lived across Europe, the U.S., India, and Indonesia, immersing himself in diverse practices ranging from meditation retreats to sustainability-focused forest co-ops. These experiences shaped his conviction that deep one-to-one human connections are among the most meaningful drivers of well-being and positive change.
 
-Compass grew out of that conviction. While Martin has long been driven to reduce global risks and suffering, he also recognized that his own life — and the lives of many others — would be greatly enriched by more profound, close, and supportive relationships. Compass is his attempt to build an open, transparent, and community-driven platform where people can connect around shared values, curiosity, and care, without the distractions of swipes, ads, or superficiality.
+Compass grew out of that conviction. While Martin has long been driven to reduce global risks and suffering, he also recognized that his own life — and the lives of many others — would be greatly enriched by more profound, close, and supportive relationships. Although he initiated the project, the platform is a gift from the community — shaped by contributors, donors, and supporters who help it thrive. Compass is many people's attempt to build an open, transparent, and community-driven platform where people can connect around shared values, curiosity, and care, without the distractions of swipes, ads, or superficiality.
 
 Martin continues to serve as an initiator and steward of Compass, but its direction is intentionally placed in the hands of the community through the Compass Constitution (as detailed in the next section).
 
@@ -51,13 +52,14 @@ Supported entirely by **donations**, not by selling your data or attention.
 
 ### How do you sustain Compass without ads or subscriptions?
 
-Through **donations from the community**. Options include:
+Through **donations and contributions from the community**. Options include:
 
 * Patreon
 * PayPal
 * GitHub Sponsors
+* Sharing ideas, feedback, or code
 
-All funding and expenses are **publicly documented** [here](/financials).
+Every contribution, no matter the size — from a small code tweak to helping refine the interface, or simply spreading the word — is part of the gift that keeps Compass free, ad-free, and community-owned. All funding and expenses are **publicly documented** [here](/financials).
 
 ### Is my data safe?
 

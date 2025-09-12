@@ -61,3 +61,20 @@ martin
 
 *lock.hcl
 /web/pages/test.tsx
+
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.mp3
+*.wav
+*.flac
+*.aac
+*.zip
+*.tar.gz
+*.rar

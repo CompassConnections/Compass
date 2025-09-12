@@ -61,7 +61,7 @@ export const LikeButton = (props: {
         <Col className="items-center">
           <HeartIcon
             className={clsx(
-              'h-14 w-14',
+              'h-8 w-8',
               liked &&
                 'fill-primary-400 stroke-primary-500 dark:stroke-primary-600'
             )}

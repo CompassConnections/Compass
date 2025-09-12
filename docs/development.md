@@ -1,5 +1,8 @@
 # Documentation for development
 
+> [!WARNING]  
+> TODO: This document is a work in progress. Please help us improve it by contributing!
+
 ### Adding a new profile variable
 
 To add a profile variable (personality type, etc.), make modifications here:

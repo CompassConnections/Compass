@@ -1,15 +1,15 @@
-import { Lover, LoverRow } from 'common/love/lover'
-import { useState } from 'react'
-import { IoFilterSharp } from 'react-icons/io5'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { RightModal } from 'web/components/layout/right-modal'
-import { Row } from 'web/components/layout/row'
-import { Input } from 'web/components/widgets/input'
-import { Select } from 'web/components/widgets/select'
-import { DesktopFilters } from './desktop-filters'
-import { LocationFilterProps } from './location-filter'
-import { MobileFilters } from './mobile-filters'
+import {Lover, LoverRow} from 'common/love/lover'
+import {useEffect, useState} from 'react'
+import {IoFilterSharp} from 'react-icons/io5'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {RightModal} from 'web/components/layout/right-modal'
+import {Row} from 'web/components/layout/row'
+import {Input} from 'web/components/widgets/input'
+import {Select} from 'web/components/widgets/select'
+import {DesktopFilters} from './desktop-filters'
+import {LocationFilterProps} from './location-filter'
+import {MobileFilters} from './mobile-filters'
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
@@ -32,6 +32,20 @@ function isOrderBy(input: string): input is FilterFields['orderBy'] {
     input
   )
 }
+
+const TYPING_SPEED = 100; // ms per character
+const HOLD_TIME = 5000; // ms to hold full word before deleting or switching
+const WORDS = ['running', 'history', 'vegan', 'fiction', 'science', 'mindfulness', 'minimalism', 'nature', 'Murakami', 'psychology', 'yoga', 'introvert', 'AI'];
+
+function getRandomPair(): string {
+  let [first, second] = ['', ''];
+  while (!first || !second || first === second) {
+    first = WORDS[Math.floor(Math.random() * WORDS.length)];
+    second = WORDS[Math.floor(Math.random() * WORDS.length)];
+  }
+  return `${first}, ${second}`;
+}
+
 
 export const Search = (props: {
   youLover: Lover | undefined | null
@@ -56,15 +70,45 @@ export const Search = (props: {
 
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
 
+  const [placeholder, setPlaceholder] = useState('');
+  const [textToType, setTextToType] = useState(getRandomPair());
+  const [_, setCharIndex] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
+
+  useEffect(() => {
+    if (isHolding) return;
+
+    const interval = setInterval(() => {
+      setCharIndex((prev) => {
+        if (prev < textToType.length) {
+          setPlaceholder(textToType.slice(0, prev + 1));
+          return prev + 1;
+        } else {
+          setIsHolding(true);
+          clearInterval(interval);
+          setTimeout(() => {
+            setPlaceholder('');
+            setCharIndex(0);
+            setTextToType(getRandomPair()); // pick new pair
+            setIsHolding(false);
+          }, HOLD_TIME);
+          return prev;
+        }
+      });
+    }, TYPING_SPEED);
+
+    return () => clearInterval(interval);
+  }, [textToType, isHolding]);
+
   return (
     <Col className={'text-ink-600 w-full gap-2 py-2 text-sm'}>
       <Row className={'mb-2 justify-between gap-2'}>
         <Input
           value={filters.name ?? ''}
-          placeholder={'Search anything...'}
+          placeholder={placeholder}
           className={'w-full max-w-xs'}
           onChange={(e) => {
-            updateFilter({ name: e.target.value })
+            updateFilter({name: e.target.value})
           }}
         />
 
@@ -92,7 +136,7 @@ export const Search = (props: {
             className="border-ink-300 border sm:hidden "
             onClick={() => setOpenFiltersModal(true)}
           >
-            <IoFilterSharp className="h-5 w-5" />
+            <IoFilterSharp className="h-5 w-5"/>
           </Button>
         </Row>
       </Row>

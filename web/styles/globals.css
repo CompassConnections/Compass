@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/*make var font-main*/
+:root {
+    --font-main: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
+}
+
 .logo {
-    font-family: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
+    font-family: var(--font-main), serif;
 }
 
 @layer base {
@@ -278,22 +283,25 @@ ul {
     padding-left: 1.25rem;
     margin-top: 0.5rem;
 }
-
-.customlink a {
+.customlink a,
+.customlink button{
     color: rgb(var(--color-primary-500));
     text-decoration: none;
+    font-family: var(--font-main), serif;
 }
 
-.dark .customlink a {
+.dark .customlink a,
+.dark .customlink button {
     color: rgb(var(--color-primary-700));
 }
 
-.customlink a:hover {
+.customlink a:hover,
+.customlink button:hover {
     text-decoration: underline;
 }
 
 .sidebar-nav {
-    font-family: "Inter", sans-serif; /* clean and legible */
+    font-family: var(--font-main), serif;
 }
 
 .body-bg {

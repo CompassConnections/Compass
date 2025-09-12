@@ -27,12 +27,13 @@ export function AddCompatibilityQuestionButton(props: {
   if (!user) return null
   return (
     <>
-      <span
+      <button
+        type="button"
         onClick={() => setOpen(true)}
-        className="text-primary-500 cursor-pointer text-sm transition-all hover:underline"
+        className="text-sm"
       >
-        Submit your own compatibility question
-      </span>
+        or submit your own!
+      </button>
       <AddCompatibilityQuestionModal
         open={open}
         setOpen={setOpen}

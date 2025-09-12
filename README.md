@@ -35,7 +35,7 @@ Here are some examples of things that would be very useful. If you want to help 
 - [x] Set up page listing all the profiles
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
-- [x] Set up domain name (https://compassmeet.com)
+- [x] Set up domain name (compassmeet.com)
 - [ ] Add mobile app (React Native on Android and iOS)
 - [ ] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)

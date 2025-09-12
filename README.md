@@ -47,6 +47,8 @@ Here are some examples of things that would be very useful. If you want to help 
 
 Everything is open to anyone for collaboration, but the following ones are particularly easy to do for first-time contributors.
 
+- [x] Clean up learn more page
+- [x] Add dark theme
 - [ ] Add profile features (intellectual interests, cause areas, personality type, conflict style, etc.)
 - [ ] Add filters to search through remaining profile features (politics, religion, education level, etc.)
 - [ ] Cover with tests (very important, just the test template and framework are ready)
@@ -63,8 +65,6 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
 - [ ] Improve loading sign (e.g., animation of a compass moving around)
 - [ ] Show compatibility score in profile page
-- [x] Clean up learn more page
-- [x] Add dark theme
 
 ## Implementation
 

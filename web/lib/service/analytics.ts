@@ -15,8 +15,6 @@ type EventIds = {
 type EventData = Record<string, Json | undefined>
 
 export async function track(name: string, properties?: EventIds & EventData) {
-  // Skip for now
-  return
   const { commentId, ...data } = properties || {}
   try {
     posthog?.capture(name, data)

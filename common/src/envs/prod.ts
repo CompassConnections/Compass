@@ -30,7 +30,7 @@ type FirebaseConfig = {
 }
 
 export const PROD_CONFIG: EnvConfig = {
-  posthogKey: 'phc_xT16KyBj7GsWnAwifoH4HiWKTFhuohRrfy3t5DK6ZIv',
+  posthogKey: 'phc_tFvQzHiMVdaAIgE38xqYomMN8q8SB5K45fqmkKNjfBU',
   domain: 'compassmeet.com',
   firebaseConfig: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',

@@ -150,9 +150,9 @@ Note that your local database will be made of synthetic data, not real users. Th
 
 Make sure the tests pass:
 ```bash
-yarn test
+yarn test tests/jest/
 ```
-TODO: fix tests
+TODO: make `yarn test` run all the tests, not just the ones in `tests/jest/`.
 
 ### Running the Development Server
 

@@ -24,5 +24,5 @@ export function getLoveOgImageUrl(user: User, lover?: LoverRow | null) {
     gender: lover?.gender ?? '???',
   } as LoveOgProps
 
-  return buildOgUrl(loveProps, 'lover', 'compassmeet.com')
+  return buildOgUrl(loveProps, 'lover')
 }

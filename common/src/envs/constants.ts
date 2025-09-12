@@ -107,3 +107,5 @@ export const RESERVED_PATHS = [
   'web',
   'welcome',
 ]
+
+export const LOCAL_WEB_URL = 'http://localhost:3000';

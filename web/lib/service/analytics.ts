@@ -32,6 +32,11 @@ export function initTracking() {
     loaded: (posthog) => {
       posthog.debug(false)
     },
+    persistence: 'cookie',
+    cross_subdomain_cookie: true,        // top-level domain cookie
+    secure_cookie: window.location.protocol === 'https:',
+    cookie_expiration: 365,
+    capture_pageview: true,
   })
 }
 

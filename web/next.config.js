@@ -47,6 +47,7 @@ module.exports = {
       { hostname: 'storage.googleapis.com' },
       { hostname: 'picsum.photos' },
       { hostname: '*.giphy.com' },
+      { hostname: 'ui-avatars.com' },
     ],
   },
   webpack: (config) => {

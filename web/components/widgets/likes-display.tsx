@@ -26,14 +26,14 @@ export const LikesDisplay = (props: {
   const { likesGiven, likesReceived, ships, refreshShips, profileLover } = props
 
   const likesGivenByUserId = keyBy(likesGiven, (l) => l.user_id)
-  const likesRecievedByUserId = keyBy(likesReceived, (l) => l.user_id)
+  const likesReceivedByUserId = keyBy(likesReceived, (l) => l.user_id)
   const mutualLikeUserIds = Object.keys(likesGivenByUserId).filter(
-    (userId) => likesRecievedByUserId[userId]
+    (userId) => likesReceivedByUserId[userId]
   )
 
   const mutualLikes = mutualLikeUserIds.map((user_id) => {
     const likeGiven = likesGivenByUserId[user_id]
-    const likeReceived = likesRecievedByUserId[user_id]
+    const likeReceived = likesReceivedByUserId[user_id]
     const created_time = Math.max(
       likeGiven.created_time,
       likeReceived.created_time
@@ -42,7 +42,7 @@ export const LikesDisplay = (props: {
   })
   const sortedMutualLikes = orderBy(mutualLikes, 'created_time', 'desc')
   const onlyLikesGiven = likesGiven.filter(
-    (l) => !likesRecievedByUserId[l.user_id]
+    (l) => !likesReceivedByUserId[l.user_id]
   )
   const onlyLikesReceived = likesReceived.filter(
     (l) => !likesGivenByUserId[l.user_id]
@@ -125,7 +125,9 @@ const UserAvatar = (props: { userId: string; className?: string }) => {
   const lover = useLoverByUserId(userId)
   const user = useUserById(userId)
 
-  if (!lover || !lover.pinned_url)
+  // console.log('UserAvatar', user?.username, lover?.pinned_url)
+
+  if (!lover)
     return <EmptyAvatar className={className} size={10} />
   return (
     <Avatar

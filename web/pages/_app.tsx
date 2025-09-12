@@ -24,11 +24,11 @@ const logoFont = Major_Mono_Display({
   subsets: ['latin'],
 })
 
-const mainFont = Figtree({
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-main',
-  subsets: ['latin'],
-})
+// const mainFont = Figtree({
+//   weight: ['300', '400', '500', '600', '700'],
+//   variable: '--font-main',
+//   subsets: ['latin'],
+// })
 
 function printBuildInfo() {
   // These are undefined if e.g. dev server
@@ -110,7 +110,7 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
           className={clsx(
             'contents font-normal',
             logoFont.variable,
-            mainFont.variable
+            // mainFont.variable
           )}
         >
           <AuthProvider serverUser={pageProps.auth}>

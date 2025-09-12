@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/*make var font-main*/
 :root {
     --font-main: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
 }
@@ -13,7 +12,7 @@
 
 @layer base {
     body {
-        font-family: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
+        font-family: var(--font-main), serif;
     }
 
     button, input, label {

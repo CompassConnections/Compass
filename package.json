@@ -13,8 +13,8 @@
   "scripts": {
     "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
     "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix",
-    "dev": "./dev.sh dev",
-    "prod": "./dev.sh prod",
+    "dev": "./run_local.sh dev",
+    "prod": "./run_local.sh prod",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

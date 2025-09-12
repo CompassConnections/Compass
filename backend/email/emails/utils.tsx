@@ -1,4 +1,4 @@
-import {Link, Row, Section, Text} from "@react-email/components";
+import {Column, Img, Link, Row, Section, Text} from "@react-email/components";
 
 interface Props {
   email?: string
@@ -10,26 +10,94 @@ export const Footer = ({
                          unsubscribeUrl,
                        }: Props) => {
   return <Section style={footer}>
-    <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '20px 0'}}/>
+    <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}}/>
+    <Row style={{marginTop: "20px"}}>
+      <Column style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
+        <Link
+          href="https://github.com/CompassMeet/Compass"
+          target="_blank"
+          style={{ margin: "0 4px" }}
+        >
+          <Img
+            src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
+            width="24"
+            height="24"
+            alt="GitHub"
+          />
+        </Link>
+        <Link
+          href="https://discord.gg/8Vd7jzqjun"
+          target="_blank"
+          style={{margin: "0 4px"}}
+        >
+          <Img
+            src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
+            width="24"
+            height="24"
+            alt="Discord"
+          />
+        </Link>
+        <Link
+          href="https://patreon.com/CompassMeet"
+          target="_blank"
+          style={{margin: "0 4px"}}
+        >
+          <Img
+            src="https://static.vecteezy.com/system/resources/previews/027/127/454/non_2x/patreon-logo-patreon-icon-transparent-free-png.png"
+            width="48"
+            height="48"
+            alt="Patreon"
+          />
+        </Link>
+        <Link
+          href="https://www.paypal.com/paypalme/MartinBraquet"
+          target="_blank"
+          style={{margin: "0 4px"}}
+        >
+          <Img
+            src="https://cdn-icons-png.flaticon.com/512/174/174861.png"
+            width="24"
+            height="24"
+            alt="PayPal"
+          />
+        </Link>
+        {/*<Column>*/}
+        {/*  <Link*/}
+        {/*    href="https://linkedin.com/in/yourhandle"*/}
+        {/*    target="_blank"*/}
+        {/*    style={{ margin: "0 8px" }}*/}
+        {/*  >*/}
+        {/*    <Img*/}
+        {/*      src="https://cdn-icons-png.flaticon.com/512/174/174857.png"*/}
+        {/*      width="24"*/}
+        {/*      height="24"*/}
+        {/*      alt="LinkedIn"*/}
+        {/*    />*/}
+        {/*  </Link>*/}
+        {/*</Column>*/}
+        {/*<Column>*/}
+        {/*  <Link*/}
+        {/*    href="https://twitter.com/yourhandle"*/}
+        {/*    target="_blank"*/}
+        {/*    style={{ margin: "0 8px" }}*/}
+        {/*  >*/}
+        {/*    <Img*/}
+        {/*      src="https://cdn-icons-png.flaticon.com/512/733/733579.png"*/}
+        {/*      width="24"*/}
+        {/*      height="24"*/}
+        {/*      alt="Twitter"*/}
+        {/*    />*/}
+        {/*  </Link>*/}
+        {/*</Column>*/}
+      </Column>
+    </Row>
+
     <Row>
-      <Text style={footerText}>
-        Compass © {new Date().getFullYear()}
+      <Text style={{fontSize: "12px", color: "#888", marginTop: "12px"}}>
+        © {new Date().getFullYear()} Compass
       </Text>
-      {/*<Row>*/}
-      {/*  <Link href="https://github.com/CompassMeet/Compass">*/}
-      {/*    <TbBrandGithub size={36} color={'black'}/>*/}
-      {/*  </Link>*/}
-      {/*  <Link href="https://discord.gg/8Vd7jzqjun">*/}
-      {/*    <TbBrandDiscord size={36} color={'black'}/>*/}
-      {/*  </Link>*/}
-      {/*  <Link href="https://patreon.com/CompassMeet">*/}
-      {/*    <TbBrandPatreon size={36} color={'black'}/>*/}
-      {/*  </Link>*/}
-      {/*  <Link href="https://www.paypal.com/paypalme/MartinBraquet">*/}
-      {/*    <TbBrandPaypal size={36} color={'black'}/>*/}
-      {/*  </Link>*/}
-      {/*</Row>*/}
-      <Text style={footerText}>
+
+      <Text style={{fontSize: "10px", color: "#888", marginTop: "12px"}}>
         The email was sent to {email}. To no longer receive these emails, unsubscribe {' '}
         <Link href={unsubscribeUrl}>
           here

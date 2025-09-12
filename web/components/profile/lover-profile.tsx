@@ -64,7 +64,8 @@ export function LoverProfile(props: {
   const areCompatible =
     !!currentLover && areGenderCompatible(currentLover, lover)
 
-  const showMessageButton = liked || likedBack || !areCompatible
+  // Allow everyone to message everyone for now
+  const showMessageButton = true // liked || likedBack || !areCompatible
 
   const isProfileVisible = currentUser || lover.visibility === 'public'
 

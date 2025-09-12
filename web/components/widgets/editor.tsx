@@ -215,8 +215,6 @@ function RichContent(props: {
 }) {
   const { className, content, size = 'md' } = props
 
-  if (!content) return null
-
   const jsxContent = useMemo(() => {
     try {
       return generateReact(content, [
@@ -235,6 +233,8 @@ function RichContent(props: {
       return ''
     }
   }, [content, size])
+
+  if (!content) return null
 
   return (
     <div

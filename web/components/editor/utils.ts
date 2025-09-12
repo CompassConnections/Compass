@@ -65,6 +65,10 @@ export function getField(extension: AnyExtension, field: string) {
  * We can't use prosemirror node views (this is what tiptap `generateHTML` does) because it uses document which is on the client.
  */
 export const generateReact = (doc: JSONContent, extensions: Extensions) => {
+  if (!doc) {
+    return null
+  }
+
   const extensionsIncludingStarterKit = extensions.flatMap(
     (e) => getField(e, 'addExtensions')?.() ?? e
   )

@@ -1,5 +1,5 @@
-import { DEV_CONFIG } from './dev'
-import { EnvConfig, PROD_CONFIG } from './prod'
+import {DEV_CONFIG} from './dev'
+import {EnvConfig, PROD_CONFIG} from './prod'
 
 // Valid in web client & Vercel deployments only.
 export const ENV = (process.env.NEXT_PUBLIC_FIREBASE_ENV ?? 'PROD') as
@@ -109,3 +109,4 @@ export const RESERVED_PATHS = [
 ]
 
 export const LOCAL_WEB_URL = 'http://localhost:3000';
+export const LOCAL_DEV = process.env.GOOGLE_CLOUD_PROJECT == null

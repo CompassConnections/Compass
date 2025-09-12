@@ -1,5 +1,4 @@
-import {DOMAIN, LOCAL_WEB_URL} from 'common/envs/constants'
-import {LOCAL_DEV} from "shared/lib/utils";
+import {DOMAIN, LOCAL_DEV, LOCAL_WEB_URL} from 'common/envs/constants'
 
 // opengraph functions that run in static props or client-side, but not in the edge (in image creation)
 

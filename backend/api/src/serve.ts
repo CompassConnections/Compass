@@ -1,9 +1,10 @@
 import * as admin from 'firebase-admin'
-import { getLocalEnv, initAdmin } from 'shared/init-admin'
-import { loadSecretsToEnv, getServiceAccountCredentials } from 'common/secrets'
-import { LOCAL_DEV, log } from 'shared/utils'
-import { METRIC_WRITER } from 'shared/monitoring/metric-writer'
-import { listen as webSocketListen } from 'shared/websockets/server'
+import {getLocalEnv, initAdmin} from 'shared/init-admin'
+import {loadSecretsToEnv, getServiceAccountCredentials} from 'common/secrets'
+import {log} from 'shared/utils'
+import {LOCAL_DEV} from "common/envs/constants";
+import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
+import {listen as webSocketListen} from 'shared/websockets/server'
 
 log('Api server starting up....')
 
@@ -19,12 +20,12 @@ if (LOCAL_DEV) {
 
 METRIC_WRITER.start()
 
-import { app } from './app'
+import {app} from './app'
 
 const credentials = LOCAL_DEV
   ? getServiceAccountCredentials(getLocalEnv())
   : // No explicit credentials needed for deployed service.
-    undefined
+  undefined
 
 const startupProcess = async () => {
   await loadSecretsToEnv(credentials)

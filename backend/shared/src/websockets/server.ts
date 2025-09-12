@@ -1,7 +1,7 @@
 import { Server as HttpServer } from 'node:http'
 import { Server as WebSocketServer, RawData, WebSocket } from 'ws'
 import { isError } from 'lodash'
-import { LOCAL_DEV, log, metrics } from 'shared/utils'
+import { log, metrics } from 'shared/utils'
 import { Switchboard } from './switchboard'
 import {
   BroadcastPayload,
@@ -9,6 +9,7 @@ import {
   ServerMessage,
   CLIENT_MESSAGE_SCHEMA,
 } from 'common/api/websockets'
+import {LOCAL_DEV} from "common/envs/constants";
 
 const SWITCHBOARD = new Switchboard()
 

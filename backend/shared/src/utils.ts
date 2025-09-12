@@ -1,11 +1,8 @@
-import {
-  createSupabaseDirectClient,
-  SupabaseDirectClient,
-} from 'shared/supabase/init'
+import {createSupabaseDirectClient, SupabaseDirectClient,} from 'shared/supabase/init'
 import * as admin from 'firebase-admin'
-import { convertPrivateUser, convertUser } from 'common/supabase/users'
-import { log, type Logger } from 'shared/monitoring/log'
-import { metrics } from 'shared/monitoring/metrics'
+import {convertPrivateUser, convertUser} from 'common/supabase/users'
+import {log, type Logger} from 'shared/monitoring/log'
+import {metrics} from 'shared/monitoring/metrics'
 
 export { metrics }
 export { log, type Logger }
@@ -66,4 +63,3 @@ export const isProd = () => {
   }
 }
 
-export const LOCAL_DEV = process.env.GOOGLE_CLOUD_PROJECT == null

@@ -112,6 +112,8 @@ To do so, simply create an `.env` file as a copy of `.env.example`, open it, and
 cp .env.example .env
 ```
 
+This project uses Supabase and Firebase. The keys included in `.env.example` point to a staging environment with test data. Contributors should use these keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
+
 ### Installing PostgreSQL
 
 Run the following commands to set up your local development database. Run only the section that corresponds to your operating system.

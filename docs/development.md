@@ -3,6 +3,8 @@
 > [!WARNING]  
 > TODO: This document is a work in progress. Please help us improve it by contributing!
 
+See [knowledge.md](knowledge.md) for high-level architecture and design decisions.
+
 ### Adding a new profile variable
 
 To add a profile variable (personality type, etc.), make modifications here:

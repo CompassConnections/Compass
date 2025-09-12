@@ -33,6 +33,12 @@ No contribution is too small—whether it’s changing a color, resizing a butto
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
 - [x] Set up domain name (https://compassmeet.com)
+- [ ] Add mobile app (React Native on Android and iOS)
+- [ ] Add better onboarding (tooltips, modals, etc.)
+- [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
+- [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
+- [ ] Add calendar integration and scheduling
+- [ ] Add events (group calls, in-person meetups, etc.)
 
 #### Secondary To Do
 
@@ -44,6 +50,16 @@ Any action item is open to anyone for collaboration, but the following ones are 
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
 - [ ] Clean up privacy notice (convert to Markdown)
+- [ ] Add other authentication methods (GitHub, Facebook, Apple, phone, etc.)
+- [ ] Add email verification
+- [ ] Add password reset
+- [ ] Add automated welcome email
+- [ ] Security audit and penetration testing
+- [ ] Make `deplo-api.sh` run automatically on push to `main` branch
+- [ ] Create settings page (change email, password, delete account, etc.)
+- [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
+- [ ] Improve loading sign (e.g., animation of a compass moving around)
+- [ ] Show compatibility score in profile page
 - [x] Clean up learn more page
 - [x] Add dark theme
 

@@ -1,17 +1,9 @@
-import { type APIHandler } from 'api/helpers/endpoint'
-import { convertRow } from 'shared/love/supabase'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import {
-  from,
-  join,
-  limit,
-  orderBy,
-  renderSql,
-  select,
-  where,
-} from 'shared/supabase/sql-builder'
-import { getCompatibleLovers } from 'api/compatible-lovers'
-import { intersection } from 'lodash'
+import {type APIHandler} from 'api/helpers/endpoint'
+import {convertRow} from 'shared/love/supabase'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
+import {getCompatibleLovers} from 'api/compatible-lovers'
+import {intersection} from 'lodash'
 
 export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
   const pg = createSupabaseDirectClient()
@@ -32,11 +24,14 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     orderBy: orderByParam,
   } = props
 
+  const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
+  // console.debug('keywords:', keywords)
+
   // compatibility. TODO: do this in sql
   if (orderByParam === 'compatibility_score') {
-    if (!compatibleWithUserId) return { status: 'fail', lovers: [] }
+    if (!compatibleWithUserId) return {status: 'fail', lovers: []}
 
-    const { compatibleLovers } = await getCompatibleLovers(compatibleWithUserId)
+    const {compatibleLovers} = await getCompatibleLovers(compatibleWithUserId)
     const lovers = compatibleLovers.filter(
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
@@ -82,53 +77,57 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     ),
     where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
 
-    name &&
-      where(`lower(users.name) ilike '%' || lower($(name)) || '%' or lower(bio::text) ilike '%' || lower($(name)) || '%'`, { name }),
+    ...keywords.map(word => where(
+      `lower(users.name) ilike '%' || lower($(word)) || '%' or lower(bio::text) ilike '%' || lower($(word)) || '%'`,
+      {word}
+    )),
 
-    genders?.length && where(`gender = ANY($(gender))`, { gender: genders }),
+    genders?.length && where(`gender = ANY($(gender))`, {gender: genders}),
 
     pref_gender?.length &&
-      where(`pref_gender && $(pref_gender)`, { pref_gender }),
+    where(`pref_gender && $(pref_gender)`, {pref_gender}),
 
     pref_age_min !== undefined &&
-      where(`age >= $(pref_age_min)`, { pref_age_min }),
+    where(`age >= $(pref_age_min)`, {pref_age_min}),
 
     pref_age_max !== undefined &&
-      where(`age <= $(pref_age_max)`, { pref_age_max }),
+    where(`age <= $(pref_age_max)`, {pref_age_max}),
 
     pref_relation_styles?.length &&
-      where(`pref_relation_styles && $(pref_relation_styles)`, {
-        pref_relation_styles,
-      }),
+    where(`pref_relation_styles && $(pref_relation_styles)`, {
+      pref_relation_styles,
+    }),
 
     wants_kids_strength !== undefined &&
-      wants_kids_strength !== -1 &&
-      where(
-        wants_kids_strength >= 2
-          ? `wants_kids_strength >= $(wants_kids_strength)`
-          : `wants_kids_strength <= $(wants_kids_strength)`,
-        { wants_kids_strength }
-      ),
+    wants_kids_strength !== -1 &&
+    where(
+      wants_kids_strength >= 2
+        ? `wants_kids_strength >= $(wants_kids_strength)`
+        : `wants_kids_strength <= $(wants_kids_strength)`,
+      {wants_kids_strength}
+    ),
 
     has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
     has_kids && has_kids > 0 && where(`has_kids > 0`),
 
-    is_smoker !== undefined && where(`is_smoker = $(is_smoker)`, { is_smoker }),
+    is_smoker !== undefined && where(`is_smoker = $(is_smoker)`, {is_smoker}),
 
     geodbCityIds?.length &&
-      where(`geodb_city_id = ANY($(geodbCityIds))`, { geodbCityIds }),
+    where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 
     orderBy(`${orderByParam} desc`),
     after &&
-      where(
-        `lovers.${orderByParam} < (select lovers.${orderByParam} from lovers where id = $(after))`,
-        { after }
-      ),
+    where(
+      `lovers.${orderByParam} < (select lovers.${orderByParam} from lovers where id = $(after))`,
+      {after}
+    ),
 
     limit(limitParam)
   )
 
+  // console.debug('query:', query)
+
   const lovers = await pg.map(query, [], convertRow)
 
-  return { status: 'success', lovers: lovers }
+  return {status: 'success', lovers: lovers}
 }

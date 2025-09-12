@@ -62,7 +62,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   }, [])
 
   const title = 'Compass'
-  const description = 'Search lasting connections'
+  const description = 'The platform for intentional connections'
 
   return (
     <>

@@ -22,6 +22,8 @@ A detailed description of the vision is available [here](https://martinbraquet.c
 
 ## To Do
 
+No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording. Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The goal is to make the platform better step by step, and every improvement counts. If you see something that could be clearer, smoother, or more engaging, **please jump in**!
+
 - [x] Authentication (user/password and Google Sign In)
 - [x] Set up PostgreSQL in Production with supabase
 - [x] Set up web hosting (vercel)

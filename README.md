@@ -91,7 +91,7 @@ Install `opentofu`, `docker`, and `yarn`. Try running this on Linux or macOS for
 ```bash
 ./setup.sh
 ```
-If it doesn't work, you can install them manually (Google how to install `opentofu`, `docker`, and `yarn` for your OS).
+If it doesn't work, you can install them manually (google how to install `opentofu`, `docker`, and `yarn` for your OS).
 
 Then, install the dependencies for this project:
 ```bash

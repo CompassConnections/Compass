@@ -16,6 +16,7 @@ export const setCookie = (name: string, val: string, opts?: CookieOptions) => {
     parts.push(...opts.map((opt) => opt.join('=')))
   }
   const cookie = parts.join('; ')
+  console.debug(cookie)
   document.cookie = cookie
 }
 

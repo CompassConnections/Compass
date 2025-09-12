@@ -24,6 +24,8 @@ A detailed description of the vision is available [here](https://martinbraquet.c
 
 No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording. Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The goal is to make the platform better step by step, and every improvement counts. If you see something that could be clearer, smoother, or more engaging, **please jump in**!
 
+Here are some examples of things that would be very useful. If you want to help but don’t know where to start, just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
+
 - [x] Authentication (user/password and Google Sign In)
 - [x] Set up PostgreSQL in Production with supabase
 - [x] Set up web hosting (vercel)
@@ -42,7 +44,7 @@ No contribution is too small—whether it’s changing a color, resizing a butto
 
 #### Secondary To Do
 
-Any action item is open to anyone for collaboration, but the following ones are particularly easy to do for first-time contributors.
+Everything is open to anyone for collaboration, but the following ones are particularly easy to do for first-time contributors.
 
 - [ ] Add profile features (intellectual interests, cause areas, personality type, conflict style, etc.)
 - [ ] Add filters to search through remaining profile features (politics, religion, education level, etc.)
@@ -55,7 +57,7 @@ Any action item is open to anyone for collaboration, but the following ones are 
 - [ ] Add password reset
 - [ ] Add automated welcome email
 - [ ] Security audit and penetration testing
-- [ ] Make `deplo-api.sh` run automatically on push to `main` branch
+- [ ] Make `deploy-api.sh` run automatically on push to `main` branch
 - [ ] Create settings page (change email, password, delete account, etc.)
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
 - [ ] Improve loading sign (e.g., animation of a compass moving around)

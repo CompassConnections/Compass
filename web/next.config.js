@@ -68,13 +68,6 @@ module.exports = {
     return config
   },
   async redirects() {
-    return [
-      // backwards compatibility
-      {
-        source: '/Bet_On_Love.pdf',
-        destination: 'https://manifold.markets/Bet_On_Love.pdf',
-        permanent: false,
-      },
-    ]
+    return []
   },
 }

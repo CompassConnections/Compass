@@ -1,15 +1,15 @@
-import type { AppProps } from 'next/app'
+import type {AppProps} from 'next/app'
 import Head from 'next/head'
-import { useEffect } from 'react'
-import { Router } from 'next/router'
+import {useEffect} from 'react'
+import {Router} from 'next/router'
 import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-import { AuthProvider, AuthUser } from 'web/components/auth-context'
-import { useHasLoaded } from 'web/hooks/use-has-loaded'
+import {PostHogProvider} from 'posthog-js/react'
+import {AuthProvider, AuthUser} from 'web/components/auth-context'
+import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import '../styles/globals.css'
-import { Major_Mono_Display, Figtree } from 'next/font/google'
+import {Major_Mono_Display} from 'next/font/google'
 import clsx from 'clsx'
-import { initTracking } from 'web/lib/service/analytics'
+import {initTracking} from 'web/lib/service/analytics'
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -44,9 +44,9 @@ function printBuildInfo() {
 }
 
 // specially treated props that may be present in the server/static props
-type ManifoldPageProps = { auth?: AuthUser }
+type PageProps = { auth?: AuthUser }
 
-function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
+function MyApp({Component, pageProps}: AppProps<PageProps>) {
   useEffect(printBuildInfo, [])
   useHasLoaded()
 
@@ -62,7 +62,7 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
   }, [])
 
   const title = 'Compass'
-  const description = 'Questionable dating site'
+  const description = 'Search lasting connections'
 
   return (
     <>
@@ -75,25 +75,25 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
           content={title}
           key="title"
         />
-        <meta name="description" content={description} key="description1" />
+        <meta name="description" content={description} key="description1"/>
         <meta
           property="og:description"
           name="twitter:description"
           content={description}
           key="description2"
         />
-        <meta property="og:url" content="https://manifold.markets" key="url" />
-        <meta property="og:site_name" content="Manifold" />
-        <meta name="twitter:card" content="summary" key="card" />
-        <meta name="twitter:site" content="@manifoldmarkets" />
+        <meta property="og:url" content="https://compassmeet.com" key="url"/>
+        <meta property="og:site_name" content="Compass"/>
+        <meta name="twitter:card" content="summary" key="card"/>
+        {/*<meta name="twitter:site" content="@compassmeet"/>*/}
         <meta
           name="twitter:image"
-          content="https://manifold.love/bet-on-love.png"
+          content="https://www.compassmeet.com/favicon.ico"
           key="image2"
         />
         <meta
           property="og:image"
-          content="https://manifold.love/bet-on-love.png"
+          content="https://www.compassmeet.com/favicon.ico"
           key="image1"
         />
         <meta
@@ -118,11 +118,11 @@ function MyApp({ Component, pageProps }: AppProps<ManifoldPageProps>) {
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">
-            <div />
+            <div/>
           </div>
         </div>
       </PostHogProvider>
-      {/* TODO: Reenable one tap setup */}
+      {/* TODO: Re-enable one tap setup */}
       {/* <GoogleOneTapSetup /> */}
     </>
   )

@@ -4,7 +4,7 @@ import { ENV } from 'common/envs/constants'
 import { Row } from 'web/components/layout/row'
 import FavIcon from "web/public/FavIcon";
 
-export default function ManifoldLoveLogo(props: {
+export default function SiteLogo(props: {
   noLink?: boolean
   className?: string
 }) {

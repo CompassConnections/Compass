@@ -7,7 +7,7 @@ import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
 import Router, {useRouter} from 'next/router'
-import ManifoldLoveLogo from 'web/components/manifold-love-logo'
+import SiteLogo from 'web/components/site-logo'
 import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -61,7 +61,7 @@ export default function SignupPage() {
         <div/>
       ) : user === null ? (
         <Col className={'items-center justify-around gap-4 pt-[20vh]'}>
-          <ManifoldLoveLogo/>
+          <SiteLogo/>
           <Button
             color={'gray-outline'}
             size={'2xl'}

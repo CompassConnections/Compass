@@ -12,7 +12,7 @@ import { firebaseLogin, firebaseLogout } from 'web/lib/firebase/users'
 import { withTracking } from 'web/lib/service/analytics'
 import { ProfileSummary } from './love-profile-summary'
 import { Item, SidebarItem } from './love-sidebar-item'
-import ManifoldLoveLogo from '../manifold-love-logo'
+import SiteLogo from '../site-logo'
 import { Button, ColorType, SizeType } from 'web/components/buttons/button'
 import {signupRedirect} from 'web/lib/util/signup'
 import { useLover } from 'web/hooks/use-lover'
@@ -44,7 +44,7 @@ export default function Sidebar(props: {
       aria-label="Sidebar"
       className={clsx('flex h-screen flex-col', className)}
     >
-      <ManifoldLoveLogo />
+      <SiteLogo />
 
       {user === undefined && <div className="h-[56px]" />}
 

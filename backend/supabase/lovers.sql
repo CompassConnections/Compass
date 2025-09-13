@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS lovers (
     is_smoker BOOLEAN,
     is_vegetarian_or_vegan BOOLEAN,
     last_online_time TIMESTAMPTZ DEFAULT now() NOT NULL,
+    last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     looking_for_matches BOOLEAN DEFAULT TRUE NOT NULL,
     messaging_status TEXT DEFAULT 'open'::TEXT NOT NULL,
     occupation TEXT,
@@ -70,9 +71,33 @@ FOR UPDATE
 
 -- Indexes
 DROP INDEX IF EXISTS lovers_user_id_idx;
-
 CREATE INDEX lovers_user_id_idx ON public.lovers USING btree (user_id);
 
 DROP INDEX IF EXISTS unique_user_id;
-
 CREATE UNIQUE INDEX unique_user_id ON public.lovers USING btree (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_lovers_last_mod_24h
+    ON public.lovers USING btree (last_modification_time);
+
+-- Functions and Triggers
+CREATE
+OR REPLACE FUNCTION update_last_modification_time()
+RETURNS TRIGGER AS $$
+BEGIN
+   IF NEW.last_online_time IS DISTINCT FROM OLD.last_online_time AND row(NEW.*) = row(OLD.*) THEN
+      -- Only last_online_time changed, do nothing
+      RETURN NEW;
+END IF;
+
+   -- Some other column changed
+   NEW.last_modification_time = now();
+RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_last_mod_time
+    BEFORE UPDATE
+    ON lovers
+    FOR EACH ROW
+    EXECUTE FUNCTION update_last_modification_time();

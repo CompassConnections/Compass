@@ -6,6 +6,15 @@
     --font-main: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
 }
 
+.main-font {
+    font-family: var(--font-main), serif;
+}
+.main-font a,
+.main-font label,
+.main-font button {
+    font-family: var(--font-main), serif;
+}
+
 .logo {
     font-family: var(--font-main), serif;
 }
@@ -118,11 +127,13 @@
         --color-canvas-0: 20 20 20;
         --color-canvas-50: 20 20 20;
         --color-canvas-100: 40 40 40;
+        --color-canvas-200: 60 60 60;
+        --color-canvas-300: 90 90 90;
 
-        --color-primary-950: 239 246 255; /* very light blue */
-        --color-primary-900: 219 234 254; /* light blue */
-        --color-primary-800: 191 219 254;
-        --color-primary-700: 147 197 253;
+        --color-primary-950: 255 255 255;
+        --color-primary-900: 255 255 255;
+        --color-primary-800: 255 255 255;
+        --color-primary-700: 255 255 255;
         --color-primary-600: 96 165 250;
         --color-primary-500: 59 130 246; /* standard blue */
         --color-primary-400: 37 99 235;

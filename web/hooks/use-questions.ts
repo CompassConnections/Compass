@@ -50,7 +50,7 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
   const [compatibilityAnswers, setCompatibilityAnswers] =
     usePersistentInMemoryState<Row<'love_compatibility_answers'>[]>(
       [],
-      `compatiblity-answers-${userId}`
+      `compatibility-answers-${userId}`
     )
 
   useEffect(() => {

@@ -38,7 +38,7 @@ export function Modal(props: {
   const positionClass = {
     center: 'sm:items-center',
     top: 'sm:items-start',
-    bottom: '',
+    bottom: 'sm:items-end',
   }[position]
 
   const wasOpenRef = useRef(open)
@@ -91,6 +91,7 @@ export function Modal(props: {
                 className={clsx(
                   'relative w-full transform transition-all',
                   'lg:mx-6 lg:my-8',
+                  'max-h-[90vh] min-h-[60vh]', // 👈 add this
                   sizeClass,
                   className
                 )}

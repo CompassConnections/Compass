@@ -2,7 +2,8 @@
 module.exports = {
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
-  optimizeFonts: false,
+  outputFileTracingRoot: __dirname,
+  // optimizeFonts: false,
   modularizeImports: {
     '@heroicons/react/solid/?(((\\w*)?/?)*)': {
       transform: '@heroicons/react/solid/{{ matches.[1] }}/{{member}}',

@@ -7,8 +7,40 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '13.0.4'
+  }
   public: {
     Tables: {
+      bookmarked_searches: {
+        Row: {
+          created_time: string
+          creator_id: string
+          id: number
+          last_notified_at: string | null
+          search_filters: Json | null
+          search_name: string | null
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          id?: never
+          last_notified_at?: string | null
+          search_filters?: Json | null
+          search_name?: string | null
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          id?: never
+          last_notified_at?: string | null
+          search_filters?: Json | null
+          search_name?: string | null
+        }
+        Relationships: []
+      }
       love_answers: {
         Row: {
           created_time: string
@@ -229,6 +261,7 @@ export type Database = {
         Row: {
           age: number
           bio: Json | null
+          bio_text: unknown | null
           born_in_location: string | null
           city: string
           city_latitude: number | null
@@ -247,6 +280,7 @@ export type Database = {
           id: number
           is_smoker: boolean | null
           is_vegetarian_or_vegan: boolean | null
+          last_modification_time: string
           last_online_time: string
           looking_for_matches: boolean
           messaging_status: string
@@ -273,6 +307,7 @@ export type Database = {
         Insert: {
           age?: number
           bio?: Json | null
+          bio_text?: unknown | null
           born_in_location?: string | null
           city: string
           city_latitude?: number | null
@@ -291,6 +326,7 @@ export type Database = {
           id?: never
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
+          last_modification_time?: string
           last_online_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
@@ -317,6 +353,7 @@ export type Database = {
         Update: {
           age?: number
           bio?: Json | null
+          bio_text?: unknown | null
           born_in_location?: string | null
           city?: string
           city_latitude?: number | null
@@ -335,6 +372,7 @@ export type Database = {
           id?: never
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
+          last_modification_time?: string
           last_online_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
@@ -552,33 +590,6 @@ export type Database = {
           }
         ]
       }
-      temp_users: {
-        Row: {
-          created_time: string | null
-          id: string | null
-          name: string | null
-          private_user_data: Json | null
-          user_data: Json | null
-          username: string | null
-        }
-        Insert: {
-          created_time?: string | null
-          id?: string | null
-          name?: string | null
-          private_user_data?: Json | null
-          user_data?: Json | null
-          username?: string | null
-        }
-        Update: {
-          created_time?: string | null
-          id?: string | null
-          name?: string | null
-          private_user_data?: Json | null
-          user_data?: Json | null
-          username?: string | null
-        }
-        Relationships: []
-      }
       user_events: {
         Row: {
           ad_id: string | null
@@ -663,7 +674,7 @@ export type Database = {
     }
     Functions: {
       calculate_earth_distance_km: {
-        Args: { lat1: number; lon1: number; lat2: number; lon2: number }
+        Args: { lat1: number; lat2: number; lon1: number; lon2: number }
         Returns: number
       }
       can_access_private_messages: {
@@ -686,12 +697,32 @@ export type Database = {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
       }
+      gtrgm_compress: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { '': unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
       is_admin: {
         Args: Record<PropertyKey, never> | { user_id: string }
         Returns: boolean
       }
       millis_interval: {
-        Args: { start_millis: number; end_millis: number }
+        Args: { end_millis: number; start_millis: number }
         Returns: unknown
       }
       millis_to_ts: {
@@ -701,6 +732,18 @@ export type Database = {
       random_alphanumeric: {
         Args: { length: number }
         Returns: string
+      }
+      set_limit: {
+        Args: { '': number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { '': string }
+        Returns: string[]
       }
       to_jsonb: {
         Args: { '': Json }
@@ -720,21 +763,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, 'public'>]
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -752,14 +799,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -775,14 +824,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
@@ -798,14 +849,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema['Enums']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
   ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
   : never
@@ -813,14 +866,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema['CompositeTypes']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
   ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
   : never

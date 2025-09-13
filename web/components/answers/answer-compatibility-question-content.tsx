@@ -17,6 +17,7 @@ import { QuestionWithCountType } from 'web/hooks/use-questions'
 import { track } from 'web/lib/service/analytics'
 import { db } from 'web/lib/supabase/db'
 import { filterKeys } from '../questions-form'
+import toast from "react-hot-toast";
 
 export type CompatibilityAnswerSubmitType = Omit<
   rowFor<'love_compatibility_answers'>,
@@ -26,7 +27,7 @@ export type CompatibilityAnswerSubmitType = Omit<
 export const IMPORTANCE_CHOICES = {
   'Not Important': 0,
   'Somewhat Important': 1,
-  Important: 2,
+  'Important': 2,
   'Very Important': 3,
 }
 
@@ -56,16 +57,22 @@ export const submitCompatibilityAnswer = async (
     ...filterKeys(newAnswer, (key, _) => !['id', 'created_time'].includes(key)),
   } as CompatibilityAnswerSubmitType
 
-  console.log('love_compatibility_answers', db)
-  await run(
-    db.from('love_compatibility_answers').upsert(input, {
-      onConflict: 'question_id,creator_id',
-    })
-  ).then(() => {
+  try {
+    await run(
+      db.from('love_compatibility_answers').upsert(input, {
+        onConflict: 'question_id,creator_id',
+      })
+    );
+
+    // Track only if upsert succeeds
     track('answer compatibility question', {
       ...newAnswer,
-    })
-  })
+    });
+  } catch (error) {
+    console.error('Failed to upsert love_compatibility_answers:', error);
+    toast.error('Error submitting. Try again?')
+  }
+
 }
 
 function getEmptyAnswer(userId: string, questionId: number) {
@@ -158,7 +165,7 @@ export function AnswerCompatibilityQuestionContent(props: {
       <Col
         className={clsx(
           SCROLLABLE_MODAL_CLASS,
-          'h-[20rem] w-full gap-4 sm:h-[30rem]'
+          'h-[30rem] w-full gap-4 sm:h-[30rem]'
         )}
       >
         <Col className="gap-2">
@@ -245,15 +252,15 @@ export function AnswerCompatibilityQuestionContent(props: {
           loading={loading}
           onClick={() => {
             setLoading(true)
-            submitCompatibilityAnswer(answer)
-              .then(() => {
-                if (isLastQuestion) {
-                  onSubmit()
-                } else if (onNext) {
-                  onNext()
-                }
-              })
-              .finally(() => setLoading(false))
+              submitCompatibilityAnswer(answer)
+                .then(() => {
+                  if (isLastQuestion) {
+                    onSubmit()
+                  } else if (onNext) {
+                    onNext()
+                  }
+                })
+                .finally(() => setLoading(false))
           }}
         >
           {isLastQuestion ? 'Finish' : 'Next'}
@@ -308,7 +315,7 @@ export const MultiSelectAnswers = (props: {
   return (
     <Col
       className={
-        'border-ink-300 text-ink-400 bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 text-sm shadow-sm'
+        'border-ink-300 text-ink-400 bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 text-sm shadow-sm main-font'
       }
     >
       {options.map((label, i) => (

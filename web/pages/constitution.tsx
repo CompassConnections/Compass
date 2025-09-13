@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import MarkdownPage from "web/components/markdown";
 
-const FILENAME = 'constitution';
+const FILENAME = __filename.split('/').pop()?.split('.').shift();
 
 export async function getStaticProps() {
   const filePath = path.join(process.cwd(), 'public', 'md', FILENAME + '.md');
@@ -15,5 +15,6 @@ export async function getStaticProps() {
 type Props = { content: string };
 
 export default function Faq({content}: Props) {
+  if (!FILENAME) throw new Error('Could not determine filename');
   return <MarkdownPage content={content} filename={FILENAME}></MarkdownPage>
 }

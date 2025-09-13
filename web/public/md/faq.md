@@ -88,7 +88,7 @@ The [full implementation](https://github.com/CompassMeet/Compass/blob/main/commo
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
 * **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
 * **Contribute to Development**: [View the code on GitHub](https://github.com/CompassMeet/Compass)
-* **Donate**: [Support the infrastructure](/about)
+* **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.
 
 ### What’s next?

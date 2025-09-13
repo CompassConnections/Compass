@@ -86,7 +86,7 @@ export const SendMessageButton = (props: {
     <>
       {circleButton ? (
         <button
-          className="bg-primary-500 hover:bg-primary-600 h-7 w-7 rounded-full transition-colors"
+          className="bg-primary-900 hover:bg-primary-600 h-7 w-7 rounded-full transition-colors"
           onClick={messageButtonClicked}
         >
           <BiEnvelope
@@ -97,7 +97,7 @@ export const SendMessageButton = (props: {
           />
         </button>
       ) : (
-        <Button size={'sm'} onClick={messageButtonClicked}>
+        <Button size={'sm'} onClick={messageButtonClicked} color={'none'} className='bg-canvas-200 hover:bg-canvas-300'>
           <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
           {includeLabel && <>Message</>}
         </Button>

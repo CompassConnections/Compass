@@ -39,7 +39,7 @@ export default function About() {
 
                 <AboutBlock
                   title="Get Notified About Searches"
-                  text="No need to constantly check an app! We'll contact you when new users fit your searches."
+                  text="No need to constantly check the app! We'll contact you when new users fit your searches."
                 />
 
                 <AboutBlock

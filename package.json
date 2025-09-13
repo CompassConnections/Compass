@@ -16,6 +16,7 @@
     "dev": "./run_local.sh dev",
     "prod": "./run_local.sh prod",
     "clean-install": "./install.sh",
+    "migrate": "./scripts/migrate.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

@@ -18,14 +18,14 @@ esac
 
 ENVIRONMENT=$ENV
 NEXT_PUBLIC_FIREBASE_ENV="${ENVIRONMENT}"
+WEB_DIR=web
 
-DIR=web
 source .env
 
 npx dotenv -e .env -- npx concurrently \
   -n API,NEXT,TS \
   -c white,magenta,cyan \
   "cross-env ENV=$NEXT_ENV yarn --cwd=backend/api dev" \
-  "cross-env NEXT_PUBLIC_FIREBASE_ENV=$NEXT_ENV yarn --cwd=$DIR serve" \
-  "cross-env yarn --cwd=$DIR ts-watch"
+  "cross-env NEXT_PUBLIC_FIREBASE_ENV=$NEXT_ENV yarn --cwd=$WEB_DIR serve" \
+  "cross-env yarn --cwd=$WEB_DIR ts-watch"
 

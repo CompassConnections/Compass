@@ -1,19 +1,20 @@
 # prereq: first do `yarn build` to compile typescript & etc.
 
-FROM node:19-alpine
+FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install PM2 globally
 RUN yarn global add pm2
 
-# Remove?
-COPY tsconfig.json ./
-
-# first get dependencies in for efficient docker layering
+# Fet dependencies in for efficient docker layering
 COPY dist/package.json dist/yarn.lock ./
-RUN yarn install --frozen-lockfile --production
 
-# then copy over typescript payload
+# Clean yarn cache to reduce image size
+RUN yarn install --frozen-lockfile --production && \
+    yarn cache clean --force && \
+    rm -rf /usr/local/share/.cache/yarn
+
+# Copy over typescript payload
 COPY dist ./
 
 # Copy the PM2 ecosystem configuration

@@ -23,4 +23,5 @@ BEGIN;
 \i backend/supabase/migrations/20250910_bio_to_jsonb.sql
 \i backend/supabase/migrations/20250910_add_bio_text.sql
 \i backend/supabase/migrations/20250910_pg_trgm.sql
+\i backend/supabase/bookmarked_searches.sql
 COMMIT;

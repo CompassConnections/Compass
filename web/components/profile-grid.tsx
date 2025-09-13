@@ -34,6 +34,8 @@ export const ProfileGrid = (props: {
 
   const user = useUser()
 
+  const other_lovers = lovers.filter((lover) => lover.user_id !== user?.id);
+
   return (
     <div className="relative">
       <div
@@ -42,17 +44,16 @@ export const ProfileGrid = (props: {
           isReloading && 'animate-pulse opacity-80'
         )}
       >
-        {lovers
-          .filter((lover) => lover.user_id !== user?.id)
+        {other_lovers
           .map((lover) => (
-          <ProfilePreview
-            key={lover.id}
-            lover={lover}
-            compatibilityScore={compatibilityScores?.[lover.user_id]}
-            hasStar={starredUserIds?.includes(lover.user_id) ?? false}
-            refreshStars={refreshStars}
-          />
-        ))}
+            <ProfilePreview
+              key={lover.id}
+              lover={lover}
+              compatibilityScore={compatibilityScores?.[lover.user_id]}
+              hasStar={starredUserIds?.includes(lover.user_id) ?? false}
+              refreshStars={refreshStars}
+            />
+          ))}
       </div>
 
       <LoadMoreUntilNotVisible loadMore={loadMore}/>
@@ -63,8 +64,11 @@ export const ProfileGrid = (props: {
         </div>
       )}
 
-      {!isLoadingMore && !isReloading && lovers.length === 0 && (
-        <div className="py-8 text-center">No profiles found</div>
+      {!isLoadingMore && !isReloading && other_lovers.length === 0 && (
+        <div className="py-8 text-center">
+          <p>No profiles found.</p>
+          <p>Feel free to bookmark your search and we'll notify you when new users match it!</p>
+        </div>
       )}
     </div>
   )
@@ -76,8 +80,8 @@ function ProfilePreview(props: {
   hasStar: boolean
   refreshStars: () => Promise<void>
 }) {
-  const {lover, compatibilityScore, hasStar, refreshStars} = props
-  const {user, gender, age, pinned_url, city, bio} = lover
+  const {lover, compatibilityScore} = props
+  const {user} = lover
   // const currentUser = useUser()
 
   return (

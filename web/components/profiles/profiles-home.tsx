@@ -17,6 +17,7 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {debounce, omit} from 'lodash'
 import {PREF_AGE_MAX, PREF_AGE_MIN,} from 'web/components/filters/location-filter'
+import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
 
 export function ProfilesHome() {
   const user = useUser();
@@ -33,6 +34,7 @@ export function ProfilesHome() {
   } = useFilters(you ?? undefined);
 
   const [lovers, setLovers] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-lovers');
+  const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
 
@@ -105,6 +107,8 @@ export function ProfilesHome() {
         setYourFilters={setYourFilters}
         isYourFilters={isYourFilters}
         locationFilterProps={locationFilterProps}
+        bookmarkedSearches={bookmarkedSearches}
+        refreshBookmarkedSearches={refreshBookmarkedSearches}
       />
       {displayLovers === undefined || compatibleLovers === undefined ? (
         <LoadingIndicator/>

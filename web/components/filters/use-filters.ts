@@ -39,7 +39,7 @@ export const orderLovers = (
 //   return filterDefined(zip(women, nonWomen).flat())
 // }
 
-const initialFilters: Partial<FilterFields> = {
+export const initialFilters: Partial<FilterFields> = {
   geodbCityIds: undefined,
   name: undefined,
   genders: undefined,

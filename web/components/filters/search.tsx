@@ -1,5 +1,5 @@
 import {Lover, LoverRow} from 'common/love/lover'
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -10,6 +10,12 @@ import {Select} from 'web/components/widgets/select'
 import {DesktopFilters} from './desktop-filters'
 import {LocationFilterProps} from './location-filter'
 import {MobileFilters} from './mobile-filters'
+import {BookmarkSearchButton} from "web/components/searches/button";
+import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
+import {submitBookmarkedSearch} from "web/lib/supabase/searches";
+import {useUser} from "web/hooks/use-user";
+import {isEqual} from "lodash";
+import {initialFilters} from "web/components/filters/use-filters";
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
@@ -57,6 +63,8 @@ export const Search = (props: {
   setYourFilters: (checked: boolean) => void
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
+  bookmarkedSearches: BookmarkedSearchesType[]
+  refreshBookmarkedSearches: () => void
 }) => {
   const {
     youLover,
@@ -66,6 +74,8 @@ export const Search = (props: {
     isYourFilters,
     locationFilterProps,
     filters,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
   } = props
 
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
@@ -74,6 +84,10 @@ export const Search = (props: {
   const [textToType, setTextToType] = useState(getRandomPair());
   const [_, setCharIndex] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [loadingBookmark, setLoadingBookmark] = useState(false);
+  const [openBookmarks, setOpenBookmarks] = useState(false);
+  const user = useUser()
 
   useEffect(() => {
     if (isHolding) return;
@@ -100,8 +114,12 @@ export const Search = (props: {
     return () => clearInterval(interval);
   }, [textToType, isHolding]);
 
+  useEffect(() => {
+    setTimeout(() => setBookmarked(false), 2000);
+  }, [bookmarked]);
+
   return (
-    <Col className={'text-ink-600 w-full gap-2 py-2 text-sm'}>
+    <Col className={'text-ink-600 w-full gap-2 py-2 text-sm main-font'}>
       <Row className={'mb-2 justify-between gap-2'}>
         <Input
           value={filters.name ?? ''}
@@ -170,6 +188,35 @@ export const Search = (props: {
           locationFilterProps={locationFilterProps}
         />
       </RightModal>
+      <Row className={'mb-2 gap-2'}>
+        <Button
+          disabled={
+            loadingBookmark || isEqual(filters, initialFilters)
+          }
+          loading={loadingBookmark}
+          onClick={() => {
+            setLoadingBookmark(true)
+            submitBookmarkedSearch(filters, user?.id)
+              .finally(() => {
+                setLoadingBookmark(false)
+                setBookmarked(true)
+                refreshBookmarkedSearches()
+                setOpenBookmarks(true)
+              })
+          }}
+          size={'xs'}
+          color={'none'}
+          className={'bg-canvas-100 hover:bg-canvas-200'}
+        >
+          {bookmarked ? 'Bookmarked!' : loadingBookmark ? '' : 'Get Notified'}
+        </Button>
+
+        <BookmarkSearchButton
+          refreshBookmarkedSearches={refreshBookmarkedSearches}
+          bookmarkedSearches={bookmarkedSearches}
+          openBookmarks={openBookmarks}
+        />
+      </Row>
     </Col>
   )
 }

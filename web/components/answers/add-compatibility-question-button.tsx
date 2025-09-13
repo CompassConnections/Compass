@@ -149,7 +149,7 @@ function CreateCompatibilityModalContent(props: {
   })
 
   return (
-    <Col className="w-full gap-4">
+    <Col className="w-full gap-4 main-font">
       <Col className="gap-1">
         <label>
           Question<span className={'text-scarlet-500'}>*</span>

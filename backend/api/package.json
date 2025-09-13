@@ -21,7 +21,7 @@
     "regen-types-dev": "cd ../supabase && make ENV=dev regen-types"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "main": "src/serve.ts",
   "dependencies": {
@@ -53,7 +53,6 @@
     "posthog-node": "4.11.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-email": "3.0.7",
     "resend": "4.1.2",
     "string-similarity": "4.0.4",
     "tsconfig-paths": "4.2.0",

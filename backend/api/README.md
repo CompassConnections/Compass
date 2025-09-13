@@ -128,4 +128,5 @@ Useful commands once inside the server:
 sudo journalctl -u konlet-startup --no-pager -efb
 sudo docker logs -f $(sudo docker ps -alq)
 docker exec -it $(sudo docker ps -alq) sh
+docker run -it --rm $(docker images -q | head -n 1) sh
 ```

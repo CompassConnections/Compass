@@ -133,13 +133,13 @@ export function AuthProvider(props: {
         if (fbUser) {
           setUserCookie(fbUser.toJSON())
 
-          const [user, privateUser, supabaseJwt] = await Promise.all([
+          const [user, privateUser] = await Promise.all([
             getUserSafe(fbUser.uid),
             getPrivateUserSafe(),
-            api('get-supabase-token').catch((e) => {
-              console.error('Error getting supabase token', e)
-              return null
-            }),
+            // api('get-supabase-token').catch((e) => {
+            //   console.error('Error getting supabase token', e)
+            //   return null
+            // }),
           ])
           // When testing on a mobile device, we'll be pointed at a local ip or ngrok address, so this will fail
           // Skipping for now at it seems to work fine without it

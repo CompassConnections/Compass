@@ -106,7 +106,11 @@ function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement
     let stringValue = value
     if (key === 'has_kids') stringValue = hasKidsNames[value as number]
     if (key === 'wants_kids_strength') stringValue = wantsKidsNames[value as number]
-    if (key === 'location') stringValue = `${(value as locationType)?.location?.name} (${(value as locationType)?.radius}mi)`
+    if (key === 'location') {
+      const locValue = value as locationType
+      if (!locValue?.location?.name) return
+      stringValue = `${locValue?.location?.name} (${locValue?.radius}mi)`
+    }
     if (Array.isArray(value)) stringValue = value.join(', ')
 
     if (!label) {

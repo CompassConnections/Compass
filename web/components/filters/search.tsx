@@ -16,6 +16,7 @@ import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
 import {isEqual} from "lodash";
 import {initialFilters} from "web/components/filters/use-filters";
+import toast from "react-hot-toast";
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
@@ -195,8 +196,13 @@ export const Search = (props: {
           }
           loading={loadingBookmark}
           onClick={() => {
+            if (bookmarkedSearches.length >= 10) {
+              toast.error('You cannot bookmark more searches; please delete one first.')
+              setOpenBookmarks(true)
+              return
+            }
             setLoadingBookmark(true)
-            submitBookmarkedSearch(filters, user?.id)
+            submitBookmarkedSearch(filters, locationFilterProps, user?.id)
               .finally(() => {
                 setLoadingBookmark(false)
                 setBookmarked(true)
@@ -214,7 +220,8 @@ export const Search = (props: {
         <BookmarkSearchButton
           refreshBookmarkedSearches={refreshBookmarkedSearches}
           bookmarkedSearches={bookmarkedSearches}
-          openBookmarks={openBookmarks}
+          open={openBookmarks}
+          setOpen={setOpenBookmarks}
         />
       </Row>
     </Col>

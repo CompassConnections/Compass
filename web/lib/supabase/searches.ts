@@ -23,11 +23,14 @@ export type BookmarkedSearchSubmitType = Omit<
 
 export const submitBookmarkedSearch = async (
   filters: Partial<FilterFields>,
-  userId: string | undefined | null
+  locationFilterProps: any,
+  userId: string | undefined | null,
 ) => {
   if (!filters) return
   if (!userId) return
-  const row = {search_filters: filters, creator_id: userId}
+  const fullFilter = {...filters, ...{location: locationFilterProps}}
+
+  const row = {search_filters: fullFilter, creator_id: userId}
   const input = {
     ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at'].includes(key)),
   } as BookmarkedSearchSubmitType

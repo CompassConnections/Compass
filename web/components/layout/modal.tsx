@@ -83,7 +83,7 @@ export function Modal(props: {
           <div className="fixed inset-0 overflow-y-auto pt-20 sm:p-0">
             <div
               className={clsx(
-                'flex min-h-full items-end justify-center overflow-hidden',
+                'flex min-h-full items-end justify-center',
                 positionClass
               )}
             >

@@ -36,6 +36,14 @@ export const hasKidsLabels: HasKidsLabelsMap = {
   },
 }
 
+export const hasKidsNames = Object.values(hasKidsLabels).reduce<Record<number, string>>(
+  (acc, { value, name }) => {
+    acc[value] = name
+    return acc
+  },
+  {}
+)
+
 const generateChoicesMap = (
   labels: HasKidsLabelsMap
 ): Record<string, number> => {

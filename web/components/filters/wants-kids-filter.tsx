@@ -1,9 +1,9 @@
-import { ReactNode } from 'react'
-import { MdNoStroller, MdOutlineStroller, MdStroller } from 'react-icons/md'
-import { Row } from 'web/components/layout/row'
-import { ChoicesToggleGroup } from 'web/components/widgets/choices-toggle-group'
-import { FilterFields } from './search'
-import { hasKidsLabels } from './has-kids-filter'
+import {ReactNode} from 'react'
+import {MdNoStroller, MdOutlineStroller, MdStroller} from 'react-icons/md'
+import {Row} from 'web/components/layout/row'
+import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
+import {FilterFields} from './search'
+import {hasKidsLabels} from './has-kids-filter'
 import clsx from 'clsx'
 
 interface KidLabel {
@@ -42,22 +42,30 @@ export const wantsKidsLabels: KidsLabelsMap = {
   no_preference: {
     name: 'Any preference',
     shortName: 'Either',
-    icon: <MdOutlineStroller className="h-4 w-4" />,
+    icon: <MdOutlineStroller className="h-4 w-4"/>,
     strength: -1,
   },
   wants_kids: {
     name: 'Wants kids',
     shortName: 'Yes',
-    icon: <MdStroller className="h-4 w-4" />,
+    icon: <MdStroller className="h-4 w-4"/>,
     strength: 2,
   },
   doesnt_want_kids: {
     name: `Doesn't want kids`,
     shortName: 'No',
-    icon: <MdNoStroller className="h-4 w-4" />,
+    icon: <MdNoStroller className="h-4 w-4"/>,
     strength: 0,
   },
 }
+
+export const wantsKidsNames = Object.values(wantsKidsLabels).reduce<Record<number, string>>(
+  (acc, {strength, name}) => {
+    acc[strength] = name
+    return acc
+  },
+  {}
+)
 
 const generateChoicesMap = (labels: KidsLabelsMap): Record<string, number> => {
   return Object.values(labels).reduce(
@@ -70,14 +78,14 @@ const generateChoicesMap = (labels: KidsLabelsMap): Record<string, number> => {
 }
 
 export function WantsKidsIcon(props: { strength: number; className?: string }) {
-  const { strength, className } = props
+  const {strength, className} = props
   return (
     <span className={className}>
       {strength == wantsKidsLabels.no_preference.strength
         ? wantsKidsLabels.no_preference.icon
         : strength == wantsKidsLabels.wants_kids.strength
-        ? wantsKidsLabels.wants_kids.icon
-        : wantsKidsLabels.doesnt_want_kids.icon}
+          ? wantsKidsLabels.wants_kids.icon
+          : wantsKidsLabels.doesnt_want_kids.icon}
     </span>
   )
 }
@@ -87,11 +95,11 @@ export function KidsLabel(props: {
   highlightedClass?: string
   mobile?: boolean
 }) {
-  const { strength, highlightedClass, mobile } = props
+  const {strength, highlightedClass, mobile} = props
 
   return (
     <Row className="items-center gap-0.5">
-      <WantsKidsIcon strength={strength} className={clsx('hidden sm:inline')} />
+      <WantsKidsIcon strength={strength} className={clsx('hidden sm:inline')}/>
       <span
         className={clsx(
           strength != wantsKidsLabels.no_preference.strength && 'font-semibold',
@@ -103,12 +111,12 @@ export function KidsLabel(props: {
             ? wantsKidsLabels.no_preference.shortName
             : wantsKidsLabels.no_preference.name
           : strength == wantsKidsLabels.wants_kids.strength
-          ? mobile
-            ? wantsKidsLabels.wants_kids.shortName
-            : wantsKidsLabels.wants_kids.name
-          : mobile
-          ? wantsKidsLabels.doesnt_want_kids.shortName
-          : wantsKidsLabels.doesnt_want_kids.name}
+            ? mobile
+              ? wantsKidsLabels.wants_kids.shortName
+              : wantsKidsLabels.wants_kids.name
+            : mobile
+              ? wantsKidsLabels.doesnt_want_kids.shortName
+              : wantsKidsLabels.doesnt_want_kids.name}
       </span>
     </Row>
   )
@@ -118,13 +126,13 @@ export function WantsKidsFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
-  const { filters, updateFilter } = props
+  const {filters, updateFilter} = props
 
   return (
     <ChoicesToggleGroup
       currentChoice={filters.wants_kids_strength ?? 0}
       choicesMap={generateChoicesMap(wantsKidsLabels)}
-      setChoice={(c) => updateFilter({ wants_kids_strength: Number(c) })}
+      setChoice={(c) => updateFilter({wants_kids_strength: Number(c)})}
       toggleClassName="w-1/3 justify-center"
     />
   )

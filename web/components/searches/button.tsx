@@ -114,8 +114,7 @@ function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement
       stringValue = str.charAt(0).toUpperCase() + str.slice(1)
     }
 
-    let display: ReactElement
-    display = key === 'name'
+    const display: ReactElement = key === 'name'
       ? <i>{stringValue as string}</i>
       : <>{stringValue}</>
 

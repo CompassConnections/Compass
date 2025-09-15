@@ -5,8 +5,28 @@ import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supa
 import {getCompatibleLovers} from 'api/compatible-lovers'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_INT} from "common/constants";
+import {Lover} from "common/love/lover";
 
-export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
+export type profileQueryType = {
+  limit?: number | undefined,
+  after?: string | undefined,
+  // Search and filter parameters
+  name?: string | undefined,
+  genders?: String[] | undefined,
+  pref_gender?: String[] | undefined,
+  pref_age_min?: number | undefined,
+  pref_age_max?: number | undefined,
+  pref_relation_styles?: String[] | undefined,
+  wants_kids_strength?: number | undefined,
+  has_kids?: number | undefined,
+  is_smoker?: boolean | undefined,
+  geodbCityIds?: String[] | undefined,
+  compatibleWithUserId?: string | undefined,
+  orderBy?: string | undefined,
+}
+
+
+export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
   const {
     limit: limitParam,
@@ -61,10 +81,9 @@ export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
       : 0
     console.log(cursor)
 
-    return {
-      status: 'success',
-      lovers: lovers.slice(cursor, cursor + limitParam),
-    }
+    if (limitParam) return lovers.slice(cursor, cursor + limitParam)
+
+    return lovers
   }
 
   const query = renderSql(
@@ -123,12 +142,15 @@ export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
       {after}
     ),
 
-    limit(limitParam)
+    limitParam && limit(limitParam)
   )
 
   // console.log('query:', query)
 
-  const lovers = await pg.map(query, [], convertRow)
+  return await pg.map(query, [], convertRow)
+}
 
-  return {status: 'success', lovers: lovers}
+export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
+  const lovers = await loadProfiles(props)
+  return {status: 'success', lovers: lovers as Lover[]}
 }

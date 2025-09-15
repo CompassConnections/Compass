@@ -51,6 +51,15 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as { jwt: string },
   },
+  'send-search-notifications': {
+    method: 'POST',
+    authed: false,
+    props: z.object({}),
+    returns: {} as {
+      status: 'success' | 'fail'
+      lovers: Lover[]
+    },
+  },
   'mark-all-notifs-read': {
     method: 'POST',
     authed: true,
@@ -304,7 +313,7 @@ export const API = (_apiTypeCheck = {
       status: 'success'
     },
   },
-  'get-lovers': {
+  'get-profiles': {
     method: 'GET',
     authed: false,
     props: z

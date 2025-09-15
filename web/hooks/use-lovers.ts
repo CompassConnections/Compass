@@ -4,7 +4,7 @@ import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-s
 import { api } from 'web/lib/api'
 import { APIResponse } from 'common/api/schema'
 import { useLoverByUserId } from './use-lover'
-import { getLoversCompatibilityFactor } from 'common/love/compatibility-score'
+import { getProfilesCompatibilityFactor } from 'common/love/compatibility-score'
 
 export const useCompatibleLovers = (
   userId: string | null | undefined,
@@ -32,7 +32,7 @@ export const useCompatibleLovers = (
 
   if (data && lover && options?.sortWithModifiers) {
     data.compatibleLovers = sortBy(data.compatibleLovers, (l) => {
-      const modifier = !lover ? 1 : getLoversCompatibilityFactor(lover, l)
+      const modifier = !lover ? 1 : getProfilesCompatibilityFactor(lover, l)
       return -1 * modifier * data.loverCompatibilityScores[l.user.id].score
     })
   }

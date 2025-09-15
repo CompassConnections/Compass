@@ -1,56 +1,58 @@
-import { API, type APIPath } from 'common/api/schema'
-import { APIError, pathWithPrefix } from 'common/api/utils'
+import {API, type APIPath} from 'common/api/schema'
+import {APIError, pathWithPrefix} from 'common/api/utils'
 import cors from 'cors'
 import * as crypto from 'crypto'
-import express from 'express'
-import { type ErrorRequestHandler, type RequestHandler } from 'express'
-import { hrtime } from 'node:process'
-import { withMonitoringContext } from 'shared/monitoring/context'
-import { log } from 'shared/monitoring/log'
-import { metrics } from 'shared/monitoring/metrics'
-import { banUser } from './ban-user'
-import { blockUser, unblockUser } from './block-user'
-import { getCompatibleLoversHandler } from './compatible-lovers'
-import { createComment } from './create-comment'
-import { createCompatibilityQuestion } from './create-compatibility-question'
-import { createLover } from './create-lover'
-import { createUser } from './create-user'
-import { getCompatibilityQuestions } from './get-compatibililty-questions'
-import { getLikesAndShips } from './get-likes-and-ships'
-import { getLoverAnswers } from './get-lover-answers'
-import { getLovers } from './get-lovers'
-import { getSupabaseToken } from './get-supabase-token'
-import { getDisplayUser, getUser } from './get-user'
-import { getMe } from './get-me'
-import { hasFreeLike } from './has-free-like'
-import { health } from './health'
-import { typedEndpoint, type APIHandler } from './helpers/endpoint'
-import { hideComment } from './hide-comment'
-import { likeLover } from './like-lover'
-import { markAllNotifsRead } from './mark-all-notifications-read'
-import { removePinnedPhoto } from './remove-pinned-photo'
-import { report } from './report'
-import { searchLocation } from './search-location'
-import { searchNearCity } from './search-near-city'
-import { shipLovers } from './ship-lovers'
-import { starLover } from './star-lover'
-import { updateLover } from './update-lover'
-import { updateMe } from './update-me'
-import { deleteMe } from './delete-me'
-import { getCurrentPrivateUser } from './get-current-private-user'
-import { createPrivateUserMessage } from './create-private-user-message'
+import express, {type ErrorRequestHandler, type RequestHandler} from 'express'
+import {hrtime} from 'node:process'
+import {withMonitoringContext} from 'shared/monitoring/context'
+import {log} from 'shared/monitoring/log'
+import {metrics} from 'shared/monitoring/metrics'
+import {banUser} from './ban-user'
+import {blockUser, unblockUser} from './block-user'
+import {getCompatibleLoversHandler} from './compatible-lovers'
+import {createComment} from './create-comment'
+import {createCompatibilityQuestion} from './create-compatibility-question'
+import {createLover} from './create-lover'
+import {createUser} from './create-user'
+import {getCompatibilityQuestions} from './get-compatibililty-questions'
+import {getLikesAndShips} from './get-likes-and-ships'
+import {getLoverAnswers} from './get-lover-answers'
+import {getProfiles} from './get-profiles'
+import {getSupabaseToken} from './get-supabase-token'
+import {getDisplayUser, getUser} from './get-user'
+import {getMe} from './get-me'
+import {hasFreeLike} from './has-free-like'
+import {health} from './health'
+import {sendSearchNotifications} from './send-search-notifications'
+import {type APIHandler, typedEndpoint} from './helpers/endpoint'
+import {hideComment} from './hide-comment'
+import {likeLover} from './like-lover'
+import {markAllNotifsRead} from './mark-all-notifications-read'
+import {removePinnedPhoto} from './remove-pinned-photo'
+import {report} from './report'
+import {searchLocation} from './search-location'
+import {searchNearCity} from './search-near-city'
+import {shipLovers} from './ship-lovers'
+import {starLover} from './star-lover'
+import {updateLover} from './update-lover'
+import {updateMe} from './update-me'
+import {deleteMe} from './delete-me'
+import {getCurrentPrivateUser} from './get-current-private-user'
+import {createPrivateUserMessage} from './create-private-user-message'
 import {
   getChannelMemberships,
   getChannelMessages,
   getLastSeenChannelTime,
   setChannelLastSeenTime,
 } from 'api/get-private-messages'
-import { searchUsers } from './search-users'
-import { createPrivateUserMessageChannel } from './create-private-user-message-channel'
-import { leavePrivateUserMessageChannel } from './leave-private-user-message-channel'
-import { updatePrivateUserMessageChannel } from './update-private-user-message-channel'
-import { getNotifications } from './get-notifications'
-import { updateNotifSettings } from './update-notif-setting'
+import {searchUsers} from './search-users'
+import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
+import {leavePrivateUserMessageChannel} from './leave-private-user-message-channel'
+import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
+import {getNotifications} from './get-notifications'
+import {updateNotifSettings} from './update-notif-setting'
+import swaggerUi from "swagger-ui-express"
+import * as fs from "fs"
 
 const allowCorsUnrestricted: RequestHandler = cors({})
 
@@ -66,15 +68,15 @@ const requestMonitoring: RequestHandler = (req, _res, next) => {
   const traceId = traceContext
     ? traceContext.split('/')[0]
     : crypto.randomUUID()
-  const context = { endpoint: req.path, traceId }
+  const context = {endpoint: req.path, traceId}
   withMonitoringContext(context, () => {
     const startTs = hrtime.bigint()
     log(`${req.method} ${req.url}`)
-    metrics.inc('http/request_count', { endpoint: req.path })
+    metrics.inc('http/request_count', {endpoint: req.path})
     next()
     const endTs = hrtime.bigint()
     const latencyMs = Number(endTs - startTs) / 1e6
-    metrics.push('http/request_latency', latencyMs, { endpoint: req.path })
+    metrics.push('http/request_latency', latencyMs, {endpoint: req.path})
   })
 }
 
@@ -82,7 +84,7 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error instanceof APIError) {
     log.info(error)
     if (!res.headersSent) {
-      const output: { [k: string]: unknown } = { message: error.message }
+      const output: { [k: string]: unknown } = {message: error.message}
       if (error.details != null) {
         output.details = error.details
       }
@@ -91,13 +93,31 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   } else {
     log.error(error)
     if (!res.headersSent) {
-      res.status(500).json({ message: error.stack, error })
+      res.status(500).json({message: error.stack, error})
     }
   }
 }
 
 export const app = express()
 app.use(requestMonitoring)
+
+const swaggerDocument = JSON.parse(fs.readFileSync("./openapi.json", "utf-8"))
+swaggerDocument.info = {
+  ...swaggerDocument.info,
+  description: "Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.",
+  version: "1.0.0",
+  contact: {
+    name: "Compass",
+    email: "compass.meet.info@gmail.com",
+    url: "https://compassmeet.com"
+  }
+};
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
+app.listen(process.env.PORT ?? 8088, () => {
+  console.log(`API UI available at /docs`)
+})
 
 app.options('*', allowCorsUnrestricted)
 
@@ -128,7 +148,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-likes-and-ships': getLikesAndShips,
   'has-free-like': hasFreeLike,
   'star-lover': starLover,
-  'get-lovers': getLovers,
+  'get-profiles': getProfiles,
   'get-lover-answers': getLoverAnswers,
   'get-compatibility-questions': getCompatibilityQuestions,
   'remove-pinned-photo': removePinnedPhoto,
@@ -146,6 +166,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-channel-messages': getChannelMessages,
   'get-channel-seen-time': getLastSeenChannelTime,
   'set-channel-seen-time': setChannelLastSeenTime,
+  'send-search-notifications': sendSearchNotifications,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

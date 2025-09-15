@@ -6,7 +6,7 @@ import {getCompatibleLovers} from 'api/compatible-lovers'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_INT} from "common/constants";
 
-export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
+export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
   const pg = createSupabaseDirectClient()
   const {
     limit: limitParam,

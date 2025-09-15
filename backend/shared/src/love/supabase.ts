@@ -40,7 +40,7 @@ export const getLover = async (userId: string) => {
   )
 }
 
-export const getLovers = async (userIds: string[]) => {
+export const getProfiles = async (userIds: string[]) => {
   const pg = createSupabaseDirectClient()
   return await pg.map(
     `

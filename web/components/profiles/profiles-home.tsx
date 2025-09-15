@@ -15,8 +15,6 @@ import {useGetter} from 'web/hooks/use-getter'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {debounce, omit} from 'lodash'
-import {PREF_AGE_MAX, PREF_AGE_MIN,} from 'web/components/filters/location-filter'
 import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
 
 export function ProfilesHome() {
@@ -55,7 +53,7 @@ export function ProfilesHome() {
     if (!user) return;
     setIsReloading(true);
     const current = ++id.current;
-    api('get-lovers', removeNullOrUndefinedProps({
+    api('get-profiles', removeNullOrUndefinedProps({
       limit: 20,
       compatibleWithUserId: user?.id,
       ...filters
@@ -77,7 +75,7 @@ export function ProfilesHome() {
     try {
       setIsLoadingMore(true);
       const lastLover = lovers[lovers.length - 1];
-      const result = await api('get-lovers', removeNullOrUndefinedProps({
+      const result = await api('get-profiles', removeNullOrUndefinedProps({
         limit: 20,
         compatibleWithUserId: user?.id,
         after: lastLover?.id.toString(),

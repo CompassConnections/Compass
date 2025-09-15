@@ -132,7 +132,7 @@ export function getScoredAnswerCompatibility(
   )
 }
 
-export const getLoversCompatibilityFactor = (
+export const getProfilesCompatibilityFactor = (
   lover1: LoverRow,
   lover2: LoverRow
 ) => {

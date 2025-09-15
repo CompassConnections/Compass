@@ -3,6 +3,7 @@ import {db} from "web/lib/supabase/db";
 import {filterKeys} from "web/components/questions-form";
 import {track} from "web/lib/service/analytics";
 import {FilterFields} from "web/components/filters/search";
+import {removeNullOrUndefinedProps} from "common/util/object";
 
 
 export const getUserBookmarkedSearches = async (userId: string) => {
@@ -29,7 +30,11 @@ export const submitBookmarkedSearch = async (
   if (!filters) return
   if (!userId) return
 
-  const row = {search_filters: filters, location: locationFilterProps, creator_id: userId}
+  const row = {
+    search_filters: removeNullOrUndefinedProps(filters),
+    location: locationFilterProps?.location ? locationFilterProps : null,
+    creator_id: userId,
+  }
   const input = {
     ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at'].includes(key)),
   } as BookmarkedSearchSubmitType

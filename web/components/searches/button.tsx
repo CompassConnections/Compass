@@ -51,7 +51,7 @@ const filterLabels: Record<string, string> = {
   pref_age_max: "Max age",
   pref_age_min: "Min age",
   has_kids: "",
-  wants_kids_strength: "",
+  wants_kids_strength: "Kids",
   is_smoker: "",
   pref_relation_styles: "Seeking",
   pref_gender: "",
@@ -93,7 +93,7 @@ function formatFilters(filters: Partial<FilterFields>, location: locationType | 
     const typedKey = key as keyof FilterFields
 
     if (value === undefined || value === null) return
-    if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds') return
+    if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds' || typedKey == 'orderBy') return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
 

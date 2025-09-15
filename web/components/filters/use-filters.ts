@@ -98,11 +98,11 @@ export const useFilters = (you: Lover | undefined) => {
   }
 
   const yourFilters: Partial<FilterFields> = {
-    genders: you?.pref_gender,
-    pref_gender: you ? [you.gender] : undefined,
+    genders: you?.pref_gender?.length ? you.pref_gender : undefined,
+    pref_gender: you?.gender?.length ? [you.gender] : undefined,
     pref_age_max: you?.pref_age_max,
     pref_age_min: you?.pref_age_min,
-    pref_relation_styles: you?.pref_relation_styles,
+    pref_relation_styles: you?.pref_relation_styles.length ? you.pref_relation_styles : undefined,
     wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
     ),
@@ -115,10 +115,11 @@ export const useFilters = (you: Lover | undefined) => {
     !!you &&
     !!location &&
     location.id === you.geodb_city_id &&
-    isEqual(filters.genders, yourFilters.genders) &&
-    !!filters.pref_gender &&
-    filters.pref_gender.length == 1 &&
-    filters.pref_gender[0] == you.gender &&
+    isEqual(filters.genders?.length ? filters.genders : undefined, yourFilters.genders?.length ? yourFilters.genders : undefined) &&
+    // isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender) &&
+    // you?.pref_gender.length &&
+    // filters.pref_gender.length == 1 &&
+    // filters.pref_gender[0] == you.gender &&
     filters.pref_age_max == yourFilters.pref_age_max &&
     filters.pref_age_min == yourFilters.pref_age_min &&
     filters.wants_kids_strength == yourFilters.wants_kids_strength

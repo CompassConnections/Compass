@@ -65,19 +65,15 @@ export type locationType = {
   radius: number
 }
 
-export type FilterFieldsWithLocation = FilterFields & {
-  location: locationType
-}
 
-
-function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement | null {
+function formatFilters(filters: Partial<FilterFields>, location: locationType | null): ReactElement | null {
   const entries: ReactElement[] = []
 
   let ageEntry = null
   let ageMin: number | undefined = filters.pref_age_min
   if (ageMin == 18) ageMin = undefined
   let ageMax = filters.pref_age_max;
-  if (ageMax == 99) ageMax = undefined
+  if (ageMax == 99 || ageMax == 100) ageMax = undefined
   if (ageMin || ageMax) {
     let text: string = 'Age: '
     if (ageMin) text = `${text}${ageMin}`
@@ -90,13 +86,13 @@ function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement
     } else {
       text = `${text}+`
     }
-    ageEntry = <span>{text}</span>
+    ageEntry = <span key='age'>{text}</span>
   }
 
   Object.entries(filters).forEach(([key, value]) => {
     const typedKey = key as keyof FilterFields
 
-    if (!value) return
+    if (value === undefined || value === null) return
     if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds') return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
@@ -106,11 +102,6 @@ function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement
     let stringValue = value
     if (key === 'has_kids') stringValue = hasKidsNames[value as number]
     if (key === 'wants_kids_strength') stringValue = wantsKidsNames[value as number]
-    if (key === 'location') {
-      const locValue = value as locationType
-      if (!locValue?.location?.name) return
-      stringValue = `${locValue?.location?.name} (${locValue?.radius}mi)`
-    }
     if (Array.isArray(value)) stringValue = value.join(', ')
 
     if (!label) {
@@ -133,7 +124,12 @@ function formatFilters(filters: Partial<FilterFieldsWithLocation>): ReactElement
 
   if (ageEntry) entries.push(ageEntry)
 
-  if (entries.length === 0) return null
+  if (location?.location?.name) {
+    const locString = `${location?.location?.name} (${location?.radius}mi)`
+    entries.push(<span key="location">{locString}</span>)
+  }
+
+  if (entries.length === 0) return <span>Anything</span>
 
   // Join with " • " separators
   return (
@@ -176,7 +172,7 @@ function ButtonModal(props: {
             {(bookmarkedSearches || []).map((search) => (
               <li key={search.id}
                   className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                {formatFilters(search.search_filters as Partial<FilterFields>)}
+                {formatFilters(search.search_filters as Partial<FilterFields>, search.location as locationType)}
                 <button
                   onClick={async () => {
                     await deleteBookmarkedSearch(search.id)

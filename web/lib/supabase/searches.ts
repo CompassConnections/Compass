@@ -28,9 +28,8 @@ export const submitBookmarkedSearch = async (
 ) => {
   if (!filters) return
   if (!userId) return
-  const fullFilter = {...filters, ...{location: locationFilterProps}}
 
-  const row = {search_filters: fullFilter, creator_id: userId}
+  const row = {search_filters: filters, location: locationFilterProps, creator_id: userId}
   const input = {
     ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at'].includes(key)),
   } as BookmarkedSearchSubmitType

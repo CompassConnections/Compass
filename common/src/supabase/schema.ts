@@ -20,6 +20,7 @@ export type Database = {
           creator_id: string
           id: number
           last_notified_at: string | null
+          location: Json | null
           search_filters: Json | null
           search_name: string | null
         }
@@ -28,6 +29,7 @@ export type Database = {
           creator_id: string
           id?: never
           last_notified_at?: string | null
+          location?: Json | null
           search_filters?: Json | null
           search_name?: string | null
         }
@@ -36,6 +38,7 @@ export type Database = {
           creator_id?: string
           id?: never
           last_notified_at?: string | null
+          location?: Json | null
           search_filters?: Json | null
           search_name?: string | null
         }

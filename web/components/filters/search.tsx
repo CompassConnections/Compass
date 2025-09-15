@@ -54,6 +54,7 @@ function getRandomPair(): string {
 }
 
 
+const MAX_BOOKMARKED_SEARCHES = 10;
 export const Search = (props: {
   youLover: Lover | undefined | null
   starredUserIds: string[]
@@ -196,8 +197,8 @@ export const Search = (props: {
           }
           loading={loadingBookmark}
           onClick={() => {
-            if (bookmarkedSearches.length >= 10) {
-              toast.error('You cannot bookmark more searches; please delete one first.')
+            if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
+              toast.error(`You can bookmark maximum ${MAX_BOOKMARKED_SEARCHES} searches; please delete one first.`)
               setOpenBookmarks(true)
               return
             }

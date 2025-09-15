@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS bookmarked_searches (
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     creator_id TEXT NOT NULL,
     search_filters JSONB,
+    location JSONB,
     last_notified_at TIMESTAMPTZ DEFAULT NULL,
     search_name TEXT DEFAULT NULL
 );

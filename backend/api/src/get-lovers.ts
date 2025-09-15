@@ -4,6 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
 import {getCompatibleLovers} from 'api/compatible-lovers'
 import {intersection} from 'lodash'
+import {MAX_INT, MIN_INT} from "common/constants";
 
 export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
   const pg = createSupabaseDirectClient()
@@ -37,8 +38,8 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender)) &&
         (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
-        (!pref_age_min || l.age >= pref_age_min) &&
-        (!pref_age_max || l.age <= pref_age_max) &&
+        (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&
+        (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
         (!pref_relation_styles ||
           intersection(pref_relation_styles, l.pref_relation_styles).length) &&
         (!wants_kids_strength ||
@@ -87,18 +88,18 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     pref_gender?.length &&
     where(`pref_gender && $(pref_gender)`, {pref_gender}),
 
-    pref_age_min !== undefined &&
-    where(`age >= $(pref_age_min)`, {pref_age_min}),
+    pref_age_min &&
+    where(`age >= $(pref_age_min) or age is null`, {pref_age_min}),
 
-    pref_age_max !== undefined &&
-    where(`age <= $(pref_age_max)`, {pref_age_max}),
+    pref_age_max &&
+    where(`age <= $(pref_age_max) or age is null`, {pref_age_max}),
 
     pref_relation_styles?.length &&
     where(`pref_relation_styles && $(pref_relation_styles)`, {
       pref_relation_styles,
     }),
 
-    wants_kids_strength !== undefined &&
+    !!wants_kids_strength &&
     wants_kids_strength !== -1 &&
     where(
       wants_kids_strength >= 2
@@ -125,7 +126,7 @@ export const getLovers: APIHandler<'get-lovers'> = async (props, _auth) => {
     limit(limitParam)
   )
 
-  // console.debug('query:', query)
+  // console.log('query:', query)
 
   const lovers = await pg.map(query, [], convertRow)
 

@@ -45,8 +45,8 @@ export const initialFilters: Partial<FilterFields> = {
   genders: undefined,
   pref_age_max: undefined,
   pref_age_min: undefined,
-  has_kids: -1,
-  wants_kids_strength: -1,
+  has_kids: undefined,
+  wants_kids_strength: undefined,
   is_smoker: undefined,
   pref_relation_styles: undefined,
   pref_gender: undefined,
@@ -61,7 +61,21 @@ export const useFilters = (you: Lover | undefined) => {
   )
 
   const updateFilter = (newState: Partial<FilterFields>) => {
-    setFilters((prevState) => ({ ...prevState, ...newState }))
+    const updatedState = { ...newState }
+    
+    if ('pref_age_min' in updatedState && updatedState.pref_age_min !== undefined) {
+      if (updatedState.pref_age_min != null && updatedState.pref_age_min <= 18) {
+        updatedState.pref_age_min = undefined
+      }
+    }
+    
+    if ('pref_age_max' in updatedState && updatedState.pref_age_max !== undefined) {
+      if (updatedState.pref_age_max != null && updatedState.pref_age_max >= 99) {
+        updatedState.pref_age_max = undefined
+      }
+    }
+    
+    setFilters((prevState) => ({ ...prevState, ...updatedState }))
   }
 
   const clearFilters = () => {
@@ -110,11 +124,11 @@ export const useFilters = (you: Lover | undefined) => {
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
     ),
   }
+  console.log(you, yourFilters)
 
   const isYourFilters =
     !!you &&
-    !!location &&
-    location.id === you.geodb_city_id &&
+    (!location || location.id === you.geodb_city_id) &&
     isEqual(filters.genders?.length ? filters.genders : undefined, yourFilters.genders?.length ? yourFilters.genders : undefined) &&
     // isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender) &&
     // you?.pref_gender.length &&

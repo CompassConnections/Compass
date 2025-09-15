@@ -195,7 +195,7 @@ export const OptionalLoveUserForm = (props: {
           <Input
             type="number"
             placeholder="Age"
-            value={lover['age'] > 0 ? lover['age'] : undefined}
+            value={lover['age'] ?? undefined}
             min={18}
             max={100}
             onChange={(e) => setLover('age', Number(e.target.value))}
@@ -236,12 +236,13 @@ export const OptionalLoveUserForm = (props: {
             <Col>
               <span>Min</span>
               <Select
-                value={lover['pref_age_min']}
+                value={lover['pref_age_min'] ?? ''}
                 onChange={(e) =>
                   setLover('pref_age_min', Number(e.target.value))
                 }
                 className={'w-18 border-ink-300 rounded-md'}
               >
+                <option key={""} value={""}></option>
                 {range(18, 100).map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -252,12 +253,13 @@ export const OptionalLoveUserForm = (props: {
             <Col>
               <span>Max</span>
               <Select
-                value={lover['pref_age_max']}
+                value={lover['pref_age_max'] ?? ''}
                 onChange={(e) =>
                   setLover('pref_age_max', Number(e.target.value))
                 }
                 className={'w-18 border-ink-300 rounded-md'}
               >
+                <option key={""} value={""}></option>
                 {range(18, 100).map((m) => (
                   <option key={m} value={m}>
                     {m}

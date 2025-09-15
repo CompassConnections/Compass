@@ -262,7 +262,7 @@ export type Database = {
       }
       lovers: {
         Row: {
-          age: number
+          age: number | null
           bio: Json | null
           bio_text: unknown | null
           born_in_location: string | null
@@ -292,8 +292,8 @@ export type Database = {
           photo_urls: string[] | null
           pinned_url: string | null
           political_beliefs: string[] | null
-          pref_age_max: number
-          pref_age_min: number
+          pref_age_max: number | null
+          pref_age_min: number | null
           pref_gender: string[]
           pref_relation_styles: string[]
           referred_by_username: string | null
@@ -308,7 +308,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
-          age?: number
+          age?: number | null
           bio?: Json | null
           bio_text?: unknown | null
           born_in_location?: string | null
@@ -338,8 +338,8 @@ export type Database = {
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null
-          pref_age_max?: number
-          pref_age_min?: number
+          pref_age_max?: number | null
+          pref_age_min?: number | null
           pref_gender: string[]
           pref_relation_styles: string[]
           referred_by_username?: string | null
@@ -354,7 +354,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
-          age?: number
+          age?: number | null
           bio?: Json | null
           bio_text?: unknown | null
           born_in_location?: string | null
@@ -384,8 +384,8 @@ export type Database = {
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null
-          pref_age_max?: number
-          pref_age_min?: number
+          pref_age_max?: number | null
+          pref_age_min?: number | null
           pref_gender?: string[]
           pref_relation_styles?: string[]
           referred_by_username?: string | null

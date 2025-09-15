@@ -15,11 +15,11 @@ import {SignupBio} from "web/components/bio/editable-bio";
 import {JSONContent} from "@tiptap/core";
 
 export const initialRequiredState = {
-  age: 30,
+  age: undefined,
   gender: '',
   pref_gender: [],
-  pref_age_min: 18,
-  pref_age_max: 100,
+  pref_age_min: undefined,
+  pref_age_max: undefined,
   pref_relation_styles: [],
   wants_kids_strength: -1,
   looking_for_matches: true,

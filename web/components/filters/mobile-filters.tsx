@@ -68,6 +68,68 @@ export function MobileFilters(props: {
           hidden={!youLover}
         />
       </Col>
+      {/* RELATIONSHIP STYLE */}
+      <MobileFilterSection
+        title="Seeking"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.pref_relation_styles)}
+        selection={
+          <RelationshipFilterText
+            relationship={filters.pref_relation_styles as RelationshipType[]}
+            highlightedClass={
+              hasAny(filters.pref_relation_styles)
+                ? 'text-primary-600'
+                : 'text-ink-400'
+            }
+          />
+        }
+      >
+        <RelationshipFilter filters={filters} updateFilter={updateFilter} />
+      </MobileFilterSection>
+      {/* LOCATION */}
+      <MobileFilterSection
+        title="Location"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={!!locationFilterProps.location}
+        selection={
+          <LocationFilterText
+            location={locationFilterProps.location}
+            radius={locationFilterProps.radius}
+            youLover={youLover}
+            highlightedClass={
+              !locationFilterProps.location
+                ? 'text-ink-400'
+                : 'text-primary-600'
+            }
+          />
+        }
+      >
+        <LocationFilter
+          youLover={youLover}
+          locationFilterProps={locationFilterProps}
+        />
+      </MobileFilterSection>
+      {/* AGE RANGE */}
+      <MobileFilterSection
+        title="Age"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        childrenClassName={'pb-6'}
+        isActive={!noMinAge || !noMaxAge}
+        selection={
+          <AgeFilterText
+            pref_age_min={filters.pref_age_min}
+            pref_age_max={filters.pref_age_max}
+            highlightedClass={
+              noMinAge && noMaxAge ? 'text-ink-400' : 'text-primary-600'
+            }
+          />
+        }
+      >
+        <AgeFilter filters={filters} updateFilter={updateFilter} />
+      </MobileFilterSection>
       {/* GENDER */}
       <MobileFilterSection
         title="Gender"
@@ -102,114 +164,52 @@ export function MobileFilters(props: {
       {/*>*/}
       {/*  <PrefGenderFilter filters={filters} updateFilter={updateFilter} />*/}
       {/*</MobileFilterSection>*/}
-      {/* AGE RANGE */}
-      <MobileFilterSection
-        title="Age"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        childrenClassName={'pb-6'}
-        isActive={!noMinAge || !noMaxAge}
-        selection={
-          <AgeFilterText
-            pref_age_min={filters.pref_age_min}
-            pref_age_max={filters.pref_age_max}
-            highlightedClass={
-              noMinAge && noMaxAge ? 'text-ink-400' : 'text-primary-600'
-            }
-          />
-        }
-      >
-        <AgeFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
-      {/* LOCATION */}
-      <MobileFilterSection
-        title="Location"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={!!locationFilterProps.location}
-        selection={
-          <LocationFilterText
-            location={locationFilterProps.location}
-            radius={locationFilterProps.radius}
-            youLover={youLover}
-            highlightedClass={
-              !locationFilterProps.location
-                ? 'text-ink-400'
-                : 'text-primary-600'
-            }
-          />
-        }
-      >
-        <LocationFilter
-          youLover={youLover}
-          locationFilterProps={locationFilterProps}
-        />
-      </MobileFilterSection>
-      {/* RELATIONSHIP STYLE */}
-      <MobileFilterSection
-        title="Relationship style"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.pref_relation_styles)}
-        selection={
-          <RelationshipFilterText
-            relationship={filters.pref_relation_styles as RelationshipType[]}
-            highlightedClass={
-              hasAny(filters.pref_relation_styles)
-                ? 'text-primary-600'
-                : 'text-ink-400'
-            }
-          />
-        }
-      >
-        <RelationshipFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
       {/* WANTS KIDS */}
-      <MobileFilterSection
-        title="Wants kids"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={
-          filters.wants_kids_strength != null &&
-          filters.wants_kids_strength !== -1
-        }
-        icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1} />}
-        selection={
-          <KidsLabel
-            strength={filters.wants_kids_strength ?? -1}
-            highlightedClass={
-              (filters.wants_kids_strength ?? -1) ==
-              wantsKidsLabels.no_preference.strength
-                ? 'text-ink-400'
-                : 'text-primary-600'
-            }
-            mobile
-          />
-        }
-      >
-        <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      {/*<MobileFilterSection*/}
+      {/*  title="Wants kids"*/}
+      {/*  openFilter={openFilter}*/}
+      {/*  setOpenFilter={setOpenFilter}*/}
+      {/*  isActive={*/}
+      {/*    filters.wants_kids_strength != null &&*/}
+      {/*    filters.wants_kids_strength !== -1*/}
+      {/*  }*/}
+      {/*  icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1} />}*/}
+      {/*  selection={*/}
+      {/*    <KidsLabel*/}
+      {/*      strength={filters.wants_kids_strength ?? -1}*/}
+      {/*      highlightedClass={*/}
+      {/*        (filters.wants_kids_strength ?? -1) ==*/}
+      {/*        wantsKidsLabels.no_preference.strength*/}
+      {/*          ? 'text-ink-400'*/}
+      {/*          : 'text-primary-600'*/}
+      {/*      }*/}
+      {/*      mobile*/}
+      {/*    />*/}
+      {/*  }*/}
+      {/*>*/}
+      {/*  <WantsKidsFilter filters={filters} updateFilter={updateFilter} />*/}
+      {/*</MobileFilterSection>*/}
       {/* HAS KIDS */}
-      <MobileFilterSection
-        title="Has kids"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={filters.has_kids != null && filters.has_kids !== -1}
-        icon={<FaChild className="text-ink-400 h-4 w-4" />}
-        selection={
-          <HasKidsLabel
-            has_kids={filters.has_kids ?? -1}
-            highlightedClass={
-              (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value
-                ? 'text-ink-400'
-                : 'text-primary-600'
-            }
-            mobile
-          />
-        }
-      >
-        <HasKidsFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      {/*<MobileFilterSection*/}
+      {/*  title="Has kids"*/}
+      {/*  openFilter={openFilter}*/}
+      {/*  setOpenFilter={setOpenFilter}*/}
+      {/*  isActive={filters.has_kids != null && filters.has_kids !== -1}*/}
+      {/*  icon={<FaChild className="text-ink-400 h-4 w-4" />}*/}
+      {/*  selection={*/}
+      {/*    <HasKidsLabel*/}
+      {/*      has_kids={filters.has_kids ?? -1}*/}
+      {/*      highlightedClass={*/}
+      {/*        (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value*/}
+      {/*          ? 'text-ink-400'*/}
+      {/*          : 'text-primary-600'*/}
+      {/*      }*/}
+      {/*      mobile*/}
+      {/*    />*/}
+      {/*  }*/}
+      {/*>*/}
+      {/*  <HasKidsFilter filters={filters} updateFilter={updateFilter} />*/}
+      {/*</MobileFilterSection>*/}
       <button
         className="text-ink-500 hover:text-primary-500 underline"
         onClick={clearFilters}

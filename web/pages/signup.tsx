@@ -11,7 +11,7 @@ import SiteLogo from 'web/components/site-logo'
 import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
-import {removeUndefinedProps} from 'common/util/object'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useLoverByUserId} from 'web/hooks/use-lover'
 import {LoverRow} from 'common/love/lover'
 import {LovePage} from "web/components/love-page";
@@ -94,7 +94,7 @@ export default function SignupPage() {
                 console.log('loverForm', loverForm)
                 const lover = await api(
                   'create-lover',
-                  removeUndefinedProps({
+                  removeNullOrUndefinedProps({
                     ...loverForm,
                     referred_by_username: referredByUsername,
                   }) as any

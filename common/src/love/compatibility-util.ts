@@ -1,4 +1,5 @@
 import { LoverRow } from 'common/love/lover'
+import {MAX_INT, MIN_INT} from "common/constants";
 
 const isPreferredGender = (
   preferredGenders: string[] | undefined,
@@ -25,8 +26,8 @@ export const areGenderCompatible = (lover1: LoverRow, lover2: LoverRow) => {
   )
 }
 
-const satisfiesAgeRange = (lover: LoverRow, age: number) => {
-  return age >= lover.pref_age_min && age <= lover.pref_age_max
+const satisfiesAgeRange = (lover: LoverRow, age: number | null | undefined) => {
+  return (age ?? MAX_INT) >= (lover.pref_age_min ?? MIN_INT) && (age ?? MIN_INT) <= (lover.pref_age_max ?? MAX_INT)
 }
 
 export const areAgeCompatible = (lover1: LoverRow, lover2: LoverRow) => {

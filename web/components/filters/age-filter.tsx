@@ -3,11 +3,11 @@ import { FilterFields } from './search'
 import { RangeSlider } from 'web/components/widgets/slider'
 
 export const PREF_AGE_MIN = 18
-export const PREF_AGE_MAX = 99
+export const PREF_AGE_MAX = 100
 
 export function getNoMinMaxAge(
-  pref_age_min: number | undefined,
-  pref_age_max: number | undefined
+  pref_age_min: number | null | undefined,
+  pref_age_max: number | null | undefined
 ) {
   const noMinAge = !pref_age_min || pref_age_min <= PREF_AGE_MIN
   const noMaxAge = !pref_age_max || pref_age_max >= PREF_AGE_MAX
@@ -15,8 +15,8 @@ export function getNoMinMaxAge(
 }
 
 export function AgeFilterText(props: {
-  pref_age_min: number | undefined
-  pref_age_max: number | undefined
+  pref_age_min: number | null | undefined
+  pref_age_max: number | null | undefined
   highlightedClass?: string
 }) {
   const { pref_age_min, pref_age_max, highlightedClass } = props

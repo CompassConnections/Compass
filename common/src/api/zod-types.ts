@@ -44,11 +44,11 @@ const genderTypes = z.array(genderType)
 
 export const baseLoversSchema = z.object({
   // Required fields
-  age: z.number().min(18).max(100),
+  age: z.number().min(18).max(100).optional(),
   gender: genderType,
   pref_gender: genderTypes,
-  pref_age_min: z.number().min(18).max(999),
-  pref_age_max: z.number().min(18).max(1000),
+  pref_age_min: z.number().min(18).max(100).optional(),
+  pref_age_max: z.number().min(18).max(100).optional(),
   pref_relation_styles: z.array(
     z.union([
       z.literal('collaboration'),

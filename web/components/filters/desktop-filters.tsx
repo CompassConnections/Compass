@@ -52,6 +52,79 @@ export function DesktopFilters(props: {
         on={isYourFilters}
         hidden={!youLover}
       />
+      {/* CONNECTION */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <FaUserGroup className="h-4 w-4" />
+                <RelationshipFilterText
+                  relationship={
+                    filters.pref_relation_styles as
+                      | RelationshipType[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <RelationshipFilter filters={filters} updateFilter={updateFilter} />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+      {/* LOCATION */}
+      <CustomizeableDropdown
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            content={
+              <LocationFilterText
+                youLover={youLover}
+                location={locationFilterProps.location}
+                radius={locationFilterProps.radius}
+                highlightedClass={open ? 'text-primary-500' : ''}
+              />
+            }
+            open={open}
+          />
+        )}
+        dropdownMenuContent={
+          <LocationFilter
+            youLover={youLover}
+            locationFilterProps={locationFilterProps}
+          />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-80"
+      />
+      {/* AGE RANGE */}
+      <CustomizeableDropdown
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            open={open}
+            content={
+              <AgeFilterText
+                pref_age_min={filters.pref_age_min}
+                pref_age_max={filters.pref_age_max}
+                highlightedClass={open ? 'text-primary-500' : ''}
+              />
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <Col className="mx-2 mb-4">
+            <AgeFilter filters={filters} updateFilter={updateFilter} />
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-80"
+      />
+      {/* GENDER */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
           <DropdownButton
@@ -91,165 +164,94 @@ export function DesktopFilters(props: {
       {/*  }*/}
       {/*  popoverClassName="bg-canvas-50"*/}
       {/*/>*/}
-      {/* AGE RANGE */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            open={open}
-            content={
-              <AgeFilterText
-                pref_age_min={filters.pref_age_min}
-                pref_age_max={filters.pref_age_max}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <AgeFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-80"
-      />
-      {/* LOCATION */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <LocationFilterText
-                youLover={youLover}
-                location={locationFilterProps.location}
-                radius={locationFilterProps.radius}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <LocationFilter
-            youLover={youLover}
-            locationFilterProps={locationFilterProps}
-          />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-80"
-      />
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <FaUserGroup className="h-4 w-4" />
-                <RelationshipFilterText
-                  relationship={
-                    filters.pref_relation_styles as
-                      | RelationshipType[]
-                      | undefined
-                  }
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <RelationshipFilter filters={filters} updateFilter={updateFilter} />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
       {/* WANTS KIDS */}
-      <DropdownMenu
-        items={[
-          {
-            name: wantsKidsLabels.no_preference.name,
-            icon: wantsKidsLabels.no_preference.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabels.no_preference.strength,
-              })
-            },
-          },
-          {
-            name: wantsKidsLabels.wants_kids.name,
-            icon: wantsKidsLabels.wants_kids.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabels.wants_kids.strength,
-              })
-            },
-          },
-          {
-            name: wantsKidsLabels.doesnt_want_kids.name,
-            icon: wantsKidsLabels.doesnt_want_kids.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabels.doesnt_want_kids.strength,
-              })
-            },
-          },
-        ]}
-        closeOnClick
-        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <KidsLabel
-                strength={
-                  filters.wants_kids_strength ??
-                  wantsKidsLabels.no_preference.strength
-                }
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
-          />
-        )}
-        menuItemsClass={'bg-canvas-50'}
-        menuWidth="w-48"
-      />
+      {/*<DropdownMenu*/}
+      {/*  items={[*/}
+      {/*    {*/}
+      {/*      name: wantsKidsLabels.no_preference.name,*/}
+      {/*      icon: wantsKidsLabels.no_preference.icon,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({*/}
+      {/*          wants_kids_strength: wantsKidsLabels.no_preference.strength,*/}
+      {/*        })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*    {*/}
+      {/*      name: wantsKidsLabels.wants_kids.name,*/}
+      {/*      icon: wantsKidsLabels.wants_kids.icon,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({*/}
+      {/*          wants_kids_strength: wantsKidsLabels.wants_kids.strength,*/}
+      {/*        })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*    {*/}
+      {/*      name: wantsKidsLabels.doesnt_want_kids.name,*/}
+      {/*      icon: wantsKidsLabels.doesnt_want_kids.icon,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({*/}
+      {/*          wants_kids_strength: wantsKidsLabels.doesnt_want_kids.strength,*/}
+      {/*        })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*  ]}*/}
+      {/*  closeOnClick*/}
+      {/*  buttonClass={'!text-ink-600 !hover:!text-ink-600'}*/}
+      {/*  buttonContent={(open: boolean) => (*/}
+      {/*    <DropdownButton*/}
+      {/*      content={*/}
+      {/*        <KidsLabel*/}
+      {/*          strength={*/}
+      {/*            filters.wants_kids_strength ??*/}
+      {/*            wantsKidsLabels.no_preference.strength*/}
+      {/*          }*/}
+      {/*          highlightedClass={open ? 'text-primary-500' : ''}*/}
+      {/*        />*/}
+      {/*      }*/}
+      {/*      open={open}*/}
+      {/*    />*/}
+      {/*  )}*/}
+      {/*  menuItemsClass={'bg-canvas-50'}*/}
+      {/*  menuWidth="w-48"*/}
+      {/*/>*/}
       {/* HAS KIDS */}
-      <DropdownMenu
-        items={[
-          {
-            name: hasKidsLabels.no_preference.name,
-            onClick: () => {
-              updateFilter({ has_kids: hasKidsLabels.no_preference.value })
-            },
-          },
-          {
-            name: hasKidsLabels.doesnt_have_kids.name,
-            onClick: () => {
-              updateFilter({ has_kids: hasKidsLabels.doesnt_have_kids.value })
-            },
-          },
-          {
-            name: hasKidsLabels.has_kids.name,
-            onClick: () => {
-              updateFilter({ has_kids: hasKidsLabels.has_kids.value })
-            },
-          },
-        ]}
-        closeOnClick
-        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <HasKidsLabel
-                has_kids={filters.has_kids ?? -1}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
-          />
-        )}
-        menuItemsClass="bg-canvas-50"
-        menuWidth="w-40"
-      />
+      {/*<DropdownMenu*/}
+      {/*  items={[*/}
+      {/*    {*/}
+      {/*      name: hasKidsLabels.no_preference.name,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({ has_kids: hasKidsLabels.no_preference.value })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*    {*/}
+      {/*      name: hasKidsLabels.doesnt_have_kids.name,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({ has_kids: hasKidsLabels.doesnt_have_kids.value })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*    {*/}
+      {/*      name: hasKidsLabels.has_kids.name,*/}
+      {/*      onClick: () => {*/}
+      {/*        updateFilter({ has_kids: hasKidsLabels.has_kids.value })*/}
+      {/*      },*/}
+      {/*    },*/}
+      {/*  ]}*/}
+      {/*  closeOnClick*/}
+      {/*  buttonClass={'!text-ink-600 !hover:!text-ink-600'}*/}
+      {/*  buttonContent={(open: boolean) => (*/}
+      {/*    <DropdownButton*/}
+      {/*      content={*/}
+      {/*        <HasKidsLabel*/}
+      {/*          has_kids={filters.has_kids ?? -1}*/}
+      {/*          highlightedClass={open ? 'text-primary-500' : ''}*/}
+      {/*        />*/}
+      {/*      }*/}
+      {/*      open={open}*/}
+      {/*    />*/}
+      {/*  )}*/}
+      {/*  menuItemsClass="bg-canvas-50"*/}
+      {/*  menuWidth="w-40"*/}
+      {/*/>*/}
       <button
         className="text-ink-500 hover:text-primary-500 underline"
         onClick={clearFilters}

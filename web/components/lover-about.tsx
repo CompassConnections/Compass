@@ -107,11 +107,11 @@ function Seeking(props: { lover: Lover }) {
   })
 
   const ageRangeText =
-    min == 18 && max == 99
+    min == 18 && max == 100
       ? 'of any age'
       : min == max
       ? `exactly ${min} years old`
-      : max == 99
+      : max == 100
       ? `${min} or older`
       : `between ${min} - ${max} years old`
 

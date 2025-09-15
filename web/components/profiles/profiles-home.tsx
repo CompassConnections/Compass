@@ -38,17 +38,17 @@ export function ProfilesHome() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
 
-  const [debouncedAgeRange, setRawAgeRange] = useState({
-    min: filters.pref_age_min ?? PREF_AGE_MIN,
-    max: filters.pref_age_max ?? PREF_AGE_MAX,
-  });
-
-  const debouncedSetAge = useCallback(debounce((state) => setRawAgeRange(state), 50), []);
-
-  useEffect(() => {
-    if (!user) return;
-    debouncedSetAge({min: filters.pref_age_min ?? PREF_AGE_MIN, max: filters.pref_age_max ?? PREF_AGE_MAX});
-  }, [filters.pref_age_min, filters.pref_age_max]);
+  // const [debouncedAgeRange, setRawAgeRange] = useState({
+  //   min: filters.pref_age_min ?? PREF_AGE_MIN,
+  //   max: filters.pref_age_max ?? PREF_AGE_MAX,
+  // });
+  //
+  // const debouncedSetAge = useCallback(debounce((state) => setRawAgeRange(state), 50), []);
+  //
+  // useEffect(() => {
+  //   if (!user) return;
+  //   debouncedSetAge({min: filters.pref_age_min ?? PREF_AGE_MIN, max: filters.pref_age_max ?? PREF_AGE_MAX});
+  // }, [filters.pref_age_min, filters.pref_age_max]);
 
   const id = useRef(0);
   useEffect(() => {
@@ -66,7 +66,7 @@ export function ProfilesHome() {
       .finally(() => {
         if (current === id.current) setIsReloading(false);
       });
-  }, [JSON.stringify(omit(filters, ['pref_age_min', 'pref_age_max'])), debouncedAgeRange.min, debouncedAgeRange.max]);
+  }, [filters]);
 
   const {data: starredUserIds, refresh: refreshStars} = useGetter('star', user?.id, getStars);
   const compatibleLovers = useCompatibleLovers(user?.id);

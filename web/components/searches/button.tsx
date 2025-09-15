@@ -70,7 +70,7 @@ function formatFilters(filters: Partial<FilterFields>, location: locationType | 
   const entries: ReactElement[] = []
 
   let ageEntry = null
-  let ageMin: number | undefined = filters.pref_age_min
+  let ageMin: number | undefined | null = filters.pref_age_min
   if (ageMin == 18) ageMin = undefined
   let ageMax = filters.pref_age_max;
   if (ageMax == 99 || ageMax == 100) ageMax = undefined

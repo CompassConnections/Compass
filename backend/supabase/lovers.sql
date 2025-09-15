@@ -7,7 +7,7 @@ END IF;
 END$$;
 
 CREATE TABLE IF NOT EXISTS lovers (
-    age INTEGER DEFAULT 18 NOT NULL,
+    age INTEGER NULL,
     bio JSON,
     born_in_location TEXT,
     city TEXT NOT NULL,
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS lovers (
     photo_urls TEXT[],
     pinned_url TEXT,
     political_beliefs TEXT[],
-    pref_age_max INTEGER DEFAULT 100 NOT NULL,
-    pref_age_min INTEGER DEFAULT 18 NOT NULL,
+    pref_age_max INTEGER NULL,
+    pref_age_min INTEGER NULL,
     pref_gender TEXT[] NOT NULL,
     pref_relation_styles TEXT[] NOT NULL,
     referred_by_username TEXT,

@@ -19,7 +19,7 @@ export function getLoveOgImageUrl(user: User, lover?: LoverRow | null) {
     avatarUrl: lover?.pinned_url,
     username: user.username,
     name: user.name,
-    age: lover?.age.toString() ?? '25',
+    age: lover?.age?.toString() ?? '25',
     city: lover?.city ?? 'Internet',
     gender: lover?.gender ?? '???',
   } as LoveOgProps

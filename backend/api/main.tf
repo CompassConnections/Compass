@@ -175,7 +175,7 @@ resource "google_compute_backend_service" "api_backend" {
 # URL map
 resource "google_compute_url_map" "api_url_map" {
   name            = "${local.service_name}-url-map"
-  default_service = google_compute_backend_service.api_backend.id
+  default_service = google_compute_backend_service.api_backend.self_link
 
   host_rule {
     hosts        = ["*"]
@@ -185,8 +185,32 @@ resource "google_compute_url_map" "api_url_map" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.api_backend.self_link
+
+    # Priority 0: passthrough /v0/* requests
+    route_rules {
+      priority = 1
+      match_rules {
+        prefix_match = "/v0"
+      }
+      service = google_compute_backend_service.api_backend.self_link
+    }
+
+    # Priority 1: rewrite everything else to /v0
+    route_rules {
+      priority = 2
+      match_rules {
+        prefix_match = "/"
+      }
+      route_action {
+        url_rewrite {
+          path_prefix_rewrite = "/v0/"
+        }
+      }
+      service = google_compute_backend_service.api_backend.self_link
+    }
   }
 }
+
 
 # HTTPS proxy
 resource "google_compute_target_https_proxy" "api_https_proxy" {

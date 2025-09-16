@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
-import {cons} from "effect/List";
+// import {cons} from "effect/List";
 
 type Prompt = {
   id: string;

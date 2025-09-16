@@ -8,7 +8,7 @@ Your contribution directly helps cover hosting, development, and community growt
 
 - [Patreon](https://patreon.com/CompassMeet) – one-time or ongoing monthly support
 - [PayPal](https://www.paypal.com/paypalme/CompassConnections) – one-time or flexible contributions
-- [GitHub Sponsors](https://github.com/sponsors/MartinBraquet) – increased transparency, but requires a GitHub account
+- [GitHub Sponsors](https://github.com/sponsors/CompassConnections) – increased transparency, but requires a GitHub account
 
 
 ## Why Donate?

@@ -7,6 +7,7 @@ import {useNearbyCities} from "web/hooks/use-nearby-locations";
 import {useEffectCheckEquality} from "web/hooks/use-effect-check-equality";
 import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKidsFilter} from "common/wants-kids";
 import {FilterFields, initialFilters, OriginLocation} from "common/filters";
+import {MAX_INT, MIN_INT} from "common/constants";
 
 export const useFilters = (you: Lover | undefined) => {
   const isLooking = useIsLooking()
@@ -69,8 +70,8 @@ export const useFilters = (you: Lover | undefined) => {
   const yourFilters: Partial<FilterFields> = {
     genders: you?.pref_gender?.length ? you.pref_gender : undefined,
     pref_gender: you?.gender?.length ? [you.gender] : undefined,
-    pref_age_max: (you?.pref_age_max ?? MAX_AGE) < 100 ? you?.pref_age_max : undefined,
-    pref_age_min: (you?.pref_age_min ?? MIN_AGE) > 18 ? you?.pref_age_min : undefined,
+    pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
+    pref_age_min: (you?.pref_age_min ?? MIN_INT) > 18 ? you?.pref_age_min : undefined,
     pref_relation_styles: you?.pref_relation_styles.length ? you.pref_relation_styles : undefined,
     wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase

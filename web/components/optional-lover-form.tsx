@@ -42,7 +42,7 @@ export const OptionalLoveUserForm = (props: {
   const {lover, user, buttonLabel, setLover, fromSignup, onSubmit} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lookingRelationship, setlookingRelationship] = useState(false)
+  const [lookingRelationship, setLookingRelationship] = useState(false)
   const router = useRouter()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
     lover.height_in_inches
@@ -534,7 +534,7 @@ export const OptionalLoveUserForm = (props: {
           <ChoicesToggleGroup
             currentChoice={lookingRelationship}
             choicesMap={{Yes: true, No: false}}
-            setChoice={(c) => setlookingRelationship(c)}
+            setChoice={(c) => setLookingRelationship(c)}
           />
         </Col>
 

@@ -129,4 +129,6 @@ sudo journalctl -u konlet-startup --no-pager -efb
 sudo docker logs -f $(sudo docker ps -alq)
 docker exec -it $(sudo docker ps -alq) sh
 docker run -it --rm $(docker images -q | head -n 1) sh
+docker rmi -f $(docker images -aq)
+
 ```

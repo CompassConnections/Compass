@@ -5,7 +5,7 @@ import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
 import {getLover} from 'shared/love/supabase'
-import {renderToStaticMarkup} from "react-dom/server";
+import { render } from "@react-email/render"
 import {MatchesType} from "common/love/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 
@@ -62,7 +62,7 @@ export const sendNewMessageEmail = async (
     from,
     subject: `${fromUser.name} sent you a message!`,
     to: privateUser.email,
-    html: renderToStaticMarkup(
+    html: await render(
       <NewMessageEmail
         fromUser={fromUser}
         fromUserLover={lover}
@@ -91,7 +91,7 @@ export const sendSearchAlertsEmail = async (
     from,
     subject: `People aligned with your values just joined`,
     to: email,
-    html: renderToStaticMarkup(
+    html: await render(
       <NewSearchAlertsEmail
         toUser={toUser}
         matches={matches}
@@ -118,7 +118,7 @@ export const sendNewEndorsementEmail = async (
     from,
     subject: `${fromUser.name} just endorsed you!`,
     to: privateUser.email,
-    react: (
+    html: await render(
       <NewEndorsementEmail
         fromUser={fromUser}
         onUser={onUser}
@@ -135,6 +135,6 @@ export const sendTestEmail = async (toEmail: string) => {
     from,
     subject: 'Test email from Compass',
     to: toEmail,
-    html: renderToStaticMarkup(<Test name="Test User"/>),
+    html: await render(<Test name="Test User"/>),
   })
 }

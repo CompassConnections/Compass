@@ -13,7 +13,7 @@
     "debug": "nodemon -r tsconfig-paths/register --watch src -e ts --watch ../../common/src --watch ../shared/src --exec \"yarn build && node --inspect-brk src/serve.ts\"",
     "dist": "yarn dist:clean && yarn dist:copy",
     "dist:clean": "rm -rf dist && mkdir -p dist/common/lib dist/backend/shared/lib dist/backend/api/lib dist/backend/email/lib",
-    "dist:copy": "rsync -a --delete ../../common/lib/ dist/common/lib && rsync -a --delete ../shared/lib/ dist/backend/shared/lib && rsync -a --delete ../email/lib/ dist/backend/email/lib && rsync -a --delete  ./lib/* dist/backend/api/lib && cp ../../yarn.lock dist && cp package.json dist",
+    "dist:copy": "rsync -a --delete ../../common/lib/ dist/common/lib && rsync -a --delete ../shared/lib/ dist/backend/shared/lib && rsync -a --delete ../email/lib/ dist/backend/email/lib && rsync -a --delete  ./lib/* dist/backend/api/lib && cp ../../yarn.lock dist && cp package.json dist && cp openapi.json dist",
     "watch": "tsc -w",
     "verify": "yarn --cwd=../.. verify",
     "verify:dir": "npx eslint . --max-warnings 0",
@@ -58,11 +58,9 @@
     "tsconfig-paths": "4.2.0",
     "twitter-api-v2": "1.15.0",
     "ws": "8.17.0",
-    "zod": "3.21.4"
-  },
-  "peerDependencies": {
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@types/cors": "2.8.17",

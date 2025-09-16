@@ -25,7 +25,7 @@ export const useFilters = (you: Lover | undefined) => {
     }
 
     if ('pref_age_max' in updatedState && updatedState.pref_age_max !== undefined) {
-      if (updatedState.pref_age_max != null && updatedState.pref_age_max >= 99) {
+      if (updatedState.pref_age_max != null && updatedState.pref_age_max >= 100) {
         updatedState.pref_age_max = undefined
       }
     }
@@ -69,8 +69,8 @@ export const useFilters = (you: Lover | undefined) => {
   const yourFilters: Partial<FilterFields> = {
     genders: you?.pref_gender?.length ? you.pref_gender : undefined,
     pref_gender: you?.gender?.length ? [you.gender] : undefined,
-    pref_age_max: you?.pref_age_max,
-    pref_age_min: you?.pref_age_min,
+    pref_age_max: (you?.pref_age_max ?? MAX_AGE) < 100 ? you?.pref_age_max : undefined,
+    pref_age_min: (you?.pref_age_min ?? MIN_AGE) > 18 ? you?.pref_age_min : undefined,
     pref_relation_styles: you?.pref_relation_styles.length ? you.pref_relation_styles : undefined,
     wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase

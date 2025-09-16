@@ -33,7 +33,7 @@ export function formatFilters(filters: Partial<FilterFields>, location: location
   let ageMin: number | undefined | null = filters.pref_age_min
   if (ageMin == 18) ageMin = undefined
   let ageMax = filters.pref_age_max;
-  if (ageMax == 99 || ageMax == 100) ageMax = undefined
+  if (ageMax == 100) ageMax = undefined
   if (ageMin || ageMax) {
     let text: string = 'Age: '
     if (ageMin) text = `${text}${ageMin}`

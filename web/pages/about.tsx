@@ -101,7 +101,7 @@ export default function About() {
                   <h5 id="share" className="font-bold mb-4 text-xl text-center">Develop the App</h5>
                   <p className="mb-4 text-center">The full source code and instructions are available on GitHub.</p>
                   <a
-                    href="https://github.com/CompassMeet/Compass"
+                    href="https://paypalme/CompassConnections/Compass"
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
                     target="_blank" rel="noopener noreferrer">
                     View Code

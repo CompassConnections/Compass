@@ -79,7 +79,7 @@ The **compatibility score** comes from answers to **compatibility prompts**. Eac
 
 Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance.
 
-The [full implementation](https://github.com/CompassMeet/Compass/blob/main/common/src/love/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
+The [full implementation](https://paypalme/CompassConnections/Compass/blob/main/common/src/love/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
 
 
 
@@ -87,7 +87,7 @@ The [full implementation](https://github.com/CompassMeet/Compass/blob/main/commo
 
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
 * **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
-* **Contribute to Development**: [View the code on GitHub](https://github.com/CompassMeet/Compass)
+* **Contribute to Development**: [View the code on GitHub](https://paypalme/CompassConnections/Compass)
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.
 

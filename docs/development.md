@@ -3,18 +3,22 @@
 > [!WARNING]  
 > TODO: This document is a work in progress. Please help us improve it by contributing!
 
-See [knowledge.md](knowledge.md) for high-level architecture and design decisions.
+See those other useful documents as well:
+- [knowledge.md](knowledge.md) for high-level architecture and design decisions.
+- [README.md](../backend/api/README.md) for the backend API
+- [README.md](../backend/email/README.md) for the email routines and how to set up a local server for quick email rendering
+- [README.md](../web/README.md) for the frontend / web server
 
 ### Adding a new profile variable
 
 To add a profile variable (personality type, etc.), make modifications here:
-
 * ...
 
-Then update the database by running a migration:
+You will likely need to update the `lovers` table of the database. Set up an SQL migration file that updates the table, as in [migrations](../backend/supabase/migrations), and run it in the same vein as [migrate.sh](../scripts/migrate.sh).
 
+Sync the database types from supabase to the local files (which assist Typescript in typing):
 ```bash
-...
+yarn regen-types
 ```
 
 ### Cover with tests

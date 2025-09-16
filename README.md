@@ -7,7 +7,7 @@
 
 This repository contains the source code for [Compass](https://compassmeet.com) — an open platform for forming deep, authentic 1-on-1 connections with clarity and efficiency.
 
-**We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small donations—you can make a real difference. [Contribute](https://www.compassmeet.com/about) in any way you can and help our community thrive!
+**We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help our community thrive!
 
 ## Features
 
@@ -105,7 +105,7 @@ We can't make the following information public, for security and privacy reasons
 - Firebase, otherwise anyone could remove users or modify the media files
 - Email, analytics, and location services, otherwise anyone could use our paid plan
 
-So, we separate all those services between production and local development, so that you can code freely without impacting the functioning of the platform.
+We separate all those services between production and local development, so that you can code freely without impacting the functioning of the platform.
 Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
 
 Most of the code will work out of the box. All you need to do is creating an `.env` file as a copy of `.env.example`:
@@ -113,8 +113,7 @@ Most of the code will work out of the box. All you need to do is creating an `.e
 cp .env.example .env
 ```
 
-Then, most of you can skip the rest of the section. If you do need one of the few remaining services, you need to store your own secrets as environment variables.
-To do so, simply open `.env` and fill in the variables according to the instructions in the file.
+If you do need one of the few remaining services, you need to store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
 
 ### Tests
 

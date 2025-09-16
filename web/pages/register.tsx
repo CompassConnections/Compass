@@ -2,7 +2,6 @@
 
 import {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
-import {FcGoogle} from "react-icons/fc";
 import {useSearchParams} from "next/navigation";
 import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup";
 
@@ -32,7 +31,7 @@ function RegisterComponent() {
   const [error, setError] = useState<string | null>(searchParams.get('error'));
   const [isLoading, setIsLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [registeredEmail, _] = useState('');
   const user = useUser()
 
   // function redirect() {
@@ -233,10 +232,10 @@ function RegisterComponent() {
                       <span className="px-2 body-bg text-gray-500">Or sign up with</span>
                     </div>
                   </div>
-                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading} />
+                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading}/>
                 </div>
               </form>
-              <div className="my-8" />
+              <div className="my-8"/>
               <div className="text-center customlink">
                 <p className="">
                   Already have an account?{' '}

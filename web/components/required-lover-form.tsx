@@ -31,9 +31,9 @@ export const initialRequiredState = {
   bio: null,
 }
 
-const requiredKeys = Object.keys(
-  initialRequiredState
-) as (keyof typeof initialRequiredState)[]
+// const requiredKeys = Object.keys(
+//   initialRequiredState
+// ) as (keyof typeof initialRequiredState)[]
 
 export const RequiredLoveUserForm = (props: {
   user: User
@@ -46,10 +46,8 @@ export const RequiredLoveUserForm = (props: {
   onSubmit?: () => void
   loverCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, loverCreatedAlready, setLover, lover, isSubmitting} =
-    props
-  const {updateUsername, updateDisplayName, userInfo, updateUserState} =
-    useEditableUserInfo(user)
+  const {user, onSubmit, loverCreatedAlready, setLover, lover, isSubmitting} = props
+  const {updateUsername, updateDisplayName, userInfo, updateUserState} = useEditableUserInfo(user)
 
   const {
     name,

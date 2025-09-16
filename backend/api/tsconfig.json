@@ -9,6 +9,7 @@
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "target": "esnext",
     "skipLibCheck": true,
     "jsx": "react-jsx",

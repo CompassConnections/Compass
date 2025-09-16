@@ -23,7 +23,6 @@ import {getDisplayUser, getUser} from './get-user'
 import {getMe} from './get-me'
 import {hasFreeLike} from './has-free-like'
 import {health} from './health'
-import {sendSearchNotifications} from './send-search-notifications'
 import {type APIHandler, typedEndpoint} from './helpers/endpoint'
 import {hideComment} from './hide-comment'
 import {likeLover} from './like-lover'
@@ -53,6 +52,7 @@ import {getNotifications} from './get-notifications'
 import {updateNotifSettings} from './update-notif-setting'
 import swaggerUi from "swagger-ui-express"
 import * as fs from "fs"
+import {sendSearchNotifications} from "api/send-search-notifications";
 
 const allowCorsUnrestricted: RequestHandler = cors({})
 
@@ -166,7 +166,6 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-channel-messages': getChannelMessages,
   'get-channel-seen-time': getLastSeenChannelTime,
   'set-channel-seen-time': setChannelLastSeenTime,
-  'send-search-notifications': sendSearchNotifications,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {
@@ -193,6 +192,28 @@ Object.entries(handlers).forEach(([path, handler]) => {
     throw new Error('Unsupported API method')
   }
 })
+
+console.log('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
+
+// Internal Endpoints
+app.post(
+  '/' + pathWithPrefix("internal/send-search-notifications"),
+  async (req, res) => {
+    const apiKey = req.header("x-api-key");
+    if (apiKey !== process.env.COMPASS_API_KEY) {
+      return res.status(401).json({error: "Unauthorized"});
+    }
+
+    try {
+      const result = await sendSearchNotifications()
+      return res.status(200).json(result)
+    } catch (err) {
+      console.error("Failed to send notifications:", err);
+      return res.status(500).json({error: "Internal server error"});
+    }
+  }
+);
+
 
 app.use(allowCorsUnrestricted, (req, res) => {
   if (req.method === 'OPTIONS') {

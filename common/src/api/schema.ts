@@ -51,14 +51,6 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as { jwt: string },
   },
-  'send-search-notifications': {
-    method: 'POST',
-    authed: false,
-    props: z.object({}),
-    returns: {} as {
-      status: 'success' | 'fail'
-    },
-  },
   'mark-all-notifs-read': {
     method: 'POST',
     authed: true,

@@ -20,7 +20,7 @@ export class APIError extends Error {
   }
 }
 
-export function pathWithPrefix(path: APIPath) {
+export function pathWithPrefix(path: string) {
   return `v0/${path}`
 }
 

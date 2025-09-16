@@ -1,4 +1,3 @@
-import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from "shared/supabase/init";
 import {from, renderSql, select} from "shared/supabase/sql-builder";
 import {loadProfiles, profileQueryType} from "api/get-profiles";
@@ -18,7 +17,7 @@ export const notifyBookmarkedSearch = async (matches: MatchesByUserType) => {
   }
 }
 
-export const sendSearchNotifications: APIHandler<'send-search-notifications'> = async (_, auth) => {
+export const sendSearchNotifications = async () => {
   const pg = createSupabaseDirectClient()
 
   const search_query = renderSql(

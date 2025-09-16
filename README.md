@@ -5,7 +5,7 @@
 
 # Compass
 
-This repository provides the source code for [Compass](https://compassmeet.com), a web application for people to form deep 1-on-1 relationships in a fully transparent and efficient way. And it just got released!
+This repository contains the source code for [Compass](https://compassmeet.com) — an open platform for forming deep, authentic 1-on-1 connections with clarity and efficiency.
 
 **We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small donations—you can make a real difference. [Contribute](https://www.compassmeet.com/about) in any way you can and help our community thrive!
 

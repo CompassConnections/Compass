@@ -28,6 +28,7 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
+  console.log(props)
   const {
     limit: limitParam,
     after,
@@ -119,9 +120,10 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(`age <= $(pref_age_max) or age is null`, {pref_age_max}),
 
     pref_relation_styles?.length &&
-    where(`pref_relation_styles && $(pref_relation_styles)`, {
-      pref_relation_styles,
-    }),
+    where(
+      `pref_relation_styles IS NULL OR pref_relation_styles = '{}' OR pref_relation_styles && $(pref_relation_styles)`,
+      { pref_relation_styles }
+    ),
 
     !!wants_kids_strength &&
     wants_kids_strength !== -1 &&

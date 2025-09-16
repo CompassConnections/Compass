@@ -13,7 +13,7 @@ export const Footer = ({
     <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}}/>
     <Row>
       <Column align="center">
-        <Link href="https://github.com/CompassMeet/Compass" target="_blank">
+        <Link href="https://github.com/CompassConnections/Compass" target="_blank">
           <Img
             src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
             width="24"

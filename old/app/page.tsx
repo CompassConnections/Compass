@@ -49,7 +49,7 @@ export default function HomePage() {
       {/* Header */}
       {/*<header className="flex justify-between items-center p-2 max-w-6xl mx-auto w-full">*/}
       {/*  <a */}
-      {/*    href="https://github.com/CompassMeet/Compass" */}
+      {/*    href="https://github.com/CompassConnections/Compass" */}
       {/*    target="_blank" */}
       {/*    rel="noopener noreferrer"*/}
       {/*    className="text-gray-700 hover: transition"*/}

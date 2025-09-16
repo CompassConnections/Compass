@@ -109,7 +109,7 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
-                  <p className="mb-4 text-center customlink"><Link href="/constitution">Support</Link> our not-for-profit infrastructure.</p>
+                  <p className="mb-4 text-center customlink"><Link href="/support">Support</Link> our not-for-profit infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                     <a
                       href="https://patreon.com/CompassMeet"

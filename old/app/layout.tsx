@@ -30,7 +30,7 @@ export default function RootLayout(
         <footer className="p-6 text-center text-gray-500">
           <div className="mb-2">
             <a
-              href="https://paypalme/CompassConnections/Compass"
+              href="https://github.com/CompassMeet/Compass"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-gray-500 hover:text-gray-700 transition"

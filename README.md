@@ -1,6 +1,6 @@
 
-[![CI](https://paypalme/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://paypalme/CompassConnections/Compass/actions/workflows/ci.yml)
-[![CD](https://paypalme/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://paypalme/CompassConnections/Compass/actions/workflows/cd.yml)
+[![CI](https://github.com/CompassMeet/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassMeet/Compass/actions/workflows/ci.yml)
+[![CD](https://github.com/CompassMeet/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassMeet/Compass/actions/workflows/cd.yml)
 ![Vercel](https://deploy-badge.vercel.app/vercel/bayesbond)
 
 # Compass

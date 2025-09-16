@@ -45,7 +45,7 @@ export function Custom404Content(props: { customText?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             className="items-center hover:text-indigo-400 hover:underline"
-            href="https://paypalme/CompassConnections/Compass/issues"
+            href="https://github.com/CompassMeet/Compass/issues"
           >
             GitHub!
             <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 " />

@@ -113,11 +113,7 @@ swaggerDocument.info = {
   }
 };
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
-app.listen(process.env.PORT ?? 8088, () => {
-  console.log(`API UI available at /docs`)
-})
+app.use(pathWithPrefix(""), swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.options('*', allowCorsUnrestricted)
 
@@ -171,7 +167,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
 Object.entries(handlers).forEach(([path, handler]) => {
   const api = API[path as APIPath]
   const cache = cacheController((api as any).cache)
-  const url = '/' + pathWithPrefix(path as APIPath)
+  const url = pathWithPrefix('/' + path as APIPath)
 
   const apiRoute = [
     url,
@@ -193,11 +189,10 @@ Object.entries(handlers).forEach(([path, handler]) => {
   }
 })
 
-console.log('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
+// console.log('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
 
 // Internal Endpoints
-app.post(
-  '/' + pathWithPrefix("internal/send-search-notifications"),
+app.post(pathWithPrefix("/internal/send-search-notifications"),
   async (req, res) => {
     const apiKey = req.header("x-api-key");
     if (apiKey !== process.env.COMPASS_API_KEY) {
@@ -223,7 +218,7 @@ app.use(allowCorsUnrestricted, (req, res) => {
       .status(404)
       .set('Content-Type', 'application/json')
       .json({
-        message: `The requested route '${req.path}' does not exist. Please check your URL for any misspellings or refer to app.ts`,
+        message: `This is the Compass API, but the requested route '${req.path}' does not exist. Please check your URL for any misspellings, the docs at https://api.compassmeet.com, or simply refer to app.ts on GitHub`,
       })
   }
 })

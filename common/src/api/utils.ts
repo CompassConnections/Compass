@@ -21,7 +21,7 @@ export class APIError extends Error {
 }
 
 export function pathWithPrefix(path: string) {
-  return `v0/${path}`
+  return `/v0${path}`
 }
 
 export function getWebsocketUrl() {

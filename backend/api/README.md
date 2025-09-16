@@ -1,13 +1,13 @@
 # Backend API
 
-This is the code for the API running at `api.compassmeet.com`.
+This is the code for the API running at https://api.compassmeet.com.
 It runs in a docker inside a Google Cloud virtual machine.
 
 ### Requirements
 
 You must have the `gcloud` CLI.
 
-On MacOS:
+On macOS:
 
 ```bash
 brew install --cask google-cloud-sdk
@@ -60,7 +60,7 @@ Set up the saved search notifications job:
 
 ```bash
 gcloud scheduler jobs create http daily-saved-search-notifications \
-  --schedule="0 19 * * *" \
+  --schedule="0 16 * * *" \
   --uri="https://api.compassmeet.com/internal/send-search-notifications" \
   --http-method=POST \
   --headers="x-api-key=<API_KEY>" \
@@ -155,3 +155,8 @@ docker exec -it $(sudo docker ps -alq) sh
 docker run -it --rm $(docker images -q | head -n 1) sh
 docker rmi -f $(docker images -aq)
 ```
+
+### Documentation
+
+The API docs are available at https://api.compassmeet.com. They are defined in [openapi.json](openapi.json).
+Just a few endpoints are mentioned in that JSON doc. Feel free to help by adding the remaining ones!

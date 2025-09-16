@@ -55,6 +55,7 @@ tsconfig.tsbuildinfo
 
 *prisma/migrations
 martin
+email-preview
 .obsidian
 .idea
 *.last-run.json

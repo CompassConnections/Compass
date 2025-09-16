@@ -53,7 +53,7 @@ export const sendSearchNotifications = async () => {
 
   for (const row of searches) {
     if (typeof row.search_filters !== 'object') continue;
-    const props = {...row.search_filters, skipId: row.creator_id}
+    const props = {...row.search_filters, skipId: row.creator_id, lastModificationWithin: '24 hours'}
     const profiles = await loadProfiles(props as profileQueryType)
     console.log(profiles.map((item: any) => item.name))
     if (!profiles.length) continue
@@ -74,7 +74,7 @@ export const sendSearchNotifications = async () => {
       })),
     })
   }
-  console.log(JSON.stringify(matches, null, 2))
+  console.log('matches:', JSON.stringify(matches, null, 2))
   await notifyBookmarkedSearch(matches)
 
   return {status: 'success'}

@@ -23,6 +23,7 @@ export type profileQueryType = {
   compatibleWithUserId?: string | undefined,
   skipId?: string | undefined,
   orderBy?: string | undefined,
+  lastModificationWithin?: string | undefined,
 }
 
 
@@ -44,6 +45,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     geodbCityIds,
     compatibleWithUserId,
     orderBy: orderByParam = 'created_time',
+    lastModificationWithin,
     skipId,
   } = props
 
@@ -150,6 +152,8 @@ export const loadProfiles = async (props: profileQueryType) => {
       `lovers.${orderByParam} < (select lovers.${orderByParam} from lovers where id = $(after))`,
       {after}
     ),
+
+    lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
 
     limitParam && limit(limitParam)
   )

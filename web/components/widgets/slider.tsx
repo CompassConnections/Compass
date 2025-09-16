@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import * as RxSlider from '@radix-ui/react-slider'
-import { ReactNode } from 'react'
+import {ReactNode, useState} from 'react'
 
 const colors = {
   green: ['bg-teal-400', 'focus:outline-teal-600/30 bg-teal-600'],
@@ -58,10 +58,10 @@ export function Slider(props: {
     >
       <Track className={trackClasses}>
         <div className="absolute left-2.5 right-2.5 h-full">
-          {marks?.map(({ value, label }) => (
+          {marks?.map(({value, label}) => (
             <div
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${(value / (max - min)) * 100}%` }}
+              style={{left: `${(value / (max - min)) * 100}%`}}
               key={value}
             >
               <div
@@ -77,7 +77,7 @@ export function Slider(props: {
           ))}
         </div>
       </Track>
-      <Thumb className={thumbClasses} />
+      <Thumb className={thumbClasses}/>
     </RxSlider.Root>
   )
 }
@@ -109,6 +109,7 @@ export function RangeSlider(props: {
   } = props
 
   const [trackClasses, thumbClasses] = colors[color]
+  const [dragValues, setDragValues] = useState<[number, number]>([lowValue, highValue])
 
   return (
     <RxSlider.Root
@@ -116,36 +117,37 @@ export function RangeSlider(props: {
         className,
         'relative flex h-7 touch-none select-none items-center'
       )}
-      value={[lowValue, highValue]}
+      value={dragValues}
       step={step ?? 1}
-      onValueChange={([low, high]) => setValues(low, high)}
+      onValueChange={(vals: number[]) => setDragValues([vals[0], vals[1]])} // update continuously for UI feedback
+      onValueCommit={([low, high]) => setValues(low, high)} // update only on release
       min={min}
       max={max}
       disabled={disabled}
     >
       <Track className={trackClasses}>
         <div>
-          {marks?.map(({ value, label }) => (
+          {marks?.map(({value, label}) => (
             <div
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${value}%` }}
+              style={{left: `${value}%`}}
               key={value}
             >
-              <span className="text-ink-400 absolute left-1/2 top-4 -translate-x-1/2 text-xs">
-                {label}
-              </span>
+          <span className="text-ink-400 absolute left-1/2 top-4 -translate-x-1/2 text-xs">
+            {label}
+          </span>
             </div>
           ))}
         </div>
       </Track>
-      <Thumb className={thumbClasses} />
-      <Thumb className={thumbClasses} />
+      <Thumb className={thumbClasses}/>
+      <Thumb className={thumbClasses}/>
     </RxSlider.Root>
   )
 }
 
 const Track = (props: { className: string; children?: ReactNode }) => {
-  const { className, children } = props
+  const {className, children} = props
   return (
     <RxSlider.Track className="bg-ink-300 relative h-1 grow rounded-full">
       {children}

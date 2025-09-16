@@ -49,8 +49,6 @@
     "next": "14.1.0",
     "posthog-js": "1.234.1",
     "punycode": "2.3.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "react-expanding-textarea": "2.3.6",
     "react-hot-toast": "2.2.0",
     "react-icons": "5.5.0",
@@ -59,6 +57,10 @@
     "react-popper": "2.3.0",
     "stability-client": "1.6.1",
     "tippy.js": "6.3.7"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@svgr/webpack": "8.1.0",

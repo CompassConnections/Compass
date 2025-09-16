@@ -12,10 +12,9 @@
   ],
   "scripts": {
     "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
-    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix",
-    "dev": "./run_local.sh dev",
-    "prod": "./run_local.sh prod",
-    "clean-install": "./install.sh",
+    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix", "dev": "./scripts/run_local.sh dev",
+    "prod": "./scripts/run_local.sh prod",
+    "clean-install": "./scripts/install.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -26,6 +25,8 @@
     "@playwright/test": "^1.54.2",
     "colorette": "^2.0.20",
     "prismjs": "^1.30.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-markdown": "*"
   },
   "devDependencies": {

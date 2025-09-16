@@ -1,7 +1,6 @@
 import {PrivateUser, User} from 'common/user'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
 import {sendEmail} from './send-email'
-import {NewMatchEmail} from '../new-match'
 import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
@@ -12,33 +11,33 @@ import NewSearchAlertsEmail from "email/new-search_alerts";
 
 const from = 'Compass <no-reply@compassmeet.com>'
 
-export const sendNewMatchEmail = async (
-  privateUser: PrivateUser,
-  matchedWithUser: User
-) => {
-  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
-    privateUser,
-    'new_match'
-  )
-  if (!privateUser.email || !sendToEmail) return
-  const lover = await getLover(privateUser.id)
-  if (!lover) return
-
-  return await sendEmail({
-    from,
-    subject: `You have a new match!`,
-    to: privateUser.email,
-    react: (
-      <NewMatchEmail
-        onUser={lover.user}
-        email={privateUser.email}
-        matchedWithUser={matchedWithUser}
-        matchedLover={lover}
-        unsubscribeUrl={unsubscribeUrl}
-      />
-    ),
-  })
-}
+// export const sendNewMatchEmail = async (
+//   privateUser: PrivateUser,
+//   matchedWithUser: User
+// ) => {
+//   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
+//     privateUser,
+//     'new_match'
+//   )
+//   if (!privateUser.email || !sendToEmail) return
+//   const lover = await getLover(privateUser.id)
+//   if (!lover) return
+//
+//   return await sendEmail({
+//     from,
+//     subject: `You have a new match!`,
+//     to: privateUser.email,
+//     react: (
+//       <NewMatchEmail
+//         onUser={lover.user}
+//         email={privateUser.email}
+//         matchedWithUser={matchedWithUser}
+//         matchedLover={lover}
+//         unsubscribeUrl={unsubscribeUrl}
+//       />
+//     ),
+//   })
+// }
 
 export const sendNewMessageEmail = async (
   privateUser: PrivateUser,

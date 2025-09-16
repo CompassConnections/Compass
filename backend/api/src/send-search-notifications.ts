@@ -69,10 +69,10 @@ export const sendSearchNotifications: APIHandler<'send-search-notifications'> = 
     matches[row.creator_id].matches.push({
       id: row.creator_id,
       description: {filters: row.search_filters, location: row.location},
-      matches: [profiles.map((item: any) => ({
+      matches: profiles.map((item: any) => ({
         name: item.name,
         username: item.username,
-      }))],
+      })),
     })
   }
   console.log(JSON.stringify(matches, null, 2))

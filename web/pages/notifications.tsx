@@ -221,8 +221,8 @@ const NotificationOption = (props: {
 
   const getSelectedValues = (destinations: string[]) => {
     const values: number[] = []
-    if (destinations.includes('email')) values.push(0)
-    if (destinations.includes('browser')) values.push(1)
+    if ((destinations ?? []).includes('email')) values.push(0)
+    if ((destinations ?? []).includes('browser')) values.push(1)
     return values
   }
 

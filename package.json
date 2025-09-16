@@ -33,7 +33,7 @@
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "18.18.8",
+    "@types/node": "20.12.11",
     "@typescript-eslint/eslint-plugin": "7.4.0",
     "@typescript-eslint/parser": "7.4.0",
     "concurrently": "8.2.2",
@@ -45,7 +45,7 @@
     "prettier": "2.8.4",
     "ts-node": "10.9.1",
     "tsc-alias": "1.8.2",
-    "tsconfig-paths": "4.1.2",
+    "tsconfig-paths": "4.2.0",
     "typescript": "5.5.4"
   },
   "resolutions": {

@@ -77,13 +77,13 @@ The web app is coded in Typescript using React as front-end. It includes:
 
 ## Development
 
-Below are all the steps to contribute. If you have any trouble or questions, please don't hesitate to open an issue or contact us on [Discord](https://discord.gg/8Vd7jzqjun)! We're responsive and happy to help.
+Below are the steps to contribute. If you have any trouble or questions, please don't hesitate to open an issue or contact us on [Discord](https://discord.gg/8Vd7jzqjun)! We're responsive and happy to help.
 
 ### Installation
 
-Clone the repo and navigating into it:
+Fork the [repo](https://github.com/CompassConnections/Compass) on GitHub (button in top right). Then, clone your repo and navigating into it:
 ```bash
-git clone git@github.com:CompassMeet/Compass.git
+git clone https://github.com/<your-username>/Compass.git
 cd Compass
 ```
 
@@ -105,48 +105,16 @@ We can't make the following information public, for security and privacy reasons
 - Firebase, otherwise anyone could remove users or modify the media files
 - Email, analytics, and location services, otherwise anyone could use our paid plan
 
-So, for your development, we will give you user-specific access when possible (e.g., Firebase) and for the rest you will need to set up cloned services (email, locations, etc.) and store your secrets as environment variables.
+So, we separate all those services between production and local development, so that you can code freely without impacting the functioning of the platform.
+Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
 
-To do so, simply create an `.env` file as a copy of `.env.example`, open it, and fill in the variables according to the instructions in the file:
+Most of the code will work out of the box. All you need to do is creating an `.env` file as a copy of `.env.example`:
 ```bash
 cp .env.example .env
 ```
 
-This project uses Supabase and Firebase. The keys included in `.env.example` point to a staging environment with test data. Contributors should use these keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
-
-### Installing PostgreSQL
-
-Run the following commands to set up your local development database. Run only the section that corresponds to your operating system.
-
-On macOS:
-```bash
-brew install postgresql
-brew services start postgresql
-```
-
-On Linux:
-```bash
-sudo apt update
-sudo apt install postgresql postgresql-contrib
-sudo systemctl start postgresql
-````
-
-On Windows, you can download PostgreSQL from the [official website](https://www.postgresql.org/download/windows/).
-
-### Database Initialization
-
-Create a database named `compass` and set the password for the `postgres` user:
-```bash
-sudo -u postgres psql
-ALTER USER postgres WITH PASSWORD 'password';  
-\q
-```
-
-Create the database
-```bash
-...
-```
-Note that your local database will be made of synthetic data, not real users. This is fine for development and testing.
+Then, most of you can skip the rest of the section. If you do need one of the few remaining services, you need to store your own secrets as environment variables.
+To do so, simply open `.env` and fill in the variables according to the instructions in the file.
 
 ### Tests
 
@@ -163,11 +131,38 @@ Start the development server:
 yarn dev
 ```
 
-Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles; you should see 5 synthetic profiles.
+Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles; you should see a few synthetic profiles.
+
+### Contributing
 
 Now you can start contributing by making changes and submitting pull requests!
 
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.
+
+### Submission
+
+Add the original repo as upstream for syncing:
+```bash
+git remote add upstream https://github.com/CompassConnections/Compass.git
+```
+
+Create a new branch for your changes:
+```bash
+git checkout -b <branch-name>
+```
+
+Make changes, then stage and commit:
+```bash
+git add .
+git commit -m "Describe your changes"
+```
+
+Push branch to your fork:
+```bash
+git push origin <branch-name>
+```
+
+Finally, open a Pull Request on GitHub from your `fork/<branch-name>` → `CompassConnections/Compass` main branch.
 
 ## Acknowledgements
 This project is built on top of [manifold.love](https://github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

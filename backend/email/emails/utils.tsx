@@ -114,11 +114,11 @@ export const content = {
 }
 
 export const paragraph = {
-  fontSize: '18px',
+  // fontSize: '12px',
   lineHeight: '24px',
   margin: '10px 0',
   color: '#000000',
-  fontFamily: 'Arial, Helvetica, sans-serif',
+  // fontFamily: 'Arial, Helvetica, sans-serif',
 }
 
 export const imageContainer = {

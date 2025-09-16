@@ -1,27 +1,8 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
+import {Body, Container, Head, Html, Link, Preview, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
-import {type LoverRow} from 'common/love/lover'
-import {
-  jamesLover,
-  jamesUser,
-  sinclairLover,
-  sinclairUser,
-} from './functions/mock'
+import {sinclairUser,} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
-import {getLoveOgImageUrl} from 'common/love/og-image'
-import {button, container, content, Footer, imageContainer, main, paragraph, profileImage} from "email/utils";
-import {sendSearchAlertsEmail} from "email/functions/helpers";
+import {container, content, Footer, main, paragraph} from "email/utils";
 import {MatchesType} from "common/love/bookmarked_searches";
 import {formatFilters, locationType} from "common/searches"
 import {FilterFields} from "common/filters";
@@ -44,33 +25,77 @@ export const NewSearchAlertsEmail = ({
   return (
     <Html>
       <Head/>
-      <Preview>Some people recently matched your bookmarked searches!</Preview>
+      <Preview>New people share your values — reach out and connect</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={content}>
             <Text style={paragraph}>Hi {name},</Text>
-            <Text style={paragraph}>The following people matched your bookmarked searches in the past 24h:</Text>
-            <Text
-              className={
-                'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 text-sm shadow-sm'
-              }
-            >
-              <ol className="list-decimal list-inside space-y-2">
-                {(matches || []).map((match) => (
-                  <li key={match.id}
-                      className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                    {formatFilters(match.description.filters as Partial<FilterFields>, match.description.location as locationType)}
-                    <span>{match.matches.map(p => p.toString()).join(', ')}</span>
-                  </li>
-                ))}
-              </ol>
 
+            <Text style={paragraph}>
+              In the past 24 hours, new people joined Compass whose values and
+              interests align with your saved searches. Compass is a gift from the
+              community, and it comes alive when people like you take the step to
+              connect with one another.
+            </Text>
+
+            {(matches || []).map((match) => (
+              <Section key={match.id} style={{marginBottom: "20px"}}>
+                <Text style={{fontWeight: "bold", marginBottom: "5px"}}>
+                  {formatFilters(
+                    match.description.filters as Partial<FilterFields>,
+                    match.description.location as locationType
+                  )?.join(" • ")}
+                </Text>
+                <Text style={{margin: 0}}>
+                  {match.matches.map((p, i) => (
+                    <span key={p.username}>
+                  {p.name} (
+                  <Link
+                    href={`https://${DOMAIN}/${p.username}`}
+                    style={{color: "#2563eb", textDecoration: "none"}}
+                  >
+                    @{p.username}
+                  </Link>
+                  )
+                      {i < match.matches.length - 1 && ", "}
+                </span>
+                  ))}
+                </Text>
+              </Section>
+            ))}
+
+            <Section style={{textAlign: "center", marginTop: "30px"}}>
+              <Text style={{marginBottom: "20px"}}>
+                If someone resonates with you, reach out. A simple hello can be the
+                start of a meaningful friendship, collaboration, or relationship.
+              </Text>
+              <Link
+                href={`https://${DOMAIN}/messages`}
+                style={{
+                  display: "inline-block",
+                  backgroundColor: "#2563eb",
+                  color: "#ffffff",
+                  padding: "12px 20px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Start a Conversation
+              </Link>
+            </Section>
+
+            <Text style={{marginTop: "40px", fontSize: "12px", color: "#555"}}>
+              Compass is built and sustained by the community — no ads, no hidden
+              algorithms, no subscriptions. Your presence and participation make it
+              possible.
             </Text>
           </Section>
           <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name}/>
         </Container>
       </Body>
     </Html>
+
   )
 }
 
@@ -84,16 +109,14 @@ const matchSamples = [
       "location": null
     },
     "matches": [
-      [
-        {
-          "name": "James Bond",
-          "username": "jamesbond"
-        },
-        {
-          "name": "Lily",
-          "username": "lilyrose"
-        }
-      ]
+      {
+        "name": "James Bond",
+        "username": "jamesbond"
+      },
+      {
+        "name": "Lily",
+        "username": "lilyrose"
+      }
     ]
   },
   {
@@ -108,12 +131,10 @@ const matchSamples = [
       "location": null
     },
     "matches": [
-      [
-        {
-          "name": "Lily",
-          "username": "lilyrose"
-        }
-      ]
+      {
+        "name": "Lily",
+        "username": "lilyrose"
+      }
     ]
   }
 ]

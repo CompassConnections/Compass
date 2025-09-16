@@ -43,7 +43,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     is_smoker,
     geodbCityIds,
     compatibleWithUserId,
-    orderBy: orderByParam,
+    orderBy: orderByParam = 'created_time',
     skipId,
   } = props
 

@@ -202,11 +202,11 @@ export function CompatibilityQuestionsDisplay(props: {
             <span className='customlink'>
               {otherQuestions.length < 1 ? (
                 <span className="text-ink-600 text-sm">
-                  You've already answered all the compatibility questions!
+                  You've already answered all the compatibility questions—
                 </span>
               ) : (
                 <span className="text-ink-600 text-sm">
-                  Answer more questions to increase your compatibility scores—
+                  Answer more questions to increase your compatibility scores—or
                 </span>
               )}{''}
               <AddCompatibilityQuestionButton

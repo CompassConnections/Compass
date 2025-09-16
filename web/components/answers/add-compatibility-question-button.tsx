@@ -32,7 +32,7 @@ export function AddCompatibilityQuestionButton(props: {
         onClick={() => setOpen(true)}
         className="text-sm"
       >
-        or submit your own!
+        submit your own!
       </button>
       <AddCompatibilityQuestionModal
         open={open}

@@ -89,7 +89,7 @@ export const sendSearchAlertsEmail = async (
 
   return await sendEmail({
     from,
-    subject: `Some people recently matched your bookmarked searches!`,
+    subject: `People aligned with your values just joined`,
     to: email,
     html: renderToStaticMarkup(
       <NewSearchAlertsEmail

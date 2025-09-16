@@ -302,11 +302,18 @@ ul {
 
 .dark .customlink a,
 .dark .customlink button {
-    color: rgb(var(--color-primary-700));
+    color: rgb(var(--color-primary-600));
+    text-decoration: none;
+    font-family: var(--font-main), serif;
 }
 
 .customlink a:hover,
 .customlink button:hover {
+    text-decoration: underline;
+}
+
+.dark .customlink a:hover,
+.dark .customlink button:hover {
     text-decoration: underline;
 }
 

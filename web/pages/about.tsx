@@ -119,7 +119,7 @@ export default function About() {
                       Donate on Patreon
                     </a>
                     <a
-                      href="https://www.paypal.com/paypalme/MartinBraquet"
+                      href="https://www.paypal.com/paypalme/CompassConnections"
                       className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"
                       target="_blank" rel="noopener noreferrer"
                     >

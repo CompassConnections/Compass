@@ -40,7 +40,7 @@ export const Footer = ({
             style={{ display: "inline-block", margin: "0 4px" }}
           />
         </Link>
-        <Link href="https://www.paypal.com/paypalme/MartinBraquet" target="_blank">
+        <Link href="https://www.paypal.com/paypalme/CompassConnections" target="_blank">
           <Img
             src="https://cdn-icons-png.flaticon.com/512/174/174861.png"
             width="24"

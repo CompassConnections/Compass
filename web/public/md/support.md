@@ -7,7 +7,7 @@ Your contribution directly helps cover hosting, development, and community growt
 ## Ways to Contribute Financially
 
 - [Patreon](https://patreon.com/CompassMeet) – one-time or ongoing monthly support
-- [PayPal](https://www.paypal.com/paypalme/MartinBraquet) – one-time or flexible contributions
+- [PayPal](https://www.paypal.com/paypalme/CompassConnections) – one-time or flexible contributions
 - [GitHub Sponsors](https://github.com/sponsors/MartinBraquet) – increased transparency, but requires a GitHub account
 
 

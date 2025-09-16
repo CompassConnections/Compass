@@ -113,7 +113,9 @@ swaggerDocument.info = {
   }
 };
 
-app.use(pathWithPrefix(""), swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+const rootPath = pathWithPrefix("/")
+app.get(rootPath, swaggerUi.setup(swaggerDocument))
+app.use(rootPath, swaggerUi.serve)
 
 app.options('*', allowCorsUnrestricted)
 

@@ -56,6 +56,7 @@ export const useEditableUserInfo = (user: User) => {
     try {
       await updateUser({ username: newUsername })
       updateUserState({ errorUsername: '', username: newUsername })
+      user.username = newUsername
     } catch (reason) {
       updateUserState({
         errorUsername: (reason as APIError).message,

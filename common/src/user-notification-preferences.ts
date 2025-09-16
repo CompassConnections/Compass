@@ -8,6 +8,7 @@ export type notification_preferences = {
   new_endorsement: notification_destination_types[]
   new_love_like: notification_destination_types[]
   new_love_ship: notification_destination_types[]
+  new_search_alerts: notification_destination_types[]
 
   // User-related
   new_message: notification_destination_types[]
@@ -37,6 +38,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   }
   const defaults: notification_preferences = {
     new_match: constructPref(true, true, true),
+    new_search_alerts: constructPref(true, true, true),
     new_endorsement: constructPref(true, true, true),
     new_love_like: constructPref(true, false, false),
     new_love_ship: constructPref(true, false, false),
@@ -59,8 +61,10 @@ export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference
 ) => {
-  const destinations = privateUser.notificationPreferences[type]
-  const opt_out = privateUser.notificationPreferences.opt_out_all
+  let destinations = privateUser.notificationPreferences[type]
+  if (!destinations) destinations = ['email', 'browser', 'mobile']
+  let opt_out = privateUser.notificationPreferences.opt_out_all
+  if (!opt_out) opt_out = []
 
   return {
     sendToEmail: destinations.includes('email') && !opt_out.includes('email'),

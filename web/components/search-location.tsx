@@ -1,9 +1,9 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
-import { OriginLocation } from './filters/location-filter'
 import { api } from 'web/lib/api'
 import { countryCodeToFlag } from 'web/lib/util/location'
 import { LoverRow } from 'common/love/lover'
+import {OriginLocation} from "common/filters";
 
 export type City = {
   geodb_city_id: string

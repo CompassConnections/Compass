@@ -1,26 +1,16 @@
 import clsx from 'clsx'
-import { Col } from 'web/components/layout/col'
-import { Slider } from 'web/components/widgets/slider'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { Row } from 'web/components/layout/row'
-import {
-  originToCity,
-  City,
-  CityRow,
-  useCitySearch,
-  loverToCity,
-} from '../search-location'
-import { Lover } from 'common/love/lover'
-import { useEffect, useState } from 'react'
-import { Input } from 'web/components/widgets/input'
-import { XIcon } from '@heroicons/react/solid'
-import { uniqBy } from 'lodash'
-import { buildArray } from 'common/util/array'
-
-export const PREF_AGE_MIN = 18
-export const PREF_AGE_MAX = 100
-
-export type OriginLocation = { id: string; name: string }
+import {Col} from 'web/components/layout/col'
+import {Slider} from 'web/components/widgets/slider'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {Row} from 'web/components/layout/row'
+import {City, CityRow, loverToCity, originToCity, useCitySearch,} from '../search-location'
+import {Lover} from 'common/love/lover'
+import {useEffect, useState} from 'react'
+import {Input} from 'web/components/widgets/input'
+import {XIcon} from '@heroicons/react/solid'
+import {uniqBy} from 'lodash'
+import {buildArray} from 'common/util/array'
+import {OriginLocation} from "common/filters";
 
 export function LocationFilterText(props: {
   location: OriginLocation | undefined | null
@@ -28,7 +18,7 @@ export function LocationFilterText(props: {
   radius: number
   highlightedClass?: string
 }) {
-  const { location, youLover, radius, highlightedClass } = props
+  const { location, radius, highlightedClass } = props
 
   if (!location) {
     return (

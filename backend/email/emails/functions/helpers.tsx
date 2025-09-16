@@ -1,12 +1,14 @@
-import { PrivateUser, User } from 'common/user'
-import { getNotificationDestinationsForUser } from 'common/user-notification-preferences'
-import { sendEmail } from './send-email'
-import { NewMatchEmail } from '../new-match'
-import { NewMessageEmail } from '../new-message'
-import { NewEndorsementEmail } from '../new-endorsement'
-import { Test } from '../test'
-import { getLover } from 'shared/love/supabase'
+import {PrivateUser, User} from 'common/user'
+import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
+import {sendEmail} from './send-email'
+import {NewMatchEmail} from '../new-match'
+import {NewMessageEmail} from '../new-message'
+import {NewEndorsementEmail} from '../new-endorsement'
+import {Test} from '../test'
+import {getLover} from 'shared/love/supabase'
 import {renderToStaticMarkup} from "react-dom/server";
+import {MatchesType} from "common/love/bookmarked_searches";
+import NewSearchAlertsEmail from "email/new-search_alerts";
 
 const from = 'Compass <no-reply@compassmeet.com>'
 
@@ -14,7 +16,7 @@ export const sendNewMatchEmail = async (
   privateUser: PrivateUser,
   matchedWithUser: User
 ) => {
-  const { sendToEmail, unsubscribeUrl } = getNotificationDestinationsForUser(
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
     'new_match'
   )
@@ -44,7 +46,7 @@ export const sendNewMessageEmail = async (
   toUser: User,
   channelId: number
 ) => {
-  const { sendToEmail, unsubscribeUrl } = getNotificationDestinationsForUser(
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
     'new_message'
   )
@@ -56,22 +58,6 @@ export const sendNewMessageEmail = async (
     console.error('Could not send email notification: User not found')
     return
   }
-
-  console.log({
-    from,
-    subject: `${fromUser.name} sent you a message!`,
-    to: privateUser.email,
-    html: renderToStaticMarkup(
-      <NewMessageEmail
-        fromUser={fromUser}
-        fromUserLover={lover}
-        toUser={toUser}
-        channelId={channelId}
-        unsubscribeUrl={unsubscribeUrl}
-        email={privateUser.email}
-      />
-    ),
-  })
 
   return await sendEmail({
     from,
@@ -90,13 +76,40 @@ export const sendNewMessageEmail = async (
   })
 }
 
+export const sendSearchAlertsEmail = async (
+  toUser: User,
+  privateUser: PrivateUser,
+  matches: MatchesType[],
+) => {
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
+    privateUser,
+    'new_search_alerts'
+  )
+  const email = privateUser.email;
+  if (!email || !sendToEmail) return
+
+  return await sendEmail({
+    from,
+    subject: `Some people recently matched your bookmarked searches!`,
+    to: email,
+    html: renderToStaticMarkup(
+      <NewSearchAlertsEmail
+        toUser={toUser}
+        matches={matches}
+        unsubscribeUrl={unsubscribeUrl}
+        email={email}
+      />
+    ),
+  })
+}
+
 export const sendNewEndorsementEmail = async (
   privateUser: PrivateUser,
   fromUser: User,
   onUser: User,
   text: string
 ) => {
-  const { sendToEmail, unsubscribeUrl } = getNotificationDestinationsForUser(
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
     'new_endorsement'
   )
@@ -123,6 +136,6 @@ export const sendTestEmail = async (toEmail: string) => {
     from,
     subject: 'Test email from Compass',
     to: toEmail,
-    html: renderToStaticMarkup(<Test name="Test User" />),
+    html: renderToStaticMarkup(<Test name="Test User"/>),
   })
 }

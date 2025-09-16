@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import {convertRelationshipType, RelationshipType,} from 'web/lib/util/convert-relationship-type'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {FilterFields} from './search'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
 import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
+import {FilterFields} from "common/filters";
 
 export function RelationshipFilterText(props: {
   relationship: RelationshipType[] | undefined

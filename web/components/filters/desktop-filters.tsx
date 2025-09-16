@@ -19,11 +19,12 @@ import {
   RelationshipFilter,
   RelationshipFilterText,
 } from './relationship-filter'
-import { FilterFields } from './search'
-import { KidsLabel, wantsKidsLabels } from './wants-kids-filter'
-import { HasKidsLabel, hasKidsLabels } from './has-kids-filter'
+import { KidsLabel, wantsKidsLabelsWithIcon } from './wants-kids-filter'
+import { HasKidsLabel } from './has-kids-filter'
 import { MyMatchesToggle } from './my-matches-toggle'
 import { Lover } from 'common/love/lover'
+import {FilterFields} from "common/filters";
+import {hasKidsLabels} from "common/has-kids";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>

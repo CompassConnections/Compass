@@ -7,7 +7,6 @@ import {getStars} from 'web/lib/supabase/stars'
 import Router from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
-import {orderLovers, useFilters} from 'web/components/filters/use-filters'
 import {ProfileGrid} from 'web/components/profile-grid'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
@@ -16,6 +15,8 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
+import {orderLovers} from "common/filters";
+import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
   const user = useUser();

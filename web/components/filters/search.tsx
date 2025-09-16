@@ -1,4 +1,4 @@
-import {Lover, LoverRow} from 'common/love/lover'
+import {Lover} from 'common/love/lover'
 import React, {useEffect, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
@@ -15,24 +15,8 @@ import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
 import {isEqual} from "lodash";
-import {initialFilters} from "web/components/filters/use-filters";
 import toast from "react-hot-toast";
-
-export type FilterFields = {
-  orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
-  geodbCityIds: string[] | null
-  genders: string[]
-  name: string | undefined
-} & Pick<
-  LoverRow,
-  | 'wants_kids_strength'
-  | 'pref_relation_styles'
-  | 'is_smoker'
-  | 'has_kids'
-  | 'pref_gender'
-  | 'pref_age_min'
-  | 'pref_age_max'
->
+import {FilterFields, initialFilters} from "common/filters";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(

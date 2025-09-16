@@ -5,7 +5,6 @@ import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supa
 import {getCompatibleLovers} from 'api/compatible-lovers'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_INT} from "common/constants";
-import {Lover} from "common/love/lover";
 
 export type profileQueryType = {
   limit?: number | undefined,
@@ -22,6 +21,7 @@ export type profileQueryType = {
   is_smoker?: boolean | undefined,
   geodbCityIds?: String[] | undefined,
   compatibleWithUserId?: string | undefined,
+  skipId?: string | undefined,
   orderBy?: string | undefined,
 }
 
@@ -43,6 +43,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     geodbCityIds,
     compatibleWithUserId,
     orderBy: orderByParam,
+    skipId,
   } = props
 
   const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
@@ -50,7 +51,10 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   // compatibility. TODO: do this in sql
   if (orderByParam === 'compatibility_score') {
-    if (!compatibleWithUserId) return {status: 'fail', lovers: []}
+    if (!compatibleWithUserId) {
+      console.error('Incompatible with user ID')
+      throw Error('Incompatible with user ID')
+    }
 
     const {compatibleLovers} = await getCompatibleLovers(compatibleWithUserId)
     const lovers = compatibleLovers.filter(
@@ -72,6 +76,7 @@ export const loadProfiles = async (props: profileQueryType) => {
           (has_kids == 0 && !l.has_kids) ||
           (l.has_kids && l.has_kids > 0)) &&
         (!is_smoker || l.is_smoker === is_smoker) &&
+        (l.id.toString() != skipId) &&
         (!geodbCityIds ||
           (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id)))
     )
@@ -135,6 +140,8 @@ export const loadProfiles = async (props: profileQueryType) => {
     geodbCityIds?.length &&
     where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 
+    skipId && where(`user_id != $(skipId)`, {skipId}),
+
     orderBy(`${orderByParam} desc`),
     after &&
     where(
@@ -151,6 +158,10 @@ export const loadProfiles = async (props: profileQueryType) => {
 }
 
 export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
-  const lovers = await loadProfiles(props)
-  return {status: 'success', lovers: lovers as Lover[]}
+  try {
+    const lovers = await loadProfiles(props)
+    return {status: 'success', lovers: lovers}
+  } catch {
+    return {status: 'fail', lovers: []}
+  }
 }

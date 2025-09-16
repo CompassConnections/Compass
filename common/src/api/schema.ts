@@ -57,7 +57,6 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as {
       status: 'success' | 'fail'
-      lovers: Lover[]
     },
   },
   'mark-all-notifs-read': {

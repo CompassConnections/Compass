@@ -159,7 +159,7 @@ const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
     },
     {
       type: 'new_message',
-      question: '... sends you a new messages?',
+      question: '... sends you a new message?',
     },
     {
       type: 'new_love_like',
@@ -181,7 +181,10 @@ const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
       type: 'on_new_follow',
       question: '... follows you?',
     },
-
+    {
+      type: 'new_search_alerts',
+      question: 'Alerts from bookmarked searches?',
+    },
     {
       type: 'opt_out_all',
       question:

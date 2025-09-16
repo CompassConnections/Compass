@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { FilterFields } from './search'
 import { RangeSlider } from 'web/components/widgets/slider'
+import {FilterFields} from "common/filters";
 
 export const PREF_AGE_MIN = 18
 export const PREF_AGE_MAX = 100

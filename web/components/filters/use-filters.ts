@@ -1,88 +1,43 @@
-import { Lover } from 'common/love/lover'
-import { filterDefined } from 'common/util/array'
-import { cloneDeep, debounce, isEqual } from 'lodash'
-import { useCallback } from 'react'
-import { useEffectCheckEquality } from 'web/hooks/use-effect-check-equality'
-import { useIsLooking } from 'web/hooks/use-is-looking'
-import { useNearbyCities } from 'web/hooks/use-nearby-locations'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
-import { OriginLocation } from './location-filter'
-import { FilterFields } from './search'
-import {
-  wantsKidsDatabaseToWantsKidsFilter,
-  wantsKidsDatabase,
-  wantsKidsToHasKidsFilter,
-} from './wants-kids-filter'
-
-export const orderLovers = (
-  lovers: Lover[],
-  starredUserIds: string[] | undefined
-) => {
-  if (!lovers) return
-
-  let s = cloneDeep(lovers)
-
-  if (starredUserIds) {
-    s = filterDefined([
-      ...starredUserIds.map((id) => s.find((l) => l.user_id === id)),
-      ...s.filter((l) => !starredUserIds.includes(l.user_id)),
-    ])
-  }
-
-  // s = alternateWomenAndMen(s)
-
-  return s
-}
-
-// const alternateWomenAndMen = (lovers: Lover[]) => {
-//   const [women, nonWomen] = partition(lovers, (l) => l.gender === 'female')
-//   return filterDefined(zip(women, nonWomen).flat())
-// }
-
-export const initialFilters: Partial<FilterFields> = {
-  geodbCityIds: undefined,
-  name: undefined,
-  genders: undefined,
-  pref_age_max: undefined,
-  pref_age_min: undefined,
-  has_kids: undefined,
-  wants_kids_strength: undefined,
-  is_smoker: undefined,
-  pref_relation_styles: undefined,
-  pref_gender: undefined,
-  orderBy: 'created_time',
-}
+import {Lover} from "common/love/lover";
+import {useIsLooking} from "web/hooks/use-is-looking";
+import {usePersistentLocalState} from "web/hooks/use-persistent-local-state";
+import {useCallback} from "react";
+import {debounce, isEqual} from "lodash";
+import {useNearbyCities} from "web/hooks/use-nearby-locations";
+import {useEffectCheckEquality} from "web/hooks/use-effect-check-equality";
+import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKidsFilter} from "common/wants-kids";
+import {FilterFields, initialFilters, OriginLocation} from "common/filters";
 
 export const useFilters = (you: Lover | undefined) => {
   const isLooking = useIsLooking()
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
-    isLooking ? initialFilters : { ...initialFilters, orderBy: 'created_time' },
+    isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'},
     'profile-filters-2'
   )
 
   const updateFilter = (newState: Partial<FilterFields>) => {
-    const updatedState = { ...newState }
-    
+    const updatedState = {...newState}
+
     if ('pref_age_min' in updatedState && updatedState.pref_age_min !== undefined) {
       if (updatedState.pref_age_min != null && updatedState.pref_age_min <= 18) {
         updatedState.pref_age_min = undefined
       }
     }
-    
+
     if ('pref_age_max' in updatedState && updatedState.pref_age_max !== undefined) {
       if (updatedState.pref_age_max != null && updatedState.pref_age_max >= 99) {
         updatedState.pref_age_max = undefined
       }
     }
-    
-    setFilters((prevState) => ({ ...prevState, ...updatedState }))
+
+    setFilters((prevState) => ({...prevState, ...updatedState}))
   }
 
   const clearFilters = () => {
     setFilters(
       isLooking
         ? initialFilters
-        : { ...initialFilters, orderBy: 'created_time' }
+        : {...initialFilters, orderBy: 'created_time'}
     )
     setLocation(undefined)
   }
@@ -101,7 +56,7 @@ export const useFilters = (you: Lover | undefined) => {
   const nearbyCities = useNearbyCities(location?.id, radius)
 
   useEffectCheckEquality(() => {
-    updateFilter({ geodbCityIds: nearbyCities })
+    updateFilter({geodbCityIds: nearbyCities})
   }, [nearbyCities])
 
   const locationFilterProps = {
@@ -144,7 +99,7 @@ export const useFilters = (you: Lover | undefined) => {
       setRadius(100)
       debouncedSetRadius(100) // clear any pending debounced sets
       if (you?.geodb_city_id && you.city) {
-        setLocation({ id: you?.geodb_city_id, name: you?.city })
+        setLocation({id: you?.geodb_city_id, name: you?.city})
       }
     } else {
       clearFilters()
@@ -160,3 +115,8 @@ export const useFilters = (you: Lover | undefined) => {
     locationFilterProps,
   }
 }
+
+// const alternateWomenAndMen = (lovers: Lover[]) => {
+//   const [women, nonWomen] = partition(lovers, (l) => l.gender === 'female')
+//   return filterDefined(zip(women, nonWomen).flat())
+// }

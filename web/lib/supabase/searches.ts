@@ -2,8 +2,8 @@ import {Row, run} from "common/supabase/utils";
 import {db} from "web/lib/supabase/db";
 import {filterKeys} from "web/components/questions-form";
 import {track} from "web/lib/service/analytics";
-import {FilterFields} from "web/components/filters/search";
 import {removeNullOrUndefinedProps} from "common/util/object";
+import {FilterFields} from "common/filters";
 
 
 export const getUserBookmarkedSearches = async (userId: string) => {

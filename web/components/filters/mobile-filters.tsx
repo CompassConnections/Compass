@@ -5,7 +5,7 @@ import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { AgeFilter, AgeFilterText, getNoMinMaxAge } from './age-filter'
 import { GenderFilter, GenderFilterText } from './gender-filter'
-import { HasKidsFilter, HasKidsLabel, hasKidsLabels } from './has-kids-filter'
+import { HasKidsFilter, HasKidsLabel } from './has-kids-filter'
 import {
   LocationFilter,
   LocationFilterProps,
@@ -16,18 +16,19 @@ import {
   RelationshipFilter,
   RelationshipFilterText,
 } from './relationship-filter'
-import { FilterFields } from './search'
 import {
   KidsLabel,
   WantsKidsFilter,
   WantsKidsIcon,
-  wantsKidsLabels,
+  wantsKidsLabelsWithIcon,
 } from './wants-kids-filter'
 import { FaChild } from 'react-icons/fa6'
 import { MyMatchesToggle } from './my-matches-toggle'
 import { Lover } from 'common/love/lover'
 import { Gender } from 'common/gender'
 import { RelationshipType } from 'web/lib/util/convert-relationship-type'
+import {FilterFields} from "common/filters";
+import {hasKidsLabels} from "common/has-kids";
 
 export function MobileFilters(props: {
   filters: Partial<FilterFields>

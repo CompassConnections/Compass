@@ -58,7 +58,7 @@ export const getProfiles = async (userIds: string[]) => {
   )
 }
 
-export const getGenderCompatibleLovers = async (lover: LoverRow) => {
+export const getGenderCompatibleProfiles = async (lover: LoverRow) => {
   const pg = createSupabaseDirectClient()
   const profiles = await pg.map(
     `
@@ -80,7 +80,7 @@ export const getGenderCompatibleLovers = async (lover: LoverRow) => {
   return profiles.filter((l: Lover) => areGenderCompatible(lover, l))
 }
 
-export const getCompatibleLovers = async (
+export const getCompatibleProfiles = async (
   lover: LoverRow,
   radiusKm: number | undefined
 ) => {

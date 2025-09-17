@@ -2,7 +2,7 @@ import {type APIHandler} from 'api/helpers/endpoint'
 import {convertRow} from 'shared/love/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
-import {getCompatibleLovers} from 'api/compatible-profiles'
+import {getCompatibleProfiles} from 'api/compatible-profiles'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_INT} from "common/constants";
 
@@ -59,8 +59,8 @@ export const loadProfiles = async (props: profileQueryType) => {
       throw Error('Incompatible with user ID')
     }
 
-    const {compatibleLovers} = await getCompatibleLovers(compatibleWithUserId)
-    const profiles = compatibleLovers.filter(
+    const {compatibleProfiles} = await getCompatibleProfiles(compatibleWithUserId)
+    const profiles = compatibleProfiles.filter(
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender)) &&

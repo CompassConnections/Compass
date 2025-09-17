@@ -42,7 +42,7 @@ const genderType = z.string()
 // ])
 const genderTypes = z.array(genderType)
 
-export const baseLoversSchema = z.object({
+export const baseProfilesSchema = z.object({
   // Required fields
   age: z.number().min(18).max(100).optional(),
   gender: genderType,
@@ -74,7 +74,7 @@ export const baseLoversSchema = z.object({
   referred_by_username: z.string().optional(),
 })
 
-const optionalLoversSchema = z.object({
+const optionalProfilesSchema = z.object({
   political_beliefs: z.array(z.string()).optional(),
   religious_belief_strength: z.number().optional(),
   religious_beliefs: z.string().optional(),
@@ -100,4 +100,4 @@ const optionalLoversSchema = z.object({
 })
 
 export const combinedLoveUsersSchema =
-  baseLoversSchema.merge(optionalLoversSchema)
+  baseProfilesSchema.merge(optionalProfilesSchema)

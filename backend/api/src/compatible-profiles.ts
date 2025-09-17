@@ -4,17 +4,17 @@ import { getCompatibilityScore } from 'common/love/compatibility-score'
 import {
   getLover,
   getCompatibilityAnswers,
-  getGenderCompatibleLovers,
+  getGenderCompatibleProfiles,
 } from 'shared/love/supabase'
 import { log } from 'shared/utils'
 
-export const getCompatibleLoversHandler: APIHandler<
+export const getCompatibleProfilesHandler: APIHandler<
   'compatible-profiles'
 > = async (props) => {
-  return getCompatibleLovers(props.userId)
+  return getCompatibleProfiles(props.userId)
 }
 
-export const getCompatibleLovers = async (userId: string) => {
+export const getCompatibleProfiles = async (userId: string) => {
   const lover = await getLover(userId)
 
   log('got lover', {
@@ -25,7 +25,7 @@ export const getCompatibleLovers = async (userId: string) => {
 
   if (!lover) throw new APIError(404, 'Lover not found')
 
-  const profiles = await getGenderCompatibleLovers(lover)
+  const profiles = await getGenderCompatibleProfiles(lover)
 
   const loverAnswers = await getCompatibilityAnswers([
     userId,
@@ -47,7 +47,7 @@ export const getCompatibleLovers = async (userId: string) => {
     )
   )
 
-  const sortedCompatibleLovers = sortBy(
+  const sortedCompatibleProfiles = sortBy(
     profiles,
     (l) => loverCompatibilityScores[l.user_id].score
   ).reverse()
@@ -55,7 +55,7 @@ export const getCompatibleLovers = async (userId: string) => {
   return {
     status: 'success',
     lover,
-    compatibleLovers: sortedCompatibleLovers,
+    compatibleProfiles: sortedCompatibleProfiles,
     loverCompatibilityScores,
   }
 }

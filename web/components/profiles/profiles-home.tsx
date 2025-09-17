@@ -2,7 +2,7 @@ import {Lover} from 'common/love/lover'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
 import {useLover} from 'web/hooks/use-lover'
-import {useCompatibleLovers} from 'web/hooks/use-profiles'
+import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import Router from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
@@ -15,7 +15,7 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
-import {orderLovers} from "common/filters";
+import {orderProfiles} from "common/filters";
 import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
@@ -32,7 +32,7 @@ export function ProfilesHome() {
     locationFilterProps,
   } = useFilters(you ?? undefined);
 
-  const [profiles, setLovers] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-profiles');
+  const [profiles, setProfiles] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-profiles');
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
@@ -60,7 +60,7 @@ export function ProfilesHome() {
       ...filters
     }) as any)
       .then(({profiles}) => {
-        if (current === id.current) setLovers(profiles);
+        if (current === id.current) setProfiles(profiles);
       })
       .finally(() => {
         if (current === id.current) setIsReloading(false);
@@ -68,8 +68,8 @@ export function ProfilesHome() {
   }, [filters]);
 
   const {data: starredUserIds, refresh: refreshStars} = useGetter('star', user?.id, getStars);
-  const compatibleLovers = useCompatibleLovers(user?.id);
-  const displayLovers = profiles && orderLovers(profiles, starredUserIds);
+  const compatibleProfiles = useCompatibleProfiles(user?.id);
+  const displayProfiles = profiles && orderProfiles(profiles, starredUserIds);
 
   const loadMore = useCallback(async () => {
     if (!profiles || isLoadingMore) return false;
@@ -83,7 +83,7 @@ export function ProfilesHome() {
         ...filters
       }) as any);
       if (result.profiles.length === 0) return false;
-      setLovers((prev) => (prev ? [...prev, ...result.profiles] : result.profiles));
+      setProfiles((prev) => (prev ? [...prev, ...result.profiles] : result.profiles));
       return true;
     } catch (err) {
       console.error('Failed to load more profiles', err);
@@ -91,7 +91,7 @@ export function ProfilesHome() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [profiles, filters, isLoadingMore, setLovers]);
+  }, [profiles, filters, isLoadingMore, setProfiles]);
 
   return (
     <>
@@ -109,15 +109,15 @@ export function ProfilesHome() {
         bookmarkedSearches={bookmarkedSearches}
         refreshBookmarkedSearches={refreshBookmarkedSearches}
       />
-      {displayLovers === undefined || compatibleLovers === undefined ? (
+      {displayProfiles === undefined || compatibleProfiles === undefined ? (
         <LoadingIndicator/>
       ) : (
         <ProfileGrid
-          profiles={displayLovers}
+          profiles={displayProfiles}
           loadMore={loadMore}
           isLoadingMore={isLoadingMore}
           isReloading={isReloading}
-          compatibilityScores={compatibleLovers?.loverCompatibilityScores}
+          compatibilityScores={compatibleProfiles?.loverCompatibilityScores}
           starredUserIds={starredUserIds}
           refreshStars={refreshStars}
         />

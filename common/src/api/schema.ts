@@ -1,7 +1,7 @@
 import {
   contentSchema,
   combinedLoveUsersSchema,
-  baseLoversSchema,
+  baseProfilesSchema,
   arraybeSchema,
 } from 'common/api/zod-types'
 import { PrivateChatMessage } from 'common/chat-message'
@@ -92,7 +92,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     returns: {} as Row<'profiles'>,
-    props: baseLoversSchema,
+    props: baseProfilesSchema,
   },
   report: {
     method: 'POST',
@@ -218,7 +218,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({ userId: z.string() }),
     returns: {} as {
       lover: Lover
-      compatibleLovers: Lover[]
+      compatibleProfiles: Lover[]
       loverCompatibilityScores: {
         [userId: string]: CompatibilityScore
       }

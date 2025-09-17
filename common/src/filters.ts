@@ -17,7 +17,7 @@ export type FilterFields = {
   | 'pref_age_min'
   | 'pref_age_max'
 >
-export const orderLovers = (
+export const orderProfiles = (
   profiles: Lover[],
   starredUserIds: string[] | undefined
 ) => {

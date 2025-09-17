@@ -20,17 +20,17 @@ import { Input } from 'web/components/widgets/input'
 
 export const BrowseMatchesButton = (props: {
   lover: Lover
-  potentialLovers: Lover[]
+  potentialProfiles: Lover[]
   compatibilityScores: Record<string, CompatibilityScore>
   className?: string
 }) => {
-  const { lover, potentialLovers, compatibilityScores, className } = props
+  const { lover, potentialProfiles, compatibilityScores, className } = props
 
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === lover.user_id
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const key = `comment ${potentialLovers.map((l) => l.id).join(',')}`
+  const key = `comment ${potentialProfiles.map((l) => l.id).join(',')}`
   const editor = useTextEditor({
     key,
     size: 'sm',
@@ -82,7 +82,7 @@ export const BrowseMatchesButton = (props: {
       {dialogOpen && (
         <BrowseMatchesDialog
           lover={lover}
-          potentialLovers={potentialLovers}
+          potentialProfiles={potentialProfiles}
           compatibilityScores={compatibilityScores}
           isSubmitting={isSubmitting}
           setOpen={setDialogOpen}
@@ -96,7 +96,7 @@ export const BrowseMatchesButton = (props: {
 
 const BrowseMatchesDialog = (props: {
   lover: Lover
-  potentialLovers: Lover[]
+  potentialProfiles: Lover[]
   compatibilityScores: Record<string, CompatibilityScore>
   isSubmitting: boolean
   setOpen: (open: boolean) => void
@@ -105,7 +105,7 @@ const BrowseMatchesDialog = (props: {
 }) => {
   const {
     lover,
-    potentialLovers,
+    potentialProfiles,
     compatibilityScores,
     isSubmitting,
     setOpen,
@@ -119,12 +119,12 @@ const BrowseMatchesDialog = (props: {
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === lover.user_id
 
-  const filteredLovers = potentialLovers.filter((lover) =>
+  const filteredProfiles = potentialProfiles.filter((lover) =>
     lover.user.name.toLowerCase().includes(query.toLowerCase())
   )
   const [potentialIndex, setPotentialIndex] = useState(0)
-  const index = Math.min(potentialIndex, filteredLovers.length - 1)
-  const potentialLover = filteredLovers[index]
+  const index = Math.min(potentialIndex, filteredProfiles.length - 1)
+  const potentialLover = filteredProfiles[index]
 
   const compatibility = potentialLover
     ? compatibilityScores[potentialLover.user_id]
@@ -151,7 +151,7 @@ const BrowseMatchesDialog = (props: {
             }}
           />
         </Row>
-        {filteredLovers.length === 0 ? (
+        {filteredProfiles.length === 0 ? (
           <Col className="gap-4">
             <div>No remaining compatible matches.</div>
             <Link href="/referrals">
@@ -163,7 +163,7 @@ const BrowseMatchesDialog = (props: {
             className="self-start"
             page={index}
             setPage={setPotentialIndex}
-            totalItems={filteredLovers.length}
+            totalItems={filteredProfiles.length}
             pageSize={1}
           />
         )}

@@ -6,7 +6,7 @@ import { APIResponse } from 'common/api/schema'
 import { useLoverByUserId } from './use-lover'
 import { getProfilesCompatibilityFactor } from 'common/love/compatibility-score'
 
-export const useCompatibleLovers = (
+export const useCompatibleProfiles = (
   userId: string | null | undefined,
   options?: { sortWithModifiers?: boolean }
 ) => {
@@ -31,7 +31,7 @@ export const useCompatibleLovers = (
   }, [userId])
 
   if (data && lover && options?.sortWithModifiers) {
-    data.compatibleLovers = sortBy(data.compatibleLovers, (l) => {
+    data.compatibleProfiles = sortBy(data.compatibleProfiles, (l) => {
       const modifier = !lover ? 1 : getProfilesCompatibilityFactor(lover, l)
       return -1 * modifier * data.loverCompatibilityScores[l.user.id].score
     })

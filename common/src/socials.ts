@@ -42,8 +42,6 @@ const stripper: { [key in Site]: (input: string) => string } = {
     s
       .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?substack\.com\//, '')
       .replace(/\/$/, ''),
-  // onlyfans: (s) =>
-  //   s.replace(/^(https?:\/\/)?(www\.)?onlyfans\.com\//, '').replace(/\/$/, ''),
   instagram: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?instagram\.com\//, '')
@@ -80,13 +78,12 @@ const urler: { [key in Site]: (handle: string) => string } = {
   mastodon: (s) =>
     s.includes('@') ? `https://${s.split('@')[1]}/@${s.split('@')[0]}` : s,
   substack: (s) => `https://${s}.substack.com`,
-  // onlyfans: (s) => `https://onlyfans.com/${s}`,
   instagram: (s) => `https://instagram.com/${s}`,
   github: (s) => `https://github.com/${s}`,
   linkedin: (s) => `https://linkedin.com/in/${s}`,
   facebook: (s) => `https://facebook.com/${s}`,
   spotify: (s) => `https://open.spotify.com/user/${s}`,
-  paypal: (s) => `https://paypal.com/user/${s}`,
+  paypal: (s) => `https://paypal.com/paypalme/${s}`,
   patreon: (s) => `https://patreon.com/user/${s}`,
 }
 
@@ -97,7 +94,6 @@ export const PLATFORM_LABELS: { [key in Site]: string } = {
   bluesky: 'Bluesky',
   mastodon: 'Mastodon',
   substack: 'Substack',
-  // onlyfans: 'OnlyFans',
   instagram: 'Instagram',
   github: 'GitHub',
   linkedin: 'LinkedIn',

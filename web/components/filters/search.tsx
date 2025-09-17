@@ -26,7 +26,61 @@ function isOrderBy(input: string): input is FilterFields['orderBy'] {
 
 const TYPING_SPEED = 100; // ms per character
 const HOLD_TIME = 5000; // ms to hold full word before deleting or switching
-const WORDS = ['running', 'history', 'vegan', 'fiction', 'science', 'mindfulness', 'minimalism', 'nature', 'Murakami', 'psychology', 'yoga', 'introvert', 'AI'];
+export const WORDS: string[] = [
+  // Values
+  "Minimalism",
+  "Sustainability",
+  "Veganism",
+  "Meditation",
+  "Climate action",
+  "Animal welfare",
+  "Community living",
+  "Open source",
+  "Spirituality",
+  "Mutual aid",
+
+  // Intellectual interests
+  "Philosophy",
+  "AI safety",
+  "Effective altruism",
+  "Systems thinking",
+  "Psychology",
+  "Thinking, Fast and Slow",
+  "History of ideas",
+
+  // Arts & culture
+  "Indie film",
+  "Jazz",
+  "Contemporary art",
+  "Folk music",
+  "Poetry",
+  "Sci-fi novels",
+  "Board games",
+
+  // Relationship intentions
+  "Platonic friendship",
+  "Romantic partner",
+  "Collaborator",
+  "Study buddy",
+  "Co-founder",
+
+  // Lifestyle
+  "Digital nomad",
+  "Slow travel",
+  "Forest co-ops",
+  "Permaculture",
+  "Yoga retreats",
+  "Mindful parenting",
+  "Non-smoker",
+
+  // Random human quirks (to make it feel alive)
+  "Chess",
+  "Rock climbing",
+  "Cold plunges",
+  "Tea ceremonies",
+  "Stargazing",
+  "Urban gardening",
+]
 
 function getRandomPair(): string {
   let [first, second] = ['', ''];

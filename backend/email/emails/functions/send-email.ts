@@ -5,6 +5,10 @@ import {
 } from 'resend'
 import { log } from 'shared/utils'
 
+import pLimit from 'p-limit'
+
+const limit = pLimit(1) // 1 concurrent per second
+
 /*
  * typically: { subject: string, to: string | string[] } & ({ text: string } | { react: ReactNode })
  */
@@ -14,7 +18,12 @@ export const sendEmail = async (
 ) => {
   const resend = getResend()
   console.log(resend, payload, options)
-  const { data, error } = await resend.emails.send(
+
+  async function sendEmailThrottle(data: any, options: any) {
+    return limit(() => resend.emails.send(data, options))
+  }
+
+  const { data, error } = await sendEmailThrottle(
     { replyTo: 'Compass <no-reply@compassmeet.com>', ...payload },
     options
   )

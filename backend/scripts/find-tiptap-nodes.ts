@@ -4,7 +4,7 @@ import {
   select,
   from,
   where,
-} from '../shared/src/supabase/sql-builder'
+} from 'shared/supabase/sql-builder'
 import { SupabaseDirectClient } from 'shared/supabase/init'
 
 runScript(async ({ pg }) => {

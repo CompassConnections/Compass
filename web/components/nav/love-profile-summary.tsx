@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useProfile } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-profile'
 import Link from 'next/link'
 import { Avatar } from 'web/components/widgets/avatar'
 import { User } from 'web/lib/firebase/users'
@@ -8,11 +8,11 @@ import { trackCallback } from 'web/lib/service/analytics'
 export function ProfileSummary(props: { user: User; className?: string }) {
   const { user, className } = props
 
-  const lover = useProfile()
+  const profile = useProfile()
 
   return (
     <Link
-      href={lover === null ? '/signup' : `/${user.username}`}
+      href={profile === null ? '/signup' : `/${user.username}`}
       onClick={trackCallback('sidebar: profile')}
       className={clsx(
         'hover:bg-ink-100 text-ink-700 group flex w-full shrink-0 flex-row items-center truncate rounded-md py-3',
@@ -21,7 +21,7 @@ export function ProfileSummary(props: { user: User; className?: string }) {
     >
       <div className="w-2 shrink" />
       <Avatar
-        avatarUrl={lover?.pinned_url ?? ''}
+        avatarUrl={profile?.pinned_url ?? ''}
         username={user.username}
         noLink
       />

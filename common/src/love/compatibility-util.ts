@@ -1,4 +1,4 @@
-import { ProfileRow } from 'common/love/lover'
+import { ProfileRow } from 'common/love/profile'
 import {MAX_INT, MIN_INT} from "common/constants";
 
 const isPreferredGender = (
@@ -18,53 +18,53 @@ const isPreferredGender = (
   return preferredGenders.includes(gender) || gender === 'non-binary'
 }
 
-export const areGenderCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
-  // console.log('areGenderCompatible', isPreferredGender(lover1.pref_gender, lover2.gender), isPreferredGender(lover2.pref_gender, lover1.gender))
+export const areGenderCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+  // console.log('areGenderCompatible', isPreferredGender(profile1.pref_gender, profile2.gender), isPreferredGender(profile2.pref_gender, profile1.gender))
   return (
-    isPreferredGender(lover1.pref_gender, lover2.gender) &&
-    isPreferredGender(lover2.pref_gender, lover1.gender)
+    isPreferredGender(profile1.pref_gender, profile2.gender) &&
+    isPreferredGender(profile2.pref_gender, profile1.gender)
   )
 }
 
-const satisfiesAgeRange = (lover: ProfileRow, age: number | null | undefined) => {
-  return (age ?? MAX_INT) >= (lover.pref_age_min ?? MIN_INT) && (age ?? MIN_INT) <= (lover.pref_age_max ?? MAX_INT)
+const satisfiesAgeRange = (profile: ProfileRow, age: number | null | undefined) => {
+  return (age ?? MAX_INT) >= (profile.pref_age_min ?? MIN_INT) && (age ?? MIN_INT) <= (profile.pref_age_max ?? MAX_INT)
 }
 
-export const areAgeCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
+export const areAgeCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
   return (
-    satisfiesAgeRange(lover1, lover2.age) &&
-    satisfiesAgeRange(lover2, lover1.age)
+    satisfiesAgeRange(profile1, profile2.age) &&
+    satisfiesAgeRange(profile2, profile1.age)
   )
 }
 
-export const areLocationCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
+export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
   if (
-    !lover1.city_latitude ||
-    !lover2.city_latitude ||
-    !lover1.city_longitude ||
-    !lover2.city_longitude
+    !profile1.city_latitude ||
+    !profile2.city_latitude ||
+    !profile1.city_longitude ||
+    !profile2.city_longitude
   )
-    return lover1.city.trim().toLowerCase() === lover2.city.trim().toLowerCase()
+    return profile1.city.trim().toLowerCase() === profile2.city.trim().toLowerCase()
 
-  const latitudeDiff = Math.abs(lover1.city_latitude - lover2.city_latitude)
-  const longigudeDiff = Math.abs(lover1.city_longitude - lover2.city_longitude)
+  const latitudeDiff = Math.abs(profile1.city_latitude - profile2.city_latitude)
+  const longigudeDiff = Math.abs(profile1.city_longitude - profile2.city_longitude)
 
   const root = (latitudeDiff ** 2 + longigudeDiff ** 2) ** 0.5
   return root < 2.5
 }
 
 export const areRelationshipStyleCompatible = (
-  lover1: ProfileRow,
-  lover2: ProfileRow
+  profile1: ProfileRow,
+  profile2: ProfileRow
 ) => {
-  return lover1.pref_relation_styles.some((style) =>
-    lover2.pref_relation_styles.includes(style)
+  return profile1.pref_relation_styles.some((style) =>
+    profile2.pref_relation_styles.includes(style)
   )
 }
 
-export const areWantKidsCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
-  const { wants_kids_strength: kids1 } = lover1
-  const { wants_kids_strength: kids2 } = lover2
+export const areWantKidsCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+  const { wants_kids_strength: kids1 } = profile1
+  const { wants_kids_strength: kids2 } = profile2
 
   if (kids1 === undefined || kids2 === undefined) return true
 

@@ -3,11 +3,11 @@ import {
   getAnswerCompatibility,
   getScoredAnswerCompatibility,
 } from 'common/love/compatibility-score'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { Row as rowFor } from 'common/supabase/utils'
 import { User } from 'common/user'
 import { partition, sortBy, keyBy } from 'lodash'
-import { useProfile } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-profile'
 import {
   QuestionWithCountType,
   useCompatibilityQuestionsWithAnswerCount,
@@ -25,7 +25,7 @@ import { Row } from 'web/components/layout/row'
 import { Linkify } from 'web/components/widgets/linkify'
 import { Pagination } from 'web/components/widgets/pagination'
 import { db } from 'web/lib/supabase/db'
-import { Subtitle } from '../widgets/lover-subtitle'
+import { Subtitle } from '../widgets/profile-subtitle'
 import { AddCompatibilityQuestionButton } from './add-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionButton,
@@ -81,11 +81,11 @@ type CompatibilitySort =
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
   user: User
-  lover: Profile
+  profile: Profile
   fromSignup?: boolean
   fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, user, fromSignup, fromProfilePage, lover } = props
+  const { isCurrentUser, user, fromSignup, fromProfilePage, profile } = props
 
   const { refreshCompatibilityQuestions, compatibilityQuestions } =
     useCompatibilityQuestionsWithAnswerCount()
@@ -223,7 +223,7 @@ export function CompatibilityQuestionsDisplay(props: {
                 user={user}
                 isCurrentUser={isCurrentUser}
                 refreshCompatibilityAll={refreshCompatibilityAll}
-                lover={lover}
+                profile={profile}
                 fromProfilePage={fromProfilePage}
               />
             )
@@ -314,7 +314,7 @@ function CompatibilityAnswerBlock(props: {
   yourQuestions: QuestionWithCountType[]
   user: User
   isCurrentUser: boolean
-  lover: Profile
+  profile: Profile
   refreshCompatibilityAll: () => void
   fromProfilePage?: Profile
 }) {
@@ -322,7 +322,7 @@ function CompatibilityAnswerBlock(props: {
     answer,
     yourQuestions,
     user,
-    lover,
+    profile,
     isCurrentUser,
     refreshCompatibilityAll,
     fromProfilePage,
@@ -374,9 +374,9 @@ function CompatibilityAnswerBlock(props: {
             <div className="hidden sm:block">
               <CompatibilityDisplay
                 question={question}
-                lover1={lover}
+                profile1={profile}
                 answer1={answer}
-                lover2={comparedProfile as Profile}
+                profile2={comparedProfile as Profile}
                 currentUserIsComparedProfile={!fromProfilePage}
                 currentUser={currentUser}
               />
@@ -437,9 +437,9 @@ function CompatibilityAnswerBlock(props: {
           <Row className="w-full justify-end sm:hidden">
             <CompatibilityDisplay
               question={question}
-              lover1={lover}
+              profile1={profile}
               answer1={answer}
-              lover2={comparedProfile as Profile}
+              profile2={comparedProfile as Profile}
               currentUserIsComparedProfile={!fromProfilePage}
               currentUser={currentUser}
             />
@@ -476,8 +476,8 @@ function CompatibilityAnswerBlock(props: {
 
 function CompatibilityDisplay(props: {
   question: QuestionWithCountType
-  lover1: Profile
-  lover2: Profile
+  profile1: Profile
+  profile2: Profile
   answer1: rowFor<'love_compatibility_answers'>
   currentUserIsComparedProfile: boolean
   currentUser: User | null | undefined
@@ -485,8 +485,8 @@ function CompatibilityDisplay(props: {
 }) {
   const {
     question,
-    lover1,
-    lover2,
+    profile1,
+    profile2,
     answer1,
     currentUserIsComparedProfile,
     currentUser,
@@ -499,7 +499,7 @@ function CompatibilityDisplay(props: {
   async function getComparedProfileAnswer() {
     db.from('love_compatibility_answers')
       .select()
-      .eq('creator_id', lover2.user_id)
+      .eq('creator_id', profile2.user_id)
       .eq('question_id', question.id)
       .then((res) => {
         if (res.error) {
@@ -515,21 +515,21 @@ function CompatibilityDisplay(props: {
 
   const [open, setOpen] = useState(false)
 
-  if (lover1.id === lover2.id) return null
+  if (profile1.id === profile2.id) return null
 
   const showCreateAnswer =
     (!answer2 || answer2.importance == -1) &&
     currentUserIsComparedProfile &&
     !!currentUser
 
-  const isCurrentUser = currentUser?.id === lover2.user_id
+  const isCurrentUser = currentUser?.id === profile2.user_id
 
   const answerCompatibility = answer2
     ? getAnswerCompatibility(answer1, answer2)
     : //getScoredAnswerCompatibility(answer1, answer2)
       undefined
-  const user1 = lover1.user
-  const user2 = lover2.user
+  const user1 = profile1.user
+  const user2 = profile2.user
 
   const importanceScore = answer1.importance
 

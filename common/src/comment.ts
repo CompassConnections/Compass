@@ -11,8 +11,8 @@ export type Comment = {
   replyToCommentId?: string
   userId: string
 
-  // lover
-  commentType: 'lover'
+  // profile
+  commentType: 'profile'
   onUserId: string
 
   /** @deprecated - content now stored as JSON in content*/

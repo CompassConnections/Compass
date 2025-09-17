@@ -36,7 +36,7 @@ export function useLiveCommentsOnProfile(userId: string) {
 
 const getComments = async (userId: string) => {
   const { data, error } = await db
-    .from('lover_comments')
+    .from('profile_comments')
     .select('*')
     .eq('on_user_id', userId)
   if (error) {

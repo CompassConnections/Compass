@@ -16,7 +16,7 @@ import {track} from 'web/lib/service/analytics'
 import {Races} from './race'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
-import {ProfileRow} from 'common/love/lover'
+import {ProfileRow} from 'common/love/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {isEqual, range} from 'lodash'
 import {PlatformSelect} from 'web/components/widgets/platform-select'
@@ -24,7 +24,7 @@ import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
 import {PlusIcon, XIcon} from '@heroicons/react/solid'
 import {SocialIcon} from './user/social'
 import {Select} from 'web/components/widgets/select'
-import {City, CityRow, loverToCity, useCitySearch} from "web/components/search-location";
+import {City, CityRow, profileToCity, useCitySearch} from "web/components/search-location";
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/love/multiple-choice";
@@ -32,26 +32,26 @@ import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
 export const OptionalLoveUserForm = (props: {
-  lover: ProfileRow
+  profile: ProfileRow
   setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K]) => void
   user: User
   buttonLabel?: string
   fromSignup?: boolean
   onSubmit?: () => Promise<void>
 }) => {
-  const {lover, user, buttonLabel, setProfile, fromSignup, onSubmit} = props
+  const {profile, user, buttonLabel, setProfile, fromSignup, onSubmit} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState(false)
   const router = useRouter()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
-    lover.height_in_inches
-      ? Math.floor((lover['height_in_inches'] ?? 0) / 12)
+    profile.height_in_inches
+      ? Math.floor((profile['height_in_inches'] ?? 0) / 12)
       : undefined
   )
   const [heightInches, setHeightInches] = useState<number | undefined>(
-    lover.height_in_inches
-      ? Math.floor((lover['height_in_inches'] ?? 0) % 12)
+    profile.height_in_inches
+      ? Math.floor((profile['height_in_inches'] ?? 0) % 12)
       : undefined
   )
 
@@ -64,7 +64,7 @@ export const OptionalLoveUserForm = (props: {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const {bio: _, ...otherProfileProps} = lover
+    const {bio: _, ...otherProfileProps} = profile
     const {error} = await tryCatch(
       updateProfile(removeNullOrUndefinedProps(otherProfileProps) as any)
     )
@@ -105,7 +105,7 @@ export const OptionalLoveUserForm = (props: {
   }
 
   const [trans, setTrans] = useState<boolean | undefined>(
-    lover['gender'].includes('trans')
+    profile['gender'].includes('trans')
   )
 
   function setProfileCity(inputCity: City | undefined) {
@@ -135,7 +135,7 @@ export const OptionalLoveUserForm = (props: {
   }
 
   useEffect(() => {
-    const currentState = lover['gender']
+    const currentState = profile['gender']
     if (currentState === 'non-binary') {
       setTrans(undefined)
     } else if (trans && !currentState.includes('trans-')) {
@@ -143,7 +143,7 @@ export const OptionalLoveUserForm = (props: {
     } else if (!trans && currentState.includes('trans-')) {
       setProfile('gender', currentState.replace('trans-', ''))
     }
-  }, [trans, lover['gender']])
+  }, [trans, profile['gender']])
 
   return (
     <>
@@ -164,10 +164,10 @@ export const OptionalLoveUserForm = (props: {
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Location</label>
-          {lover.city ? (
+          {profile.city ? (
             <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
               <CityRow
-                city={loverToCity(lover)}
+                city={profileToCity(profile)}
                 onSelect={() => {
                 }}
                 className="pointer-events-none"
@@ -195,7 +195,7 @@ export const OptionalLoveUserForm = (props: {
           <Input
             type="number"
             placeholder="Age"
-            value={lover['age'] ?? undefined}
+            value={profile['age'] ?? undefined}
             min={18}
             max={100}
             onChange={(e) => setProfile('age', Number(e.target.value))}
@@ -206,7 +206,7 @@ export const OptionalLoveUserForm = (props: {
           <Col className={'gap-1'}>
             <label className={clsx(labelClassName)}>Gender</label>
             <ChoicesToggleGroup
-              currentChoice={lover['gender'].replace('trans-', '')}
+              currentChoice={profile['gender'].replace('trans-', '')}
               choicesMap={{
                 Woman: 'female',
                 Man: 'male',
@@ -225,7 +225,7 @@ export const OptionalLoveUserForm = (props: {
               Men: 'male',
               Other: 'other',
             }}
-            selected={lover['pref_gender']}
+            selected={profile['pref_gender']}
             onChange={(selected) => setProfile('pref_gender', selected)}
           />
         </Col>
@@ -236,7 +236,7 @@ export const OptionalLoveUserForm = (props: {
             <Col>
               <span>Min</span>
               <Select
-                value={lover['pref_age_min'] ?? ''}
+                value={profile['pref_age_min'] ?? ''}
                 onChange={(e) =>
                   setProfile('pref_age_min', Number(e.target.value))
                 }
@@ -253,7 +253,7 @@ export const OptionalLoveUserForm = (props: {
             <Col>
               <span>Max</span>
               <Select
-                value={lover['pref_age_max'] ?? ''}
+                value={profile['pref_age_max'] ?? ''}
                 onChange={(e) =>
                   setProfile('pref_age_max', Number(e.target.value))
                 }
@@ -274,7 +274,7 @@ export const OptionalLoveUserForm = (props: {
           <label className={clsx(labelClassName)}>Connection type</label>
           <MultiCheckbox
             choices={RELATIONSHIP_CHOICES}
-            selected={lover['pref_relation_styles']}
+            selected={profile['pref_relation_styles']}
             onChange={(selected) =>
               setProfile('pref_relation_styles', selected)
             }
@@ -359,7 +359,7 @@ export const OptionalLoveUserForm = (props: {
               'Pause AI': 'pause ai',
               Other: 'other',
             }}
-            selected={lover['political_beliefs'] ?? []}
+            selected={profile['political_beliefs'] ?? []}
             onChange={(selected) => setProfile('political_beliefs', selected)}
           />
         </Col>
@@ -370,14 +370,14 @@ export const OptionalLoveUserForm = (props: {
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
-            value={lover['religious_beliefs'] ?? undefined}
+            value={profile['religious_beliefs'] ?? undefined}
           />
         </Col>
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Do you smoke?</label>
           <ChoicesToggleGroup
-            currentChoice={lover['is_smoker'] ?? undefined}
+            currentChoice={profile['is_smoker'] ?? undefined}
             choicesMap={{
               Yes: true,
               No: false,
@@ -399,7 +399,7 @@ export const OptionalLoveUserForm = (props: {
             }}
             className={'w-20'}
             min={0}
-            value={lover['drinks_per_month'] ?? undefined}
+            value={profile['drinks_per_month'] ?? undefined}
           />
         </Col>
 
@@ -451,7 +451,7 @@ export const OptionalLoveUserForm = (props: {
             type="text"
             onChange={(e) => setProfileState('born_in_location', e.target.value)}
             className={'w-52'}
-            value={lover['born_in_location'] ?? undefined}
+            value={profile['born_in_location'] ?? undefined}
           />
         </Col> */}
 
@@ -459,7 +459,7 @@ export const OptionalLoveUserForm = (props: {
           <label className={clsx(labelClassName)}>Ethnicity/origin</label>
           <MultiCheckbox
             choices={Races}
-            selected={lover['ethnicity'] ?? []}
+            selected={profile['ethnicity'] ?? []}
             onChange={(selected) => setProfile('ethnicity', selected)}
           />
         </Col>
@@ -470,7 +470,7 @@ export const OptionalLoveUserForm = (props: {
           </label>
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
-              currentChoice={lover['education_level'] ?? ''}
+              currentChoice={profile['education_level'] ?? ''}
               choicesMap={{
                 None: 'none',
                 'High school': 'high-school',
@@ -489,7 +489,7 @@ export const OptionalLoveUserForm = (props: {
             type="text"
             onChange={(e) => setProfile('university', e.target.value)}
             className={'w-52'}
-            value={lover['university'] ?? undefined}
+            value={profile['university'] ?? undefined}
           />
         </Col>
         <Col className={clsx(colClassName)}>
@@ -498,19 +498,19 @@ export const OptionalLoveUserForm = (props: {
             type="text"
             onChange={(e) => setProfile('company', e.target.value)}
             className={'w-52'}
-            value={lover['company'] ?? undefined}
+            value={profile['company'] ?? undefined}
           />
         </Col>
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            Job title {lover['company'] ? 'at ' + lover['company'] : ''}
+            Job title {profile['company'] ? 'at ' + profile['company'] : ''}
           </label>
           <Input
             type="text"
             onChange={(e) => setProfile('occupation_title', e.target.value)}
             className={'w-52'}
-            value={lover['occupation_title'] ?? undefined}
+            value={profile['occupation_title'] ?? undefined}
           />
         </Col>
 
@@ -525,7 +525,7 @@ export const OptionalLoveUserForm = (props: {
             }}
             className={'w-20'}
             min={0}
-            value={lover['has_kids'] ?? undefined}
+            value={profile['has_kids'] ?? undefined}
           />
         </Col>
 
@@ -549,7 +549,7 @@ export const OptionalLoveUserForm = (props: {
                     setChoice={(choice) => {
                       setProfile('wants_kids_strength', choice)
                     }}
-                    currentChoice={lover.wants_kids_strength ?? -1}
+                    currentChoice={profile.wants_kids_strength ?? -1}
                 />
             </Col>
         </>}
@@ -563,8 +563,8 @@ export const OptionalLoveUserForm = (props: {
 
           <AddPhotosWidget
             user={user}
-            photo_urls={lover.photo_urls}
-            pinned_url={lover.pinned_url}
+            photo_urls={profile.photo_urls}
+            pinned_url={profile.pinned_url}
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
             setPinnedUrl={(url) => setProfile('pinned_url', url)}
           />

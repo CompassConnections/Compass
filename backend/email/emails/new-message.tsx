@@ -11,7 +11,7 @@ import {
   Text,
 } from '@react-email/components'
 import { type User } from 'common/user'
-import { type ProfileRow } from 'common/love/lover'
+import { type ProfileRow } from 'common/love/profile'
 import {
   jamesProfile,
   jamesUser,

@@ -26,7 +26,7 @@ export function NotificationItem(props: { notification: Notification }) {
     setHighlighted,
   }
 
-  if (sourceType === 'comment_on_lover') {
+  if (sourceType === 'comment_on_profile') {
     return <CommentOnProfileNotification {...params} />
   } else if (sourceType === 'new_match') {
     return <NewMatchNotification {...params} />

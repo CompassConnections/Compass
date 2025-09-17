@@ -123,7 +123,7 @@ export const createUser: APIHandler<'create-user'> = async (
   log('created user ', { username: user.username, firebaseId: auth.uid })
 
   const continuation = async () => {
-    await track(auth.uid, 'create lover', { username: user.username })
+    await track(auth.uid, 'create profile', { username: user.username })
   }
 
   return {

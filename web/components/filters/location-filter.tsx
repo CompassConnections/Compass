@@ -3,8 +3,8 @@ import {Col} from 'web/components/layout/col'
 import {Slider} from 'web/components/widgets/slider'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {Row} from 'web/components/layout/row'
-import {City, CityRow, loverToCity, originToCity, useCitySearch,} from '../search-location'
-import {Profile} from 'common/love/lover'
+import {City, CityRow, profileToCity, originToCity, useCitySearch,} from '../search-location'
+import {Profile} from 'common/love/profile'
 import {useEffect, useState} from 'react'
 import {Input} from 'web/components/widgets/input'
 import {XIcon} from '@heroicons/react/solid'
@@ -64,7 +64,7 @@ export function LocationFilter(props: {
 
   const { location, setLocation, radius, setRadius } = props.locationFilterProps
 
-  const youCity = youProfile && loverToCity(youProfile)
+  const youCity = youProfile && profileToCity(youProfile)
 
   const [lastCity, setLastCity] = usePersistentInMemoryState<City>(
     location ? originToCity(location) : youCity || DEFAULT_LAST_CITY,

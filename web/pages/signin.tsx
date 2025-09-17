@@ -7,7 +7,7 @@ import {auth, firebaseLogin} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
 
 import {signInWithEmailAndPassword} from "firebase/auth";
-import {getProfileRow} from "common/love/lover";
+import {getProfileRow} from "common/love/profile";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {LovePage} from "web/components/love-page";
@@ -43,14 +43,14 @@ function RegisterComponent() {
       if (user) {
         console.log("User signed in:", user);
         try {
-          const lover = await getProfileRow(user.id, db)
-          if (lover) {
+          const profile = await getProfileRow(user.id, db)
+          if (profile) {
             await Router.push('/')
           } else {
             await Router.push('/signup')
           }
         } catch (error) {
-          console.error("Error fetching lover profile:", error);
+          console.error("Error fetching profile profile:", error);
         }
         setIsLoading(false);
         setIsLoadingGoogle(false);

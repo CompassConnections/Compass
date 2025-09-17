@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
-import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/required-lover-form'
-import {OptionalLoveUserForm} from 'web/components/optional-lover-form'
+import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/required-profile-form'
+import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
 import {useUser} from 'web/hooks/use-user'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
@@ -12,8 +12,8 @@ import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
-import {useProfileByUserId} from 'web/hooks/use-lover'
-import {ProfileRow} from 'common/love/lover'
+import {useProfileByUserId} from 'web/hooks/use-profile'
+import {ProfileRow} from 'common/love/profile'
 import {LovePage} from "web/components/love-page";
 import {Button} from "web/components/buttons/button";
 
@@ -25,7 +25,7 @@ export default function SignupPage() {
   useTracking('view love signup page')
 
   // Omit the id, created_time?
-  const [loverForm, setProfileForm] = useState<ProfileRow>({
+  const [profileForm, setProfileForm] = useState<ProfileRow>({
     ...initialRequiredState,
   } as any)
   const setProfileState = (key: keyof ProfileRow, value: any) => {
@@ -47,7 +47,7 @@ export default function SignupPage() {
       <Col className={'w-full px-6 py-4'}>
         <OptionalLoveUserForm
           setProfile={setProfileState}
-          lover={loverForm}
+          profile={profileForm}
           user={user}
           fromSignup
         />
@@ -78,10 +78,10 @@ export default function SignupPage() {
             <RequiredLoveUserForm
               user={user}
               setProfile={setProfileState}
-              lover={loverForm}
+              profile={profileForm}
               isSubmitting={isSubmitting}
               onSubmit={async () => {
-                if (!loverForm.looking_for_matches) {
+                if (!profileForm.looking_for_matches) {
                   router.push('/')
                   return
                 }
@@ -91,11 +91,11 @@ export default function SignupPage() {
                   : undefined
 
                 setIsSubmitting(true)
-                console.log('loverForm', loverForm)
-                const lover = await api(
-                  'create-lover',
+                console.log('profileForm', profileForm)
+                const profile = await api(
+                  'create-profile',
                   removeNullOrUndefinedProps({
-                    ...loverForm,
+                    ...profileForm,
                     referred_by_username: referredByUsername,
                   }) as any
                 ).catch((e: unknown) => {
@@ -103,8 +103,8 @@ export default function SignupPage() {
                   return null
                 })
                 setIsSubmitting(false)
-                if (lover) {
-                  setProfileForm(lover)
+                if (profile) {
+                  setProfileForm(profile)
                   setStep(1)
                   scrollTo(0, 0)
                   track('submit love required profile')

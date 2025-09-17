@@ -18,8 +18,8 @@ import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
 import Sidebar from './nav/love-sidebar'
-import {useProfile} from 'web/hooks/use-lover'
-import {Profile} from 'common/love/lover'
+import {useProfile} from 'web/hooks/use-profile'
+import {Profile} from 'common/love/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 
 export function LovePage(props: {
@@ -40,9 +40,9 @@ export function LovePage(props: {
   } = props
   const user = useUser()
   const isMobile = useIsMobile()
-  const lover = useProfile()
+  const profile = useProfile()
   const bottomNavOptions = user
-    ? getBottomNavigation(user, lover)
+    ? getBottomNavigation(user, profile)
     : signedOutNavigation()
   // const [isModalOpen, setIsModalOpen] = useState(false)
   const desktopSidebarOptions = getDesktopNav(user)
@@ -106,13 +106,13 @@ const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
 const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon};
 const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon};
 
-function getBottomNavigation(user: User, lover: Profile | null | undefined) {
+function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   return buildArray(
     Profiles,
     NotifsSolid,
     {
       name: 'Profile',
-      href: lover === null ? '/signup' : `/${user.username}`,
+      href: profile === null ? '/signup' : `/${user.username}`,
       icon: SolidHomeIcon,
     },
     {

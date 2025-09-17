@@ -8,12 +8,12 @@ import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-bu
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
-import ProfilePrimaryInfo from './lover-primary-info'
+import ProfilePrimaryInfo from './profile-primary-info'
 import {OnlineIcon} from '../online-icon'
 import {track} from 'web/lib/service/analytics'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {ShareProfileButton} from '../widgets/share-profile-button'
-import {Profile} from 'common/love/lover'
+import {Profile} from 'common/love/profile'
 import {useUser} from 'web/hooks/use-user'
 import {linkClass} from 'web/components/widgets/site-link'
 import {StarButton} from '../widgets/star-button'
@@ -23,7 +23,7 @@ import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 
 export default function ProfileProfileHeader(props: {
   user: User
-  lover: Profile
+  profile: Profile
   simpleView?: boolean
   starredUserIds: string[]
   refreshStars: () => Promise<void>
@@ -32,7 +32,7 @@ export default function ProfileProfileHeader(props: {
 }) {
   const {
     user,
-    lover,
+    profile,
     simpleView,
     starredUserIds,
     refreshStars,
@@ -43,7 +43,7 @@ export default function ProfileProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
-  console.log('ProfileProfileHeader', {user, lover, currentUser})
+  console.log('ProfileProfileHeader', {user, profile, currentUser})
 
   return (
     <Col className="w-full">
@@ -51,7 +51,7 @@ export default function ProfileProfileHeader(props: {
         <Row className="items-center gap-1">
           <Col className="gap-1">
             <Row className="items-center gap-1 text-xl">
-              <OnlineIcon last_online_time={lover.last_online_time}/>
+              <OnlineIcon last_online_time={profile.last_online_time}/>
               <span>
                 {simpleView ? (
                   <Link className={linkClass} href={`/${user.username}`}>
@@ -60,10 +60,10 @@ export default function ProfileProfileHeader(props: {
                 ) : (
                   <span className="font-semibold">{user.name}</span>
                 )}
-                , {lover.age}
+                , {profile.age}
               </span>
             </Row>
-            <ProfilePrimaryInfo lover={lover}/>
+            <ProfilePrimaryInfo profile={profile}/>
           </Col>
         </Row>
         {currentUser && isCurrentUser ? (
@@ -91,11 +91,11 @@ export default function ProfileProfileHeader(props: {
               items={[
                 {
                   name:
-                    lover.visibility === 'member'
+                    profile.visibility === 'member'
                       ? 'List Profile Publicly'
                       : 'Limit to Members Only',
                   icon:
-                    lover.visibility === 'member' ? (
+                    profile.visibility === 'member' ? (
                       <EyeIcon className="h-4 w-4"/>
                     ) : (
                       <LockClosedIcon className="h-4 w-4"/>
@@ -129,7 +129,7 @@ export default function ProfileProfileHeader(props: {
             />
             {currentUser && (
               <StarButton
-                targetProfile={lover}
+                targetProfile={profile}
                 isStarred={starredUserIds.includes(user.id)}
                 refresh={refreshStars}
               />
@@ -149,10 +149,10 @@ export default function ProfileProfileHeader(props: {
       <VisibilityConfirmationModal
         open={showVisibilityModal}
         setOpen={setShowVisibilityModal}
-        currentVisibility={lover.visibility}
+        currentVisibility={profile.visibility}
         onConfirm={async () => {
           const newVisibility =
-            lover.visibility === 'member' ? 'public' : 'member'
+            profile.visibility === 'member' ? 'public' : 'member'
           await updateProfile({visibility: newVisibility})
           refreshProfile()
         }}

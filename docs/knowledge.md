@@ -400,7 +400,7 @@ const { data, error } = await tryCatch(
   insert(pg, 'profiles', { user_id: auth.uid, ...body })
 )
 
-if (error) throw APIError(500, 'Error creating lover: ' + error.message)
+if (error) throw APIError(500, 'Error creating profile: ' + error.message)
 
 await update(pg, 'profiles', 'user_id', { user_id: auth.uid, age: 99 })
 

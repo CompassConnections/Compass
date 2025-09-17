@@ -7,7 +7,7 @@ import { Carousel } from 'web/components/widgets/carousel'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { Col } from 'web/components/layout/col'
 import { SignUpButton } from './nav/love-sidebar'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { useAdmin } from 'web/hooks/use-admin'
 import { Button } from 'web/components/buttons/button'
 import { updateProfile } from 'web/lib/api'
@@ -18,21 +18,21 @@ import { api } from 'web/lib/api'
 import { EditablePhotoGrid } from './widgets/editable-photo-grid'
 import { AddPhotosWidget } from './widgets/add-photos'
 
-export default function ProfileCarousel(props: { lover: Profile }) {
-  const { lover } = props
-  const photoNums = lover.photo_urls ? lover.photo_urls.length : 0
+export default function ProfileCarousel(props: { profile: Profile }) {
+  const { profile } = props
+  const photoNums = profile.photo_urls ? profile.photo_urls.length : 0
 
   const [lightboxUrl, setLightboxUrl] = useState('')
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [addPhotosOpen, setAddPhotosOpen] = useState(false)
 
-  const [pinnedUrl, setPinnedUrl] = useState<string | null>(lover.pinned_url)
-  const [photoUrls, setPhotoUrls] = useState<string[]>(lover.photo_urls ?? [])
+  const [pinnedUrl, setPinnedUrl] = useState<string | null>(profile.pinned_url)
+  const [photoUrls, setPhotoUrls] = useState<string[]>(profile.photo_urls ?? [])
 
   const isAdmin = useAdmin()
   const currentUser = useUser()
-  const isCurrentUser = currentUser?.id === lover.user_id
+  const isCurrentUser = currentUser?.id === profile.user_id
 
   const handleSaveChanges = async () => {
     await updateProfile({
@@ -42,14 +42,14 @@ export default function ProfileCarousel(props: { lover: Profile }) {
     setIsEditMode(false)
   }
 
-  if (!currentUser && lover.visibility !== 'public') {
+  if (!currentUser && profile.visibility !== 'public') {
     return (
       <Carousel>
-        {lover.pinned_url && (
+        {profile.pinned_url && (
           <div className="h-80 w-[250px] flex-none snap-start">
             <Image
               priority={true}
-              src={lover.pinned_url}
+              src={profile.pinned_url}
               height={360}
               width={240}
               sizes="(max-width: 640px) 100vw, 240px"
@@ -83,7 +83,7 @@ export default function ProfileCarousel(props: { lover: Profile }) {
             size="sm"
             color="red"
             onClick={() => {
-              api('remove-pinned-photo', { userId: lover.user_id }).then(() =>
+              api('remove-pinned-photo', { userId: profile.user_id }).then(() =>
                 Router.back()
               )
             }}
@@ -105,8 +105,8 @@ export default function ProfileCarousel(props: { lover: Profile }) {
             <Button
               onClick={() => {
                 // TODO this is stale if you've saved
-                setPhotoUrls(lover.photo_urls ?? [])
-                setPinnedUrl(lover.pinned_url)
+                setPhotoUrls(profile.photo_urls ?? [])
+                setPinnedUrl(profile.pinned_url)
                 setIsEditMode(false)
               }}
               color="gray-outline"
@@ -164,7 +164,7 @@ export default function ProfileCarousel(props: { lover: Profile }) {
         </Col>
       ) : (
         <Carousel>
-          {buildArray(lover.pinned_url, lover.photo_urls).map((url, i) => (
+          {buildArray(profile.pinned_url, profile.photo_urls).map((url, i) => (
             <div key={url} className="h-80 w-[250px] flex-none snap-start">
               <Image
                 priority={i < 3}
@@ -181,7 +181,7 @@ export default function ProfileCarousel(props: { lover: Profile }) {
               />
             </div>
           ))}
-          {isCurrentUser && (lover.photo_urls?.length ?? 0) > 1 && (
+          {isCurrentUser && (profile.photo_urls?.length ?? 0) > 1 && (
             <button
               className="bg-ink-200 text-ink-0 group flex h-80 w-[250px] flex-none cursor-pointer snap-start items-center justify-center rounded ease-in-out"
               onClick={() => setAddPhotosOpen(true)}

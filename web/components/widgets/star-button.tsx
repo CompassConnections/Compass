@@ -6,7 +6,7 @@ import { api } from 'web/lib/api'
 import { buttonClass } from 'web/components/buttons/button'
 import { track } from 'web/lib/service/analytics'
 import { Tooltip } from 'web/components/widgets/tooltip'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 
 export const StarButton = (props: {
   targetProfile: Profile
@@ -25,13 +25,13 @@ export const StarButton = (props: {
 
   const star = async () => {
     setIsStarred(!isStarred)
-    await api('star-lover', {
+    await api('star-profile', {
       targetUserId: targetId,
       remove: isStarred,
     }).catch(() => {
       setIsStarred(isStarred)
     })
-    track('star lover', {
+    track('star profile', {
       targetId,
       remove: isStarred,
     })

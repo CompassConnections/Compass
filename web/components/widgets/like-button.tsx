@@ -9,10 +9,10 @@ import { Tooltip } from 'web/components/widgets/tooltip'
 import { Col } from 'web/components/layout/col'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { Row } from 'web/components/layout/row'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { useUserById } from 'web/hooks/use-user-supabase'
 import { MatchAvatars } from '../matches/match-avatars'
-import { useProfile } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-profile'
 import { useAPIGetter } from 'web/hooks/use-api-getter'
 
 export const LikeButton = (props: {
@@ -36,8 +36,8 @@ export const LikeButton = (props: {
   const like = async () => {
     setShowConfirmation(false)
     setIsLoading(true)
-    await api('like-lover', { targetUserId: targetId, remove: liked })
-    track('like lover', {
+    await api('like-profile', { targetUserId: targetId, remove: liked })
+    track('like profile', {
       targetId,
       remove: liked,
     })

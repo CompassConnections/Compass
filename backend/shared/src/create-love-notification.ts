@@ -10,9 +10,9 @@ export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
   const { creator_id, target_id, like_id } = like
 
   const targetPrivateUser = await getPrivateUser(target_id)
-  const lover = await getProfile(creator_id)
+  const profile = await getProfile(creator_id)
 
-  if (!targetPrivateUser || !lover) return
+  if (!targetPrivateUser || !profile) return
 
   const { sendToBrowser } = getNotificationDestinationsForUser(
     targetPrivateUser,
@@ -30,9 +30,9 @@ export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
     sourceId: like_id,
     sourceType: 'love_like',
     sourceUpdateType: 'created',
-    sourceUserName: lover.user.name,
-    sourceUserUsername: lover.user.username,
-    sourceUserAvatarUrl: lover.pinned_url ?? lover.user.avatarUrl,
+    sourceUserName: profile.user.name,
+    sourceUserUsername: profile.user.username,
+    sourceUserAvatarUrl: profile.pinned_url ?? profile.user.avatarUrl,
     sourceText: '',
   }
   const pg = createSupabaseDirectClient()
@@ -48,13 +48,13 @@ export const createLoveShipNotification = async (
 
   const creator = await getUser(creator_id)
   const targetPrivateUser = await getPrivateUser(recipientId)
-  const lover = await getProfile(otherTargetId)
+  const profile = await getProfile(otherTargetId)
 
-  if (!creator || !targetPrivateUser || !lover) {
+  if (!creator || !targetPrivateUser || !profile) {
     console.error('Could not load user object', {
       creator,
       targetPrivateUser,
-      lover,
+      profile,
     })
     return
   }
@@ -75,9 +75,9 @@ export const createLoveShipNotification = async (
     sourceId: ship_id,
     sourceType: 'love_ship',
     sourceUpdateType: 'created',
-    sourceUserName: lover.user.name,
-    sourceUserUsername: lover.user.username,
-    sourceUserAvatarUrl: lover.pinned_url ?? lover.user.avatarUrl,
+    sourceUserName: profile.user.name,
+    sourceUserUsername: profile.user.username,
+    sourceUserAvatarUrl: profile.pinned_url ?? profile.user.avatarUrl,
     sourceText: '',
     data: {
       creatorId: creator_id,

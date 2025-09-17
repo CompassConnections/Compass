@@ -33,7 +33,7 @@ runScript(async ({ pg }) => {
   console.log('\nSearching comments for linkPreviews...')
   const commentQuery = renderSql(
     select('id, content'),
-    from('lover_comments'),
+    from('profile_comments'),
     where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeType}")')`)
   )
   const comments = await pg.manyOrNone(commentQuery)
@@ -45,7 +45,7 @@ runScript(async ({ pg }) => {
     console.log('before', comment.content)
     console.log('after', newContent)
 
-    await pg.none('update lover_comments set content = $1 where id = $2', [
+    await pg.none('update profile_comments set content = $1 where id = $2', [
       newContent,
       comment.id,
     ])

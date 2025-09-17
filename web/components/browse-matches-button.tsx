@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { MAX_COMMENT_LENGTH } from 'common/comment'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
 import { Modal, SCROLLABLE_MODAL_CLASS } from 'web/components/layout/modal'
@@ -13,21 +13,21 @@ import { useTextEditor } from 'web/components/widgets/editor'
 import { useUser } from 'web/hooks/use-user'
 import { CompatibilityScore } from 'common/love/compatibility-score'
 import { CompatibleBadge } from './widgets/compatible-badge'
-import { ProfileProfile } from './profile/lover-profile'
+import { ProfileProfile } from './profile/profile-profile'
 import { Pagination } from 'web/components/widgets/pagination'
 import { Title } from 'web/components/widgets/title'
 import { Input } from 'web/components/widgets/input'
 
 export const BrowseMatchesButton = (props: {
-  lover: Profile
+  profile: Profile
   potentialProfiles: Profile[]
   compatibilityScores: Record<string, CompatibilityScore>
   className?: string
 }) => {
-  const { lover, potentialProfiles, compatibilityScores, className } = props
+  const { profile, potentialProfiles, compatibilityScores, className } = props
 
   const currentUser = useUser()
-  const isCurrentUser = currentUser?.id === lover.user_id
+  const isCurrentUser = currentUser?.id === profile.user_id
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const key = `comment ${potentialProfiles.map((l) => l.id).join(',')}`
@@ -46,7 +46,7 @@ export const BrowseMatchesButton = (props: {
 
     // setIsSubmitting(true)
     // const result = await createMatch({
-    //   userId1: lover.user_id,
+    //   userId1: profile.user_id,
     //   userId2: selectedMatchId,
     //   betAmount,
     //   introduction,
@@ -61,7 +61,7 @@ export const BrowseMatchesButton = (props: {
     //   window.location.reload()
     // }
   }
-  if (!lover.looking_for_matches)
+  if (!profile.looking_for_matches)
     return (
       <div className="text-ink-500 text-sm">
         Not looking for more matches right now
@@ -77,11 +77,11 @@ export const BrowseMatchesButton = (props: {
         disabled={isSubmitting}
         loading={isSubmitting}
       >
-        Browse {isCurrentUser ? 'your compatible' : `for ${lover.user.name}`}
+        Browse {isCurrentUser ? 'your compatible' : `for ${profile.user.name}`}
       </Button>
       {dialogOpen && (
         <BrowseMatchesDialog
-          lover={lover}
+          profile={profile}
           potentialProfiles={potentialProfiles}
           compatibilityScores={compatibilityScores}
           isSubmitting={isSubmitting}
@@ -95,7 +95,7 @@ export const BrowseMatchesButton = (props: {
 }
 
 const BrowseMatchesDialog = (props: {
-  lover: Profile
+  profile: Profile
   potentialProfiles: Profile[]
   compatibilityScores: Record<string, CompatibilityScore>
   isSubmitting: boolean
@@ -104,7 +104,7 @@ const BrowseMatchesDialog = (props: {
   editor: Editor | null
 }) => {
   const {
-    lover,
+    profile,
     potentialProfiles,
     compatibilityScores,
     isSubmitting,
@@ -117,10 +117,10 @@ const BrowseMatchesDialog = (props: {
   const [error, setError] = useState<string | undefined>(undefined)
 
   const currentUser = useUser()
-  const isCurrentUser = currentUser?.id === lover.user_id
+  const isCurrentUser = currentUser?.id === profile.user_id
 
-  const filteredProfiles = potentialProfiles.filter((lover) =>
-    lover.user.name.toLowerCase().includes(query.toLowerCase())
+  const filteredProfiles = potentialProfiles.filter((profile) =>
+    profile.user.name.toLowerCase().includes(query.toLowerCase())
   )
   const [potentialIndex, setPotentialIndex] = useState(0)
   const index = Math.min(potentialIndex, filteredProfiles.length - 1)
@@ -140,7 +140,7 @@ const BrowseMatchesDialog = (props: {
       <Col className="bg-canvas-0 min-h-full gap-2 rounded p-4 pb-8">
         <Row className="justify-between">
           <Title className="!mb-0">
-            Browse {!isCurrentUser && `for ${lover.user.name}`}
+            Browse {!isCurrentUser && `for ${profile.user.name}`}
           </Title>
           <Input
             className={'!h-10 max-w-[200px] self-end text-sm'}
@@ -172,13 +172,13 @@ const BrowseMatchesDialog = (props: {
           <>
             <CompatibilityScoreDisplay compatibility={compatibility} />
             <ProfileProfile
-              lover={potentialProfile}
+              profile={potentialProfile}
               user={potentialProfile.user}
               refreshProfile={() => window.location.reload()}
-              fromProfilePage={lover}
+              fromProfilePage={profile}
             />
 
-            {/* <Col key={lover.id} className={clsx('gap-4 px-3 py-2')}>
+            {/* <Col key={profile.id} className={clsx('gap-4 px-3 py-2')}>
               <CommentInputTextArea
                 isSubmitting={isSubmitting}
                 editor={editor}

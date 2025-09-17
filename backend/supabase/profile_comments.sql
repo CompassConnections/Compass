@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS lover_comments (
+CREATE TABLE IF NOT EXISTS profile_comments (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     content JSONB NOT NULL,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -12,12 +12,12 @@ CREATE TABLE IF NOT EXISTS lover_comments (
 );
 
 -- Row Level Security
-ALTER TABLE lover_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profile_comments ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-DROP POLICY IF EXISTS "public read" ON lover_comments;
-CREATE POLICY "public read" ON lover_comments FOR ALL USING (true);
+DROP POLICY IF EXISTS "public read" ON profile_comments;
+CREATE POLICY "public read" ON profile_comments FOR ALL USING (true);
 
 -- Indexes
-CREATE INDEX IF NOT EXISTS lover_comments_user_id_idx
-    ON public.lover_comments USING btree (on_user_id);
+CREATE INDEX IF NOT EXISTS profile_comments_user_id_idx
+    ON public.profile_comments USING btree (on_user_id);

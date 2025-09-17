@@ -1,29 +1,29 @@
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { useState } from 'react'
 import { Col } from 'web/components/layout/col'
-import { Subtitle } from '../widgets/lover-subtitle'
-import { BioBlock } from './lover-bio-block'
+import { Subtitle } from '../widgets/profile-subtitle'
+import { BioBlock } from './profile-bio-block'
 
 export function ProfileBio(props: {
   isCurrentUser: boolean
-  lover: Profile
+  profile: Profile
   refreshProfile: () => void
   fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, lover, refreshProfile, fromProfilePage } = props
+  const { isCurrentUser, profile, refreshProfile, fromProfilePage } = props
   const [edit, setEdit] = useState(false)
 
-  if (!isCurrentUser && !lover.bio) return null
-  if (fromProfilePage && !lover.bio) return null
+  if (!isCurrentUser && !profile.bio) return null
+  if (fromProfilePage && !profile.bio) return null
 
   return (
     <Col>
       <Subtitle className="mb-4">About Me</Subtitle>
       <BioBlock
         isCurrentUser={isCurrentUser}
-        lover={lover}
+        profile={profile}
         refreshProfile={refreshProfile}
-        edit={edit || (isCurrentUser && !lover.bio)}
+        edit={edit || (isCurrentUser && !profile.bio)}
         setEdit={setEdit}
       />
     </Col>

@@ -1,10 +1,10 @@
 import { Col } from 'web/components/layout/col'
 import { groupBy, orderBy } from 'lodash'
-import { useLiveCommentsOnProfile } from 'web/hooks/use-comments-on-lover'
+import { useLiveCommentsOnProfile } from 'web/hooks/use-comments-on-profile'
 import {
   ProfileCommentInput,
   ProfileProfileCommentThread,
-} from 'web/components/lover-comments'
+} from 'web/components/profile-comments'
 import { User } from 'common/user'
 import { Row } from 'web/components/layout/row'
 import ShortToggle from 'web/components/widgets/short-toggle'
@@ -12,12 +12,12 @@ import { useState } from 'react'
 import { updateProfile } from 'web/lib/api'
 import { Tooltip } from 'web/components/widgets/tooltip'
 import { toast } from 'react-hot-toast'
-import { Subtitle } from './widgets/lover-subtitle'
-import { Profile } from 'common/love/lover'
+import { Subtitle } from './widgets/profile-subtitle'
+import { Profile } from 'common/love/profile'
 
 export const ProfileCommentSection = (props: {
   onUser: User
-  lover: Profile
+  profile: Profile
   currentUser: User | null | undefined
   simpleView?: boolean
 }) => {
@@ -25,10 +25,10 @@ export const ProfileCommentSection = (props: {
   const comments = useLiveCommentsOnProfile(onUser.id).filter((c) => !c.hidden)
   const parentComments = comments.filter((c) => !c.replyToCommentId)
   const commentsByParent = groupBy(comments, (c) => c.replyToCommentId ?? '_')
-  const [lover, setProfile] = useState<Profile>(props.lover)
+  const [profile, setProfile] = useState<Profile>(props.profile)
   const isCurrentUser = currentUser?.id === onUser.id
 
-  if (simpleView && (!lover.comments_enabled || parentComments.length == 0))
+  if (simpleView && (!profile.comments_enabled || parentComments.length == 0))
     return null
 
   return (
@@ -38,12 +38,12 @@ export const ProfileCommentSection = (props: {
         {isCurrentUser && !simpleView && (
           <Tooltip
             text={
-              (lover.comments_enabled ? 'Disable' : 'Enable') +
+              (profile.comments_enabled ? 'Disable' : 'Enable') +
               ' endorsements from others'
             }
           >
             <ShortToggle
-              on={lover.comments_enabled}
+              on={profile.comments_enabled}
               setOn={(on) => {
                 const update = { comments_enabled: on }
                 setProfile((l) => ({ ...l, ...update }))
@@ -63,7 +63,7 @@ export const ProfileCommentSection = (props: {
       </Row>
       {!simpleView && (
         <>
-          {lover.comments_enabled && (
+          {profile.comments_enabled && (
             <>
               <div className="mb-4">
                 {isCurrentUser ? (
@@ -84,7 +84,7 @@ export const ProfileCommentSection = (props: {
               )}
             </>
           )}
-          {!lover.comments_enabled &&
+          {!profile.comments_enabled &&
             (isCurrentUser ? (
               <span className={'text-ink-500 text-sm'}>
                 This feature is disabled
@@ -96,7 +96,7 @@ export const ProfileCommentSection = (props: {
             ))}
         </>
       )}
-      {lover.comments_enabled &&
+      {profile.comments_enabled &&
         orderBy(parentComments, 'createdTime', 'desc').map((c) => (
           <ProfileProfileCommentThread
             key={c.id + 'thread'}

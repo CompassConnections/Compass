@@ -1,4 +1,4 @@
-import {Profile} from "common/love/lover";
+import {Profile} from "common/love/profile";
 import {useIsLooking} from "web/hooks/use-is-looking";
 import {usePersistentLocalState} from "web/hooks/use-persistent-local-state";
 import {useCallback} from "react";

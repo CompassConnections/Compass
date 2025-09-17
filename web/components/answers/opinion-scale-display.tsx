@@ -8,7 +8,7 @@ import { capitalize, orderBy } from 'lodash'
 import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
-import { Subtitle } from '../widgets/lover-subtitle'
+import { Subtitle } from '../widgets/profile-subtitle'
 import { BiTachometer } from 'react-icons/bi'
 
 export function OpinionScale(props: {

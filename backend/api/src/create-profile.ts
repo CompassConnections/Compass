@@ -8,7 +8,7 @@ import { updateUser } from 'shared/supabase/users'
 import { tryCatch } from 'common/util/try-catch'
 import { insert } from 'shared/supabase/utils'
 
-export const createProfile: APIHandler<'create-lover'> = async (body, auth) => {
+export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
 
   const { data: existingUser } = await tryCatch(
@@ -40,7 +40,7 @@ export const createProfile: APIHandler<'create-lover'> = async (body, auth) => {
   }
 
   log('Created user', data)
-  await track(user.id, 'create lover', { username: user.username })
+  await track(user.id, 'create profile', { username: user.username })
 
   return data
 }

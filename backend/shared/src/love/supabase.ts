@@ -1,5 +1,5 @@
 import { areGenderCompatible } from 'common/love/compatibility-util'
-import { type Profile, type ProfileRow } from 'common/love/lover'
+import { type Profile, type ProfileRow } from 'common/love/profile'
 import { type User } from 'common/user'
 import { Row } from 'common/supabase/utils'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
@@ -58,7 +58,7 @@ export const getProfiles = async (userIds: string[]) => {
   )
 }
 
-export const getGenderCompatibleProfiles = async (lover: ProfileRow) => {
+export const getGenderCompatibleProfiles = async (profile: ProfileRow) => {
   const pg = createSupabaseDirectClient()
   const profiles = await pg.map(
     `
@@ -74,14 +74,14 @@ export const getGenderCompatibleProfiles = async (lover: ProfileRow) => {
         and (data->>'userDeleted' != 'true' or data->>'userDeleted' is null)
         and profiles.pinned_url is not null
       `,
-    { ...lover },
+    { ...profile },
     convertRow
   )
-  return profiles.filter((l: Profile) => areGenderCompatible(lover, l))
+  return profiles.filter((l: Profile) => areGenderCompatible(profile, l))
 }
 
 export const getCompatibleProfiles = async (
-  lover: ProfileRow,
+  profile: ProfileRow,
   radiusKm: number | undefined
 ) => {
   const pg = createSupabaseDirectClient()
@@ -111,7 +111,7 @@ export const getCompatibleProfiles = async (
         -- Location
         and calculate_earth_distance_km($(city_latitude), $(city_longitude), profiles.city_latitude, profiles.city_longitude) < $(radiusKm)
       `,
-    { ...lover, radiusKm: radiusKm ?? 40_000 },
+    { ...profile, radiusKm: radiusKm ?? 40_000 },
     convertRow
   )
 }

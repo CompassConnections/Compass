@@ -3,8 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { UserIcon } from '@heroicons/react/solid'
 
-import { Profile } from 'common/love/lover'
-import { useProfileByUserId } from 'web/hooks/use-lover'
+import { Profile } from 'common/love/profile'
+import { useProfileByUserId } from 'web/hooks/use-profile'
 import { Col } from 'web/components/layout/col'
 import { Avatar, EmptyAvatar } from 'web/components/widgets/avatar'
 import { Carousel } from 'web/components/widgets/carousel'
@@ -13,7 +13,7 @@ import { useUser } from 'web/hooks/use-user'
 import { useUserById } from 'web/hooks/use-user-supabase'
 import { SendMessageButton } from 'web/components/messaging/send-message-button'
 import { ShipsList } from './ships-display'
-import { Subtitle } from './lover-subtitle'
+import { Subtitle } from './profile-subtitle'
 import { LikeData, ShipData } from 'common/api/love-types'
 
 export const LikesDisplay = (props: {
@@ -122,17 +122,17 @@ const LikesList = (props: { label: string; likes: LikeData[] }) => {
 
 const UserAvatar = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
-  const lover = useProfileByUserId(userId)
+  const profile = useProfileByUserId(userId)
   const user = useUserById(userId)
 
-  // console.log('UserAvatar', user?.username, lover?.pinned_url)
+  // console.log('UserAvatar', user?.username, profile?.pinned_url)
 
-  if (!lover)
+  if (!profile)
     return <EmptyAvatar className={className} size={10} />
   return (
     <Avatar
       className={className}
-      avatarUrl={lover.pinned_url}
+      avatarUrl={profile.pinned_url}
       username={user?.username}
     />
   )
@@ -143,14 +143,14 @@ export const MatchTile = (props: {
   matchUserId: string
 }) => {
   const { matchUserId, profileProfile } = props
-  const lover = useProfileByUserId(matchUserId)
+  const profile = useProfileByUserId(matchUserId)
   const user = useUserById(matchUserId)
   const currentUser = useUser()
   const isYourMatch = currentUser?.id === profileProfile.user_id
 
-  if (!lover || !user)
+  if (!profile || !user)
     return <Col className="mb-2 h-[184px] w-[200px] shrink-0"></Col>
-  const { pinned_url } = lover
+  const { pinned_url } = profile
 
   return (
     <Col className="mb-2 w-[200px] shrink-0 overflow-hidden rounded">

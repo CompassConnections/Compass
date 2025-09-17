@@ -24,7 +24,7 @@ import {
 } from './wants-kids-filter'
 import { FaChild } from 'react-icons/fa6'
 import { MyMatchesToggle } from './my-matches-toggle'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import { Gender } from 'common/gender'
 import { RelationshipType } from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";

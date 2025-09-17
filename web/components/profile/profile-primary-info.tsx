@@ -6,30 +6,30 @@ import { MdHeight } from 'react-icons/md'
 import { Row } from 'web/components/layout/row'
 import GenderIcon from '../gender-icon'
 import { Gender, convertGender } from 'common/gender'
-import { formatProfileValue } from '../lover-about'
-import { Profile } from 'common/love/lover'
+import { formatProfileValue } from '../profile-about'
+import { Profile } from 'common/love/profile'
 
-export default function ProfilePrimaryInfo(props: { lover: Profile }) {
-  const { lover } = props
+export default function ProfilePrimaryInfo(props: { profile: Profile }) {
+  const { profile } = props
   const stateOrCountry =
-    lover.country === 'United States of America'
-      ? lover.region_code
-      : lover.country
+    profile.country === 'United States of America'
+      ? profile.region_code
+      : profile.country
   return (
     <Row className="text-ink-700 gap-4 text-sm">
       <IconWithInfo
-        text={`${lover.city ?? ''}, ${stateOrCountry ?? ''}`}
+        text={`${profile.city ?? ''}, ${stateOrCountry ?? ''}`}
         icon={<IoLocationOutline className="h-4 w-4" />}
       />
       <IconWithInfo
-        text={capitalize(convertGender(lover.gender as Gender))}
+        text={capitalize(convertGender(profile.gender as Gender))}
         icon={
-          <GenderIcon gender={lover.gender as Gender} className="h-4 w-4 " />
+          <GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />
         }
       />
-      {lover.height_in_inches != null && (
+      {profile.height_in_inches != null && (
         <IconWithInfo
-          text={formatProfileValue('height_in_inches', lover.height_in_inches)}
+          text={formatProfileValue('height_in_inches', profile.height_in_inches)}
           icon={<MdHeight className="h-4 w-4 " />}
         />
       )}

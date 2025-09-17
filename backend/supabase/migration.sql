@@ -9,7 +9,7 @@ BEGIN;
 \i backend/supabase/private_user_messages.sql
 \i backend/supabase/private_user_seen_message_channels.sql
 \i backend/supabase/love_answers.sql
-\i backend/supabase/lover_comments.sql
+\i backend/supabase/profile_comments.sql
 \i backend/supabase/love_compatibility_answers.sql
 \i backend/supabase/love_likes.sql
 \i backend/supabase/love_questions.sql

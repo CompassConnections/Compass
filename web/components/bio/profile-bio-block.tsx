@@ -2,7 +2,7 @@ import { PencilIcon, XIcon } from '@heroicons/react/outline'
 import { JSONContent } from '@tiptap/core'
 import clsx from 'clsx'
 
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
@@ -13,12 +13,12 @@ import { tryCatch } from 'common/util/try-catch'
 
 export function BioBlock(props: {
   isCurrentUser: boolean
-  lover: Profile
+  profile: Profile
   refreshProfile: () => void
   edit: boolean
   setEdit: (edit: boolean) => void
 }) {
-  const { isCurrentUser, refreshProfile, lover, edit, setEdit } = props
+  const { isCurrentUser, refreshProfile, profile, edit, setEdit } = props
 
   return (
     <Col
@@ -28,15 +28,15 @@ export function BioBlock(props: {
       )}
     >
       <Row className="w-full">
-        {!edit && lover.bio && (
+        {!edit && profile.bio && (
           <Col className="flex w-full flex-grow">
-            <Content className="w-full" content={lover.bio as JSONContent} />
+            <Content className="w-full" content={profile.bio as JSONContent} />
           </Col>
         )}
         {edit && (
           <EditableBio
-            lover={lover}
-            onCancel={lover.bio ? () => setEdit(false) : undefined}
+            profile={profile}
+            onCancel={profile.bio ? () => setEdit(false) : undefined}
             onSave={() => {
               refreshProfile()
               setEdit(false)

@@ -10,8 +10,8 @@ export const hideComment: APIHandler<'hide-comment'> = async (
   auth
 ) => {
   const pg = createSupabaseDirectClient()
-  const comment = await pg.oneOrNone<Row<'lover_comments'>>(
-    `select * from lover_comments where id = $1`,
+  const comment = await pg.oneOrNone<Row<'profile_comments'>>(
+    `select * from profile_comments where id = $1`,
     [commentId]
   )
   if (!comment) {
@@ -26,7 +26,7 @@ export const hideComment: APIHandler<'hide-comment'> = async (
     throw new APIError(403, 'You are not allowed to hide this comment')
   }
 
-  await pg.none(`update lover_comments set hidden = $2 where id = $1`, [
+  await pg.none(`update profile_comments set hidden = $2 where id = $1`, [
     commentId,
     hide,
   ])

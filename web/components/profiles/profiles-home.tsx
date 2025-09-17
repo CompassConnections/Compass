@@ -1,7 +1,7 @@
-import {Profile} from 'common/love/lover'
+import {Profile} from 'common/love/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
-import {useProfile} from 'web/hooks/use-lover'
+import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import Router from 'next/router'
@@ -20,8 +20,8 @@ import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
   const user = useUser();
-  const lover = useProfile();
-  const you = lover;
+  const profile = useProfile();
+  const you = profile;
 
   const {
     filters,
@@ -95,7 +95,7 @@ export function ProfilesHome() {
 
   return (
     <>
-      {!lover && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}
+      {!profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}
       <Title className="!mb-2 text-3xl">Profiles</Title>
       <Search
         youProfile={you}
@@ -117,7 +117,7 @@ export function ProfilesHome() {
           loadMore={loadMore}
           isLoadingMore={isLoadingMore}
           isReloading={isReloading}
-          compatibilityScores={compatibleProfiles?.loverCompatibilityScores}
+          compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
           starredUserIds={starredUserIds}
           refreshStars={refreshStars}
         />

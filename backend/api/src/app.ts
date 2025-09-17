@@ -12,11 +12,11 @@ import {blockUser, unblockUser} from './block-user'
 import {getCompatibleProfilesHandler} from './compatible-profiles'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
-import {createProfile} from './create-lover'
+import {createProfile} from './create-profile'
 import {createUser} from './create-user'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
 import {getLikesAndShips} from './get-likes-and-ships'
-import {getProfileAnswers} from './get-lover-answers'
+import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
 import {getDisplayUser, getUser} from './get-user'
@@ -25,15 +25,15 @@ import {hasFreeLike} from './has-free-like'
 import {health} from './health'
 import {type APIHandler, typedEndpoint} from './helpers/endpoint'
 import {hideComment} from './hide-comment'
-import {likeProfile} from './like-lover'
+import {likeProfile} from './like-profile'
 import {markAllNotifsRead} from './mark-all-notifications-read'
 import {removePinnedPhoto} from './remove-pinned-photo'
 import {report} from './report'
 import {searchLocation} from './search-location'
 import {searchNearCity} from './search-near-city'
 import {shipProfiles} from './ship-profiles'
-import {starProfile} from './star-lover'
-import {updateProfile} from './update-lover'
+import {starProfile} from './star-profile'
+import {updateProfile} from './update-profile'
 import {updateMe} from './update-me'
 import {deleteMe} from './delete-me'
 import {getCurrentPrivateUser} from './get-current-private-user'
@@ -134,20 +134,20 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'ban-user': banUser,
   report: report,
   'create-user': createUser,
-  'create-lover': createProfile,
+  'create-profile': createProfile,
   me: getMe,
   'me/private': getCurrentPrivateUser,
   'me/update': updateMe,
   'update-notif-settings': updateNotifSettings,
   'me/delete': deleteMe,
-  'update-lover': updateProfile,
-  'like-lover': likeProfile,
+  'update-profile': updateProfile,
+  'like-profile': likeProfile,
   'ship-profiles': shipProfiles,
   'get-likes-and-ships': getLikesAndShips,
   'has-free-like': hasFreeLike,
-  'star-lover': starProfile,
+  'star-profile': starProfile,
   'get-profiles': getProfiles,
-  'get-lover-answers': getProfileAnswers,
+  'get-profile-answers': getProfileAnswers,
   'get-compatibility-questions': getCompatibilityQuestions,
   'remove-pinned-photo': removePinnedPhoto,
   'create-comment': createComment,

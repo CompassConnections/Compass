@@ -32,8 +32,8 @@ export const createComment: APIHandler<'create-comment'> = async (
   if (!onUser) throw new APIError(404, 'User not found')
 
   const pg = createSupabaseDirectClient()
-  const comment = await pg.one<Row<'lover_comments'>>(
-    `insert into lover_comments (user_id, user_name, user_username, user_avatar_url, on_user_id, content, reply_to_comment_id)
+  const comment = await pg.one<Row<'profile_comments'>>(
+    `insert into profile_comments (user_id, user_name, user_username, user_avatar_url, on_user_id, content, reply_to_comment_id)
         values ($1, $2, $3, $4, $5, $6, $7) returning *`,
     [
       creator.id,
@@ -104,7 +104,7 @@ const createNewCommentOnProfileNotification = async (
     createdTime: Date.now(),
     isSeen: false,
     sourceId: commentId.toString(),
-    sourceType: 'comment_on_lover',
+    sourceType: 'comment_on_profile',
     sourceUpdateType: 'created',
     sourceUserName: creator.name,
     sourceUserUsername: creator.username,

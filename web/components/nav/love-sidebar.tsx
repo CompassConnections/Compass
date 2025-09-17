@@ -15,7 +15,7 @@ import { Item, SidebarItem } from './love-sidebar-item'
 import SiteLogo from '../site-logo'
 import { Button, ColorType, SizeType } from 'web/components/buttons/button'
 import {signupRedirect} from 'web/lib/util/signup'
-import { useProfile } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-profile'
 import { useTheme } from 'web/hooks/use-theme'
 
 export default function Sidebar(props: {
@@ -28,7 +28,7 @@ export default function Sidebar(props: {
   const currentPage = router.pathname
 
   const user = useUser()
-  const lover = useProfile()
+  const profile = useProfile()
 
   const { theme, setTheme } = useTheme()
 
@@ -58,7 +58,7 @@ export default function Sidebar(props: {
         {user === null && <SignUpButton className="mt-4" text="Sign up" />}
         {/*{user === null && <SignUpAsMatchmaker className="mt-2" />}*/}
 
-        {user && lover === null && (
+        {user && profile === null && (
           <Button className="mt-2" onClick={() => router.push('signup')}>
             Create a profile
           </Button>

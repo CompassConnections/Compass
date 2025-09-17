@@ -10,7 +10,7 @@ import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Column} from 'common/supabase/utils'
-import {ProfileRow} from 'common/love/lover'
+import {ProfileRow} from 'common/love/profile'
 import {SignupBio} from "web/components/bio/editable-bio";
 import {JSONContent} from "@tiptap/core";
 
@@ -40,13 +40,13 @@ export const RequiredLoveUserForm = (props: {
   // TODO thread this properly instead of this jank
   setEditUsername?: (name: string) => unknown
   setEditDisplayName?: (name: string) => unknown
-  lover: ProfileRow
+  profile: ProfileRow
   setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K] | undefined) => void
   isSubmitting: boolean
   onSubmit?: () => void
-  loverCreatedAlready?: boolean
+  profileCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, loverCreatedAlready, setProfile, lover, isSubmitting} = props
+  const {user, onSubmit, profileCreatedAlready, setProfile, profile, isSubmitting} = props
   const {updateUsername, updateDisplayName, userInfo, updateUserState} = useEditableUserInfo(user)
 
   const {
@@ -67,9 +67,9 @@ export const RequiredLoveUserForm = (props: {
 
   const canContinue = true
   // const canContinue =
-  //   (!lover.looking_for_matches ||
+  //   (!profile.looking_for_matches ||
   //     requiredKeys
-  //       .map((k) => lover[k])
+  //       .map((k) => profile[k])
   //       .every((v) =>
   //         typeof v == 'string'
   //           ? v !== ''
@@ -83,7 +83,7 @@ export const RequiredLoveUserForm = (props: {
   return (
     <>
       <Title>The Basics</Title>
-      {!loverCreatedAlready && <div className="text-ink-500 mb-6 text-lg">No endless forms—write your own bio, your own way.</div>}
+      {!profileCreatedAlready && <div className="text-ink-500 mb-6 text-lg">No endless forms—write your own bio, your own way.</div>}
       <Col className={'gap-8'}>
         <Col>
           <label className={clsx(labelClassName)}>Display name</label>
@@ -103,7 +103,7 @@ export const RequiredLoveUserForm = (props: {
           {errorName && <span className="text-error text-sm">{errorName}</span>}
         </Col>
 
-        {!loverCreatedAlready && <>
+        {!profileCreatedAlready && <>
             <Col>
                 <label className={clsx(labelClassName)}>Username</label>
                 <Row className={'items-center gap-2'}>
@@ -128,7 +128,7 @@ export const RequiredLoveUserForm = (props: {
                 <label className={clsx(labelClassName)}>Bio</label>
                 <SignupBio
                     onChange={(e: JSONContent) => {
-                      console.log('bio changed', e, lover.bio)
+                      console.log('bio changed', e, profile.bio)
                       setProfile('bio', e)
                     }}
                 />

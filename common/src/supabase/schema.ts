@@ -221,7 +221,7 @@ export type Database = {
         }
         Relationships: []
       }
-      lover_comments: {
+      profile_comments: {
         Row: {
           content: Json
           created_time: string
@@ -257,147 +257,6 @@ export type Database = {
           user_id?: string
           user_name?: string
           user_username?: string
-        }
-        Relationships: []
-      }
-      lovers: {
-        Row: {
-          age: number | null
-          bio: Json | null
-          bio_text: unknown | null
-          born_in_location: string | null
-          city: string
-          city_latitude: number | null
-          city_longitude: number | null
-          comments_enabled: boolean
-          company: string | null
-          country: string | null
-          created_time: string
-          drinks_per_month: number | null
-          education_level: string | null
-          ethnicity: string[] | null
-          gender: string
-          geodb_city_id: string | null
-          has_kids: number | null
-          height_in_inches: number | null
-          id: number
-          is_smoker: boolean | null
-          is_vegetarian_or_vegan: boolean | null
-          last_modification_time: string
-          last_online_time: string
-          looking_for_matches: boolean
-          messaging_status: string
-          occupation: string | null
-          occupation_title: string | null
-          photo_urls: string[] | null
-          pinned_url: string | null
-          political_beliefs: string[] | null
-          pref_age_max: number | null
-          pref_age_min: number | null
-          pref_gender: string[]
-          pref_relation_styles: string[]
-          referred_by_username: string | null
-          region_code: string | null
-          religious_belief_strength: number | null
-          religious_beliefs: string | null
-          twitter: string | null
-          university: string | null
-          user_id: string
-          visibility: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength: number
-          website: string | null
-        }
-        Insert: {
-          age?: number | null
-          bio?: Json | null
-          bio_text?: unknown | null
-          born_in_location?: string | null
-          city: string
-          city_latitude?: number | null
-          city_longitude?: number | null
-          comments_enabled?: boolean
-          company?: string | null
-          country?: string | null
-          created_time?: string
-          drinks_per_month?: number | null
-          education_level?: string | null
-          ethnicity?: string[] | null
-          gender: string
-          geodb_city_id?: string | null
-          has_kids?: number | null
-          height_in_inches?: number | null
-          id?: never
-          is_smoker?: boolean | null
-          is_vegetarian_or_vegan?: boolean | null
-          last_modification_time?: string
-          last_online_time?: string
-          looking_for_matches?: boolean
-          messaging_status?: string
-          occupation?: string | null
-          occupation_title?: string | null
-          photo_urls?: string[] | null
-          pinned_url?: string | null
-          political_beliefs?: string[] | null
-          pref_age_max?: number | null
-          pref_age_min?: number | null
-          pref_gender: string[]
-          pref_relation_styles: string[]
-          referred_by_username?: string | null
-          region_code?: string | null
-          religious_belief_strength?: number | null
-          religious_beliefs?: string | null
-          twitter?: string | null
-          university?: string | null
-          user_id: string
-          visibility?: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength?: number
-          website?: string | null
-        }
-        Update: {
-          age?: number | null
-          bio?: Json | null
-          bio_text?: unknown | null
-          born_in_location?: string | null
-          city?: string
-          city_latitude?: number | null
-          city_longitude?: number | null
-          comments_enabled?: boolean
-          company?: string | null
-          country?: string | null
-          created_time?: string
-          drinks_per_month?: number | null
-          education_level?: string | null
-          ethnicity?: string[] | null
-          gender?: string
-          geodb_city_id?: string | null
-          has_kids?: number | null
-          height_in_inches?: number | null
-          id?: never
-          is_smoker?: boolean | null
-          is_vegetarian_or_vegan?: boolean | null
-          last_modification_time?: string
-          last_online_time?: string
-          looking_for_matches?: boolean
-          messaging_status?: string
-          occupation?: string | null
-          occupation_title?: string | null
-          photo_urls?: string[] | null
-          pinned_url?: string | null
-          political_beliefs?: string[] | null
-          pref_age_max?: number | null
-          pref_age_min?: number | null
-          pref_gender?: string[]
-          pref_relation_styles?: string[]
-          referred_by_username?: string | null
-          region_code?: string | null
-          religious_belief_strength?: number | null
-          religious_beliefs?: string | null
-          twitter?: string | null
-          university?: string | null
-          user_id?: string
-          visibility?: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength?: number
-          website?: string | null
         }
         Relationships: []
       }
@@ -584,7 +443,7 @@ export type Database = {
           twitter: string | null
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['lover_visibility']
+          visibility: Database['public']['Enums']['profile_visibility']
           wants_kids_strength: number
           website: string | null
         }
@@ -629,7 +488,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -674,7 +533,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id?: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -834,10 +693,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Record<string, unknown>[]
       }
-      get_love_question_answers_and_lovers: {
-        Args: { p_question_id: number }
-        Returns: Record<string, unknown>[]
-      }
       get_love_question_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
@@ -900,7 +755,7 @@ export type Database = {
       }
     }
     Enums: {
-      lover_visibility: 'public' | 'member'
+      profile_visibility: 'public' | 'member'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1028,7 +883,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      lover_visibility: ['public', 'member'],
+      profile_visibility: ['public', 'member'],
     },
   },
 } as const

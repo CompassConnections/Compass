@@ -29,7 +29,7 @@ import { api } from 'web/lib/api'
 import { RelativeTimestamp } from 'web/components/relative-timestamp'
 import { useAdmin } from 'web/hooks/use-admin'
 import { EyeOffIcon } from '@heroicons/react/outline'
-import { useProfileByUserId } from 'web/hooks/use-lover'
+import { useProfileByUserId } from 'web/hooks/use-profile'
 import { MAX_COMMENT_LENGTH, ReplyToUserInfo } from 'common/comment'
 import { safeLocalStorage } from 'web/lib/util/local'
 
@@ -158,7 +158,7 @@ const ProfileComment = memo(function FeedComment(props: {
   const [comment, setComment] = useState(props.comment)
   const { userUsername, userAvatarUrl, userId, hidden } = comment
   const isOwner = onUser.id === userId
-  const lover = useProfileByUserId(userId)
+  const profile = useProfileByUserId(userId)
 
   useEffect(() => {
     if (highlighted && ref.current) {
@@ -176,7 +176,7 @@ const ProfileComment = memo(function FeedComment(props: {
           <Avatar
             username={userUsername}
             size={isParent ? 'sm' : '2xs'}
-            avatarUrl={lover?.pinned_url ?? userAvatarUrl}
+            avatarUrl={profile?.pinned_url ?? userAvatarUrl}
             className={clsx(isOwner && 'shadow shadow-amber-300', 'z-10')}
           />
           <div

@@ -5,14 +5,14 @@ import clsx from 'clsx'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { MatchAvatars } from '../matches/match-avatars'
 import { Row } from 'web/components/layout/row'
-import { Profile } from 'common/love/lover'
-import { useProfileByUserId } from 'web/hooks/use-lover'
+import { Profile } from 'common/love/profile'
+import { useProfileByUserId } from 'web/hooks/use-profile'
 import { Col } from 'web/components/layout/col'
 import { EmptyAvatar, Avatar } from 'web/components/widgets/avatar'
 import { Carousel } from 'web/components/widgets/carousel'
 import { UserLink } from 'web/components/widgets/user-link'
 import { useUser } from 'web/hooks/use-user'
-import { Subtitle } from './lover-subtitle'
+import { Subtitle } from './profile-subtitle'
 import { ShipButton } from './ship-button'
 import { hasShipped } from 'web/lib/util/ship-util'
 import { ShipData } from 'common/api/love-types'
@@ -144,15 +144,15 @@ const ShipsTargetDisplay = (props: {
 
 const UserAvatar = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
-  const lover = useProfileByUserId(userId)
+  const profile = useProfileByUserId(userId)
   const user = useUserById(userId)
 
-  if (!lover || !lover.pinned_url)
+  if (!profile || !profile.pinned_url)
     return <EmptyAvatar className={className} size={10} />
   return (
     <Avatar
       className={className}
-      avatarUrl={lover.pinned_url}
+      avatarUrl={profile.pinned_url}
       username={user?.username}
       noLink
     />
@@ -162,14 +162,14 @@ const UserAvatar = (props: { userId: string; className?: string }) => {
 const UserInfoRow = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
   const user = useUserById(userId)
-  const lover = useProfileByUserId(userId)
+  const profile = useProfileByUserId(userId)
 
   return (
     <Row className={clsx(className, 'items-center gap-2')}>
-      {!lover || !lover.pinned_url ? (
+      {!profile || !profile.pinned_url ? (
         <EmptyAvatar size={10} />
       ) : (
-        <Avatar avatarUrl={lover.pinned_url} username={user?.username} />
+        <Avatar avatarUrl={profile.pinned_url} username={user?.username} />
       )}
       {user && <UserLink user={user} hideBadge />}
     </Row>

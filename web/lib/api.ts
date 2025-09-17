@@ -28,6 +28,6 @@ function curriedAPI<P extends APIPath>(path: P) {
   return (params: APIParams<P>) => api(path, params)
 }
 
-export const updateProfile = curriedAPI('update-lover')
+export const updateProfile = curriedAPI('update-profile')
 export const updateUser = curriedAPI('me/update')
 export const report = curriedAPI('report')

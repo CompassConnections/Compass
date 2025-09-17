@@ -20,8 +20,8 @@ const from = 'Compass <no-reply@compassmeet.com>'
 //     'new_match'
 //   )
 //   if (!privateUser.email || !sendToEmail) return
-//   const lover = await getProfile(privateUser.id)
-//   if (!lover) return
+//   const profile = await getProfile(privateUser.id)
+//   if (!profile) return
 //
 //   return await sendEmail({
 //     from,
@@ -29,10 +29,10 @@ const from = 'Compass <no-reply@compassmeet.com>'
 //     to: privateUser.email,
 //     react: (
 //       <NewMatchEmail
-//         onUser={lover.user}
+//         onUser={profile.user}
 //         email={privateUser.email}
 //         matchedWithUser={matchedWithUser}
-//         matchedProfile={lover}
+//         matchedProfile={profile}
 //         unsubscribeUrl={unsubscribeUrl}
 //       />
 //     ),
@@ -51,9 +51,9 @@ export const sendNewMessageEmail = async (
   )
   if (!privateUser.email || !sendToEmail) return
 
-  const lover = await getProfile(fromUser.id)
+  const profile = await getProfile(fromUser.id)
 
-  if (!lover) {
+  if (!profile) {
     console.error('Could not send email notification: User not found')
     return
   }
@@ -65,7 +65,7 @@ export const sendNewMessageEmail = async (
     html: await render(
       <NewMessageEmail
         fromUser={fromUser}
-        fromUserProfile={lover}
+        fromUserProfile={profile}
         toUser={toUser}
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}

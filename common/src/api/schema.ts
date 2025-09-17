@@ -7,7 +7,7 @@ import {
 import { PrivateChatMessage } from 'common/chat-message'
 import { CompatibilityScore } from 'common/love/compatibility-score'
 import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/love/constants'
-import { Profile, ProfileRow } from 'common/love/lover'
+import { Profile, ProfileRow } from 'common/love/profile'
 import { Row } from 'common/supabase/utils'
 import { PrivateUser, User } from 'common/user'
 import { z } from 'zod'
@@ -88,7 +88,7 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
   },
-  'create-lover': {
+  'create-profile': {
     method: 'POST',
     authed: true,
     returns: {} as Row<'profiles'>,
@@ -143,7 +143,7 @@ export const API = (_apiTypeCheck = {
     }),
     returns: {} as FullUser,
   },
-  'update-lover': {
+  'update-profile': {
     method: 'POST',
     authed: true,
     props: combinedLoveUsersSchema.partial(),
@@ -217,9 +217,9 @@ export const API = (_apiTypeCheck = {
     authed: false,
     props: z.object({ userId: z.string() }),
     returns: {} as {
-      lover: Profile
+      profile: Profile
       compatibleProfiles: Profile[]
-      loverCompatibilityScores: {
+      profileCompatibilityScores: {
         [userId: string]: CompatibilityScore
       }
     },
@@ -246,7 +246,7 @@ export const API = (_apiTypeCheck = {
       })[]
     },
   },
-  'like-lover': {
+  'like-profile': {
     method: 'POST',
     authed: true,
     props: z.object({
@@ -293,7 +293,7 @@ export const API = (_apiTypeCheck = {
       hasFreeLike: boolean
     },
   },
-  'star-lover': {
+  'star-profile': {
     method: 'POST',
     authed: true,
     props: z.object({
@@ -334,7 +334,7 @@ export const API = (_apiTypeCheck = {
       profiles: Profile[]
     },
   },
-  'get-lover-answers': {
+  'get-profile-answers': {
     method: 'GET',
     authed: false,
     props: z.object({ userId: z.string() }).strict(),

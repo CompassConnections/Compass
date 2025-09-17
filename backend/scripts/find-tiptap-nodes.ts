@@ -27,7 +27,7 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   console.log(`\nSearching comments for ${nodeName}...`)
   const commentQuery = renderSql(
     select('id, user_id, on_user_id, content'),
-    from('lover_comments'),
+    from('profile_comments'),
     where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeName}")')`)
   )
   const comments = await pg.manyOrNone(commentQuery)

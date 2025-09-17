@@ -1,8 +1,8 @@
 
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'lover_visibility') THEN
-CREATE TYPE lover_visibility AS ENUM ('public', 'member');
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_visibility') THEN
+CREATE TYPE profile_visibility AS ENUM ('public', 'member');
 END IF;
 END$$;
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     twitter TEXT,
     university TEXT,
     user_id TEXT NOT NULL,
-    visibility lover_visibility DEFAULT 'member'::lover_visibility NOT NULL,
+    visibility profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
     wants_kids_strength INTEGER DEFAULT 0 NOT NULL,
     website TEXT,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)

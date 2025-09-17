@@ -12,7 +12,7 @@ import {
 import { Row } from 'web/components/layout/row'
 import { IndividualQuestionRow } from '../questions-form'
 import { TbMessage } from 'react-icons/tb'
-import { OtherProfileAnswers } from './other-lover-answers'
+import { OtherProfileAnswers } from './other-profile-answers'
 import { ArrowLeftIcon } from '@heroicons/react/outline'
 import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
 

@@ -7,7 +7,7 @@ import { tryCatch } from 'common/util/try-catch'
 import { update } from 'shared/supabase/utils'
 import { type Row } from 'common/supabase/utils'
 
-export const updateProfile: APIHandler<'update-lover'> = async (
+export const updateProfile: APIHandler<'update-profile'> = async (
   parsedBody,
   auth
 ) => {
@@ -25,7 +25,7 @@ export const updateProfile: APIHandler<'update-lover'> = async (
   }
 
   !parsedBody.last_online_time &&
-    log('Updating lover', { userId: auth.uid, parsedBody })
+    log('Updating profile', { userId: auth.uid, parsedBody })
 
   await removePinnedUrlFromPhotoUrls(parsedBody)
   if (parsedBody.avatar_url) {
@@ -37,8 +37,8 @@ export const updateProfile: APIHandler<'update-lover'> = async (
   )
 
   if (error) {
-    log('Error updating lover', error)
-    throw new APIError(500, 'Error updating lover')
+    log('Error updating profile', error)
+    throw new APIError(500, 'Error updating profile')
   }
 
   return data

@@ -1,17 +1,17 @@
-import {ProfileCommentSection} from 'web/components/lover-comment-section'
-import ProfileProfileHeader from 'web/components/profile/lover-profile-header'
+import {ProfileCommentSection} from 'web/components/profile-comment-section'
+import ProfileProfileHeader from 'web/components/profile/profile-profile-header'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {useUser} from 'web/hooks/use-user'
 import {User} from 'web/lib/firebase/users'
-import ProfileAbout from 'web/components/lover-about'
-import {ProfileAnswers} from 'web/components/answers/lover-answers'
+import ProfileAbout from 'web/components/profile-about'
+import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {SignUpButton} from 'web/components/nav/love-sidebar'
-import {Profile} from 'common/love/lover'
-import {ProfileBio} from 'web/components/bio/lover-bio'
+import {Profile} from 'common/love/profile'
+import {ProfileBio} from 'web/components/bio/profile-bio'
 import {areGenderCompatible} from 'common/love/compatibility-util'
-import {useProfile} from 'web/hooks/use-lover'
+import {useProfile} from 'web/hooks/use-profile'
 import {useGetter} from 'web/hooks/use-getter'
 import {getStars} from 'web/lib/supabase/stars'
 import {Content} from "web/components/widgets/editor";
@@ -19,14 +19,14 @@ import {JSONContent} from "@tiptap/core";
 import React from "react";
 
 export function ProfileProfile(props: {
-  lover: Profile
+  profile: Profile
   user: User
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
 }) {
   console.log('Rendering ProfileProfile for ', props)
-  const {lover, user, refreshProfile, fromProfilePage, fromSignup} = props
+  const {profile, user, refreshProfile, fromProfilePage, fromSignup} = props
 
   const currentUser = useUser()
   const currentProfile = useProfile()
@@ -56,18 +56,18 @@ export function ProfileProfile(props: {
   //   !!ships && hasShipped(currentUser, fromProfilePage?.user_id, user.id, ships)
 
   const areCompatible =
-    !!currentProfile && areGenderCompatible(currentProfile, lover)
+    !!currentProfile && areGenderCompatible(currentProfile, profile)
 
   // Allow everyone to message everyone for now
   const showMessageButton = true // liked || likedBack || !areCompatible
 
-  const isProfileVisible = currentUser || lover.visibility === 'public'
+  const isProfileVisible = currentUser || profile.visibility === 'public'
 
   return (
     <>
       <ProfileProfileHeader
         user={user}
-        lover={lover}
+        profile={profile}
         simpleView={!!fromProfilePage}
         starredUserIds={starredUserIds ?? []}
         refreshStars={refreshStars}
@@ -77,7 +77,7 @@ export function ProfileProfile(props: {
       {isProfileVisible ? (
         <ProfileContent
           user={user}
-          lover={lover}
+          profile={profile}
           refreshProfile={refreshProfile}
           fromProfilePage={fromProfilePage}
           fromSignup={fromSignup}
@@ -89,7 +89,7 @@ export function ProfileProfile(props: {
       ) : (
         <Col className="bg-canvas-0 w-full gap-4 rounded p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            <Content className="w-full line-clamp-6" content={lover.bio as JSONContent}/>
+            <Content className="w-full line-clamp-6" content={profile.bio as JSONContent}/>
           </div>
           <Col className="relative gap-4">
             <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5"/>
@@ -106,7 +106,7 @@ export function ProfileProfile(props: {
       {/*  ((!fromProfilePage && !isCurrentUser) ||*/}
       {/*    (fromProfilePage && fromProfilePage.user_id === currentUser?.id)) && (*/}
       {/*    <Row className="right-0 mr-1 self-end lg:bottom-6">*/}
-      {/*      <LikeButton targetProfile={lover} liked={liked} refresh={refresh} />*/}
+      {/*      <LikeButton targetProfile={profile} liked={liked} refresh={refresh} />*/}
       {/*    </Row>*/}
       {/*  )}*/}
       {/*{fromProfilePage &&*/}
@@ -121,14 +121,14 @@ export function ProfileProfile(props: {
       {/*      />*/}
       {/*    </Row>*/}
       {/*  )}*/}
-      {isProfileVisible && lover.photo_urls && <ProfileCarousel lover={lover}/>}
+      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile}/>}
     </>
   )
 }
 
 function ProfileContent(props: {
   user: User
-  lover: Profile
+  profile: Profile
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
@@ -139,7 +139,7 @@ function ProfileContent(props: {
 }) {
   const {
     user,
-    lover,
+    profile,
     refreshProfile,
     fromProfilePage,
     fromSignup,
@@ -154,10 +154,10 @@ function ProfileContent(props: {
 
   return (
     <>
-      <ProfileAbout lover={lover}/>
+      <ProfileAbout profile={profile}/>
       <ProfileBio
         isCurrentUser={isCurrentUser}
-        lover={lover}
+        profile={profile}
         refreshProfile={refreshProfile}
         fromProfilePage={fromProfilePage}
       />
@@ -166,11 +166,11 @@ function ProfileContent(props: {
         user={user}
         fromSignup={fromSignup}
         fromProfilePage={fromProfilePage}
-        lover={lover}
+        profile={profile}
       />
       <ProfileCommentSection
         onUser={user}
-        lover={lover}
+        profile={profile}
         currentUser={currentUser}
         simpleView={!!fromProfilePage}
       />
@@ -179,7 +179,7 @@ function ProfileContent(props: {
       {/*  likesReceived={likesReceived}*/}
       {/*  ships={ships}*/}
       {/*  refreshShips={refreshShips}*/}
-      {/*  profileProfile={lover}*/}
+      {/*  profileProfile={profile}*/}
       {/*/>*/}
     </>
   )

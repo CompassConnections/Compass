@@ -1,4 +1,4 @@
-import {Profile} from 'common/love/lover'
+import {Profile} from 'common/love/profile'
 import {CompatibilityScore} from 'common/love/compatibility-score'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
@@ -34,7 +34,7 @@ export const ProfileGrid = (props: {
 
   const user = useUser()
 
-  const other_profiles = profiles.filter((lover) => lover.user_id !== user?.id);
+  const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id);
 
   return (
     <div className="relative">
@@ -45,12 +45,12 @@ export const ProfileGrid = (props: {
         )}
       >
         {other_profiles
-          .map((lover) => (
+          .map((profile) => (
             <ProfilePreview
-              key={lover.id}
-              lover={lover}
-              compatibilityScore={compatibilityScores?.[lover.user_id]}
-              hasStar={starredUserIds?.includes(lover.user_id) ?? false}
+              key={profile.id}
+              profile={profile}
+              compatibilityScore={compatibilityScores?.[profile.user_id]}
+              hasStar={starredUserIds?.includes(profile.user_id) ?? false}
               refreshStars={refreshStars}
             />
           ))}
@@ -75,13 +75,13 @@ export const ProfileGrid = (props: {
 }
 
 function ProfilePreview(props: {
-  lover: Profile
+  profile: Profile
   compatibilityScore: CompatibilityScore | undefined
   hasStar: boolean
   refreshStars: () => Promise<void>
 }) {
-  const {lover, compatibilityScore} = props
-  const {user} = lover
+  const {profile, compatibilityScore} = props
+  const {user} = profile
   // const currentUser = useUser()
 
   return (
@@ -115,7 +115,7 @@ function ProfilePreview(props: {
           {/*      className="!pt-0"*/}
           {/*      isStarred={hasStar}*/}
           {/*      refresh={refreshStars}*/}
-          {/*      targetProfile={lover}*/}
+          {/*      targetProfile={profile}*/}
           {/*      hideTooltip*/}
           {/*    />*/}
           {/*  ) : (*/}
@@ -135,7 +135,7 @@ function ProfilePreview(props: {
               </h3>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
-                <Content className="w-full line-clamp-4" content={lover.bio as JSONContent}/>
+                <Content className="w-full line-clamp-4" content={profile.bio as JSONContent}/>
               </div>
               {/*{age}*/}
             </div>

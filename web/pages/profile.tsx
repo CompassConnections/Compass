@@ -1,9 +1,9 @@
-import {Profile, ProfileRow} from 'common/love/lover'
+import {Profile, ProfileRow} from 'common/love/profile'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {OptionalLoveUserForm} from 'web/components/optional-lover-form'
-import {RequiredLoveUserForm} from 'web/components/required-lover-form'
-import {useProfileByUser} from 'web/hooks/use-lover'
+import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
+import {RequiredLoveUserForm} from 'web/components/required-profile-form'
+import {useProfileByUser} from 'web/hooks/use-profile'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
@@ -13,22 +13,22 @@ import {LovePage} from "web/components/love-page";
 
 export default function ProfilePage() {
   const user = useUser()
-  const {lover} = useProfileByUser(user ?? undefined)
+  const {profile} = useProfileByUser(user ?? undefined)
 
   useEffect(() => {
-    if (user === null || lover === null) {
+    if (user === null || profile === null) {
       Router.replace('/')
     }
   }, [user])
 
-  return user && lover && <ProfilePageInner user={user} lover={lover}/>
+  return user && profile && <ProfilePageInner user={user} profile={profile}/>
 }
 
-function ProfilePageInner(props: { user: User; lover: Profile }) {
+function ProfilePageInner(props: { user: User; profile: Profile }) {
   const {user} = props
 
-  const [lover, setProfile] = useState<Profile>({
-    ...props.lover,
+  const [profile, setProfile] = useState<Profile>({
+    ...props.profile,
     user,
   })
 
@@ -46,15 +46,15 @@ function ProfilePageInner(props: { user: User; lover: Profile }) {
           <RequiredLoveUserForm
             user={user}
             setProfile={setProfileState}
-            lover={lover}
-            loverCreatedAlready={true}
+            profile={profile}
+            profileCreatedAlready={true}
             isSubmitting={false}
             setEditUsername={setUsername}
             setEditDisplayName={setDisplayName}
           />
           <div className={'h-4'}/>
           <OptionalLoveUserForm
-            lover={lover}
+            profile={profile}
             user={user}
             setProfile={setProfileState}
             buttonLabel={'Save'}

@@ -15,32 +15,32 @@ export const getCompatibleProfilesHandler: APIHandler<
 }
 
 export const getCompatibleProfiles = async (userId: string) => {
-  const lover = await getProfile(userId)
+  const profile = await getProfile(userId)
 
-  log('got lover', {
-    id: lover?.id,
-    userId: lover?.user_id,
-    username: lover?.user?.username,
+  log('got profile', {
+    id: profile?.id,
+    userId: profile?.user_id,
+    username: profile?.user?.username,
   })
 
-  if (!lover) throw new APIError(404, 'Profile not found')
+  if (!profile) throw new APIError(404, 'Profile not found')
 
-  const profiles = await getGenderCompatibleProfiles(lover)
+  const profiles = await getGenderCompatibleProfiles(profile)
 
-  const loverAnswers = await getCompatibilityAnswers([
+  const profileAnswers = await getCompatibilityAnswers([
     userId,
     ...profiles.map((l) => l.user_id),
   ])
-  log('got lover answers ' + loverAnswers.length)
+  log('got profile answers ' + profileAnswers.length)
 
-  const answersByUserId = groupBy(loverAnswers, 'creator_id')
-  const loverCompatibilityScores = Object.fromEntries(
+  const answersByUserId = groupBy(profileAnswers, 'creator_id')
+  const profileCompatibilityScores = Object.fromEntries(
     profiles.map(
       (l) =>
         [
           l.user_id,
           getCompatibilityScore(
-            answersByUserId[lover.user_id] ?? [],
+            answersByUserId[profile.user_id] ?? [],
             answersByUserId[l.user_id] ?? []
           ),
         ] as const
@@ -49,13 +49,13 @@ export const getCompatibleProfiles = async (userId: string) => {
 
   const sortedCompatibleProfiles = sortBy(
     profiles,
-    (l) => loverCompatibilityScores[l.user_id].score
+    (l) => profileCompatibilityScores[l.user_id].score
   ).reverse()
 
   return {
     status: 'success',
-    lover,
+    profile,
     compatibleProfiles: sortedCompatibleProfiles,
-    loverCompatibilityScores,
+    profileCompatibilityScores,
   }
 }

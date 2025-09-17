@@ -22,7 +22,7 @@ import {
 import { KidsLabel, wantsKidsLabelsWithIcon } from './wants-kids-filter'
 import { HasKidsLabel } from './has-kids-filter'
 import { MyMatchesToggle } from './my-matches-toggle'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 import {FilterFields} from "common/filters";
 import {hasKidsLabels} from "common/has-kids";
 

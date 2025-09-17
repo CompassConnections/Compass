@@ -10,14 +10,14 @@ import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { Linkify } from 'web/components/widgets/linkify'
 import { IndividualQuestionRow } from '../questions-form'
-import { Subtitle } from '../widgets/lover-subtitle'
+import { Subtitle } from '../widgets/profile-subtitle'
 import {
   QuestionWithCountType,
   useFRQuestionsWithAnswerCount,
   useUserAnswers,
 } from 'web/hooks/use-questions'
 import { TbMessage } from 'react-icons/tb'
-import { OtherProfileAnswers } from './other-lover-answers'
+import { OtherProfileAnswers } from './other-profile-answers'
 import {
   MODAL_CLASS,
   Modal,
@@ -26,7 +26,7 @@ import {
 import { partition } from 'lodash'
 import { shortenName } from 'web/components/widgets/user-link'
 import { AddQuestionButton } from './free-response-add-question'
-import { Profile } from 'common/love/lover'
+import { Profile } from 'common/love/profile'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean

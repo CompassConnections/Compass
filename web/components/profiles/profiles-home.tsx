@@ -1,7 +1,7 @@
-import {Lover} from 'common/love/lover'
+import {Profile} from 'common/love/lover'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
-import {useLover} from 'web/hooks/use-lover'
+import {useProfile} from 'web/hooks/use-lover'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import Router from 'next/router'
@@ -20,7 +20,7 @@ import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
   const user = useUser();
-  const lover = useLover();
+  const lover = useProfile();
   const you = lover;
 
   const {
@@ -32,7 +32,7 @@ export function ProfilesHome() {
     locationFilterProps,
   } = useFilters(you ?? undefined);
 
-  const [profiles, setProfiles] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-profiles');
+  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profile-profiles');
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
@@ -75,11 +75,11 @@ export function ProfilesHome() {
     if (!profiles || isLoadingMore) return false;
     try {
       setIsLoadingMore(true);
-      const lastLover = profiles[profiles.length - 1];
+      const lastProfile = profiles[profiles.length - 1];
       const result = await api('get-profiles', removeNullOrUndefinedProps({
         limit: 20,
         compatibleWithUserId: user?.id,
-        after: lastLover?.id.toString(),
+        after: lastProfile?.id.toString(),
         ...filters
       }) as any);
       if (result.profiles.length === 0) return false;
@@ -98,7 +98,7 @@ export function ProfilesHome() {
       {!lover && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}
       <Title className="!mb-2 text-3xl">Profiles</Title>
       <Search
-        youLover={you}
+        youProfile={you}
         starredUserIds={starredUserIds ?? []}
         filters={filters}
         updateFilter={updateFilter}

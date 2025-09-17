@@ -1,5 +1,5 @@
 import { keyBy, sumBy } from 'lodash'
-import { LoverRow } from 'common/love/lover'
+import { ProfileRow } from 'common/love/lover'
 import { Row as rowFor } from 'common/supabase/utils'
 import {
   areAgeCompatible,
@@ -133,8 +133,8 @@ export function getScoredAnswerCompatibility(
 }
 
 export const getProfilesCompatibilityFactor = (
-  lover1: LoverRow,
-  lover2: LoverRow
+  lover1: ProfileRow,
+  lover2: ProfileRow
 ) => {
   let multiplier = 1
   multiplier *= areAgeCompatible(lover1, lover2) ? 1 : 0.5

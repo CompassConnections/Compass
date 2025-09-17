@@ -4,13 +4,13 @@ import { createSupabaseDirectClient } from './supabase/init'
 import { getNotificationDestinationsForUser } from 'common/user-notification-preferences'
 import { Notification } from 'common/notifications'
 import { insertNotificationToSupabase } from './supabase/notifications'
-import { getLover } from './love/supabase'
+import { getProfile } from './love/supabase'
 
 export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
   const { creator_id, target_id, like_id } = like
 
   const targetPrivateUser = await getPrivateUser(target_id)
-  const lover = await getLover(creator_id)
+  const lover = await getProfile(creator_id)
 
   if (!targetPrivateUser || !lover) return
 
@@ -48,7 +48,7 @@ export const createLoveShipNotification = async (
 
   const creator = await getUser(creator_id)
   const targetPrivateUser = await getPrivateUser(recipientId)
-  const lover = await getLover(otherTargetId)
+  const lover = await getProfile(otherTargetId)
 
   if (!creator || !targetPrivateUser || !lover) {
     console.error('Could not load user object', {

@@ -1,4 +1,4 @@
-import {Lover} from 'common/love/lover'
+import {Profile} from 'common/love/lover'
 import React, {useEffect, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
@@ -90,7 +90,7 @@ function getRandomPair(count = 3): string {
 
 const MAX_BOOKMARKED_SEARCHES = 10;
 export const Search = (props: {
-  youLover: Lover | undefined | null
+  youProfile: Profile | undefined | null
   starredUserIds: string[]
   // filter props
   filters: Partial<FilterFields>
@@ -103,7 +103,7 @@ export const Search = (props: {
   refreshBookmarkedSearches: () => void
 }) => {
   const {
-    youLover,
+    youProfile,
     updateFilter,
     clearFilters,
     setYourFilters,
@@ -179,7 +179,7 @@ export const Search = (props: {
             className={'w-18 border-ink-300 rounded-md'}
           >
             <option value="created_time">New</option>
-            {youLover && (
+            {youProfile && (
               <option value="compatibility_score">Compatible</option>
             )}
             <option value="last_online_time">Active</option>
@@ -201,7 +201,7 @@ export const Search = (props: {
       >
         <DesktopFilters
           filters={filters}
-          youLover={youLover}
+          youProfile={youProfile}
           updateFilter={updateFilter}
           clearFilters={clearFilters}
           setYourFilters={setYourFilters}
@@ -216,7 +216,7 @@ export const Search = (props: {
       >
         <MobileFilters
           filters={filters}
-          youLover={youLover}
+          youProfile={youProfile}
           updateFilter={updateFilter}
           clearFilters={clearFilters}
           setYourFilters={setYourFilters}

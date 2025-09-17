@@ -1,4 +1,4 @@
-import { LoverRow } from 'common/love/lover'
+import { ProfileRow } from 'common/love/lover'
 import type { User } from 'common/user'
 
 // for email template testing
@@ -27,7 +27,7 @@ export const sinclairUser: User = {
   },
 }
 
-export const sinclairLover: LoverRow = {
+export const sinclairProfile: ProfileRow = {
   id: 55,
   user_id: '0k1suGSJKVUnHbCPEhHNpgZPkUP2',
   created_time: '2023-10-27T00:41:59.851776+00:00',
@@ -125,7 +125,7 @@ export const jamesUser: User = {
   },
 }
 
-export const jamesLover: LoverRow = {
+export const jamesProfile: ProfileRow = {
   id: 2,
   user_id: '5LZ4LgYuySdL1huCWe7bti02ghx2',
   created_time: '2023-10-21T21:18:26.691211+00:00',

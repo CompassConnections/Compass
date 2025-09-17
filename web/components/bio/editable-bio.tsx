@@ -1,16 +1,16 @@
 import { JSONContent } from '@tiptap/core'
 import { MAX_DESCRIPTION_LENGTH } from 'common/envs/constants'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { tryCatch } from 'common/util/try-catch'
 import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { TextEditor, useTextEditor } from 'web/components/widgets/editor'
-import { updateLover } from 'web/lib/api'
+import { updateProfile } from 'web/lib/api'
 import { track } from 'web/lib/service/analytics'
 
 export function EditableBio(props: {
-  lover: Lover
+  lover: Profile
   onSave: () => void
   onCancel?: () => void
 }) {
@@ -25,7 +25,7 @@ export function EditableBio(props: {
 
   const saveBio = async () => {
     if (!editor) return
-    const { error } = await tryCatch(updateLover({ bio: editor.getJSON() }))
+    const { error } = await tryCatch(updateProfile({ bio: editor.getJSON() }))
 
     if (error) {
       console.error(error)

@@ -6,17 +6,17 @@ import { api } from 'web/lib/api'
 import { buttonClass } from 'web/components/buttons/button'
 import { track } from 'web/lib/service/analytics'
 import { Tooltip } from 'web/components/widgets/tooltip'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 
 export const StarButton = (props: {
-  targetLover: Lover
+  targetProfile: Profile
   isStarred: boolean
   refresh: () => Promise<void>
   hideTooltip?: boolean
   className?: string
 }) => {
-  const { targetLover, refresh, hideTooltip, className } = props
-  const targetId = targetLover.user_id
+  const { targetProfile, refresh, hideTooltip, className } = props
+  const targetId = targetProfile.user_id
   const [isStarred, setIsStarred] = useState(props.isStarred)
 
   useEffect(() => {

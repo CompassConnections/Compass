@@ -3,7 +3,7 @@ import Router from 'next/router'
 import Head from 'next/head'
 import {useRouter} from 'next/router'
 import {LovePage} from 'web/components/love-page'
-import {useLoverByUser} from 'web/hooks/use-lover'
+import {useProfileByUser} from 'web/hooks/use-lover'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -13,9 +13,9 @@ import {useTracking} from 'web/hooks/use-tracking'
 import {BackButton} from 'web/components/back-button'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {getLoveOgImageUrl} from 'common/love/og-image'
-import {getLoverRow, LoverRow} from 'common/love/lover'
+import {getProfileRow, ProfileRow} from 'common/love/lover'
 import {db} from 'web/lib/supabase/db'
-import {LoverProfile} from 'web/components/profile/lover-profile'
+import {ProfileProfile} from 'web/components/profile/lover-profile'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {type GetStaticProps} from 'next'
@@ -58,7 +58,7 @@ export const getStaticProps: GetStaticProps<
     }
   }
 
-  const lover = await getLoverRow(user.id, db)
+  const lover = await getProfileRow(user.id, db)
   return {
     props: {
       user,
@@ -82,7 +82,7 @@ type DeletedUserPageProps = {
 type ActiveUserPageProps = {
   user: User
   username: string
-  lover: LoverRow
+  lover: ProfileRow
 }
 
 export default function UserPage(props: UserPageProps) {
@@ -111,13 +111,13 @@ function UserPageInner(props: ActiveUserPageProps) {
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
   useTracking('view love profile', {username: user?.username})
 
-  const [staticLover] = useState(
+  const [staticProfile] = useState(
     props.lover && user ? {...props.lover, user: user} : null
   )
-  const {lover: clientLover, refreshLover} = useLoverByUser(user)
+  const {lover: clientProfile, refreshProfile} = useProfileByUser(user)
   // Show previous profile while loading another one
-  const lover = clientLover ?? staticLover
-  // console.log('lover:', user?.username, lover, clientLover, staticLover)
+  const lover = clientProfile ?? staticProfile
+  // console.log('lover:', user?.username, lover, clientProfile, staticProfile)
 
   return (
     <LovePage
@@ -141,11 +141,11 @@ function UserPageInner(props: ActiveUserPageProps) {
       {currentUser !== undefined && (
         <Col className={'gap-4'}>
           {lover ? (
-            <LoverProfile
+            <ProfileProfile
               key={lover.user_id}
               lover={lover}
               user={user}
-              refreshLover={refreshLover}
+              refreshProfile={refreshProfile}
               fromSignup={fromSignup}
             />
           ) : isCurrentUser ? (

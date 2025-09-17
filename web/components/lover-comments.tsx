@@ -29,11 +29,11 @@ import { api } from 'web/lib/api'
 import { RelativeTimestamp } from 'web/components/relative-timestamp'
 import { useAdmin } from 'web/hooks/use-admin'
 import { EyeOffIcon } from '@heroicons/react/outline'
-import { useLoverByUserId } from 'web/hooks/use-lover'
+import { useProfileByUserId } from 'web/hooks/use-lover'
 import { MAX_COMMENT_LENGTH, ReplyToUserInfo } from 'common/comment'
 import { safeLocalStorage } from 'web/lib/util/local'
 
-export function LoverProfileCommentThread(props: {
+export function ProfileProfileCommentThread(props: {
   onUser: User
   threadComments: Comment[]
   parentComment: Comment
@@ -123,7 +123,7 @@ export function LoverProfileCommentThread(props: {
       {replyToUserInfo && (
         <div className="stop-prop flex">
           <div className="border-ink-100 -mt-3 ml-4 h-7 w-4 rounded-bl-xl border-b-2 border-l-2" />
-          <LoverCommentInput
+          <ProfileCommentInput
             onUserId={onUser.id}
             parentCommentId={parentComment.id}
             replyToUserInfo={replyToUserInfo}
@@ -158,7 +158,7 @@ const ProfileComment = memo(function FeedComment(props: {
   const [comment, setComment] = useState(props.comment)
   const { userUsername, userAvatarUrl, userId, hidden } = comment
   const isOwner = onUser.id === userId
-  const lover = useLoverByUserId(userId)
+  const lover = useProfileByUserId(userId)
 
   useEffect(() => {
     if (highlighted && ref.current) {
@@ -375,7 +375,7 @@ function CommentActions(props: {
   )
 }
 
-export function LoverCommentInput(props: {
+export function ProfileCommentInput(props: {
   onUserId: string
   className?: string
   replyToUserInfo?: ReplyToUserInfo

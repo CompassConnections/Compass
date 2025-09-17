@@ -24,7 +24,7 @@ import {
 } from './wants-kids-filter'
 import { FaChild } from 'react-icons/fa6'
 import { MyMatchesToggle } from './my-matches-toggle'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { Gender } from 'common/gender'
 import { RelationshipType } from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";
@@ -32,7 +32,7 @@ import {hasKidsLabels} from "common/has-kids";
 
 export function MobileFilters(props: {
   filters: Partial<FilterFields>
-  youLover: Lover | undefined | null
+  youProfile: Profile | undefined | null
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
   setYourFilters: (checked: boolean) => void
@@ -41,7 +41,7 @@ export function MobileFilters(props: {
 }) {
   const {
     filters,
-    youLover,
+    youProfile,
     updateFilter,
     clearFilters,
     setYourFilters,
@@ -64,9 +64,9 @@ export function MobileFilters(props: {
       <Col className="p-4 pb-2">
         <MyMatchesToggle
           setYourFilters={setYourFilters}
-          youLover={youLover}
+          youProfile={youProfile}
           on={isYourFilters}
-          hidden={!youLover}
+          hidden={!youProfile}
         />
       </Col>
       {/* RELATIONSHIP STYLE */}
@@ -98,7 +98,7 @@ export function MobileFilters(props: {
           <LocationFilterText
             location={locationFilterProps.location}
             radius={locationFilterProps.radius}
-            youLover={youLover}
+            youProfile={youProfile}
             highlightedClass={
               !locationFilterProps.location
                 ? 'text-ink-400'
@@ -108,7 +108,7 @@ export function MobileFilters(props: {
         }
       >
         <LocationFilter
-          youLover={youLover}
+          youProfile={youProfile}
           locationFilterProps={locationFilterProps}
         />
       </MobileFilterSection>

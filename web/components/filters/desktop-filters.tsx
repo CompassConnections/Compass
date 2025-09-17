@@ -22,13 +22,13 @@ import {
 import { KidsLabel, wantsKidsLabelsWithIcon } from './wants-kids-filter'
 import { HasKidsLabel } from './has-kids-filter'
 import { MyMatchesToggle } from './my-matches-toggle'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import {FilterFields} from "common/filters";
 import {hasKidsLabels} from "common/has-kids";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
-  youLover: Lover | undefined | null
+  youProfile: Profile | undefined | null
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
   setYourFilters: (checked: boolean) => void
@@ -37,7 +37,7 @@ export function DesktopFilters(props: {
 }) {
   const {
     filters,
-    youLover,
+    youProfile,
     updateFilter,
     clearFilters,
     setYourFilters,
@@ -49,9 +49,9 @@ export function DesktopFilters(props: {
     <>
       <MyMatchesToggle
         setYourFilters={setYourFilters}
-        youLover={youLover}
+        youProfile={youProfile}
         on={isYourFilters}
-        hidden={!youLover}
+        hidden={!youProfile}
       />
       {/* CONNECTION */}
       <CustomizeableDropdown
@@ -85,7 +85,7 @@ export function DesktopFilters(props: {
           <DropdownButton
             content={
               <LocationFilterText
-                youLover={youLover}
+                youProfile={youProfile}
                 location={locationFilterProps.location}
                 radius={locationFilterProps.radius}
                 highlightedClass={open ? 'text-primary-500' : ''}
@@ -96,7 +96,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <LocationFilter
-            youLover={youLover}
+            youProfile={youProfile}
             locationFilterProps={locationFilterProps}
           />
         }

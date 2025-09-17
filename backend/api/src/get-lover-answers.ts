@@ -2,7 +2,7 @@ import { type APIHandler } from 'api/helpers/endpoint'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { Row } from 'common/supabase/utils'
 
-export const getLoverAnswers: APIHandler<'get-lover-answers'> = async (
+export const getProfileAnswers: APIHandler<'get-lover-answers'> = async (
   props,
   _auth
 ) => {

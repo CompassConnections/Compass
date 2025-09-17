@@ -12,7 +12,7 @@ import { useIsIframe } from 'web/hooks/use-is-iframe'
 import { trackCallback } from 'web/lib/service/analytics'
 import { User } from 'common/user'
 import { Col } from 'web/components/layout/col'
-import { useLover } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-lover'
 
 const itemClass =
   'sm:hover:bg-ink-200 block w-full py-1 px-3 text-center sm:hover:text-primary-700 transition-colors'
@@ -80,7 +80,7 @@ function ProfileItem(props: {
   track: () => void
 }) {
   const { user, item, touched, setTouched, currentPage, track } = props
-  const lover = useLover()
+  const lover = useProfile()
   return (
     <Link
       href={item.href ?? '#'}

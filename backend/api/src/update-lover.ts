@@ -7,21 +7,21 @@ import { tryCatch } from 'common/util/try-catch'
 import { update } from 'shared/supabase/utils'
 import { type Row } from 'common/supabase/utils'
 
-export const updateLover: APIHandler<'update-lover'> = async (
+export const updateProfile: APIHandler<'update-lover'> = async (
   parsedBody,
   auth
 ) => {
   log('parsedBody', parsedBody)
   const pg = createSupabaseDirectClient()
 
-  const { data: existingLover } = await tryCatch(
+  const { data: existingProfile } = await tryCatch(
     pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [
       auth.uid,
     ])
   )
 
-  if (!existingLover) {
-    throw new APIError(404, 'Lover not found')
+  if (!existingProfile) {
+    throw new APIError(404, 'Profile not found')
   }
 
   !parsedBody.last_online_time &&

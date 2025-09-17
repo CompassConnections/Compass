@@ -2,16 +2,16 @@ import { User } from 'common/user'
 import { Col } from 'web/components/layout/col'
 import { CompatibilityQuestionsDisplay } from './compatibility-questions-display'
 import { FreeResponseDisplay } from './free-response-display'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 
-export function LoverAnswers(props: {
+export function ProfileAnswers(props: {
   isCurrentUser: boolean
   user: User
-  lover: Lover
+  lover: Profile
   fromSignup?: boolean
-  fromLoverPage?: Lover
+  fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, user, fromSignup, fromLoverPage, lover } = props
+  const { isCurrentUser, user, fromSignup, fromProfilePage, lover } = props
 
   return (
     <Col className={'mt-2 gap-5'}>
@@ -20,12 +20,12 @@ export function LoverAnswers(props: {
         user={user}
         lover={lover}
         fromSignup={fromSignup}
-        fromLoverPage={fromLoverPage}
+        fromProfilePage={fromProfilePage}
       />
       {/*<FreeResponseDisplay*/}
       {/*  isCurrentUser={isCurrentUser}*/}
       {/*  user={user}*/}
-      {/*  fromLoverPage={fromLoverPage}*/}
+      {/*  fromProfilePage={fromProfilePage}*/}
       {/*/>*/}
     </Col>
   )

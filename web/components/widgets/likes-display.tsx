@@ -3,8 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { UserIcon } from '@heroicons/react/solid'
 
-import { Lover } from 'common/love/lover'
-import { useLoverByUserId } from 'web/hooks/use-lover'
+import { Profile } from 'common/love/lover'
+import { useProfileByUserId } from 'web/hooks/use-lover'
 import { Col } from 'web/components/layout/col'
 import { Avatar, EmptyAvatar } from 'web/components/widgets/avatar'
 import { Carousel } from 'web/components/widgets/carousel'
@@ -21,9 +21,9 @@ export const LikesDisplay = (props: {
   likesReceived: LikeData[]
   ships: ShipData[]
   refreshShips: () => Promise<void>
-  profileLover: Lover
+  profileProfile: Profile
 }) => {
-  const { likesGiven, likesReceived, ships, refreshShips, profileLover } = props
+  const { likesGiven, likesReceived, ships, refreshShips, profileProfile } = props
 
   const likesGivenByUserId = keyBy(likesGiven, (l) => l.user_id)
   const likesReceivedByUserId = keyBy(likesReceived, (l) => l.user_id)
@@ -68,7 +68,7 @@ export const LikesDisplay = (props: {
                 <MatchTile
                   key={like.user_id}
                   matchUserId={like.user_id}
-                  profileLover={profileLover}
+                  profileProfile={profileProfile}
                 />
               )
             })}
@@ -86,7 +86,7 @@ export const LikesDisplay = (props: {
         <ShipsList
           label="Shipped with"
           ships={ships}
-          profileLover={profileLover}
+          profileProfile={profileProfile}
           refreshShips={refreshShips}
         />
       )}
@@ -122,7 +122,7 @@ const LikesList = (props: { label: string; likes: LikeData[] }) => {
 
 const UserAvatar = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
-  const lover = useLoverByUserId(userId)
+  const lover = useProfileByUserId(userId)
   const user = useUserById(userId)
 
   // console.log('UserAvatar', user?.username, lover?.pinned_url)
@@ -139,14 +139,14 @@ const UserAvatar = (props: { userId: string; className?: string }) => {
 }
 
 export const MatchTile = (props: {
-  profileLover: Lover
+  profileProfile: Profile
   matchUserId: string
 }) => {
-  const { matchUserId, profileLover } = props
-  const lover = useLoverByUserId(matchUserId)
+  const { matchUserId, profileProfile } = props
+  const lover = useProfileByUserId(matchUserId)
   const user = useUserById(matchUserId)
   const currentUser = useUser()
-  const isYourMatch = currentUser?.id === profileLover.user_id
+  const isYourMatch = currentUser?.id === profileProfile.user_id
 
   if (!lover || !user)
     return <Col className="mb-2 h-[184px] w-[200px] shrink-0"></Col>

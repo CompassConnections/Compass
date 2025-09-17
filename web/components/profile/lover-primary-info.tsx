@@ -6,10 +6,10 @@ import { MdHeight } from 'react-icons/md'
 import { Row } from 'web/components/layout/row'
 import GenderIcon from '../gender-icon'
 import { Gender, convertGender } from 'common/gender'
-import { formatLoverValue } from '../lover-about'
-import { Lover } from 'common/love/lover'
+import { formatProfileValue } from '../lover-about'
+import { Profile } from 'common/love/lover'
 
-export default function LoverPrimaryInfo(props: { lover: Lover }) {
+export default function ProfilePrimaryInfo(props: { lover: Profile }) {
   const { lover } = props
   const stateOrCountry =
     lover.country === 'United States of America'
@@ -29,7 +29,7 @@ export default function LoverPrimaryInfo(props: { lover: Lover }) {
       />
       {lover.height_in_inches != null && (
         <IconWithInfo
-          text={formatLoverValue('height_in_inches', lover.height_in_inches)}
+          text={formatProfileValue('height_in_inches', lover.height_in_inches)}
           icon={<MdHeight className="h-4 w-4 " />}
         />
       )}

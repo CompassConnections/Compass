@@ -8,27 +8,27 @@ import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-bu
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
-import LoverPrimaryInfo from './lover-primary-info'
+import ProfilePrimaryInfo from './lover-primary-info'
 import {OnlineIcon} from '../online-icon'
 import {track} from 'web/lib/service/analytics'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {ShareProfileButton} from '../widgets/share-profile-button'
-import {Lover} from 'common/love/lover'
+import {Profile} from 'common/love/lover'
 import {useUser} from 'web/hooks/use-user'
 import {linkClass} from 'web/components/widgets/site-link'
 import {StarButton} from '../widgets/star-button'
-import {api, updateLover} from 'web/lib/api'
+import {api, updateProfile} from 'web/lib/api'
 import React, {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 
-export default function LoverProfileHeader(props: {
+export default function ProfileProfileHeader(props: {
   user: User
-  lover: Lover
+  lover: Profile
   simpleView?: boolean
   starredUserIds: string[]
   refreshStars: () => Promise<void>
   showMessageButton: boolean
-  refreshLover: () => void
+  refreshProfile: () => void
 }) {
   const {
     user,
@@ -37,13 +37,13 @@ export default function LoverProfileHeader(props: {
     starredUserIds,
     refreshStars,
     showMessageButton,
-    refreshLover,
+    refreshProfile,
   } = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
-  console.log('LoverProfileHeader', {user, lover, currentUser})
+  console.log('ProfileProfileHeader', {user, lover, currentUser})
 
   return (
     <Col className="w-full">
@@ -63,7 +63,7 @@ export default function LoverProfileHeader(props: {
                 , {lover.age}
               </span>
             </Row>
-            <LoverPrimaryInfo lover={lover}/>
+            <ProfilePrimaryInfo lover={lover}/>
           </Col>
         </Row>
         {currentUser && isCurrentUser ? (
@@ -129,7 +129,7 @@ export default function LoverProfileHeader(props: {
             />
             {currentUser && (
               <StarButton
-                targetLover={lover}
+                targetProfile={lover}
                 isStarred={starredUserIds.includes(user.id)}
                 refresh={refreshStars}
               />
@@ -153,8 +153,8 @@ export default function LoverProfileHeader(props: {
         onConfirm={async () => {
           const newVisibility =
             lover.visibility === 'member' ? 'public' : 'member'
-          await updateLover({visibility: newVisibility})
-          refreshLover()
+          await updateProfile({visibility: newVisibility})
+          refreshProfile()
         }}
       />
     </Col>

@@ -6,7 +6,7 @@ import { log } from 'shared/utils'
 import { tryCatch } from 'common/util/try-catch'
 import { Row } from 'common/supabase/utils'
 
-export const likeLover: APIHandler<'like-lover'> = async (props, auth) => {
+export const likeProfile: APIHandler<'like-lover'> = async (props, auth) => {
   const { targetUserId, remove } = props
   const creatorId = auth.uid
 

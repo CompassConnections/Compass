@@ -7,10 +7,10 @@ import { Carousel } from 'web/components/widgets/carousel'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { Col } from 'web/components/layout/col'
 import { SignUpButton } from './nav/love-sidebar'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { useAdmin } from 'web/hooks/use-admin'
 import { Button } from 'web/components/buttons/button'
-import { updateLover } from 'web/lib/api'
+import { updateProfile } from 'web/lib/api'
 import { Row } from 'web/components/layout/row'
 import { useUser } from 'web/hooks/use-user'
 import { PlusIcon } from '@heroicons/react/solid'
@@ -18,7 +18,7 @@ import { api } from 'web/lib/api'
 import { EditablePhotoGrid } from './widgets/editable-photo-grid'
 import { AddPhotosWidget } from './widgets/add-photos'
 
-export default function ProfileCarousel(props: { lover: Lover }) {
+export default function ProfileCarousel(props: { lover: Profile }) {
   const { lover } = props
   const photoNums = lover.photo_urls ? lover.photo_urls.length : 0
 
@@ -35,7 +35,7 @@ export default function ProfileCarousel(props: { lover: Lover }) {
   const isCurrentUser = currentUser?.id === lover.user_id
 
   const handleSaveChanges = async () => {
-    await updateLover({
+    await updateProfile({
       pinned_url: pinnedUrl ?? undefined,
       photo_urls: photoUrls,
     })

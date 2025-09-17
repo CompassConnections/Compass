@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
 import { api } from 'web/lib/api'
 import { APIResponse } from 'common/api/schema'
-import { useLoverByUserId } from './use-lover'
+import { useProfileByUserId } from './use-lover'
 import { getProfilesCompatibilityFactor } from 'common/love/compatibility-score'
 
 export const useCompatibleProfiles = (
@@ -14,7 +14,7 @@ export const useCompatibleProfiles = (
     APIResponse<'compatible-profiles'> | undefined | null
   >(undefined, `compatible-profiles-${userId}`)
 
-  const lover = useLoverByUserId(userId ?? undefined)
+  const lover = useProfileByUserId(userId ?? undefined)
 
   useEffect(() => {
     if (userId) {

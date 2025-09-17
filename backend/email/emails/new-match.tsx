@@ -1,14 +1,14 @@
 import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
-import {type LoverRow} from 'common/love/lover'
+import {type ProfileRow} from 'common/love/lover'
 import {type User} from 'common/user'
-import {jamesLover, jamesUser, sinclairUser} from './functions/mock'
+import {jamesProfile, jamesUser, sinclairUser} from './functions/mock'
 import {Footer} from "email/utils";
 
 interface NewMatchEmailProps {
   onUser: User
   matchedWithUser: User
-  matchedLover: LoverRow
+  matchedProfile: ProfileRow
   unsubscribeUrl: string
   email?: string
 }
@@ -16,12 +16,12 @@ interface NewMatchEmailProps {
 export const NewMatchEmail = ({
                                 onUser,
                                 matchedWithUser,
-                                matchedLover,
+                                matchedProfile,
                                 unsubscribeUrl,
                                 email
                               }: NewMatchEmailProps) => {
   const name = onUser.name.split(' ')[0]
-  // const userImgSrc = getLoveOgImageUrl(matchedWithUser, matchedLover)
+  // const userImgSrc = getLoveOgImageUrl(matchedWithUser, matchedProfile)
   const userUrl = `https://${DOMAIN}/${matchedWithUser.username}`
 
   return (
@@ -72,7 +72,7 @@ export const NewMatchEmail = ({
 NewMatchEmail.PreviewProps = {
   onUser: sinclairUser,
   matchedWithUser: jamesUser,
-  matchedLover: jamesLover,
+  matchedProfile: jamesProfile,
   email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMatchEmailProps

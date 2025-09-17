@@ -28,7 +28,7 @@ import { Gender, convertGenderPlural } from 'common/gender'
 import { HiOutlineGlobe } from 'react-icons/hi'
 import { UserHandles } from 'web/components/user/user-handles'
 import { convertRace } from './race'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -54,7 +54,7 @@ export function AboutRow(props: {
   )
 }
 
-export default function LoverAbout(props: { lover: Lover }) {
+export default function ProfileAbout(props: { lover: Profile }) {
   const { lover } = props
   return (
     <Col
@@ -91,7 +91,7 @@ export default function LoverAbout(props: { lover: Lover }) {
   )
 }
 
-function Seeking(props: { lover: Lover }) {
+function Seeking(props: { lover: Profile }) {
   const { lover } = props
   const prefGender = lover.pref_gender
   const min = lover.pref_age_min
@@ -126,7 +126,7 @@ function Seeking(props: { lover: Lover }) {
   )
 }
 
-function RelationshipType(props: { lover: Lover }) {
+function RelationshipType(props: { lover: Profile }) {
   const { lover } = props
   const relationshipTypes = lover.pref_relation_styles
   const seekingGenderText = stringOrStringArrayToText({
@@ -149,7 +149,7 @@ function RelationshipType(props: { lover: Lover }) {
   )
 }
 
-function Education(props: { lover: Lover }) {
+function Education(props: { lover: Profile }) {
   const { lover } = props
   const educationLevel = lover.education_level
   const university = lover.university
@@ -173,7 +173,7 @@ function Education(props: { lover: Lover }) {
   )
 }
 
-function Occupation(props: { lover: Lover }) {
+function Occupation(props: { lover: Profile }) {
   const { lover } = props
   const occupation_title = lover.occupation_title
   const company = lover.company
@@ -194,7 +194,7 @@ function Occupation(props: { lover: Lover }) {
   )
 }
 
-function Smoker(props: { lover: Lover }) {
+function Smoker(props: { lover: Profile }) {
   const { lover } = props
   const isSmoker = lover.is_smoker
   if (isSmoker == null) return null
@@ -211,7 +211,7 @@ function Smoker(props: { lover: Lover }) {
   )
 }
 
-function Drinks(props: { lover: Lover }) {
+function Drinks(props: { lover: Profile }) {
   const { lover } = props
   const drinksPerMonth = lover.drinks_per_month
   if (drinksPerMonth == null) return null
@@ -233,7 +233,7 @@ function Drinks(props: { lover: Lover }) {
   )
 }
 
-function WantsKids(props: { lover: Lover }) {
+function WantsKids(props: { lover: Profile }) {
   const { lover } = props
   const wantsKidsStrength = lover.wants_kids_strength
   if (wantsKidsStrength == null || wantsKidsStrength < 0) return null
@@ -256,7 +256,7 @@ function WantsKids(props: { lover: Lover }) {
   )
 }
 
-function HasKids(props: { lover: Lover }) {
+function HasKids(props: { lover: Profile }) {
   const { lover } = props
   const hasKidsText =
     lover.has_kids && lover.has_kids > 0
@@ -264,7 +264,7 @@ function HasKids(props: { lover: Lover }) {
       : null
   return <AboutRow icon={<FaChild className="h-5 w-5" />} text={hasKidsText} />
 }
-export const formatLoverValue = (key: string, value: any) => {
+export const formatProfileValue = (key: string, value: any) => {
   if (Array.isArray(value)) {
     return value.join(', ')
   }

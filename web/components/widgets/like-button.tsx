@@ -9,20 +9,20 @@ import { Tooltip } from 'web/components/widgets/tooltip'
 import { Col } from 'web/components/layout/col'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { Row } from 'web/components/layout/row'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { useUserById } from 'web/hooks/use-user-supabase'
 import { MatchAvatars } from '../matches/match-avatars'
-import { useLover } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-lover'
 import { useAPIGetter } from 'web/hooks/use-api-getter'
 
 export const LikeButton = (props: {
-  targetLover: Lover
+  targetProfile: Profile
   liked: boolean
   refresh: () => Promise<void>
   className?: string
 }) => {
-  const { targetLover, liked, refresh, className } = props
-  const targetId = targetLover.user_id
+  const { targetProfile, liked, refresh, className } = props
+  const targetId = targetProfile.user_id
   const [isLoading, setIsLoading] = useState(false)
 
   const { data, refresh: refreshHasFreeLike } = useAPIGetter(
@@ -70,14 +70,14 @@ export const LikeButton = (props: {
         </Col>
       </button>
       <LikeConfirmationDialog
-        targetLover={targetLover}
+        targetProfile={targetProfile}
         hasFreeLike={hasFreeLike}
         submit={like}
         open={!liked && showConfirmation}
         setOpen={setShowConfirmation}
       />
       <CancelLikeConfimationDialog
-        targetLover={targetLover}
+        targetProfile={targetProfile}
         submit={like}
         open={liked && showConfirmation}
         setOpen={setShowConfirmation}
@@ -87,15 +87,15 @@ export const LikeButton = (props: {
 }
 
 const LikeConfirmationDialog = (props: {
-  targetLover: Lover
+  targetProfile: Profile
   hasFreeLike: boolean
   open: boolean
   setOpen: (open: boolean) => void
   submit: () => void
 }) => {
-  const { open, setOpen, targetLover, hasFreeLike, submit } = props
-  const youLover = useLover()
-  const user = useUserById(targetLover.user_id)
+  const { open, setOpen, targetProfile, hasFreeLike, submit } = props
+  const youProfile = useProfile()
+  const user = useUserById(targetProfile.user_id)
 
   return (
     <Modal
@@ -115,10 +115,10 @@ const LikeConfirmationDialog = (props: {
           <div className="text-ink-500">You get one like per day</div>
         </Col>
 
-        {youLover && user && (
+        {youProfile && user && (
           <MatchAvatars
-            profileLover={youLover}
-            matchedLover={{ ...targetLover, user: user as any }}
+            profileProfile={youProfile}
+            matchedProfile={{ ...targetProfile, user: user as any }}
           />
         )}
 
@@ -138,13 +138,13 @@ const LikeConfirmationDialog = (props: {
 }
 
 const CancelLikeConfimationDialog = (props: {
-  targetLover: Lover
+  targetProfile: Profile
   open: boolean
   setOpen: (open: boolean) => void
   submit: () => void
 }) => {
-  const { open, setOpen, targetLover, submit } = props
-  const user = useUserById(targetLover.user_id)
+  const { open, setOpen, targetProfile, submit } = props
+  const user = useUserById(targetProfile.user_id)
   return (
     <Modal
       open={open}

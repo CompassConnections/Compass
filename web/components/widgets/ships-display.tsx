@@ -5,8 +5,8 @@ import clsx from 'clsx'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { MatchAvatars } from '../matches/match-avatars'
 import { Row } from 'web/components/layout/row'
-import { Lover } from 'common/love/lover'
-import { useLoverByUserId } from 'web/hooks/use-lover'
+import { Profile } from 'common/love/lover'
+import { useProfileByUserId } from 'web/hooks/use-lover'
 import { Col } from 'web/components/layout/col'
 import { EmptyAvatar, Avatar } from 'web/components/widgets/avatar'
 import { Carousel } from 'web/components/widgets/carousel'
@@ -22,17 +22,17 @@ import { User } from 'common/user'
 export const ShipsList = (props: {
   label: string
   ships: ShipData[]
-  profileLover: Lover
+  profileProfile: Profile
   refreshShips: () => Promise<void>
 }) => {
-  const { label, ships, profileLover, refreshShips } = props
+  const { label, ships, profileProfile, refreshShips } = props
 
   const shipsWithTargetId = ships.map(
     ({ target1_id, target2_id, ...other }) => ({
       ...other,
       target1_id,
       target2_id,
-      targetId: target1_id === profileLover.user_id ? target2_id : target1_id,
+      targetId: target1_id === profileProfile.user_id ? target2_id : target1_id,
     })
   )
   const shipsByTargetId = groupBy(shipsWithTargetId, (s) => s.targetId)
@@ -52,7 +52,7 @@ export const ShipsList = (props: {
               <ShipsTargetDisplay
                 key={targetId}
                 ships={shipsByTargetId[targetId]}
-                profileLover={profileLover}
+                profileProfile={profileProfile}
                 refreshShips={refreshShips}
               />
             )
@@ -68,18 +68,18 @@ export const ShipsList = (props: {
 const ShipsTargetDisplay = (props: {
   ships: (ShipData & { targetId: string })[]
   refreshShips: () => Promise<void>
-  profileLover: Lover
+  profileProfile: Profile
   className?: string
 }) => {
-  const { ships, refreshShips, profileLover, className } = props
+  const { ships, refreshShips, profileProfile, className } = props
   const { targetId } = ships[0]
 
-  const targetLover = useLoverByUserId(targetId)
+  const targetProfile = useProfileByUserId(targetId)
   const targetUser = useUserById(targetId) as User | null | undefined
   const [open, setOpen] = useState(false)
 
   const currentUser = useUser()
-  const shipped = hasShipped(currentUser, profileLover.user_id, targetId, ships)
+  const shipped = hasShipped(currentUser, profileProfile.user_id, targetId, ships)
 
   return (
     <>
@@ -96,15 +96,15 @@ const ShipsTargetDisplay = (props: {
       {open && (
         <Modal open={open} setOpen={setOpen}>
           <Col className={clsx(MODAL_CLASS, 'relative')}>
-            {targetLover && targetUser && (
+            {targetProfile && targetUser && (
               <>
                 <MatchAvatars
-                  profileLover={profileLover}
-                  matchedLover={{ ...targetLover, user: targetUser }}
+                  profileProfile={profileProfile}
+                  matchedProfile={{ ...targetProfile, user: targetUser }}
                 />
                 <Row className="w-full items-baseline justify-stretch gap-2 text-lg font-semibold">
                   <Row className="flex-1 justify-end">
-                    <UserLink hideBadge user={profileLover.user} noLink />
+                    <UserLink hideBadge user={profileProfile.user} noLink />
                   </Row>
                   &
                   <Row className="flex-1 justify-start">
@@ -124,12 +124,12 @@ const ShipsTargetDisplay = (props: {
               </Col>
             </Col>
             {currentUser &&
-              profileLover.user_id !== currentUser?.id &&
+              profileProfile.user_id !== currentUser?.id &&
               targetId !== currentUser?.id && (
                 <Row className="sticky bottom-[70px] right-0 mr-1 self-end lg:bottom-6">
                   <ShipButton
                     shipped={shipped}
-                    targetId1={profileLover.user_id}
+                    targetId1={profileProfile.user_id}
                     targetId2={targetId}
                     refresh={refreshShips}
                   />
@@ -144,7 +144,7 @@ const ShipsTargetDisplay = (props: {
 
 const UserAvatar = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
-  const lover = useLoverByUserId(userId)
+  const lover = useProfileByUserId(userId)
   const user = useUserById(userId)
 
   if (!lover || !lover.pinned_url)
@@ -162,7 +162,7 @@ const UserAvatar = (props: { userId: string; className?: string }) => {
 const UserInfoRow = (props: { userId: string; className?: string }) => {
   const { userId, className } = props
   const user = useUserById(userId)
-  const lover = useLoverByUserId(userId)
+  const lover = useProfileByUserId(userId)
 
   return (
     <Row className={clsx(className, 'items-center gap-2')}>

@@ -1,4 +1,4 @@
-import {Lover} from 'common/love/lover'
+import {Profile} from 'common/love/lover'
 import {CompatibilityScore} from 'common/love/compatibility-score'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
@@ -14,7 +14,7 @@ import {CompatibleBadge} from "web/components/widgets/compatible-badge";
 import {useUser} from "web/hooks/use-user";
 
 export const ProfileGrid = (props: {
-  profiles: Lover[]
+  profiles: Profile[]
   loadMore: () => Promise<boolean>
   isLoadingMore: boolean
   isReloading: boolean
@@ -75,7 +75,7 @@ export const ProfileGrid = (props: {
 }
 
 function ProfilePreview(props: {
-  lover: Lover
+  lover: Profile
   compatibilityScore: CompatibilityScore | undefined
   hasStar: boolean
   refreshStars: () => Promise<void>
@@ -115,7 +115,7 @@ function ProfilePreview(props: {
           {/*      className="!pt-0"*/}
           {/*      isStarred={hasStar}*/}
           {/*      refresh={refreshStars}*/}
-          {/*      targetLover={lover}*/}
+          {/*      targetProfile={lover}*/}
           {/*      hideTooltip*/}
           {/*    />*/}
           {/*  ) : (*/}

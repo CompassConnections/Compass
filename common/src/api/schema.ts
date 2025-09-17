@@ -7,7 +7,7 @@ import {
 import { PrivateChatMessage } from 'common/chat-message'
 import { CompatibilityScore } from 'common/love/compatibility-score'
 import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/love/constants'
-import { Lover, LoverRow } from 'common/love/lover'
+import { Profile, ProfileRow } from 'common/love/lover'
 import { Row } from 'common/supabase/utils'
 import { PrivateUser, User } from 'common/user'
 import { z } from 'zod'
@@ -147,7 +147,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     props: combinedLoveUsersSchema.partial(),
-    returns: {} as LoverRow,
+    returns: {} as ProfileRow,
   },
   'update-notif-settings': {
     method: 'POST',
@@ -217,8 +217,8 @@ export const API = (_apiTypeCheck = {
     authed: false,
     props: z.object({ userId: z.string() }),
     returns: {} as {
-      lover: Lover
-      compatibleProfiles: Lover[]
+      lover: Profile
+      compatibleProfiles: Profile[]
       loverCompatibilityScores: {
         [userId: string]: CompatibilityScore
       }
@@ -331,7 +331,7 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {
       status: 'success' | 'fail'
-      profiles: Lover[]
+      profiles: Profile[]
     },
   },
   'get-lover-answers': {

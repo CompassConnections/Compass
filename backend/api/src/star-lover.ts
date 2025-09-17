@@ -5,7 +5,7 @@ import { tryCatch } from 'common/util/try-catch'
 import { Row } from 'common/supabase/utils'
 import { insert } from 'shared/supabase/utils'
 
-export const starLover: APIHandler<'star-lover'> = async (props, auth) => {
+export const starProfile: APIHandler<'star-lover'> = async (props, auth) => {
   const { targetUserId, remove } = props
   const creatorId = auth.uid
 

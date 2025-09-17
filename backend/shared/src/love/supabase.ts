@@ -1,28 +1,28 @@
 import { areGenderCompatible } from 'common/love/compatibility-util'
-import { type Lover, type LoverRow } from 'common/love/lover'
+import { type Profile, type ProfileRow } from 'common/love/lover'
 import { type User } from 'common/user'
 import { Row } from 'common/supabase/utils'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 
-export type LoverAndUserRow = LoverRow & {
+export type ProfileAndUserRow = ProfileRow & {
   name: string
   username: string
   user: any
 }
 
-export function convertRow(row: LoverAndUserRow): Lover
-export function convertRow(row: LoverAndUserRow | undefined): Lover | null {
+export function convertRow(row: ProfileAndUserRow): Profile
+export function convertRow(row: ProfileAndUserRow | undefined): Profile | null {
   if (!row) return null
 
   return {
     ...row,
     user: { ...row.user, name: row.name, username: row.username } as User,
-  } as Lover
+  } as Profile
 }
 
 const LOVER_COLS = 'profiles.*, name, username, users.data as user'
 
-export const getLover = async (userId: string) => {
+export const getProfile = async (userId: string) => {
   const pg = createSupabaseDirectClient()
   return await pg.oneOrNone(
     `
@@ -58,7 +58,7 @@ export const getProfiles = async (userIds: string[]) => {
   )
 }
 
-export const getGenderCompatibleProfiles = async (lover: LoverRow) => {
+export const getGenderCompatibleProfiles = async (lover: ProfileRow) => {
   const pg = createSupabaseDirectClient()
   const profiles = await pg.map(
     `
@@ -77,11 +77,11 @@ export const getGenderCompatibleProfiles = async (lover: LoverRow) => {
     { ...lover },
     convertRow
   )
-  return profiles.filter((l: Lover) => areGenderCompatible(lover, l))
+  return profiles.filter((l: Profile) => areGenderCompatible(lover, l))
 }
 
 export const getCompatibleProfiles = async (
-  lover: LoverRow,
+  lover: ProfileRow,
   radiusKm: number | undefined
 ) => {
   const pg = createSupabaseDirectClient()

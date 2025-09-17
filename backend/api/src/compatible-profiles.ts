@@ -2,7 +2,7 @@ import { groupBy, sortBy } from 'lodash'
 import { APIError, type APIHandler } from 'api/helpers/endpoint'
 import { getCompatibilityScore } from 'common/love/compatibility-score'
 import {
-  getLover,
+  getProfile,
   getCompatibilityAnswers,
   getGenderCompatibleProfiles,
 } from 'shared/love/supabase'
@@ -15,7 +15,7 @@ export const getCompatibleProfilesHandler: APIHandler<
 }
 
 export const getCompatibleProfiles = async (userId: string) => {
-  const lover = await getLover(userId)
+  const lover = await getProfile(userId)
 
   log('got lover', {
     id: lover?.id,
@@ -23,7 +23,7 @@ export const getCompatibleProfiles = async (userId: string) => {
     username: lover?.user?.username,
   })
 
-  if (!lover) throw new APIError(404, 'Lover not found')
+  if (!lover) throw new APIError(404, 'Profile not found')
 
   const profiles = await getGenderCompatibleProfiles(lover)
 

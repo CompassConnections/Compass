@@ -2,23 +2,23 @@ import { PencilIcon, XIcon } from '@heroicons/react/outline'
 import { JSONContent } from '@tiptap/core'
 import clsx from 'clsx'
 
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { Content } from 'web/components/widgets/editor'
-import { updateLover } from 'web/lib/api'
+import { updateProfile } from 'web/lib/api'
 import { EditableBio } from './editable-bio'
 import { tryCatch } from 'common/util/try-catch'
 
 export function BioBlock(props: {
   isCurrentUser: boolean
-  lover: Lover
-  refreshLover: () => void
+  lover: Profile
+  refreshProfile: () => void
   edit: boolean
   setEdit: (edit: boolean) => void
 }) {
-  const { isCurrentUser, refreshLover, lover, edit, setEdit } = props
+  const { isCurrentUser, refreshProfile, lover, edit, setEdit } = props
 
   return (
     <Col
@@ -38,7 +38,7 @@ export function BioBlock(props: {
             lover={lover}
             onCancel={lover.bio ? () => setEdit(false) : undefined}
             onSave={() => {
-              refreshLover()
+              refreshProfile()
               setEdit(false)
             }}
           />
@@ -55,9 +55,9 @@ export function BioBlock(props: {
                 name: 'Delete',
                 icon: <XIcon className="h-5 w-5" />,
                 onClick: async () => {
-                  const { error } = await tryCatch(updateLover({ bio: null }))
+                  const { error } = await tryCatch(updateProfile({ bio: null }))
                   if (error) console.error(error)
-                  else refreshLover()
+                  else refreshProfile()
                 },
               },
             ]}

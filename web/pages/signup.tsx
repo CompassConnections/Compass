@@ -12,8 +12,8 @@ import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
-import {useLoverByUserId} from 'web/hooks/use-lover'
-import {LoverRow} from 'common/love/lover'
+import {useProfileByUserId} from 'web/hooks/use-lover'
+import {ProfileRow} from 'common/love/lover'
 import {LovePage} from "web/components/love-page";
 import {Button} from "web/components/buttons/button";
 
@@ -25,28 +25,28 @@ export default function SignupPage() {
   useTracking('view love signup page')
 
   // Omit the id, created_time?
-  const [loverForm, setLoverForm] = useState<LoverRow>({
+  const [loverForm, setProfileForm] = useState<ProfileRow>({
     ...initialRequiredState,
   } as any)
-  const setLoverState = (key: keyof LoverRow, value: any) => {
-    setLoverForm((prevState) => ({...prevState, [key]: value}))
+  const setProfileState = (key: keyof ProfileRow, value: any) => {
+    setProfileForm((prevState) => ({...prevState, [key]: value}))
   }
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const existingLover = useLoverByUserId(user?.id)
+  const existingProfile = useProfileByUserId(user?.id)
   useEffect(() => {
-    if (existingLover) {
-      setLoverForm(existingLover)
+    if (existingProfile) {
+      setProfileForm(existingProfile)
       setStep(1)
     }
-  }, [existingLover])
+  }, [existingProfile])
 
   if (step === 1 && user) {
     return <LovePage trackPageView={'register'}>
       <Col className={'w-full px-6 py-4'}>
         <OptionalLoveUserForm
-          setLover={setLoverState}
+          setProfile={setProfileState}
           lover={loverForm}
           user={user}
           fromSignup
@@ -77,7 +77,7 @@ export default function SignupPage() {
           {step === 0 ? (
             <RequiredLoveUserForm
               user={user}
-              setLover={setLoverState}
+              setProfile={setProfileState}
               lover={loverForm}
               isSubmitting={isSubmitting}
               onSubmit={async () => {
@@ -104,7 +104,7 @@ export default function SignupPage() {
                 })
                 setIsSubmitting(false)
                 if (lover) {
-                  setLoverForm(lover)
+                  setProfileForm(lover)
                   setStep(1)
                   scrollTo(0, 0)
                   track('submit love required profile')

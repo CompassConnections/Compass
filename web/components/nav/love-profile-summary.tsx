@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useLover } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-lover'
 import Link from 'next/link'
 import { Avatar } from 'web/components/widgets/avatar'
 import { User } from 'web/lib/firebase/users'
@@ -8,7 +8,7 @@ import { trackCallback } from 'web/lib/service/analytics'
 export function ProfileSummary(props: { user: User; className?: string }) {
   const { user, className } = props
 
-  const lover = useLover()
+  const lover = useProfile()
 
   return (
     <Link

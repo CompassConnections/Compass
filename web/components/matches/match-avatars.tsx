@@ -1,27 +1,27 @@
 import { Row } from 'web/components/layout/row'
 import { HeartIcon } from '@heroicons/react/solid'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import Image from 'next/image'
 import { Col } from 'web/components/layout/col'
 import { UserIcon } from '@heroicons/react/solid'
 import clsx from 'clsx'
 
 export function MatchAvatars(props: {
-  profileLover: Lover
-  matchedLover: Lover
+  profileProfile: Profile
+  matchedProfile: Profile
   className?: string
 }) {
-  const { profileLover, matchedLover, className } = props
+  const { profileProfile, matchedProfile, className } = props
 
   return (
     <Row className={clsx(className, 'mx-auto items-center gap-1')}>
-      {profileLover.pinned_url ? (
+      {profileProfile.pinned_url ? (
         <Image
-          src={profileLover.pinned_url}
+          src={profileProfile.pinned_url}
           // You must set these so we don't pay an extra $1k/month to vercel
           width={100}
           height={100}
-          alt={profileLover.user.username}
+          alt={profileProfile.user.username}
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (
@@ -31,13 +31,13 @@ export function MatchAvatars(props: {
       )}
 
       <HeartIcon className="text-ink-300 h-6 w-6" />
-      {matchedLover.pinned_url ? (
+      {matchedProfile.pinned_url ? (
         <Image
-          src={matchedLover.pinned_url}
+          src={matchedProfile.pinned_url}
           // You must set these so we don't pay an extra $1k/month to vercel
           width={100}
           height={100}
-          alt={matchedLover.user.username}
+          alt={matchedProfile.user.username}
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (

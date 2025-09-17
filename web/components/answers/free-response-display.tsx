@@ -17,7 +17,7 @@ import {
   useUserAnswers,
 } from 'web/hooks/use-questions'
 import { TbMessage } from 'react-icons/tb'
-import { OtherLoverAnswers } from './other-lover-answers'
+import { OtherProfileAnswers } from './other-lover-answers'
 import {
   MODAL_CLASS,
   Modal,
@@ -26,14 +26,14 @@ import {
 import { partition } from 'lodash'
 import { shortenName } from 'web/components/widgets/user-link'
 import { AddQuestionButton } from './free-response-add-question'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean
   user: User
-  fromLoverPage: Lover | undefined
+  fromProfilePage: Profile | undefined
 }) {
-  const { isCurrentUser, user, fromLoverPage } = props
+  const { isCurrentUser, user, fromProfilePage } = props
 
   const { refreshAnswers, answers: allAnswers } = useUserAnswers(user?.id)
 
@@ -79,7 +79,7 @@ export function FreeResponseDisplay(props: {
         })}
       </Col>
 
-      {isCurrentUser && !fromLoverPage && (
+      {isCurrentUser && !fromProfilePage && (
         <AddQuestionButton
           isFirstQuestion={answers.length < 1}
           questions={otherFRQuestions}
@@ -164,7 +164,7 @@ function AnswerBlock(props: {
       <Modal open={otherAnswerModal} setOpen={setOtherAnswerModal}>
         <Col className={MODAL_CLASS}>
           <span className="font-semibold">{question.question}</span>
-          <OtherLoverAnswers
+          <OtherProfileAnswers
             question={question}
             user={user}
             className={SCROLLABLE_MODAL_CLASS}

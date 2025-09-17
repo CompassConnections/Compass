@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { api } from 'web/lib/api'
 import { countryCodeToFlag } from 'web/lib/util/location'
-import { LoverRow } from 'common/love/lover'
+import { ProfileRow } from 'common/love/lover'
 import {OriginLocation} from "common/filters";
 
 export type City = {
@@ -15,7 +15,7 @@ export type City = {
   longitude: number
 }
 
-export function loverToCity(lover: LoverRow): City {
+export function loverToCity(lover: ProfileRow): City {
   return {
     geodb_city_id: lover.geodb_city_id!,
     city: lover.city,

@@ -10,7 +10,7 @@ import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Column} from 'common/supabase/utils'
-import {LoverRow} from 'common/love/lover'
+import {ProfileRow} from 'common/love/lover'
 import {SignupBio} from "web/components/bio/editable-bio";
 import {JSONContent} from "@tiptap/core";
 
@@ -40,13 +40,13 @@ export const RequiredLoveUserForm = (props: {
   // TODO thread this properly instead of this jank
   setEditUsername?: (name: string) => unknown
   setEditDisplayName?: (name: string) => unknown
-  lover: LoverRow
-  setLover: <K extends Column<'profiles'>>(key: K, value: LoverRow[K] | undefined) => void
+  lover: ProfileRow
+  setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K] | undefined) => void
   isSubmitting: boolean
   onSubmit?: () => void
   loverCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, loverCreatedAlready, setLover, lover, isSubmitting} = props
+  const {user, onSubmit, loverCreatedAlready, setProfile, lover, isSubmitting} = props
   const {updateUsername, updateDisplayName, userInfo, updateUserState} = useEditableUserInfo(user)
 
   const {
@@ -129,7 +129,7 @@ export const RequiredLoveUserForm = (props: {
                 <SignupBio
                     onChange={(e: JSONContent) => {
                       console.log('bio changed', e, lover.bio)
-                      setLover('bio', e)
+                      setProfile('bio', e)
                     }}
                 />
             </Col>

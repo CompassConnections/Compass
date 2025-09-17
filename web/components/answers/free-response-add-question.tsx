@@ -12,7 +12,7 @@ import {
 import { Row } from 'web/components/layout/row'
 import { IndividualQuestionRow } from '../questions-form'
 import { TbMessage } from 'react-icons/tb'
-import { OtherLoverAnswers } from './other-lover-answers'
+import { OtherProfileAnswers } from './other-lover-answers'
 import { ArrowLeftIcon } from '@heroicons/react/outline'
 import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
 
@@ -87,7 +87,7 @@ function AddQuestionModal(props: {
               </Button>
               <span className="font-semibold">{expandedQuestion.question}</span>
             </Row>
-            <OtherLoverAnswers
+            <OtherProfileAnswers
               question={expandedQuestion}
               user={user}
               className={SCROLLABLE_MODAL_CLASS}

@@ -46,7 +46,7 @@ export const createComment: APIHandler<'create-comment'> = async (
     ]
   )
   if (onUser.id !== creator.id)
-    await createNewCommentOnLoverNotification(
+    await createNewCommentOnProfileNotification(
       onUser,
       creator,
       richTextToString(content),
@@ -84,7 +84,7 @@ const validateComment = async (
   return { content, creator }
 }
 
-const createNewCommentOnLoverNotification = async (
+const createNewCommentOnProfileNotification = async (
   onUser: User,
   creator: User,
   sourceText: string,

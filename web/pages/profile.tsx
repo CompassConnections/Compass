@@ -1,9 +1,9 @@
-import {Lover, LoverRow} from 'common/love/lover'
+import {Profile, ProfileRow} from 'common/love/lover'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {OptionalLoveUserForm} from 'web/components/optional-lover-form'
 import {RequiredLoveUserForm} from 'web/components/required-lover-form'
-import {useLoverByUser} from 'web/hooks/use-lover'
+import {useProfileByUser} from 'web/hooks/use-lover'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
@@ -13,7 +13,7 @@ import {LovePage} from "web/components/love-page";
 
 export default function ProfilePage() {
   const user = useUser()
-  const {lover} = useLoverByUser(user ?? undefined)
+  const {lover} = useProfileByUser(user ?? undefined)
 
   useEffect(() => {
     if (user === null || lover === null) {
@@ -24,16 +24,16 @@ export default function ProfilePage() {
   return user && lover && <ProfilePageInner user={user} lover={lover}/>
 }
 
-function ProfilePageInner(props: { user: User; lover: Lover }) {
+function ProfilePageInner(props: { user: User; lover: Profile }) {
   const {user} = props
 
-  const [lover, setLover] = useState<Lover>({
+  const [lover, setProfile] = useState<Profile>({
     ...props.lover,
     user,
   })
 
-  const setLoverState = <K extends Column<'profiles'>>(key: K, value: LoverRow[K] | undefined) => {
-    setLover((prevState) => ({...prevState, [key]: value}))
+  const setProfileState = <K extends Column<'profiles'>>(key: K, value: ProfileRow[K] | undefined) => {
+    setProfile((prevState) => ({...prevState, [key]: value}))
   }
 
   const [displayName, setDisplayName] = useState(user.name)
@@ -45,7 +45,7 @@ function ProfilePageInner(props: { user: User; lover: Lover }) {
         <Col className={'w-full px-6 py-4'}>
           <RequiredLoveUserForm
             user={user}
-            setLover={setLoverState}
+            setProfile={setProfileState}
             lover={lover}
             loverCreatedAlready={true}
             isSubmitting={false}
@@ -56,7 +56,7 @@ function ProfilePageInner(props: { user: User; lover: Lover }) {
           <OptionalLoveUserForm
             lover={lover}
             user={user}
-            setLover={setLoverState}
+            setProfile={setProfileState}
             buttonLabel={'Save'}
             onSubmit={async () => {
               api('me/update', {

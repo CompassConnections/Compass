@@ -1,35 +1,35 @@
-import {LoverCommentSection} from 'web/components/lover-comment-section'
-import LoverProfileHeader from 'web/components/profile/lover-profile-header'
+import {ProfileCommentSection} from 'web/components/lover-comment-section'
+import ProfileProfileHeader from 'web/components/profile/lover-profile-header'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {useUser} from 'web/hooks/use-user'
 import {User} from 'web/lib/firebase/users'
-import LoverAbout from 'web/components/lover-about'
-import {LoverAnswers} from 'web/components/answers/lover-answers'
+import ProfileAbout from 'web/components/lover-about'
+import {ProfileAnswers} from 'web/components/answers/lover-answers'
 import {SignUpButton} from 'web/components/nav/love-sidebar'
-import {Lover} from 'common/love/lover'
-import {LoverBio} from 'web/components/bio/lover-bio'
+import {Profile} from 'common/love/lover'
+import {ProfileBio} from 'web/components/bio/lover-bio'
 import {areGenderCompatible} from 'common/love/compatibility-util'
-import {useLover} from 'web/hooks/use-lover'
+import {useProfile} from 'web/hooks/use-lover'
 import {useGetter} from 'web/hooks/use-getter'
 import {getStars} from 'web/lib/supabase/stars'
 import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import React from "react";
 
-export function LoverProfile(props: {
-  lover: Lover
+export function ProfileProfile(props: {
+  lover: Profile
   user: User
-  refreshLover: () => void
-  fromLoverPage?: Lover
+  refreshProfile: () => void
+  fromProfilePage?: Profile
   fromSignup?: boolean
 }) {
-  console.log('Rendering LoverProfile for ', props)
-  const {lover, user, refreshLover, fromLoverPage, fromSignup} = props
+  console.log('Rendering ProfileProfile for ', props)
+  const {lover, user, refreshProfile, fromProfilePage, fromSignup} = props
 
   const currentUser = useUser()
-  const currentLover = useLover()
+  const currentProfile = useProfile()
   // const isCurrentUser = currentUser?.id === user.id
 
   const {data: starredUserIds, refresh: refreshStars} = useGetter(
@@ -53,10 +53,10 @@ export function LoverProfile(props: {
   //   likesGiven.map((l) => l.user_id).includes(currentUser.id)
 
   // const shipped =
-  //   !!ships && hasShipped(currentUser, fromLoverPage?.user_id, user.id, ships)
+  //   !!ships && hasShipped(currentUser, fromProfilePage?.user_id, user.id, ships)
 
   const areCompatible =
-    !!currentLover && areGenderCompatible(currentLover, lover)
+    !!currentProfile && areGenderCompatible(currentProfile, lover)
 
   // Allow everyone to message everyone for now
   const showMessageButton = true // liked || likedBack || !areCompatible
@@ -65,21 +65,21 @@ export function LoverProfile(props: {
 
   return (
     <>
-      <LoverProfileHeader
+      <ProfileProfileHeader
         user={user}
         lover={lover}
-        simpleView={!!fromLoverPage}
+        simpleView={!!fromProfilePage}
         starredUserIds={starredUserIds ?? []}
         refreshStars={refreshStars}
         showMessageButton={showMessageButton}
-        refreshLover={refreshLover}
+        refreshProfile={refreshProfile}
       />
       {isProfileVisible ? (
-        <LoverContent
+        <ProfileContent
           user={user}
           lover={lover}
-          refreshLover={refreshLover}
-          fromLoverPage={fromLoverPage}
+          refreshProfile={refreshProfile}
+          fromProfilePage={fromProfilePage}
           fromSignup={fromSignup}
           // likesGiven={likesGiven ?? []}
           // likesReceived={likesReceived ?? []}
@@ -103,19 +103,19 @@ export function LoverProfile(props: {
         </Col>
       )}
       {/*{areCompatible &&*/}
-      {/*  ((!fromLoverPage && !isCurrentUser) ||*/}
-      {/*    (fromLoverPage && fromLoverPage.user_id === currentUser?.id)) && (*/}
+      {/*  ((!fromProfilePage && !isCurrentUser) ||*/}
+      {/*    (fromProfilePage && fromProfilePage.user_id === currentUser?.id)) && (*/}
       {/*    <Row className="right-0 mr-1 self-end lg:bottom-6">*/}
-      {/*      <LikeButton targetLover={lover} liked={liked} refresh={refresh} />*/}
+      {/*      <LikeButton targetProfile={lover} liked={liked} refresh={refresh} />*/}
       {/*    </Row>*/}
       {/*  )}*/}
-      {/*{fromLoverPage &&*/}
-      {/*  fromLoverPage.user_id !== currentUser?.id &&*/}
+      {/*{fromProfilePage &&*/}
+      {/*  fromProfilePage.user_id !== currentUser?.id &&*/}
       {/*  user.id !== currentUser?.id && (*/}
       {/*    <Row className="sticky bottom-[70px] right-0 mr-1 self-end lg:bottom-6">*/}
       {/*      <ShipButton*/}
       {/*        shipped={shipped}*/}
-      {/*        targetId1={fromLoverPage.user_id}*/}
+      {/*        targetId1={fromProfilePage.user_id}*/}
       {/*        targetId2={user.id}*/}
       {/*        refresh={refresh}*/}
       {/*      />*/}
@@ -126,11 +126,11 @@ export function LoverProfile(props: {
   )
 }
 
-function LoverContent(props: {
+function ProfileContent(props: {
   user: User
-  lover: Lover
-  refreshLover: () => void
-  fromLoverPage?: Lover
+  lover: Profile
+  refreshProfile: () => void
+  fromProfilePage?: Profile
   fromSignup?: boolean
   // likesGiven: LikeData[]
   // likesReceived: LikeData[]
@@ -140,8 +140,8 @@ function LoverContent(props: {
   const {
     user,
     lover,
-    refreshLover,
-    fromLoverPage,
+    refreshProfile,
+    fromProfilePage,
     fromSignup,
     // likesGiven,
     // likesReceived,
@@ -154,32 +154,32 @@ function LoverContent(props: {
 
   return (
     <>
-      <LoverAbout lover={lover}/>
-      <LoverBio
+      <ProfileAbout lover={lover}/>
+      <ProfileBio
         isCurrentUser={isCurrentUser}
         lover={lover}
-        refreshLover={refreshLover}
-        fromLoverPage={fromLoverPage}
+        refreshProfile={refreshProfile}
+        fromProfilePage={fromProfilePage}
       />
-      <LoverAnswers
+      <ProfileAnswers
         isCurrentUser={isCurrentUser}
         user={user}
         fromSignup={fromSignup}
-        fromLoverPage={fromLoverPage}
+        fromProfilePage={fromProfilePage}
         lover={lover}
       />
-      <LoverCommentSection
+      <ProfileCommentSection
         onUser={user}
         lover={lover}
         currentUser={currentUser}
-        simpleView={!!fromLoverPage}
+        simpleView={!!fromProfilePage}
       />
       {/*<LikesDisplay*/}
       {/*  likesGiven={likesGiven}*/}
       {/*  likesReceived={likesReceived}*/}
       {/*  ships={ships}*/}
       {/*  refreshShips={refreshShips}*/}
-      {/*  profileLover={lover}*/}
+      {/*  profileProfile={lover}*/}
       {/*/>*/}
     </>
   )

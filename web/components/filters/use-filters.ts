@@ -1,4 +1,4 @@
-import {Lover} from "common/love/lover";
+import {Profile} from "common/love/lover";
 import {useIsLooking} from "web/hooks/use-is-looking";
 import {usePersistentLocalState} from "web/hooks/use-persistent-local-state";
 import {useCallback} from "react";
@@ -9,7 +9,7 @@ import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKid
 import {FilterFields, initialFilters, OriginLocation} from "common/filters";
 import {MAX_INT, MIN_INT} from "common/constants";
 
-export const useFilters = (you: Lover | undefined) => {
+export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
     isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'},
@@ -117,7 +117,7 @@ export const useFilters = (you: Lover | undefined) => {
   }
 }
 
-// const alternateWomenAndMen = (profiles: Lover[]) => {
+// const alternateWomenAndMen = (profiles: Profile[]) => {
 //   const [women, nonWomen] = partition(profiles, (l) => l.gender === 'female')
 //   return filterDefined(zip(women, nonWomen).flat())
 // }

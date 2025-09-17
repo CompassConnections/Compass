@@ -1,4 +1,4 @@
-import {Lover, LoverRow} from "common/love/lover";
+import {Profile, ProfileRow} from "common/love/lover";
 import {cloneDeep} from "lodash";
 import {filterDefined} from "common/util/array";
 
@@ -8,7 +8,7 @@ export type FilterFields = {
   genders: string[]
   name: string | undefined
 } & Pick<
-  LoverRow,
+  ProfileRow,
   | 'wants_kids_strength'
   | 'pref_relation_styles'
   | 'is_smoker'
@@ -18,7 +18,7 @@ export type FilterFields = {
   | 'pref_age_max'
 >
 export const orderProfiles = (
-  profiles: Lover[],
+  profiles: Profile[],
   starredUserIds: string[] | undefined
 ) => {
   if (!profiles) return

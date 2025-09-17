@@ -15,7 +15,7 @@ import { Item, SidebarItem } from './love-sidebar-item'
 import SiteLogo from '../site-logo'
 import { Button, ColorType, SizeType } from 'web/components/buttons/button'
 import {signupRedirect} from 'web/lib/util/signup'
-import { useLover } from 'web/hooks/use-lover'
+import { useProfile } from 'web/hooks/use-lover'
 import { useTheme } from 'web/hooks/use-theme'
 
 export default function Sidebar(props: {
@@ -28,7 +28,7 @@ export default function Sidebar(props: {
   const currentPage = router.pathname
 
   const user = useUser()
-  const lover = useLover()
+  const lover = useProfile()
 
   const { theme, setTheme } = useTheme()
 

@@ -4,7 +4,7 @@ import {Slider} from 'web/components/widgets/slider'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {Row} from 'web/components/layout/row'
 import {City, CityRow, loverToCity, originToCity, useCitySearch,} from '../search-location'
-import {Lover} from 'common/love/lover'
+import {Profile} from 'common/love/lover'
 import {useEffect, useState} from 'react'
 import {Input} from 'web/components/widgets/input'
 import {XIcon} from '@heroicons/react/solid'
@@ -14,7 +14,7 @@ import {OriginLocation} from "common/filters";
 
 export function LocationFilterText(props: {
   location: OriginLocation | undefined | null
-  youLover: Lover | undefined | null
+  youProfile: Profile | undefined | null
   radius: number
   highlightedClass?: string
 }) {
@@ -57,14 +57,14 @@ const DEFAULT_LAST_CITY: City = {
 }
 
 export function LocationFilter(props: {
-  youLover: Lover | undefined | null
+  youProfile: Profile | undefined | null
   locationFilterProps: LocationFilterProps
 }) {
-  const { youLover } = props
+  const { youProfile } = props
 
   const { location, setLocation, radius, setRadius } = props.locationFilterProps
 
-  const youCity = youLover && loverToCity(youLover)
+  const youCity = youProfile && loverToCity(youProfile)
 
   const [lastCity, setLastCity] = usePersistentInMemoryState<City>(
     location ? originToCity(location) : youCity || DEFAULT_LAST_CITY,

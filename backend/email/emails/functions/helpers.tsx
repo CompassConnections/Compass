@@ -4,7 +4,7 @@ import {sendEmail} from './send-email'
 import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
-import {getLover} from 'shared/love/supabase'
+import {getProfile} from 'shared/love/supabase'
 import { render } from "@react-email/render"
 import {MatchesType} from "common/love/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
@@ -20,7 +20,7 @@ const from = 'Compass <no-reply@compassmeet.com>'
 //     'new_match'
 //   )
 //   if (!privateUser.email || !sendToEmail) return
-//   const lover = await getLover(privateUser.id)
+//   const lover = await getProfile(privateUser.id)
 //   if (!lover) return
 //
 //   return await sendEmail({
@@ -32,7 +32,7 @@ const from = 'Compass <no-reply@compassmeet.com>'
 //         onUser={lover.user}
 //         email={privateUser.email}
 //         matchedWithUser={matchedWithUser}
-//         matchedLover={lover}
+//         matchedProfile={lover}
 //         unsubscribeUrl={unsubscribeUrl}
 //       />
 //     ),
@@ -51,7 +51,7 @@ export const sendNewMessageEmail = async (
   )
   if (!privateUser.email || !sendToEmail) return
 
-  const lover = await getLover(fromUser.id)
+  const lover = await getProfile(fromUser.id)
 
   if (!lover) {
     console.error('Could not send email notification: User not found')
@@ -65,7 +65,7 @@ export const sendNewMessageEmail = async (
     html: await render(
       <NewMessageEmail
         fromUser={fromUser}
-        fromUserLover={lover}
+        fromUserProfile={lover}
         toUser={toUser}
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}

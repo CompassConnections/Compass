@@ -42,7 +42,7 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-function OgLover(props: LoveOgProps) {
+function OgProfile(props: LoveOgProps) {
   const { avatarUrl, username, name, age, city, gender } = props
   return (
     <div
@@ -111,7 +111,7 @@ export default async function handler(req: NextRequest) {
     const loveOgProps = Object.fromEntries(
       searchParams.entries()
     ) as LoveOgProps
-    const image = OgLover(loveOgProps)
+    const image = OgProfile(loveOgProps)
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)
   } catch (e: any) {

@@ -1,20 +1,20 @@
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { useState } from 'react'
 import { Col } from 'web/components/layout/col'
 import { Subtitle } from '../widgets/lover-subtitle'
 import { BioBlock } from './lover-bio-block'
 
-export function LoverBio(props: {
+export function ProfileBio(props: {
   isCurrentUser: boolean
-  lover: Lover
-  refreshLover: () => void
-  fromLoverPage?: Lover
+  lover: Profile
+  refreshProfile: () => void
+  fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, lover, refreshLover, fromLoverPage } = props
+  const { isCurrentUser, lover, refreshProfile, fromProfilePage } = props
   const [edit, setEdit] = useState(false)
 
   if (!isCurrentUser && !lover.bio) return null
-  if (fromLoverPage && !lover.bio) return null
+  if (fromProfilePage && !lover.bio) return null
 
   return (
     <Col>
@@ -22,7 +22,7 @@ export function LoverBio(props: {
       <BioBlock
         isCurrentUser={isCurrentUser}
         lover={lover}
-        refreshLover={refreshLover}
+        refreshProfile={refreshProfile}
         edit={edit || (isCurrentUser && !lover.bio)}
         setEdit={setEdit}
       />

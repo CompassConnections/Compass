@@ -1,10 +1,10 @@
 import { Row, run, SupabaseClient } from 'common/supabase/utils'
 import { User } from 'common/user'
 
-export type LoverRow = Row<'profiles'>
-export type Lover = LoverRow & { user: User }
-export const getLoverRow = async (userId: string, db: SupabaseClient) => {
-  console.log('getLoverRow', userId)
+export type ProfileRow = Row<'profiles'>
+export type Profile = ProfileRow & { user: User }
+export const getProfileRow = async (userId: string, db: SupabaseClient) => {
+  console.log('getProfileRow', userId)
   const res = await run(db.from('profiles').select('*').eq('user_id', userId))
   return res.data[0]
 }

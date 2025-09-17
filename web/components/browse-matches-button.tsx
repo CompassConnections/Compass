@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 import { MAX_COMMENT_LENGTH } from 'common/comment'
-import { Lover } from 'common/love/lover'
+import { Profile } from 'common/love/lover'
 import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
 import { Modal, SCROLLABLE_MODAL_CLASS } from 'web/components/layout/modal'
@@ -13,14 +13,14 @@ import { useTextEditor } from 'web/components/widgets/editor'
 import { useUser } from 'web/hooks/use-user'
 import { CompatibilityScore } from 'common/love/compatibility-score'
 import { CompatibleBadge } from './widgets/compatible-badge'
-import { LoverProfile } from './profile/lover-profile'
+import { ProfileProfile } from './profile/lover-profile'
 import { Pagination } from 'web/components/widgets/pagination'
 import { Title } from 'web/components/widgets/title'
 import { Input } from 'web/components/widgets/input'
 
 export const BrowseMatchesButton = (props: {
-  lover: Lover
-  potentialProfiles: Lover[]
+  lover: Profile
+  potentialProfiles: Profile[]
   compatibilityScores: Record<string, CompatibilityScore>
   className?: string
 }) => {
@@ -95,8 +95,8 @@ export const BrowseMatchesButton = (props: {
 }
 
 const BrowseMatchesDialog = (props: {
-  lover: Lover
-  potentialProfiles: Lover[]
+  lover: Profile
+  potentialProfiles: Profile[]
   compatibilityScores: Record<string, CompatibilityScore>
   isSubmitting: boolean
   setOpen: (open: boolean) => void
@@ -124,10 +124,10 @@ const BrowseMatchesDialog = (props: {
   )
   const [potentialIndex, setPotentialIndex] = useState(0)
   const index = Math.min(potentialIndex, filteredProfiles.length - 1)
-  const potentialLover = filteredProfiles[index]
+  const potentialProfile = filteredProfiles[index]
 
-  const compatibility = potentialLover
-    ? compatibilityScores[potentialLover.user_id]
+  const compatibility = potentialProfile
+    ? compatibilityScores[potentialProfile.user_id]
     : undefined
 
   return (
@@ -168,14 +168,14 @@ const BrowseMatchesDialog = (props: {
           />
         )}
 
-        {potentialLover && (
+        {potentialProfile && (
           <>
             <CompatibilityScoreDisplay compatibility={compatibility} />
-            <LoverProfile
-              lover={potentialLover}
-              user={potentialLover.user}
-              refreshLover={() => window.location.reload()}
-              fromLoverPage={lover}
+            <ProfileProfile
+              lover={potentialProfile}
+              user={potentialProfile.user}
+              refreshProfile={() => window.location.reload()}
+              fromProfilePage={lover}
             />
 
             {/* <Col key={lover.id} className={clsx('gap-4 px-3 py-2')}>

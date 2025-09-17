@@ -11,11 +11,11 @@ import {
   Text,
 } from '@react-email/components'
 import { type User } from 'common/user'
-import { type LoverRow } from 'common/love/lover'
+import { type ProfileRow } from 'common/love/lover'
 import {
-  jamesLover,
+  jamesProfile,
   jamesUser,
-  sinclairLover,
+  sinclairProfile,
   sinclairUser,
 } from './functions/mock'
 import { DOMAIN } from 'common/envs/constants'
@@ -24,7 +24,7 @@ import {button, container, content, Footer, imageContainer, main, paragraph, pro
 
 interface NewMessageEmailProps {
   fromUser: User
-  fromUserLover: LoverRow
+  fromUserProfile: ProfileRow
   toUser: User
   channelId: number
   unsubscribeUrl: string
@@ -33,7 +33,7 @@ interface NewMessageEmailProps {
 
 export const NewMessageEmail = ({
   fromUser,
-  fromUserLover,
+  fromUserProfile,
   toUser,
   channelId,
   unsubscribeUrl,
@@ -42,7 +42,7 @@ export const NewMessageEmail = ({
   const name = toUser.name.split(' ')[0]
   const creatorName = fromUser.name
   const messagesUrl = `https://${DOMAIN}/messages/${channelId}`
-  const userImgSrc = getLoveOgImageUrl(fromUser, fromUserLover)
+  const userImgSrc = getLoveOgImageUrl(fromUser, fromUserProfile)
 
   return (
     <Html>
@@ -90,7 +90,7 @@ export const NewMessageEmail = ({
 
 NewMessageEmail.PreviewProps = {
   fromUser: jamesUser,
-  fromUserLover: jamesLover,
+  fromUserProfile: jamesProfile,
   toUser: sinclairUser,
   channelId: 1,
   email: 'someone@gmail.com',

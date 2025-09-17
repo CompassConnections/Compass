@@ -12,7 +12,7 @@ import { capitalize } from 'lodash'
 import clsx from 'clsx'
 import { shortenedFromNow } from 'web/lib/util/shortenedFromNow'
 
-export function OtherLoverAnswers(props: {
+export function OtherProfileAnswers(props: {
   question: QuestionWithCountType
   user?: User
   className?: string

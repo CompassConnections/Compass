@@ -1,4 +1,4 @@
-import { LoverRow } from 'common/love/lover'
+import { ProfileRow } from 'common/love/lover'
 import {MAX_INT, MIN_INT} from "common/constants";
 
 const isPreferredGender = (
@@ -18,7 +18,7 @@ const isPreferredGender = (
   return preferredGenders.includes(gender) || gender === 'non-binary'
 }
 
-export const areGenderCompatible = (lover1: LoverRow, lover2: LoverRow) => {
+export const areGenderCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
   // console.log('areGenderCompatible', isPreferredGender(lover1.pref_gender, lover2.gender), isPreferredGender(lover2.pref_gender, lover1.gender))
   return (
     isPreferredGender(lover1.pref_gender, lover2.gender) &&
@@ -26,18 +26,18 @@ export const areGenderCompatible = (lover1: LoverRow, lover2: LoverRow) => {
   )
 }
 
-const satisfiesAgeRange = (lover: LoverRow, age: number | null | undefined) => {
+const satisfiesAgeRange = (lover: ProfileRow, age: number | null | undefined) => {
   return (age ?? MAX_INT) >= (lover.pref_age_min ?? MIN_INT) && (age ?? MIN_INT) <= (lover.pref_age_max ?? MAX_INT)
 }
 
-export const areAgeCompatible = (lover1: LoverRow, lover2: LoverRow) => {
+export const areAgeCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
   return (
     satisfiesAgeRange(lover1, lover2.age) &&
     satisfiesAgeRange(lover2, lover1.age)
   )
 }
 
-export const areLocationCompatible = (lover1: LoverRow, lover2: LoverRow) => {
+export const areLocationCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
   if (
     !lover1.city_latitude ||
     !lover2.city_latitude ||
@@ -54,15 +54,15 @@ export const areLocationCompatible = (lover1: LoverRow, lover2: LoverRow) => {
 }
 
 export const areRelationshipStyleCompatible = (
-  lover1: LoverRow,
-  lover2: LoverRow
+  lover1: ProfileRow,
+  lover2: ProfileRow
 ) => {
   return lover1.pref_relation_styles.some((style) =>
     lover2.pref_relation_styles.includes(style)
   )
 }
 
-export const areWantKidsCompatible = (lover1: LoverRow, lover2: LoverRow) => {
+export const areWantKidsCompatible = (lover1: ProfileRow, lover2: ProfileRow) => {
   const { wants_kids_strength: kids1 } = lover1
   const { wants_kids_strength: kids2 } = lover2
 

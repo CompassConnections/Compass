@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { uniqBy } from 'lodash'
 import { convertComment } from 'common/supabase/comment'
 
-export function useLiveCommentsOnLover(userId: string) {
+export function useLiveCommentsOnProfile(userId: string) {
   const [comments, setComments] = useState<Comment[]>([])
 
   useEffect(() => {

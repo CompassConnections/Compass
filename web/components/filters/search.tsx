@@ -82,13 +82,9 @@ export const WORDS: string[] = [
   "Urban gardening",
 ]
 
-function getRandomPair(): string {
-  let [first, second] = ['', ''];
-  while (!first || !second || first === second) {
-    first = WORDS[Math.floor(Math.random() * WORDS.length)];
-    second = WORDS[Math.floor(Math.random() * WORDS.length)];
-  }
-  return `${first}, ${second}`;
+function getRandomPair(count = 3): string {
+  const shuffled = [...WORDS].sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, count).join(", ")
 }
 
 

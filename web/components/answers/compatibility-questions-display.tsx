@@ -208,7 +208,7 @@ export function CompatibilityQuestionsDisplay(props: {
                 <span className="text-ink-600 text-sm">
                   Answer more questions to increase your compatibility scores—or
                 </span>
-              )}{''}
+              )}{' '}
               <AddCompatibilityQuestionButton
                 refreshCompatibilityAll={refreshCompatibilityAll}
               />

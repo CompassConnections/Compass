@@ -10,8 +10,6 @@ import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {SignUpButton} from 'web/components/nav/love-sidebar'
 import {Profile} from 'common/love/profile'
 import {ProfileBio} from 'web/components/bio/profile-bio'
-import {areGenderCompatible} from 'common/love/compatibility-util'
-import {useProfile} from 'web/hooks/use-profile'
 import {useGetter} from 'web/hooks/use-getter'
 import {getStars} from 'web/lib/supabase/stars'
 import {Content} from "web/components/widgets/editor";
@@ -29,7 +27,7 @@ export function ProfileProfile(props: {
   const {profile, user, refreshProfile, fromProfilePage, fromSignup} = props
 
   const currentUser = useUser()
-  const currentProfile = useProfile()
+  // const currentProfile = useProfile()
   // const isCurrentUser = currentUser?.id === user.id
 
   const {data: starredUserIds, refresh: refreshStars} = useGetter(
@@ -55,8 +53,8 @@ export function ProfileProfile(props: {
   // const shipped =
   //   !!ships && hasShipped(currentUser, fromProfilePage?.user_id, user.id, ships)
 
-  const areCompatible =
-    !!currentProfile && areGenderCompatible(currentProfile, profile)
+  // const areCompatible =
+  //   !!currentProfile && areGenderCompatible(currentProfile, profile)
 
   // Allow everyone to message everyone for now
   const showMessageButton = true // liked || likedBack || !areCompatible

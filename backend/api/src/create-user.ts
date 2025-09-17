@@ -21,7 +21,7 @@ export const createUser: APIHandler<'create-user'> = async (
   auth,
   req
 ) => {
-  const { deviceToken: preDeviceToken, adminToken } = props
+  const { deviceToken: preDeviceToken } = props
   const firebaseUser = await admin.auth().getUser(auth.uid)
 
   const testUserAKAEmailPasswordUser =

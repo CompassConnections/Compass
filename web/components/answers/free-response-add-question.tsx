@@ -1,20 +1,15 @@
-import { PlusIcon } from '@heroicons/react/outline'
+import {ArrowLeftIcon, PlusIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { User } from 'common/user'
-import { QuestionWithCountType } from 'web/hooks/use-questions'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import {
-  MODAL_CLASS,
-  Modal,
-  SCROLLABLE_MODAL_CLASS,
-} from 'web/components/layout/modal'
-import { Row } from 'web/components/layout/row'
-import { IndividualQuestionRow } from '../questions-form'
-import { TbMessage } from 'react-icons/tb'
-import { OtherProfileAnswers } from './other-profile-answers'
-import { ArrowLeftIcon } from '@heroicons/react/outline'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
+import {User} from 'common/user'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS,} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {IndividualQuestionRow} from '../questions-form'
+import {TbMessage} from 'react-icons/tb'
+import {OtherProfileAnswers} from './other-profile-answers'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 
 export function AddQuestionButton(props: {
   isFirstQuestion?: boolean
@@ -22,7 +17,7 @@ export function AddQuestionButton(props: {
   user: User
   refreshAnswers: () => void
 }) {
-  const { isFirstQuestion, questions, user, refreshAnswers } = props
+  const {questions, user, refreshAnswers} = props
   const [openModal, setOpenModal] = usePersistentInMemoryState(
     false,
     `add-question-${user.id}`
@@ -31,7 +26,7 @@ export function AddQuestionButton(props: {
     <>
       <Button color={'gray-outline'} onClick={() => setOpenModal(true)}>
         <Row className="items-center gap-1">
-          <PlusIcon className="h-4 w-4" />
+          <PlusIcon className="h-4 w-4"/>
           Add Free Response
         </Row>
       </Button>
@@ -53,7 +48,7 @@ function AddQuestionModal(props: {
   user: User
   refreshAnswers: () => void
 }) {
-  const { open, setOpen, questions, user, refreshAnswers } = props
+  const {open, setOpen, questions, user, refreshAnswers} = props
   const addableQuestions = questions.filter(
     (q) => q.answer_type === 'free_response'
   )
@@ -83,7 +78,7 @@ function AddQuestionModal(props: {
                   setExpandedQuestion(null)
                 }}
               >
-                <ArrowLeftIcon className={'h-4 w-4'} />
+                <ArrowLeftIcon className={'h-4 w-4'}/>
               </Button>
               <span className="font-semibold">{expandedQuestion.question}</span>
             </Row>
@@ -120,7 +115,7 @@ function AddQuestionModal(props: {
                       }}
                     >
                       {question.answer_count}
-                      <TbMessage className="h-4 w-4" />
+                      <TbMessage className="h-4 w-4"/>
                     </button>
                   </Row>
                 )

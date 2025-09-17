@@ -54,7 +54,7 @@ export function LovePage(props: {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   trackPageView && useTracking(`view love ${trackPageView}`, trackPageProps)
   useOnline()
-  const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false)
+  const [_, setIsAddFundsModalOpen] = useState(false)
 
   return (
     <>

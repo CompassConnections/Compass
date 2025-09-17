@@ -750,7 +750,7 @@ export type Database = {
         Returns: Json
       }
       ts_to_millis: {
-        Args: { ts: string } | { ts: string }
+        Args: { ts: string }
         Returns: number
       }
     }

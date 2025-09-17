@@ -1,8 +1,7 @@
-import { User } from 'common/user'
-import { Col } from 'web/components/layout/col'
-import { CompatibilityQuestionsDisplay } from './compatibility-questions-display'
-import { FreeResponseDisplay } from './free-response-display'
-import { Profile } from 'common/love/profile'
+import {User} from 'common/user'
+import {Col} from 'web/components/layout/col'
+import {CompatibilityQuestionsDisplay} from './compatibility-questions-display'
+import {Profile} from 'common/love/profile'
 
 export function ProfileAnswers(props: {
   isCurrentUser: boolean
@@ -11,7 +10,7 @@ export function ProfileAnswers(props: {
   fromSignup?: boolean
   fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, user, fromSignup, fromProfilePage, profile } = props
+  const {isCurrentUser, user, fromSignup, fromProfilePage, profile} = props
 
   return (
     <Col className={'mt-2 gap-5'}>

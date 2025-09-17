@@ -26,7 +26,7 @@ function RegisterComponent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+  const [_, setIsLoadingGoogle] = useState(false);
   const user = useUser()
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function RegisterComponent() {
     setError(null);
     try {
       const creds = await firebaseLogin();
-      if (creds){
+      if (creds) {
         setIsLoading(true)
         setIsLoadingGoogle(true);
       }
@@ -80,6 +80,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password);
+      console.log(creds)
     } catch (error) {
       console.error("Error signing in:", error);
       const message = 'Failed to sign in with your email and password';

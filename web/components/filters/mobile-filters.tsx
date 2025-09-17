@@ -1,34 +1,17 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { ReactNode, useState } from 'react'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { AgeFilter, AgeFilterText, getNoMinMaxAge } from './age-filter'
-import { GenderFilter, GenderFilterText } from './gender-filter'
-import { HasKidsFilter, HasKidsLabel } from './has-kids-filter'
-import {
-  LocationFilter,
-  LocationFilterProps,
-  LocationFilterText,
-} from './location-filter'
-import { PrefGenderFilter, PrefGenderFilterText } from './pref-gender-filter'
-import {
-  RelationshipFilter,
-  RelationshipFilterText,
-} from './relationship-filter'
-import {
-  KidsLabel,
-  WantsKidsFilter,
-  WantsKidsIcon,
-  wantsKidsLabelsWithIcon,
-} from './wants-kids-filter'
-import { FaChild } from 'react-icons/fa6'
-import { MyMatchesToggle } from './my-matches-toggle'
-import { Profile } from 'common/love/profile'
-import { Gender } from 'common/gender'
-import { RelationshipType } from 'web/lib/util/convert-relationship-type'
+import {ReactNode, useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {AgeFilter, AgeFilterText, getNoMinMaxAge} from './age-filter'
+import {GenderFilter, GenderFilterText} from './gender-filter'
+import {LocationFilter, LocationFilterProps, LocationFilterText,} from './location-filter'
+import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter'
+import {MyMatchesToggle} from './my-matches-toggle'
+import {Profile} from 'common/love/profile'
+import {Gender} from 'common/gender'
+import {RelationshipType} from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";
-import {hasKidsLabels} from "common/has-kids";
 
 export function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -50,6 +33,7 @@ export function MobileFilters(props: {
   } = props
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
+
   function hasAny(filterArray: any[] | undefined) {
     return filterArray && filterArray.length > 0
   }
@@ -86,7 +70,7 @@ export function MobileFilters(props: {
           />
         }
       >
-        <RelationshipFilter filters={filters} updateFilter={updateFilter} />
+        <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
       {/* LOCATION */}
       <MobileFilterSection
@@ -129,7 +113,7 @@ export function MobileFilters(props: {
           />
         }
       >
-        <AgeFilter filters={filters} updateFilter={updateFilter} />
+        <AgeFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
       {/* GENDER */}
       <MobileFilterSection
@@ -146,7 +130,7 @@ export function MobileFilters(props: {
           />
         }
       >
-        <GenderFilter filters={filters} updateFilter={updateFilter} />
+        <GenderFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
       {/* PREFERRED GENDER */}
       {/*<MobileFilterSection*/}
@@ -263,9 +247,9 @@ export function MobileFilterSection(props: {
         </Row>
         <div className="text-ink-400">
           {isOpen ? (
-            <ChevronUpIcon className="h-5 w-5" />
+            <ChevronUpIcon className="h-5 w-5"/>
           ) : (
-            <ChevronDownIcon className="h-5 w-5" />
+            <ChevronDownIcon className="h-5 w-5"/>
           )}
         </div>
       </button>

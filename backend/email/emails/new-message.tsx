@@ -1,26 +1,9 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
-import { type User } from 'common/user'
-import { type ProfileRow } from 'common/love/profile'
-import {
-  jamesProfile,
-  jamesUser,
-  sinclairProfile,
-  sinclairUser,
-} from './functions/mock'
-import { DOMAIN } from 'common/envs/constants'
-import { getLoveOgImageUrl } from 'common/love/og-image'
-import {button, container, content, Footer, imageContainer, main, paragraph, profileImage} from "email/utils";
+import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
+import {type User} from 'common/user'
+import {type ProfileRow} from 'common/love/profile'
+import {jamesProfile, jamesUser, sinclairUser,} from './functions/mock'
+import {DOMAIN} from 'common/envs/constants'
+import {button, container, content, Footer, imageContainer, main, paragraph} from "email/utils";
 
 interface NewMessageEmailProps {
   fromUser: User
@@ -32,21 +15,21 @@ interface NewMessageEmailProps {
 }
 
 export const NewMessageEmail = ({
-  fromUser,
-  fromUserProfile,
-  toUser,
-  channelId,
-  unsubscribeUrl,
-  email,
-}: NewMessageEmailProps) => {
+                                  fromUser,
+                                  // fromUserProfile,
+                                  toUser,
+                                  channelId,
+                                  unsubscribeUrl,
+                                  email,
+                                }: NewMessageEmailProps) => {
   const name = toUser.name.split(' ')[0]
   const creatorName = fromUser.name
   const messagesUrl = `https://${DOMAIN}/messages/${channelId}`
-  const userImgSrc = getLoveOgImageUrl(fromUser, fromUserProfile)
+  // const userImgSrc = getLoveOgImageUrl(fromUser, fromUserProfile)
 
   return (
     <Html>
-      <Head />
+      <Head/>
       <Preview>New message from {creatorName}</Preview>
       <Body style={main}>
         <Container style={container}>

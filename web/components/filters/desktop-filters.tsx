@@ -1,30 +1,18 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
-import { RelationshipType } from 'web/lib/util/convert-relationship-type'
-import { ReactNode } from 'react'
-import { FaUserGroup } from 'react-icons/fa6'
-import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { CustomizeableDropdown } from 'web/components/widgets/customizeable-dropdown'
-import { Gender } from 'common/gender'
-import { AgeFilter, AgeFilterText } from './age-filter'
-import { GenderFilter, GenderFilterText } from './gender-filter'
-import {
-  LocationFilter,
-  LocationFilterProps,
-  LocationFilterText,
-} from './location-filter'
-import { PrefGenderFilter, PrefGenderFilterText } from './pref-gender-filter'
-import {
-  RelationshipFilter,
-  RelationshipFilterText,
-} from './relationship-filter'
-import { KidsLabel, wantsKidsLabelsWithIcon } from './wants-kids-filter'
-import { HasKidsLabel } from './has-kids-filter'
-import { MyMatchesToggle } from './my-matches-toggle'
-import { Profile } from 'common/love/profile'
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
+import {RelationshipType} from 'web/lib/util/convert-relationship-type'
+import {ReactNode} from 'react'
+import {FaUserGroup} from 'react-icons/fa6'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {CustomizeableDropdown} from 'web/components/widgets/customizeable-dropdown'
+import {Gender} from 'common/gender'
+import {AgeFilter, AgeFilterText} from './age-filter'
+import {GenderFilter, GenderFilterText} from './gender-filter'
+import {LocationFilter, LocationFilterProps, LocationFilterText,} from './location-filter'
+import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter'
+import {MyMatchesToggle} from './my-matches-toggle'
+import {Profile} from 'common/love/profile'
 import {FilterFields} from "common/filters";
-import {hasKidsLabels} from "common/has-kids";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -60,7 +48,7 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <FaUserGroup className="h-4 w-4" />
+                <FaUserGroup className="h-4 w-4"/>
                 <RelationshipFilterText
                   relationship={
                     filters.pref_relation_styles as
@@ -74,7 +62,7 @@ export function DesktopFilters(props: {
           />
         )}
         dropdownMenuContent={
-          <RelationshipFilter filters={filters} updateFilter={updateFilter} />
+          <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
@@ -119,7 +107,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <AgeFilter filters={filters} updateFilter={updateFilter} />
+            <AgeFilter filters={filters} updateFilter={updateFilter}/>
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -140,7 +128,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col>
-            <GenderFilter filters={filters} updateFilter={updateFilter} />
+            <GenderFilter filters={filters} updateFilter={updateFilter}/>
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -264,15 +252,15 @@ export function DesktopFilters(props: {
 }
 
 export function DropdownButton(props: { open: boolean; content: ReactNode }) {
-  const { open, content } = props
+  const {open, content} = props
   return (
     <Row className="hover:text-ink-700 items-center gap-0.5 transition-all">
       {content}
       <span className="text-ink-400">
         {open ? (
-          <ChevronUpIcon className="h-4 w-4" />
+          <ChevronUpIcon className="h-4 w-4"/>
         ) : (
-          <ChevronDownIcon className="h-4 w-4" />
+          <ChevronDownIcon className="h-4 w-4"/>
         )}
       </span>
     </Row>

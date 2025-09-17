@@ -4,7 +4,7 @@ import {
   select,
   from,
   where,
-} from '../shared/src/supabase/sql-builder'
+} from 'shared/supabase/sql-builder'
 import { type JSONContent } from '@tiptap/core'
 
 const removeNodesOfType = (

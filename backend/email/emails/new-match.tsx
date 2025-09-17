@@ -16,7 +16,7 @@ interface NewMatchEmailProps {
 export const NewMatchEmail = ({
                                 onUser,
                                 matchedWithUser,
-                                matchedProfile,
+                                // matchedProfile,
                                 unsubscribeUrl,
                                 email
                               }: NewMatchEmailProps) => {
@@ -88,11 +88,11 @@ const container = {
   maxWidth: '600px',
 }
 
-const logoContainer = {
-  padding: '20px 0px 5px 0px',
-  textAlign: 'center' as const,
-  backgroundColor: '#ffffff',
-}
+// const logoContainer = {
+//   padding: '20px 0px 5px 0px',
+//   textAlign: 'center' as const,
+//   backgroundColor: '#ffffff',
+// }
 
 const content = {
   backgroundColor: '#ffffff',
@@ -112,9 +112,9 @@ const imageContainer = {
   margin: '20px 0',
 }
 
-const profileImage = {
-  // border: '1px solid #ec489a',
-}
+// const profileImage = {
+//   // border: '1px solid #ec489a',
+// }
 
 const button = {
   backgroundColor: '#4887ec',

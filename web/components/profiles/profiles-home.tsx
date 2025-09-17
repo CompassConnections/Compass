@@ -2,7 +2,7 @@ import {Lover} from 'common/love/lover'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
 import {useLover} from 'web/hooks/use-lover'
-import {useCompatibleLovers} from 'web/hooks/use-lovers'
+import {useCompatibleLovers} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import Router from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
@@ -32,7 +32,7 @@ export function ProfilesHome() {
     locationFilterProps,
   } = useFilters(you ?? undefined);
 
-  const [lovers, setLovers] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-lovers');
+  const [profiles, setLovers] = usePersistentInMemoryState<Lover[] | undefined>(undefined, 'profile-profiles');
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
@@ -59,8 +59,8 @@ export function ProfilesHome() {
       compatibleWithUserId: user?.id,
       ...filters
     }) as any)
-      .then(({lovers}) => {
-        if (current === id.current) setLovers(lovers);
+      .then(({profiles}) => {
+        if (current === id.current) setLovers(profiles);
       })
       .finally(() => {
         if (current === id.current) setIsReloading(false);
@@ -69,29 +69,29 @@ export function ProfilesHome() {
 
   const {data: starredUserIds, refresh: refreshStars} = useGetter('star', user?.id, getStars);
   const compatibleLovers = useCompatibleLovers(user?.id);
-  const displayLovers = lovers && orderLovers(lovers, starredUserIds);
+  const displayLovers = profiles && orderLovers(profiles, starredUserIds);
 
   const loadMore = useCallback(async () => {
-    if (!lovers || isLoadingMore) return false;
+    if (!profiles || isLoadingMore) return false;
     try {
       setIsLoadingMore(true);
-      const lastLover = lovers[lovers.length - 1];
+      const lastLover = profiles[profiles.length - 1];
       const result = await api('get-profiles', removeNullOrUndefinedProps({
         limit: 20,
         compatibleWithUserId: user?.id,
         after: lastLover?.id.toString(),
         ...filters
       }) as any);
-      if (result.lovers.length === 0) return false;
-      setLovers((prev) => (prev ? [...prev, ...result.lovers] : result.lovers));
+      if (result.profiles.length === 0) return false;
+      setLovers((prev) => (prev ? [...prev, ...result.profiles] : result.profiles));
       return true;
     } catch (err) {
-      console.error('Failed to load more lovers', err);
+      console.error('Failed to load more profiles', err);
       return false;
     } finally {
       setIsLoadingMore(false);
     }
-  }, [lovers, filters, isLoadingMore, setLovers]);
+  }, [profiles, filters, isLoadingMore, setLovers]);
 
   return (
     <>
@@ -113,7 +113,7 @@ export function ProfilesHome() {
         <LoadingIndicator/>
       ) : (
         <ProfileGrid
-          lovers={displayLovers}
+          profiles={displayLovers}
           loadMore={loadMore}
           isLoadingMore={isLoadingMore}
           isReloading={isReloading}

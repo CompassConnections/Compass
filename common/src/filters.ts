@@ -18,12 +18,12 @@ export type FilterFields = {
   | 'pref_age_max'
 >
 export const orderLovers = (
-  lovers: Lover[],
+  profiles: Lover[],
   starredUserIds: string[] | undefined
 ) => {
-  if (!lovers) return
+  if (!profiles) return
 
-  let s = cloneDeep(lovers)
+  let s = cloneDeep(profiles)
 
   if (starredUserIds) {
     s = filterDefined([

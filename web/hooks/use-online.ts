@@ -10,7 +10,7 @@ export const useOnline = () => {
     if (!lover || !isAuthed) return
     run(
       db
-        .from('lovers')
+        .from('profiles')
         .update({ last_online_time: new Date().toISOString() })
         .eq('id', lover.id)
     )

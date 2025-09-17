@@ -22,11 +22,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
     `
       select target_id, love_likes.created_time
       from love_likes
-      join lovers on lovers.user_id = love_likes.target_id
+      join profiles on profiles.user_id = love_likes.target_id
       join users on users.id = love_likes.target_id
       where creator_id = $1
         and looking_for_matches
-        and lovers.pinned_url is not null
+        and profiles.pinned_url is not null
         and (data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)
       order by created_time desc
     `,
@@ -44,11 +44,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
     `
       select creator_id, love_likes.created_time
       from love_likes
-      join lovers on lovers.user_id = love_likes.creator_id
+      join profiles on profiles.user_id = love_likes.creator_id
       join users on users.id = love_likes.creator_id
       where target_id = $1
         and looking_for_matches
-        and lovers.pinned_url is not null
+        and profiles.pinned_url is not null
         and (data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)
       order by created_time desc
     `,
@@ -71,11 +71,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
       target1_id, target2_id, creator_id, love_ships.created_time,
       target1_id as target_id
     from love_ships
-    join lovers on lovers.user_id = love_ships.target1_id
+    join profiles on profiles.user_id = love_ships.target1_id
     join users on users.id = love_ships.target1_id
     where target2_id = $1
-      and lovers.looking_for_matches
-      and lovers.pinned_url is not null
+      and profiles.looking_for_matches
+      and profiles.pinned_url is not null
       and (users.data->>'isBannedFromPosting' != 'true' or users.data->>'isBannedFromPosting' is null)
 
     union all
@@ -84,11 +84,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
       target1_id, target2_id, creator_id, love_ships.created_time,
       target2_id as target_id
     from love_ships
-    join lovers on lovers.user_id = love_ships.target2_id
+    join profiles on profiles.user_id = love_ships.target2_id
     join users on users.id = love_ships.target2_id
     where target1_id = $1
-      and lovers.looking_for_matches
-      and lovers.pinned_url is not null
+      and profiles.looking_for_matches
+      and profiles.pinned_url is not null
       and (users.data->>'isBannedFromPosting' != 'true' or users.data->>'isBannedFromPosting' is null)
     `,
     [userId],

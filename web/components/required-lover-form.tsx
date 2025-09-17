@@ -41,7 +41,7 @@ export const RequiredLoveUserForm = (props: {
   setEditUsername?: (name: string) => unknown
   setEditDisplayName?: (name: string) => unknown
   lover: LoverRow
-  setLover: <K extends Column<'lovers'>>(key: K, value: LoverRow[K] | undefined) => void
+  setLover: <K extends Column<'profiles'>>(key: K, value: LoverRow[K] | undefined) => void
   isSubmitting: boolean
   onSubmit?: () => void
   loverCreatedAlready?: boolean

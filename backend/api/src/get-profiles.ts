@@ -2,7 +2,7 @@ import {type APIHandler} from 'api/helpers/endpoint'
 import {convertRow} from 'shared/love/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
-import {getCompatibleLovers} from 'api/compatible-lovers'
+import {getCompatibleLovers} from 'api/compatible-profiles'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_INT} from "common/constants";
 
@@ -60,7 +60,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     }
 
     const {compatibleLovers} = await getCompatibleLovers(compatibleWithUserId)
-    const lovers = compatibleLovers.filter(
+    const profiles = compatibleLovers.filter(
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender)) &&
@@ -85,19 +85,19 @@ export const loadProfiles = async (props: profileQueryType) => {
     )
 
     const cursor = after
-      ? lovers.findIndex((l) => l.id.toString() === after) + 1
+      ? profiles.findIndex((l) => l.id.toString() === after) + 1
       : 0
     console.log(cursor)
 
-    if (limitParam) return lovers.slice(cursor, cursor + limitParam)
+    if (limitParam) return profiles.slice(cursor, cursor + limitParam)
 
-    return lovers
+    return profiles
   }
 
   const query = renderSql(
-    select('lovers.*, name, username, users.data as user'),
-    from('lovers'),
-    join('users on users.id = lovers.user_id'),
+    select('profiles.*, name, username, users.data as user'),
+    from('profiles'),
+    join('users on users.id = profiles.user_id'),
     where('looking_for_matches = true'),
     // where(`pinned_url is not null and pinned_url != ''`),
     where(
@@ -149,7 +149,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     orderBy(`${orderByParam} desc`),
     after &&
     where(
-      `lovers.${orderByParam} < (select lovers.${orderByParam} from lovers where id = $(after))`,
+      `profiles.${orderByParam} < (select profiles.${orderByParam} from profiles where id = $(after))`,
       {after}
     ),
 
@@ -165,9 +165,9 @@ export const loadProfiles = async (props: profileQueryType) => {
 
 export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
   try {
-    const lovers = await loadProfiles(props)
-    return {status: 'success', lovers: lovers}
+    const profiles = await loadProfiles(props)
+    return {status: 'success', profiles: profiles}
   } catch {
-    return {status: 'fail', lovers: []}
+    return {status: 'fail', profiles: []}
   }
 }

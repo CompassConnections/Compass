@@ -9,7 +9,7 @@ import {log} from 'shared/monitoring/log'
 import {metrics} from 'shared/monitoring/metrics'
 import {banUser} from './ban-user'
 import {blockUser, unblockUser} from './block-user'
-import {getCompatibleLoversHandler} from './compatible-lovers'
+import {getCompatibleLoversHandler} from './compatible-profiles'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
 import {createLover} from './create-lover'
@@ -31,7 +31,7 @@ import {removePinnedPhoto} from './remove-pinned-photo'
 import {report} from './report'
 import {searchLocation} from './search-location'
 import {searchNearCity} from './search-near-city'
-import {shipLovers} from './ship-lovers'
+import {shipLovers} from './ship-profiles'
 import {starLover} from './star-lover'
 import {updateLover} from './update-lover'
 import {updateMe} from './update-me'
@@ -142,7 +142,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'me/delete': deleteMe,
   'update-lover': updateLover,
   'like-lover': likeLover,
-  'ship-lovers': shipLovers,
+  'ship-profiles': shipLovers,
   'get-likes-and-ships': getLikesAndShips,
   'has-free-like': hasFreeLike,
   'star-lover': starLover,
@@ -153,7 +153,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'create-comment': createComment,
   'hide-comment': hideComment,
   'create-compatibility-question': createCompatibilityQuestion,
-  'compatible-lovers': getCompatibleLoversHandler,
+  'compatible-profiles': getCompatibleLoversHandler,
   'search-location': searchLocation,
   'search-near-city': searchNearCity,
   'create-private-user-message': createPrivateUserMessage,

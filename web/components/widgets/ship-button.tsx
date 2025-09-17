@@ -20,12 +20,12 @@ export const ShipButton = (props: {
 
   const like = async () => {
     setIsLoading(true)
-    await api('ship-lovers', {
+    await api('ship-profiles', {
       targetUserId1: targetId1,
       targetUserId2: targetId2,
       remove: shipped,
     })
-    track('ship lovers', {
+    track('ship profiles', {
       targetId1,
       targetId2,
       remove: shipped,

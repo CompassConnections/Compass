@@ -91,7 +91,7 @@ export const API = (_apiTypeCheck = {
   'create-lover': {
     method: 'POST',
     authed: true,
-    returns: {} as Row<'lovers'>,
+    returns: {} as Row<'profiles'>,
     props: baseLoversSchema,
   },
   report: {
@@ -212,7 +212,7 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
   },
-  'compatible-lovers': {
+  'compatible-profiles': {
     method: 'GET',
     authed: false,
     props: z.object({ userId: z.string() }),
@@ -257,7 +257,7 @@ export const API = (_apiTypeCheck = {
       status: 'success'
     },
   },
-  'ship-lovers': {
+  'ship-profiles': {
     method: 'POST',
     authed: true,
     props: z.object({
@@ -331,7 +331,7 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {
       status: 'success' | 'fail'
-      lovers: Lover[]
+      profiles: Lover[]
     },
   },
   'get-lover-answers': {

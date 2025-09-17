@@ -1,7 +1,7 @@
 BEGIN;
 \i backend/supabase/functions.sql
 \i backend/supabase/firebase.sql
-\i backend/supabase/lovers.sql
+\i backend/supabase/profiles.sql
 \i backend/supabase/users.sql
 \i backend/supabase/private_user_message_channels.sql
 \i backend/supabase/private_user_message_channel_members.sql
@@ -20,8 +20,5 @@ BEGIN;
 \i backend/supabase/user_notifications.sql
 \i backend/supabase/functions_others.sql
 \i backend/supabase/reports.sql
-\i backend/supabase/migrations/20250910_bio_to_jsonb.sql
-\i backend/supabase/migrations/20250910_add_bio_text.sql
-\i backend/supabase/migrations/20250910_pg_trgm.sql
 \i backend/supabase/bookmarked_searches.sql
 COMMIT;

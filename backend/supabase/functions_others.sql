@@ -20,7 +20,7 @@ END;
 $function$;
 
 create
-or replace function public.get_love_question_answers_and_lovers (p_question_id bigint) returns setof record language plpgsql as $function$
+or replace function public.get_love_question_answers_and_profiles (p_question_id bigint) returns setof record language plpgsql as $function$
 BEGIN
 RETURN QUERY
 SELECT
@@ -29,16 +29,16 @@ SELECT
     love_answers.free_response,
     love_answers.multiple_choice,
     love_answers.integer,
-    lovers.age,
-    lovers.gender,
-    lovers.city,
+    profiles.age,
+    profiles.gender,
+    profiles.city,
     users.data
 FROM
-    lovers
+    profiles
         JOIN
-    love_answers ON lovers.user_id = love_answers.creator_id
+    love_answers ON profiles.user_id = love_answers.creator_id
         join
-    users on lovers.user_id = users.id
+    users on profiles.user_id = users.id
 WHERE
     love_answers.question_id = p_question_id
 order by love_answers.created_time desc;

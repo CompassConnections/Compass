@@ -10,7 +10,7 @@ import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 export const useLover = () => {
   const user = useUser()
   const [lover, setLover] = usePersistentLocalState<
-    Row<'lovers'> | undefined | null
+    Row<'profiles'> | undefined | null
   >(undefined, `lover-${user?.id}`)
 
   const refreshLover = () => {

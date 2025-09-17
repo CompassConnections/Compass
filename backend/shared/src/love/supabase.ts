@@ -20,7 +20,7 @@ export function convertRow(row: LoverAndUserRow | undefined): Lover | null {
   } as Lover
 }
 
-const LOVER_COLS = 'lovers.*, name, username, users.data as user'
+const LOVER_COLS = 'profiles.*, name, username, users.data as user'
 
 export const getLover = async (userId: string) => {
   const pg = createSupabaseDirectClient()
@@ -29,9 +29,9 @@ export const getLover = async (userId: string) => {
       select
         ${LOVER_COLS}
       from
-        lovers
+        profiles
       join
-        users on users.id = lovers.user_id
+        users on users.id = profiles.user_id
       where
         user_id = $1
     `,
@@ -47,9 +47,9 @@ export const getProfiles = async (userIds: string[]) => {
       select
        ${LOVER_COLS}
       from
-        lovers
+        profiles
       join
-        users on users.id = lovers.user_id
+        users on users.id = profiles.user_id
       where
         user_id = any($1)
     `,
@@ -60,24 +60,24 @@ export const getProfiles = async (userIds: string[]) => {
 
 export const getGenderCompatibleLovers = async (lover: LoverRow) => {
   const pg = createSupabaseDirectClient()
-  const lovers = await pg.map(
+  const profiles = await pg.map(
     `
       select 
         ${LOVER_COLS}
-      from lovers
+      from profiles
       join
-        users on users.id = lovers.user_id
+        users on users.id = profiles.user_id
       where
         user_id != $(user_id)
         and looking_for_matches
         and (data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)
         and (data->>'userDeleted' != 'true' or data->>'userDeleted' is null)
-        and lovers.pinned_url is not null
+        and profiles.pinned_url is not null
       `,
     { ...lover },
     convertRow
   )
-  return lovers.filter((l: Lover) => areGenderCompatible(lover, l))
+  return profiles.filter((l: Lover) => areGenderCompatible(lover, l))
 }
 
 export const getCompatibleLovers = async (
@@ -89,9 +89,9 @@ export const getCompatibleLovers = async (
     `
       select 
         ${LOVER_COLS}
-      from lovers
+      from profiles
       join
-        users on users.id = lovers.user_id
+        users on users.id = profiles.user_id
       where
         user_id != $(user_id)
         and looking_for_matches
@@ -99,17 +99,17 @@ export const getCompatibleLovers = async (
         and (data->>'userDeleted' != 'true' or data->>'userDeleted' is null)
 
         -- Gender
-        and (lovers.gender = any($(pref_gender)) or lovers.gender = 'non-binary')
-        and ($(gender) = any(lovers.pref_gender) or $(gender) = 'non-binary')
+        and (profiles.gender = any($(pref_gender)) or profiles.gender = 'non-binary')
+        and ($(gender) = any(profiles.pref_gender) or $(gender) = 'non-binary')
 
         -- Age
-        and lovers.age >= $(pref_age_min)
-        and lovers.age <= $(pref_age_max)
-        and $(age) >= lovers.pref_age_min
-        and $(age) <= lovers.pref_age_max
+        and profiles.age >= $(pref_age_min)
+        and profiles.age <= $(pref_age_max)
+        and $(age) >= profiles.pref_age_min
+        and $(age) <= profiles.pref_age_max
 
         -- Location
-        and calculate_earth_distance_km($(city_latitude), $(city_longitude), lovers.city_latitude, lovers.city_longitude) < $(radiusKm)
+        and calculate_earth_distance_km($(city_latitude), $(city_longitude), profiles.city_latitude, profiles.city_longitude) < $(radiusKm)
       `,
     { ...lover, radiusKm: radiusKm ?? 40_000 },
     convertRow

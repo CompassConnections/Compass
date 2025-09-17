@@ -9,7 +9,7 @@ import {
 import { log } from 'shared/utils'
 
 export const getCompatibleLoversHandler: APIHandler<
-  'compatible-lovers'
+  'compatible-profiles'
 > = async (props) => {
   return getCompatibleLovers(props.userId)
 }
@@ -25,17 +25,17 @@ export const getCompatibleLovers = async (userId: string) => {
 
   if (!lover) throw new APIError(404, 'Lover not found')
 
-  const lovers = await getGenderCompatibleLovers(lover)
+  const profiles = await getGenderCompatibleLovers(lover)
 
   const loverAnswers = await getCompatibilityAnswers([
     userId,
-    ...lovers.map((l) => l.user_id),
+    ...profiles.map((l) => l.user_id),
   ])
   log('got lover answers ' + loverAnswers.length)
 
   const answersByUserId = groupBy(loverAnswers, 'creator_id')
   const loverCompatibilityScores = Object.fromEntries(
-    lovers.map(
+    profiles.map(
       (l) =>
         [
           l.user_id,
@@ -48,7 +48,7 @@ export const getCompatibleLovers = async (userId: string) => {
   )
 
   const sortedCompatibleLovers = sortBy(
-    lovers,
+    profiles,
     (l) => loverCompatibilityScores[l.user_id].score
   ).reverse()
 

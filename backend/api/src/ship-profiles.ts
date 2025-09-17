@@ -5,7 +5,7 @@ import { log } from 'shared/utils'
 import { tryCatch } from 'common/util/try-catch'
 import { insert } from 'shared/supabase/utils'
 
-export const shipLovers: APIHandler<'ship-lovers'> = async (props, auth) => {
+export const shipLovers: APIHandler<'ship-profiles'> = async (props, auth) => {
   const { targetUserId1, targetUserId2, remove } = props
   const creatorId = auth.uid
 

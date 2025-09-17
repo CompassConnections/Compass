@@ -15,7 +15,7 @@ export const updateLover: APIHandler<'update-lover'> = async (
   const pg = createSupabaseDirectClient()
 
   const { data: existingLover } = await tryCatch(
-    pg.oneOrNone<Row<'lovers'>>('select * from lovers where user_id = $1', [
+    pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [
       auth.uid,
     ])
   )
@@ -33,7 +33,7 @@ export const updateLover: APIHandler<'update-lover'> = async (
   }
 
   const { data, error } = await tryCatch(
-    update(pg, 'lovers', 'user_id', { user_id: auth.uid, ...parsedBody })
+    update(pg, 'profiles', 'user_id', { user_id: auth.uid, ...parsedBody })
   )
 
   if (error) {

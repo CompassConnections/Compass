@@ -12,7 +12,7 @@ export const createLover: APIHandler<'create-lover'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
 
   const { data: existingUser } = await tryCatch(
-    pg.oneOrNone<{ id: string }>('select id from lovers where user_id = $1', [
+    pg.oneOrNone<{ id: string }>('select id from profiles where user_id = $1', [
       auth.uid,
     ])
   )
@@ -31,7 +31,7 @@ export const createLover: APIHandler<'create-lover'> = async (body, auth) => {
   console.log('body', body)
 
   const { data, error } = await tryCatch(
-    insert(pg, 'lovers', { user_id: auth.uid, ...body })
+    insert(pg, 'profiles', { user_id: auth.uid, ...body })
   )
 
   if (error) {

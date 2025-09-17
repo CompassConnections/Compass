@@ -14,7 +14,7 @@ import {CompatibleBadge} from "web/components/widgets/compatible-badge";
 import {useUser} from "web/hooks/use-user";
 
 export const ProfileGrid = (props: {
-  lovers: Lover[]
+  profiles: Lover[]
   loadMore: () => Promise<boolean>
   isLoadingMore: boolean
   isReloading: boolean
@@ -23,7 +23,7 @@ export const ProfileGrid = (props: {
   refreshStars: () => Promise<void>
 }) => {
   const {
-    lovers,
+    profiles,
     loadMore,
     isLoadingMore,
     isReloading,
@@ -34,7 +34,7 @@ export const ProfileGrid = (props: {
 
   const user = useUser()
 
-  const other_lovers = lovers.filter((lover) => lover.user_id !== user?.id);
+  const other_profiles = profiles.filter((lover) => lover.user_id !== user?.id);
 
   return (
     <div className="relative">
@@ -44,7 +44,7 @@ export const ProfileGrid = (props: {
           isReloading && 'animate-pulse opacity-80'
         )}
       >
-        {other_lovers
+        {other_profiles
           .map((lover) => (
             <ProfilePreview
               key={lover.id}
@@ -64,7 +64,7 @@ export const ProfileGrid = (props: {
         </div>
       )}
 
-      {!isLoadingMore && !isReloading && other_lovers.length === 0 && (
+      {!isLoadingMore && !isReloading && other_profiles.length === 0 && (
         <div className="py-8 text-center">
           <p>No profiles found.</p>
           <p>Feel free to bookmark your search and we'll notify you when new users match it!</p>

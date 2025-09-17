@@ -345,7 +345,7 @@ We have two ways to access our postgres database.
 ```ts
 import { db } from 'web/lib/supabase/db'
 
-db.from('lovers').select('*').eq('user_id', userId)
+db.from('profiles').select('*').eq('user_id', userId)
 ```
 
 and
@@ -354,7 +354,7 @@ and
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 
 const pg = createSupabaseDirectClient()
-pg.oneOrNone<Row<'lovers'>>('select * from lovers where user_id = $1', [userId])
+pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [userId])
 ```
 
 The supabase client just uses the supabase client library, which is a wrapper around postgREST. It allows us to query and update the database directly from the frontend.
@@ -397,12 +397,12 @@ const pg = createSupabaseDirectClient()
 
 // you are encouraged to use tryCatch for these
 const { data, error } = await tryCatch(
-  insert(pg, 'lovers', { user_id: auth.uid, ...body })
+  insert(pg, 'profiles', { user_id: auth.uid, ...body })
 )
 
 if (error) throw APIError(500, 'Error creating lover: ' + error.message)
 
-await update(pg, 'lovers', 'user_id', { user_id: auth.uid, age: 99 })
+await update(pg, 'profiles', 'user_id', { user_id: auth.uid, age: 99 })
 
 await updateData(pg, 'private_users', { id: userId, notifications: { ... } })
 ```

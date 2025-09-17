@@ -17,7 +17,7 @@ export const removePinnedPhoto: APIHandler<'remove-pinned-photo'> = async (
 
   const pg = createSupabaseDirectClient()
   const { error } = await tryCatch(
-    pg.none('update lovers set pinned_url = null where user_id = $1', [userId])
+    pg.none('update profiles set pinned_url = null where user_id = $1', [userId])
   )
 
   if (error) {

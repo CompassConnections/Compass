@@ -14,10 +14,11 @@ See those other useful documents as well:
 To add a profile variable (personality type, etc.), make modifications here:
 * ...
 
-You will likely need to update the `lovers` table of the database. Set up an SQL migration file that updates the table, as in [migrations](../backend/supabase/migrations), and run it in the same vein as [migrate.sh](../scripts/migrate.sh).
+You will likely need to update the `profiles` table of the database. Set up an SQL migration file that updates the table, as in [migrations](../backend/supabase/migrations), and run it in the same vein as [migrate.sh](../scripts/migrate.sh).
 
 Sync the database types from supabase to the local files (which assist Typescript in typing):
 ```bash
+
 yarn regen-types
 ```
 

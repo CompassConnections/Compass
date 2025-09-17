@@ -33,7 +33,7 @@ import toast from "react-hot-toast";
 
 export const OptionalLoveUserForm = (props: {
   lover: LoverRow
-  setLover: <K extends Column<'lovers'>>(key: K, value: LoverRow[K]) => void
+  setLover: <K extends Column<'profiles'>>(key: K, value: LoverRow[K]) => void
   user: User
   buttonLabel?: string
   fromSignup?: boolean

@@ -117,7 +117,7 @@ export const useFilters = (you: Lover | undefined) => {
   }
 }
 
-// const alternateWomenAndMen = (lovers: Lover[]) => {
-//   const [women, nonWomen] = partition(lovers, (l) => l.gender === 'female')
+// const alternateWomenAndMen = (profiles: Lover[]) => {
+//   const [women, nonWomen] = partition(profiles, (l) => l.gender === 'female')
 //   return filterDefined(zip(women, nonWomen).flat())
 // }

@@ -11,14 +11,14 @@ export const useCompatibleLovers = (
   options?: { sortWithModifiers?: boolean }
 ) => {
   const [data, setData] = usePersistentInMemoryState<
-    APIResponse<'compatible-lovers'> | undefined | null
-  >(undefined, `compatible-lovers-${userId}`)
+    APIResponse<'compatible-profiles'> | undefined | null
+  >(undefined, `compatible-profiles-${userId}`)
 
   const lover = useLoverByUserId(userId ?? undefined)
 
   useEffect(() => {
     if (userId) {
-      api('compatible-lovers', { userId })
+      api('compatible-profiles', { userId })
         .then(setData)
         .catch((e) => {
           if (e.code === 404) {

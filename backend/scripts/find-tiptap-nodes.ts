@@ -59,7 +59,7 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   console.log(`\nSearching profiles for ${nodeName}...`)
   const users = renderSql(
     select('user_id, bio'),
-    from('lovers'),
+    from('profiles'),
     where(`jsonb_path_exists(bio::jsonb, '$.**.type ? (@ == "${nodeName}")')`)
   )
 

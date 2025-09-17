@@ -8,11 +8,11 @@ import { chunk } from 'lodash'
 runScript(async ({ pg }) => {
   const directClient = createSupabaseDirectClient()
 
-  // Get all users and their corresponding lovers
+  // Get all users and their corresponding profiles
   const users = await directClient.manyOrNone(`
     select u.id, u.data, l.twitter
     from users u
-    left join lovers l on l.user_id = u.id
+    left join profiles l on l.user_id = u.id
   `)
 
   log('Found', users.length, 'users to migrate')

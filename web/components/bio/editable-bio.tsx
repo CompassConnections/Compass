@@ -116,6 +116,8 @@ export function SignupBio(props: {
     placeholder: placeHolder,
   })
 
+  // const [charLength, setCharLength] = useState(0)
+
   return (
     <Col className="relative w-full">
       <BioTips/>
@@ -123,9 +125,21 @@ export function SignupBio(props: {
         editor={editor}
         onBlur={() => {
           // console.log('onchange', editor?.getText())
-          if (editor) onChange(editor.getJSON())
+          if (!editor) return
+          const e = editor.getJSON()
+          // console.log(e)
+          // const text = e.content.map((block: any) => block.content?.map((c: any) => c.text).join('') ?? '').join('');
+          // setCharLength(text.length)
+          // console.log(text, text.length)
+          // if (text.length < 250) {
+          //   return; // do not save
+          // }
+
+          // console.log('bio changed', e, profile.bio);
+          onChange(e)
         }}
       />
+      {/*<p>{charLength} / 250</p>*/}
     </Col>
   )
 }

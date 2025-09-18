@@ -1,6 +1,5 @@
 'use client';
 
-import {aColor, supportEmail} from "@/lib/client/constants";
 import Image from 'next/image';
 
 export default function PrivacyPage() {

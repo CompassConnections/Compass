@@ -1,3 +1,5 @@
+import {discordLink} from "common/constants";
+
 export const SITE_ORDER = [
   'site', // personal site
   'x', // twitter
@@ -73,7 +75,7 @@ const urler: { [key in Site]: (handle: string) => string } = {
   discord: (s) =>
     (s.length === 17 || s.length === 18) && !isNaN(parseInt(s, 10))
       ? `https://discord.com/users/${s}` // discord user id
-      : 'https://discord.gg/8Vd7jzqjun', // our server
+      : discordLink, // our server
   bluesky: (s) => `https://bsky.app/profile/${s}`,
   mastodon: (s) =>
     s.includes('@') ? `https://${s.split('@')[1]}/@${s.split('@')[0]}` : s,

@@ -1,4 +1,5 @@
 import {Column, Img, Link, Row, Section, Text} from "@react-email/components";
+import {discordLink, githubRepo, patreonLink, paypalLink} from "common/constants";
 
 interface Props {
   email?: string
@@ -13,7 +14,7 @@ export const Footer = ({
     <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}}/>
     <Row>
       <Column align="center">
-        <Link href="https://github.com/CompassConnections/Compass" target="_blank">
+        <Link href={githubRepo} target="_blank">
           <Img
             src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
             width="24"
@@ -22,7 +23,7 @@ export const Footer = ({
             style={{ display: "inline-block", margin: "0 4px" }}
           />
         </Link>
-        <Link href="https://discord.gg/8Vd7jzqjun" target="_blank">
+        <Link href={discordLink} target="_blank">
           <Img
             src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
             width="24"
@@ -31,7 +32,7 @@ export const Footer = ({
             style={{ display: "inline-block", margin: "0 4px" }}
           />
         </Link>
-        <Link href="https://patreon.com/CompassMeet" target="_blank">
+        <Link href={patreonLink} target="_blank">
           <Img
             src="https://static.vecteezy.com/system/resources/previews/027/127/454/non_2x/patreon-logo-patreon-icon-transparent-free-png.png"
             width="24"
@@ -40,7 +41,7 @@ export const Footer = ({
             style={{ display: "inline-block", margin: "0 4px" }}
           />
         </Link>
-        <Link href="https://www.paypal.com/paypalme/CompassConnections" target="_blank">
+        <Link href={paypalLink} target="_blank">
           <Img
             src="https://cdn-icons-png.flaticon.com/512/174/174861.png"
             width="24"

@@ -5,6 +5,7 @@ import { Col } from 'web/components/layout/col'
 
 import { Title } from 'web/components/widgets/title'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
+import {discordLink, formLink, githubIssues} from "common/constants";
 
 export default function Custom404(props: { customText?: string }) {
   return (
@@ -27,7 +28,7 @@ export function Custom404Content(props: { customText?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             className="items-center hover:text-indigo-400 hover:underline"
-            href="https://forms.gle/tKnXUMAbEreMK6FC6"
+            href={formLink}
           >
             a Google Form
             <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 " />
@@ -36,7 +37,7 @@ export function Custom404Content(props: { customText?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             className="items-center hover:text-indigo-400 hover:underline"
-            href="https://discord.gg/8Vd7jzqjun"
+            href={discordLink}
           >
             Discord
             <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 " />
@@ -45,7 +46,7 @@ export function Custom404Content(props: { customText?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             className="items-center hover:text-indigo-400 hover:underline"
-            href="https://github.com/CompassConnections/Compass/issues"
+            href={githubIssues}
           >
             GitHub!
             <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 " />

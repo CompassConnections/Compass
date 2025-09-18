@@ -1,5 +1,5 @@
-import {supportEmail} from "../../old/lib/client/constants";
 import {LovePage} from "web/components/love-page";
+import {supportEmail} from "common/constants";
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function TermsPage() {

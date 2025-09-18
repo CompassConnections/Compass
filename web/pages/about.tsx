@@ -1,6 +1,7 @@
 import {LovePage} from 'web/components/love-page'
 import {ReactNode} from "react";
 import Link from "next/link";
+import {discordLink, formLink, githubRepo} from "common/constants";
 
 
 export const AboutBlock = (props: {
@@ -79,7 +80,7 @@ export default function About() {
                   <p className="mb-4 text-center">Give suggestions or let us know you want to help through this
                     form!</p>
                   <a
-                    href="https://forms.gle/tKnXUMAbEreMK6FC6"
+                    href={formLink}
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
                     target="_blank" rel="noopener noreferrer"
                   >
@@ -90,7 +91,7 @@ export default function About() {
                   <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
                   <p className="mb-4 text-center">Shape the product or chat with like-minded people.</p>
                   <a
-                    href="https://discord.gg/8Vd7jzqjun"
+                    href={discordLink}
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
                     target="_blank" rel="noopener noreferrer"
                   >
@@ -101,7 +102,7 @@ export default function About() {
                   <h5 id="share" className="font-bold mb-4 text-xl text-center">Develop the App</h5>
                   <p className="mb-4 text-center">The full source code and instructions are available on GitHub.</p>
                   <a
-                    href="https://github.com/CompassConnections/Compass"
+                    href={githubRepo}
                     className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
                     target="_blank" rel="noopener noreferrer">
                     View Code

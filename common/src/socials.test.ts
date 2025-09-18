@@ -1,4 +1,5 @@
 import { strip, getSocialUrl } from './socials'
+import {discordLink} from "common/constants";
 
 describe('strip', () => {
   describe('x/twitter', () => {
@@ -75,6 +76,6 @@ describe('getSocialUrl', () => {
 
   it('should handle discord user IDs and default invite', () => {
     expect(getSocialUrl('discord', '123456789012345678')).toBe('https://discord.com/users/123456789012345678')
-    expect(getSocialUrl('discord', 'not-an-id')).toBe('https://discord.gg/8Vd7jzqjun')
+    expect(getSocialUrl('discord', 'not-an-id')).toBe({discordLink})
   })
 })

@@ -2,12 +2,21 @@ import { type APIHandler } from 'api/helpers/endpoint'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { Row } from 'common/supabase/utils'
 
+export function shuffle<T>(array: T[]): T[] {
+  const arr = [...array]; // copy to avoid mutating the original
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export const getCompatibilityQuestions: APIHandler<
   'get-compatibility-questions'
 > = async (_props, _auth) => {
   const pg = createSupabaseDirectClient()
 
-  const questions = await pg.manyOrNone<
+  const dbQuestions = await pg.manyOrNone<
     Row<'love_questions'> & { answer_count: number; score: number }
   >(
     `SELECT 
@@ -28,11 +37,12 @@ export const getCompatibilityQuestions: APIHandler<
     []
   )
 
-  if (false)
-    console.log(
-      'got questions',
-      questions.map((q) => q.question + ' ' + q.score)
-    )
+  const questions = shuffle(dbQuestions)
+
+  // console.log(
+  //   'got questions',
+  //   questions.map((q) => q.question + ' ' + q.score)
+  // )
 
   return {
     status: 'success',

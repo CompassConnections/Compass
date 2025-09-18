@@ -79,3 +79,4 @@ email-preview
 *.zip
 *.tar.gz
 *.rar
+/favicon_color.ico

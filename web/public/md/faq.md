@@ -87,6 +87,12 @@ Right now, Compass is **web-only**. The good news is that it’s designed to be 
 
 Dedicated iOS and Android apps are planned for the coming months. They’ll be built as soon as one of our contributors (or the core team) tackles it. If you’re interested in helping speed that up, check out the GitHub or reach out in the Discord community.
 
+### What is open source?
+
+Compass is fully **open source**, which means anyone can view the code, suggest improvements, or contribute directly. This ensures transparency, prevents hidden agendas, and allows the community to shape the platform together.
+
+Whether it’s fixing a small bug, adding a new feature, improving design, or writing tests, contributions of all sizes are welcome. You can explore the code and instructions on our [GitHub repository](https://github.com/CompassConnections/Compass).
+
 ### How can I help?
 
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)

@@ -81,7 +81,11 @@ Matches are scored based on how well two people’s responses and accepted answe
 
 The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/love/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
 
+### What platforms does Compass run on?
 
+Right now, Compass is **web-only**. The good news is that it’s designed to be **fully responsive**, so it looks clean and works fluidly on a mobile browser — you can use it seamlessly on your phone just like an app.
+
+Dedicated iOS and Android apps are planned for the coming months. They’ll be built as soon as one of our contributors (or the core team) tackles it. If you’re interested in helping speed that up, check out the GitHub or reach out in the Discord community.
 
 ### How can I help?
 

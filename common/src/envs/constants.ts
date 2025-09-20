@@ -1,20 +1,11 @@
 import {DEV_CONFIG} from './dev'
-import {EnvConfig, PROD_CONFIG} from './prod'
-
-// Valid in web client & Vercel deployments only.
-export const ENV = (process.env.NEXT_PUBLIC_FIREBASE_ENV ?? 'PROD') as
-  | 'PROD'
-  | 'DEV'
-
-export const CONFIGS: { [env: string]: EnvConfig } = {
-  PROD: PROD_CONFIG,
-  DEV: DEV_CONFIG,
-}
+import {PROD_CONFIG} from './prod'
+import {isProd} from "common/envs/is-prod";
 
 export const MAX_DESCRIPTION_LENGTH = 16000
 export const MAX_ANSWER_LENGTH = 240
 
-export const ENV_CONFIG = CONFIGS[ENV]
+export const ENV_CONFIG = isProd() ? PROD_CONFIG : DEV_CONFIG
 
 export function isAdminId(id: string) {
   return ENV_CONFIG.adminIds.includes(id)
@@ -23,6 +14,7 @@ export function isAdminId(id: string) {
 export function isModId(id: string) {
   return MOD_IDS.includes(id)
 }
+
 export const DOMAIN = ENV_CONFIG.domain
 export const FIREBASE_CONFIG = ENV_CONFIG.firebaseConfig
 export const PROJECT_ID = ENV_CONFIG.firebaseConfig.projectId

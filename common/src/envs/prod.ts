@@ -3,6 +3,7 @@ export type EnvConfig = {
   firebaseConfig: FirebaseConfig
   supabaseInstanceId: string
   supabaseAnonKey: string
+  supabaseServiceRoleKey?: string
   posthogKey: string
   apiEndpoint: string
 

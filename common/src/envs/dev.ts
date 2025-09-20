@@ -3,6 +3,7 @@ import { EnvConfig, PROD_CONFIG } from './prod'
 export const DEV_CONFIG: EnvConfig = {
   ...PROD_CONFIG,
   supabaseInstanceId: 'zbspxezubpzxmuxciurg',
+  supabaseServiceRoleKey: '09wATRREfAzyL5pc', // For database write access (dev). A 16-character password with digits and letters.
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpic3B4ZXp1YnB6eG11eGNpdXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2ODM0MTMsImV4cCI6MjA3MzI1OTQxM30.ZkM7zlawP8Nke0T3KJrqpOQ4DzqPaXTaJXLC2WU8Y7c',
   firebaseConfig: {
     apiKey: "AIzaSyBspL9glBXWbMsjmtt36dgb2yU0YGGhzKo",

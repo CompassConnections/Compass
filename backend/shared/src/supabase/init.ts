@@ -1,14 +1,12 @@
-import pgPromise from 'pg-promise'
-export { SupabaseClient } from 'common/supabase/utils'
-import { DEV_CONFIG } from 'common/envs/dev'
-import { PROD_CONFIG } from 'common/envs/prod'
-import { metrics, log, isProd } from '../utils'
-import { IDatabase, ITask } from 'pg-promise'
-import { IClient } from 'pg-promise/typescript/pg-subset'
-import { HOUR_MS } from 'common/util/time'
-import { METRICS_INTERVAL_MS } from 'shared/monitoring/metric-writer'
-import { getMonitoringContext } from 'shared/monitoring/context'
-import { type IConnectionParameters } from 'pg-promise/typescript/pg-subset'
+import pgPromise, {IDatabase, ITask} from 'pg-promise'
+import {log, metrics} from '../utils'
+import {IClient, type IConnectionParameters} from 'pg-promise/typescript/pg-subset'
+import {HOUR_MS} from 'common/util/time'
+import {METRICS_INTERVAL_MS} from 'shared/monitoring/metric-writer'
+import {getMonitoringContext} from 'shared/monitoring/context'
+import {ENV_CONFIG} from "common/envs/constants";
+
+export {SupabaseClient} from 'common/supabase/utils'
 
 export const pgp = pgPromise({
   error(err: any, e: pgPromise.IEventContext) {
@@ -21,9 +19,9 @@ export const pgp = pgPromise({
   query() {
     const ctx = getMonitoringContext()
     if (ctx?.endpoint) {
-      metrics.inc('pg/query_count', { endpoint: ctx.endpoint })
+      metrics.inc('pg/query_count', {endpoint: ctx.endpoint})
     } else if (ctx?.job) {
-      metrics.inc('pg/query_count', { job: ctx.job })
+      metrics.inc('pg/query_count', {job: ctx.job})
     } else {
       metrics.inc('pg/query_count')
     }
@@ -38,10 +36,11 @@ export type SupabaseTransaction = ITask<{}>
 export type SupabaseDirectClient = IDatabase<{}, IClient> | SupabaseTransaction
 
 export function getInstanceId() {
-  return (
-    process.env.SUPABASE_INSTANCE_ID ??
-    (isProd() ? PROD_CONFIG.supabaseInstanceId : DEV_CONFIG.supabaseInstanceId)
-  )
+  return process.env.SUPABASE_INSTANCE_ID ?? ENV_CONFIG.supabaseInstanceId
+}
+
+export function getSupabasePwd() {
+  return ENV_CONFIG.supabaseServiceRoleKey ?? process.env.SUPABASE_DB_PASSWORD
 }
 
 const newClient = (
@@ -50,7 +49,7 @@ const newClient = (
     password?: string
   } & IConnectionParameters
 ) => {
-  const { instanceId, password, ...settings } = props
+  const {instanceId, password, ...settings} = props
 
   const config = {
     // This host is IPV4 compatible, for the google cloud VM
@@ -60,7 +59,7 @@ const newClient = (
     password: password,
     database: 'postgres',
     pool_mode: 'session',
-    ssl: { rejectUnauthorized: false },
+    ssl: {rejectUnauthorized: false},
     family: 4, // <- forces IPv4
     ...settings,
   }
@@ -72,6 +71,7 @@ const newClient = (
 
 // Use one connection to avoid WARNING: Creating a duplicate database object for the same connection.
 let pgpDirect: IDatabase<{}, IClient> | null = null
+
 export function createSupabaseDirectClient(
   instanceId?: string,
   password?: string
@@ -83,7 +83,7 @@ export function createSupabaseDirectClient(
       "Can't connect to Supabase; no process.env.SUPABASE_INSTANCE_ID and no instance ID in config."
     )
   }
-  password = password ?? process.env.SUPABASE_DB_PASSWORD
+  password = password ?? getSupabasePwd()
   if (!password) {
     throw new Error(
       "Can't connect to Supabase; no process.env.SUPABASE_DB_PASSWORD."
@@ -101,10 +101,10 @@ export function createSupabaseDirectClient(
   pool.on('acquire', () => metrics.inc('pg/connections_acquired'))
   pool.on('release', () => metrics.inc('pg/connections_released'))
   setInterval(() => {
-    metrics.set('pg/pool_connections', pool.waitingCount, { state: 'waiting' })
-    metrics.set('pg/pool_connections', pool.idleCount, { state: 'idle' })
-    metrics.set('pg/pool_connections', pool.expiredCount, { state: 'expired' })
-    metrics.set('pg/pool_connections', pool.totalCount, { state: 'total' })
+    metrics.set('pg/pool_connections', pool.waitingCount, {state: 'waiting'})
+    metrics.set('pg/pool_connections', pool.idleCount, {state: 'idle'})
+    metrics.set('pg/pool_connections', pool.expiredCount, {state: 'expired'})
+    metrics.set('pg/pool_connections', pool.totalCount, {state: 'total'})
   }, METRICS_INTERVAL_MS)
   return (pgpDirect = client)
 }
@@ -114,7 +114,7 @@ export const createShortTimeoutDirectClient = () => {
   if (shortTimeoutPgpClient) return shortTimeoutPgpClient
   shortTimeoutPgpClient = newClient({
     instanceId: getInstanceId(),
-    password: process.env.SUPABASE_DB_PASSWORD,
+    password: getSupabasePwd(),
     query_timeout: 1000 * 30,
     max: 20,
   })

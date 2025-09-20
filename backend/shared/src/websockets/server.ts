@@ -9,7 +9,7 @@ import {
   ServerMessage,
   CLIENT_MESSAGE_SCHEMA,
 } from 'common/api/websockets'
-import {LOCAL_DEV} from "common/envs/constants";
+import {IS_LOCAL} from "common/envs/constants";
 
 const SWITCHBOARD = new Switchboard()
 
@@ -107,7 +107,7 @@ export function broadcastMulti(topics: string[], data: BroadcastPayload) {
 
   // it isn't secure to do this in prod for auth reasons (maybe?)
   // but it's super convenient for testing
-  if (LOCAL_DEV) {
+  if (IS_LOCAL) {
     const msg = { type: 'broadcast', topic: '*', topics, data }
     sendToSubscribers('*', msg)
   }

@@ -3,9 +3,10 @@ export type EnvConfig = {
   firebaseConfig: FirebaseConfig
   supabaseInstanceId: string
   supabaseAnonKey: string
-  supabaseServiceRoleKey?: string
+  supabasePwd?: string
   posthogKey: string
-  apiEndpoint: string
+  backendDomain: string
+  googleApplicationCredentials: string
 
   // IDs for v2 cloud functions -- find these by deploying a cloud function and
   // examining the URL, https://[name]-[cloudRunId]-[cloudRunRegion].a.run.app
@@ -33,6 +34,11 @@ type FirebaseConfig = {
 export const PROD_CONFIG: EnvConfig = {
   posthogKey: 'phc_tFvQzHiMVdaAIgE38xqYomMN8q8SB5K45fqmkKNjfBU',
   domain: 'compassmeet.com',
+  backendDomain: 'api.compassmeet.com',
+  supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
+  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_KEY || '',
+  supabasePwd: process.env.SUPABASE_DB_PASSWORD || '',
+  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS || '',
   firebaseConfig: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: "compass-130ba.firebaseapp.com",
@@ -46,12 +52,8 @@ export const PROD_CONFIG: EnvConfig = {
   },
   cloudRunId: 'w3txbmd3ba',
   cloudRunRegion: 'uc',
-  supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_KEY || '',
-  apiEndpoint: 'api.compassmeet.com',
   adminIds: [
     '0vaZsIJk9zLVOWY4gb61gTrRIU73', // Martin
   ],
-
   faviconPath: '/favicon.ico',
 }

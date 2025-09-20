@@ -15,7 +15,13 @@ export function isModId(id: string) {
   return MOD_IDS.includes(id)
 }
 
-export const DOMAIN = ENV_CONFIG.domain
+export const LOCAL_WEB_DOMAIN = 'localhost:3000';
+export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';
+export const IS_LOCAL = !process.env.VERCEL && !process.env.K_SERVICE;
+console.log(IS_LOCAL ? 'Running in local mode' : 'Running in deployed mode', isProd() ? '(prod)' : '(dev)');
+
+export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
+export const BACKEND_DOMAIN = IS_LOCAL ? LOCAL_BACKEND_DOMAIN : ENV_CONFIG.backendDomain
 export const FIREBASE_CONFIG = ENV_CONFIG.firebaseConfig
 export const PROJECT_ID = ENV_CONFIG.firebaseConfig.projectId
 
@@ -99,6 +105,3 @@ export const RESERVED_PATHS = [
   'web',
   'welcome',
 ]
-
-export const LOCAL_WEB_URL = 'http://localhost:3000';
-export const LOCAL_DEV = process.env.GOOGLE_CLOUD_PROJECT == null

@@ -9,7 +9,7 @@ regen-types-prod:
 	cd ../../common && npx prettier --write ./src/supabase/schema.ts
 
 regen-types-dev:
-	npx supabase gen types typescript --project-id ltzepxnhhnrnvovqblfr --schema public > ../../common/src/supabase/schema.ts
+	npx supabase gen types typescript --project-id zbspxezubpzxmuxciurg --schema public > ../../common/src/supabase/schema.ts
 	cd ../../common && npx prettier --write ./src/supabase/schema.ts
 
 regen-schema:

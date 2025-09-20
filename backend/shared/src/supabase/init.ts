@@ -36,11 +36,11 @@ export type SupabaseTransaction = ITask<{}>
 export type SupabaseDirectClient = IDatabase<{}, IClient> | SupabaseTransaction
 
 export function getInstanceId() {
-  return process.env.SUPABASE_INSTANCE_ID ?? ENV_CONFIG.supabaseInstanceId
+  return ENV_CONFIG.supabaseInstanceId
 }
 
 export function getSupabasePwd() {
-  return ENV_CONFIG.supabaseServiceRoleKey ?? process.env.SUPABASE_DB_PASSWORD
+  return ENV_CONFIG.supabasePwd
 }
 
 const newClient = (
@@ -55,7 +55,7 @@ const newClient = (
     // This host is IPV4 compatible, for the google cloud VM
     host: 'aws-1-us-west-1.pooler.supabase.com',
     port: 5432,
-    user: `postgres.ltzepxnhhnrnvovqblfr`,
+    user: `postgres.${instanceId}`,
     password: password,
     database: 'postgres',
     pool_mode: 'session',

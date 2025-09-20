@@ -48,6 +48,7 @@ module.exports = {
       { hostname: 'picsum.photos' },
       { hostname: '*.giphy.com' },
       { hostname: 'ui-avatars.com' },
+      { hostname: 'localhost' },
     ],
   },
   webpack: (config) => {

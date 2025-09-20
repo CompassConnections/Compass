@@ -12,14 +12,16 @@
   ],
   "scripts": {
     "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
-    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix", "dev": "./scripts/run_local.sh dev",
+    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix",
+    "dev": "./scripts/run_local.sh dev",
     "prod": "./scripts/run_local.sh prod",
     "clean-install": "./scripts/install.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:update": "jest --updateSnapshot"
+    "test:update": "jest --updateSnapshot",
+    "postinstall": "./scripts/post_install.sh"
   },
   "dependencies": {
     "@playwright/test": "^1.54.2",

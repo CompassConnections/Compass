@@ -20,6 +20,7 @@ export const sendEmail = async (
   console.log(resend, payload, options)
 
   async function sendEmailThrottle(data: any, options: any) {
+    if (!resend) return { data: null, error: 'No Resend client' }
     return limit(() => resend.emails.send(data, options))
   }
 
@@ -44,6 +45,11 @@ export const sendEmail = async (
 let resend: Resend | null = null
 const getResend = () => {
   if (resend) return resend
+
+  if (!process.env.RESEND_KEY) {
+    console.log('No RESEND_KEY, skipping email send')
+    return
+  }
 
   const apiKey = process.env.RESEND_KEY as string
   // console.log(`RESEND_KEY: ${apiKey}`)

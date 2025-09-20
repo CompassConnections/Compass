@@ -1,4 +1,4 @@
-import { ENV_CONFIG } from 'common/envs/constants'
+import {BACKEND_DOMAIN} from 'common/envs/constants'
 
 type ErrorCode =
   | 400 // your input is bad (like zod is mad)
@@ -11,6 +11,7 @@ type ErrorCode =
 export class APIError extends Error {
   code: ErrorCode
   details?: unknown
+
   constructor(code: ErrorCode, message: string, details?: unknown) {
     super(message)
     this.code = code
@@ -19,20 +20,19 @@ export class APIError extends Error {
   }
 }
 
+const prefix = 'v0'
+
 export function pathWithPrefix(path: string) {
-  return `/v0${path}`
+  return `/${prefix}${path}`
 }
 
 export function getWebsocketUrl() {
-  const endpoint = process.env.NEXT_PUBLIC_API_URL ?? ENV_CONFIG.apiEndpoint
-  const protocol = endpoint.startsWith('localhost') ? 'ws' : 'wss'
+  const protocol = BACKEND_DOMAIN.startsWith('localhost') ? 'ws' : 'wss'
 
-  return `${protocol}://${endpoint}/ws`
+  return `${protocol}://${BACKEND_DOMAIN}/ws`
 }
 
 export function getApiUrl(path: string) {
-  const endpoint = process.env.NEXT_PUBLIC_API_URL ?? ENV_CONFIG.apiEndpoint
-  const protocol = endpoint.startsWith('localhost') ? 'http' : 'https'
-  const prefix = 'v0'
-  return `${protocol}://${endpoint}/${prefix}/${path}`
+  const protocol = BACKEND_DOMAIN.startsWith('localhost') ? 'http' : 'https'
+  return `${protocol}://${BACKEND_DOMAIN}/${prefix}/${path}`
 }

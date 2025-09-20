@@ -1,16 +1,12 @@
 import * as admin from 'firebase-admin'
 
-import { getServiceAccountCredentials } from 'common/secrets'
 
-export const getLocalEnv = () => {
-  return (process.env.ENV?.toUpperCase() ?? 'STAGING') as 'PROD' | 'DEV'
-}
+import {getServiceAccountCredentials} from "shared/firebase-utils";
 
 // Locally initialize Firebase Admin.
 export const initAdmin = () => {
   try {
-    const env = getLocalEnv()
-    const serviceAccount = getServiceAccountCredentials(env)
+    const serviceAccount = getServiceAccountCredentials()
     console.log(
       `Initializing connection to ${serviceAccount.project_id} Firebase...`
     )

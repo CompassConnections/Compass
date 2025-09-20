@@ -1,27 +1,25 @@
 import * as admin from 'firebase-admin'
-import { PrivateUser } from 'common/user'
-import { randomString } from 'common/util/random'
-import { cleanDisplayName, cleanUsername } from 'common/util/clean-username'
-import { getIp, track } from 'shared/analytics'
-import { APIError, APIHandler } from './helpers/endpoint'
-import { getDefaultNotificationPreferences } from 'common/user-notification-preferences'
-import { removeUndefinedProps } from 'common/util/object'
-import { generateAvatarUrl } from 'shared/helpers/generate-and-update-avatar-urls'
-import { getStorage } from 'firebase-admin/storage'
-import { DEV_CONFIG } from 'common/envs/dev'
-import { PROD_CONFIG } from 'common/envs/prod'
-import { RESERVED_PATHS } from 'common/envs/constants'
-import { log, isProd, getUser, getUserByUsername } from 'shared/utils'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { insert } from 'shared/supabase/utils'
-import { convertPrivateUser, convertUser } from 'common/supabase/users'
+import {PrivateUser} from 'common/user'
+import {randomString} from 'common/util/random'
+import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
+import {getIp, track} from 'shared/analytics'
+import {APIError, APIHandler} from './helpers/endpoint'
+import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
+import {removeUndefinedProps} from 'common/util/object'
+import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
+import {getStorage} from 'firebase-admin/storage'
+import {ENV_CONFIG, RESERVED_PATHS} from 'common/envs/constants'
+import {getUser, getUserByUsername, log} from 'shared/utils'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+import {convertPrivateUser, convertUser} from 'common/supabase/users'
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
   auth,
   req
 ) => {
-  const { deviceToken: preDeviceToken } = props
+  const {deviceToken: preDeviceToken} = props
   const firebaseUser = await admin.auth().getUser(auth.uid)
 
   const testUserAKAEmailPasswordUser =
@@ -63,7 +61,9 @@ export const createUser: APIHandler<'create-user'> = async (
 
   // Check username case-insensitive
   const dupes = await pg.one<number>(
-    `select count(*) from users where username ilike $1`,
+    `select count(*)
+     from users
+     where username ilike $1`,
     [username],
     (r) => r.count
   )
@@ -71,7 +71,7 @@ export const createUser: APIHandler<'create-user'> = async (
   const isReservedName = RESERVED_PATHS.includes(username)
   if (usernameExists || isReservedName) username += randomString(4)
 
-  const { user, privateUser } = await pg.tx(async (tx) => {
+  const {user, privateUser} = await pg.tx(async (tx) => {
     const preexistingUser = await getUser(auth.uid, tx)
     if (preexistingUser)
       throw new APIError(403, 'User already exists', {
@@ -81,13 +81,13 @@ export const createUser: APIHandler<'create-user'> = async (
     // Check exact username to avoid problems with duplicate requests
     const sameNameUser = await getUserByUsername(username, tx)
     if (sameNameUser)
-      throw new APIError(403, 'Username already taken', { username })
+      throw new APIError(403, 'Username already taken', {username})
 
     const user = removeUndefinedProps({
       avatarUrl,
       isBannedFromPosting: Boolean(
         (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
-          (ip && bannedIpAddresses.includes(ip))
+        (ip && bannedIpAddresses.includes(ip))
       ),
       link: {},
     })
@@ -120,10 +120,10 @@ export const createUser: APIHandler<'create-user'> = async (
     }
   })
 
-  log('created user ', { username: user.username, firebaseId: auth.uid })
+  log('created user ', {username: user.username, firebaseId: auth.uid})
 
   const continuation = async () => {
-    await track(auth.uid, 'create profile', { username: user.username })
+    await track(auth.uid, 'create profile', {username: user.username})
   }
 
   return {
@@ -136,9 +136,7 @@ export const createUser: APIHandler<'create-user'> = async (
 }
 
 function getStorageBucketId() {
-  return isProd()
-    ? PROD_CONFIG.firebaseConfig.storageBucket
-    : DEV_CONFIG.firebaseConfig.storageBucket
+  return ENV_CONFIG.firebaseConfig.storageBucket
 }
 
 // Automatically ban users with these device tokens or ip addresses.

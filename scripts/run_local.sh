@@ -16,8 +16,6 @@ case $ENV in
       exit 1
 esac
 
-ENVIRONMENT=$ENV
-NEXT_PUBLIC_FIREBASE_ENV="${ENVIRONMENT}"
 WEB_DIR=web
 
 source .env
@@ -25,7 +23,7 @@ source .env
 npx dotenv -e .env -- npx concurrently \
   -n API,NEXT,TS \
   -c white,magenta,cyan \
-  "cross-env ENV=$NEXT_ENV yarn --cwd=backend/api dev" \
+  "cross-env ENV=$NEXT_ENV ENVIRONMENT=$NEXT_ENV yarn --cwd=backend/api dev" \
   "cross-env NEXT_PUBLIC_FIREBASE_ENV=$NEXT_ENV yarn --cwd=$WEB_DIR serve" \
   "cross-env yarn --cwd=$WEB_DIR ts-watch"
 

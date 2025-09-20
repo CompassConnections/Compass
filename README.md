@@ -107,7 +107,7 @@ We can't make the following information public, for security and privacy reasons
 - Firebase, otherwise anyone could remove users or modify the media files
 - Email, analytics, and location services, otherwise anyone could use our paid plan
 
-We separate all those services between production and local development, so that you can code freely without impacting the functioning of the platform.
+That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
 Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
 
 If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.

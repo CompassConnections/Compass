@@ -19,7 +19,7 @@ export const LOCAL_WEB_DOMAIN = 'localhost:3000';
 export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';
 
 export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
-export const IS_VERCEL = !!process.env.VERCEL
+export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
 export const IS_LOCAL = !IS_GOOGLE_CLOUD && !IS_VERCEL
 export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
 console.log(`Running in ${HOSTING_ENV}`, isProd() ? '(prod)' : '(dev)');

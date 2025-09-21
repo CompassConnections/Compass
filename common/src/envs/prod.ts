@@ -6,7 +6,7 @@ export type EnvConfig = {
   supabasePwd?: string
   posthogKey: string
   backendDomain: string
-  googleApplicationCredentials: string
+  googleApplicationCredentials: string | undefined
 
   // IDs for v2 cloud functions -- find these by deploying a cloud function and
   // examining the URL, https://[name]-[cloudRunId]-[cloudRunRegion].a.run.app
@@ -38,7 +38,7 @@ export const PROD_CONFIG: EnvConfig = {
   supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_KEY || '',
   supabasePwd: process.env.SUPABASE_DB_PASSWORD || '',
-  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS || '',
+  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
   firebaseConfig: {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: "compass-130ba.firebaseapp.com",

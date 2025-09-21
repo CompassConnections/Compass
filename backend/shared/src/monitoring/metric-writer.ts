@@ -1,25 +1,19 @@
-import { MetricServiceClient } from '@google-cloud/monitoring'
-import { average, sumOfSquaredError } from 'common/util/math'
-import { log } from './log'
-import { InstanceInfo, getInstanceInfo } from './instance-info'
-import { chunk } from 'lodash'
-import {
-  CUSTOM_METRICS,
-  MetricStore,
-  MetricStoreEntry,
-  metrics,
-} from './metrics'
+import {MetricServiceClient} from '@google-cloud/monitoring'
+import {average, sumOfSquaredError} from 'common/util/math'
+import {log} from './log'
+import {getInstanceInfo, InstanceInfo} from './instance-info'
+import {chunk} from 'lodash'
+import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry,} from './metrics'
+import {IS_GOOGLE_CLOUD} from "common/envs/constants";
 
 // how often metrics are written. GCP says don't write for a single time series
 // more than once per 5 seconds.
 export const METRICS_INTERVAL_MS = 60_000
 
-const LOCAL_DEV = process.env.GOOGLE_CLOUD_PROJECT == null
-
 function serializeTimestamp(ts: number) {
   const seconds = ts / 1000
   const nanos = (ts % 1000) * 1000
-  return { seconds, nanos } as const
+  return {seconds, nanos} as const
 }
 
 // see https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.snoozes#timeinterval
@@ -31,7 +25,7 @@ function serializeInterval(entry: MetricStoreEntry, ts: number) {
         endTime: serializeTimestamp(ts),
       }
     case 'GAUGE': {
-      return { endTime: serializeTimestamp(ts) }
+      return {endTime: serializeTimestamp(ts)}
     }
   }
 }
@@ -43,7 +37,7 @@ function serializeDistribution(points: number[]) {
     mean: average(points),
     sumOfSquaredDeviation: sumOfSquaredError(points),
     // not interested in handling histograms right now
-    bucketOptions: { explicitBuckets: { bounds: [0] } },
+    bucketOptions: {explicitBuckets: {bounds: [0]}},
     bucketCounts: [0, points.length],
   }
 }
@@ -52,9 +46,9 @@ function serializeDistribution(points: number[]) {
 function serializeValue(entry: MetricStoreEntry) {
   switch (CUSTOM_METRICS[entry.type].valueKind) {
     case 'int64Value':
-      return { int64Value: entry.value }
+      return {int64Value: entry.value}
     case 'distributionValue': {
-      return { distributionValue: serializeDistribution(entry.points ?? []) }
+      return {distributionValue: serializeDistribution(entry.points ?? [])}
     }
     default:
       throw new Error('Other value kinds not yet implemented.')
@@ -110,8 +104,8 @@ export class MetricWriter {
       for (const entry of freshEntries) {
         entry.fresh = false
       }
-      if (!LOCAL_DEV) {
-        log.debug('Writing GCP metrics.', { entries: freshEntries })
+      if (!IS_GOOGLE_CLOUD) {
+        log.debug('Writing GCP metrics.', {entries: freshEntries})
         if (this.instance == null) {
           this.instance = await getInstanceInfo()
           log.debug('Retrieved instance metadata.', {
@@ -126,7 +120,7 @@ export class MetricWriter {
         for (const batch of chunk(timeSeries, 200)) {
           this.store.clearDistributionGauges()
           // see https://cloud.google.com/monitoring/custom-metrics/creating-metrics
-          await this.client.createTimeSeries({ timeSeries: batch, name })
+          await this.client.createTimeSeries({timeSeries: batch, name})
         }
       }
     }
@@ -138,7 +132,7 @@ export class MetricWriter {
         try {
           await this.write()
         } catch (error) {
-          log.error('Failed to write metrics.', { error })
+          log.error('Failed to write metrics.', {error})
         }
       }, this.intervalMs)
     }

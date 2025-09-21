@@ -17,8 +17,12 @@ export function isModId(id: string) {
 
 export const LOCAL_WEB_DOMAIN = 'localhost:3000';
 export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';
-export const IS_LOCAL = !process.env.VERCEL && !process.env.K_SERVICE;
-console.log(IS_LOCAL ? 'Running in local mode' : 'Running in deployed mode', isProd() ? '(prod)' : '(dev)');
+
+export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
+export const IS_VERCEL = !!process.env.VERCEL
+export const IS_LOCAL = !IS_GOOGLE_CLOUD && !IS_VERCEL
+export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
+console.log(`Running in ${HOSTING_ENV}`, isProd() ? '(prod)' : '(dev)');
 
 export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
 export const BACKEND_DOMAIN = IS_LOCAL ? LOCAL_BACKEND_DOMAIN : ENV_CONFIG.backendDomain

@@ -2,6 +2,7 @@ import { format } from 'node:util'
 import { isError, pick, omit } from 'lodash'
 import { dim, red, yellow } from 'colors/safe'
 import { getMonitoringContext } from './context'
+import {IS_GOOGLE_CLOUD} from "common/envs/constants";
 
 // mapping JS log levels (e.g. functions on console object) to GCP log levels
 const JS_TO_GCP_LEVELS = {
@@ -13,7 +14,6 @@ const JS_TO_GCP_LEVELS = {
 
 const JS_LEVELS = Object.keys(JS_TO_GCP_LEVELS) as LogLevel[]
 const DEFAULT_LEVEL = 'info'
-const IS_GCP = process.env.GOOGLE_CLOUD_PROJECT != null
 
 // keys to put in front to categorize a log line in the console
 const DISPLAY_CATEGORY_KEYS = ['endpoint', 'job'] as const
@@ -72,7 +72,7 @@ function writeLog(
     const contextData = getMonitoringContext()
     const message = format(toString(msg), ...(rest ?? []))
     const data = { ...(contextData ?? {}), ...(props ?? {}) }
-    if (IS_GCP) {
+    if (IS_GOOGLE_CLOUD) {
       const severity = JS_TO_GCP_LEVELS[level]
       const output: LogDetails = { severity, message, ...data }
       if (msg instanceof Error) {

@@ -80,3 +80,4 @@ email-preview
 *.tar.gz
 *.rar
 /favicon_color.ico
+/backend/shared/src/googleApplicationCredentials-dev.json

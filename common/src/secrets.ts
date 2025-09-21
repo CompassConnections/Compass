@@ -1,6 +1,7 @@
 import {SecretManagerServiceClient} from '@google-cloud/secret-manager'
 import {zip} from 'lodash'
 import {IS_LOCAL} from "common/envs/constants";
+import {refreshConfig} from "common/envs/prod";
 
 // List of secrets that are available to backend (api, functions, scripts, etc.)
 // Edit them at:
@@ -44,6 +45,8 @@ export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
 
   const secretIds = ids.length > 0 ? ids : secrets
 
+  console.log('secretIds', secretIds)
+
   const fullSecretNames = secretIds.map(
     (secret: string) =>
       `${client.projectPath(projectId)}/secrets/${secret}/versions/latest`
@@ -70,7 +73,9 @@ export const loadSecretsToEnv = async (credentials?: any) => {
   for (const [key, value] of Object.entries(allSecrets)) {
     if (key && value) {
       process.env[key] = value
+      // console.log(key, value)
     }
   }
+  refreshConfig()
 }
 

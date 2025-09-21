@@ -36,11 +36,11 @@ export const PROD_CONFIG: EnvConfig = {
   domain: 'compassmeet.com',
   backendDomain: 'api.compassmeet.com',
   supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_KEY || '',
-  supabasePwd: process.env.SUPABASE_DB_PASSWORD || '',
-  googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  supabaseAnonKey: '',
+  supabasePwd: '',
+  googleApplicationCredentials: undefined,
   firebaseConfig: {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+    apiKey: '',
     authDomain: "compass-130ba.firebaseapp.com",
     projectId: "compass-130ba",
     storageBucket: "compass-130ba.firebasestorage.app",
@@ -57,3 +57,12 @@ export const PROD_CONFIG: EnvConfig = {
   ],
   faviconPath: '/favicon.ico',
 }
+
+export const refreshConfig = () => {
+  PROD_CONFIG.supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY || ''
+  PROD_CONFIG.supabasePwd = process.env.SUPABASE_DB_PASSWORD || ''
+  PROD_CONFIG.googleApplicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS
+  PROD_CONFIG.firebaseConfig.apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || ''
+}
+
+refreshConfig()

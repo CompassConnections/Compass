@@ -1,19 +1,21 @@
-import { Row } from '../layout/row'
+import {Row} from '../layout/row'
 import clsx from 'clsx'
-import { Socials, SITE_ORDER, getSocialUrl } from 'common/socials'
-import { sortBy } from 'lodash'
-import { SocialIcon } from './social'
+import {getSocialUrl, SITE_ORDER, Socials} from 'common/socials'
+import {sortBy} from 'lodash'
+import {SocialIcon} from './social'
 
 export function UserHandles(props: { links: Socials; className?: string }) {
-  const { links, className } = props
+  const {links, className} = props
 
   const display = sortBy(
     Object.entries(links),
     ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as any)
   ).map(([platform, label]) => {
+    let renderedLabel = label
+    if (platform === 'okcupid') renderedLabel = 'OkCupid'
     return {
       platform,
-      label,
+      label: renderedLabel,
       url: getSocialUrl(platform as any, label),
     }
   })
@@ -25,7 +27,7 @@ export function UserHandles(props: { links: Socials; className?: string }) {
         className
       )}
     >
-      {display.map(({ platform, label, url }) => (
+      {display.map(({platform, label, url}) => (
         <a key={platform} target="_blank" href={url}>
           <Row className="items-center gap-1">
             <SocialIcon

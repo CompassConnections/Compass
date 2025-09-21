@@ -13,6 +13,8 @@ export const SITE_ORDER = [
   'linkedin',
   'facebook',
   'patreon',
+  'okcupid',
+  'calendly',
   'spotify',
 ] as const
 
@@ -32,8 +34,19 @@ const stripper: { [key in Site]: (input: string) => string } = {
       .replace(/^@/, '')
       .replace(/\/$/, ''),
   discord: (s) => s,
-  paypal: (s) => s,
-  patreon: (s) => s,
+  paypal: (s) =>
+    s
+      .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?paypal\.com\/paypalme\//, '')
+      .replace(/\/$/, ''),
+  patreon: (s) =>
+    s
+      .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?patreon\.com\//, '')
+      .replace(/\/$/, ''),
+  okcupid: (s) => s.replace(/^(https?:\/\/)/, ''),
+  calendly: (s) =>
+    s
+      .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?calendly\.com\//, '')
+      .replace(/\/$/, ''),
   bluesky: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?bsky\.app\/profile\//, '')
@@ -71,6 +84,7 @@ export const getSocialUrl = (site: Site, handle: string) =>
 
 const urler: { [key in Site]: (handle: string) => string } = {
   site: (s) => (s.startsWith('http') ? s : `https://${s}`),
+  okcupid: (s) => (s.startsWith('http') ? s : `https://${s}`),
   x: (s) => `https://x.com/${s}`,
   discord: (s) =>
     (s.length === 17 || s.length === 18) && !isNaN(parseInt(s, 10))
@@ -86,7 +100,8 @@ const urler: { [key in Site]: (handle: string) => string } = {
   facebook: (s) => `https://facebook.com/${s}`,
   spotify: (s) => `https://open.spotify.com/user/${s}`,
   paypal: (s) => `https://paypal.com/paypalme/${s}`,
-  patreon: (s) => `https://patreon.com/user/${s}`,
+  patreon: (s) => `https://patreon.com/${s}`,
+  calendly: (s) => `https://calendly.com/${s}`,
 }
 
 export const PLATFORM_LABELS: { [key in Site]: string } = {
@@ -103,4 +118,6 @@ export const PLATFORM_LABELS: { [key in Site]: string } = {
   spotify: 'Spotify',
   paypal: 'Paypal',
   patreon: 'Patreon',
+  okcupid: 'OkCupid',
+  calendly: 'Calendly',
 }

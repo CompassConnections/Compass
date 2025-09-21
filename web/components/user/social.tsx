@@ -1,7 +1,7 @@
 import { LinkIcon } from '@heroicons/react/solid'
 import { Site } from 'common/socials'
 import { ReactNode } from 'react'
-import { LuBookmark } from 'react-icons/lu'
+import { LuBookmark, LuHeart } from 'react-icons/lu'
 import {
   TbBrandBluesky,
   TbBrandDiscord,
@@ -14,6 +14,7 @@ import {
   TbBrandPaypal,
   TbBrandSpotify,
   TbBrandX,
+  TbCalendar,
 } from 'react-icons/tb'
 
 export const PLATFORM_ICONS: {
@@ -32,6 +33,8 @@ export const PLATFORM_ICONS: {
   spotify: TbBrandSpotify,
   patreon: TbBrandPatreon,
   paypal: TbBrandPaypal,
+  okcupid: LuHeart,
+  calendly: TbCalendar,
 }
 
 export const SocialIcon = (props: {

@@ -29,7 +29,7 @@ type SecretId = (typeof secrets)[number]
 export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
   if (!ids.length && IS_LOCAL) return {}
 
-  console.log('Fetching secrets...')
+  // console.log('Fetching secrets...')
   let client: SecretManagerServiceClient
   if (credentials) {
     const projectId = credentials['project_id']

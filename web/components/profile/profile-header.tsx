@@ -60,7 +60,7 @@ export default function ProfileHeader(props: {
                 ) : (
                   <span className="font-semibold">{user.name}</span>
                 )}
-                , {profile.age}
+                {profile.age ? `, ${profile.age}` : ''}
               </span>
             </Row>
             <ProfilePrimaryInfo profile={profile}/>

@@ -17,16 +17,16 @@ export default function ProfilePrimaryInfo(props: { profile: Profile }) {
       : profile.country
   return (
     <Row className="text-ink-700 gap-4 text-sm">
-      <IconWithInfo
+      {profile.city && <IconWithInfo
         text={`${profile.city ?? ''}, ${stateOrCountry ?? ''}`}
         icon={<IoLocationOutline className="h-4 w-4" />}
-      />
-      <IconWithInfo
+      />}
+      {profile.gender && <IconWithInfo
         text={capitalize(convertGender(profile.gender as Gender))}
         icon={
           <GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />
         }
-      />
+      />}
       {profile.height_in_inches != null && (
         <IconWithInfo
           text={formatProfileValue('height_in_inches', profile.height_in_inches)}

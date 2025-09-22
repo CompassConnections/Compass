@@ -1,22 +1,22 @@
-import { RadioGroup } from '@headlessui/react'
-import { UserIcon } from '@heroicons/react/solid'
+import {RadioGroup} from '@headlessui/react'
+import {UserIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { Row as rowFor, run } from 'common/supabase/utils'
-import { User } from 'common/user'
-import { shortenNumber } from 'common/util/format'
-import { sortBy } from 'lodash'
-import { useState } from 'react'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { SCROLLABLE_MODAL_CLASS } from 'web/components/layout/modal'
-import { Row } from 'web/components/layout/row'
-import { ExpandingInput } from 'web/components/widgets/expanding-input'
-import { RadioToggleGroup } from 'web/components/widgets/radio-toggle-group'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { QuestionWithCountType } from 'web/hooks/use-questions'
-import { track } from 'web/lib/service/analytics'
-import { db } from 'web/lib/supabase/db'
-import { filterKeys } from '../questions-form'
+import {Row as rowFor, run} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {shortenNumber} from 'common/util/format'
+import {sortBy} from 'lodash'
+import {useState} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {ExpandingInput} from 'web/components/widgets/expanding-input'
+import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
+import {filterKeys} from '../questions-form'
 import toast from "react-hot-toast";
 
 export type CompatibilityAnswerSubmitType = Omit<
@@ -72,7 +72,25 @@ export const submitCompatibilityAnswer = async (
     console.error('Failed to upsert love_compatibility_answers:', error);
     toast.error('Error submitting. Try again?')
   }
+}
 
+export const deleteCompatibilityAnswer = async (
+  id: number,
+  userId: string
+) => {
+  if (!userId || !id) return
+  try {
+    await run(
+      db
+        .from('love_compatibility_answers')
+        .delete()
+        .match({id: id, creator_id: userId})
+    )
+    await track('delete compatibility question', {id});
+  } catch (error) {
+    console.error('Failed to delete prompt answer:', error);
+    toast.error('Error deleting. Try again?')
+  }
 }
 
 function getEmptyAnswer(userId: string, questionId: number) {
@@ -85,6 +103,7 @@ function getEmptyAnswer(userId: string, questionId: number) {
     importance: -1,
   }
 }
+
 export function AnswerCompatibilityQuestionContent(props: {
   compatibilityQuestion: QuestionWithCountType
   user: User
@@ -108,7 +127,7 @@ export function AnswerCompatibilityQuestionContent(props: {
   } = props
   const [answer, setAnswer] = useState<CompatibilityAnswerSubmitType>(
     (props.answer as CompatibilityAnswerSubmitType) ??
-      getEmptyAnswer(user.id, compatibilityQuestion.id)
+    getEmptyAnswer(user.id, compatibilityQuestion.id)
   )
 
   const [loading, setLoading] = useState(false)
@@ -158,7 +177,7 @@ export function AnswerCompatibilityQuestionContent(props: {
             >
               {shortenedPopularity}
             </Tooltip>
-            <UserIcon className="h-4 w-4" />
+            <UserIcon className="h-4 w-4"/>
           </Row>
         )}
       </Col>
@@ -173,7 +192,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           <SelectAnswer
             value={answer.multiple_choice}
             setValue={(choice) =>
-              setAnswer({ ...answer, multiple_choice: choice })
+              setAnswer({...answer, multiple_choice: choice})
             }
             options={optionOrder}
           />
@@ -183,7 +202,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           <MultiSelectAnswers
             values={answer.pref_choices ?? []}
             setValue={(choice) =>
-              setAnswer({ ...answer, pref_choices: choice })
+              setAnswer({...answer, pref_choices: choice})
             }
             options={optionOrder}
           />
@@ -194,7 +213,7 @@ export function AnswerCompatibilityQuestionContent(props: {
             currentChoice={answer.importance ?? -1}
             choicesMap={IMPORTANCE_CHOICES}
             setChoice={(choice: number) =>
-              setAnswer({ ...answer, importance: choice })
+              setAnswer({...answer, importance: choice})
             }
             indexColors={IMPORTANCE_RADIO_COLORS}
           />
@@ -208,14 +227,14 @@ export function AnswerCompatibilityQuestionContent(props: {
             rows={3}
             value={answer.explanation ?? ''}
             onChange={(e) =>
-              setAnswer({ ...answer, explanation: e.target.value })
+              setAnswer({...answer, explanation: e.target.value})
             }
           />
         </Col>
       </Col>
       <Row className="w-full justify-between gap-4">
         {noSkip ? (
-          <div />
+          <div/>
         ) : (
           <button
             disabled={loading || skipLoading}
@@ -252,15 +271,15 @@ export function AnswerCompatibilityQuestionContent(props: {
           loading={loading}
           onClick={() => {
             setLoading(true)
-              submitCompatibilityAnswer(answer)
-                .then(() => {
-                  if (isLastQuestion) {
-                    onSubmit()
-                  } else if (onNext) {
-                    onNext()
-                  }
-                })
-                .finally(() => setLoading(false))
+            submitCompatibilityAnswer(answer)
+              .then(() => {
+                if (isLastQuestion) {
+                  onSubmit()
+                } else if (onNext) {
+                  onNext()
+                }
+              })
+              .finally(() => setLoading(false))
           }}
         >
           {isLastQuestion ? 'Finish' : 'Next'}
@@ -275,7 +294,7 @@ export const SelectAnswer = (props: {
   setValue: (value: number) => void
   options: string[]
 }) => {
-  const { value, setValue, options } = props
+  const {value, setValue, options} = props
   return (
     <RadioGroup
       className={
@@ -288,7 +307,7 @@ export const SelectAnswer = (props: {
         <RadioGroup.Option
           key={i}
           value={i}
-          className={({ disabled }) =>
+          className={({disabled}) =>
             clsx(
               disabled
                 ? 'text-ink-300 aria-checked:bg-ink-300 aria-checked:text-ink-0 cursor-not-allowed'
@@ -310,7 +329,7 @@ export const MultiSelectAnswers = (props: {
   setValue: (value: number[]) => void
   options: string[]
 }) => {
-  const { values, setValue, options } = props
+  const {values, setValue, options} = props
 
   return (
     <Col

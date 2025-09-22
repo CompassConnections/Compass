@@ -1,5 +1,5 @@
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
-import ProfileProfileHeader from 'web/components/profile/profile-profile-header'
+import ProfileHeader from 'web/components/profile/profile-header'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -16,7 +16,7 @@ import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import React from "react";
 
-export function ProfileProfile(props: {
+export function ProfileInfo(props: {
   profile: Profile
   user: User
   refreshProfile: () => void
@@ -63,7 +63,7 @@ export function ProfileProfile(props: {
 
   return (
     <>
-      <ProfileProfileHeader
+      <ProfileHeader
         user={user}
         profile={profile}
         simpleView={!!fromProfilePage}

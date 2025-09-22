@@ -1,52 +1,43 @@
-import { PencilIcon } from '@heroicons/react/outline'
-import {
-  getAnswerCompatibility,
-  getScoredAnswerCompatibility,
-} from 'common/love/compatibility-score'
-import { Profile } from 'common/love/profile'
-import { Row as rowFor } from 'common/supabase/utils'
-import { User } from 'common/user'
-import { partition, sortBy, keyBy } from 'lodash'
-import { useProfile } from 'web/hooks/use-profile'
+import {PencilIcon, TrashIcon} from '@heroicons/react/outline'
+import {getAnswerCompatibility, getScoredAnswerCompatibility,} from 'common/love/compatibility-score'
+import {Profile} from 'common/love/profile'
+import {Row as rowFor} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {keyBy, partition, sortBy} from 'lodash'
+import {useProfile} from 'web/hooks/use-profile'
 import {
   QuestionWithCountType,
   useCompatibilityQuestionsWithAnswerCount,
   useUserCompatibilityAnswers,
 } from 'web/hooks/use-questions'
-import { useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { Col } from 'web/components/layout/col'
-import {
-  MODAL_CLASS,
-  Modal,
-  SCROLLABLE_MODAL_CLASS,
-} from 'web/components/layout/modal'
-import { Row } from 'web/components/layout/row'
-import { Linkify } from 'web/components/widgets/linkify'
-import { Pagination } from 'web/components/widgets/pagination'
-import { db } from 'web/lib/supabase/db'
-import { Subtitle } from '../widgets/profile-subtitle'
-import { AddCompatibilityQuestionButton } from './add-compatibility-question-button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS,} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {Linkify} from 'web/components/widgets/linkify'
+import {Pagination} from 'web/components/widgets/pagination'
+import {db} from 'web/lib/supabase/db'
+import {Subtitle} from '../widgets/profile-subtitle'
+import {AddCompatibilityQuestionButton} from './add-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionButton,
   AnswerSkippedCompatibilityQuestionsButton,
 } from './answer-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionContent,
+  deleteCompatibilityAnswer,
   IMPORTANCE_CHOICES,
   IMPORTANCE_DISPLAY_COLORS,
 } from './answer-compatibility-question-content'
 import clsx from 'clsx'
-import { shortenName } from 'web/components/widgets/user-link'
-import {
-  PreferredList,
-  PreferredListNoComparison,
-} from './compatibility-question-preferred-list'
-import { useUser } from 'web/hooks/use-user'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { useIsLooking } from 'web/hooks/use-is-looking'
-import { DropdownButton } from '../filters/desktop-filters'
-import { buildArray } from 'common/util/array'
+import {shortenName} from 'web/components/widgets/user-link'
+import {PreferredList, PreferredListNoComparison,} from './compatibility-question-preferred-list'
+import {useUser} from 'web/hooks/use-user'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useIsLooking} from 'web/hooks/use-is-looking'
+import {DropdownButton} from '../filters/desktop-filters'
+import {buildArray} from 'common/util/array'
 
 const NUM_QUESTIONS_TO_SHOW = 8
 
@@ -69,7 +60,7 @@ function separateQuestionsArray(
     }
   })
 
-  return { skippedQuestions, answeredQuestions, otherQuestions }
+  return {skippedQuestions, answeredQuestions, otherQuestions}
 }
 
 type CompatibilitySort =
@@ -85,12 +76,12 @@ export function CompatibilityQuestionsDisplay(props: {
   fromSignup?: boolean
   fromProfilePage?: Profile
 }) {
-  const { isCurrentUser, user, fromSignup, fromProfilePage, profile } = props
+  const {isCurrentUser, user, fromSignup, fromProfilePage, profile} = props
 
-  const { refreshCompatibilityQuestions, compatibilityQuestions } =
+  const {refreshCompatibilityQuestions, compatibilityQuestions} =
     useCompatibilityQuestionsWithAnswerCount()
 
-  const { refreshCompatibilityAnswers, compatibilityAnswers } =
+  const {refreshCompatibilityAnswers, compatibilityAnswers} =
     useUserCompatibilityAnswers(user.id)
 
   const [skippedAnswers, answers] = partition(
@@ -106,7 +97,7 @@ export function CompatibilityQuestionsDisplay(props: {
     skippedAnswers.map((answer) => answer.question_id)
   )
 
-  const { skippedQuestions, answeredQuestions, otherQuestions } =
+  const {skippedQuestions, answeredQuestions, otherQuestions} =
     separateQuestionsArray(
       compatibilityQuestions,
       skippedAnswerQuestionIds,
@@ -126,7 +117,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const currentUser = useUser()
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
-  const { compatibilityAnswers: comparedAnswers } =
+  const {compatibilityAnswers: comparedAnswers} =
     useUserCompatibilityAnswers(comparedUserId)
   const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
 
@@ -206,9 +197,9 @@ export function CompatibilityQuestionsDisplay(props: {
                 </span>
               ) : (
                 <span className="text-ink-600 text-sm">
-                  Answer more questions to increase your compatibility scores—or
+                  Answer more questions to increase your compatibility scores—or{' '}
                 </span>
-              )}{' '}
+                )}
               <AddCompatibilityQuestionButton
                 refreshCompatibilityAll={refreshCompatibilityAll}
               />
@@ -269,7 +260,7 @@ function CompatibilitySortWidget(props: {
   fromProfilePage: Profile | undefined
   className?: string
 }) {
-  const { sort, setSort, user, fromProfilePage, className } = props
+  const {sort, setSort, user, fromProfilePage, className} = props
   const currentUser = useUser()
 
   const sortToDisplay = {
@@ -286,7 +277,7 @@ function CompatibilitySortWidget(props: {
     'their-important',
     'disagree',
     (!fromProfilePage || fromProfilePage.user_id === currentUser?.id) &&
-      'your-unanswered'
+    'your-unanswered'
   )
 
   return (
@@ -301,7 +292,7 @@ function CompatibilitySortWidget(props: {
       closeOnClick
       buttonClass={'!text-ink-600 !hover:!text-ink-600'}
       buttonContent={(open: boolean) => (
-        <DropdownButton content={sortToDisplay[sort]} open={open} />
+        <DropdownButton content={sortToDisplay[sort]} open={open}/>
       )}
       menuItemsClass={'bg-canvas-0'}
       menuWidth="w-48"
@@ -335,8 +326,8 @@ function CompatibilityAnswerBlock(props: {
   const comparedProfile = isCurrentUser
     ? null
     : !!fromProfilePage
-    ? fromProfilePage
-    : { ...currentProfile, user: currentUser }
+      ? fromProfilePage
+      : {...currentProfile, user: currentUser}
 
   if (
     !question ||
@@ -393,8 +384,15 @@ function CompatibilityAnswerBlock(props: {
                 items={[
                   {
                     name: 'Edit',
-                    icon: <PencilIcon className="h-5 w-5" />,
+                    icon: <PencilIcon className="h-5 w-5"/>,
                     onClick: () => setEditOpen(true),
+                  },
+                  {
+                    name: 'Delete',
+                    icon: <TrashIcon className="h-5 w-5"/>,
+                    onClick: () => {
+                      deleteCompatibilityAnswer(answer.id, user.id).then(() => refreshCompatibilityAll())
+                    },
                   },
                 ]}
                 closeOnClick
@@ -409,7 +407,7 @@ function CompatibilityAnswerBlock(props: {
       </Row>
       <Row className="px-2 -mt-4">
         {answer.explanation && (
-          <Linkify className="" text={answer.explanation} />
+          <Linkify className="" text={answer.explanation}/>
         )}
       </Row>
       {distinctPreferredAnswersText.length > 0 && (
@@ -509,6 +507,7 @@ function CompatibilityDisplay(props: {
         setAnswer2(res.data[0] ?? null)
       })
   }
+
   useEffect(() => {
     getComparedProfileAnswer()
   }, [])
@@ -527,7 +526,7 @@ function CompatibilityDisplay(props: {
   const answerCompatibility = answer2
     ? getAnswerCompatibility(answer1, answer2)
     : //getScoredAnswerCompatibility(answer1, answer2)
-      undefined
+    undefined
   const user1 = profile1.user
   const user2 = profile2.user
 
@@ -572,11 +571,11 @@ function CompatibilityDisplay(props: {
             <div className="text-ink-500 text-sm">
               {shortenName(user1.name)} marked this as{' '}
               <span className="font-semibold">
-                <ImportanceDisplay importance={answer1.importance} />
+                <ImportanceDisplay importance={answer1.importance}/>
               </span>
             </div>
             {!answer2 && (
-              <PreferredListNoComparison question={question} answer={answer1} />
+              <PreferredListNoComparison question={question} answer={answer1}/>
             )}
             {answer2 && (
               <>
@@ -597,7 +596,7 @@ function CompatibilityDisplay(props: {
                   {isCurrentUser ? 'You' : shortenName(user2.name)} marked this
                   as{' '}
                   <span className="font-semibold">
-                    <ImportanceDisplay importance={answer2.importance} />
+                    <ImportanceDisplay importance={answer2.importance}/>
                   </span>
                 </div>
                 <PreferredList
@@ -616,7 +615,7 @@ function CompatibilityDisplay(props: {
 }
 
 function ImportanceDisplay(props: { importance: number }) {
-  const { importance } = props
+  const {importance} = props
   return (
     <span className={clsx('w-fit')}>
       {getStringKeyFromNumValue(importance, IMPORTANCE_CHOICES)}
@@ -629,7 +628,7 @@ function ImportanceButton(props: {
   onClick: () => void
   className?: string
 }) {
-  const { importance, onClick, className } = props
+  const {importance, onClick, className} = props
   return (
     <button
       onClick={onClick}
@@ -641,10 +640,11 @@ function ImportanceButton(props: {
         className
       )}
     >
-      <ImportanceDisplay importance={importance} />
+      <ImportanceDisplay importance={importance}/>
     </button>
   )
 }
+
 function getStringKeyFromNumValue(
   value: number,
   map: Record<string, number>

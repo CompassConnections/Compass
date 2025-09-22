@@ -21,7 +21,7 @@ import {api, updateProfile} from 'web/lib/api'
 import React, {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 
-export default function ProfileProfileHeader(props: {
+export default function ProfileHeader(props: {
   user: User
   profile: Profile
   simpleView?: boolean

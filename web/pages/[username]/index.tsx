@@ -15,7 +15,7 @@ import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {getLoveOgImageUrl} from 'common/love/og-image'
 import {getProfileRow, ProfileRow} from 'common/love/profile'
 import {db} from 'web/lib/supabase/db'
-import {ProfileProfile} from 'web/components/profile/profile-profile'
+import {ProfileInfo} from 'web/components/profile/profile-info'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {type GetStaticProps} from 'next'
@@ -141,7 +141,7 @@ function UserPageInner(props: ActiveUserPageProps) {
       {currentUser !== undefined && (
         <Col className={'gap-4'}>
           {profile ? (
-            <ProfileProfile
+            <ProfileInfo
               key={profile.user_id}
               profile={profile}
               user={user}

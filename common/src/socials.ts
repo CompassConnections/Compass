@@ -43,10 +43,7 @@ const stripper: { [key in Site]: (input: string) => string } = {
       .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?patreon\.com\//, '')
       .replace(/\/$/, ''),
   okcupid: (s) => s.replace(/^(https?:\/\/)/, ''),
-  calendly: (s) =>
-    s
-      .replace(/^(https?:\/\/)?(www\.)?(\w+\.)?calendly\.com\//, '')
-      .replace(/\/$/, ''),
+  calendly: (s) => s,
   bluesky: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?bsky\.app\/profile\//, '')
@@ -101,7 +98,7 @@ const urler: { [key in Site]: (handle: string) => string } = {
   spotify: (s) => `https://open.spotify.com/user/${s}`,
   paypal: (s) => `https://paypal.com/paypalme/${s}`,
   patreon: (s) => `https://patreon.com/${s}`,
-  calendly: (s) => `https://calendly.com/${s}`,
+  calendly: (s) => (s.startsWith('http') ? s : `https://${s}`),
 }
 
 export const PLATFORM_LABELS: { [key in Site]: string } = {

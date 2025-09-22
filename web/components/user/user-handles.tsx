@@ -4,6 +4,11 @@ import {getSocialUrl, SITE_ORDER, Socials} from 'common/socials'
 import {sortBy} from 'lodash'
 import {SocialIcon} from './social'
 
+const LABEL_TO_RENDER: Record<string, string> = {
+  okcupid: 'OkCupid',
+  calendly: 'Calendly',
+}
+
 export function UserHandles(props: { links: Socials; className?: string }) {
   const {links, className} = props
 
@@ -11,8 +16,7 @@ export function UserHandles(props: { links: Socials; className?: string }) {
     Object.entries(links),
     ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as any)
   ).map(([platform, label]) => {
-    let renderedLabel = label
-    if (platform === 'okcupid') renderedLabel = 'OkCupid'
+    const renderedLabel = LABEL_TO_RENDER[platform] || label
     return {
       platform,
       label: renderedLabel,

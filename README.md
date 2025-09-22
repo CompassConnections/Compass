@@ -129,6 +129,8 @@ yarn dev
 
 Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles; you should see a few synthetic profiles.
 
+Note: it's normal if page loading locally is much slower than the deployed version. It can take up to 10 seconds, it would be great to improve that though!
+
 ### Contributing
 
 Now you can start contributing by making changes and submitting pull requests!

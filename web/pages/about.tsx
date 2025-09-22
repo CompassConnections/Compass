@@ -60,7 +60,9 @@ export default function About() {
 
                 <AboutBlock
                   title="Democratic"
-                  text={<span className="customlink">Governed by the community, while ensuring no drift through our <Link href="/constitution">constitution</Link>.</span>}
+                  text={<span
+                    className="customlink">Governed by the community, while ensuring no drift through our <Link
+                    href="/constitution">constitution</Link>.</span>}
                 />
 
                 <AboutBlock
@@ -110,7 +112,8 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
-                  <p className="mb-4 text-center customlink"><Link href="/support">Support</Link> our not-for-profit infrastructure.</p>
+                  <p className="mb-4 text-center customlink"><Link href="/support">Support</Link> our not-for-profit
+                    infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                     <a
                       href="https://patreon.com/CompassMeet"
@@ -127,15 +130,22 @@ export default function About() {
                       Donate on PayPal
                     </a>
                     <a
-                      href="https://github.com/sponsors/CompassConnections"
+                      href="https://ko-fi.com/compassconnections"
                       className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"
                       target="_blank" rel="noopener noreferrer"
                     >
-                      Donate on GitHub
+                      Donate on Ko-fi
                     </a>
-                    <span className="text-sm text-gray-400 mt-2 text-center block">
-                    GitHub has increased transparency,<br/>but requires an account.
-                  </span>
+                    {/*<a*/}
+                    {/*  href="https://github.com/sponsors/CompassConnections"*/}
+                    {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"*/}
+                    {/*  target="_blank" rel="noopener noreferrer"*/}
+                    {/*>*/}
+                    {/*  Donate on GitHub*/}
+                    {/*</a>*/}
+                    {/*<span className="text-sm text-gray-400 mt-2 text-center block">*/}
+                    {/*GitHub has increased transparency,<br/>but requires an account.*/}
+                    {/*</span>*/}
                   </div>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center md:col-span-2">

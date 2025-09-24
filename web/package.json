@@ -55,6 +55,7 @@
     "react-international-phone": "4.2.6",
     "react-masonry-css": "1.0.16",
     "react-popper": "2.3.0",
+    "recharts": "3.2.1",
     "stability-client": "1.6.1",
     "tippy.js": "6.3.7"
   },

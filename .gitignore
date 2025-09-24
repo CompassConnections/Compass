@@ -81,3 +81,6 @@ email-preview
 *.rar
 /favicon_color.ico
 /backend/shared/src/googleApplicationCredentials-dev.json
+*.tfstate
+*.tfstate.backup
+*.terraform

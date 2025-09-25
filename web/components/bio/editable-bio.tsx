@@ -23,6 +23,10 @@ Write a clear and engaging bio to help others understand who you are and the con
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `
 
+export function CharLimitText() {
+  return <p>Profiles with fewer than 250 characters will be hidden by default from the profile grid — write a meaningful bio so others can find you through keyword search and connect intentionally.</p>
+}
+
 export function BioTips() {
   const [showMoreInfo, setShowMoreInfo] = useState(false)
 
@@ -81,6 +85,7 @@ export function EditableBio(props: {
 
   return (
     <Col className="relative w-full">
+      <CharLimitText/>
       <BioTips/>
       <TextEditor editor={editor} />
 
@@ -120,6 +125,7 @@ export function SignupBio(props: {
 
   return (
     <Col className="relative w-full">
+      <CharLimitText/>
       <BioTips/>
       <TextEditor
         editor={editor}

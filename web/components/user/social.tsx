@@ -1,7 +1,7 @@
-import { LinkIcon } from '@heroicons/react/solid'
-import { Site } from 'common/socials'
-import { ReactNode } from 'react'
-import { LuBookmark, LuHeart } from 'react-icons/lu'
+import {DocumentReportIcon, LinkIcon} from '@heroicons/react/solid'
+import {Site} from 'common/socials'
+import {ReactNode} from 'react'
+import {LuBookmark, LuHandshake, LuHeart, LuUsers} from 'react-icons/lu'
 import {
   TbBrandBluesky,
   TbBrandDiscord,
@@ -34,6 +34,10 @@ export const PLATFORM_ICONS: {
   patreon: TbBrandPatreon,
   paypal: TbBrandPaypal,
   okcupid: LuHeart,
+  datingdoc: LuHeart,
+  friendshipdoc: LuUsers,
+  workdoc: DocumentReportIcon,
+  connectiondoc: LuHandshake,
   calendly: TbCalendar,
 }
 
@@ -43,7 +47,7 @@ export const SocialIcon = (props: {
   size?: number;
   color?: string;
 }) => {
-  const { site, ...rest } = props
+  const {site, ...rest} = props
   const Icon = PLATFORM_ICONS[site as Site] || PLATFORM_ICONS.site
 
   return <Icon {...rest} />

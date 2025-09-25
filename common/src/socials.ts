@@ -15,6 +15,10 @@ export const SITE_ORDER = [
   'patreon',
   'okcupid',
   'calendly',
+  'datingdoc',
+  'friendshipdoc',
+  'connectiondoc',
+  'workdoc',
   'spotify',
 ] as const
 
@@ -44,6 +48,10 @@ const stripper: { [key in Site]: (input: string) => string } = {
       .replace(/\/$/, ''),
   okcupid: (s) => s.replace(/^(https?:\/\/)/, ''),
   calendly: (s) => s,
+  datingdoc: (s) => s,
+  friendshipdoc: (s) => s,
+  workdoc: (s) => s,
+  connectiondoc: (s) => s,
   bluesky: (s) =>
     s
       .replace(/^(https?:\/\/)?(www\.)?bsky\.app\/profile\//, '')
@@ -99,6 +107,10 @@ const urler: { [key in Site]: (handle: string) => string } = {
   paypal: (s) => `https://paypal.com/paypalme/${s}`,
   patreon: (s) => `https://patreon.com/${s}`,
   calendly: (s) => (s.startsWith('http') ? s : `https://${s}`),
+  datingdoc: (s) => (s.startsWith('http') ? s : `https://${s}`),
+  friendshipdoc: (s) => (s.startsWith('http') ? s : `https://${s}`),
+  workdoc: (s) => (s.startsWith('http') ? s : `https://${s}`),
+  connectiondoc: (s) => (s.startsWith('http') ? s : `https://${s}`),
 }
 
 export const PLATFORM_LABELS: { [key in Site]: string } = {
@@ -117,4 +129,8 @@ export const PLATFORM_LABELS: { [key in Site]: string } = {
   patreon: 'Patreon',
   okcupid: 'OkCupid',
   calendly: 'Calendly',
+  datingdoc: 'Dating Doc',
+  friendshipdoc: 'Friendship Doc',
+  workdoc: 'Work Doc',
+  connectiondoc: 'Connection Doc',
 }

@@ -1,22 +1,26 @@
 import {Row} from '../layout/row'
 import clsx from 'clsx'
-import {getSocialUrl, SITE_ORDER, Socials} from 'common/socials'
+import {getSocialUrl, PLATFORM_LABELS, Site, SITE_ORDER, Socials} from 'common/socials'
 import {sortBy} from 'lodash'
 import {SocialIcon} from './social'
 
-const LABEL_TO_RENDER: Record<string, string> = {
-  okcupid: 'OkCupid',
-  calendly: 'Calendly',
-}
+const LABELS_TO_RENDER = [
+  'okcupid',
+  'calendly',
+  'datingdoc',
+  'friendshipdoc',
+  'connectiondoc',
+  'workdoc',
+]
 
 export function UserHandles(props: { links: Socials; className?: string }) {
   const {links, className} = props
 
   const display = sortBy(
     Object.entries(links),
-    ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as any)
+    ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as Site)
   ).map(([platform, label]) => {
-    const renderedLabel = LABEL_TO_RENDER[platform] || label
+    const renderedLabel: string = LABELS_TO_RENDER.includes(platform) ? PLATFORM_LABELS[platform as Site] : label
     return {
       platform,
       label: renderedLabel,

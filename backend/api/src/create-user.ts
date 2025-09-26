@@ -7,12 +7,12 @@ import {APIError, APIHandler} from './helpers/endpoint'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
 import {removeUndefinedProps} from 'common/util/object'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
-import {getStorage} from 'firebase-admin/storage'
-import {ENV_CONFIG, RESERVED_PATHS} from 'common/envs/constants'
+import {RESERVED_PATHS} from 'common/envs/constants'
 import {getUser, getUserByUsername, log} from 'shared/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
+import {getBucket} from "shared/firebase-utils";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
@@ -50,7 +50,7 @@ export const createUser: APIHandler<'create-user'> = async (
   const rawName = fbUser.displayName || emailName || 'User' + randomString(4)
   const name = cleanDisplayName(rawName)
 
-  const bucket = getStorage().bucket(getStorageBucketId())
+  const bucket = getBucket()
   const avatarUrl = fbUser.photoURL
     ? fbUser.photoURL
     : await generateAvatarUrl(auth.uid, name, bucket)
@@ -133,10 +133,6 @@ export const createUser: APIHandler<'create-user'> = async (
     },
     continue: continuation,
   }
-}
-
-function getStorageBucketId() {
-  return ENV_CONFIG.firebaseConfig.storageBucket
 }
 
 // Automatically ban users with these device tokens or ip addresses.

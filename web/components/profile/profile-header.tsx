@@ -1,6 +1,7 @@
 import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Router from 'next/router'
+import router from 'next/router'
 import Link from 'next/link'
 import {User} from 'common/user'
 import {Button} from 'web/components/buttons/button'
@@ -17,9 +18,11 @@ import {Profile} from 'common/love/profile'
 import {useUser} from 'web/hooks/use-user'
 import {linkClass} from 'web/components/widgets/site-link'
 import {StarButton} from '../widgets/star-button'
-import {api, updateProfile} from 'web/lib/api'
+import {updateProfile} from 'web/lib/api'
 import React, {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
+import {deleteAccount} from "web/lib/util/delete";
+import toast from "react-hot-toast";
 
 export default function ProfileHeader(props: {
   user: User
@@ -110,9 +113,23 @@ export default function ProfileHeader(props: {
                       'Are you sure you want to delete your profile? This cannot be undone.'
                     )
                     if (confirmed) {
-                      track('delete love profile')
-                      await api('me/delete', {username: user.username})
-                      window.location.reload()
+                      toast
+                        .promise(deleteAccount(user.username), {
+                          loading: 'Deleting account...',
+                          success: () => {
+                            router.push('/')
+                            return 'Your account has been deleted.'
+                          },
+                          error: () => {
+                            return 'Failed to delete account.'
+                          },
+                        })
+                        .then(() => {
+                          // return true
+                        })
+                        .catch(() => {
+                          // return false
+                        })
                     }
                   },
                 },

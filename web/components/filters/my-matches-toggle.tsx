@@ -13,7 +13,7 @@ export function MyMatchesToggle(props: {
     return <></>
   }
 
-  const label = 'Your matches'
+  const label = 'Your filters'
 
   return (
     <Row className={clsx('mr-2 items-center', on && 'font-semibold')}>

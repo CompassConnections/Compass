@@ -1,21 +1,15 @@
-import { TrashIcon } from '@heroicons/react/solid'
+import {TrashIcon} from '@heroicons/react/solid'
 import router from 'next/router'
-import { useState } from 'react'
+import {useState} from 'react'
 import toast from 'react-hot-toast'
-import { auth } from 'web/lib/firebase/users'
-import { ConfirmationButton } from '../buttons/confirmation-button'
-import { Col } from '../layout/col'
-import { Input } from '../widgets/input'
-import { Title } from '../widgets/title'
-import { api } from 'web/lib/api'
+import {ConfirmationButton} from '../buttons/confirmation-button'
+import {Col} from '../layout/col'
+import {Input} from '../widgets/input'
+import {Title} from '../widgets/title'
+import {deleteAccount} from "web/lib/util/delete";
 
 export function DeleteYourselfButton(props: { username: string }) {
-  const { username } = props
-
-  const deleteAccount = async () => {
-    await api('me/delete', { username })
-    await auth.signOut()
-  }
+  const {username} = props
 
   const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState('')
 
@@ -24,7 +18,7 @@ export function DeleteYourselfButton(props: { username: string }) {
       openModalBtn={{
         className: 'p-2',
         label: 'Permanently delete this account',
-        icon: <TrashIcon className="mr-1 h-5 w-5" />,
+        icon: <TrashIcon className="mr-1 h-5 w-5"/>,
         color: 'red',
       }}
       submitBtn={{
@@ -35,14 +29,14 @@ export function DeleteYourselfButton(props: { username: string }) {
       onSubmitWithSuccess={async () => {
         if (deleteAccountConfirmation == 'delete my account') {
           toast
-            .promise(deleteAccount(), {
+            .promise(deleteAccount(username), {
               loading: 'Deleting account...',
               success: () => {
                 router.push('/')
-                return 'Account deleted'
+                return 'Your account has been deleted.'
               },
               error: () => {
-                return 'Failed to delete account'
+                return 'Failed to delete account.'
               },
             })
             .then(() => {

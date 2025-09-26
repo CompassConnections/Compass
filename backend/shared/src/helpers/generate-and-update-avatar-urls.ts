@@ -1,7 +1,5 @@
-import { Storage } from 'firebase-admin/storage'
-import { DOMAIN } from 'common/envs/constants'
-
-type Bucket = ReturnType<InstanceType<typeof Storage>['bucket']>
+import {DOMAIN} from 'common/envs/constants'
+import {Bucket} from "shared/firebase-utils";
 
 export const generateAvatarUrl = async (
   userId: string,
@@ -44,7 +42,7 @@ async function upload(userId: string, buffer: Buffer, bucket: Bucket) {
   await file.save(buffer, {
     private: false,
     public: true,
-    metadata: { contentType: 'image/png' },
+    metadata: {contentType: 'image/png'},
   })
   return `https://storage.googleapis.com/${bucket.cloudStorageURI.hostname}/${filename}`
 }

@@ -130,3 +130,7 @@ export const RESERVED_PATHS = [
   'web',
   'welcome',
 ]
+
+export function getStorageBucketId() {
+  return ENV_CONFIG.firebaseConfig.storageBucket
+}

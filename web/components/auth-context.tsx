@@ -1,24 +1,19 @@
 'use client'
-import { createContext, ReactNode, useEffect, useState } from 'react'
-import { pickBy } from 'lodash'
-import { onIdTokenChanged, User as FirebaseUser } from 'firebase/auth'
-import { auth } from 'web/lib/firebase/users'
-import { api } from 'web/lib/api'
-import { randomString } from 'common/util/random'
-import { useStateCheckEquality } from 'web/hooks/use-state-check-equality'
-import { AUTH_COOKIE_NAME, TEN_YEARS_SECS } from 'common/envs/constants'
-import { getCookie, setCookie } from 'web/lib/util/cookie'
-import {
-  type PrivateUser,
-  type User,
-  type UserAndPrivateUser,
-} from 'common/user'
-import { safeLocalStorage } from 'web/lib/util/local'
-import { updateSupabaseAuth } from 'web/lib/supabase/db'
-import { useEffectCheckEquality } from 'web/hooks/use-effect-check-equality'
-import { getPrivateUserSafe, getUserSafe } from 'web/lib/supabase/users'
-import { useWebsocketPrivateUser, useWebsocketUser } from 'web/hooks/use-user'
-import { identifyUser, setUserProperty } from 'web/lib/service/analytics'
+import {createContext, ReactNode, useEffect, useState} from 'react'
+import {pickBy} from 'lodash'
+import {onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
+import {auth} from 'web/lib/firebase/users'
+import {api} from 'web/lib/api'
+import {randomString} from 'common/util/random'
+import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
+import {AUTH_COOKIE_NAME, TEN_YEARS_SECS} from 'common/envs/constants'
+import {getCookie, setCookie} from 'web/lib/util/cookie'
+import {type PrivateUser, type User, type UserAndPrivateUser,} from 'common/user'
+import {safeLocalStorage} from 'web/lib/util/local'
+import {useEffectCheckEquality} from 'web/hooks/use-effect-check-equality'
+import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
+import {useWebsocketPrivateUser, useWebsocketUser} from 'web/hooks/use-user'
+import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
 
 // Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
@@ -70,13 +65,23 @@ const setUserCookie = (data: object | undefined) => {
   ])
 }
 
+export const clearUserCookie = () => {
+  setCookie(AUTH_COOKIE_NAME, '', [
+    ['path', '/'],
+    ['max-age', '0'],
+    ['samesite', 'lax'],
+    ['secure'],
+  ])
+}
+
+
 export const AuthContext = createContext<AuthUser>(undefined)
 
 export function AuthProvider(props: {
   children: ReactNode
   serverUser?: AuthUser
 }) {
-  const { children, serverUser } = props
+  const {children, serverUser} = props
 
   const [user, setUser] = useStateCheckEquality<User | undefined | null>(
     serverUser ? serverUser.user : serverUser
@@ -89,8 +94,8 @@ export function AuthProvider(props: {
   const authUser = !user
     ? user
     : !privateUser
-    ? privateUser
-    : { user, privateUser, authLoaded }
+      ? privateUser
+      : {user, privateUser, authLoaded}
 
   useEffect(() => {
     if (serverUser === undefined) {

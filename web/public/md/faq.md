@@ -52,10 +52,11 @@ Supported entirely by **donations**, not by selling your data or attention.
 
 ### How do you sustain Compass without ads or subscriptions?
 
-Through **donations and contributions from the community**. Options include:
+Through **[donations](/support) and contributions from the community**. Options include:
 
 * Patreon
 * PayPal
+* Ko-fi
 * GitHub Sponsors
 * Sharing ideas, feedback, or code
 

@@ -1,14 +1,15 @@
-import {User} from "common/user";
-
-export const sendDiscordNewUser = async (user: User) => {
-  const webhookUrl = process.env.DISCORD_WEBHOOK_NEW_USERS
+export const sendDiscordMessage = async (content: string, channel: string) => {
+  const webhookUrl = {
+    members: process.env.DISCORD_WEBHOOK_MEMBERS,
+    general: process.env.DISCORD_WEBHOOK_GENERAL,
+  }[channel]
 
   if (!webhookUrl) return
 
   const response = await fetch(webhookUrl!, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({content: `**${user.name}** just created a profile at https://www.compassmeet.com/${user.username}`}),
+    body: JSON.stringify({content}),
   })
 
   if (!response.ok) {

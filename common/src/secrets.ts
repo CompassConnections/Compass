@@ -18,7 +18,8 @@ export const secrets = (
     'RESEND_KEY',
     'COMPASS_API_KEY',
     'NEXT_PUBLIC_FIREBASE_API_KEY',
-    'DISCORD_WEBHOOK_NEW_USERS',
+    'DISCORD_WEBHOOK_MEMBERS',
+    'DISCORD_WEBHOOK_GENERAL',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

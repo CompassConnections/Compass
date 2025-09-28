@@ -13,7 +13,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {getBucket} from "shared/firebase-utils";
-import {sendDiscordNewUser} from "common/discord/core";
+import {sendDiscordMessage} from "common/discord/core";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
@@ -130,9 +130,35 @@ export const createUser: APIHandler<'create-user'> = async (
       console.log('Failed to track create profile', e)
     }
     try {
-      await sendDiscordNewUser(user)
+      await sendDiscordMessage(
+        `**${user.name}** just created a profile at https://www.compassmeet.com/${user.username}`,
+        'members',
+      )
     } catch (e) {
       console.log('Failed to send discord new user', e)
+    }
+    try {
+      const nProfiles = await pg.one<number>(
+        `SELECT count(*) FROM users`,
+        [],
+        (r) => Number(r.count)
+      )
+
+      const isMilestone = (n: number) => {
+        return (
+          [15, 20, 30, 40].includes(n) || // early milestones
+          n % 50 === 0
+        )
+      }
+      if (isMilestone(nProfiles)) {
+        await sendDiscordMessage(
+          `We just reached **${nProfiles}** total profiles! 🎉`,
+          'general',
+          )
+      }
+
+    } catch (e) {
+      console.log('Failed to send discord user milestone', e)
     }
   }
 

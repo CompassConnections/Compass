@@ -13,6 +13,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {getBucket} from "shared/firebase-utils";
+import {sendDiscordNewUser} from "common/discord/core";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
@@ -123,7 +124,16 @@ export const createUser: APIHandler<'create-user'> = async (
   log('created user ', {username: user.username, firebaseId: auth.uid})
 
   const continuation = async () => {
-    await track(auth.uid, 'create profile', {username: user.username})
+    try {
+      await track(auth.uid, 'create profile', {username: user.username})
+    } catch (e) {
+      console.log('Failed to track create profile', e)
+    }
+    try {
+      await sendDiscordNewUser(user)
+    } catch (e) {
+      console.log('Failed to send discord new user', e)
+    }
   }
 
   return {

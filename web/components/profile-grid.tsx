@@ -87,7 +87,6 @@ function ProfilePreview(props: {
   const bio = profile.bio as JSONContent;
 
   if (bio && bio.content) {
-    // Convert heading and list to paragraph
     bio.content = bio.content?.map(c => {
       if (c.type === 'heading' || c.type === 'list') {
         return {

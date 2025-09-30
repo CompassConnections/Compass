@@ -84,7 +84,7 @@ function ProfilePreview(props: {
   const {user} = profile
   // const currentUser = useUser()
 
-  let bio = profile.bio as JSONContent;
+  const bio = profile.bio as JSONContent;
 
   if (bio && bio.content) {
     // Convert heading and list to paragraph

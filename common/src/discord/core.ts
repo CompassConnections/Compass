@@ -1,8 +1,12 @@
+import {IS_DEV} from "common/envs/constants";
+
 export const sendDiscordMessage = async (content: string, channel: string) => {
-  const webhookUrl = {
+  let webhookUrl = {
     members: process.env.DISCORD_WEBHOOK_MEMBERS,
     general: process.env.DISCORD_WEBHOOK_GENERAL,
   }[channel]
+
+  if (IS_DEV) webhookUrl = process.env.DISCORD_WEBHOOK_DEV
 
   if (!webhookUrl) return
 

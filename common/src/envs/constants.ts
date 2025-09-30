@@ -16,6 +16,8 @@ export function isModId(id: string) {
 }
 
 export const ENV = isProd() ? 'prod' : 'dev'
+export const IS_PROD = ENV === 'prod'
+export const IS_DEV = ENV === 'dev'
 
 export const LOCAL_WEB_DOMAIN = 'localhost:3000';
 export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';

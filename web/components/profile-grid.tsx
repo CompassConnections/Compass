@@ -87,15 +87,26 @@ function ProfilePreview(props: {
   const bio = profile.bio as JSONContent;
 
   if (bio && bio.content) {
-    bio.content = bio.content?.map(c => {
-      if (c.type === 'heading' || c.type === 'list') {
-        return {
+    const newBio = []
+    let i = 0
+    for (const c of bio.content) {
+      if ((c?.content?.length || 0) == 0) continue
+      if (c.type === 'paragraph') {
+        newBio.push(c)
+      } else if (['heading'].includes(c.type ?? '')) {
+        newBio.push({
           type: 'paragraph',
           content: c.content
-        }
+        })
+      } else if (c.type === 'image') {
+        continue
+      } else {
+        newBio.push(c)
       }
-      return c
-    })
+      i += 1
+      if (i >= 5) break
+    }
+    bio.content = newBio
   }
 
   return (

@@ -84,6 +84,21 @@ function ProfilePreview(props: {
   const {user} = profile
   // const currentUser = useUser()
 
+  let bio = profile.bio as JSONContent;
+
+  if (bio && bio.content) {
+    // Convert heading and list to paragraph
+    bio.content = bio.content?.map(c => {
+      if (c.type === 'heading' || c.type === 'list') {
+        return {
+          type: 'paragraph',
+          content: c.content
+        }
+      }
+      return c
+    })
+  }
+
   return (
     <Link
       onClick={() => track('click love profile preview')}
@@ -135,7 +150,7 @@ function ProfilePreview(props: {
               </h3>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
-                <Content className="w-full line-clamp-4" content={profile.bio as JSONContent}/>
+                <Content className="w-full line-clamp-4" content={bio}/>
               </div>
               {/*{age}*/}
             </div>

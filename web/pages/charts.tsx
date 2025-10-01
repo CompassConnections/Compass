@@ -6,7 +6,7 @@ export default function Charts() {
     <LovePage
       trackPageView={'charts'}
     >
-      <h1 className="text-3xl font-semibold text-center mb-6">An example of dynamic charts</h1>
+      <h1 className="text-3xl font-semibold text-center mb-6">Community Growth over Time</h1>
       <ChartComponent/>
     </LovePage>
   );

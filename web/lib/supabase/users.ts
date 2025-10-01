@@ -1,9 +1,10 @@
-import { db } from './db'
-import { run } from 'common/supabase/utils'
-import { APIError, api } from 'web/lib/api'
-import { unauthedApi } from 'common/util/api'
-import type { DisplayUser } from 'common/api/user-types'
-export type { DisplayUser }
+import {db} from './db'
+import {run} from 'common/supabase/utils'
+import {APIError, api} from 'web/lib/api'
+import {unauthedApi} from 'common/util/api'
+import type {DisplayUser} from 'common/api/user-types'
+
+export type {DisplayUser}
 
 export async function getUserSafe(userId: string) {
   try {
@@ -25,27 +26,27 @@ export async function getPrivateUserSafe() {
 }
 
 export async function getUserById(id: string) {
-  return unauthedApi('user/by-id/:id/lite', { id })
+  return unauthedApi('user/by-id/:id/lite', {id})
 }
 
 export async function getUserByUsername(username: string) {
-  return unauthedApi('user/:username/lite', { username })
+  return unauthedApi('user/:username/lite', {username})
 }
 
 export async function getFullUserByUsername(username: string) {
-  return unauthedApi('user/:username', { username })
+  return unauthedApi('user/:username', {username})
 }
 
 export async function getFullUserById(id: string) {
-  return unauthedApi('user/by-id/:id', { id })
+  return unauthedApi('user/by-id/:id', {id})
 }
 
 export async function searchUsers(prompt: string, limit: number) {
-  return unauthedApi('search-users', { term: prompt, limit: limit })
+  return unauthedApi('search-users', {term: prompt, limit: limit})
 }
 
 export async function getDisplayUsers(userIds: string[]) {
-  const { data } = await run(
+  const {data} = await run(
     db
       .from('users')
       .select(`id, name, username, data->avatarUrl, data->isBannedFromPosting`)
@@ -53,4 +54,13 @@ export async function getDisplayUsers(userIds: string[]) {
   )
 
   return data as unknown as DisplayUser[]
+}
+
+export async function getUserCreations() {
+  const {data} = await run(
+    db.from('users')
+      .select(`id, created_time`)
+      .order('created_time')
+  )
+  return data
 }

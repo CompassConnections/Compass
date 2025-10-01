@@ -9,16 +9,16 @@ export default function ChartComponent() {
     async function loadData() {
       // Load some data from the backend API or Supabase
       const data = await getUserCreations()
-      let counts: { [date: string]: number } = {}
+      const counts: { [date: string]: number } = {}
       data.forEach((d) => {
         const date = new Date(d.created_time).toISOString().split('T')[0]
         counts[date] = (counts[date] || 0) + 1
       })
       const json: any = Object.entries(counts).map(([date, value]) => ({date, value}))
       let prev = 0
-      for (let i = 0; i < json.length; i++) {
-        json[i].value += prev
-        prev = json[i].value
+      for (const e of json) {
+        e.value += prev
+        prev = e.value
       }
       json.sort((a: any, b: any) => a.date.localeCompare(b.date))
 

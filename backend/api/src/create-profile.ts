@@ -58,7 +58,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     }
     try {
       const nProfiles = await pg.one<number>(
-        `SELECT count(*) FROM users`,
+        `SELECT count(*) FROM profiles`,
         [],
         (r) => Number(r.count)
       )
@@ -69,6 +69,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
           n % 50 === 0
         )
       }
+      console.log(nProfiles, isMilestone(nProfiles))
       if (isMilestone(nProfiles)) {
         await sendDiscordMessage(
           `We just reached **${nProfiles}** total profiles! 🎉`,

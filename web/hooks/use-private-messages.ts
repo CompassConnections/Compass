@@ -15,12 +15,14 @@ import { PrivateMessageChannel } from 'common/supabase/private-messages'
 import { useAPIGetter } from 'web/hooks/use-api-getter'
 import { useApiSubscription } from 'web/hooks/use-api-subscription'
 import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
+import {getWebsocketUrl} from "common/api/utils";
 
 export function usePrivateMessages(
   channelId: number,
   limit: number,
   userId: string
 ) {
+  console.log('getWebsocketUrl', getWebsocketUrl())
   const [messages, setMessages] = usePersistentLocalState<
     PrivateChatMessage[] | undefined
   >(undefined, `private-messages-${channelId}-${limit}-v1`)

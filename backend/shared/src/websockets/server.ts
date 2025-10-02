@@ -10,6 +10,7 @@ import {
   CLIENT_MESSAGE_SCHEMA,
 } from 'common/api/websockets'
 import {IS_LOCAL} from "common/envs/constants";
+import {getWebsocketUrl} from "common/api/utils";
 
 const SWITCHBOARD = new Switchboard()
 
@@ -127,7 +128,7 @@ export function listen(server: HttpServer, path: string) {
   const wss = new WebSocketServer({ server, path })
   let deadConnectionCleaner: NodeJS.Timeout | undefined
   wss.on('listening', () => {
-    log.info(`Web socket server listening on ${path}.`)
+    log.info(`Web socket server listening on ${path}. ${getWebsocketUrl()}`)
     deadConnectionCleaner = setInterval(function ping() {
       const now = Date.now()
       for (const ws of wss.clients) {

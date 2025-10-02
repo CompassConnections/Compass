@@ -65,6 +65,7 @@ export const OptionalLoveUserForm = (props: {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const {bio: _, ...otherProfileProps} = profile
+    console.log('otherProfileProps', removeNullOrUndefinedProps(otherProfileProps))
     const {error} = await tryCatch(
       updateProfile(removeNullOrUndefinedProps(otherProfileProps) as any)
     )
@@ -198,7 +199,7 @@ export const OptionalLoveUserForm = (props: {
             value={profile['age'] ?? undefined}
             min={18}
             max={100}
-            onChange={(e) => setProfile('age', Number(e.target.value))}
+            onChange={(e) => setProfile('age', e.target.value ? Number(e.target.value) : null)}
           />
         </Col>
 
@@ -238,7 +239,7 @@ export const OptionalLoveUserForm = (props: {
               <Select
                 value={profile['pref_age_min'] ?? ''}
                 onChange={(e) =>
-                  setProfile('pref_age_min', Number(e.target.value))
+                  setProfile('pref_age_min', e.target.value ? Number(e.target.value) : 18)
                 }
                 className={'w-18 border-ink-300 rounded-md'}
               >
@@ -255,7 +256,7 @@ export const OptionalLoveUserForm = (props: {
               <Select
                 value={profile['pref_age_max'] ?? ''}
                 onChange={(e) =>
-                  setProfile('pref_age_max', Number(e.target.value))
+                  setProfile('pref_age_max', e.target.value ? Number(e.target.value) : 100)
                 }
                 className={'w-18 border-ink-300 rounded-md'}
               >

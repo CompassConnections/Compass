@@ -107,12 +107,14 @@ function Seeking(props: { profile: Profile }) {
   })
 
   const ageRangeText =
-    min == 18 && max == 100
+    min == 18 && max == 100 || min == undefined && max == undefined
       ? 'of any age'
       : min == max
       ? `exactly ${min} years old`
-      : max == 100
-      ? `${min} or older`
+      : max == 100 || max == undefined
+      ? `older than ${min}`
+      : min == 18 || min == undefined
+      ? `younger than ${max}`
       : `between ${min} - ${max} years old`
 
   if (!prefGender || prefGender.length < 1) {

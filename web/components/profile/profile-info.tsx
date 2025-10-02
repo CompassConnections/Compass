@@ -23,8 +23,8 @@ export function ProfileInfo(props: {
   fromProfilePage?: Profile
   fromSignup?: boolean
 }) {
-  console.log('Rendering ProfileProfile for ', props)
   const {profile, user, refreshProfile, fromProfilePage, fromSignup} = props
+  console.log('Rendering Profile for', user.username, user.name, props)
 
   const currentUser = useUser()
   // const currentProfile = useProfile()

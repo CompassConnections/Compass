@@ -1,5 +1,6 @@
 import {Column, Img, Link, Row, Section, Text} from "@react-email/components";
 import {discordLink, githubRepo, patreonLink, paypalLink} from "common/constants";
+import {DOMAIN} from "common/envs/constants";
 
 interface Props {
   email?: string
@@ -16,7 +17,7 @@ export const Footer = ({
       <Column align="center">
         <Link href={githubRepo} target="_blank">
           <Img
-            src="https://cdn-icons-png.flaticon.com/512/733/733553.png"
+            src={`https://${DOMAIN}/images/github-logo.png`}
             width="24"
             height="24"
             alt="GitHub"
@@ -25,7 +26,7 @@ export const Footer = ({
         </Link>
         <Link href={discordLink} target="_blank">
           <Img
-            src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
+            src={`https://${DOMAIN}/images/discord-logo.png`}
             width="24"
             height="24"
             alt="Discord"
@@ -34,7 +35,7 @@ export const Footer = ({
         </Link>
         <Link href={patreonLink} target="_blank">
           <Img
-            src="https://static.vecteezy.com/system/resources/previews/027/127/454/non_2x/patreon-logo-patreon-icon-transparent-free-png.png"
+            src={`https://${DOMAIN}/images/patreon-logo.png`}
             width="24"
             height="24"
             alt="Patreon"
@@ -43,7 +44,7 @@ export const Footer = ({
         </Link>
         <Link href={paypalLink} target="_blank">
           <Img
-            src="https://cdn-icons-png.flaticon.com/512/174/174861.png"
+            src={`https://${DOMAIN}/images/paypal-logo.png`}
             width="24"
             height="24"
             alt="PayPal"

@@ -1,4 +1,4 @@
-import {BACKEND_DOMAIN} from 'common/envs/constants'
+import {BACKEND_DOMAIN, IS_LOCAL} from 'common/envs/constants'
 
 type ErrorCode =
   | 400 // your input is bad (like zod is mad)
@@ -27,12 +27,11 @@ export function pathWithPrefix(path: string) {
 }
 
 export function getWebsocketUrl() {
-  const protocol = BACKEND_DOMAIN.startsWith('localhost') ? 'ws' : 'wss'
-
+  const protocol = IS_LOCAL ? 'ws' : 'wss'
   return `${protocol}://${BACKEND_DOMAIN}/ws`
 }
 
 export function getApiUrl(path: string) {
-  const protocol = BACKEND_DOMAIN.startsWith('localhost') ? 'http' : 'https'
+  const protocol = IS_LOCAL ? 'http' : 'https'
   return `${protocol}://${BACKEND_DOMAIN}/${prefix}/${path}`
 }

@@ -69,6 +69,7 @@ Yes.
 * Your data will **never be sold**.
 * You can **control what is visible publicly**.
 * Messaging may move toward **end-to-end encryption** in future versions.
+* Stored in secure Supabase and Firebase databases.
 
 ### How is the compatibility score calculated?
 
@@ -93,6 +94,10 @@ Dedicated iOS and Android apps are planned for the coming months. They’ll be b
 Compass is fully **open source**, which means anyone can view the code, suggest improvements, or contribute directly. This ensures transparency, prevents hidden agendas, and allows the community to shape the platform together.
 
 Whether it’s fixing a small bug, adding a new feature, improving design, or writing tests, contributions of all sizes are welcome. You can explore the code and instructions on our [GitHub repository](https://github.com/CompassConnections/Compass).
+
+### Why is the platform called Compass?
+
+We chose the name Compass because our goal is to help people orient themselves toward the connections that matter most — not just romantically, but intellectually, socially, and collaboratively. Just as a compass points you toward true north, this platform is designed to guide you toward people who align with your values, interests, and deeper goals, helping you navigate the complexity of human relationships with more clarity and intention. It’s not about endless swiping or superficial matches; it’s about finding direction and meaning in the connections you build.
 
 ### How can I help?
 

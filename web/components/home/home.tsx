@@ -63,15 +63,18 @@ export function LoggedOutHome() {
       <div className="py-8"></div>
       <h3
         className="text-2xl font-bold text-center">
-        Find people who share your values, not just your photos.
+        Find people who share your values, ideas, and intentions — not just your photos.
       </h3>
       <div className="w-full py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
-            <AboutBox title="Radically Transparent" text="No algorithms. Every profile searchable."/>
-            <AboutBox title="Built for Depth" text="Filter by any keyword and what matters most."/>
-            <AboutBox title="Community Owned" text="Free forever. Built by users, for users."/>
+            <AboutBox title="Radically Transparent" text="No algorithms. Every profile searchable. You decide who to discover."/>
+            <AboutBox title="Built for Depth" text="Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter."/>
+            <AboutBox title="Community Owned & Open Source" text="Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone."/>
           </div>
+          <p>
+            Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to browsing — a public digital good designed to serve people, not profit.
+          </p>
         </div>
       </div>
       <div className="block lg:hidden h-12"></div>

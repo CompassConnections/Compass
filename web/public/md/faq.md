@@ -107,8 +107,12 @@ We chose the name Compass because our goal is to help people orient themselves t
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.
 
+### What’s the long-term vision?
+
+Our goal is for Compass to become what Linux is for software, Wikipedia is for knowledge, or Firefox is for browsing — a public, open-source infrastructure that anyone can use, contribute to, and trust. We believe meaningful human connection deserves the same treatment: free, transparent, community-owned, and protected from corporate capture.
+
 ### What’s next?
 
-Compass has officially **launched**. The platform is now open for everyone who values meaningful, values-driven connections. Our focus has shifted toward **growing the community** and **securing donations** to sustain and expand the platform.
+Compass has officially **launched** in October 2025 and is growing fast. Our focus is now toward **gathering feedback**, **growing the community** and **securing donations** to sustain and expand the platform.
 
 Every action, whether sharing, donating, or contributing, directly helps Compass remain **ad-free, subscription-free, and community-owned**.

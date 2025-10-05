@@ -69,6 +69,11 @@ export default function About() {
                   title='One Mission'
                   text='Our only mission is to create more genuine human connections, and every decision must serve that goal.'
                 />
+
+                <AboutBlock
+                  title='Vision'
+                  text='Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.'
+                />
               </div>
             </div>
           </div>

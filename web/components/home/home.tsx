@@ -72,9 +72,11 @@ export function LoggedOutHome() {
             <AboutBox title="Built for Depth" text="Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter."/>
             <AboutBox title="Community Owned & Open Source" text="Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone."/>
           </div>
-          <p>
-            Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to browsing — a public digital good designed to serve people, not profit.
-          </p>
+          <div className="mt-10 max-w-xl mx-auto">
+          <p className="text-center">
+              Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to browsing — a public digital good designed to serve people, not profit.
+            </p>
+          </div>
         </div>
       </div>
       <div className="block lg:hidden h-12"></div>

@@ -79,7 +79,7 @@ The **compatibility score** comes from answers to **compatibility prompts**. Eac
 * **Answers they would accept from others**
 * **A degree of importance** for each question
 
-Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance.
+Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
 
 The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/love/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
 

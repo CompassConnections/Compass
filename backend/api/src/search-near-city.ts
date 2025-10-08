@@ -8,7 +8,7 @@ const searchNearCityMain = async (cityId: string, radius: number) => {
 }
 
 export const searchNearCity: APIHandler<'search-near-city'> = async (body) => {
-  const { cityId, radius } = body
+  const {cityId, radius} = body
   return await searchNearCityMain(cityId, radius)
 }
 

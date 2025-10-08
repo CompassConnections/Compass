@@ -1,6 +1,6 @@
 # FAQ – Compass
 
-Compass is a **gift from the community** — built by people like you who care about deep, meaningful connections. Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
+Compass is a **gift from the community** — built by its members like you who care about deep, meaningful connections. Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
 
 ### What is Compass?
 

@@ -57,6 +57,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
+export const UNSUBSCRIBE_URL = 'https://compassmeet.com/notifications';
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference
@@ -72,7 +73,7 @@ export const getNotificationDestinationsForUser = (
       destinations.includes('browser') && !opt_out.includes('browser'),
     sendToMobile:
       destinations.includes('mobile') && !opt_out.includes('mobile'),
-    unsubscribeUrl: 'https://compassmeet.com/notifications',
+    unsubscribeUrl: UNSUBSCRIBE_URL,
     urlToManageThisNotification: '/notifications',
   }
 }

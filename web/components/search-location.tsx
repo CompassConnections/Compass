@@ -110,11 +110,10 @@ export const useCitySearch = () => {
       if (query.length < 2) {
         setCities([])
         return
-      }
-      if (query.length >= 2) {
+      } else {
         fetchData()
       }
-    }, 200)
+    }, 1000)
 
     return () => {
       clearTimeout(debounce)

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-    --font-main: "Crimson Pro", Georgia, "Times New Roman", Times, serif;
+    --font-main: "Crimson Pro", "EB Garamond", Georgia, "Times New Roman", Times, serif;
 }
 
 .main-font {

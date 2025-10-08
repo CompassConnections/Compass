@@ -9,6 +9,7 @@ export default function Document() {
         <link rel="icon" href={ENV_CONFIG.faviconPath} />
         <link
           href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"
+          // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <Script src="/init-theme.js" strategy="beforeInteractive" />

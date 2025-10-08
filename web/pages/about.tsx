@@ -1,7 +1,7 @@
 import {LovePage} from 'web/components/love-page'
 import {ReactNode} from "react";
 import Link from "next/link";
-import {discordLink, formLink, githubRepo} from "common/constants";
+import {discordLink, formLink, githubRepo, stoatLink} from "common/constants";
 
 
 export const AboutBlock = (props: {
@@ -95,17 +95,6 @@ export default function About() {
                   </a>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
-                  <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
-                  <p className="mb-4 text-center">Shape the product or chat with like-minded people.</p>
-                  <a
-                    href={discordLink}
-                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                    target="_blank" rel="noopener noreferrer"
-                  >
-                    Join the Discord
-                  </a>
-                </div>
-                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="share" className="font-bold mb-4 text-xl text-center">Develop the App</h5>
                   <p className="mb-4 text-center">The full source code and instructions are available on GitHub.</p>
                   <a
@@ -116,27 +105,47 @@ export default function About() {
                   </a>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
+                  <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
+                  <p className="mb-4 text-center">Shape the product or chat with like-minded people.</p>
+                  <div className="flex flex-col gap-4 w-full items-center">
+                  <a
+                    href={discordLink}
+                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
+                    target="_blank" rel="noopener noreferrer"
+                  >
+                    Join the Discord
+                  </a>
+                  <a
+                    href={stoatLink}
+                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
+                    target="_blank" rel="noopener noreferrer"
+                  >
+                    Join on Stoat / Revolt
+                  </a>
+                  </div>
+                </div>
+                <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
                   <p className="mb-4 text-center customlink"><Link href="/support">Support</Link> our not-for-profit
                     infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                     <a
                       href="https://patreon.com/CompassMeet"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"
+                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
                       target="_blank" rel="noopener noreferrer"
                     >
                       Donate on Patreon
                     </a>
                     <a
                       href="https://www.paypal.com/paypalme/CompassConnections"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"
+                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
                       target="_blank" rel="noopener noreferrer"
                     >
                       Donate on PayPal
                     </a>
                     <a
                       href="https://ko-fi.com/compassconnections"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"
+                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
                       target="_blank" rel="noopener noreferrer"
                     >
                       Donate on Ko-fi

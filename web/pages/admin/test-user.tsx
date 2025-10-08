@@ -26,7 +26,7 @@ export default function TestUser() {
   )
 
   useEffect(() => {
-    setEmail('manifoldTestNewUser+' + randomString() + '@gmail.com')
+    setEmail('testNewUser+' + randomString() + '@gmail.com')
     setPassword(randomString())
     const key = 'TEST_CREATE_USER_KEY'
     const cookie = getCookie(key)

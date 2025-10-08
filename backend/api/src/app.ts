@@ -108,7 +108,7 @@ swaggerDocument.info = {
   version: "1.0.0",
   contact: {
     name: "Compass",
-    email: "compass.meet.info@gmail.com",
+    email: "hello@compassmeet.com",
     url: "https://compassmeet.com"
   }
 };

@@ -1,8 +1,8 @@
 export const MAX_INT = 99999
 export const MIN_INT = -MAX_INT
 
-export const supportEmail = 'compass.meet.info@gmail.com';
-export const marketingEmail = 'compass.meet.marketing@gmail.com';
+export const supportEmail = 'hello@compassmeet.com';
+export const marketingEmail = 'hello@compassmeet.com';
 
 export const githubRepo = "https://github.com/CompassConnections/Compass";
 export const githubIssues = `${githubRepo}/issues`

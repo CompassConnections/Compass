@@ -126,7 +126,7 @@ function UserPageInner(props: ActiveUserPageProps) {
       className={'relative p-2 sm:pt-0'}
     >
       <SEO
-        title={`${user.name} (@${user.username})`}
+        title={`${user.name}`}
         description={user.bio ?? ''}
         url={`/${user.username}`}
         image={getLoveOgImageUrl(user, profile)}

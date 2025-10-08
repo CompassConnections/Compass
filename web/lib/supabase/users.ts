@@ -58,7 +58,7 @@ export async function getDisplayUsers(userIds: string[]) {
 
 export async function getUserCreations() {
   const {data} = await run(
-    db.from('users')
+    db.from('profiles')
       .select(`id, created_time`)
       .order('created_time')
   )

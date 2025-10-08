@@ -4,8 +4,9 @@ See the [full constitution](/constitution) for details on membership criteria an
 
 ### Members
 
-- Martin Braquet
+- [Martin Braquet](/Martin)
+- [Ruth](/RuthS)
 
 ### Administrators
 
-- Martin Braquet
+- [Martin Braquet](/Martin)

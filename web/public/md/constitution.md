@@ -19,7 +19,7 @@ We, the community of Compass, commit to building and maintaining this project in
 2. **Eligibility** —
     1. To become a Member with voting rights, an individual must:
        - Have a 1:1 with a current member.
-       - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a minimum of 20 hours.
+       - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a minimum of 5 hours.
        - Be approved by the Membership Committee (see Article IV) by a **supermajority vote**.
         - To become an Administrator, all current Administrators must unanimously vote for them to have the role.
 3. **Provisional Members** — New participants can join discussions but cannot vote until they have met the criteria.

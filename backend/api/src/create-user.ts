@@ -13,6 +13,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {getBucket} from "shared/firebase-utils";
+import {sendWelcomeEmail} from "email/functions/helpers";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
@@ -127,6 +128,11 @@ export const createUser: APIHandler<'create-user'> = async (
       await track(auth.uid, 'create profile', {username: user.username})
     } catch (e) {
       console.log('Failed to track create profile', e)
+    }
+    try {
+      await sendWelcomeEmail(user, privateUser)
+    } catch (e) {
+      console.log('Failed to sendWelcomeEmail', e)
     }
   }
 

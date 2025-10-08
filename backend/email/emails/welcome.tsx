@@ -3,13 +3,19 @@ import {type User} from 'common/user'
 import {mockUser,} from './functions/mock'
 import {button, container, content, Footer, main, paragraph} from "email/utils";
 
+function randomHex(length: number) {
+  const bytes = new Uint8Array(Math.ceil(length / 2));
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, length);
+}
+
 interface WelcomeEmailProps {
   toUser: User
   unsubscribeUrl: string
   email?: string
 }
-
-export const confirmUrl = `https://compassmeet.com/confirm-email/abc123`
 
 export const WelcomeEmail = ({
                                toUser,
@@ -17,6 +23,7 @@ export const WelcomeEmail = ({
                                email,
                              }: WelcomeEmailProps) => {
   const name = toUser.name.split(' ')[0]
+  const confirmUrl = `https://compassmeet.com/confirm-email/${randomHex(16)}`
 
   return (
     <Html>

@@ -1,5 +1,5 @@
 import {PrivateUser, User} from 'common/user'
-import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
+import {getNotificationDestinationsForUser, UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
 import {sendEmail} from './send-email'
 import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
@@ -8,6 +8,7 @@ import {getProfile} from 'shared/love/supabase'
 import { render } from "@react-email/render"
 import {MatchesType} from "common/love/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
+import WelcomeEmail from "email/welcome";
 
 const from = 'Compass <hello@compassmeet.com>'
 
@@ -69,6 +70,25 @@ export const sendNewMessageEmail = async (
         toUser={toUser}
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
+      />
+    ),
+  })
+}
+
+export const sendWelcomeEmail = async (
+  toUser: User,
+  privateUser: PrivateUser,
+) => {
+  if (!privateUser.email) return
+  return await sendEmail({
+    from,
+    subject: `Welcome to Compass!`,
+    to: privateUser.email,
+    html: await render(
+      <WelcomeEmail
+        toUser={toUser}
+        unsubscribeUrl={UNSUBSCRIBE_URL}
         email={privateUser.email}
       />
     ),

@@ -1,9 +1,13 @@
 import clsx from 'clsx'
-import { useEffect, useRef, useState } from 'react'
-import { api } from 'web/lib/api'
-import { countryCodeToFlag } from 'web/lib/util/location'
-import { ProfileRow } from 'common/love/profile'
+import {useEffect, useRef, useState} from 'react'
+import {api} from 'web/lib/api'
+import {countryCodeToFlag} from 'web/lib/util/location'
+import {ProfileRow} from 'common/love/profile'
 import {OriginLocation} from "common/filters";
+
+function isDigitString(value: string): boolean {
+  return /^\d+$/.test(value);
+}
 
 export type City = {
   geodb_city_id: string
@@ -44,7 +48,7 @@ export function CityRow(props: {
   onSelect: (city: City) => void
   className?: string
 }) {
-  const { city, onSelect, className } = props
+  const {city, onSelect, className} = props
   return (
     <button
       key={city.geodb_city_id}
@@ -56,7 +60,7 @@ export function CityRow(props: {
     >
       <div className="group-hover:text-ink-950 font-semibold transition-colors">
         {city.city}
-        {city.region_code ? `, ${city.region_code}` : ''}
+        {city.region_code && !isDigitString(city.region_code) ? `, ${city.region_code}` : ''}
       </div>
       <div className="text-ink-400 group-hover:text-ink-700 transition-colors">
         {countryCodeToFlag(city.country_code) || city.country}
@@ -78,7 +82,7 @@ export const useCitySearch = () => {
         setLoading(true)
         searchCountRef.current++
         const thisSearchCount = searchCountRef.current
-        const response = await api('search-location', { term: query, limit: 5 })
+        const response = await api('search-location', {term: query, limit: 8})
         if (response.status !== 'success') {
           throw new Error(response.data)
         }
@@ -117,5 +121,5 @@ export const useCitySearch = () => {
     }
   }, [query])
 
-  return { query, setQuery, loading, cities }
+  return {query, setQuery, loading, cities}
 }

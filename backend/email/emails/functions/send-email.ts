@@ -25,7 +25,7 @@ export const sendEmail = async (
   }
 
   const { data, error } = await sendEmailThrottle(
-    { replyTo: 'Compass <no-reply@compassmeet.com>', ...payload },
+    { replyTo: 'Compass <hello@compassmeet.com>', ...payload },
     options
   )
   console.log('resend.emails.send', data, error)

@@ -9,7 +9,7 @@ import { render } from "@react-email/render"
 import {MatchesType} from "common/love/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 
-const from = 'Compass <no-reply@compassmeet.com>'
+const from = 'Compass <hello@compassmeet.com>'
 
 // export const sendNewMatchEmail = async (
 //   privateUser: PrivateUser,

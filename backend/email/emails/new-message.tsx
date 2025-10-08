@@ -1,7 +1,7 @@
 import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
 import {type ProfileRow} from 'common/love/profile'
-import {jamesProfile, jamesUser, sinclairUser,} from './functions/mock'
+import {jamesProfile, jamesUser, mockUser,} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
 import {button, container, content, Footer, imageContainer, main, paragraph} from "email/utils";
 
@@ -74,7 +74,7 @@ export const NewMessageEmail = ({
 NewMessageEmail.PreviewProps = {
   fromUser: jamesUser,
   fromUserProfile: jamesProfile,
-  toUser: sinclairUser,
+  toUser: mockUser,
   channelId: 1,
   email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',

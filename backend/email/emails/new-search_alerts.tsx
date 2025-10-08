@@ -1,6 +1,6 @@
 import {Body, Container, Head, Html, Link, Preview, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
-import {sinclairUser,} from './functions/mock'
+import {mockUser,} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
 import {container, content, Footer, main, paragraph} from "email/utils";
 import {MatchesType} from "common/love/bookmarked_searches";
@@ -140,7 +140,7 @@ const matchSamples = [
 ]
 
 NewSearchAlertsEmail.PreviewProps = {
-  toUser: sinclairUser,
+  toUser: mockUser,
   email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
   matches: matchSamples,

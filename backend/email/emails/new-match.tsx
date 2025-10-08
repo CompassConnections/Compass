@@ -2,7 +2,7 @@ import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@rea
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/love/profile'
 import {type User} from 'common/user'
-import {jamesProfile, jamesUser, sinclairUser} from './functions/mock'
+import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 import {Footer} from "email/utils";
 
 interface NewMatchEmailProps {
@@ -70,7 +70,7 @@ export const NewMatchEmail = ({
 }
 
 NewMatchEmail.PreviewProps = {
-  onUser: sinclairUser,
+  onUser: mockUser,
   matchedWithUser: jamesUser,
   matchedProfile: jamesProfile,
   email: 'someone@gmail.com',

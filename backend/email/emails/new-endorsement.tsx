@@ -1,7 +1,7 @@
 import {Body, Button, Column, Container, Head, Html, Preview, Row, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
 import {DOMAIN} from 'common/envs/constants'
-import {jamesUser, sinclairUser} from './functions/mock'
+import {jamesUser, mockUser} from './functions/mock'
 import {button, container, content, Footer, main, paragraph} from "email/utils";
 
 interface NewEndorsementEmailProps {
@@ -74,7 +74,7 @@ export const NewEndorsementEmail = ({
 
 NewEndorsementEmail.PreviewProps = {
   fromUser: jamesUser,
-  onUser: sinclairUser,
+  onUser: mockUser,
   endorsementText:
     "Sinclair is someone you want to have around because she injects creativity and humor into every conversation, and her laugh is infectious! Not to mention that she's a great employee, treats everyone with respect, and is even-tempered.",
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',

@@ -3,7 +3,7 @@ import type { User } from 'common/user'
 
 // for email template testing
 
-export const sinclairUser: User = {
+export const mockUser: User = {
   createdTime: 0,
   bio: 'the futa in futarchy',
   website: 'sincl.ai',

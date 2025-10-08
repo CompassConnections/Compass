@@ -336,8 +336,8 @@ ol {
 /* Ensure li behaves as a list item (some resets or flex can break markers) */
 ol > li {
     display: list-item;           /* prevents flex from removing marker layout */
-    padding-left: 1rem;   /* extra spacing after number */
-    text-indent: -1rem;   /* pull first line back so text aligns */
+    padding-left: 0rem;   /* extra spacing after number */
+    text-indent: -0rem;   /* pull first line back so text aligns */
 }
 
 /* Style the marker (modern browsers) */

@@ -36,7 +36,7 @@ runScript(async ({ pg }) => {
     }
   }
 
-  // console.log('updates', updates.slice(0, 10))
+  // console.debug('updates', updates.slice(0, 10))
   // return
 
   let count = 0

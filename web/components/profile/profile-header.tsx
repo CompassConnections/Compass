@@ -46,7 +46,7 @@ export default function ProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
-  console.log('ProfileProfileHeader', {user, profile, currentUser})
+  console.debug('ProfileProfileHeader', {user, profile, currentUser})
 
   return (
     <Col className="w-full">

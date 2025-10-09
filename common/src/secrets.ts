@@ -32,7 +32,7 @@ type SecretId = (typeof secrets)[number]
 export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
   if (!ids.length && IS_LOCAL) return {}
 
-  // console.log('Fetching secrets...')
+  // console.debug('Fetching secrets...')
   let client: SecretManagerServiceClient
   if (credentials) {
     const projectId = credentials['project_id']
@@ -47,7 +47,7 @@ export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
 
   const secretIds = ids.length > 0 ? ids : secrets
 
-  console.log('secretIds', secretIds)
+  console.debug('secretIds', secretIds)
 
   const fullSecretNames = secretIds.map(
     (secret: string) =>
@@ -75,7 +75,7 @@ export const loadSecretsToEnv = async (credentials?: any) => {
   for (const [key, value] of Object.entries(allSecrets)) {
     if (key && value) {
       process.env[key] = value
-      // console.log(key, value)
+      // console.debug(key, value)
     }
   }
   refreshConfig()

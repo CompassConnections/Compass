@@ -26,7 +26,7 @@ export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
 export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
 export const IS_LOCAL = !IS_GOOGLE_CLOUD && !IS_VERCEL
 export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
-console.log(`Running in ${HOSTING_ENV} (${ENV})`,);
+console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 
 // class MissingKeyError implements Error {
 //   constructor(key: string) {

@@ -35,7 +35,7 @@ export const deleteMe: APIHandler<'me/delete'> = async (body, auth) => {
   try {
     const auth = admin.auth()
     await auth.deleteUser(userId)
-    console.log(`Deleted user ${userId} from Firebase Auth and Supabase`)
+    console.debug(`Deleted user ${userId} from Firebase Auth and Supabase`)
   } catch (e) {
     console.error('Error deleting user from Firebase Auth:', e)
   }

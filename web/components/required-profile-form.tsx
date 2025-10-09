@@ -128,7 +128,7 @@ export const RequiredLoveUserForm = (props: {
                 <label className={clsx(labelClassName)}>Bio</label>
                 <SignupBio
                     onChange={(e: JSONContent) => {
-                      console.log('bio changed', e, profile.bio)
+                      console.debug('bio changed', e, profile.bio)
                       setProfile('bio', e)
                     }}
                 />

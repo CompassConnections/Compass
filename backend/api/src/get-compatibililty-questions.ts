@@ -39,7 +39,7 @@ export const getCompatibilityQuestions: APIHandler<
 
   const questions = shuffle(dbQuestions)
 
-  // console.log(
+  // console.debug(
   //   'got questions',
   //   questions.map((q) => q.question + ' ' + q.score)
   // )

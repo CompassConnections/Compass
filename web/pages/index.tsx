@@ -7,7 +7,7 @@ import {ProfilesHome} from "web/components/profiles/profiles-home";
 
 export default function ProfilesPage() {
   const user = useUser();
-  console.log('user:', user)
+  console.debug('user:', user)
 
   return (
     <LovePage trackPageView={'user profiles'}>

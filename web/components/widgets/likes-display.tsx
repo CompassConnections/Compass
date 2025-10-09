@@ -125,7 +125,7 @@ const UserAvatar = (props: { userId: string; className?: string }) => {
   const profile = useProfileByUserId(userId)
   const user = useUserById(userId)
 
-  // console.log('UserAvatar', user?.username, profile?.pinned_url)
+  // console.debug('UserAvatar', user?.username, profile?.pinned_url)
 
   if (!profile)
     return <EmptyAvatar className={className} size={10} />

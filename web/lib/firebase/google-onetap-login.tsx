@@ -10,7 +10,7 @@ async function handleResponse(response: any) {
   const credential = GoogleAuthProvider.credential(idToken)
   try {
     const result = await signInWithCredential(auth, credential)
-    console.log(result.user)
+    console.debug(result.user)
   } catch (error) {
     console.error('could not log in via onetap', error)
   }

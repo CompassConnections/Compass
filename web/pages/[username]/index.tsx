@@ -24,7 +24,7 @@ export const getStaticProps: GetStaticProps<
   UserPageProps,
   { username: string }
 > = async (props) => {
-  // console.log('Starting getStaticProps in /[username]')
+  // console.debug('Starting getStaticProps in /[username]')
   const {username} = props.params!
 
   const user = await getUserForStaticProps(db, username)
@@ -86,7 +86,7 @@ type ActiveUserPageProps = {
 }
 
 export default function UserPage(props: UserPageProps) {
-  // console.log('Starting UserPage in /[username]')
+  // console.debug('Starting UserPage in /[username]')
   if (!props.user) {
     return <div>This account has been deleted</div>
   }
@@ -99,7 +99,7 @@ export default function UserPage(props: UserPageProps) {
 }
 
 function UserPageInner(props: ActiveUserPageProps) {
-  // console.log('Starting UserPageInner in /[username]')
+  // console.debug('Starting UserPageInner in /[username]')
   const {user, username} = props
   const router = useRouter()
   const {query} = router
@@ -117,7 +117,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
   // Show previous profile while loading another one
   const profile = clientProfile ?? staticProfile
-  // console.log('profile:', user?.username, profile, clientProfile, staticProfile)
+  // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
 
   return (
     <LovePage

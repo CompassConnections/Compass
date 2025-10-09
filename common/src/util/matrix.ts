@@ -32,7 +32,7 @@ export function factorizeMatrix(
   const mFeatures = fillMatrix(m, FEATURES, initCell)
   const nFeatures = fillMatrix(n, FEATURES, initCell)
 
-  console.log('rows', m, 'columns', n, 'numPoints', points)
+  console.debug('rows', m, 'columns', n, 'numPoints', points)
 
   const updateFeature = (a: number, b: number, error: number) =>
     a + LEARNING_RATE * (2 * error * b - REGULARIZATION_RATE * a)
@@ -75,7 +75,7 @@ export function factorizeMatrix(
           }
         }
       }
-      console.log(iter, 'error', totalError / points)
+      console.debug(iter, 'error', totalError / points)
 
       // Complete factorization process if total error falls below a certain threshold
       if (totalError / points < THRESHOLD) break

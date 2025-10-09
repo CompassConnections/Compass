@@ -17,7 +17,7 @@ export const sendEmail = async (
   options?: CreateEmailRequestOptions
 ) => {
   const resend = getResend()
-  console.log(resend, payload, options)
+  console.debug(resend, payload, options)
 
   async function sendEmailThrottle(data: any, options: any) {
     if (!resend) return { data: null, error: 'No Resend client' }
@@ -28,7 +28,7 @@ export const sendEmail = async (
     { replyTo: 'Compass <no-reply@compassmeet.com>', ...payload },
     options
   )
-  console.log('resend.emails.send', data, error)
+  console.debug('resend.emails.send', data, error)
 
   if (error) {
     log.error(
@@ -47,12 +47,12 @@ const getResend = () => {
   if (resend) return resend
 
   if (!process.env.RESEND_KEY) {
-    console.log('No RESEND_KEY, skipping email send')
+    console.debug('No RESEND_KEY, skipping email send')
     return
   }
 
   const apiKey = process.env.RESEND_KEY as string
-  // console.log(`RESEND_KEY: ${apiKey}`)
+  // console.debug(`RESEND_KEY: ${apiKey}`)
   resend = new Resend(apiKey)
   return resend
 }

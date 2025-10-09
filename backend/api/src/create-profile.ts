@@ -29,7 +29,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     updateUser(pg, auth.uid, { avatarUrl: body.pinned_url })
   }
 
-  console.log('body', body)
+  console.debug('body', body)
 
   const { data, error } = await tryCatch(
     insert(pg, 'profiles', { user_id: auth.uid, ...body })
@@ -46,7 +46,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     try {
       await track(auth.uid, 'create profile', {username: user.username})
     } catch (e) {
-      console.log('Failed to track create profile', e)
+      console.error('Failed to track create profile', e)
     }
     try {
       await sendDiscordMessage(
@@ -54,7 +54,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
         'members',
       )
     } catch (e) {
-      console.log('Failed to send discord new profile', e)
+      console.error('Failed to send discord new profile', e)
     }
     try {
       const nProfiles = await pg.one<number>(
@@ -69,7 +69,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
           n % 50 === 0
         )
       }
-      console.log(nProfiles, isMilestone(nProfiles))
+      console.debug(nProfiles, isMilestone(nProfiles))
       if (isMilestone(nProfiles)) {
         await sendDiscordMessage(
           `We just reached **${nProfiles}** total profiles! 🎉`,
@@ -78,7 +78,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       }
 
     } catch (e) {
-      console.log('Failed to send discord user milestone', e)
+      console.error('Failed to send discord user milestone', e)
     }
   }
 

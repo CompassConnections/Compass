@@ -130,18 +130,18 @@ export function SignupBio(props: {
       <TextEditor
         editor={editor}
         onBlur={() => {
-          // console.log('onchange', editor?.getText())
+          // console.debug('onchange', editor?.getText())
           if (!editor) return
           const e = editor.getJSON()
-          // console.log(e)
+          // console.debug(e)
           // const text = e.content.map((block: any) => block.content?.map((c: any) => c.text).join('') ?? '').join('');
           // setCharLength(text.length)
-          // console.log(text, text.length)
+          // console.debug(text, text.length)
           // if (text.length < 250) {
           //   return; // do not save
           // }
 
-          // console.log('bio changed', e, profile.bio);
+          // console.debug('bio changed', e, profile.bio);
           onChange(e)
         }}
       />

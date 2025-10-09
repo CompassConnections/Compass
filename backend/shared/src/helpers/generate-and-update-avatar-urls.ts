@@ -25,7 +25,7 @@ export const generateAvatarUrl = async (
     const buffer = await res.arrayBuffer()
     return await upload(userId, Buffer.from(buffer), bucket)
   } catch (e) {
-    console.log('error generating avatar', e)
+    console.debug('error generating avatar', e)
     return `https://${DOMAIN}/images/default-avatar.png`
   }
 }

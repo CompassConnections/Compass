@@ -29,7 +29,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
   useApiSubscription({
     topics: [`user/${userId ?? '_'}`],
     onBroadcast: ({ data }) => {
-      console.log(data)
+      console.debug(data)
       setUser((user) => {
         if (!user || !data.user) {
           return user

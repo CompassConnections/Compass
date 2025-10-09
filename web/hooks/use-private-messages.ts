@@ -22,7 +22,7 @@ export function usePrivateMessages(
   limit: number,
   userId: string
 ) {
-  console.log('getWebsocketUrl', getWebsocketUrl())
+  // console.debug('getWebsocketUrl', getWebsocketUrl())
   const [messages, setMessages] = usePersistentLocalState<
     PrivateChatMessage[] | undefined
   >(undefined, `private-messages-${channelId}-${limit}-v1`)

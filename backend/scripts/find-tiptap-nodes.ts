@@ -24,7 +24,7 @@ runScript(async ({ pg }) => {
 })
 
 const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
-  console.log(`\nSearching comments for ${nodeName}...`)
+  console.debug(`\nSearching comments for ${nodeName}...`)
   const commentQuery = renderSql(
     select('id, user_id, on_user_id, content'),
     from('profile_comments'),
@@ -32,15 +32,15 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
   const comments = await pg.manyOrNone(commentQuery)
 
-  console.log(`Found ${comments.length} comments:`)
+  console.debug(`Found ${comments.length} comments:`)
   comments.forEach((comment) => {
-    console.log('\nComment ID:', comment.id)
-    console.log('From user:', comment.user_id)
-    console.log('On user:', comment.on_user_id)
-    console.log('Content:', JSON.stringify(comment.content))
+    console.debug('\nComment ID:', comment.id)
+    console.debug('From user:', comment.user_id)
+    console.debug('On user:', comment.on_user_id)
+    console.debug('Content:', JSON.stringify(comment.content))
   })
 
-  console.log(`\nSearching private messages for ${nodeName}...`)
+  console.debug(`\nSearching private messages for ${nodeName}...`)
   const messageQuery = renderSql(
     select('id, user_id, channel_id, content'),
     from('private_user_messages'),
@@ -48,15 +48,15 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
   const messages = await pg.manyOrNone(messageQuery)
 
-  console.log(`Found ${messages.length} private messages:`)
+  console.debug(`Found ${messages.length} private messages:`)
   messages.forEach((msg) => {
-    console.log('\nMessage ID:', msg.id)
-    console.log('From user:', msg.user_id)
-    console.log('Channel:', msg.channel_id)
-    console.log('Content:', JSON.stringify(msg.content))
+    console.debug('\nMessage ID:', msg.id)
+    console.debug('From user:', msg.user_id)
+    console.debug('Channel:', msg.channel_id)
+    console.debug('Content:', JSON.stringify(msg.content))
   })
 
-  console.log(`\nSearching profiles for ${nodeName}...`)
+  console.debug(`\nSearching profiles for ${nodeName}...`)
   const users = renderSql(
     select('user_id, bio'),
     from('profiles'),
@@ -64,9 +64,9 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
 
   const usersWithMentions = await pg.manyOrNone(users)
-  console.log(`Found ${usersWithMentions.length} users:`)
+  console.debug(`Found ${usersWithMentions.length} users:`)
   usersWithMentions.forEach((user) => {
-    console.log('\nUser ID:', user.user_id)
-    console.log('Bio:', JSON.stringify(user.bio))
+    console.debug('\nUser ID:', user.user_id)
+    console.debug('Bio:', JSON.stringify(user.bio))
   })
 }

@@ -44,7 +44,7 @@ export function wantsKidsToHasKidsFilter(wantsKidsStrength: wantsKidsDatabase) {
 export function wantsKidsDatabaseToWantsKidsFilter(
   wantsKidsStrength: wantsKidsDatabase
 ) {
-  // console.log(wantsKidsStrength)
+  // console.debug(wantsKidsStrength)
   if (wantsKidsStrength == wantsKidsLabels.no_preference.strength) {
     return wantsKidsLabels.no_preference.strength
   }

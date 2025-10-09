@@ -20,7 +20,7 @@ import {Button} from "web/components/buttons/button";
 export default function SignupPage() {
   const [step, setStep] = useState(0)
   const user = useUser()
-  console.log('user:', user)
+  console.debug('user:', user)
   const router = useRouter()
   useTracking('view love signup page')
 
@@ -91,7 +91,7 @@ export default function SignupPage() {
                   : undefined
 
                 setIsSubmitting(true)
-                console.log('profileForm', profileForm)
+                console.debug('profileForm', profileForm)
                 const profile = await api(
                   'create-profile',
                   removeNullOrUndefinedProps({

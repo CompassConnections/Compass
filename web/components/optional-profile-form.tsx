@@ -65,7 +65,7 @@ export const OptionalLoveUserForm = (props: {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const {bio: _, ...otherProfileProps} = profile
-    console.log('otherProfileProps', removeNullOrUndefinedProps(otherProfileProps))
+    console.debug('otherProfileProps', removeNullOrUndefinedProps(otherProfileProps))
     const {error} = await tryCatch(
       updateProfile(removeNullOrUndefinedProps(otherProfileProps) as any)
     )

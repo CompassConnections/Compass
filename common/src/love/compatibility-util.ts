@@ -5,7 +5,7 @@ const isPreferredGender = (
   preferredGenders: string[] | undefined,
   gender: string | undefined
 ) => {
-  // console.log('isPreferredGender', preferredGenders, gender)
+  // console.debug('isPreferredGender', preferredGenders, gender)
   if (preferredGenders === undefined || preferredGenders.length === 0 || gender === undefined) return true
 
   // If simple gender preference, don't include non-binary.
@@ -19,7 +19,7 @@ const isPreferredGender = (
 }
 
 export const areGenderCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
-  // console.log('areGenderCompatible', isPreferredGender(profile1.pref_gender, profile2.gender), isPreferredGender(profile2.pref_gender, profile1.gender))
+  // console.debug('areGenderCompatible', isPreferredGender(profile1.pref_gender, profile2.gender), isPreferredGender(profile2.pref_gender, profile1.gender))
   return (
     isPreferredGender(profile1.pref_gender, profile2.gender) &&
     isPreferredGender(profile2.pref_gender, profile1.gender)

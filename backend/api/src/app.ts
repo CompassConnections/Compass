@@ -191,7 +191,7 @@ Object.entries(handlers).forEach(([path, handler]) => {
   }
 })
 
-// console.log('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
+// console.debug('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
 
 // Internal Endpoints
 app.post(pathWithPrefix("/internal/send-search-notifications"),

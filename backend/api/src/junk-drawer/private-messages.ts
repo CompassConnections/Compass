@@ -163,7 +163,7 @@ const notifyOtherUserInChannelIfInactive = async (
   // TODO: notification only for active user
 
   const otherUser = await getUser(otherUserId.user_id)
-  console.log('otherUser:', otherUser)
+  console.debug('otherUser:', otherUser)
   if (!otherUser) return
 
   await createNewMessageNotification(creator, otherUser, channelId)
@@ -175,7 +175,7 @@ const createNewMessageNotification = async (
   channelId: number
 ) => {
   const privateUser = await getPrivateUser(toUser.id)
-  console.log('privateUser:', privateUser)
+  console.debug('privateUser:', privateUser)
   if (!privateUser) return
   await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
 }

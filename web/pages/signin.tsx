@@ -41,7 +41,7 @@ function RegisterComponent() {
   useEffect(() => {
     const checkAndRedirect = async () => {
       if (user) {
-        console.log("User signed in:", user);
+        console.debug("User signed in:", user);
         try {
           const profile = await getProfileRow(user.id, db)
           if (profile) {
@@ -80,7 +80,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password);
-      console.log(creds)
+      console.debug(creds)
     } catch (error) {
       console.error("Error signing in:", error);
       const message = 'Failed to sign in with your email and password';
@@ -115,7 +115,7 @@ function RegisterComponent() {
     }
   }
 
-  console.log('Form rendering');
+  console.debug('Form rendering');
   return (
     <LovePage trackPageView={'signin'}>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

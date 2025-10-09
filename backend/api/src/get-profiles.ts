@@ -29,7 +29,7 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  console.log(props)
+  console.debug(props)
   const {
     limit: limitParam,
     after,
@@ -87,7 +87,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     const cursor = after
       ? profiles.findIndex((l) => l.id.toString() === after) + 1
       : 0
-    console.log(cursor)
+    console.debug(cursor)
 
     if (limitParam) return profiles.slice(cursor, cursor + limitParam)
 
@@ -158,7 +158,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     limitParam && limit(limitParam)
   )
 
-  // console.log('query:', query)
+  // console.debug('query:', query)
 
   return await pg.map(query, [], convertRow)
 }

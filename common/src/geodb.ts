@@ -23,10 +23,10 @@ export const geodbFetch = async (endpoint: string) => {
     }
 
     const data = await res.json()
-    console.log('geodbFetch', endpoint, data)
+    console.debug('geodbFetch', endpoint, data)
     return {status: 'success', data}
   } catch (error) {
-    console.log('geodbFetch', endpoint, error)
+    console.debug('geodbFetch', endpoint, error)
     return {status: 'failure', data: error}
   }
 }

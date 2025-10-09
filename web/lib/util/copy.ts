@@ -14,14 +14,14 @@ export function copyToClipboard(text: string) {
     (window as any).clipboardData &&
     (window as any).clipboardData.setData
   ) {
-    console.log('copy 2')
+    console.debug('copy 2')
     // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
     return (window as any).clipboardData.setData('Text', text)
   } else if (
     document.queryCommandSupported &&
     document.queryCommandSupported('copy')
   ) {
-    console.log('copy 3')
+    console.debug('copy 3')
     const textarea = document.createElement('textarea')
     textarea.textContent = text
     textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in Microsoft Edge.

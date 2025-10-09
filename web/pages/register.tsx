@@ -57,7 +57,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
       const creds = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User signed up:", creds.user);
+      console.debug("User signed up:", creds.user);
     } catch (error) {
       console.error("Error signing up:", error);
       if (error instanceof Error && error.message.includes("email-already-in-use")) {

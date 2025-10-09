@@ -55,7 +55,7 @@
 //     // })
 //     setDialogOpen(false)
 //
-//     // console.log('result', result)
+//     // console.debug('result', result)
 //
 //     // if (result.success) {
 //     //   window.location.reload()

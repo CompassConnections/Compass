@@ -42,13 +42,13 @@ export default function TestUser() {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setSubmitting(false)
-        console.log('SUCCESS creating firebase user', userCredential)
+        console.debug('SUCCESS creating firebase user', userCredential)
       })
       .catch((error) => {
         setSubmitting(false)
         const errorCode = error.code
         const errorMessage = error.message
-        console.log('ERROR creating firebase user', errorCode, errorMessage)
+        console.error('ERROR creating firebase user', errorCode, errorMessage)
       })
   }
   const login = () => {
@@ -57,13 +57,13 @@ export default function TestUser() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setSubmitting(false)
-        console.log('SUCCESS logging in firebase user', userCredential)
+        console.debug('SUCCESS logging in firebase user', userCredential)
       })
       .catch((error) => {
         setSigningIn(false)
         const errorCode = error.code
         const errorMessage = error.message
-        console.log('ERROR logging in firebase user', errorCode, errorMessage)
+        console.error('ERROR logging in firebase user', errorCode, errorMessage)
       })
   }
 

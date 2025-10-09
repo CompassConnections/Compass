@@ -115,7 +115,7 @@ export default async function handler(req: NextRequest) {
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)
   } catch (e: any) {
-    console.log(`${e.message}`)
+    console.error(`${e.message}`)
     return new Response(`Failed to generate the image`, {
       status: 500,
     })

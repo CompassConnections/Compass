@@ -58,7 +58,7 @@ function AddCompatibilityQuestionModal(props: {
   )
   const afterAddQuestion = (newQuestion: rowFor<'love_questions'>) => {
     setDbQuestion(newQuestion)
-    console.log('setDbQuestion', newQuestion)
+    console.debug('setDbQuestion', newQuestion)
   }
 
   return (
@@ -137,7 +137,7 @@ function CreateCompatibilityModalContent(props: {
         options: generateJson(),
       };
       const newQuestion = await api('create-compatibility-question', data)
-      console.log('create-compatibility-question', newQuestion, data)
+      console.debug('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question
       if (q) {
         afterAddQuestion(q as rowFor<'love_questions'>)

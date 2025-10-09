@@ -15,7 +15,7 @@ export const useProfile = () => {
 
   const refreshProfile = () => {
     if (user) {
-      console.log('Refreshing profile in useProfile for', user?.username, profile);
+      console.debug('Refreshing profile in useProfile for', user?.username, profile);
       getProfileRow(user.id, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)
@@ -38,18 +38,18 @@ export const useProfileByUser = (user: User | undefined) => {
 
   function refreshProfile() {
     if (userId) {
-      console.log('Refreshing profile in useProfileByUser for', user?.username, profile);
+      console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
       getProfileRow(userId, db)
         .then((profile) => {
           if (!profile) setProfile(null)
           else setProfile({...profile, user})
         })
         .catch(error => {
-          console.log('Warning: profile not found', user?.username, error);
+          console.debug('Warning: profile not found', user?.username, error);
           setProfile(null)
           return
         });
-      console.log('End Refreshing profile for', user?.username, profile);
+      console.debug('End Refreshing profile for', user?.username, profile);
     }
   }
 
@@ -66,7 +66,7 @@ export const useProfileByUserId = (userId: string | undefined) => {
   >(undefined, `profile-${userId}`)
 
   useEffect(() => {
-    console.log('Refreshing profile in useProfileByUserId for', userId, profile);
+    console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
     if (userId)
       getProfileRow(userId, db).then((profile) => {
         if (!profile) setProfile(null)

@@ -25,7 +25,7 @@ export const sendSearchNotifications = async () => {
     from('bookmarked_searches'),
   )
   const searches = await pg.map(search_query, [], convertSearchRow) as Row<'bookmarked_searches'>[]
-  console.log(`Running ${searches.length} bookmarked searches`)
+  console.debug(`Running ${searches.length} bookmarked searches`)
 
   const _users = await pg.map(
     renderSql(
@@ -36,7 +36,7 @@ export const sendSearchNotifications = async () => {
     convertSearchRow
   ) as Row<'users'>[]
   const users = keyBy(_users, 'id')
-  console.log('users', users)
+  console.debug('users', users)
 
   const _privateUsers = await pg.map(
     renderSql(
@@ -47,7 +47,7 @@ export const sendSearchNotifications = async () => {
     convertSearchRow
   ) as Row<'private_users'>[]
   const privateUsers = keyBy(_privateUsers, 'id')
-  console.log('privateUsers', privateUsers)
+  console.debug('privateUsers', privateUsers)
 
   const matches: MatchesByUserType = {}
 
@@ -55,7 +55,7 @@ export const sendSearchNotifications = async () => {
     if (typeof row.search_filters !== 'object') continue;
     const props = {...row.search_filters, skipId: row.creator_id, lastModificationWithin: '24 hours'}
     const profiles = await loadProfiles(props as profileQueryType)
-    console.log(profiles.map((item: any) => item.name))
+    console.debug(profiles.map((item: any) => item.name))
     if (!profiles.length) continue
     if (!(row.creator_id in matches)) {
       if (!privateUsers[row.creator_id]) continue
@@ -74,7 +74,7 @@ export const sendSearchNotifications = async () => {
       })),
     })
   }
-  console.log('matches:', JSON.stringify(matches, null, 2))
+  console.debug('matches:', JSON.stringify(matches, null, 2))
   await notifyBookmarkedSearch(matches)
 
   return {status: 'success'}

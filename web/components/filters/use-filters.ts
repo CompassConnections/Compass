@@ -80,7 +80,7 @@ export const useFilters = (you: Profile | undefined) => {
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
     ),
   }
-  console.log(you, yourFilters)
+  console.debug(you, yourFilters)
 
   const isYourFilters =
     !!you &&

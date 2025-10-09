@@ -5,7 +5,7 @@ cd "$(dirname "$0")"/..
 
 source .env
 
-export url=http://localhost:8088/v0
+export url=http://localhost:8088
 #export url=https://api.compassmeet.com
 
 export endpoint=/internal/send-search-notifications

@@ -185,29 +185,29 @@ resource "google_compute_url_map" "api_url_map" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.api_backend.self_link
-
-    # Priority 0: passthrough /v0/* requests
-    route_rules {
-      priority = 1
-      match_rules {
-        prefix_match = "/v0"
-      }
-      service = google_compute_backend_service.api_backend.self_link
-    }
-
-    # Priority 1: rewrite everything else to /v0
-    route_rules {
-      priority = 2
-      match_rules {
-        prefix_match = "/"
-      }
-      route_action {
-        url_rewrite {
-          path_prefix_rewrite = "/v0/"
-        }
-      }
-      service = google_compute_backend_service.api_backend.self_link
-    }
+  #
+  #   # Priority 0: passthrough /v0/* requests
+  #   route_rules {
+  #     priority = 1
+  #     match_rules {
+  #       prefix_match = "/v0"
+  #     }
+  #     service = google_compute_backend_service.api_backend.self_link
+  #   }
+  #
+  #   # Priority 1: rewrite everything else to /v0
+  #   route_rules {
+  #     priority = 2
+  #     match_rules {
+  #       prefix_match = "/"
+  #     }
+  #     route_action {
+  #       url_rewrite { # This may break websockets (the Upgrade and Connection headers must pass through untouched).
+  #         path_prefix_rewrite = "/v0/"
+  #       }
+  #     }
+  #     service = google_compute_backend_service.api_backend.self_link
+  #   }
   }
 }
 

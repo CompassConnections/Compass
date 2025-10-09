@@ -20,10 +20,10 @@ export class APIError extends Error {
   }
 }
 
-const prefix = 'v0'
+const prefix = ''
 
 export function pathWithPrefix(path: string) {
-  return `/${prefix}${path}`
+  return `${prefix}${path}`
 }
 
 export function getWebsocketUrl() {
@@ -33,5 +33,5 @@ export function getWebsocketUrl() {
 
 export function getApiUrl(path: string) {
   const protocol = IS_LOCAL ? 'http' : 'https'
-  return `${protocol}://${BACKEND_DOMAIN}/${prefix}/${path}`
+  return `${protocol}://${BACKEND_DOMAIN}${prefix}/${path}`
 }

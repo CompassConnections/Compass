@@ -18,3 +18,5 @@ export const formLink = "https://forms.gle/tKnXUMAbEreMK6FC6"
 export const pStyle = "mt-1 text-gray-800 dark:text-white whitespace-pre-line";
 
 export const IS_MAINTENANCE = false; // set to true to enable maintenance mode banner
+
+export const MIN_BIO_LENGTH = 300;

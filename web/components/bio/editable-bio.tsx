@@ -1,16 +1,17 @@
-import { JSONContent } from '@tiptap/core'
-import { MAX_DESCRIPTION_LENGTH } from 'common/envs/constants'
-import { Profile } from 'common/love/profile'
-import { tryCatch } from 'common/util/try-catch'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { TextEditor, useTextEditor } from 'web/components/widgets/editor'
-import { updateProfile } from 'web/lib/api'
-import { track } from 'web/lib/service/analytics'
-import React, {useState} from "react";
+import {JSONContent} from '@tiptap/core'
+import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
+import {Profile} from 'common/love/profile'
+import {tryCatch} from 'common/util/try-catch'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
+import {updateProfile} from 'web/lib/api'
+import {track} from 'web/lib/service/analytics'
+import React, {useEffect, useState} from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link"
+import {MIN_BIO_LENGTH} from "common/constants";
 
 const placeHolder = "Tell us about yourself — and what you're looking for!";
 
@@ -22,10 +23,6 @@ Write a clear and engaging bio to help others understand who you are and the con
 - Expectations, boundaries, and personality traits
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `
-
-export function CharLimitText() {
-  return <p>Profiles with fewer than 250 characters will be hidden by default from the profile grid — write a meaningful bio so others can find you through keyword search and connect intentionally.</p>
-}
 
 export function BioTips() {
   const [showMoreInfo, setShowMoreInfo] = useState(false)
@@ -62,18 +59,15 @@ export function EditableBio(props: {
   onSave: () => void
   onCancel?: () => void
 }) {
-  const { profile, onCancel, onSave } = props
-  const editor = useTextEditor({
-    max: MAX_DESCRIPTION_LENGTH,
-    defaultValue: (profile.bio as JSONContent) ?? '',
-    placeholder: placeHolder,
-  })
+  const {profile, onCancel, onSave} = props
+  const [editor, setEditor] = useState<any>(null)
+  const [textLength, setTextLength] = useState(0);
 
-  const hideButtons = editor?.getText().length === 0 && !profile.bio
+  const hideButtons = (textLength === 0) && !profile.bio
 
   const saveBio = async () => {
     if (!editor) return
-    const { error } = await tryCatch(updateProfile({ bio: editor.getJSON() }))
+    const {error} = await tryCatch(updateProfile({bio: editor.getJSON()}))
 
     if (error) {
       console.error(error)
@@ -85,10 +79,15 @@ export function EditableBio(props: {
 
   return (
     <Col className="relative w-full">
-      <CharLimitText/>
-      <BioTips/>
-      <TextEditor editor={editor} />
-
+      <BaseBio
+        defaultValue={profile.bio}
+        onEditor={(e) => {
+          setEditor(e);
+          e?.on('update', () => {
+            setTextLength(e.getText().length);
+          });
+        }}
+      />
       {!hideButtons && (
         <Row className="absolute bottom-1 right-1 justify-between gap-2">
           {onCancel && (
@@ -114,38 +113,53 @@ export function EditableBio(props: {
 export function SignupBio(props: {
   onChange: (e: JSONContent) => void
 }) {
-  const { onChange } = props
-  const editor = useTextEditor({
-    max: MAX_DESCRIPTION_LENGTH,
-    defaultValue: '',
-    placeholder: placeHolder,
-  })
-
-  // const [charLength, setCharLength] = useState(0)
-
+  const {onChange} = props
   return (
     <Col className="relative w-full">
-      <CharLimitText/>
-      <BioTips/>
-      <TextEditor
-        editor={editor}
-        onBlur={() => {
-          // console.debug('onchange', editor?.getText())
+      <BaseBio
+        onBlur={(editor) => {
           if (!editor) return
           const e = editor.getJSON()
-          // console.debug(e)
-          // const text = e.content.map((block: any) => block.content?.map((c: any) => c.text).join('') ?? '').join('');
-          // setCharLength(text.length)
-          // console.debug(text, text.length)
-          // if (text.length < 250) {
-          //   return; // do not save
-          // }
-
-          // console.debug('bio changed', e, profile.bio);
           onChange(e)
         }}
       />
-      {/*<p>{charLength} / 250</p>*/}
     </Col>
+  )
+}
+
+interface BaseBioProps {
+  defaultValue?: any
+  onBlur?: (editor: any) => void
+  onEditor?: (editor: any) => void
+}
+
+export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
+  const editor = useTextEditor({
+    // extensions: [StarterKit],
+    max: MAX_DESCRIPTION_LENGTH,
+    defaultValue: defaultValue,
+    placeholder: placeHolder,
+  })
+  const textLength = editor?.getText().length ?? 0
+
+  useEffect(() => {
+    onEditor?.(editor)
+  }, [editor, onEditor])
+
+  return (
+    <div>
+      {textLength < MIN_BIO_LENGTH &&
+          <p>
+              Write {MIN_BIO_LENGTH - textLength} more {MIN_BIO_LENGTH - textLength === 1 ? 'character' : 'characters'} so
+              others can find you through keyword
+              search and connect intentionally.
+          </p>
+      }
+      <BioTips/>
+      <TextEditor
+        editor={editor}
+        onBlur={() => onBlur?.(editor)}
+      />
+    </div>
   )
 }

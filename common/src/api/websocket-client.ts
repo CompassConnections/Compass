@@ -93,7 +93,7 @@ export class APIRealtimeClient {
       // Send a heartbeat ping every 25s
       this.heartbeat = window.setInterval(() => {
         if (this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify({ type: "ping" }));
+          this.sendMessage('ping', {}).catch(console.error);
         }
       }, 25000);
       if (this.subscriptions.size > 0) {

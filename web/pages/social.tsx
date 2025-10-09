@@ -1,5 +1,5 @@
 import {LovePage} from 'web/components/love-page'
-import {discordLink, githubRepo, redditLink, stoatLink, xLink} from "common/constants";
+import {discordLink, githubRepo, redditLink, stoatLink, xLink, supportEmail} from "common/constants";
 
 
 export const Block = (props: {
@@ -30,6 +30,7 @@ export default function Social() {
               <Block url={redditLink} content={'Reddit'}/>
               <Block url={githubRepo} content={'GitHub'}/>
               <Block url={xLink} content={'X'}/>
+              <Block url={`mailto:${supportEmail}`} content={`${supportEmail}`}/>
             </div>
           </div>
         </div>

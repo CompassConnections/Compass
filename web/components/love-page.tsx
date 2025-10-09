@@ -69,6 +69,10 @@ export function LovePage(props: {
           position={isMobile ? 'bottom-center' : 'top-center'}
           containerClassName="!bottom-[70px]"
         />
+        {/* Maintenance banner */}
+        <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
+          Maintenance in progress: Some features may be broken for the next few hours.
+        </div>
         {hideSidebar ? (
           <div className="lg:col-span-2 lg:flex" />
         ) : (

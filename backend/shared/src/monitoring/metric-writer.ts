@@ -104,7 +104,7 @@ export class MetricWriter {
       for (const entry of freshEntries) {
         entry.fresh = false
       }
-      if (!IS_GOOGLE_CLOUD) {
+      if (IS_GOOGLE_CLOUD) {
         log.debug('Writing GCP metrics.', {entries: freshEntries})
         if (this.instance == null) {
           this.instance = await getInstanceInfo()

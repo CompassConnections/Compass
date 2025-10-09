@@ -54,6 +54,9 @@ gcloud projects add-iam-policy-binding compass-130ba \
     --member="serviceAccount:253367029065-compute@developer.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor"
 gcloud run services list
+gcloud compute backend-services update api-backend \
+  --global \
+  --timeout=600s
 ```
 
 Set up the saved search notifications job:

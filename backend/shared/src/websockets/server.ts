@@ -12,10 +12,15 @@ import {
 import {IS_LOCAL} from "common/envs/constants";
 import {getWebsocketUrl} from "common/api/utils";
 
+// Extend the type definition locally
+interface HeartbeatWebSocket extends WebSocket {
+  isAlive?: boolean
+}
+
 const SWITCHBOARD = new Switchboard()
 
 // if a connection doesn't ping for this long, we assume the other side is toast
-const CONNECTION_TIMEOUT_MS = 60 * 1000
+// const CONNECTION_TIMEOUT_MS = 60 * 1000
 
 export class MessageParseError extends Error {
   details?: unknown
@@ -52,7 +57,7 @@ function parseMessage(data: RawData): ClientMessage {
   }
 }
 
-function processMessage(ws: WebSocket, data: RawData): ServerMessage<'ack'> {
+function processMessage(ws: HeartbeatWebSocket, data: RawData): ServerMessage<'ack'> {
   try {
     const msg = parseMessage(data)
     const { type, txid } = msg
@@ -129,21 +134,26 @@ export function listen(server: HttpServer, path: string) {
   let deadConnectionCleaner: NodeJS.Timeout | undefined
   wss.on('listening', () => {
     log.info(`Web socket server listening on ${path}. ${getWebsocketUrl()}`)
-    deadConnectionCleaner = setInterval(function ping() {
-      const now = Date.now()
-      for (const ws of wss.clients) {
-        const lastSeen = SWITCHBOARD.getClient(ws).lastSeen
-        if (lastSeen < now - CONNECTION_TIMEOUT_MS) {
-          ws.terminate()
+    deadConnectionCleaner = setInterval(() => {
+      for (const ws of wss.clients as Set<HeartbeatWebSocket>) {
+        if (ws.isAlive === false) {
+          log.debug('Terminating dead connection');
+          ws.terminate();
+          continue;
         }
+        ws.isAlive = false;
+        log.debug('Sending ping to client');
+        ws.ping();
       }
-    }, CONNECTION_TIMEOUT_MS)
+    }, 25000);
   })
   wss.on('error', (err) => {
     log.error('Error on websocket server.', { error: err })
   })
-  wss.on('connection', (ws) => {
-    // todo: should likely kill connections that haven't sent any ping for a long time
+  wss.on('connection', (ws: HeartbeatWebSocket) => {
+    ws.isAlive = true;
+    log.debug('Received pong from client');
+    ws.on('pong', () => (ws.isAlive = true));
     metrics.inc('ws/connections_established')
     metrics.set('ws/open_connections', wss.clients.size)
     log.debug('WS client connected.')

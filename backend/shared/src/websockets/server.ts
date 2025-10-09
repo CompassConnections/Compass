@@ -142,7 +142,7 @@ export function listen(server: HttpServer, path: string) {
           continue;
         }
         ws.isAlive = false;
-        log.debug('Sending ping to client');
+        // log.debug('Sending ping to client');
         ws.ping();
       }
     }, 25000);
@@ -152,7 +152,7 @@ export function listen(server: HttpServer, path: string) {
   })
   wss.on('connection', (ws: HeartbeatWebSocket) => {
     ws.isAlive = true;
-    log.debug('Received pong from client');
+    // log.debug('Received pong from client');
     ws.on('pong', () => (ws.isAlive = true));
     metrics.inc('ws/connections_established')
     metrics.set('ws/open_connections', wss.clients.size)

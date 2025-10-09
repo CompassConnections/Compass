@@ -5,7 +5,7 @@
       "rules": "storage.rules"
     },
     {
-      "bucket": "compass-130ba-private.firebasestorage.app",
+      "bucket": "compass-130ba-private",
       "rules": "private-storage.rules"
     }
   ]

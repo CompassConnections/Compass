@@ -13,7 +13,7 @@ export const DEV_CONFIG: EnvConfig = {
     authDomain: "compass-57c3c.firebaseapp.com",
     projectId: "compass-57c3c",
     storageBucket: "compass-57c3c.firebasestorage.app",
-    privateBucket: 'compass-private.firebasestorage.app',
+    privateBucket: 'compass-130ba-private',
     messagingSenderId: "297460199314",
     appId: "1:297460199314:web:c45678c54285910e255b4b",
     measurementId: "G-N6LZ64EMJ2",

@@ -44,7 +44,7 @@ export const PROD_CONFIG: EnvConfig = {
     authDomain: "compass-130ba.firebaseapp.com",
     projectId: "compass-130ba",
     storageBucket: "compass-130ba.firebasestorage.app",
-    privateBucket: 'compass-private.firebasestorage.app',
+    privateBucket: 'compass-130ba-private',
     messagingSenderId: "253367029065",
     appId: "1:253367029065:web:b338785af99d4145095e98",
     measurementId: "G-2LSQYJQE6P",

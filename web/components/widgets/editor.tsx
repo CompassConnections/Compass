@@ -1,35 +1,29 @@
 import CharacterCount from '@tiptap/extension-character-count'
-import { Link } from '@tiptap/extension-link'
+import {Link} from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import type { Content, JSONContent } from '@tiptap/react'
-import {
-  Editor,
-  EditorContent,
-  Extensions,
-  mergeAttributes,
-  useEditor,
-} from '@tiptap/react'
+import type {Content, JSONContent} from '@tiptap/react'
+import {Editor, EditorContent, Extensions, mergeAttributes, useEditor,} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
-import { ReactNode, useCallback, useEffect, useMemo } from 'react'
-import { DisplayMention } from '../editor/user-mention/mention-extension'
-import { Linkify } from './linkify'
-import { linkClass } from './site-link'
+import {ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {DisplayMention} from '../editor/user-mention/mention-extension'
+import {Linkify} from './linkify'
+import {linkClass} from './site-link'
 import Iframe from 'common/util/tiptap-iframe'
-import { debounce, noop } from 'lodash'
-import { FloatingFormatMenu } from '../editor/floating-format-menu'
-import { StickyFormatMenu } from '../editor/sticky-format-menu'
-import { Upload, useUploadMutation } from '../editor/upload-extension'
-import { generateReact } from '../editor/utils'
-import { EmojiExtension } from '../editor/emoji/emoji-extension'
-import { nodeViewMiddleware } from '../editor/nodeview-middleware'
-import { BasicImage, DisplayImage, MediumDisplayImage } from '../editor/image'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
-import { richTextToString } from 'common/util/parse'
-import { safeLocalStorage } from 'web/lib/util/local'
+import {debounce, noop} from 'lodash'
+import {FloatingFormatMenu} from '../editor/floating-format-menu'
+import {StickyFormatMenu} from '../editor/sticky-format-menu'
+import {Upload, useUploadMutation} from '../editor/upload-extension'
+import {generateReact} from '../editor/utils'
+import {EmojiExtension} from '../editor/emoji/emoji-extension'
+import {nodeViewMiddleware} from '../editor/nodeview-middleware'
+import {BasicImage, DisplayImage, MediumDisplayImage} from '../editor/image'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {richTextToString} from 'common/util/parse'
+import {safeLocalStorage} from 'web/lib/util/local'
 
 const DisplayLink = Link.extend({
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({HTMLAttributes}) {
     HTMLAttributes.target = HTMLAttributes.href.includes('manifold.markets')
       ? '_self'
       : '_blank'
@@ -51,7 +45,7 @@ const DisplayLink = Link.extend({
 const editorExtensions = (simple = false): Extensions =>
   nodeViewMiddleware([
     StarterKit.configure({
-      heading: simple ? false : { levels: [1, 2, 3] },
+      heading: simple ? false : {levels: [1, 2, 3]},
       horizontalRule: simple ? false : {},
     }),
     simple ? DisplayImage : BasicImage,
@@ -84,7 +78,7 @@ export function useTextEditor(props: {
   extensions?: Extensions
   className?: string
 }) {
-  const { placeholder, className, max, defaultValue, size = 'md', key } = props
+  const {placeholder, className, max, defaultValue, size = 'md', key} = props
   const simple = size === 'sm'
 
   const [content, setContent] = usePersistentLocalState<
@@ -122,9 +116,9 @@ export function useTextEditor(props: {
     editorProps: getEditorProps(),
     onUpdate: !key
       ? noop
-      : ({ editor }) => {
-          save(editor.getJSON())
-        },
+      : ({editor}) => {
+        save(editor.getJSON())
+      },
     extensions: [
       ...editorExtensions(simple),
       Placeholder.configure({
@@ -132,7 +126,7 @@ export function useTextEditor(props: {
         emptyEditorClass:
           'before:content-[attr(data-placeholder)] before:text-ink-500 before:float-left before:h-0 cursor-text',
       }),
-      CharacterCount.configure({ limit: max }),
+      CharacterCount.configure({limit: max}),
       ...(props.extensions ?? []),
     ],
     content: defaultValue ?? (key && content ? content : ''),
@@ -186,7 +180,7 @@ export function TextEditor(props: {
   onBlur?: () => void
   onChange?: () => void
 }) {
-  const { editor, simple, hideEmbed, children, className, onBlur, onChange } = props
+  const {editor, simple, hideEmbed, children, className, onBlur, onChange} = props
 
   return (
     // matches input styling
@@ -196,9 +190,9 @@ export function TextEditor(props: {
         className
       )}
     >
-      <FloatingFormatMenu editor={editor} advanced={!simple} />
+      <FloatingFormatMenu editor={editor} advanced={!simple}/>
       <div className={clsx('max-h-[69vh] overflow-auto')}>
-        <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
+        <EditorContent editor={editor} onBlur={onBlur} onChange={onChange}/>
       </div>
 
       <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>
@@ -213,7 +207,7 @@ function RichContent(props: {
   className?: string
   size?: 'sm' | 'md' | 'lg'
 }) {
-  const { className, content, size = 'md' } = props
+  const {className, content, size = 'md'} = props
 
   const jsxContent = useMemo(() => {
     try {
@@ -222,8 +216,8 @@ function RichContent(props: {
         size === 'sm'
           ? DisplayImage
           : size === 'md'
-          ? MediumDisplayImage
-          : BasicImage,
+            ? MediumDisplayImage
+            : BasicImage,
         DisplayLink,
         DisplayMention,
         Iframe,
@@ -257,7 +251,7 @@ export function Content(props: {
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }) {
-  const { className, size = 'md', content } = props
+  const {className, size = 'md', content} = props
   return typeof content === 'string' ? (
     <Linkify
       className={clsx('whitespace-pre-line', proseClass(size), className)}

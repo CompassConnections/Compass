@@ -54,7 +54,7 @@ export class APIRealtimeClient {
   // subscribers by the topic they are subscribed to
   subscriptions: Map<string, BroadcastHandler[]>
   connectTimeout?: NodeJS.Timeout
-  heartbeat?: NodeJS.Timeout
+  heartbeat?: number | undefined;
 
   constructor(url: string) {
     this.url = url
@@ -90,10 +90,12 @@ export class APIRealtimeClient {
       if (VERBOSE_LOGGING) {
         console.info('API websocket opened.')
       }
-      this.heartbeat = setInterval(
-        async () => this.sendMessage('ping', {}).catch(console.error),
-        30000
-      )
+      // Send a heartbeat ping every 25s
+      this.heartbeat = window.setInterval(() => {
+        if (this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({ type: "ping" }));
+        }
+      }, 25000);
       if (this.subscriptions.size > 0) {
         this.sendMessage('subscribe', {
           topics: Array.from(this.subscriptions.keys()),
@@ -105,7 +107,7 @@ export class APIRealtimeClient {
       if (VERBOSE_LOGGING) {
         console.info(`API websocket closed with code=${ev.code}: ${ev.reason}`)
       }
-      clearInterval(this.heartbeat)
+      if (this.heartbeat) clearInterval(this.heartbeat)
 
       // mqp: we might need to change how the txn stuff works if we ever want to
       // implement "wait until i am subscribed, and then do something" in a component.

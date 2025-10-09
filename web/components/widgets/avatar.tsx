@@ -47,7 +47,7 @@ export const Avatar = memo(
     const url: string = avatarUrl && avatarUrl.length > 0
       ? avatarUrl
       : `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackInitial)}`;
-    console.log(username, fallbackInitial, url)
+    // console.log(username, fallbackInitial, url)
 
     // there can be no avatar URL or username in the feed, we show a "submit comment"
     // item with a fake grey user circle guy even if you aren't signed in

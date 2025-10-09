@@ -144,13 +144,13 @@ export default function ProfileHeader(props: {
               className="sm:flex"
               username={user.username}
             />
-            {currentUser && (
-              <StarButton
-                targetProfile={profile}
-                isStarred={starredUserIds.includes(user.id)}
-                refresh={refreshStars}
-              />
-            )}
+            {/*{currentUser && (*/}
+            {/*  <StarButton*/}
+            {/*    targetProfile={profile}*/}
+            {/*    isStarred={starredUserIds.includes(user.id)}*/}
+            {/*    refresh={refreshStars}*/}
+            {/*  />*/}
+            {/*)}*/}
             {currentUser && showMessageButton && (
               <SendMessageButton toUser={user} currentUser={currentUser}/>
             )}

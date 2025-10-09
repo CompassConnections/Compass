@@ -25,7 +25,7 @@ PGDATABASE="postgres"
 # Retrieve password from Secret Manager
 PGPASSWORD=$(gcloud secrets versions access latest --secret="SUPABASE_DB_PASSWORD")
 
-BUCKET_NAME="gs://compass-130ba.firebasestorage.app/backups/supabase"
+BUCKET_NAME="gs://compass-130ba-private/backups/supabase"
 BACKUP_DIR="/tmp/supabase_backups"
 RETENTION_DAYS=30
 

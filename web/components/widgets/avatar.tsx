@@ -43,14 +43,11 @@ export const Avatar = memo(
         Router.push(`/${username}`)
       }
     }
-
     const fallbackInitial = (username || 'U')[0]; // first character, not encoded string
     const url: string = avatarUrl && avatarUrl.length > 0
       ? avatarUrl
       : `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackInitial)}`;
-
-
-    // console.debug(url)
+    console.log(username, fallbackInitial, url)
 
     // there can be no avatar URL or username in the feed, we show a "submit comment"
     // item with a fake grey user circle guy even if you aren't signed in

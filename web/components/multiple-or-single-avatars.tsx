@@ -4,7 +4,7 @@ import { Row } from './layout/row'
 import clsx from 'clsx'
 
 export const MultipleOrSingleAvatars = (props: {
-  avatars: Array<{ avatarUrl: string; id: string }>
+  avatars: Array<{ avatarUrl: string; id: string; name: string }>
   onClick?: () => void
   size: AvatarSizeType
   // TODO: standardize these numbers so they are calculated from the size
@@ -17,7 +17,7 @@ export const MultipleOrSingleAvatars = (props: {
   if (avatars.length === 0) return null
 
   if (avatars.length === 1) {
-    return <Avatar size={size} avatarUrl={avatars[0].avatarUrl} />
+    return <Avatar size={size} avatarUrl={avatars[0].avatarUrl} username={avatars[0].name} />
   }
 
   const totalAvatars = avatars.length

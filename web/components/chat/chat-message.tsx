@@ -59,7 +59,7 @@ export const ChatMessageItem = memo(function ChatMessageItem(props: {
           userId={id}
         />
       )}
-      <Col className="@sm:max-w-[calc(100vw-6rem)] @md:max-w-[80%] max-w-[calc(100vw-2rem)]">
+      <Col className="sm:max-w-[calc(100vw-6rem)] md:max-w-[70%]">
         {firstOfUser && !isMe && chat.visibility !== 'system_status' && (
           <Row className={'items-center gap-3'}>
             <Link

@@ -50,6 +50,10 @@ export default function PrivateMessagesPage() {
   const { channelId: channelIdString } = router.query as { channelId: string }
   const channelId = router.isReady ? parseInt(channelIdString) : undefined
   const user = useUser()
+  if (user === null) {
+    router.replace(`/signin?returnTo=${encodeURIComponent('/messages')}`)
+    return <LoadingIndicator />
+  }
   return (
     <LovePage trackPageView={'private messages page'}>
       {router.isReady && channelId && user ? (

@@ -2,15 +2,15 @@ locals {
   project = "compass-130ba"
   region  = "us-west1"
   zone         = "us-west1-b"
-  service_name = "backup"
+  # service_name = "backup"
   machine_type = "e2-micro"
 }
 
-variable "env" {
-  description = "Environment (env or prod)"
-  type        = string
-  default     = "prod"
-}
+# variable "env" {
+#   description = "Environment (env or prod)"
+#   type        = string
+#   default     = "prod"
+# }
 
 provider "google" {
   project = local.project

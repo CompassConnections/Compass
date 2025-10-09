@@ -1,6 +1,8 @@
 import {HomeIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
 import {
+  GlobeAltIcon,
   HomeIcon as SolidHomeIcon,
+  LinkIcon,
   QuestionMarkCircleIcon as SolidQuestionIcon,
   UserCircleIcon,
 } from '@heroicons/react/solid'
@@ -44,13 +46,11 @@ export function LovePage(props: {
   const profile = useProfile()
   const bottomNavOptions = user
     ? getBottomNavigation(user, profile)
-    : signedOutNavigation()
+    : getBottomSignedOutNavigation()
   // const [isModalOpen, setIsModalOpen] = useState(false)
-  const desktopSidebarOptions = getDesktopNav(user)
+  const desktopSidebarOptions = getDesktopNavigation(user)
 
-  const mobileSidebarOptions = user
-    ? getSidebarNavigation(() => setIsAddFundsModalOpen(true))
-    : []
+  const mobileSidebarOptions = getMobileSidebar(() => setIsAddFundsModalOpen(true))
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   trackPageView && useTracking(`view love ${trackPageView}`, trackPageProps)
@@ -59,7 +59,7 @@ export function LovePage(props: {
 
   return (
     <>
-      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]" />
+      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]"/>
       <Col
         className={clsx(
           'pb-[58px] lg:pb-0', // bottom bar padding
@@ -71,16 +71,17 @@ export function LovePage(props: {
           containerClassName="!bottom-[70px]"
         />
         {/* Maintenance banner */}
-        {IS_MAINTENANCE && <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
-          Maintenance in progress: Some features may be broken for the next few hours.
-        </div>}
+        {IS_MAINTENANCE &&
+            <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
+                Maintenance in progress: Some features may be broken for the next few hours.
+            </div>}
         {hideSidebar ? (
-          <div className="lg:col-span-2 lg:flex" />
+          <div className="lg:col-span-2 lg:flex"/>
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
             className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
-            />
+          />
         )}
         <main
           className={clsx(
@@ -102,14 +103,23 @@ export function LovePage(props: {
   )
 }
 
-const Profiles = { name: 'Profiles', href: '/', icon: SolidHomeIcon };
-const ProfilesHome = { name: 'Profiles', href: '/', icon: HomeIcon };
-const faq = { name: 'FAQ', href: '/faq', icon: SolidQuestionIcon };
-const About = { name: 'About', href: '/about', icon: QuestionMarkCircleIcon };
-const Signin = { name: 'Sign in', href: '/signin', icon: UserCircleIcon };
+const Profiles = {name: 'Profiles', href: '/', icon: SolidHomeIcon};
+const ProfilesHome = {name: 'Profiles', href: '/', icon: HomeIcon};
+const faq = {name: 'FAQ', href: '/faq', icon: SolidQuestionIcon};
+const About = {name: 'About', href: '/about', icon: QuestionMarkCircleIcon};
+const Signin = {name: 'Sign in', href: '/signin', icon: UserCircleIcon};
 const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon};
 const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon};
 const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon};
+const Social = {name: 'Social', href: '/social', icon: LinkIcon};
+const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon};
+
+const base = [
+  About,
+  faq,
+  Social,
+  Organization,
+]
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   return buildArray(
@@ -130,33 +140,28 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   )
 }
 
-const signedOutNavigation = () => [
+const getBottomSignedOutNavigation = () => [
   Profiles,
   About,
-  faq,
   Signin,
 ]
-const getDesktopNav = (user: User | null | undefined) => {
+
+const getDesktopNavigation = (user: User | null | undefined) => {
   if (user)
     return buildArray(
       ProfilesHome,
       Notifs,
       Messages,
-      About,
-      faq
+      ...base,
     )
 
   return buildArray(
-    // { name: 'Profiles', href: '/', icon: HomeIcon },
-    About,
-    faq
+    ...base
   )
 }
 
-// No sidebar when signed out
-const getSidebarNavigation = (_toggleModal: () => void) => {
+const getMobileSidebar = (_toggleModal: () => void) => {
   return buildArray(
-    About,
-    faq
+    ...base,
   )
 }

@@ -1,18 +1,18 @@
 import Link from 'next/link'
 import clsx from 'clsx'
-import { MenuAlt3Icon } from '@heroicons/react/solid'
-import { Transition, Dialog } from '@headlessui/react'
-import { useState, Fragment } from 'react'
-import { useRouter } from 'next/router'
+import {MenuAlt3Icon} from '@heroicons/react/solid'
+import {Dialog, Transition} from '@headlessui/react'
+import {Fragment, useState} from 'react'
+import {useRouter} from 'next/router'
 import Sidebar from './love-sidebar'
-import { Item } from './love-sidebar-item'
-import { useUser } from 'web/hooks/use-user'
-import { Avatar } from 'web/components/widgets/avatar'
-import { useIsIframe } from 'web/hooks/use-is-iframe'
-import { trackCallback } from 'web/lib/service/analytics'
-import { User } from 'common/user'
-import { Col } from 'web/components/layout/col'
-import { useProfile } from 'web/hooks/use-profile'
+import {Item} from './love-sidebar-item'
+import {useUser} from 'web/hooks/use-user'
+import {Avatar} from 'web/components/widgets/avatar'
+import {useIsIframe} from 'web/hooks/use-is-iframe'
+import {trackCallback} from 'web/lib/service/analytics'
+import {User} from 'common/user'
+import {Col} from 'web/components/layout/col'
+import {useProfile} from 'web/hooks/use-profile'
 
 const itemClass =
   'sm:hover:bg-ink-200 block w-full py-1 px-3 text-center sm:hover:text-primary-700 transition-colors'
@@ -24,7 +24,7 @@ export function BottomNavBar(props: {
   navigationOptions: Item[]
   sidebarNavigationOptions: Item[]
 }) {
-  const { navigationOptions, sidebarNavigationOptions } = props
+  const {navigationOptions, sidebarNavigationOptions} = props
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const router = useRouter()
@@ -38,7 +38,8 @@ export function BottomNavBar(props: {
   }
 
   return (
-    <nav className="border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav">
+    <nav
+      className="border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav">
       {navigationOptions.map((item) => (
         <NavBarItem
           key={item.name}
@@ -47,26 +48,22 @@ export function BottomNavBar(props: {
           user={user}
         />
       ))}
-      {!!user && (
-        <>
-          <div
-            className={clsx(
-              itemClass,
-              'relative',
-              sidebarOpen ? selectedItemClass : ''
-            )}
-            onClick={() => setSidebarOpen(true)}
-          >
-            <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true" />
-            More
-          </div>
-          <MobileSidebar
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            sidebarNavigationOptions={sidebarNavigationOptions}
-          />
-        </>
-      )}
+      <div
+        className={clsx(
+          itemClass,
+          'relative',
+          sidebarOpen ? selectedItemClass : ''
+        )}
+        onClick={() => setSidebarOpen(true)}
+      >
+        <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true"/>
+        More
+      </div>
+      <MobileSidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        sidebarNavigationOptions={sidebarNavigationOptions}
+      />
     </nav>
   )
 }
@@ -79,7 +76,7 @@ function ProfileItem(props: {
   currentPage: string
   track: () => void
 }) {
-  const { user, item, touched, setTouched, currentPage, track } = props
+  const {user, item, touched, setTouched, currentPage, track} = props
   const profile = useProfile()
   return (
     <Link
@@ -114,7 +111,7 @@ function NavBarItem(props: {
   user?: User | null
   className?: string
 }) {
-  const { item, currentPage, children, user } = props
+  const {item, currentPage, children, user} = props
   const track = trackCallback(`navbar: ${item.trackingEventName ?? item.name}`)
   const [touched, setTouched] = useState(false)
   if (item.name === 'Profile' && user) {
@@ -141,7 +138,7 @@ function NavBarItem(props: {
         onTouchStart={() => setTouched(true)}
         onTouchEnd={() => setTouched(false)}
       >
-        {item.icon && <item.icon className="mx-auto my-1 h-6 w-6" />}
+        {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
         {children}
         {item.name}
       </button>
@@ -163,7 +160,7 @@ function NavBarItem(props: {
       onTouchStart={() => setTouched(true)}
       onTouchEnd={() => setTouched(false)}
     >
-      {item.icon && <item.icon className="mx-auto my-1 h-6 w-6" />}
+      {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
       {children}
       {item.name}
     </Link>
@@ -176,7 +173,7 @@ export function MobileSidebar(props: {
   setSidebarOpen: (open: boolean) => void
   sidebarNavigationOptions: Item[]
 }) {
-  const { sidebarOpen, sidebarNavigationOptions, setSidebarOpen } = props
+  const {sidebarOpen, sidebarNavigationOptions, setSidebarOpen} = props
   return (
     <div>
       <Transition.Root show={sidebarOpen} as={Fragment}>
@@ -195,7 +192,7 @@ export function MobileSidebar(props: {
             leaveTo="opacity-0"
           >
             {/* background cover */}
-            <Dialog.Overlay className="bg-canvas-100/75 fixed inset-0" />
+            <Dialog.Overlay className="bg-canvas-100/75 fixed inset-0"/>
           </Transition.Child>
           <Transition.Child
             as={Fragment}

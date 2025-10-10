@@ -1,20 +1,6 @@
 import {LovePage} from 'web/components/love-page'
+import {GeneralButton} from "web/components/buttons/general-button";
 
-
-export const Block = (props: {
-  url: string
-  content: string
-}) => {
-  const {url, content} = props
-  return <div className="rounded-xl shadow p-6 flex flex-col items-center">
-    <a
-      href={url}
-      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-    >
-      {content}
-    </a>
-  </div>;
-}
 
 export default function Organization() {
   return (
@@ -24,11 +10,11 @@ export default function Organization() {
           <div className="relative py-8 mt-12 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">
               <h3 className="text-4xl font-bold text-center mt-8 mb-8">Organization</h3>
-              <Block url={'/support'} content={'Support'}/>
-              <Block url={'/constitution'} content={'Constitution'}/>
-              <Block url={'/financials'} content={'Financials'}/>
-              <Block url={'/terms'} content={'Terms and Conditions'}/>
-              <Block url={'/privacy'} content={'Privacy Policy'}/>
+              <GeneralButton url={'/support'} content={'Support'}/>
+              <GeneralButton url={'/constitution'} content={'Constitution'}/>
+              <GeneralButton url={'/financials'} content={'Financials'}/>
+              <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>
+              <GeneralButton url={'/privacy'} content={'Privacy Policy'}/>
             </div>
           </div>
         </div>

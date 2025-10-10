@@ -7,7 +7,7 @@ import {APIError, APIHandler} from './helpers/endpoint'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
 import {removeUndefinedProps} from 'common/util/object'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
-import {RESERVED_PATHS} from 'common/envs/constants'
+import {IS_LOCAL, RESERVED_PATHS} from 'common/envs/constants'
 import {getUser, getUserByUsername, log} from 'shared/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -130,7 +130,7 @@ export const createUser: APIHandler<'create-user'> = async (
       console.error('Failed to track create profile', e)
     }
     try {
-      await sendWelcomeEmail(user, privateUser)
+      if (!IS_LOCAL) await sendWelcomeEmail(user, privateUser)
     } catch (e) {
       console.error('Failed to sendWelcomeEmail', e)
     }

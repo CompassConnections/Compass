@@ -53,7 +53,7 @@ export function formatFilters(filters: Partial<FilterFields>, location: location
     const typedKey = key as keyof FilterFields
 
     if (value === undefined || value === null) return
-    if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds' || typedKey == 'orderBy') return
+    if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds' || typedKey == 'orderBy' || typedKey == 'shortBio') return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
 

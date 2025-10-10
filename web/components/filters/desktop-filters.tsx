@@ -13,6 +13,7 @@ import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/love/profile'
 import {FilterFields} from "common/filters";
+import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -132,6 +133,12 @@ export function DesktopFilters(props: {
           </Col>
         }
         popoverClassName="bg-canvas-50"
+      />
+      {/* Short Bios */}
+      <ShortBioToggle
+        updateFilter={updateFilter}
+        filters={filters}
+        hidden={false}
       />
       {/* PREFERRED GENDER */}
       {/*<CustomizeableDropdown*/}

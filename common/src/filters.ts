@@ -7,6 +7,7 @@ export type FilterFields = {
   geodbCityIds: string[] | null
   genders: string[]
   name: string | undefined
+  shortBio: boolean | undefined
 } & Pick<
   ProfileRow,
   | 'wants_kids_strength'
@@ -47,6 +48,7 @@ export const initialFilters: Partial<FilterFields> = {
   is_smoker: undefined,
   pref_relation_styles: undefined,
   pref_gender: undefined,
+  shortBio: undefined,
   orderBy: 'created_time',
 }
 export type OriginLocation = { id: string; name: string }

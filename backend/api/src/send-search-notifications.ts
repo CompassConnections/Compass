@@ -53,7 +53,12 @@ export const sendSearchNotifications = async () => {
 
   for (const row of searches) {
     if (typeof row.search_filters !== 'object') continue;
-    const props = {...row.search_filters, skipId: row.creator_id, lastModificationWithin: '24 hours'}
+    const props = {
+      ...row.search_filters,
+      skipId: row.creator_id,
+      lastModificationWithin: '24 hours',
+      shortBio: true,
+    }
     const profiles = await loadProfiles(props as profileQueryType)
     console.debug(profiles.map((item: any) => item.name))
     if (!profiles.length) continue

@@ -19,6 +19,7 @@ export type profileQueryType = {
   wants_kids_strength?: number | undefined,
   has_kids?: number | undefined,
   is_smoker?: boolean | undefined,
+  shortBio?: boolean | undefined,
   geodbCityIds?: String[] | undefined,
   compatibleWithUserId?: string | undefined,
   skipId?: string | undefined,
@@ -42,6 +43,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     wants_kids_strength,
     has_kids,
     is_smoker,
+    shortBio,
     geodbCityIds,
     compatibleWithUserId,
     orderBy: orderByParam = 'created_time',
@@ -154,7 +156,7 @@ export const loadProfiles = async (props: profileQueryType) => {
       {after}
     ),
 
-    where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
+    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
 
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
 

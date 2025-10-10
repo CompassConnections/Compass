@@ -9,6 +9,10 @@ export default function ProfilesPage() {
   const user = useUser();
   console.debug('user:', user)
 
+  if (user === undefined) {
+    return <div/>
+  }
+
   return (
     <LovePage trackPageView={'user profiles'}>
       <Col className="items-center">

@@ -3,6 +3,7 @@ import {run} from 'common/supabase/utils'
 import {APIError, api} from 'web/lib/api'
 import {unauthedApi} from 'common/util/api'
 import type {DisplayUser} from 'common/api/user-types'
+import {MIN_BIO_LENGTH} from "common/constants";
 
 export type {DisplayUser}
 
@@ -56,10 +57,21 @@ export async function getDisplayUsers(userIds: string[]) {
   return data as unknown as DisplayUser[]
 }
 
-export async function getUserCreations() {
+export async function getProfilesCreations() {
   const {data} = await run(
     db.from('profiles')
       .select(`id, created_time`)
+      .order('created_time')
+  )
+  return data
+}
+
+export async function getProfilesWithBioCreations() {
+  const {data} = await run(
+    db
+      .from('profiles')
+      .select(`id, created_time`)
+      .gt('bio_length', MIN_BIO_LENGTH)
       .order('created_time')
   )
   return data

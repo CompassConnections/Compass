@@ -10,7 +10,7 @@ export const Block = (props: {
     <a
       href={url}
       className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-      target="_blank" rel="noopener noreferrer">
+    >
       {content}
     </a>
   </div>;

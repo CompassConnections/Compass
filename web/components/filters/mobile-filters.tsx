@@ -12,6 +12,7 @@ import {Profile} from 'common/love/profile'
 import {Gender} from 'common/gender'
 import {RelationshipType} from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";
+import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 
 export function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -132,6 +133,15 @@ export function MobileFilters(props: {
       >
         <GenderFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
+      {/* Short Bios */}
+
+      <Col className="p-4 pb-2">
+        <ShortBioToggle
+          updateFilter={updateFilter}
+          filters={filters}
+          hidden={false}
+        />
+      </Col>
       {/* PREFERRED GENDER */}
       {/*<MobileFilterSection*/}
       {/*  title="Interested in"*/}

@@ -13,21 +13,21 @@ We, the community of Compass, commit to building and maintaining this project in
 ## Article II: Membership Levels
 
 1. **Definition** —
-    1. A *User* is any individual who has an account.
-    2. A *Member* is any individual who meets and maintains the eligibility criteria defined in this Article.
-    3. An *Administrator* is a specific type of *Member* which has more power and write access to the code.
+    1. A *Member* is any individual who has an account.
+    2. A *Volunteer* is a member with voting rights (also known as **voting member**).
+    3. An *Administrator* is a specific type of *Volunteer* which has more power and write access to the code.
 2. **Eligibility** —
-    1. To become a Member with voting rights, an individual must:
-       - Have a 1:1 with a current member.
+    1. To become a Volunteer, an individual must:
+       - Have a 1:1 with a current volunteer.
        - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a minimum of 5 hours.
        - Be approved by the Membership Committee (see Article IV) by a **supermajority vote**.
         - To become an Administrator, all current Administrators must unanimously vote for them to have the role.
-3. **Provisional Members** — New participants can join discussions but cannot vote until they have met the criteria.
-4. **Loss of Membership** — Members may be removed for:
+3. **Provisional Volunteers** — New participants can join discussions but cannot vote until they have met the criteria.
+4. **Loss of Membership** — Volunteers may be removed for:
     - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
-    - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Members.
+    - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Volunteers.
 
-[Current members and administrators](/members)
+[Current volunteers and administrators](/members)
 
 ## Article III: Governance Structure
 
@@ -37,30 +37,30 @@ We, the community of Compass, commit to building and maintaining this project in
 - Once the community reaches **5 voting members**, leadership positions will be filled via community election as described below.
 
 ### Section 2: Democratic Governance
-1. **Voting Power** — One Member = one vote.
-2. **Quorum** — At least **40%** of active Members must participate for a vote to be valid.
+1. **Voting Power** — One Volunteer = one vote.
+2. **Quorum** — At least **40%** of active Volunteers must participate for a vote to be valid.
 3. **Decision Thresholds**:
     - **Simple majority (50%+1)** — Day-to-day operational decisions.
     - **Supermajority (2/3)** — Constitutional amendments, membership approvals/removals, major funding decisions, and changes to project scope.
 4. **Deliberation Period** — All proposals must be open for discussion for at least **7 days** before voting begins.
 5. All administrators have veto power on votes.
-6. Users can submit feedback and vote on our Feedback Form but this is not an official vote, it is for Members and Administrators to consider.
+6. Members can submit feedback and vote on our Feedback Form but this is not an official vote, it is for Volunteers and Administrators to consider.
 
 
 ## Article IV: Committees
 
-1. **Membership Committee** — Reviews applications, handles disputes over eligibility.
+1. **Membership Committee** — Reviews volunteer applications, handles disputes over eligibility.
 2. **Technical Committee** — Oversees code quality, ensures open-source compliance.
 3. **Governance Committee** — Maintains the constitution, moderates community votes, investigates governance concerns.
-4. **Elections** — Committees are elected annually by Members once the community reaches 5 voting members.
+4. **Elections** — Committees are elected annually by Volunteers once the community reaches 5 voting members.
 
 
 ## Article V: Anti-Capture Safeguards
 
 1. **Contribution Thresholds** — Voting rights are earned through sustained contribution, not just joining.
-2. **Probation Period** — New Members gain voting rights only after 1 month.
-3. **Identity Verification** — Each voting Member must have a unique, verifiable identity to prevent sockpuppets.
-4. **Conflict of Interest Disclosure** — Any Member with a direct financial interest in a competing or controlling entity must disclose before voting.
+2. **Probation Period** — New Volunteers gain voting rights only after 1 month.
+3. **Identity Verification** — Each Volunteers must have a unique, verifiable identity to prevent sockpuppets.
+4. **Conflict of Interest Disclosure** — Any Volunteers with a direct financial interest in a competing or controlling entity must disclose before voting.
 
 
 ## Article VI: Transparency
@@ -71,7 +71,7 @@ We, the community of Compass, commit to building and maintaining this project in
 
 ## Article VII: Amendments
 
-1. **Proposal** — Amendments require co-signature by at least **10%** of Members.
+1. **Proposal** — Amendments require co-signature by at least **10%** of Volunteers.
 2. **Approval** — A **2/3 majority vote** in favor. Any administrator can veto the vote.
 3. **Deliberation** — A minimum 7-day discussion period before voting.
 

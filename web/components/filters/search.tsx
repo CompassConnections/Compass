@@ -25,7 +25,7 @@ function isOrderBy(input: string): input is FilterFields['orderBy'] {
 }
 
 const TYPING_SPEED = 100; // ms per character
-const HOLD_TIME = 5000; // ms to hold full word before deleting or switching
+const HOLD_TIME = 2000; // ms to hold full word before deleting or switching
 export const WORDS: string[] = [
   // Values
   "Minimalism",

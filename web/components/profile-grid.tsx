@@ -67,7 +67,7 @@ export const ProfileGrid = (props: {
       {!isLoadingMore && !isReloading && other_profiles.length === 0 && (
         <div className="py-8 text-center">
           <p>No profiles found.</p>
-          <p>Feel free to bookmark your search and we'll notify you when new users match it!</p>
+          <p>Feel free to click on Get Notified and we'll notify you when new users match it!</p>
         </div>
       )}
     </div>

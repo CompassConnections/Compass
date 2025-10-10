@@ -79,6 +79,7 @@ export function ProfileInfo(props: {
           refreshProfile={refreshProfile}
           fromProfilePage={fromProfilePage}
           fromSignup={fromSignup}
+          isProfileVisible={isProfileVisible}
           // likesGiven={likesGiven ?? []}
           // likesReceived={likesReceived ?? []}
           // ships={ships ?? []}
@@ -119,7 +120,6 @@ export function ProfileInfo(props: {
       {/*      />*/}
       {/*    </Row>*/}
       {/*  )}*/}
-      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile}/>}
     </>
   )
 }
@@ -130,6 +130,7 @@ function ProfileContent(props: {
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
+  isProfileVisible?: true | User
   // likesGiven: LikeData[]
   // likesReceived: LikeData[]
   // ships: ShipData[]
@@ -141,6 +142,7 @@ function ProfileContent(props: {
     refreshProfile,
     fromProfilePage,
     fromSignup,
+    isProfileVisible
     // likesGiven,
     // likesReceived,
     // ships,
@@ -166,6 +168,7 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
+      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile}/>}
       <ProfileCommentSection
         onUser={user}
         profile={profile}

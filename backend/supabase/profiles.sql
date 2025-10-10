@@ -9,6 +9,7 @@ END$$;
 CREATE TABLE IF NOT EXISTS profiles (
     age INTEGER NULL,
     bio JSONB,
+    bio_length integer null,
     born_in_location TEXT,
     city TEXT NOT NULL,
     city_latitude NUMERIC(9, 6),
@@ -78,6 +79,10 @@ CREATE UNIQUE INDEX unique_user_id ON public.profiles USING btree (user_id);
 
 CREATE INDEX IF NOT EXISTS idx_profiles_last_mod_24h
     ON public.profiles USING btree (last_modification_time);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_bio_length
+    ON profiles (bio_length);
+
 
 -- Functions and Triggers
 CREATE

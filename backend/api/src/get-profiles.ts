@@ -4,7 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
 import {getCompatibleProfiles} from 'api/compatible-profiles'
 import {intersection} from 'lodash'
-import {MAX_INT, MIN_INT} from "common/constants";
+import {MAX_INT, MIN_BIO_LENGTH, MIN_INT} from "common/constants";
 
 export type profileQueryType = {
   limit?: number | undefined,
@@ -81,7 +81,8 @@ export const loadProfiles = async (props: profileQueryType) => {
         (!is_smoker || l.is_smoker === is_smoker) &&
         (l.id.toString() != skipId) &&
         (!geodbCityIds ||
-          (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id)))
+          (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
+        ((l.bio_length ?? 0) >= MIN_BIO_LENGTH)
     )
 
     const cursor = after
@@ -152,6 +153,8 @@ export const loadProfiles = async (props: profileQueryType) => {
       `profiles.${orderByParam} < (select profiles.${orderByParam} from profiles where id = $(after))`,
       {after}
     ),
+
+    where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
 
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
 

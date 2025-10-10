@@ -1,5 +1,5 @@
-import { ProfileRow } from 'common/love/profile'
-import type { User } from 'common/user'
+import {ProfileRow} from 'common/love/profile'
+import type {User} from 'common/user'
 
 // for email template testing
 
@@ -78,6 +78,7 @@ export const sinclairProfile: ProfileRow = {
   city_longitude: -122.416389,
   geodb_city_id: '126964',
   referred_by_username: null,
+  bio_length: 1000,
   bio: {
     type: 'doc',
     content: [
@@ -173,6 +174,7 @@ export const jamesProfile: ProfileRow = {
   city_longitude: -122.416389,
   geodb_city_id: '126964',
   referred_by_username: null,
+  bio_length: 1000,
   bio: {
     type: 'doc',
     content: [

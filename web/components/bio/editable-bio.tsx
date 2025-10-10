@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import {Editor} from '@tiptap/core'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {Profile} from 'common/love/profile'
 import {tryCatch} from 'common/util/try-catch'
@@ -67,7 +67,8 @@ export function EditableBio(props: {
 
   const saveBio = async () => {
     if (!editor) return
-    const {error} = await tryCatch(updateProfile({bio: editor.getJSON()}))
+    console.log(editor.getText().length)
+    const {error} = await tryCatch(updateProfile({bio: editor.getJSON(), bio_length: editor.getText().length}))
 
     if (error) {
       console.error(error)
@@ -111,7 +112,7 @@ export function EditableBio(props: {
 }
 
 export function SignupBio(props: {
-  onChange: (e: JSONContent) => void
+  onChange: (e: Editor) => void
 }) {
   const {onChange} = props
   return (
@@ -119,8 +120,7 @@ export function SignupBio(props: {
       <BaseBio
         onBlur={(editor) => {
           if (!editor) return
-          const e = editor.getJSON()
-          onChange(e)
+          onChange(editor)
         }}
       />
     </Col>
@@ -150,9 +150,8 @@ export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
     <div>
       {textLength < MIN_BIO_LENGTH &&
           <p>
-              Write {MIN_BIO_LENGTH - textLength} more {MIN_BIO_LENGTH - textLength === 1 ? 'character' : 'characters'} so
-              others can find you through keyword
-              search and connect intentionally.
+              Add {MIN_BIO_LENGTH - textLength} more {MIN_BIO_LENGTH - textLength === 1 ? 'character' : 'characters'} so
+              your profile can appear in search results—or leave it for now and explore others’ profiles first.
           </p>
       }
       <BioTips/>

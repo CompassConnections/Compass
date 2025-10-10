@@ -221,45 +221,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profile_comments: {
-        Row: {
-          content: Json
-          created_time: string
-          hidden: boolean
-          id: number
-          on_user_id: string
-          reply_to_comment_id: number | null
-          user_avatar_url: string
-          user_id: string
-          user_name: string
-          user_username: string
-        }
-        Insert: {
-          content: Json
-          created_time?: string
-          hidden?: boolean
-          id?: never
-          on_user_id: string
-          reply_to_comment_id?: number | null
-          user_avatar_url: string
-          user_id: string
-          user_name: string
-          user_username: string
-        }
-        Update: {
-          content?: Json
-          created_time?: string
-          hidden?: boolean
-          id?: never
-          on_user_id?: string
-          reply_to_comment_id?: number | null
-          user_avatar_url?: string
-          user_id?: string
-          user_name?: string
-          user_username?: string
-        }
-        Relationships: []
-      }
       private_user_message_channel_members: {
         Row: {
           channel_id: number
@@ -401,10 +362,50 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_comments: {
+        Row: {
+          content: Json
+          created_time: string
+          hidden: boolean
+          id: number
+          on_user_id: string
+          reply_to_comment_id: number | null
+          user_avatar_url: string
+          user_id: string
+          user_name: string
+          user_username: string
+        }
+        Insert: {
+          content: Json
+          created_time?: string
+          hidden?: boolean
+          id?: number
+          on_user_id: string
+          reply_to_comment_id?: number | null
+          user_avatar_url: string
+          user_id: string
+          user_name: string
+          user_username: string
+        }
+        Update: {
+          content?: Json
+          created_time?: string
+          hidden?: boolean
+          id?: number
+          on_user_id?: string
+          reply_to_comment_id?: number | null
+          user_avatar_url?: string
+          user_id?: string
+          user_name?: string
+          user_username?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
           bio: Json | null
+          bio_length: number | null
           born_in_location: string | null
           city: string
           city_latitude: number | null
@@ -443,13 +444,14 @@ export type Database = {
           twitter: string | null
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['profile_visibility']
+          visibility: Database['public']['Enums']['lover_visibility']
           wants_kids_strength: number
           website: string | null
         }
         Insert: {
           age?: number | null
           bio?: Json | null
+          bio_length?: number | null
           born_in_location?: string | null
           city: string
           city_latitude?: number | null
@@ -488,13 +490,14 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id: string
-          visibility?: Database['public']['Enums']['profile_visibility']
+          visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
         Update: {
           age?: number | null
           bio?: Json | null
+          bio_length?: number | null
           born_in_location?: string | null
           city?: string
           city_latitude?: number | null
@@ -533,7 +536,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id?: string
-          visibility?: Database['public']['Enums']['profile_visibility']
+          visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -693,6 +696,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Record<string, unknown>[]
       }
+      get_love_question_answers_and_lovers: {
+        Args: { p_question_id: number }
+        Returns: Record<string, unknown>[]
+      }
       get_love_question_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
@@ -755,7 +762,7 @@ export type Database = {
       }
     }
     Enums: {
-      profile_visibility: 'public' | 'member'
+      lover_visibility: 'public' | 'member'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -883,7 +890,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      profile_visibility: ['public', 'member'],
+      lover_visibility: ['public', 'member'],
     },
   },
 } as const

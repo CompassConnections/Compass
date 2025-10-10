@@ -62,6 +62,7 @@ export const baseProfilesSchema = z.object({
   visibility: z.union([z.literal('public'), z.literal('member')]),
 
   bio: contentSchema.optional().nullable(),
+  bio_length: z.number().optional().nullable(),
 
   geodb_city_id: z.string().optional(),
   city: z.string(),

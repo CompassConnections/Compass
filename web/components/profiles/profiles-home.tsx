@@ -4,9 +4,7 @@ import {Search} from 'web/components/filters/search'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
-import Router from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Button} from 'web/components/buttons/button'
 import {ProfileGrid} from 'web/components/profile-grid'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
@@ -20,8 +18,7 @@ import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
   const user = useUser();
-  const profile = useProfile();
-  const you = profile;
+  const you = useProfile();
 
   const {
     filters,
@@ -95,7 +92,7 @@ export function ProfilesHome() {
 
   return (
     <>
-      {!profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}
+      {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
       <Title className="!mb-2 text-3xl">Profiles</Title>
       <Search
         youProfile={you}

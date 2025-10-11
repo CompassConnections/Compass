@@ -22,7 +22,7 @@ You can find a lot of interesting info in the [About page](https://www.compassme
 A detailed description of the early vision is also available in this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass shifted to a more general audience).
 
 <p align="center">
-  <img src="https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/demo_compass.gif?alt=media&token=375a1c9a-1dd0-4e56-b2d0-ebf027c58cee" alt="Compass Demo" width="600">
+  <img src="https://martinbraquet.com/wp-content/uploads/demo_compass.gif" alt="Compass Demo" width="600">
 </p>
 
 ## To Do

@@ -7,11 +7,13 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <link rel="icon" href={ENV_CONFIG.faviconPath} />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"
-          // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
+        {/*<link*/}
+        {/*  href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"*/}
+        {/*  // href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&display=swap"*/}
+        {/*  // href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;500;600;700&display=swap"*/}
+        {/*  // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"*/}
+        {/*  rel="stylesheet"*/}
+        {/*/>*/}
         <Script src="/init-theme.js" strategy="beforeInteractive" />
       </Head>
       <body className="body-bg text-ink-1000">

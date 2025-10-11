@@ -21,6 +21,7 @@ Write a clear and engaging bio to help others understand who you are and the con
 - Connection goals (friendship, romantic, collaborative) and availability
 - What makes you unique and what you care about
 - Expectations, boundaries, and personality traits
+- How to contact you or start a conversation (email, social media, etc.)
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `
 

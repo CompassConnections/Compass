@@ -21,6 +21,8 @@ This repository contains the source code for [Compass](https://compassmeet.com) 
 You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and the [FAQ](https://www.compassmeet.com/faq) as well.
 A detailed description of the early vision is also available in this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass shifted to a more general audience).
 
+![Demo](https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/demo_compass.gif?alt=media&token=375a1c9a-1dd0-4e56-b2d0-ebf027c58cee)
+
 ## To Do
 
 No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording. Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The goal is to make the platform better step by step, and every improvement counts. If you see something that could be clearer, smoother, or more engaging, **please jump in**!

@@ -109,7 +109,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
 
     ...keywords.map(word => where(
-      `lower(users.name) ilike '%' || lower($(word)) || '%' or lower(bio::text) ilike '%' || lower($(word)) || '%'`,
+      `lower(users.name) ilike '%' || lower($(word)) || '%' or lower(bio::text) ilike '%' || lower($(word)) || '%' or bio_tsv @@ phraseto_tsquery('english', $(word))`,
       {word}
     )),
 

@@ -14,10 +14,14 @@ export function convertRow(row: ProfileAndUserRow): Profile
 export function convertRow(row: ProfileAndUserRow | undefined): Profile | null {
   if (!row) return null
 
-  return {
+  // Remove internal/search-only fields from the returned profile row
+  const profile: any = {
     ...row,
     user: { ...row.user, name: row.name, username: row.username } as User,
-  } as Profile
+  }
+  delete profile.bio_text
+  delete profile.bio_tsv
+  return profile as Profile
 }
 
 const LOVER_COLS = 'profiles.*, name, username, users.data as user'

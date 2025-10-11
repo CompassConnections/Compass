@@ -406,6 +406,8 @@ export type Database = {
           age: number | null
           bio: Json | null
           bio_length: number | null
+          bio_text: string | null
+          bio_tsv: unknown | null
           born_in_location: string | null
           city: string
           city_latitude: number | null
@@ -452,6 +454,8 @@ export type Database = {
           age?: number | null
           bio?: Json | null
           bio_length?: number | null
+          bio_text?: string | null
+          bio_tsv?: unknown | null
           born_in_location?: string | null
           city: string
           city_latitude?: number | null
@@ -467,7 +471,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
@@ -498,6 +502,8 @@ export type Database = {
           age?: number | null
           bio?: Json | null
           bio_length?: number | null
+          bio_text?: string | null
+          bio_tsv?: unknown | null
           born_in_location?: string | null
           city?: string
           city_latitude?: number | null
@@ -513,7 +519,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string

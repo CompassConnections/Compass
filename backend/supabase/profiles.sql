@@ -115,25 +115,31 @@ CREATE INDEX profiles_bio_trgm_idx
 
 
 --- bio_text
--- ALTER TABLE profiles ADD COLUMN bio_text tsvector;
---
--- CREATE OR REPLACE FUNCTION profiles_bio_tsvector_update()
--- RETURNS trigger AS $$
--- BEGIN
---   new.bio_text := to_tsvector(
---     'english',
---     (
---       SELECT string_agg(trim(both '"' from x::text), ' ')
---       FROM jsonb_path_query(new.bio, '$.**.text'::jsonpath) AS x
---     )
---   );
--- RETURN new;
--- END;
--- $$ LANGUAGE plpgsql;
---
--- CREATE TRIGGER profiles_bio_tsvector_trigger
---     BEFORE INSERT OR UPDATE OF bio ON profiles
---     FOR EACH ROW EXECUTE FUNCTION profiles_bio_tsvector_update();
---
--- create index on profiles using gin(bio_text);
+ALTER TABLE profiles ADD COLUMN bio_text TEXT;
+UPDATE profiles
+SET bio_text = (
+    SELECT string_agg(DISTINCT trim(both '"' from value::text), ' ')
+    FROM jsonb_path_query(bio, '$.**.text') AS t(value)
+);
+
+ALTER TABLE profiles ADD COLUMN bio_tsv tsvector
+    GENERATED ALWAYS AS (to_tsvector('english', coalesce(bio_text, ''))) STORED;
+
+CREATE INDEX profiles_bio_tsv_idx ON profiles USING GIN (bio_tsv);
+
+CREATE OR REPLACE FUNCTION update_bio_text()
+    RETURNS trigger AS $$
+BEGIN
+    NEW.bio_text := (
+        SELECT string_agg(DISTINCT trim(both '"' from value::text), ' ')
+        FROM jsonb_path_query(NEW.bio, '$.**.text') AS t(value)
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_bio_text
+    BEFORE INSERT OR UPDATE OF bio ON profiles
+    FOR EACH ROW EXECUTE FUNCTION update_bio_text();
+
 

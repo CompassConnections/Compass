@@ -84,4 +84,5 @@ email-preview
 *.tfstate
 *.tfstate.backup
 *.terraform
+/backups/firebase/auth/data/
 /backups/firebase/storage/data/

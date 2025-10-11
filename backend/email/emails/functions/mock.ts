@@ -102,6 +102,8 @@ export const sinclairProfile: ProfileRow = {
       },
     ],
   },
+  bio_text: 'the futa in futarchy',
+  bio_tsv: 'the futa in futarchy',
   age: 25,
 }
 
@@ -204,5 +206,7 @@ export const jamesProfile: ProfileRow = {
       },
     ],
   },
+  bio_text: 'the futa in futarchy',
+  bio_tsv: 'the futa in futarchy',
   age: 32,
 }

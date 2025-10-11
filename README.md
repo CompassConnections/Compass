@@ -21,7 +21,7 @@ This repository contains the source code for [Compass](https://compassmeet.com) 
 You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and the [FAQ](https://www.compassmeet.com/faq) as well.
 A detailed description of the early vision is also available in this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass shifted to a more general audience).
 
-<p align="center">
+<p>
   <img src="https://martinbraquet.com/wp-content/uploads/demo_compass.gif" alt="Compass Demo" width="600">
 </p>
 
@@ -29,7 +29,20 @@ A detailed description of the early vision is also available in this [blog post]
 
 No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording. Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The goal is to make the platform better step by step, and every improvement counts. If you see something that could be clearer, smoother, or more engaging, **please jump in**!
 
-Here are some examples of things that would be very useful. If you want to help but don’t know where to start, just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
+The complete, official list of tasks is available [here on ClickUp](https://sharing.clickup.com/90181043445/l/h/6-901810339879-1/bbfd32f4f4bf64b). If you are working on one task, just assign it to yourself and move its status to "in progress". If there is also a GitHub issue for that task, assign it to yourself as well.
+
+To have edit access to the ClickUp workspace, you need an admin to manually give you permission (one time thing). To do so, just use your preferred option:
+- Ask or DM an admin on Discord
+- Email hello@compassmeet.com
+- Raise an issue on GitHub
+
+If you want to add tasks without creating an account, you can simply email
+```
+a.t.901810339879.u-276866260.b847aba1-2709-4f17-b4dc-565a6967c234@tasks.clickup.com
+```
+Put the task title in the email subject and the task description in the email content.
+
+Here is a tailored selection of things that would be very useful. If you want to help but don’t know where to start, just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
 
 - [x] Authentication (user/password and Google Sign In)
 - [x] Set up PostgreSQL in Production with supabase
@@ -62,7 +75,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [ ] Add other authentication methods (GitHub, Facebook, Apple, phone, etc.)
 - [ ] Add email verification
 - [ ] Add password reset
-- [ ] Add automated welcome email
+- [x] Add automated welcome email
 - [ ] Security audit and penetration testing
 - [ ] Make `deploy-api.sh` run automatically on push to `main` branch
 - [ ] Create settings page (change email, password, delete account, etc.)

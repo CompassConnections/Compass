@@ -16,6 +16,7 @@ import { SimpleCopyTextButton } from 'web/components/buttons/copy-link-button'
 import { api } from 'web/lib/api'
 import { buildArray } from 'common/util/array'
 import { DeleteYourselfButton } from '../profile/delete-yourself'
+import {toast} from "react-hot-toast";
 
 export function MoreOptionsUserButton(props: { user: User }) {
   const { user } = props
@@ -55,11 +56,22 @@ export function MoreOptionsUserButton(props: { user: User }) {
                 <Button
                   color={'red'}
                   size="xs"
-                  onClick={() => {
-                    api('ban-user', {
-                      userId,
-                      unban: user.isBannedFromPosting ?? false,
-                    })
+                  onClick={async () => {
+                    await toast.promise(
+                      api('ban-user', {
+                        userId,
+                        unban: user.isBannedFromPosting ?? false,
+                      }),
+                      {
+                        loading: 'Banning...',
+                        success: () => {
+                          return 'User banned!'
+                        },
+                        error: () => {
+                          return 'Error banning user'
+                        },
+                      }
+                    )
                   }}
                 >
                   {user.isBannedFromPosting ? 'Banned' : 'Ban User'}

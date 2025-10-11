@@ -88,11 +88,29 @@ type ActiveUserPageProps = {
 export default function UserPage(props: UserPageProps) {
   // console.debug('Starting UserPage in /[username]')
   if (!props.user) {
-    return <div>This account has been deleted</div>
+    return <LovePage
+      trackPageView={'user page'}
+      className={'relative p-2 sm:pt-0'}
+    >
+      <Col className="items-center justify-center h-full">
+        <div className="text-xl font-semibold text-center mt-8">
+          This account has been deleted.
+        </div>
+      </Col>
+    </LovePage>
   }
 
   if (props.user.isBannedFromPosting) {
-    return <div>This account is banned</div>
+    return <LovePage
+      trackPageView={'user page'}
+      className={'relative p-2 sm:pt-0'}
+    >
+      <Col className="items-center justify-center h-full">
+        <div className="text-xl font-semibold text-center mt-8">
+          This account has been suspended.
+        </div>
+      </Col>
+    </LovePage>
   }
 
   return <UserPageInner {...props} />

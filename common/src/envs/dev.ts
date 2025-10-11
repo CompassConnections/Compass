@@ -19,4 +19,7 @@ export const DEV_CONFIG: EnvConfig = {
     measurementId: "G-N6LZ64EMJ2",
     region: 'us-west1',
   },
+  adminIds: [
+    'ULxLz04VW1V4vbnj5XLwvzCSkYd2', // Martin
+  ],
 }

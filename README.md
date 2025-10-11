@@ -105,7 +105,7 @@ Almost all the features will work out of the box, so you can skip this step and 
 We can't make the following information public, for security and privacy reasons:
 - Database, otherwise anyone could access all the user data (including private messages)
 - Firebase, otherwise anyone could remove users or modify the media files
-- Email, analytics, and location services, otherwise anyone could use our paid plan
+- Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
 
 That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
 Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.

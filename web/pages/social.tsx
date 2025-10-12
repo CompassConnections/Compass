@@ -10,7 +10,7 @@ export default function Social() {
         <div className="w-full">
           <div className="relative py-8 mt-12 overflow-hidden">
             <div className="relative z-10 max-w-3xl mx-auto px-4">
-              <h3 className="text-4xl font-bold text-center mt-8 mb-8">Social</h3>
+              <h3 className="text-4xl font-bold text-center mt-8 mb-8">Socials</h3>
               <GeneralButton url={discordLink} content={'Discord'}/>
               <GeneralButton url={stoatLink} content={'Revolt / Stoat'}/>
               <GeneralButton url={redditLink} content={'Reddit'}/>

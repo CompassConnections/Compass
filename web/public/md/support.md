@@ -22,13 +22,20 @@ Your contribution directly helps cover hosting, development, and community growt
 ## Non-Financial Contributions
 
 Donations aren’t the only way to help. You can also:
-- Improve code or documentation
-- Suggest features and test new builds
+- Improve [code or documentation](https://github.com/CompassConnections/Compass)
+- [Suggest](https://forms.gle/tKnXUMAbEreMK6FC6) features and test new builds
 - Spread the word to thoughtful communities
 - Help with design, moderation, or translations
 
-Every small action adds up to something bigger.
+No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording. Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The goal is to make the platform better step by step, and every improvement counts. If you see something that could be clearer, smoother, or more engaging, **please jump in**!
 
+The complete, official list of tasks is available [here on ClickUp](https://sharing.clickup.com/90181043445/l/h/6-901810339879-1/bbfd32f4f4bf64b). If you are working on one task, just assign it to yourself and move its status to "in progress". If there is also a GitHub issue for that task, assign it to yourself as well.
+
+To have edit access to the ClickUp workspace, you need an admin to manually give you permission (one time thing). To do so, just use your preferred option:
+- DM an [admin](/members) here on Compass
+- Ask or DM an admin on [Discord](https://discord.gg/8Vd7jzqjun)
+- Email hello@compassmeet.com
+- Raise an issue on [GitHub](https://github.com/CompassConnections/Compass/issues)
 
 **Thank you for being part of this mission.**  
 Together, we’re building a platform for meaningful human connection — one that will never be captured by profit or advertising.

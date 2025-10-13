@@ -10,7 +10,7 @@ import {MatchesType} from "common/love/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";
 
-const from = 'Compass <no-reply@compassmeet.com>'
+const from = 'Compass <compass@compassmeet.com>'
 
 // export const sendNewMatchEmail = async (
 //   privateUser: PrivateUser,

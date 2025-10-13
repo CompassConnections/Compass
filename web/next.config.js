@@ -69,6 +69,11 @@ module.exports = {
     return config
   },
   async redirects() {
-    return []
+      return [
+          { source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false },
+          { source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false },
+          { source: '/paypal', destination: 'https://www.paypal.com/paypalme/CompassConnections', permanent: false },
+          { source: '/github', destination: "https://github.com/CompassConnections/Compass", permanent: false },
+      ];
   },
 }

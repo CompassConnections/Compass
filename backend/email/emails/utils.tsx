@@ -1,5 +1,4 @@
 import {Column, Img, Link, Row, Section, Text} from "@react-email/components";
-import {discordLink, githubRepo, patreonLink, paypalLink} from "common/constants";
 import {DOMAIN} from "common/envs/constants";
 
 interface Props {
@@ -15,40 +14,40 @@ export const Footer = ({
     <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}}/>
     <Row>
       <Column align="center">
-        <Link href={githubRepo} target="_blank">
+        <Link href={`https://${DOMAIN}/github`} target="_blank">
           <Img
             src={`https://${DOMAIN}/images/github-logo.png`}
             width="24"
             height="24"
             alt="GitHub"
-            style={{ display: "inline-block", margin: "0 4px" }}
+            style={{display: "inline-block", margin: "0 4px"}}
           />
         </Link>
-        <Link href={discordLink} target="_blank">
+        <Link href={`https://${DOMAIN}/discord`} target="_blank">
           <Img
             src={`https://${DOMAIN}/images/discord-logo.png`}
             width="24"
             height="24"
             alt="Discord"
-            style={{ display: "inline-block", margin: "0 4px" }}
+            style={{display: "inline-block", margin: "0 4px"}}
           />
         </Link>
-        <Link href={patreonLink} target="_blank">
+        <Link href={`https://${DOMAIN}/patreon`} target="_blank">
           <Img
             src={`https://${DOMAIN}/images/patreon-logo.png`}
             width="24"
             height="24"
             alt="Patreon"
-            style={{ display: "inline-block", margin: "0 4px" }}
+            style={{display: "inline-block", margin: "0 4px"}}
           />
         </Link>
-        <Link href={paypalLink} target="_blank">
+        <Link href={`https://${DOMAIN}/paypal`} target="_blank">
           <Img
             src={`https://${DOMAIN}/images/paypal-logo.png`}
             width="24"
             height="24"
             alt="PayPal"
-            style={{ display: "inline-block", margin: "0 4px" }}
+            style={{display: "inline-block", margin: "0 4px"}}
           />
         </Link>
       </Column>

@@ -4,10 +4,8 @@ import {
   type CreateEmailOptions,
 } from 'resend'
 import { log } from 'shared/utils'
+import {sleep} from "common/util/time";
 
-import pLimit from 'p-limit'
-
-const limit = pLimit(1) // 1 concurrent per second
 
 /*
  * typically: { subject: string, to: string | string[] } & ({ text: string } | { react: ReactNode })
@@ -19,12 +17,9 @@ export const sendEmail = async (
   const resend = getResend()
   console.debug(resend, payload, options)
 
-  async function sendEmailThrottle(data: any, options: any) {
-    if (!resend) return { data: null, error: 'No Resend client' }
-    return limit(() => resend.emails.send(data, options))
-  }
+  if (!resend) return null
 
-  const { data, error } = await sendEmailThrottle(
+  const { data, error } = await resend.emails.send(
     { replyTo: 'Compass <hello@compassmeet.com>', ...payload },
     options
   )
@@ -39,6 +34,9 @@ export const sendEmail = async (
   }
 
   log(`Sent email to ${payload.to} with subject ${payload.subject}`)
+
+  await sleep(1000) // to avoid rate limits (2 / second in resend free plan)
+
   return data
 }
 

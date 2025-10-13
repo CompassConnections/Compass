@@ -9,7 +9,7 @@ export const Card = forwardRef(function Card(
   return (
     <div
       className={clsx(
-        'bg-canvas-0 border-ink-300 cursor-pointer rounded-lg border transition-shadow hover:shadow-md focus:shadow-md',
+        'bg-canvas-0 border-ink-300 rounded-lg border transition-shadow hover:shadow-md focus:shadow-md',
         className
       )}
       ref={ref}

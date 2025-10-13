@@ -54,6 +54,7 @@ import swaggerUi from "swagger-ui-express"
 import * as fs from "fs"
 import {sendSearchNotifications} from "api/send-search-notifications";
 import {sendDiscordMessage} from "common/discord/core";
+import {getMessagesCount} from "api/get-messages-count";
 
 const allowCorsUnrestricted: RequestHandler = cors({})
 
@@ -165,6 +166,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-channel-messages': getChannelMessages,
   'get-channel-seen-time': getLastSeenChannelTime,
   'set-channel-seen-time': setChannelLastSeenTime,
+  'get-messages-count': getMessagesCount,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

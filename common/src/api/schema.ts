@@ -4,19 +4,19 @@ import {
   baseProfilesSchema,
   arraybeSchema,
 } from 'common/api/zod-types'
-import { PrivateChatMessage } from 'common/chat-message'
-import { CompatibilityScore } from 'common/love/compatibility-score'
-import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/love/constants'
-import { Profile, ProfileRow } from 'common/love/profile'
-import { Row } from 'common/supabase/utils'
-import { PrivateUser, User } from 'common/user'
-import { z } from 'zod'
-import { LikeData, ShipData } from './love-types'
-import { DisplayUser, FullUser } from './user-types'
-import { PrivateMessageChannel } from 'common/supabase/private-messages'
-import { Notification } from 'common/notifications'
-import { arrify } from 'common/util/array'
-import { notification_preference } from 'common/user-notification-preferences'
+import {PrivateChatMessage} from 'common/chat-message'
+import {CompatibilityScore} from 'common/love/compatibility-score'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/love/constants'
+import {Profile, ProfileRow} from 'common/love/profile'
+import {Row} from 'common/supabase/utils'
+import {PrivateUser, User} from 'common/user'
+import {z} from 'zod'
+import {LikeData, ShipData} from './love-types'
+import {DisplayUser, FullUser} from './user-types'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
+import {Notification} from 'common/notifications'
+import {arrify} from 'common/util/array'
+import {notification_preference} from 'common/user-notification-preferences'
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
@@ -59,12 +59,12 @@ export const API = (_apiTypeCheck = {
   'user/by-id/:id/block': {
     method: 'POST',
     authed: true,
-    props: z.object({ id: z.string() }).strict(),
+    props: z.object({id: z.string()}).strict(),
   },
   'user/by-id/:id/unblock': {
     method: 'POST',
     authed: true,
-    props: z.object({ id: z.string() }).strict(),
+    props: z.object({id: z.string()}).strict(),
   },
   'ban-user': {
     method: 'POST',
@@ -176,28 +176,28 @@ export const API = (_apiTypeCheck = {
     authed: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as FullUser,
-    props: z.object({ username: z.string() }).strict(),
+    props: z.object({username: z.string()}).strict(),
   },
   'user/:username/lite': {
     method: 'GET',
     authed: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as DisplayUser,
-    props: z.object({ username: z.string() }).strict(),
+    props: z.object({username: z.string()}).strict(),
   },
   'user/by-id/:id': {
     method: 'GET',
     authed: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as FullUser,
-    props: z.object({ id: z.string() }).strict(),
+    props: z.object({id: z.string()}).strict(),
   },
   'user/by-id/:id/lite': {
     method: 'GET',
     authed: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as DisplayUser,
-    props: z.object({ id: z.string() }).strict(),
+    props: z.object({id: z.string()}).strict(),
   },
   'search-users': {
     method: 'GET',
@@ -215,7 +215,7 @@ export const API = (_apiTypeCheck = {
   'compatible-profiles': {
     method: 'GET',
     authed: false,
-    props: z.object({ userId: z.string() }),
+    props: z.object({userId: z.string()}),
     returns: {} as {
       profile: Profile
       compatibleProfiles: Profile[]
@@ -227,7 +227,7 @@ export const API = (_apiTypeCheck = {
   'remove-pinned-photo': {
     method: 'POST',
     authed: true,
-    returns: { success: true },
+    returns: {success: true},
     props: z
       .object({
         userId: z.string(),
@@ -338,7 +338,7 @@ export const API = (_apiTypeCheck = {
   'get-profile-answers': {
     method: 'GET',
     authed: false,
-    props: z.object({ userId: z.string() }).strict(),
+    props: z.object({userId: z.string()}).strict(),
     returns: {} as {
       status: 'success'
       answers: Row<'love_compatibility_answers'>[]
@@ -477,6 +477,12 @@ export const API = (_apiTypeCheck = {
       radius: z.number().min(1).max(500),
     }),
   },
+  'get-messages-count': {
+    method: 'GET',
+    authed: false,
+    props: z.object({}),
+    returns: {} as { count: number },
+  },
 } as const)
 
 export type APIPath = keyof typeof API
@@ -488,8 +494,8 @@ export type ValidatedAPIParams<N extends APIPath> = z.output<
 >
 
 export type APIResponse<N extends APIPath> = APISchema<N> extends {
-  returns: Record<string, any>
-}
+    returns: Record<string, any>
+  }
   ? APISchema<N>['returns']
   : void
 

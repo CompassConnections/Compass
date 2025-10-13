@@ -1,6 +1,6 @@
 import {db} from './db'
 import {run} from 'common/supabase/utils'
-import {APIError, api} from 'web/lib/api'
+import {api, APIError} from 'web/lib/api'
 import {unauthedApi} from 'common/util/api'
 import type {DisplayUser} from 'common/api/user-types'
 import {MIN_BIO_LENGTH} from "common/constants";
@@ -76,3 +76,20 @@ export async function getProfilesWithBioCreations() {
   )
   return data
 }
+
+export async function getCount(table: string) {
+  if (table == 'private_user_messages') {
+    const result = await api('get-messages-count')
+    return result.count
+  }
+  const {count} = await run(
+    db
+      .from(table)
+      .select('*', {count: 'exact', head: true})
+  )
+  return count;
+}
+
+// export async function getNumberProfiles() {
+//   return await getCount('profiles');
+// }

@@ -9,6 +9,30 @@ import { tryCatch } from 'common/util/try-catch'
 import { insert } from 'shared/supabase/utils'
 import {sendDiscordMessage} from "common/discord/core";
 
+function extractTextFromBio(bio: any): string {
+  try {
+    const texts: string[] = []
+    const visit = (node: any) => {
+      if (!node) return
+      if (Array.isArray(node)) {
+        for (const item of node) visit(item)
+        return
+      }
+      if (typeof node === 'object') {
+        for (const [k, v] of Object.entries(node)) {
+          if (k === 'text' && typeof v === 'string') texts.push(v)
+          else visit(v as any)
+        }
+      }
+    }
+    visit(bio)
+    // Remove extra whitespace and join
+    return texts.map((t) => t.trim()).filter(Boolean).join(' ')
+  } catch {
+    return ''
+  }
+}
+
 export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
 
@@ -49,10 +73,12 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       console.error('Failed to track create profile', e)
     }
     try {
-      await sendDiscordMessage(
-        `**${user.name}** just created a profile at https://www.compassmeet.com/${user.username}`,
-        'members',
-      )
+      let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
+      if (body.bio) {
+        const bioText = extractTextFromBio(body.bio)
+        if (bioText) message += `\n > ${bioText}`
+      }
+      await sendDiscordMessage(message, 'members')
     } catch (e) {
       console.error('Failed to send discord new profile', e)
     }

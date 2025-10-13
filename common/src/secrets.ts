@@ -20,6 +20,7 @@ export const secrets = (
     'NEXT_PUBLIC_FIREBASE_API_KEY',
     'DISCORD_WEBHOOK_MEMBERS',
     'DISCORD_WEBHOOK_GENERAL',
+    'DISCORD_WEBHOOK_HEALTH',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

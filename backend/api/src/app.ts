@@ -53,6 +53,7 @@ import {updateNotifSettings} from './update-notif-setting'
 import swaggerUi from "swagger-ui-express"
 import * as fs from "fs"
 import {sendSearchNotifications} from "api/send-search-notifications";
+import {sendDiscordMessage} from "common/discord/core";
 
 const allowCorsUnrestricted: RequestHandler = cors({})
 
@@ -206,6 +207,10 @@ app.post(pathWithPrefix("/internal/send-search-notifications"),
       return res.status(200).json(result)
     } catch (err) {
       console.error("Failed to send notifications:", err);
+      await sendDiscordMessage(
+        "Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...",
+        "health"
+      )
       return res.status(500).json({error: "Internal server error"});
     }
   }

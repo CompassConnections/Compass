@@ -13,6 +13,7 @@ export default function Organization() {
               <GeneralButton url={'/support'} content={'Support'}/>
               <GeneralButton url={'/constitution'} content={'Constitution'}/>
               <GeneralButton url={'/financials'} content={'Financials'}/>
+              <GeneralButton url={'/charts'} content={'Growth & Stats'}/>
               <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>
               <GeneralButton url={'/privacy'} content={'Privacy Policy'}/>
             </div>

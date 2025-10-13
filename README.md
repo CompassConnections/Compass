@@ -152,6 +152,10 @@ Note: it's normal if page loading locally is much slower than the deployed versi
 
 Now you can start contributing by making changes and submitting pull requests!
 
+We recommend using a good code editor (VSCode, WebStorm, Cursor, etc.) with Typescript support and a good AI assistant (GitHub Copilot, etc.) to make your life easier.
+
+If you are new to Typescript or the open-source space, you could start with small changes, such as tweaking some web components or improving wording in some pages. You can find those files in `web/public/md/`.
+
 See [development.md](docs/development.md) for additional instructions, such as adding new profile features.
 
 ### Submission

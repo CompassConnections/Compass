@@ -2,7 +2,7 @@
 
 See the [full constitution](/constitution) for details on membership criteria and governance structure.
 
-### Members
+### Voting Members
 
 - [Martin Braquet](/Martin)
 - [Ruth](/RuthS)

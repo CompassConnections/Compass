@@ -107,12 +107,29 @@ We chose the name Compass because our goal is to help people orient themselves t
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.
 
+### How fast is Compass growing?
+
+Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/charts). It includes information such as:
+
+* Community growth over time
+* Messages sent
+* Discussions started
+* Search Bookmarks created
+* Endorsements given
+* Prompts answered
+
+[//]: # (* Feature votes and participation rates)
+[//]: # (* Contributions and donations)
+[//]: # (* Number of active users)
+
+Because Compass is fully transparent and community-owned, you can see how the ecosystem evolves — not just in numbers, but in how people connect, collaborate, and help shape the platform together.
+
 ### What’s the long-term vision?
 
 Our goal is for Compass to become what Linux is for software, Wikipedia is for knowledge, or Firefox is for browsing — a public, open-source infrastructure that anyone can use, contribute to, and trust. We believe meaningful human connection deserves the same treatment: free, transparent, community-owned, and protected from corporate capture.
 
 ### What’s next?
 
-Compass has officially **launched** in October 2025 and is growing fast. Our focus is now toward **gathering feedback**, **growing the community** and **securing donations** to sustain and expand the platform.
+Our focus is now toward **gathering feedback**, **growing the community** and **securing donations** to sustain and expand the platform.
 
 Every action, whether sharing, donating, or contributing, directly helps Compass remain **ad-free, subscription-free, and community-owned**.

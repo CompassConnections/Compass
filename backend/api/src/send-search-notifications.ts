@@ -53,8 +53,9 @@ export const sendSearchNotifications = async () => {
 
   for (const row of searches) {
     if (typeof row.search_filters !== 'object') continue;
+    const { orderBy, ...filters } = (row.search_filters ?? {}) as Record<string, any>
     const props = {
-      ...row.search_filters,
+      ...filters,
       skipId: row.creator_id,
       lastModificationWithin: '24 hours',
       shortBio: true,

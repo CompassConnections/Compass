@@ -20,7 +20,9 @@ export function UserHandles(props: { links: Socials; className?: string }) {
     Object.entries(links),
     ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as Site)
   ).map(([platform, label]) => {
-    const renderedLabel: string = LABELS_TO_RENDER.includes(platform) ? PLATFORM_LABELS[platform as Site] : label
+    let renderedLabel: string = LABELS_TO_RENDER.includes(platform) ? PLATFORM_LABELS[platform as Site] : label
+    renderedLabel = renderedLabel?.replace(/\/+$/, '') // remove trailing slashes
+    renderedLabel = renderedLabel?.replace(/^(https?:\/\/)?(www\.)?/, '') // remove protocol and www
     return {
       platform,
       label: renderedLabel,

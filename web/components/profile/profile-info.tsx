@@ -14,7 +14,6 @@ import {useGetter} from 'web/hooks/use-getter'
 import {getStars} from 'web/lib/supabase/stars'
 import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
-import React from "react";
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {UserActivity} from "common/user";
 

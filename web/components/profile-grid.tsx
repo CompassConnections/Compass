@@ -7,7 +7,6 @@ import {Col} from './layout/col'
 import clsx from 'clsx'
 import {JSONContent} from "@tiptap/core";
 import {Content} from "web/components/widgets/editor";
-import React from "react";
 import Link from "next/link";
 import {Row} from "web/components/layout/row";
 import {CompatibleBadge} from "web/components/widgets/compatible-badge";

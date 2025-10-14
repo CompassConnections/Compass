@@ -1,5 +1,5 @@
 import {Profile} from 'common/love/profile'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'

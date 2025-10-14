@@ -8,7 +8,7 @@ import {Row} from 'web/components/layout/row'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {updateProfile} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link"
 import {MIN_BIO_LENGTH} from "common/constants";

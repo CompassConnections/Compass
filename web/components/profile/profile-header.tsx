@@ -18,7 +18,7 @@ import {Profile} from 'common/love/profile'
 import {useUser} from 'web/hooks/use-user'
 import {linkClass} from 'web/components/widgets/site-link'
 import {updateProfile} from 'web/lib/api'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 import {deleteAccount} from "web/lib/util/delete";
 import toast from "react-hot-toast";

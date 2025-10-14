@@ -28,6 +28,22 @@ function cumulativeFromCounts(counts: Record<string, number>, sortedDates: strin
 export default function ChartMembers() {
   const [data, setData] = useState<any[]>([])
 
+  const [chartHeight, setChartHeight] = useState<number>(400)
+
+  useEffect(() => {
+    // Set responsive chart height: 300px on small widths, 400px otherwise
+    function applyHeight() {
+      if (typeof window !== 'undefined') {
+        const isSmall = window.innerWidth < 420
+        setChartHeight(isSmall ? 320 : 400)
+      }
+    }
+
+    applyHeight()
+    window.addEventListener('resize', applyHeight)
+    return () => window.removeEventListener('resize', applyHeight)
+  }, [])
+
   useEffect(() => {
     async function load() {
       const [allProfiles, bioProfiles] = await Promise.all([
@@ -92,49 +108,64 @@ export default function ChartMembers() {
 
   // One LineChart with two Line series sharing the same data array
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data}>
-        {/*<CartesianGrid strokeDasharray="3 3"/>*/}
-        <XAxis
-          dataKey="dateTs"
-          type="number"
-          scale="time"
-          domain={["dataMin", "dataMax"]}
-          tickFormatter={(ts) => new Date(ts).toISOString().split("T")[0]}
-          label={{value: "Date", position: "insideBottomRight", offset: -5}}
-        />
-        <YAxis label={{value: "Number of Members", angle: -90, position: "insideLeft"}}/>
-        <Tooltip
-          contentStyle={{
-            backgroundColor: "rgb(var(--color-canvas-100))",
-            border: "none",
-            borderRadius: "8px",
-            color: "rgb(var(--color-primary-900))",
-          }}
-          labelStyle={{
-            color: "rgb(var(--color-primary-900))",
-          }}
-          labelFormatter={(value, payload) => (payload && payload[0] && payload[0].payload?.date) || new Date(value as number).toISOString().split("T")[0]}
-        />
-        <Legend/>
-        <Line
-          type="monotone"
-          dataKey="profilesCreations"
-          name="Total"
-          stroke="rgb(var(--color-primary-900))"
-          strokeWidth={2}
-          dot={false}
-        />
-        <Line
-          type="monotone"
-          dataKey="profilesWithBioCreations"
-          name="With Bio"
-          stroke="#9ca3af"
-          strokeDasharray="4 2"
-          strokeWidth={2}
-          dot={false}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <LineChart data={data} margin={{top: 24, right: 16, bottom: 24, left: -30}}>
+          <text
+            x="50%"
+            y="24"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            style={{
+              fontSize: "16px",
+              fontWeight: 600,
+              fill: "rgb(var(--color-primary-900))",
+            }}
+          >
+            Number of Members
+          </text>
+          {/*<CartesianGrid strokeDasharray="3 3"/>*/}
+          <XAxis
+            dataKey="dateTs"
+            type="number"
+            scale="time"
+            domain={["dataMin", "dataMax"]}
+            tickFormatter={(ts) => new Date(ts).toISOString().split("T")[0]}
+            label={{value: "Date", position: "insideBottomRight", offset: -5}}
+          />
+          <YAxis/>
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "rgb(var(--color-canvas-100))",
+              border: "none",
+              borderRadius: "8px",
+              color: "rgb(var(--color-primary-900))",
+            }}
+            labelStyle={{
+              color: "rgb(var(--color-primary-900))",
+            }}
+            labelFormatter={(value, payload) => (payload && payload[0] && payload[0].payload?.date) || new Date(value as number).toISOString().split("T")[0]}
+          />
+          <Legend/>
+          <Line
+            type="monotone"
+            dataKey="profilesCreations"
+            name="Total"
+            stroke="rgb(var(--color-primary-900))"
+            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="profilesWithBioCreations"
+            name="With Bio"
+            stroke="#9ca3af"
+            strokeDasharray="4 2"
+            strokeWidth={2}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

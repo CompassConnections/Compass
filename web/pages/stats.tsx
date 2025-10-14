@@ -6,13 +6,14 @@ import StatBox from "web/components/widgets/stat-box";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
 
-export default function Charts() {
+export default function Stats() {
   const [data, setData] = useState<Record<string, number | null>>({})
 
   useEffect(() => {
     async function load() {
       const tables = [
         'profiles',
+        'active_members',
         'bookmarked_searches',
         'private_user_message_channels',
         'private_user_messages',
@@ -49,9 +50,10 @@ export default function Charts() {
           )}
         >
           {!!data.profiles && <StatBox value={data.profiles} label={'Members'} />}
-          {!!data.bookmarked_searches && <StatBox value={data.bookmarked_searches} label={'Searches Bookmarked'} />}
+          {!!data.active_members && <StatBox value={data.active_members} label={'Active Members (last month)'} />}
           {!!data.private_user_message_channels && <StatBox value={data.private_user_message_channels} label={'Discussions'} />}
           {!!data.private_user_messages && <StatBox value={data.private_user_messages} label={'Messages'} />}
+          {!!data.bookmarked_searches && <StatBox value={data.bookmarked_searches} label={'Searches Bookmarked'} />}
           {!!data.profile_comments && <StatBox value={data.profile_comments} label={'Endorsements'} />}
           {!!data.love_compatibility_answers && <StatBox value={data.love_compatibility_answers} label={'Prompts Answered'} />}
         </Col>

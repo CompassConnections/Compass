@@ -109,7 +109,7 @@ We chose the name Compass because our goal is to help people orient themselves t
 
 ### How fast is Compass growing?
 
-Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/charts). It includes information such as:
+Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/stats). It includes information such as:
 
 * Community growth over time
 * Messages sent

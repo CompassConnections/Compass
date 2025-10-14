@@ -74,6 +74,7 @@ module.exports = {
           { source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false },
           { source: '/paypal', destination: 'https://www.paypal.com/paypalme/CompassConnections', permanent: false },
           { source: '/github', destination: "https://github.com/CompassConnections/Compass", permanent: false },
+          { source: '/charts', destination: "/stats", permanent: true },
       ];
   },
 }

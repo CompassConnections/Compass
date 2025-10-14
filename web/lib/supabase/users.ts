@@ -4,6 +4,7 @@ import {api, APIError} from 'web/lib/api'
 import {unauthedApi} from 'common/util/api'
 import type {DisplayUser} from 'common/api/user-types'
 import {MIN_BIO_LENGTH} from "common/constants";
+import {MONTH_MS} from "common/util/time";
 
 export type {DisplayUser}
 
@@ -81,6 +82,15 @@ export async function getCount(table: string) {
   if (table == 'private_user_messages') {
     const result = await api('get-messages-count')
     return result.count
+  }
+  if (table == 'active_members') {
+    const {count} = await run(
+      db
+        .from('user_activity')
+        .select('*', {count: 'exact', head: true})
+        .gt('last_online_time', new Date(Date.now() - MONTH_MS).toISOString()) // last month
+    )
+    return count;
   }
   const {count} = await run(
     db

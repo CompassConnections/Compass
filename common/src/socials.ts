@@ -90,7 +90,7 @@ export const getSocialUrl = (site: Site, handle: string) =>
 const urler: { [key in Site]: (handle: string) => string } = {
   site: (s) => (s.startsWith('http') ? s : `https://${s}`),
   okcupid: (s) => (s.startsWith('http') ? s : `https://${s}`),
-  x: (s) => `https://x.com/${s}`,
+  x: (s) => s.startsWith('http') ? s : `https://x.com/${s}`,
   discord: (s) =>
     (s.length === 17 || s.length === 18) && !isNaN(parseInt(s, 10))
       ? `https://discord.com/users/${s}` // discord user id
@@ -98,14 +98,14 @@ const urler: { [key in Site]: (handle: string) => string } = {
   bluesky: (s) => `https://bsky.app/profile/${s}`,
   mastodon: (s) =>
     s.includes('@') ? `https://${s.split('@')[1]}/@${s.split('@')[0]}` : s,
-  substack: (s) => `https://${s}.substack.com`,
-  instagram: (s) => `https://instagram.com/${s}`,
-  github: (s) => `https://github.com/${s}`,
-  linkedin: (s) => `https://linkedin.com/in/${s}`,
-  facebook: (s) => `https://facebook.com/${s}`,
-  spotify: (s) => `https://open.spotify.com/user/${s}`,
-  paypal: (s) => `https://paypal.com/paypalme/${s}`,
-  patreon: (s) => `https://patreon.com/${s}`,
+  substack: (s) => s.startsWith('http') ? s : `https://${s}.substack.com`,
+  instagram: (s) => s.startsWith('http') ? s : `https://instagram.com/${s}`,
+  github: (s) => s.startsWith('http') ? s : `https://github.com/${s}`,
+  linkedin: (s) => s.startsWith('http') ? s : `https://linkedin.com/in/${s}`,
+  facebook: (s) => s.startsWith('http') ? s : `https://facebook.com/${s}`,
+  spotify: (s) => s.startsWith('http') ? s : `https://open.spotify.com/user/${s}`,
+  paypal: (s) => s.startsWith('http') ? s : `https://paypal.com/paypalme/${s}`,
+  patreon: (s) => s.startsWith('http') ? s : `https://patreon.com/${s}`,
   calendly: (s) => (s.startsWith('http') ? s : `https://${s}`),
   datingdoc: (s) => (s.startsWith('http') ? s : `https://${s}`),
   friendshipdoc: (s) => (s.startsWith('http') ? s : `https://${s}`),

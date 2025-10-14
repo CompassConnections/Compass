@@ -276,9 +276,10 @@ export const OptionalLoveUserForm = (props: {
           <MultiCheckbox
             choices={RELATIONSHIP_CHOICES}
             selected={profile['pref_relation_styles']}
-            onChange={(selected) =>
+            onChange={(selected) => {
               setProfile('pref_relation_styles', selected)
-            }
+              setLookingRelationship((selected || []).includes('relationship'))
+            }}
           />
         </Col>
 
@@ -530,14 +531,14 @@ export const OptionalLoveUserForm = (props: {
           />
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Looking for a relationship?</label>
-          <ChoicesToggleGroup
-            currentChoice={lookingRelationship}
-            choicesMap={{Yes: true, No: false}}
-            setChoice={(c) => setLookingRelationship(c)}
-          />
-        </Col>
+        {/*<Col className={clsx(colClassName)}>*/}
+        {/*  <label className={clsx(labelClassName)}>Looking for a relationship?</label>*/}
+        {/*  <ChoicesToggleGroup*/}
+        {/*    currentChoice={lookingRelationship}*/}
+        {/*    choicesMap={{Yes: true, No: false}}*/}
+        {/*    setChoice={(c) => setLookingRelationship(c)}*/}
+        {/*  />*/}
+        {/*</Col>*/}
 
         {lookingRelationship && <>
             <Col className={clsx(colClassName)}>

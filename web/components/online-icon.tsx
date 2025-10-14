@@ -15,21 +15,21 @@ export const OnlineIcon = memo(function OnlineIcon(props: {
   const currentTime = dayjs()
 
   // Calculate the time difference as a duration
-  const diff = dayjs.duration(Math.abs(currentTime.diff(lastOnlineTime)))
+  const timeDiff = dayjs.duration(Math.abs(currentTime.diff(lastOnlineTime)))
 
   const STALLED_CUTOFF = 15
   const INACTIVE_HOURS = 12
 
   // Check if last online time was more than 30 minutes ago and more than one day ago
-  const isStalled = diff.asMinutes() > STALLED_CUTOFF
-  const isInactive = diff.asHours() > INACTIVE_HOURS
+  const isStalled = timeDiff.asMinutes() > STALLED_CUTOFF
+  const isInactive = timeDiff.asHours() > INACTIVE_HOURS
 
   if (isInactive) {
     return <></>
   }
 
   return (
-    <Tooltip text={'Last online: ' + fromNow(lastOnlineTime.valueOf())}>
+    <Tooltip text={'Last online: ' + fromNow(last_online_time)}>
       <div
         className={clsx(
           'h-2 w-2 rounded-full',

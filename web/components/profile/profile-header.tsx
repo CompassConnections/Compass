@@ -55,7 +55,7 @@ export default function ProfileHeader(props: {
         <Row className="items-center gap-1">
           <Col className="gap-1">
             <Row className="items-center gap-1 text-xl">
-              <OnlineIcon last_online_time={userActivity?.last_online_time}/>
+              {!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}
               <span>
                 {simpleView ? (
                   <Link className={linkClass} href={`/${user.username}`}>

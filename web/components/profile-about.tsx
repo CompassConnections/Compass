@@ -1,41 +1,31 @@
 import clsx from 'clsx'
-import {
-  type RelationshipType,
-  convertRelationshipType,
-} from 'web/lib/util/convert-relationship-type'
+import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-relationship-type'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import { ReactNode } from 'react'
-import { BiSolidDrink } from 'react-icons/bi'
-import { BsPersonHeart } from 'react-icons/bs'
-import { FaChild } from 'react-icons/fa6'
-import {
-  LuBriefcase,
-  LuCigarette,
-  LuCigaretteOff,
-  LuGraduationCap,
-} from 'react-icons/lu'
-import { MdNoDrinks, MdOutlineChildFriendly } from 'react-icons/md'
-import {
-  PiHandsPrayingBold,
-  PiMagnifyingGlassBold,
-  PiPlantBold,
-} from 'react-icons/pi'
-import { RiScales3Line } from 'react-icons/ri'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { fromNow } from 'web/lib/util/time'
-import { Gender, convertGenderPlural } from 'common/gender'
-import { HiOutlineGlobe } from 'react-icons/hi'
-import { UserHandles } from 'web/components/user/user-handles'
-import { convertRace } from './race'
-import { Profile } from 'common/love/profile'
+import {ReactNode} from 'react'
+import {BiSolidDrink} from 'react-icons/bi'
+import {BsPersonHeart} from 'react-icons/bs'
+import {FaChild} from 'react-icons/fa6'
+import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap,} from 'react-icons/lu'
+import {MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
+import {PiHandsPrayingBold, PiMagnifyingGlassBold, PiPlantBold,} from 'react-icons/pi'
+import {RiScales3Line} from 'react-icons/ri'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {fromNow} from 'web/lib/util/time'
+import {convertGenderPlural, Gender} from 'common/gender'
+import {HiOutlineGlobe} from 'react-icons/hi'
+import {UserHandles} from 'web/components/user/user-handles'
+import {convertRace} from './race'
+import {Profile} from 'common/love/profile'
+import {UserActivity} from "common/user";
+import {ClockIcon} from "@heroicons/react/solid";
 
 export function AboutRow(props: {
   icon: ReactNode
   text?: string | null | string[]
   preText?: string
 }) {
-  const { icon, text, preText } = props
+  const {icon, text, preText} = props
   if (!text || text.length < 1) {
     return <></>
   }
@@ -54,45 +44,50 @@ export function AboutRow(props: {
   )
 }
 
-export default function ProfileAbout(props: { profile: Profile }) {
-  const { profile } = props
+export default function ProfileAbout(props: {
+  profile: Profile,
+  userActivity?: UserActivity,
+  isCurrentUser: boolean,
+}) {
+  const {profile, userActivity, isCurrentUser} = props
   return (
     <Col
       className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded p-4')}
     >
-      <Seeking profile={profile} />
-      <RelationshipType profile={profile} />
-      <HasKids profile={profile} />
+      <Seeking profile={profile}/>
+      <RelationshipType profile={profile}/>
+      <HasKids profile={profile}/>
       <AboutRow
-        icon={<RiScales3Line className="h-5 w-5" />}
+        icon={<RiScales3Line className="h-5 w-5"/>}
         text={profile.political_beliefs}
       />
-      <Education profile={profile} />
-      <Occupation profile={profile} />
+      <Education profile={profile}/>
+      <Occupation profile={profile}/>
       <AboutRow
-        icon={<PiHandsPrayingBold className="h-5 w-5" />}
+        icon={<PiHandsPrayingBold className="h-5 w-5"/>}
         text={profile.religious_beliefs}
       />
       <AboutRow
-        icon={<HiOutlineGlobe className="h-5 w-5" />}
+        icon={<HiOutlineGlobe className="h-5 w-5"/>}
         text={profile.ethnicity
           ?.filter((r) => r !== 'other')
           ?.map((r: any) => convertRace(r))}
       />
-      <Smoker profile={profile} />
-      <Drinks profile={profile} />
+      <Smoker profile={profile}/>
+      <Drinks profile={profile}/>
       <AboutRow
-        icon={<PiPlantBold className="h-5 w-5" />}
+        icon={<PiPlantBold className="h-5 w-5"/>}
         text={profile.is_vegetarian_or_vegan ? 'Vegetarian/Vegan' : null}
       />
-      <WantsKids profile={profile} />
-      <UserHandles links={profile.user.link} />
+      <WantsKids profile={profile}/>
+      <UserHandles links={profile.user.link}/>
+      {!isCurrentUser && <LastOnline lastOnlineTime={userActivity?.last_online_time}/>}
     </Col>
   )
 }
 
 function Seeking(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const prefGender = profile.pref_gender
   const min = profile.pref_age_min
   const max = profile.pref_age_max
@@ -110,26 +105,26 @@ function Seeking(props: { profile: Profile }) {
     min == 18 && max == 100 || min == undefined && max == undefined
       ? 'of any age'
       : min == max
-      ? `exactly ${min} years old`
-      : max == 100 || max == undefined
-      ? `older than ${min}`
-      : min == 18 || min == undefined
-      ? `younger than ${max}`
-      : `between ${min} - ${max} years old`
+        ? `exactly ${min} years old`
+        : max == 100 || max == undefined
+          ? `older than ${min}`
+          : min == 18 || min == undefined
+            ? `younger than ${max}`
+            : `between ${min} - ${max} years old`
 
   if (!prefGender || prefGender.length < 1) {
     return <></>
   }
   return (
     <AboutRow
-      icon={<PiMagnifyingGlassBold className="h-5 w-5" />}
+      icon={<PiMagnifyingGlassBold className="h-5 w-5"/>}
       text={`${seekingGenderText} ${ageRangeText}`}
     />
   )
 }
 
 function RelationshipType(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const relationshipTypes = profile.pref_relation_styles
   const seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes.map((rel) =>
@@ -145,14 +140,14 @@ function RelationshipType(props: { profile: Profile }) {
   })
   return (
     <AboutRow
-      icon={<BsPersonHeart className="h-5 w-5" />}
+      icon={<BsPersonHeart className="h-5 w-5"/>}
       text={seekingGenderText}
     />
   )
 }
 
 function Education(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const educationLevel = profile.education_level
   const university = profile.university
 
@@ -169,14 +164,14 @@ function Education(props: { profile: Profile }) {
   }${capitalizeAndRemoveUnderscores(university)}`
   return (
     <AboutRow
-      icon={<LuGraduationCap className="h-5 w-5" />}
+      icon={<LuGraduationCap className="h-5 w-5"/>}
       text={universityText}
     />
   )
 }
 
 function Occupation(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const occupation_title = profile.occupation_title
   const company = profile.company
 
@@ -190,44 +185,44 @@ function Occupation(props: { profile: Profile }) {
   }`
   return (
     <AboutRow
-      icon={<LuBriefcase className="h-5 w-5" />}
+      icon={<LuBriefcase className="h-5 w-5"/>}
       text={occupationText}
     />
   )
 }
 
 function Smoker(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const isSmoker = profile.is_smoker
   if (isSmoker == null) return null
   if (isSmoker) {
     return (
-      <AboutRow icon={<LuCigarette className="h-5 w-5" />} text={'Smokes'} />
+      <AboutRow icon={<LuCigarette className="h-5 w-5"/>} text={'Smokes'}/>
     )
   }
   return (
     <AboutRow
-      icon={<LuCigaretteOff className="h-5 w-5" />}
+      icon={<LuCigaretteOff className="h-5 w-5"/>}
       text={`Doesn't smoke`}
     />
   )
 }
 
 function Drinks(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const drinksPerMonth = profile.drinks_per_month
   if (drinksPerMonth == null) return null
   if (drinksPerMonth === 0) {
     return (
       <AboutRow
-        icon={<MdNoDrinks className="h-5 w-5" />}
+        icon={<MdNoDrinks className="h-5 w-5"/>}
         text={`Doesn't drink`}
       />
     )
   }
   return (
     <AboutRow
-      icon={<BiSolidDrink className="h-5 w-5" />}
+      icon={<BiSolidDrink className="h-5 w-5"/>}
       text={`${drinksPerMonth} ${
         drinksPerMonth == 1 ? 'drink' : 'drinks'
       } per month`}
@@ -236,36 +231,48 @@ function Drinks(props: { profile: Profile }) {
 }
 
 function WantsKids(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const wantsKidsStrength = profile.wants_kids_strength
   if (wantsKidsStrength == null || wantsKidsStrength < 0) return null
   const wantsKidsText =
     wantsKidsStrength == 0
       ? 'Does not want children'
       : wantsKidsStrength == 1
-      ? 'Prefers not to have children'
-      : wantsKidsStrength == 2
-      ? 'Neutral or open to having children'
-      : wantsKidsStrength == 3
-      ? 'Leaning towards wanting children'
-      : 'Wants children'
+        ? 'Prefers not to have children'
+        : wantsKidsStrength == 2
+          ? 'Neutral or open to having children'
+          : wantsKidsStrength == 3
+            ? 'Leaning towards wanting children'
+            : 'Wants children'
 
   return (
     <AboutRow
-      icon={<MdOutlineChildFriendly className="h-5 w-5" />}
+      icon={<MdOutlineChildFriendly className="h-5 w-5"/>}
       text={wantsKidsText}
     />
   )
 }
 
+function LastOnline(props: { lastOnlineTime?: string }) {
+  const {lastOnlineTime} = props
+  if (!lastOnlineTime) return null
+  return (
+    <AboutRow
+      icon={<ClockIcon className="h-5 w-5"/>}
+      text={'Last online ' + fromNow(lastOnlineTime)}
+    />
+  )
+}
+
 function HasKids(props: { profile: Profile }) {
-  const { profile } = props
+  const {profile} = props
   const hasKidsText =
     profile.has_kids && profile.has_kids > 0
       ? `Has ${profile.has_kids} ${profile.has_kids > 1 ? 'kids' : 'kid'}`
       : null
-  return <AboutRow icon={<FaChild className="h-5 w-5" />} text={hasKidsText} />
+  return <AboutRow icon={<FaChild className="h-5 w-5"/>} text={hasKidsText}/>
 }
+
 export const formatProfileValue = (key: string, value: any) => {
   if (Array.isArray(value)) {
     return value.join(', ')

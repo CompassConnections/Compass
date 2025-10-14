@@ -30,6 +30,10 @@ export function UserHandles(props: { links: Socials; className?: string }) {
     }
   })
 
+  if (display.length === 0) {
+    return null
+  }
+
   return (
     <Row
       className={clsx(

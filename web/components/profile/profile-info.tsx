@@ -16,6 +16,7 @@ import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import React from "react";
 import {useUserActivity} from 'web/hooks/use-user-activity'
+import {UserActivity} from "common/user";
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -79,6 +80,7 @@ export function ProfileInfo(props: {
       {isProfileVisible ? (
         <ProfileContent
           user={user}
+          userActivity={userActivity}
           profile={profile}
           refreshProfile={refreshProfile}
           fromProfilePage={fromProfilePage}
@@ -130,6 +132,7 @@ export function ProfileInfo(props: {
 
 function ProfileContent(props: {
   user: User
+  userActivity?: UserActivity
   profile: Profile
   refreshProfile: () => void
   fromProfilePage?: Profile
@@ -142,6 +145,7 @@ function ProfileContent(props: {
 }) {
   const {
     user,
+    userActivity,
     profile,
     refreshProfile,
     fromProfilePage,
@@ -158,7 +162,7 @@ function ProfileContent(props: {
 
   return (
     <>
-      <ProfileAbout profile={profile}/>
+      <ProfileAbout profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser}/>
       <ProfileBio
         isCurrentUser={isCurrentUser}
         profile={profile}

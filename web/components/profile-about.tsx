@@ -80,8 +80,8 @@ export default function ProfileAbout(props: {
         text={profile.is_vegetarian_or_vegan ? 'Vegetarian/Vegan' : null}
       />
       <WantsKids profile={profile}/>
-      <UserHandles links={profile.user.link}/>
       {!isCurrentUser && <LastOnline lastOnlineTime={userActivity?.last_online_time}/>}
+      <UserHandles links={profile.user.link}/>
     </Col>
   )
 }

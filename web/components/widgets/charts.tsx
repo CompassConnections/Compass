@@ -110,7 +110,7 @@ export default function ChartMembers() {
   return (
     <div>
       <ResponsiveContainer width="100%" height={chartHeight}>
-        <LineChart data={data} margin={{top: 24, right: 16, bottom: 24, left: -30}}>
+        <LineChart data={data} margin={{top: 24, right: 16, bottom: 24, left: -20}}>
           <text
             x="50%"
             y="24"

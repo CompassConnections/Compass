@@ -41,8 +41,10 @@ export default function Stats() {
   return (
     <LovePage trackPageView={'charts'}>
       <h1 className="text-3xl font-semibold text-center mb-6">Growth & Stats</h1>
-      <Col className={'mx-4 mb-8'}>
+      <Col className={'sm:mx-4 mx-1 mb-8'}>
         <ChartMembers/>
+      </Col>
+      <Col className={'mx-4 mb-8'}>
         <Col
           className={clsx(
             'pb-[58px] lg:pb-0', // bottom bar padding

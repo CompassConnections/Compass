@@ -27,6 +27,8 @@ export type profileQueryType = {
   lastModificationWithin?: string | undefined,
 }
 
+const userActivityColumns = ['last_online_time']
+
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
@@ -97,11 +99,14 @@ export const loadProfiles = async (props: profileQueryType) => {
     return profiles
   }
 
+  const tablePrefix = userActivityColumns.includes(orderByParam) ? 'user_activity' : 'profiles'
+  const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
+
   const query = renderSql(
     select('profiles.*, name, username, users.data as user, user_activity.last_online_time'),
     from('profiles'),
     join('users on users.id = profiles.user_id'),
-    leftJoin('user_activity on user_activity.user_id = profiles.user_id'),
+    leftJoin(userActivityJoin),
     where('looking_for_matches = true'),
     // where(`pinned_url is not null and pinned_url != ''`),
     where(
@@ -150,11 +155,16 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     skipId && where(`user_id != $(skipId)`, {skipId}),
 
-    orderBy(`${orderByParam} desc`),
+    orderBy(`${tablePrefix}.${orderByParam} DESC`),
     after &&
     where(
-      `profiles.${orderByParam} < (select profiles.${orderByParam} from profiles where id = $(after))`,
-      {after}
+      `${tablePrefix}.${orderByParam} < (
+      SELECT ${tablePrefix}.${orderByParam}
+      FROM profiles
+      LEFT JOIN ${userActivityJoin}
+      WHERE profiles.id = $(after)
+    )`,
+      { after }
     ),
 
     !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),

@@ -152,7 +152,13 @@ Note: it's normal if page loading locally is much slower than the deployed versi
 
 Now you can start contributing by making changes and submitting pull requests!
 
-We recommend using a good code editor (VSCode, WebStorm, Cursor, etc.) with Typescript support and a good AI assistant (GitHub Copilot, etc.) to make your life easier.
+We recommend using a good code editor (VSCode, WebStorm, Cursor, etc.) with Typescript support and a good AI assistant (GitHub Copilot, etc.) to make your life easier. To debug, you can use the browser developer tools (F12), specifically:
+- Components tab to see the React component tree and props (you need to install the [React Developer Tools](https://react.dev/learn/react-developer-tools) extension)
+- Console tab for errors and logs
+- Network tab to see the requests and responses
+- Storage tab to see cookies and local storage
+
+You can also add `console.log()` statements in the code.
 
 If you are new to Typescript or the open-source space, you could start with small changes, such as tweaking some web components or improving wording in some pages. You can find those files in `web/public/md/`.
 

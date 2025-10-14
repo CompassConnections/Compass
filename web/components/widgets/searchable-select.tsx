@@ -52,7 +52,7 @@ export function SearchableSelect(props: {
 
   return (
     <Popover className={clsx('relative', parentClassName)}>
-      {({ open, close }) => (
+      {({ open: _open, close }) => (
         <>
           <Popover.Button
             ref={setReferenceElement}

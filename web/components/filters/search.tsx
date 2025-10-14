@@ -32,21 +32,16 @@ export const WORDS: string[] = [
   "Sustainability",
   "Veganism",
   "Meditation",
-  "Climate action",
-  "Animal welfare",
+  "Climate",
+  "Animal",
   "Community living",
   "Open source",
   "Spirituality",
-  "Mutual aid",
 
   // Intellectual interests
   "Philosophy",
   "AI safety",
-  "Effective altruism",
-  "Systems thinking",
   "Psychology",
-  "Thinking, Fast and Slow",
-  "History of ideas",
 
   // Arts & culture
   "Indie film",
@@ -54,32 +49,42 @@ export const WORDS: string[] = [
   "Contemporary art",
   "Folk music",
   "Poetry",
-  "Sci-fi novels",
+  "Sci-fi",
   "Board games",
 
   // Relationship intentions
-  "Platonic friendship",
-  "Romantic partner",
-  "Collaborator",
   "Study buddy",
   "Co-founder",
 
   // Lifestyle
   "Digital nomad",
-  "Slow travel",
-  "Forest co-ops",
   "Permaculture",
-  "Yoga retreats",
-  "Mindful parenting",
-  "Non-smoker",
+  "Yoga",
 
   // Random human quirks (to make it feel alive)
   "Chess",
   "Rock climbing",
-  "Cold plunges",
-  "Tea ceremonies",
   "Stargazing",
-  "Urban gardening",
+
+  // Other
+  "Feminism",
+  "Coding",
+  "ENFP",
+  "INTP",
+  "Therapy",
+  "Science",
+  "Camus",
+  "Running",
+  "Writing",
+  "Reading",
+  "Anime",
+  "Drawing",
+  "Photography",
+  "Linux",
+  "History",
+  "Graphics design",
+  "Math",
+  "Ethereum",
 ]
 
 function getRandomPair(count = 3): string {

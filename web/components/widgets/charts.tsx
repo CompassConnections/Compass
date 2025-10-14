@@ -92,7 +92,7 @@ export default function ChartMembers() {
 
   // One LineChart with two Line series sharing the same data array
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data}>
         {/*<CartesianGrid strokeDasharray="3 3"/>*/}
         <XAxis

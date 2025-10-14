@@ -1,7 +1,7 @@
 import {type APIHandler} from 'api/helpers/endpoint'
 import {convertRow} from 'shared/love/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {from, join, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
+import {from, join, leftJoin, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
 import {getCompatibleProfiles} from 'api/compatible-profiles'
 import {intersection} from 'lodash'
 import {MAX_INT, MIN_BIO_LENGTH, MIN_INT} from "common/constants";
@@ -98,9 +98,10 @@ export const loadProfiles = async (props: profileQueryType) => {
   }
 
   const query = renderSql(
-    select('profiles.*, name, username, users.data as user'),
+    select('profiles.*, name, username, users.data as user, user_activity.last_online_time'),
     from('profiles'),
     join('users on users.id = profiles.user_id'),
+    leftJoin('user_activity on user_activity.user_id = profiles.user_id'),
     where('looking_for_matches = true'),
     // where(`pinned_url is not null and pinned_url != ''`),
     where(

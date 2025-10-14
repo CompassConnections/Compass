@@ -50,6 +50,7 @@ import {leavePrivateUserMessageChannel} from './leave-private-user-message-chann
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {getNotifications} from './get-notifications'
 import {updateNotifSettings} from './update-notif-setting'
+import {setLastOnline} from './set-last-online'
 import swaggerUi from "swagger-ui-express"
 import * as fs from "fs"
 import {sendSearchNotifications} from "api/send-search-notifications";
@@ -167,6 +168,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-channel-seen-time': getLastSeenChannelTime,
   'set-channel-seen-time': setChannelLastSeenTime,
   'get-messages-count': getMessagesCount,
+  'set-last-online': setLastOnline,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

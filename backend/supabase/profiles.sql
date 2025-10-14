@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS profiles (
     id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     is_smoker BOOLEAN,
     is_vegetarian_or_vegan BOOLEAN,
-    last_online_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     looking_for_matches BOOLEAN DEFAULT TRUE NOT NULL,
     messaging_status TEXT DEFAULT 'open'::TEXT NOT NULL,
@@ -89,17 +88,11 @@ CREATE
 OR REPLACE FUNCTION update_last_modification_time()
 RETURNS TRIGGER AS $$
 BEGIN
-   IF NEW.last_online_time IS DISTINCT FROM OLD.last_online_time AND row(NEW.*) = row(OLD.*) THEN
-      -- Only last_online_time changed, do nothing
-      RETURN NEW;
-END IF;
-
-   -- Some other column changed
-   NEW.last_modification_time = now();
-RETURN NEW;
+    NEW.last_modification_time = now();
+    RETURN NEW;
 END;
-$$
-LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;
+
 
 CREATE TRIGGER trigger_update_last_mod_time
     BEFORE UPDATE
@@ -141,5 +134,3 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_update_bio_text
     BEFORE INSERT OR UPDATE OF bio ON profiles
     FOR EACH ROW EXECUTE FUNCTION update_bio_text();
-
-

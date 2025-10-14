@@ -405,6 +405,11 @@ export const API = (_apiTypeCheck = {
       channelId: z.coerce.number(),
     }),
   },
+  'set-last-online': {
+    method: 'POST',
+    authed: true,
+    props: z.object({}),
+  },
   'get-notifications': {
     method: 'GET',
     authed: true,

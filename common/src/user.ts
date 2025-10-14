@@ -46,6 +46,11 @@ export type PrivateUser = {
   blockedByUserIds: string[]
 }
 
+export type UserActivity = {
+  user_id: string // same as User.id
+  last_online_time: string
+}
+
 export type UserAndPrivateUser = { user: User; privateUser: PrivateUser }
 
 export function getCurrentUtcTime(): Date {

@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import Router from 'next/router'
 import router from 'next/router'
 import Link from 'next/link'
-import {User} from 'common/user'
+import {User, UserActivity} from 'common/user'
 import {Button} from 'web/components/buttons/button'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
 import {Col} from 'web/components/layout/col'
@@ -17,7 +17,6 @@ import {ShareProfileButton} from '../widgets/share-profile-button'
 import {Profile} from 'common/love/profile'
 import {useUser} from 'web/hooks/use-user'
 import {linkClass} from 'web/components/widgets/site-link'
-import {StarButton} from '../widgets/star-button'
 import {updateProfile} from 'web/lib/api'
 import React, {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
@@ -26,6 +25,7 @@ import toast from "react-hot-toast";
 
 export default function ProfileHeader(props: {
   user: User
+  userActivity?: UserActivity
   profile: Profile
   simpleView?: boolean
   starredUserIds: string[]
@@ -36,9 +36,10 @@ export default function ProfileHeader(props: {
   const {
     user,
     profile,
+    userActivity,
     simpleView,
-    starredUserIds,
-    refreshStars,
+    // starredUserIds,
+    // refreshStars,
     showMessageButton,
     refreshProfile,
   } = props
@@ -46,7 +47,7 @@ export default function ProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
 
-  console.debug('ProfileProfileHeader', {user, profile, currentUser})
+  console.debug('ProfileProfileHeader', {user, profile, userActivity, currentUser})
 
   return (
     <Col className="w-full">
@@ -54,7 +55,7 @@ export default function ProfileHeader(props: {
         <Row className="items-center gap-1">
           <Col className="gap-1">
             <Row className="items-center gap-1 text-xl">
-              <OnlineIcon last_online_time={profile.last_online_time}/>
+              <OnlineIcon last_online_time={userActivity?.last_online_time}/>
               <span>
                 {simpleView ? (
                   <Link className={linkClass} href={`/${user.username}`}>

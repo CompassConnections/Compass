@@ -58,10 +58,8 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Policies
 DROP POLICY IF EXISTS "public read" ON profiles;
-
 CREATE POLICY "public read" ON profiles
-FOR SELECT
-                    USING (true);
+FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "self update" ON profiles;
 

@@ -15,6 +15,7 @@ import {getStars} from 'web/lib/supabase/stars'
 import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import React from "react";
+import {useUserActivity} from 'web/hooks/use-user-activity'
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -61,10 +62,13 @@ export function ProfileInfo(props: {
 
   const isProfileVisible = currentUser || profile.visibility === 'public'
 
+  const { data: userActivity } = useUserActivity(user?.id)
+
   return (
     <>
       <ProfileHeader
         user={user}
+        userActivity={userActivity}
         profile={profile}
         simpleView={!!fromProfilePage}
         starredUserIds={starredUserIds ?? []}

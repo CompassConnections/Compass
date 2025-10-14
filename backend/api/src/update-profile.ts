@@ -24,8 +24,7 @@ export const updateProfile: APIHandler<'update-profile'> = async (
     throw new APIError(404, 'Profile not found')
   }
 
-  !parsedBody.last_online_time &&
-    log('Updating profile', { userId: auth.uid, parsedBody })
+  log('Updating profile', { userId: auth.uid, parsedBody })
 
   await removePinnedUrlFromPhotoUrls(parsedBody)
   if (parsedBody.avatar_url) {

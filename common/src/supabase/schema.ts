@@ -427,7 +427,6 @@ export type Database = {
           is_smoker: boolean | null
           is_vegetarian_or_vegan: boolean | null
           last_modification_time: string
-          last_online_time: string
           looking_for_matches: boolean
           messaging_status: string
           occupation: string | null
@@ -475,7 +474,6 @@ export type Database = {
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
-          last_online_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
           occupation?: string | null
@@ -523,7 +521,6 @@ export type Database = {
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
-          last_online_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
           occupation?: string | null

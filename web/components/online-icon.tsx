@@ -5,7 +5,7 @@ import { Tooltip } from 'web/components/widgets/tooltip'
 import { fromNow } from 'web/lib/util/time'
 
 export const OnlineIcon = memo(function OnlineIcon(props: {
-  last_online_time: string
+  last_online_time?: string
 }) {
   const { last_online_time } = props
 

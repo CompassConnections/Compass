@@ -18,6 +18,7 @@ export async function api<P extends APIPath>(
         break
       }
     }
+    console.debug('User loaded after', i, 'iterations')
   }
 
   return typedAPICall(path, params, auth.currentUser)

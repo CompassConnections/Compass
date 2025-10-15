@@ -177,8 +177,8 @@ export type APIHandler<N extends APIPath> = (
 // Simple in-memory fixed-window rate limiter keyed by auth uid (or IP if unauthenticated)
 // Not suitable for multi-instance deployments without a shared store, but provides basic protection.
 // Limits are configurable via env:
-//   API_RATE_LIMIT_PER_MIN_AUTHED (default 120)
-//   API_RATE_LIMIT_PER_MIN_UNAUTHED (default 30)
+//   API_RATE_LIMIT_PER_MIN_AUTHED
+//   API_RATE_LIMIT_PER_MIN_UNAUTHED
 // Endpoints can be exempted by adding their name to RATE_LIMIT_EXEMPT (comma-separated)
 const __rateLimitState: Map<string, { windowStart: number; count: number }> = new Map()
 

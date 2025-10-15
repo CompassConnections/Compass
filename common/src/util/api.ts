@@ -67,7 +67,7 @@ export async function baseApiCall(props: {
     body:
       params == null || method === 'GET' ? undefined : JSON.stringify(params),
   })
-  console.log('Request', req)
+  // console.log('Request', req)
   return fetch(req).then(async (resp) => {
     const json = (await resp.json()) as { [k: string]: any }
     if (!resp.ok) {

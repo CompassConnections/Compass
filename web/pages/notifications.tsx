@@ -24,8 +24,10 @@ import { api } from 'web/lib/api'
 import { MultiSelectAnswers } from 'web/components/answers/answer-compatibility-question-content'
 import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
 import { debounce } from 'lodash'
+import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 
 export default function NotificationsPage() {
+  useRedirectIfSignedOut()
   return (
     <LovePage trackPageView={'notifications page'}>
       <NoSEO />

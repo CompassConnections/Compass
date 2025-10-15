@@ -2,8 +2,6 @@ import {API, APIParams, APIPath} from 'common/api/schema'
 import {typedAPICall} from 'common/util/api'
 import {sleep} from 'common/util/time'
 import {auth} from './firebase/users'
-import {APIError} from "common/api/utils";
-import toast from "react-hot-toast";
 
 export async function api<P extends APIPath>(
   path: P,
@@ -22,11 +20,7 @@ export async function api<P extends APIPath>(
     }
   }
 
-  return typedAPICall(path, params, auth.currentUser).catch((e) => {
-    if (e instanceof APIError && e.code === 429) {}
-      toast.error('Too many requests. Please try again later.')
-    throw e
-  })
+  return typedAPICall(path, params, auth.currentUser)
 }
 
 function curriedAPI<P extends APIPath>(path: P) {

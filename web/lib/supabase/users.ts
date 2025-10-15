@@ -1,10 +1,11 @@
 import {db} from './db'
 import {run} from 'common/supabase/utils'
-import {api, APIError} from 'web/lib/api'
+import {api} from 'web/lib/api'
 import {unauthedApi} from 'common/util/api'
 import type {DisplayUser} from 'common/api/user-types'
 import {MIN_BIO_LENGTH} from "common/constants";
 import {MONTH_MS} from "common/util/time";
+import {APIError} from "common/api/utils";
 
 export type {DisplayUser}
 

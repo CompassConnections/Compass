@@ -13,7 +13,6 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
-import {orderProfiles} from "common/filters";
 import {useFilters} from "web/components/filters/use-filters";
 
 export function ProfilesHome() {
@@ -64,9 +63,12 @@ export function ProfilesHome() {
       });
   }, [filters]);
 
-  const {data: starredUserIds, refresh: refreshStars} = useGetter('star', user?.id, getStars);
-  const compatibleProfiles = useCompatibleProfiles(user?.id);
-  const displayProfiles = profiles && orderProfiles(profiles, starredUserIds);
+  const {data: starredUsers, refresh: refreshStars} = useGetter('star', user?.id, getStars)
+  const starredUserIds = starredUsers?.map((u) => u.id)
+
+  const compatibleProfiles = useCompatibleProfiles(user?.id)
+  // const displayProfiles = profiles && orderProfiles(profiles, starredUserIds);
+  const displayProfiles = profiles
 
   const loadMore = useCallback(async () => {
     if (!profiles || isLoadingMore) return false;
@@ -96,7 +98,8 @@ export function ProfilesHome() {
       <Title className="!mb-2 text-3xl">Profiles</Title>
       <Search
         youProfile={you}
-        starredUserIds={starredUserIds ?? []}
+        starredUsers={starredUsers ?? []}
+        refreshStars={refreshStars}
         filters={filters}
         updateFilter={updateFilter}
         clearFilters={clearFilters}

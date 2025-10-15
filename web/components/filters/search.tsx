@@ -10,13 +10,14 @@ import {Select} from 'web/components/widgets/select'
 import {DesktopFilters} from './desktop-filters'
 import {LocationFilterProps} from './location-filter'
 import {MobileFilters} from './mobile-filters'
-import {BookmarkSearchButton} from "web/components/searches/button";
+import {BookmarkSearchButton, BookmarkStarButton} from "web/components/searches/button";
 import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
 import {isEqual} from "lodash";
 import toast from "react-hot-toast";
 import {FilterFields, initialFilters} from "common/filters";
+import {DisplayUser} from "common/api/user-types";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -96,7 +97,8 @@ function getRandomPair(count = 3): string {
 const MAX_BOOKMARKED_SEARCHES = 10;
 export const Search = (props: {
   youProfile: Profile | undefined | null
-  starredUserIds: string[]
+  starredUsers: DisplayUser[]
+  refreshStars: () => void
   // filter props
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
@@ -117,6 +119,8 @@ export const Search = (props: {
     filters,
     bookmarkedSearches,
     refreshBookmarkedSearches,
+    starredUsers,
+    refreshStars,
   } = props
 
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
@@ -128,6 +132,7 @@ export const Search = (props: {
   const [bookmarked, setBookmarked] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
   const [openBookmarks, setOpenBookmarks] = useState(false);
+  const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
 
   useEffect(() => {
@@ -254,7 +259,7 @@ export const Search = (props: {
           color={'none'}
           className={'bg-canvas-100 hover:bg-canvas-200'}
         >
-          {bookmarked ? 'Bookmarked!' : loadingBookmark ? '' : 'Get Notified'}
+          {bookmarked ? 'Saved!' : loadingBookmark ? '' : 'Get Notified'}
         </Button>
 
         <BookmarkSearchButton
@@ -262,6 +267,16 @@ export const Search = (props: {
           bookmarkedSearches={bookmarkedSearches}
           open={openBookmarks}
           setOpen={setOpenBookmarks}
+        />
+
+        <BookmarkStarButton
+          refreshStars={refreshStars}
+          starredUsers={starredUsers}
+          open={openStarBookmarks}
+          setOpen={(checked) => {
+            setOpenStarBookmarks(checked)
+            refreshStars()
+          }}
         />
       </Row>
     </Col>

@@ -1,5 +1,6 @@
 import { run } from 'common/supabase/utils'
 import { db } from 'web/lib/supabase/db'
+import {DisplayUser} from "common/api/user-types";
 
 export const getStars = async (creatorId: string) => {
   const { data } = await run(
@@ -12,5 +13,13 @@ export const getStars = async (creatorId: string) => {
 
   if (!data) return []
 
-  return data.map((d) => d.target_id as string)
+  const ids = data.map((d) => d.target_id as string)
+  const {data: users} = await run(
+    db
+      .from('users')
+      .select(`id, name, username`)
+      .in('id', ids)
+  )
+
+  return users as unknown as DisplayUser[]
 }

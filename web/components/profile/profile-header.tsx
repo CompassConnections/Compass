@@ -22,6 +22,7 @@ import {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 import {deleteAccount} from "web/lib/util/delete";
 import toast from "react-hot-toast";
+import {StarButton} from "web/components/widgets/star-button";
 
 export default function ProfileHeader(props: {
   user: User
@@ -38,8 +39,8 @@ export default function ProfileHeader(props: {
     profile,
     userActivity,
     simpleView,
-    // starredUserIds,
-    // refreshStars,
+    starredUserIds,
+    refreshStars,
     showMessageButton,
     refreshProfile,
   } = props
@@ -145,13 +146,13 @@ export default function ProfileHeader(props: {
               className="sm:flex"
               username={user.username}
             />
-            {/*{currentUser && (*/}
-            {/*  <StarButton*/}
-            {/*    targetProfile={profile}*/}
-            {/*    isStarred={starredUserIds.includes(user.id)}*/}
-            {/*    refresh={refreshStars}*/}
-            {/*  />*/}
-            {/*)}*/}
+            {currentUser && (
+              <StarButton
+                targetProfile={profile}
+                isStarred={starredUserIds.includes(user.id)}
+                refresh={refreshStars}
+              />
+            )}
             {currentUser && showMessageButton && (
               <SendMessageButton toUser={user} currentUser={currentUser}/>
             )}

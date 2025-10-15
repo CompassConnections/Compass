@@ -31,11 +31,12 @@ export function ProfileInfo(props: {
   // const currentProfile = useProfile()
   // const isCurrentUser = currentUser?.id === user.id
 
-  const {data: starredUserIds, refresh: refreshStars} = useGetter(
+  const {data: starredUsers, refresh: refreshStars} = useGetter(
     'stars',
     currentUser?.id,
     getStars
   )
+  const starredUserIds = starredUsers?.map((u) => u.id)
 
   // const { data, refresh } = useAPIGetter('get-likes-and-ships', {
   //   userId: user.id,

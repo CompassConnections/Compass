@@ -153,7 +153,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     geodbCityIds?.length &&
     where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 
-    skipId && where(`user_id != $(skipId)`, {skipId}),
+    skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
     orderBy(`${tablePrefix}.${orderByParam} DESC`),
     after &&

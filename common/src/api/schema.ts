@@ -123,7 +123,7 @@ export const API = (_apiTypeCheck = {
   me: {
     method: 'GET',
     authed: true,
-    rateLimited: true,
+    rateLimited: false,
     cache: DEFAULT_CACHE_STRATEGY,
     props: z.object({}),
     returns: {} as FullUser,
@@ -184,7 +184,7 @@ export const API = (_apiTypeCheck = {
   'me/private': {
     method: 'GET',
     authed: true,
-    rateLimited: true,
+    rateLimited: false,
     props: z.object({}),
     returns: {} as PrivateUser,
   },
@@ -261,7 +261,7 @@ export const API = (_apiTypeCheck = {
   'get-compatibility-questions': {
     method: 'GET',
     authed: true,
-    rateLimited: true,
+    rateLimited: false,
     props: z.object({}),
     returns: {} as {
       status: 'success'
@@ -400,7 +400,7 @@ export const API = (_apiTypeCheck = {
   'get-channel-memberships': {
     method: 'GET',
     authed: true,
-    rateLimited: true,
+    rateLimited: false,
     props: z.object({
       channelId: z.coerce.number().optional(),
       createdTime: z.string().optional(),
@@ -415,7 +415,7 @@ export const API = (_apiTypeCheck = {
   'get-channel-messages': {
     method: 'GET',
     authed: true,
-    rateLimited: true,
+    rateLimited: false,
     props: z.object({
       channelId: z.coerce.number(),
       limit: z.coerce.number(),

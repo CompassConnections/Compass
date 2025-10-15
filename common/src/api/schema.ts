@@ -28,6 +28,8 @@ type APIGenericSchema = {
   method: 'GET' | 'POST' | 'PUT'
   // whether the endpoint requires authentication
   authed: boolean
+  // whether the endpoint requires authentication
+  rateLimited?: boolean
   // zod schema for the request body (or for params for GET requests)
   props: z.ZodType
   // note this has to be JSON serializable
@@ -80,6 +82,7 @@ export const API = (_apiTypeCheck = {
     // TODO rest
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as { user: User; privateUser: PrivateUser },
     props: z
       .object({
@@ -91,12 +94,14 @@ export const API = (_apiTypeCheck = {
   'create-profile': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as Row<'profiles'>,
     props: baseProfilesSchema,
   },
   report: {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z
       .object({
         contentOwnerId: z.string(),
@@ -112,6 +117,7 @@ export const API = (_apiTypeCheck = {
   me: {
     method: 'GET',
     authed: true,
+    rateLimited: true,
     cache: DEFAULT_CACHE_STRATEGY,
     props: z.object({}),
     returns: {} as FullUser,
@@ -119,6 +125,7 @@ export const API = (_apiTypeCheck = {
   'me/update': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       name: z.string().trim().min(1).optional(),
       username: z.string().trim().min(1).optional(),
@@ -146,6 +153,7 @@ export const API = (_apiTypeCheck = {
   'update-profile': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: combinedLoveUsersSchema.partial(),
     returns: {} as ProfileRow,
   },
@@ -161,6 +169,7 @@ export const API = (_apiTypeCheck = {
   'me/delete': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       username: z.string(), // just so you're sure
     }),
@@ -168,6 +177,7 @@ export const API = (_apiTypeCheck = {
   'me/private': {
     method: 'GET',
     authed: true,
+    rateLimited: true,
     props: z.object({}),
     returns: {} as PrivateUser,
   },
@@ -201,20 +211,22 @@ export const API = (_apiTypeCheck = {
   },
   'search-users': {
     method: 'GET',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: [] as FullUser[],
     props: z
       .object({
         term: z.string(),
-        limit: z.coerce.number().gte(0).lte(1000).default(500),
+        limit: z.coerce.number().gte(0).lte(20).default(500),
         page: z.coerce.number().gte(0).default(0),
       })
       .strict(),
   },
   'compatible-profiles': {
     method: 'GET',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     props: z.object({userId: z.string()}),
     returns: {} as {
       profile: Profile
@@ -227,6 +239,7 @@ export const API = (_apiTypeCheck = {
   'remove-pinned-photo': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {success: true},
     props: z
       .object({
@@ -236,7 +249,8 @@ export const API = (_apiTypeCheck = {
   },
   'get-compatibility-questions': {
     method: 'GET',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     props: z.object({}),
     returns: {} as {
       status: 'success'
@@ -249,6 +263,7 @@ export const API = (_apiTypeCheck = {
   'like-profile': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       targetUserId: z.string(),
       remove: z.boolean().optional(),
@@ -260,6 +275,7 @@ export const API = (_apiTypeCheck = {
   'ship-profiles': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       targetUserId1: z.string(),
       targetUserId2: z.string(),
@@ -271,7 +287,8 @@ export const API = (_apiTypeCheck = {
   },
   'get-likes-and-ships': {
     method: 'GET',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     props: z
       .object({
         userId: z.string(),
@@ -287,6 +304,7 @@ export const API = (_apiTypeCheck = {
   'has-free-like': {
     method: 'GET',
     authed: true,
+    rateLimited: true,
     props: z.object({}).strict(),
     returns: {} as {
       status: 'success'
@@ -296,6 +314,7 @@ export const API = (_apiTypeCheck = {
   'star-profile': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       targetUserId: z.string(),
       remove: z.boolean().optional(),
@@ -307,9 +326,10 @@ export const API = (_apiTypeCheck = {
   'get-profiles': {
     method: 'GET',
     authed: false,
+    rateLimited: true,
     props: z
       .object({
-        limit: z.coerce.number().optional().default(20),
+        limit: z.coerce.number().gt(0).lte(20).optional().default(20),
         after: z.string().optional(),
         // Search and filter parameters
         name: z.string().optional(),
@@ -337,7 +357,8 @@ export const API = (_apiTypeCheck = {
   },
   'get-profile-answers': {
     method: 'GET',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     props: z.object({userId: z.string()}).strict(),
     returns: {} as {
       status: 'success'
@@ -347,6 +368,7 @@ export const API = (_apiTypeCheck = {
   'create-comment': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       userId: z.string(),
       content: contentSchema,
@@ -357,6 +379,7 @@ export const API = (_apiTypeCheck = {
   'hide-comment': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     props: z.object({
       commentId: z.string(),
       hide: z.boolean(),
@@ -366,6 +389,7 @@ export const API = (_apiTypeCheck = {
   'get-channel-memberships': {
     method: 'GET',
     authed: true,
+    rateLimited: true,
     props: z.object({
       channelId: z.coerce.number().optional(),
       createdTime: z.string().optional(),
@@ -380,6 +404,7 @@ export const API = (_apiTypeCheck = {
   'get-channel-messages': {
     method: 'GET',
     authed: true,
+    rateLimited: true,
     props: z.object({
       channelId: z.coerce.number(),
       limit: z.coerce.number(),
@@ -424,6 +449,7 @@ export const API = (_apiTypeCheck = {
   'create-private-user-message': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       content: contentSchema,
@@ -433,6 +459,7 @@ export const API = (_apiTypeCheck = {
   'create-private-user-message-channel': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       userIds: z.array(z.string()),
@@ -441,6 +468,7 @@ export const API = (_apiTypeCheck = {
   'update-private-user-message-channel': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       channelId: z.number(),
@@ -450,6 +478,7 @@ export const API = (_apiTypeCheck = {
   'leave-private-user-message-channel': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       channelId: z.number(),
@@ -458,6 +487,7 @@ export const API = (_apiTypeCheck = {
   'create-compatibility-question': {
     method: 'POST',
     authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       question: z.string().min(1).max(MAX_COMPATIBILITY_QUESTION_LENGTH),
@@ -466,7 +496,8 @@ export const API = (_apiTypeCheck = {
   },
   'search-location': {
     method: 'POST',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       term: z.string(),
@@ -475,7 +506,8 @@ export const API = (_apiTypeCheck = {
   },
   'search-near-city': {
     method: 'POST',
-    authed: false,
+    authed: true,
+    rateLimited: true,
     returns: {} as any,
     props: z.object({
       cityId: z.string(),
@@ -484,14 +516,14 @@ export const API = (_apiTypeCheck = {
   },
   'get-messages-count': {
     method: 'GET',
-    authed: false,
+    authed: true,
     props: z.object({}),
     returns: {} as { count: number },
   },
 } as const)
 
 export type APIPath = keyof typeof API
-export type APISchema<N extends APIPath> = (typeof API)[N]
+export type APISchema<N extends APIPath> = (typeof API)[N] & { rateLimited?: boolean }
 
 export type APIParams<N extends APIPath> = z.input<APISchema<N>['props']>
 export type ValidatedAPIParams<N extends APIPath> = z.output<

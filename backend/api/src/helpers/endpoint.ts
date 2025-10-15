@@ -174,11 +174,63 @@ export type APIHandler<N extends APIPath> = (
   req: Request
 ) => Promise<APIResponseOptionalContinue<N>>
 
+// Simple in-memory fixed-window rate limiter keyed by auth uid (or IP if unauthenticated)
+// Not suitable for multi-instance deployments without a shared store, but provides basic protection.
+// Limits are configurable via env:
+//   API_RATE_LIMIT_PER_MIN_AUTHED (default 120)
+//   API_RATE_LIMIT_PER_MIN_UNAUTHED (default 30)
+// Endpoints can be exempted by adding their name to RATE_LIMIT_EXEMPT (comma-separated)
+const __rateLimitState: Map<string, { windowStart: number; count: number }> = new Map()
+
+function getRateLimitConfig() {
+  const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 30)
+  const unAuthed = Number(process.env.API_RATE_LIMIT_PER_MIN_UNAUTHED ?? 30)
+  return {authedLimit: authed, unAuthLimit: unAuthed}
+}
+
+function rateLimitKey(name: string, req: Request, auth?: AuthedUser) {
+  if (auth) return `uid:${auth.uid}`
+  // fallback to IP for unauthenticated requests
+  return `ip:${req.ip}`
+}
+
+function checkRateLimit(name: string, req: Request, res: Response, auth?: AuthedUser) {
+  const {authedLimit, unAuthLimit} = getRateLimitConfig()
+
+  const key = rateLimitKey(name, req, auth)
+  const limit = auth ? authedLimit : unAuthLimit
+  const now = Date.now()
+  const windowMs = 60_000
+  const windowStart = Math.floor(now / windowMs) * windowMs
+
+  let state = __rateLimitState.get(key)
+  if (!state || state.windowStart !== windowStart) {
+    state = {windowStart, count: 0}
+    __rateLimitState.set(key, state)
+  }
+  state.count += 1
+
+  const remaining = Math.max(0, limit - state.count)
+  const reset = Math.ceil((state.windowStart + windowMs - now) / 1000)
+
+  // Set standard-ish rate limit headers
+  res.setHeader('X-RateLimit-Limit', String(limit))
+  res.setHeader('X-RateLimit-Remaining', String(Math.max(0, remaining)))
+  res.setHeader('X-RateLimit-Reset', String(reset))
+
+  // console.log(`Rate limit check for ${key} on ${name}: ${state.count}/${limit} (remaining: ${remaining}, resets in ${reset}s)`)
+
+  if (state.count > limit) {
+    res.setHeader('Retry-After', String(reset))
+    throw new APIError(429, 'Too Many Requests: rate limit exceeded.')
+  }
+}
+
 export const typedEndpoint = <N extends APIPath>(
   name: N,
   handler: APIHandler<N>
 ) => {
-  const {props: propSchema, authed: authRequired, method} = API[name]
+  const {props: propSchema, authed: authRequired, rateLimited = false, method} = API[name] as APISchema<N>
 
   return async (req: Request, res: Response, next: NextFunction) => {
     let authUser: AuthedUser | undefined = undefined
@@ -186,6 +238,15 @@ export const typedEndpoint = <N extends APIPath>(
       authUser = await lookupUser(await parseCredentials(req))
     } catch (e) {
       if (authRequired) return next(e)
+    }
+
+    // Apply rate limiting before invoking the handler
+    if (rateLimited) {
+      try {
+        checkRateLimit(String(name), req, res, authUser)
+      } catch (e) {
+        return next(e)
+      }
     }
 
     const props = {

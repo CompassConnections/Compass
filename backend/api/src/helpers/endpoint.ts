@@ -183,7 +183,7 @@ export type APIHandler<N extends APIPath> = (
 const __rateLimitState: Map<string, { windowStart: number; count: number }> = new Map()
 
 function getRateLimitConfig() {
-  const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 30)
+  const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 120)
   const unAuthed = Number(process.env.API_RATE_LIMIT_PER_MIN_UNAUTHED ?? 30)
   return {authedLimit: authed, unAuthLimit: unAuthed}
 }

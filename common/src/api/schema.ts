@@ -225,7 +225,7 @@ export const API = (_apiTypeCheck = {
   },
   'compatible-profiles': {
     method: 'GET',
-    authed: true,
+    authed: false,
     rateLimited: true,
     props: z.object({userId: z.string()}),
     returns: {} as {

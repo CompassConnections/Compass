@@ -1,6 +1,6 @@
-import { unauthedApi } from 'common/util/api'
-import { useEffect, useRef } from 'react'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
+import {useEffect, useRef} from 'react'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {api} from "web/lib/api";
 
 export function useNearbyCities(
   referenceCityId: string | null | undefined,
@@ -15,7 +15,7 @@ export function useNearbyCities(
     searchCount.current++
     const thisSearchCount = searchCount.current
     if (referenceCityId) {
-      unauthedApi('search-near-city', {
+      api('search-near-city', {
         cityId: referenceCityId,
         radius,
       }).then((result) => {

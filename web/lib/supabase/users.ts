@@ -44,7 +44,7 @@ export async function getFullUserById(id: string) {
 }
 
 export async function searchUsers(prompt: string, limit: number) {
-  return unauthedApi('search-users', {term: prompt, limit: limit})
+  return api('search-users', {term: prompt, limit: limit})
 }
 
 export async function getDisplayUsers(userIds: string[]) {

@@ -17,7 +17,7 @@ export const useOnline = () => {
       //     .eq('id', profile.id)
       // )
       api('set-last-online-time')
-      console.log('set last online time for', profile.id, date)
+      // console.log('set last online time for', profile.id, date)
     })()
   }, [profile?.id, isAuthed])
 }

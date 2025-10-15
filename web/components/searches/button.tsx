@@ -10,7 +10,8 @@ import {FilterFields} from "common/filters";
 import {api} from "web/lib/api";
 import {DisplayUser} from "common/api/user-types";
 import {Link} from "@react-email/components";
-import {DOMAIN} from "common/envs/constants";
+import {useState} from "react";
+import toast from "react-hot-toast";
 
 export function BookmarkSearchButton(props: {
   bookmarkedSearches: BookmarkedSearchesType[]
@@ -63,33 +64,35 @@ function ButtonModal(props: {
       <Col className={MODAL_CLASS}>
         <h3>Saved Searches</h3>
         {bookmarkedSearches?.length ? (<>
-        <p>We'll notify you daily when new people match your searches below.</p>
-        <Col
-          className={
-            'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
-          }
-        >
-          <ol className="list-decimal list-inside space-y-2">
-            {(bookmarkedSearches || []).map((search) => (
-              <li key={search.id}
-                  className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                {formatFilters(search.search_filters as Partial<FilterFields>, search.location as locationType)?.join(" • ")}
-                <button
-                  onClick={async () => {
-                    await deleteBookmarkedSearch(search.id)
-                    refreshBookmarkedSearches()
-                  }}
-                  className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ol>
+              <p>We'll notify you daily when new people match your searches below.</p>
+              <Col
+                className={
+                  'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
+                }
+              >
+                <ol className="list-decimal list-inside space-y-2">
+                  {(bookmarkedSearches || []).map((search) => (
+                    <li key={search.id}
+                        className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
+                      {formatFilters(search.search_filters as Partial<FilterFields>, search.location as locationType)?.join(" • ")}
+                      <button
+                        onClick={async () => {
+                          await deleteBookmarkedSearch(search.id)
+                          refreshBookmarkedSearches()
+                        }}
+                        className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ol>
 
-        </Col>
-          </>
-        ) : <p>You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people match it.</p>}
+              </Col>
+            </>
+          ) :
+          <p>You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people
+            match it.</p>}
         {/*<BookmarkSearchContent*/}
         {/*  total={bookmarkedSearches.length}*/}
         {/*  compatibilityQuestion={bookmarkedSearches[questionIndex]}*/}
@@ -151,6 +154,10 @@ function StarModal(props: {
   refreshStars: () => void
 }) {
   const {open, setOpen, starredUsers, refreshStars} = props
+  // Track items being optimistically removed so we can hide them immediately
+  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
+
+  const visibleUsers = (starredUsers || []).filter((u) => !removingIds.has(u.id))
 
   return (
     <Modal
@@ -162,42 +169,57 @@ function StarModal(props: {
     >
       <Col className={MODAL_CLASS}>
         <h3>Saved Profiles</h3>
-        {starredUsers?.length ? (<>
-        <p>Here are the profiles you saved:</p>
-        <Col
-          className={
-            'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
-          }
-        >
-          <ol className="list-decimal list-inside space-y-2">
-            {(starredUsers || []).map((user) => (
-              <li key={user.id}
-                  className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                {user.name} (<Link
-                  href={`https://${DOMAIN}/${user.username}`}
-                  // style={{color: "#2563eb", textDecoration: "none"}}
-                >
-                  @{user.username}
-                </Link>) {' '}
-                <button
-                  onClick={async () => {
-                    await api('star-profile', {
-                      targetUserId: user.id,
-                      remove: true,
-                    })
-                    refreshStars()
-                  }}
-                  className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ol>
+        {visibleUsers?.length ? (<>
+            <p>Here are the profiles you saved:</p>
+            <Col
+              className={
+                'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
+              }
+            >
+              <ol className="list-decimal list-inside space-y-2">
+                {visibleUsers.map((user) => (
+                  <li key={user.id}
+                      className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
+                    {user.name} (<Link
+                    href={`/${user.username}`}
+                    // style={{color: "#2563eb", textDecoration: "none"}}
+                  >
+                    @{user.username}
+                  </Link>) {' '}
+                    <button
+                      onClick={() => {
+                        // Optimistically remove the user from the list
+                        setRemovingIds((prev) => new Set(prev).add(user.id))
+                        // Fire the API call without blocking UI
+                        api('star-profile', {
+                          targetUserId: user.id,
+                          remove: true,
+                        })
+                          .then(() => {
+                            // Sync with server state
+                            refreshStars()
+                          })
+                          .catch(() => {
+                            toast.error("Couldn't remove saved profile. Please try again.")
+                            // Revert optimistic removal on failure
+                            setRemovingIds((prev) => {
+                              const next = new Set(prev)
+                              next.delete(user.id)
+                              return next
+                            })
+                          })
+                      }}
+                      className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ol>
 
-        </Col>
+            </Col>
           </>
-      ) : <p>You haven't saved any profile. To save one, click on the star on their profile page.</p>}
+        ) : <p>You haven't saved any profile. To save one, click on the star on their profile page.</p>}
         {/*<BookmarkSearchContent*/}
         {/*  total={bookmarkedSearches.length}*/}
         {/*  compatibilityQuestion={bookmarkedSearches[questionIndex]}*/}

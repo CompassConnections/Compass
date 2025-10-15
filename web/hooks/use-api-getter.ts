@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import {useEffect} from 'react'
 
-import { APIParams, APIPath, APIResponse } from 'common/api/schema'
-import { usePersistentInMemoryState } from './use-persistent-in-memory-state'
-import { APIError, api } from 'web/lib/api'
-import { useEvent } from './use-event'
+import {APIParams, APIPath, APIResponse} from 'common/api/schema'
+import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
+import {api} from 'web/lib/api'
+import {useEvent} from './use-event'
+import {APIError} from "common/api/utils";
 
 const promiseCache: Record<string, Promise<any> | undefined> = {}
 
@@ -45,7 +46,7 @@ export const useAPIGetter = <P extends APIPath>(
     refresh()
   }, [propsStringToTriggerRefresh])
 
-  return { data, error, refresh }
+  return {data, error, refresh}
 }
 
 function deepCopyWithoutKeys(obj: any, keysToRemove: string[]): any {

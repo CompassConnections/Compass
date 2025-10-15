@@ -44,33 +44,39 @@ export const API = (_apiTypeCheck = {
   health: {
     method: 'GET',
     authed: false,
+    rateLimited: false,
     props: z.object({}),
     returns: {} as { message: 'Server is working.'; uid?: string },
   },
   'get-supabase-token': {
     method: 'GET',
     authed: true,
+    rateLimited: false,
     props: z.object({}),
     returns: {} as { jwt: string },
   },
   'mark-all-notifs-read': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({}),
   },
   'user/by-id/:id/block': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({id: z.string()}).strict(),
   },
   'user/by-id/:id/unblock': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({id: z.string()}).strict(),
   },
   'ban-user': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z
       .object({
         userId: z.string(),
@@ -160,6 +166,7 @@ export const API = (_apiTypeCheck = {
   'update-notif-settings': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({
       type: z.string() as z.ZodType<notification_preference>,
       medium: z.enum(['email', 'browser', 'mobile']),
@@ -184,6 +191,7 @@ export const API = (_apiTypeCheck = {
   'user/:username': {
     method: 'GET',
     authed: false,
+    rateLimited: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as FullUser,
     props: z.object({username: z.string()}).strict(),
@@ -191,6 +199,7 @@ export const API = (_apiTypeCheck = {
   'user/:username/lite': {
     method: 'GET',
     authed: false,
+    rateLimited: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as DisplayUser,
     props: z.object({username: z.string()}).strict(),
@@ -198,6 +207,7 @@ export const API = (_apiTypeCheck = {
   'user/by-id/:id': {
     method: 'GET',
     authed: false,
+    rateLimited: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as FullUser,
     props: z.object({id: z.string()}).strict(),
@@ -205,6 +215,7 @@ export const API = (_apiTypeCheck = {
   'user/by-id/:id/lite': {
     method: 'GET',
     authed: false,
+    rateLimited: false,
     cache: DEFAULT_CACHE_STRATEGY,
     returns: {} as DisplayUser,
     props: z.object({id: z.string()}).strict(),
@@ -225,7 +236,7 @@ export const API = (_apiTypeCheck = {
   },
   'compatible-profiles': {
     method: 'GET',
-    authed: false,
+    authed: true,
     rateLimited: true,
     props: z.object({userId: z.string()}),
     returns: {} as {
@@ -325,7 +336,7 @@ export const API = (_apiTypeCheck = {
   },
   'get-profiles': {
     method: 'GET',
-    authed: false,
+    authed: true,
     rateLimited: true,
     props: z
       .object({
@@ -415,6 +426,7 @@ export const API = (_apiTypeCheck = {
   'get-channel-seen-time': {
     method: 'GET',
     authed: true,
+    rateLimited: false,
     props: z.object({
       channelIds: z
         .array(z.coerce.number())
@@ -426,6 +438,7 @@ export const API = (_apiTypeCheck = {
   'set-channel-seen-time': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({
       channelId: z.coerce.number(),
     }),
@@ -433,11 +446,13 @@ export const API = (_apiTypeCheck = {
   'set-last-online-time': {
     method: 'POST',
     authed: true,
+    rateLimited: false,
     props: z.object({}),
   },
   'get-notifications': {
     method: 'GET',
     authed: true,
+    rateLimited: false,
     returns: [] as Notification[],
     props: z
       .object({
@@ -517,13 +532,14 @@ export const API = (_apiTypeCheck = {
   'get-messages-count': {
     method: 'GET',
     authed: true,
+    rateLimited: false,
     props: z.object({}),
     returns: {} as { count: number },
   },
 } as const)
 
 export type APIPath = keyof typeof API
-export type APISchema<N extends APIPath> = (typeof API)[N] & { rateLimited?: boolean }
+export type APISchema<N extends APIPath> = (typeof API)[N]
 
 export type APIParams<N extends APIPath> = z.input<APISchema<N>['props']>
 export type ValidatedAPIParams<N extends APIPath> = z.output<

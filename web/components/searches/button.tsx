@@ -9,9 +9,9 @@ import {formatFilters, locationType} from "common/searches";
 import {FilterFields} from "common/filters";
 import {api} from "web/lib/api";
 import {DisplayUser} from "common/api/user-types";
-import {Link} from "@react-email/components";
 import {useState} from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export function BookmarkSearchButton(props: {
   bookmarkedSearches: BookmarkedSearchesType[]
@@ -180,12 +180,14 @@ function StarModal(props: {
                 {visibleUsers.map((user) => (
                   <li key={user.id}
                       className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                    {user.name} (<Link
-                    href={`/${user.username}`}
-                    // style={{color: "#2563eb", textDecoration: "none"}}
-                  >
-                    @{user.username}
-                  </Link>) {' '}
+                    <a className={'customlink'}>
+                      {user.name} (<Link
+                      href={`/${user.username}`}
+                      // style={{color: "#2563eb", textDecoration: "none"}}
+                    >
+                      @{user.username}
+                    </Link>) {' '}
+                    </a>
                     <button
                       onClick={() => {
                         // Optimistically remove the user from the list

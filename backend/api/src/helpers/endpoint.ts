@@ -184,7 +184,7 @@ const __rateLimitState: Map<string, { windowStart: number; count: number }> = ne
 
 function getRateLimitConfig() {
   const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 120)
-  const unAuthed = Number(process.env.API_RATE_LIMIT_PER_MIN_UNAUTHED ?? 30)
+  const unAuthed = Number(process.env.API_RATE_LIMIT_PER_MIN_UNAUTHED ?? 120)
   return {authedLimit: authed, unAuthLimit: unAuthed}
 }
 

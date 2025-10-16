@@ -3,7 +3,7 @@ import {Col} from 'web/components/layout/col'
 import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/required-profile-form'
 import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
 import {useUser} from 'web/hooks/use-user'
-import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
 import Router, {useRouter} from 'next/router'
@@ -114,7 +114,7 @@ export default function SignupPage() {
           ) : step === 1 ? (
             <></>
           ) : (
-            <LoadingIndicator/>
+            <CompassLoadingIndicator/>
           )}
         </Col>
       )}

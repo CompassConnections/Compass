@@ -6,7 +6,7 @@ import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {ProfileGrid} from 'web/components/profile-grid'
-import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {CompassLoadingIndicator, LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useGetter} from 'web/hooks/use-getter'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
@@ -110,7 +110,7 @@ export function ProfilesHome() {
         refreshBookmarkedSearches={refreshBookmarkedSearches}
       />
       {displayProfiles === undefined || compatibleProfiles === undefined ? (
-        <LoadingIndicator/>
+        <CompassLoadingIndicator/>
       ) : (
         <ProfileGrid
           profiles={displayProfiles}

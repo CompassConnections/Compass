@@ -1,6 +1,6 @@
 import {Profile} from 'common/love/profile'
 import {CompatibilityScore} from 'common/love/compatibility-score'
-import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {track} from 'web/lib/service/analytics'
 import {Col} from './layout/col'
@@ -59,7 +59,7 @@ export const ProfileGrid = (props: {
 
       {isLoadingMore && (
         <div className="flex justify-center py-4">
-          <LoadingIndicator/>
+          <CompassLoadingIndicator/>
         </div>
       )}
 

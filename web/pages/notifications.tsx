@@ -1,41 +1,37 @@
-import {
-  NOTIFICATIONS_PER_PAGE,
-  NOTIFICATION_TYPES_TO_SELECT,
-  type Notification,
-} from 'common/notifications'
-import { PrivateUser, type User } from 'common/src/user'
+import {type Notification, NOTIFICATION_TYPES_TO_SELECT, NOTIFICATIONS_PER_PAGE,} from 'common/notifications'
+import {PrivateUser, type User} from 'common/src/user'
 import {
   notification_destination_types,
   notification_preference,
   notification_preferences,
 } from 'common/user-notification-preferences'
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { NoSEO } from 'web/components/NoSEO'
-import { Col } from 'web/components/layout/col'
-import { UncontrolledTabs } from 'web/components/layout/tabs'
-import { LovePage } from 'web/components/love-page'
-import { NotificationItem } from 'web/components/notification-items'
-import { LoadingIndicator } from 'web/components/widgets/loading-indicator'
-import { Pagination } from 'web/components/widgets/pagination'
-import { Title } from 'web/components/widgets/title'
-import { useGroupedNotifications } from 'web/hooks/use-notifications'
-import { usePrivateUser, useUser } from 'web/hooks/use-user'
-import { api } from 'web/lib/api'
-import { MultiSelectAnswers } from 'web/components/answers/answer-compatibility-question-content'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { debounce } from 'lodash'
+import {Fragment, useCallback, useEffect, useMemo, useState} from 'react'
+import {NoSEO} from 'web/components/NoSEO'
+import {Col} from 'web/components/layout/col'
+import {UncontrolledTabs} from 'web/components/layout/tabs'
+import {LovePage} from 'web/components/love-page'
+import {NotificationItem} from 'web/components/notification-items'
+import {CompassLoadingIndicator, LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {Pagination} from 'web/components/widgets/pagination'
+import {Title} from 'web/components/widgets/title'
+import {useGroupedNotifications} from 'web/hooks/use-notifications'
+import {usePrivateUser, useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {MultiSelectAnswers} from 'web/components/answers/answer-compatibility-question-content'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {debounce} from 'lodash'
 import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
   return (
     <LovePage trackPageView={'notifications page'}>
-      <NoSEO />
+      <NoSEO/>
       <Title>Updates</Title>
       <UncontrolledTabs
         tabs={[
-          { title: 'Notifications', content: <NotificationsContent /> },
-          { title: 'Settings', content: <NotificationSettings /> },
+          {title: 'Notifications', content: <NotificationsContent/>},
+          {title: 'Settings', content: <NotificationSettings/>},
         ]}
         trackingName={'notifications page'}
       />
@@ -45,15 +41,15 @@ export default function NotificationsPage() {
 
 const NotificationsContent = () => {
   const user = useUser()
-  if (!user) return <LoadingIndicator />
-  return <LoadedNotificationsContent user={user} />
+  if (!user) return <CompassLoadingIndicator/>
+  return <LoadedNotificationsContent user={user}/>
 }
 
 function LoadedNotificationsContent(props: { user: User }) {
-  const { user } = props
+  const {user} = props
   const privateUser = usePrivateUser()
 
-  const { groupedNotifications, mostRecentNotification } =
+  const {groupedNotifications, mostRecentNotification} =
     useGroupedNotifications(user, NOTIFICATION_TYPES_TO_SELECT)
 
   const [page, setPage] = useState(0)
@@ -67,7 +63,7 @@ function LoadedNotificationsContent(props: { user: User }) {
   // Mark all notifications as seen. Rerun as new notifications come in.
   useEffect(() => {
     if (!privateUser) return
-    api('mark-all-notifs-read', { seen: true })
+    api('mark-all-notifs-read', {seen: true})
     groupedNotifications
       ?.map((ng) => ng.notifications)
       .flat()
@@ -81,7 +77,7 @@ function LoadedNotificationsContent(props: { user: User }) {
       <Col className={'min-h-[100vh] gap-0 text-sm'}>
         {groupedNotifications === undefined ||
         paginatedGroupedNotifications === undefined ? (
-          <LoadingIndicator />
+          <CompassLoadingIndicator/>
         ) : paginatedGroupedNotifications.length === 0 ? (
           <div className={'mt-2'}>You don't have any notifications, yet.</div>
         ) : (
@@ -109,15 +105,15 @@ function RenderNotificationGroups(props: {
   page: number
   setPage: (page: number) => void
 }) {
-  const { notificationGroups, page, setPage, totalItems } = props
+  const {notificationGroups, page, setPage, totalItems} = props
 
   return (
     <>
       {notificationGroups.map((notification) => {
         return notification.notifications.map((notification: Notification) => (
           <Fragment key={notification.id}>
-            <NotificationItem notification={notification} />
-            <div className="bg-ink-300 mx-2 box-border h-[1.5px]" />
+            <NotificationItem notification={notification}/>
+            <div className="bg-ink-300 mx-2 box-border h-[1.5px]"/>
           </Fragment>
         ))
       })}
@@ -138,11 +134,11 @@ function RenderNotificationGroups(props: {
 const NotificationSettings = () => {
   const privateUser = usePrivateUser()
   if (!privateUser) return null
-  return <LoadedNotificationSettings privateUser={privateUser} />
+  return <LoadedNotificationSettings privateUser={privateUser}/>
 }
 
 const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
-  const { privateUser } = props
+  const {privateUser} = props
 
   const [prefs, setPrefs] =
     usePersistentInMemoryState<notification_preferences>(
@@ -197,14 +193,14 @@ const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
   return (
     <div className="mx-auto max-w-2xl">
       <div className="flex flex-col gap-8 p-4">
-        {notificationTypes.map(({ type, question }) => (
+        {notificationTypes.map(({type, question}) => (
           <NotificationOption
             key={type}
             type={type}
             question={question}
             selected={prefs[type]}
             onUpdate={(selected) => {
-              setPrefs((prevPrefs) => ({ ...prevPrefs, [type]: selected }))
+              setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
             }}
           />
         ))}
@@ -219,7 +215,7 @@ const NotificationOption = (props: {
   selected: notification_destination_types[]
   onUpdate: (selected: notification_destination_types[]) => void
 }) => {
-  const { type, question, selected, onUpdate } = props
+  const {type, question, selected, onUpdate} = props
 
   const getSelectedValues = (destinations: string[]) => {
     const values: number[] = []

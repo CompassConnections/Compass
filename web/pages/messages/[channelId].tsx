@@ -1,65 +1,53 @@
-import { LovePage } from 'web/components/love-page'
-import { useRouter } from 'next/router'
-import {
-  usePrivateMessages,
-  useSortedPrivateMessageMemberships,
-} from 'web/hooks/use-private-messages'
-import { Col } from 'web/components/layout/col'
-import { User } from 'common/user'
-import { useEffect, useState } from 'react'
-import { track } from 'web/lib/service/analytics'
-import { firebaseLogin } from 'web/lib/firebase/users'
-import { uniq } from 'lodash'
-import { useUser } from 'web/hooks/use-user'
-import { useTextEditor } from 'web/components/widgets/editor'
-import { api } from 'web/lib/api'
-import {
-  ChatMessageItem,
-  SystemChatMessageItem,
-} from 'web/components/chat/chat-message'
-import { CommentInputTextArea } from 'web/components/comments/comment-input'
-import { LoadingIndicator } from 'web/components/widgets/loading-indicator'
-import { DAY_MS, YEAR_MS } from 'common/util/time'
-import { useUsersInStore } from 'web/hooks/use-user-supabase'
-import { Row } from 'web/components/layout/row'
+import {LovePage} from 'web/components/love-page'
+import {useRouter} from 'next/router'
+import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
+import {Col} from 'web/components/layout/col'
+import {User} from 'common/user'
+import {useEffect, useState} from 'react'
+import {track} from 'web/lib/service/analytics'
+import {firebaseLogin} from 'web/lib/firebase/users'
+import {uniq} from 'lodash'
+import {useUser} from 'web/hooks/use-user'
+import {useTextEditor} from 'web/components/widgets/editor'
+import {api} from 'web/lib/api'
+import {ChatMessageItem, SystemChatMessageItem,} from 'web/components/chat/chat-message'
+import {CommentInputTextArea} from 'web/components/comments/comment-input'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {DAY_MS, YEAR_MS} from 'common/util/time'
+import {useUsersInStore} from 'web/hooks/use-user-supabase'
+import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
-import { useRedirectIfSignedOut } from 'web/hooks/use-redirect-if-signed-out'
-import { MultipleOrSingleAvatars } from 'web/components/multiple-or-single-avatars'
-import { Modal, MODAL_CLASS } from 'web/components/layout/modal'
-import {
-  BannedBadge,
-  UserAvatarAndBadge,
-} from 'web/components/widgets/user-link'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
+import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {BannedBadge, UserAvatarAndBadge,} from 'web/components/widgets/user-link'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { DotsVerticalIcon } from '@heroicons/react/solid'
-import { FaUserFriends, FaUserMinus } from 'react-icons/fa'
-import { buildArray, filterDefined } from 'common/util/array'
-import { GiSpeakerOff } from 'react-icons/gi'
+import {DotsVerticalIcon} from '@heroicons/react/solid'
+import {FaUserFriends, FaUserMinus} from 'react-icons/fa'
+import {buildArray, filterDefined} from 'common/util/array'
+import {GiSpeakerOff} from 'react-icons/gi'
 import toast from 'react-hot-toast'
-import { useIsMobile } from 'web/hooks/use-is-mobile'
-import {
-  useGroupedMessages,
-  usePaginatedScrollingMessages,
-} from 'web/lib/supabase/chat-messages'
-import { PrivateMessageChannel } from 'common/supabase/private-messages'
-import { ChatMessage } from 'common/chat-message'
-import { BackButton } from 'web/components/back-button'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useGroupedMessages, usePaginatedScrollingMessages,} from 'web/lib/supabase/chat-messages'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
+import {ChatMessage} from 'common/chat-message'
+import {BackButton} from 'web/components/back-button'
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
-  const { channelId: channelIdString } = router.query as { channelId: string }
+  const {channelId: channelIdString} = router.query as { channelId: string }
   const channelId = router.isReady ? parseInt(channelIdString) : undefined
   const user = useUser()
   if (user === null) {
     router.replace(`/signin?returnTo=${encodeURIComponent('/messages')}`)
-    return <LoadingIndicator />
+    return <CompassLoadingIndicator/>
   }
   return (
     <LovePage trackPageView={'private messages page'}>
       {router.isReady && channelId && user ? (
-        <PrivateMessagesContent user={user} channelId={channelId} />
+        <PrivateMessagesContent user={user} channelId={channelId}/>
       ) : (
-        <LoadingIndicator />
+        <CompassLoadingIndicator/>
       )}
     </LovePage>
   )
@@ -71,13 +59,13 @@ export function PrivateMessagesContent(props: {
 }) {
   useRedirectIfSignedOut()
 
-  const { channelId, user } = props
+  const {channelId, user} = props
   const channelMembership = useSortedPrivateMessageMemberships(
     user.id,
     1,
     channelId
   )
-  const { channels, memberIdsByChannelId } = channelMembership
+  const {channels, memberIdsByChannelId} = channelMembership
   const thisChannel = channels?.find((c) => c.channel_id == channelId)
   const loaded = channels !== undefined && channelId
   const memberIds = thisChannel
@@ -87,9 +75,9 @@ export function PrivateMessagesContent(props: {
   return (
     <>
       {user && loaded && thisChannel && memberIds ? (
-        <PrivateChat channel={thisChannel} user={user} memberIds={memberIds} />
+        <PrivateChat channel={thisChannel} user={user} memberIds={memberIds}/>
       ) : (
-        <LoadingIndicator />
+        <CompassLoadingIndicator/>
       )}
     </>
   )
@@ -100,7 +88,7 @@ export const PrivateChat = (props: {
   channel: PrivateMessageChannel
   memberIds: string[]
 }) => {
-  const { user, channel, memberIds } = props
+  const {user, channel, memberIds} = props
   const channelId = channel.channel_id
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
@@ -132,7 +120,7 @@ export const PrivateChat = (props: {
   )
   const router = useRouter()
 
-  const { topVisibleRef, showMessages, messages, innerDiv, outerDiv } =
+  const {topVisibleRef, showMessages, messages, innerDiv, outerDiv} =
     usePaginatedScrollingMessages(
       realtimeMessages?.map(
         (m) =>
@@ -193,7 +181,7 @@ export const PrivateChat = (props: {
           'border-ink-200 bg-canvas-50 h-14 items-center gap-1 border-b'
         }
       >
-        <BackButton className="self-stretch" />
+        <BackButton className="self-stretch"/>
         <MultipleOrSingleAvatars
           size="sm"
           spacing={0.5}
@@ -219,22 +207,22 @@ export const PrivateChat = (props: {
         )}
 
         {members?.length == 1 && members[0].isBannedFromPosting && (
-          <BannedBadge />
+          <BannedBadge/>
         )}
         <DropdownMenu
           className={'ml-auto [&_button]:p-4'}
           menuWidth={'w-44'}
-          icon={<DotsVerticalIcon className="h-5 w-5" />}
+          icon={<DotsVerticalIcon className="h-5 w-5"/>}
           items={buildArray(
             {
-              icon: <FaUserFriends className={'h-5 w-5'} />,
+              icon: <FaUserFriends className={'h-5 w-5'}/>,
               name: 'See members',
               onClick: () => {
                 setShowUsers(true)
               },
             },
             {
-              icon: <GiSpeakerOff className="h-5 w-5" />,
+              icon: <GiSpeakerOff className="h-5 w-5"/>,
               name: 'Mute 1 day',
               onClick: async () => {
                 await toast.promise(
@@ -251,7 +239,7 @@ export const PrivateChat = (props: {
               },
             },
             {
-              icon: <GiSpeakerOff className="h-5 w-5" />,
+              icon: <GiSpeakerOff className="h-5 w-5"/>,
               name: 'Mute forever',
               onClick: async () => {
                 await toast.promise(
@@ -268,7 +256,7 @@ export const PrivateChat = (props: {
               },
             },
             {
-              icon: <FaUserMinus className="h-5 w-5" />,
+              icon: <FaUserMinus className="h-5 w-5"/>,
               name: 'Leave chat',
               onClick: async () => {
                 await api('leave-private-user-message-channel', {
@@ -287,7 +275,7 @@ export const PrivateChat = (props: {
                   key={user.id}
                   className={'w-full items-center justify-start gap-2'}
                 >
-                  <UserAvatarAndBadge user={user} />
+                  <UserAvatarAndBadge user={user}/>
                 </Row>
               ))}
             </Col>
@@ -311,13 +299,13 @@ export const PrivateChat = (props: {
             }}
           >
             {realtimeMessages === undefined ? (
-              <LoadingIndicator />
+              <CompassLoadingIndicator/>
             ) : (
               <>
                 <div
                   className={'absolute h-1 '}
                   ref={topVisibleRef}
-                  style={{ top: heightFromTop }}
+                  style={{top: heightFromTop}}
                 />
                 {groupedMessages.map((messages, i) => {
                   const firstMessage = messages[0]
@@ -383,5 +371,5 @@ export const PrivateChat = (props: {
 }
 
 const setAsSeen = async (channelId: number) => {
-  return api('set-channel-seen-time', { channelId })
+  return api('set-channel-seen-time', {channelId})
 }

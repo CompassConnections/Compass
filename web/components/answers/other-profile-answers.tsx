@@ -1,29 +1,29 @@
-import { User } from 'common/user'
-import { useOtherAnswers } from 'web/hooks/use-other-answers'
-import { QuestionWithCountType } from 'web/hooks/use-questions'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Avatar } from 'web/components/widgets/avatar'
-import { Linkify } from 'web/components/widgets/linkify'
-import { LoadingIndicator } from 'web/components/widgets/loading-indicator'
-import { UserLink } from 'web/components/widgets/user-link'
-import { Gender, convertGender } from 'common/gender'
-import { capitalize } from 'lodash'
+import {User} from 'common/user'
+import {useOtherAnswers} from 'web/hooks/use-other-answers'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Avatar} from 'web/components/widgets/avatar'
+import {Linkify} from 'web/components/widgets/linkify'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {UserLink} from 'web/components/widgets/user-link'
+import {convertGender, Gender} from 'common/gender'
+import {capitalize} from 'lodash'
 import clsx from 'clsx'
-import { shortenedFromNow } from 'web/lib/util/shortenedFromNow'
+import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 
 export function OtherProfileAnswers(props: {
   question: QuestionWithCountType
   user?: User
   className?: string
 }) {
-  const { question, className } = props
+  const {question, className} = props
   const otherAnswers = useOtherAnswers(question.id)
   const shownAnswers = otherAnswers?.filter(
     (a) => a.multiple_choice != null || a.free_response || a.integer
   )
 
-  if (otherAnswers === undefined) return <LoadingIndicator />
+  if (otherAnswers === undefined) return <CompassLoadingIndicator/>
   if (
     (otherAnswers === null ||
       otherAnswers.length ||
@@ -50,7 +50,7 @@ export function OtherProfileAnswers(props: {
                 />
                 <Col>
                   <span className="text-sm">
-                    <UserLink user={answerUser} />, {otherAnswer.age}
+                    <UserLink user={answerUser}/>, {otherAnswer.age}
                   </span>
                   <Row className="gap-1 text-xs">
                     {otherAnswer.city} •{' '}

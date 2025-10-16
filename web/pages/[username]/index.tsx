@@ -1,12 +1,9 @@
 import {useState} from 'react'
-import Router from 'next/router'
-import Head from 'next/head'
 import {useRouter} from 'next/router'
+import Head from 'next/head'
 import {LovePage} from 'web/components/love-page'
 import {useProfileByUser} from 'web/hooks/use-profile'
-import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
 import {useTracking} from 'web/hooks/use-tracking'
@@ -19,6 +16,7 @@ import {ProfileInfo} from 'web/components/profile/profile-info'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {type GetStaticProps} from 'next'
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
 export const getStaticProps: GetStaticProps<
   UserPageProps,
@@ -124,7 +122,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   const fromSignup = query.fromSignup === 'true'
 
   const currentUser = useUser()
-  const isCurrentUser = currentUser?.id === user?.id
+  // const isCurrentUser = currentUser?.id === user?.id
 
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
   useTracking('view love profile', {username: user?.username})
@@ -166,24 +164,8 @@ function UserPageInner(props: ActiveUserPageProps) {
               refreshProfile={refreshProfile}
               fromSignup={fromSignup}
             />
-          ) : isCurrentUser ? (
-            <Col className={'mt-4 w-full items-center'}>
-              <Row>
-                <Button onClick={() => Router.push('/signup')}>
-                  Create a profile
-                </Button>
-              </Row>
-            </Col>
           ) : (
-            <Col className="bg-canvas-0 rounded p-4 ">
-              <div>{user.name} hasn't created a profile yet.</div>
-              <Button
-                className="mt-4 self-start"
-                onClick={() => Router.push('/')}
-              >
-                See more profiles
-              </Button>
-            </Col>
+            <CompassLoadingIndicator/>
           )}
         </Col>
       )}

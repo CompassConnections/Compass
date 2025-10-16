@@ -5,6 +5,7 @@ import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
 import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
 import { AnswerCompatibilityQuestionContent } from './answer-compatibility-question-content'
+import router from "next/router";
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
@@ -48,6 +49,9 @@ export function AnswerCompatibilityQuestionButton(props: {
         user={user}
         otherQuestions={questionsToAnswer}
         refreshCompatibilityAll={refreshCompatibilityAll}
+        onClose={() => {
+          if (fromSignup) router.push('/')
+        }}
       />
     </>
   )
@@ -86,8 +90,9 @@ function AnswerCompatibilityQuestionModal(props: {
   user: User
   otherQuestions: QuestionWithCountType[]
   refreshCompatibilityAll: () => void
+  onClose?: () => void
 }) {
-  const { open, setOpen, user, otherQuestions, refreshCompatibilityAll } = props
+  const { open, setOpen, user, otherQuestions, refreshCompatibilityAll, onClose } = props
   const [questionIndex, setQuestionIndex] = useState(0)
   return (
     <Modal
@@ -96,6 +101,7 @@ function AnswerCompatibilityQuestionModal(props: {
       onClose={() => {
         refreshCompatibilityAll()
         setQuestionIndex(0)
+        onClose?.()
       }}
     >
       <Col className={MODAL_CLASS}>

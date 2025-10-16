@@ -16,7 +16,7 @@ export const getCompatibilityQuestions: APIHandler<
 > = async (_props, _auth) => {
   const pg = createSupabaseDirectClient()
 
-  const dbQuestions = await pg.manyOrNone<
+  const questions = await pg.manyOrNone<
     Row<'love_questions'> & { answer_count: number; score: number }
   >(
     `SELECT 
@@ -31,13 +31,13 @@ export const getCompatibilityQuestions: APIHandler<
         love_questions.answer_type = 'compatibility_multiple_choice'
     GROUP BY 
         love_questions.id
-    ORDER BY 
-        score DESC
+    ORDER BY
+         love_questions.importance_score
     `,
     []
   )
 
-  const questions = shuffle(dbQuestions)
+  // const questions = shuffle(dbQuestions)
 
   // console.debug(
   //   'got questions',

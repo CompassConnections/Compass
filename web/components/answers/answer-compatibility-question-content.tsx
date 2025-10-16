@@ -157,11 +157,11 @@ export function AnswerCompatibilityQuestionContent(props: {
   return (
     <Col className="h-full w-full gap-4">
       <Col className="gap-1">
-        <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">
+        {compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">
           <span>
             Massive upgrade coming soon! More prompts, better predictive power, filtered by category, etc.
           </span>
-        </Row>
+        </Row>}
         {index !== null &&
           index !== undefined &&
           total !== null &&

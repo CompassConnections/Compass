@@ -22,13 +22,16 @@ export function AnswerCompatibilityQuestionButton(props: {
   } = props
   const [open, setOpen] = useState(fromSignup ?? false)
   if (!user) return null
+  if (otherQuestions.length === 0) return null
+  const isCore = otherQuestions.some((q) => q.importance_score === 0)
+  const questionsToAnswer = isCore ? otherQuestions.filter((q) => q.importance_score === 0) : otherQuestions
   return (
     <>
       {size === 'md' ? (
         <Button onClick={() => setOpen(true)} color="gray-outline">
           Answer Questions{' '}
           <span className="text-primary-600 ml-2">
-            +{otherQuestions.length}
+            +{questionsToAnswer.length}
           </span>
         </Button>
       ) : (
@@ -43,7 +46,7 @@ export function AnswerCompatibilityQuestionButton(props: {
         open={open}
         setOpen={setOpen}
         user={user}
-        otherQuestions={otherQuestions}
+        otherQuestions={questionsToAnswer}
         refreshCompatibilityAll={refreshCompatibilityAll}
       />
     </>

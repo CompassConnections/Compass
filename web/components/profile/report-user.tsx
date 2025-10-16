@@ -7,6 +7,7 @@ import { Button } from 'web/components/buttons/button'
 import Textarea from 'react-expanding-textarea'
 import { toast } from 'react-hot-toast'
 import { api } from 'web/lib/api'
+import {randomString} from "common/util/random";
 
 export const ReportUser = (props: { user: User; closeModal: () => void }) => {
   const { user, closeModal } = props
@@ -31,7 +32,7 @@ export const ReportUser = (props: { user: User; closeModal: () => void }) => {
       .promise(
         api('report', {
           contentType: 'user',
-          contentId: user.id,
+          contentId: randomString(16),
           contentOwnerId: user.id,
           description:
             'Reasons: ' + [...selectedReportTypes, otherReportType].join(', '),

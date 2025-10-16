@@ -531,7 +531,7 @@ export const API = (_apiTypeCheck = {
   },
   'get-messages-count': {
     method: 'GET',
-    authed: true,
+    authed: false,
     rateLimited: false,
     props: z.object({}),
     returns: {} as { count: number },

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/required-profile-form'
 import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
@@ -6,8 +6,7 @@ import {useUser} from 'web/hooks/use-user'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
-import Router, {useRouter} from 'next/router'
-import SiteLogo from 'web/components/site-logo'
+import {useRouter} from 'next/router'
 import {useTracking} from 'web/hooks/use-tracking'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -15,7 +14,6 @@ import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileRow} from 'common/love/profile'
 import {LovePage} from "web/components/love-page";
-import {Button} from "web/components/buttons/button";
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
@@ -23,6 +21,36 @@ export default function SignupPage() {
   console.debug('user:', user)
   const router = useRouter()
   useTracking('view love signup page')
+
+  // Hold loading indicator for 5s when user transitions from undefined -> null
+  const prevUserRef = useRef<ReturnType<typeof useUser>>()
+  const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [holdLoading, setHoldLoading] = useState(true)
+
+  useEffect(() => {
+    const prev = prevUserRef.current
+    // Transition: undefined -> null
+    if (prev === undefined && user === null) {
+      setHoldLoading(true)
+      if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current)
+      holdTimeoutRef.current = setTimeout(() => {
+        setHoldLoading(false)
+        holdTimeoutRef.current = null
+      }, 10000)
+    }
+    // If user becomes defined, stop holding immediately
+    if (user && holdLoading) {
+      setHoldLoading(false)
+      if (holdTimeoutRef.current) {
+        clearTimeout(holdTimeoutRef.current)
+        holdTimeoutRef.current = null
+      }
+    }
+    prevUserRef.current = user
+    return () => {
+      // no-op
+    }
+  }, [user, holdLoading])
 
   // Omit the id, created_time?
   const [profileForm, setProfileForm] = useState<ProfileRow>({
@@ -55,23 +83,14 @@ export default function SignupPage() {
     </LovePage>
   }
 
+  if (user === null && !holdLoading) {
+    router.push('/')
+  }
+
   return (
     <Col className="items-center">
-      {user === undefined ? (
-        <CompassLoadingIndicator/>
-      ) : user === null ? (
-        <Col className={'items-center justify-around gap-4 pt-[20vh]'}>
-          <SiteLogo/>
-          <Button
-            color={'gray-outline'}
-            size={'2xl'}
-            className={''}
-            onClick={() => {
-              Router.push('register')
-            }}>
-            Sign up
-          </Button>
-        </Col>
+      {!user ? (
+        <LovePage trackPageView={'register'}><CompassLoadingIndicator/></LovePage>
       ) : (
         <Col className={'w-full max-w-2xl px-6 py-4'}>
           {step === 0 ? (

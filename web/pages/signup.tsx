@@ -58,7 +58,7 @@ export default function SignupPage() {
   return (
     <Col className="items-center">
       {user === undefined ? (
-        <div/>
+        <CompassLoadingIndicator/>
       ) : user === null ? (
         <Col className={'items-center justify-around gap-4 pt-[20vh]'}>
           <SiteLogo/>

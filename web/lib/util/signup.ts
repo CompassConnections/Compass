@@ -5,11 +5,12 @@ import { getProfileRow } from 'common/love/profile'
 
 export const signupThenMaybeRedirectToSignup = async () => {
   const creds = await firebaseLogin()
-  await Router.push('/')
   const userId = creds?.user.uid
   if (userId) {
     const profile = await getProfileRow(userId, db)
-    if (!profile) {
+    if (profile) {
+      await Router.push('/')
+    } else {
       await Router.push('/signup')
     }
   }

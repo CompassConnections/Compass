@@ -44,8 +44,10 @@ function RegisterComponent() {
       if (user) {
         const profile = await getProfileRow(user.id, db)
         if (profile) {
+          console.log("Router.push('/')")
           await Router.push('/')
         } else {
+          console.log("Router.push('/signup')")
           await Router.push('/signup')
         }
         setIsLoading(false);

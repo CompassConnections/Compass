@@ -84,13 +84,14 @@ export default function SignupPage() {
   }
 
   if (user === null && !holdLoading) {
-    router.push('/')
+    console.log('user === null && !holdLoading')
+    return <CompassLoadingIndicator/>
   }
 
   return (
     <Col className="items-center">
       {!user ? (
-        <LovePage trackPageView={'register'}><CompassLoadingIndicator/></LovePage>
+        <CompassLoadingIndicator/>
       ) : (
         <Col className={'w-full max-w-2xl px-6 py-4'}>
           {step === 0 ? (
@@ -131,7 +132,7 @@ export default function SignupPage() {
               }}
             />
           ) : step === 1 ? (
-            <></>
+            <CompassLoadingIndicator/>
           ) : (
             <CompassLoadingIndicator/>
           )}

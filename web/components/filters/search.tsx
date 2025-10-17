@@ -14,9 +14,8 @@ import {BookmarkSearchButton, BookmarkStarButton} from "web/components/searches/
 import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
-import {isEqual} from "lodash";
 import toast from "react-hot-toast";
-import {FilterFields, initialFilters} from "common/filters";
+import {FilterFields} from "common/filters";
 import {DisplayUser} from "common/api/user-types";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {

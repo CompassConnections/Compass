@@ -33,8 +33,10 @@ export function VoteItem(props: {
           <Col className='text-sm text-gray-500 italic'>
             <Content className="w-full" content={vote.description as JSONContent}/>
           </Col>
-          {vote.priority && <Col>Priority: {vote.priority / vote.votes_for}</Col>}
-          {creator?.username && <Col className={'mt-2 customlink text-right'}><Link href={`/${creator.username}`}>{creator.username}</Link></Col>}
+          <Row className={'gap-2 mt-2 items-center justify-between w-full customlink'}>
+            {!!vote.priority ? <div>Priority: {((vote.priority / vote.votes_for / 3) * 100).toFixed(0)}%</div> : <p></p>}
+            {creator?.username && <Link href={`/${creator.username}`} className="customlink">{creator.username}</Link>}
+          </Row>
           <VoteButtons
             voteId={vote.id}
             counts={{

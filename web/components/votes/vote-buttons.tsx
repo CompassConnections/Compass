@@ -3,7 +3,7 @@ import {Button} from 'web/components/buttons/button'
 import clsx from 'clsx'
 import toast from 'react-hot-toast'
 import {api} from 'web/lib/api'
-import {useState} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import {useUser} from "web/hooks/use-user";
 
 export type VoteChoice = 'for' | 'abstain' | 'against'
@@ -47,7 +47,31 @@ export function VoteButtons(props: {
   const {voteId, counts, onVoted, className} = props
   const [loading, setLoading] = useState<VoteChoice | null>(null)
   const [showPriority, setShowPriority] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   const disabled = loading !== null
+
+  // Close the dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!showPriority) return
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node | null
+      if (containerRef.current && target && !containerRef.current.contains(target)) {
+        setShowPriority(false)
+      }
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowPriority(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showPriority])
 
   const sendVote = async (choice: VoteChoice, priority: number) => {
     try {
@@ -79,7 +103,7 @@ export function VoteButtons(props: {
 
   return (
     <Row className={clsx('gap-4 mt-2', className)}>
-      <div className="relative">
+      <div className="relative" ref={containerRef}>
         <VoteButton
           color={clsx('bg-green-700 text-white hover:bg-green-500')}
           count={counts.for}
@@ -89,15 +113,15 @@ export function VoteButtons(props: {
         />
         {showPriority && (
           <div className={clsx(
-            'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-white shadow-lg',
+            'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
             'dark:bg-ink-900'
           )}>
             {priorities.map((p) => (
               <button
                 key={p.value}
                 className={clsx(
-                  'w-full text-left px-3 py-2 text-sm hover:bg-ink-100',
-                  'dark:hover:bg-ink-800'
+                  'w-full text-left px-3 py-2 text-sm hover:bg-ink-100 bg-canvas-50',
+                  'dark:hover:bg-canvas-100'
                 )}
                 onClick={async () => {
                   setShowPriority(false)

@@ -1,12 +1,41 @@
-import { Row } from 'web/components/layout/row'
-import { Button } from 'web/components/buttons/button'
+import {Row} from 'web/components/layout/row'
+import {Button} from 'web/components/buttons/button'
 import clsx from 'clsx'
 import toast from 'react-hot-toast'
-import { api } from 'web/lib/api'
-import { useState } from 'react'
+import {api} from 'web/lib/api'
+import {useState} from 'react'
 import {useUser} from "web/hooks/use-user";
 
 export type VoteChoice = 'for' | 'abstain' | 'against'
+
+function VoteButton(props: {
+  color: string
+  count: number
+  title: string
+  disabled?: boolean
+  onClick?: () => void
+}) {
+  const {color, count, title, disabled, onClick} = props
+  return (
+    <Button
+      size="xs"
+      disabled={disabled}
+      className={clsx('px-4 py-2 rounded-lg', color)}
+      onClick={onClick}
+      color={'gray-white'}
+    >
+      <div className="font-semibold mx-2">{count}</div>
+      <div className="text-sm">{title}</div>
+    </Button>
+  )
+}
+
+const priorities = [
+  {label: 'Urgent', value: 3},
+  {label: 'High', value: 2},
+  {label: 'Medium', value: 1},
+  {label: 'Low', value: 0},
+] as const
 
 export function VoteButtons(props: {
   voteId: number
@@ -15,7 +44,7 @@ export function VoteButtons(props: {
   className?: string
 }) {
   const user = useUser()
-  const { voteId, counts, onVoted, className } = props
+  const {voteId, counts, onVoted, className} = props
   const [loading, setLoading] = useState<VoteChoice | null>(null)
   const [showPriority, setShowPriority] = useState(false)
   const disabled = loading !== null
@@ -27,7 +56,7 @@ export function VoteButtons(props: {
         toast.error('Please sign in to vote')
         return
       }
-      await api('vote', { voteId, choice, priority })
+      await api('vote', {voteId, choice, priority})
       toast.success(`Voted ${choice}${choice === 'for' ? ` with priority ${priority}` : ''}`)
       await onVoted?.()
     } catch (e) {
@@ -47,35 +76,6 @@ export function VoteButtons(props: {
     // Default priority 0 for non-for choices
     await sendVote(choice, 0)
   }
-
-function VoteButton(props: {
-  color: string
-  count: number
-  title: string
-  disabled?: boolean
-  onClick?: () => void
-}) {
-  const { color, count, title, disabled, onClick } = props
-  return (
-    <Button
-      size="xs"
-      disabled={disabled}
-      className={clsx('px-4 py-2 rounded-lg', color)}
-      onClick={onClick}
-      color={'gray-white'}
-    >
-      <div className="font-semibold mx-2">{count}</div>
-      <div className="text-sm">{title}</div>
-    </Button>
-  )
-}
-
-  const priorities = [
-    { label: 'Urgent', value: 3 },
-    { label: 'High', value: 2 },
-    { label: 'Medium', value: 1 },
-    { label: 'Low', value: 0 },
-  ] as const
 
   return (
     <Row className={clsx('gap-4 mt-2', className)}>

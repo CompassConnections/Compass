@@ -86,7 +86,6 @@ const bottomNav = (
   toggleTheme: () => void
 ) =>
   buildArray<Item>(
-    !loggedIn && { name: 'Sign in', icon: LoginIcon, href: '/signin' },
     {
       name: theme ?? 'auto',
       children:
@@ -114,6 +113,7 @@ const bottomNav = (
       ),
       onClick: toggleTheme,
     },
+    !loggedIn && { name: 'Sign in', icon: LoginIcon, href: '/signin' },
     loggedIn && { name: 'Sign out', icon: LogoutIcon, onClick: logout }
   )
 

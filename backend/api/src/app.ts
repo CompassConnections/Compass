@@ -56,6 +56,8 @@ import * as fs from "fs"
 import {sendSearchNotifications} from "api/send-search-notifications";
 import {sendDiscordMessage} from "common/discord/core";
 import {getMessagesCount} from "api/get-messages-count";
+import {createVote} from "api/create-vote";
+import {vote} from "api/vote";
 
 const allowCorsUnrestricted: RequestHandler = cors({})
 
@@ -156,6 +158,8 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'create-comment': createComment,
   'hide-comment': hideComment,
   'create-compatibility-question': createCompatibilityQuestion,
+  'create-vote': createVote,
+  'vote': vote,
   'compatible-profiles': getCompatibleProfilesHandler,
   'search-location': searchLocation,
   'search-near-city': searchNearCity,

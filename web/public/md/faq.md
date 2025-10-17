@@ -36,7 +36,7 @@ Martin continues to serve as an initiator and steward of Compass, but its direct
 
 Compass is run democratically under a [constitution](/constitution) that prevents central control and ensures long-term alignment with its mission.
 
-* Major decisions (scope, funding, rules) are voted on by **active contributors**.
+* Major decisions (scope, funding, rules) are [voted](/vote) on by **active contributors**.
 * The full constitution is **public and transparent**.
 * No corporate capture — Compass will always remain a community-owned project.
 
@@ -103,6 +103,7 @@ We chose the name Compass because our goal is to help people orient themselves t
 
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
 * **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
+* **Vote on proposals**: [vote here](/vote)
 * **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.

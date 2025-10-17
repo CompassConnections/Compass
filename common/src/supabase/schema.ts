@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.4'
+    PostgrestVersion: '13.0.5'
   }
   public: {
     Tables: {
@@ -471,7 +471,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
@@ -519,7 +519,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
@@ -700,6 +700,80 @@ export type Database = {
         }
         Relationships: []
       }
+      vote_results: {
+        Row: {
+          choice: number
+          created_time: string
+          id: number
+          priority: number
+          user_id: string
+          vote_id: number
+        }
+        Insert: {
+          choice: number
+          created_time?: string
+          id?: never
+          priority: number
+          user_id: string
+          vote_id: number
+        }
+        Update: {
+          choice?: number
+          created_time?: string
+          id?: never
+          priority?: number
+          user_id?: string
+          vote_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vote_results_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vote_results_vote_id_fkey'
+            columns: ['vote_id']
+            isOneToOne: false
+            referencedRelation: 'votes'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      votes: {
+        Row: {
+          created_time: string
+          creator_id: string
+          description: Json | null
+          id: number
+          title: string
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          description?: Json | null
+          id?: never
+          title: string
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          description?: Json | null
+          id?: never
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'votes_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -732,6 +806,20 @@ export type Database = {
       get_love_question_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
+      }
+      get_votes_with_results: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_time: string
+          creator_id: string
+          description: Json
+          id: number
+          priority: number
+          title: string
+          votes_abstain: number
+          votes_against: number
+          votes_for: number
+        }[]
       }
       gtrgm_compress: {
         Args: { '': unknown }

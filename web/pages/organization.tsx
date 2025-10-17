@@ -16,6 +16,7 @@ export default function Organization() {
       >
         <GeneralButton url={'/support'} content={'Support'}/>
         <GeneralButton url={'/constitution'} content={'Constitution'}/>
+        <GeneralButton url={'/vote'} content={'Proposals'}/>
         <GeneralButton url={'/financials'} content={'Financials'}/>
         <GeneralButton url={'/stats'} content={'Growth & Stats'}/>
         <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>

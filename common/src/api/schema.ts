@@ -513,6 +513,27 @@ export const API = (_apiTypeCheck = {
       options: z.record(z.string(), z.number()),
     }),
   },
+  'create-vote': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      title: z.string().min(1),
+      description: contentSchema,
+    }),
+  },
+  'vote': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      voteId: z.number(),
+      priority: z.number(),
+      choice: z.enum(['for', 'abstain', 'against']),
+    }),
+  },
   'search-location': {
     method: 'POST',
     authed: true,

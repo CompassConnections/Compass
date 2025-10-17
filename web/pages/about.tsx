@@ -61,7 +61,7 @@ export default function About() {
                 <AboutBlock
                   title="Democratic"
                   text={<span
-                    className="customlink">Governed by the community, while ensuring no drift through our <Link
+                    className="customlink">Governed and <Link href="/vote">voted</Link> by the community, while ensuring no drift through our <Link
                     href="/constitution">constitution</Link>.</span>}
                 />
 

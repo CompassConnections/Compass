@@ -24,6 +24,7 @@ import {useProfile} from 'web/hooks/use-profile'
 import {Profile} from 'common/love/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 import {IS_MAINTENANCE} from "common/constants";
+import {MdThumbUp} from "react-icons/md";
 
 export function LovePage(props: {
   trackPageView: string | false
@@ -113,10 +114,12 @@ const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotifica
 const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon};
 const Social = {name: 'Social', href: '/social', icon: LinkIcon};
 const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon};
+const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp};
 
 const base = [
   About,
   faq,
+  Vote,
   Social,
   Organization,
 ]

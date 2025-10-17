@@ -2,7 +2,7 @@ import {DEV_CONFIG} from './dev'
 import {PROD_CONFIG} from './prod'
 import {isProd} from "common/envs/is-prod";
 
-export const MAX_DESCRIPTION_LENGTH = 16000
+export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
 
 export const ENV_CONFIG = isProd() ? PROD_CONFIG : DEV_CONFIG

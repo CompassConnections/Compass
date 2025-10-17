@@ -283,6 +283,48 @@ export const OptionalLoveUserForm = (props: {
           />
         </Col>
 
+        {lookingRelationship && <>
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>Relationship style</label>
+                <MultiCheckbox
+                    choices={ROMANTIC_CHOICES}
+                    selected={profile['pref_romantic_styles'] || []}
+                    onChange={(selected) => {
+                      setProfile('pref_romantic_styles', selected)
+                    }}
+                />
+            </Col>
+
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>
+                    I would like to have kids
+                </label>
+                <RadioToggleGroup
+                    className={'w-44'}
+                    choicesMap={MultipleChoiceOptions}
+                    setChoice={(choice) => {
+                      setProfile('wants_kids_strength', choice)
+                    }}
+                    currentChoice={profile.wants_kids_strength ?? -1}
+                />
+            </Col>
+
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>Current number of kids</label>
+                <Input
+                    type="number"
+                    onChange={(e) => {
+                      const value =
+                        e.target.value === '' ? null : Number(e.target.value)
+                      setProfile('has_kids', value)
+                    }}
+                    className={'w-20'}
+                    min={0}
+                    value={profile['has_kids'] ?? undefined}
+                />
+            </Col>
+        </>}
+
         <Col className={clsx(colClassName, 'pb-4')}>
           <label className={clsx(labelClassName)}>Socials</label>
 
@@ -516,21 +558,6 @@ export const OptionalLoveUserForm = (props: {
           />
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Current number of kids</label>
-          <Input
-            type="number"
-            onChange={(e) => {
-              const value =
-                e.target.value === '' ? null : Number(e.target.value)
-              setProfile('has_kids', value)
-            }}
-            className={'w-20'}
-            min={0}
-            value={profile['has_kids'] ?? undefined}
-          />
-        </Col>
-
         {/*<Col className={clsx(colClassName)}>*/}
         {/*  <label className={clsx(labelClassName)}>Looking for a relationship?</label>*/}
         {/*  <ChoicesToggleGroup*/}
@@ -539,33 +566,6 @@ export const OptionalLoveUserForm = (props: {
         {/*    setChoice={(c) => setLookingRelationship(c)}*/}
         {/*  />*/}
         {/*</Col>*/}
-
-        {lookingRelationship && <>
-            <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>
-                    I would like to have kids
-                </label>
-                <RadioToggleGroup
-                    className={'w-44'}
-                    choicesMap={MultipleChoiceOptions}
-                    setChoice={(choice) => {
-                      setProfile('wants_kids_strength', choice)
-                    }}
-                    currentChoice={profile.wants_kids_strength ?? -1}
-                />
-            </Col>
-
-            <Col className={clsx(colClassName)}>
-              <label className={clsx(labelClassName)}>Relationship style</label>
-              <MultiCheckbox
-                choices={ROMANTIC_CHOICES}
-                selected={profile['pref_romantic_styles'] || []}
-                onChange={(selected) => {
-                  setProfile('pref_romantic_styles', selected)
-                }}
-              />
-            </Col>
-        </>}
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Photos</label>

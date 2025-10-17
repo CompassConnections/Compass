@@ -31,7 +31,7 @@ export function VoteComponent() {
   console.debug('votes', votes)
 
   return (
-    <Col className="mx-4">
+    <Col className="mx-2">
       <Title className="!mb-2 text-3xl">Proposals</Title>
       {votes && votes.length > 0 && <Col className={'mt-4'}>
         {votes.map((vote: Vote) => {

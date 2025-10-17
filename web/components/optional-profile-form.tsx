@@ -394,14 +394,19 @@ export const OptionalLoveUserForm = (props: {
           <label className={clsx(labelClassName)}>Political beliefs</label>
           <MultiCheckbox
             choices={{
+              Progressive: 'progressive',
               Liberal: 'liberal',
-              Moderate: 'moderate',
+              'Moderate / Centrist': 'moderate',
               Conservative: 'conservative',
               Socialist: 'socialist',
+              Nationalist: 'nationalist',
+              Populist: 'populist',
+              'Green / Eco-Socialist': 'green',
+              Technocratic: 'technocratic',
               Libertarian: 'libertarian',
-              'e/acc': 'e/acc',
-              'Pause AI': 'pause ai',
-              Other: 'other',
+              'Effective Accelerationism': 'e/acc',
+              'Pause AI / Tech Skeptic': 'pause ai',
+              'Independent / Other': 'other',
             }}
             selected={profile['political_beliefs'] ?? []}
             onChange={(selected) => setProfile('political_beliefs', selected)}

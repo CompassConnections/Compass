@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.5'
+    PostgrestVersion: '13.0.4'
   }
   public: {
     Tables: {
@@ -471,7 +471,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
@@ -519,7 +519,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           is_vegetarian_or_vegan?: boolean | null
           last_modification_time?: string
@@ -748,6 +748,7 @@ export type Database = {
           creator_id: string
           description: Json | null
           id: number
+          is_anonymous: boolean | null
           title: string
         }
         Insert: {
@@ -755,6 +756,7 @@ export type Database = {
           creator_id: string
           description?: Json | null
           id?: never
+          is_anonymous?: boolean | null
           title: string
         }
         Update: {
@@ -762,6 +764,7 @@ export type Database = {
           creator_id?: string
           description?: Json | null
           id?: never
+          is_anonymous?: boolean | null
           title?: string
         }
         Relationships: [
@@ -814,6 +817,7 @@ export type Database = {
           creator_id: string
           description: Json
           id: number
+          is_anonymous: boolean
           priority: number
           title: string
           votes_abstain: number
@@ -874,7 +878,7 @@ export type Database = {
         Returns: Json
       }
       ts_to_millis: {
-        Args: { ts: string }
+        Args: { ts: string } | { ts: string }
         Returns: number
       }
     }

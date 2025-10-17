@@ -6,7 +6,7 @@ import { tryCatch } from 'common/util/try-catch'
 
 export const createVote: APIHandler<
   'create-vote'
-> = async ({ title, description }, auth) => {
+> = async ({ title, description, isAnonymous }, auth) => {
   const creator = await getUser(auth.uid)
   if (!creator) throw new APIError(401, 'Your account was not found')
 
@@ -17,6 +17,7 @@ export const createVote: APIHandler<
       creator_id: creator.id,
       title,
       description,
+      is_anonymous: isAnonymous,
     })
   )
 

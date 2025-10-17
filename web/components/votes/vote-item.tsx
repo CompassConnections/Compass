@@ -35,7 +35,7 @@ export function VoteItem(props: {
           </Col>
           <Row className={'gap-2 mt-2 items-center justify-between w-full customlink'}>
             {!!vote.priority ? <div>Priority: {((vote.priority / vote.votes_for / 3) * 100).toFixed(0)}%</div> : <p></p>}
-            {creator?.username && <Link href={`/${creator.username}`} className="customlink">{creator.username}</Link>}
+            {!vote.is_anonymous && creator?.username && <Link href={`/${creator.username}`} className="customlink">{creator.username}</Link>}
           </Row>
           <VoteButtons
             voteId={vote.id}

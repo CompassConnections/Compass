@@ -25,6 +25,7 @@ export function VoteComponent() {
 
   const [title, setTitle] = useState<string>('')
   const [editor, setEditor] = useState<any>(null)
+  const [isAnonymous, setIsAnonymous] = useState<boolean>(false)
 
   const hideButton = title.length == 0
 
@@ -53,6 +54,16 @@ export function VoteComponent() {
           <VoteCreator
               onEditor={(e) => setEditor(e)}
           />
+          <Row className="mx-2 mb-2 items-center gap-2 text-sm text-gray-500">
+              <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                  className="h-4 w-4 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="anonymous">Anonymous?</label>
+          </Row>
         {!hideButton && (
           <Row className="right-1 justify-between gap-2">
             <Button
@@ -61,11 +72,14 @@ export function VoteComponent() {
                 const data = {
                   title: title,
                   description: editor.getJSON() as JSONContent,
+                  isAnonymous: isAnonymous,
                 };
                 const newVote = await api('create-vote', data).catch(() => {
                   toast.error('Failed to create vote — try again or contact us...')
                 })
                 if (!newVote) return
+                setTitle('')
+                editor.commands.clearContent()
                 toast.success('Vote created')
                 console.debug('Vote created', newVote)
                 refreshVotes()

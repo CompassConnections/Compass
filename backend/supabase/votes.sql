@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS votes (
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     creator_id TEXT NOT NULL,
     title TEXT NOT NULL,
+    is_anonymous BOOLEAN NOT NULL,
     description JSONB
 );
 

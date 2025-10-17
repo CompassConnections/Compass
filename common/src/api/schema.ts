@@ -520,6 +520,7 @@ export const API = (_apiTypeCheck = {
     returns: {} as any,
     props: z.object({
       title: z.string().min(1),
+      isAnonymous: z.boolean(),
       description: contentSchema,
     }),
   },

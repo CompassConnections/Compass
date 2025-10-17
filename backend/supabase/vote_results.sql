@@ -34,6 +34,7 @@ DROP INDEX IF EXISTS idx_vote_results_vote_choice;
 CREATE INDEX idx_vote_results_vote_choice ON vote_results (vote_id, choice);
 
 
+drop function if exists get_votes_with_results;
 create or replace function get_votes_with_results()
     returns table (
       id BIGINT,
@@ -41,6 +42,7 @@ create or replace function get_votes_with_results()
       description jsonb,
       created_time timestamptz,
       creator_id TEXT,
+      is_anonymous boolean,
       votes_for int,
       votes_against int,
       votes_abstain int,
@@ -53,6 +55,7 @@ SELECT
     v.description,
     v.created_time,
     v.creator_id,
+    v.is_anonymous,
     COALESCE(SUM(CASE WHEN r.choice = 1 THEN 1 ELSE 0 END), 0) AS votes_for,
     COALESCE(SUM(CASE WHEN r.choice = -1 THEN 1 ELSE 0 END), 0) AS votes_against,
     COALESCE(SUM(CASE WHEN r.choice = 0 THEN 1 ELSE 0 END), 0) AS votes_abstain,

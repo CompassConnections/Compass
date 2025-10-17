@@ -50,7 +50,6 @@ export const baseProfilesSchema = z.object({
   pref_age_min: z.number().min(18).max(100).optional(),
   pref_age_max: z.number().min(18).max(100).optional(),
   pref_relation_styles: z.array(z.string()),
-  pref_romantic_styles: z.array(z.string()),
   wants_kids_strength: z.number(),
   looking_for_matches: z.boolean(),
   photo_urls: z.array(z.string()),
@@ -92,6 +91,7 @@ const optionalProfilesSchema = z.object({
   bio: contentSchema.optional().nullable(),
   twitter: z.string().optional(),
   avatar_url: z.string().optional(),
+  pref_romantic_styles: z.array(z.string()),
 })
 
 export const combinedLoveUsersSchema =

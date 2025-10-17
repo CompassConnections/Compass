@@ -355,6 +355,9 @@ export const API = (_apiTypeCheck = {
         is_smoker: z.coerce.boolean().optional(),
         shortBio: z.coerce.boolean().optional(),
         geodbCityIds: arraybeSchema.optional(),
+        lat: z.coerce.number().optional(),
+        lon: z.coerce.number().optional(),
+        radius: z.coerce.number().optional(),
         compatibleWithUserId: z.string().optional(),
         orderBy: z
           .enum(['last_online_time', 'created_time', 'compatibility_score'])

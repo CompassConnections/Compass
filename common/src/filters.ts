@@ -2,9 +2,18 @@ import {Profile, ProfileRow} from "common/love/profile";
 import {cloneDeep} from "lodash";
 import {filterDefined} from "common/util/array";
 
+// export type TargetArea = {
+//   lat: number
+//   lon: number
+//   radius: number
+// }
+
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
   geodbCityIds: string[] | null
+  lat: number | null
+  lon: number | null
+  radius: number | null
   genders: string[]
   name: string | undefined
   shortBio: boolean | undefined
@@ -18,6 +27,7 @@ export type FilterFields = {
   | 'pref_age_min'
   | 'pref_age_max'
 >
+
 export const orderProfiles = (
   profiles: Profile[],
   starredUserIds: string[] | undefined
@@ -39,6 +49,9 @@ export const orderProfiles = (
 }
 export const initialFilters: Partial<FilterFields> = {
   geodbCityIds: undefined,
+  lat: undefined,
+  lon: undefined,
+  radius: undefined,
   name: undefined,
   genders: undefined,
   pref_age_max: undefined,
@@ -51,4 +64,8 @@ export const initialFilters: Partial<FilterFields> = {
   shortBio: undefined,
   orderBy: 'created_time',
 }
-export type OriginLocation = { id: string; name: string }
+
+
+export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]
+
+export type OriginLocation = { id: string; name: string, lat: number, lon: number }

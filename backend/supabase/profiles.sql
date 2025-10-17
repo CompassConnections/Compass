@@ -81,6 +81,15 @@ CREATE INDEX IF NOT EXISTS idx_profiles_last_mod_24h
 CREATE INDEX IF NOT EXISTS idx_profiles_bio_length
     ON profiles (bio_length);
 
+-- Fastest general-purpose index
+DROP INDEX IF EXISTS profiles_lat_lon_idx;
+CREATE INDEX profiles_lat_lon_idx ON profiles (city_latitude, city_longitude);
+
+-- Optional additional index for large tables / clustered inserts
+DROP INDEX IF EXISTS profiles_lat_lon_brin_idx;
+CREATE INDEX profiles_lat_lon_brin_idx ON profiles USING BRIN (city_latitude, city_longitude) WITH (pages_per_range = 32);
+
+
 
 -- Functions and Triggers
 CREATE

@@ -6,7 +6,7 @@ import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {getStars} from 'web/lib/supabase/stars'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {ProfileGrid} from 'web/components/profile-grid'
-import {CompassLoadingIndicator, LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useGetter} from 'web/hooks/use-getter'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
@@ -28,7 +28,7 @@ export function ProfilesHome() {
     locationFilterProps,
   } = useFilters(you ?? undefined);
 
-  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profile-profiles');
+  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profiles');
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);

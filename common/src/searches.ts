@@ -25,6 +25,18 @@ export type locationType = {
   radius: number
 }
 
+const skippedKeys = [
+  'pref_age_min',
+  'pref_age_max',
+  'geodbCityIds',
+  'orderBy',
+  'shortBio',
+  'targetArea',
+  'lat',
+  'lon',
+  'radius',
+]
+
 
 export function formatFilters(filters: Partial<FilterFields>, location: locationType | null): String[] | null {
   const entries: String[] = []
@@ -53,7 +65,7 @@ export function formatFilters(filters: Partial<FilterFields>, location: location
     const typedKey = key as keyof FilterFields
 
     if (value === undefined || value === null) return
-    if (typedKey == 'pref_age_min' || typedKey == 'pref_age_max' || typedKey == 'geodbCityIds' || typedKey == 'orderBy' || typedKey == 'shortBio') return
+    if (skippedKeys.includes(typedKey)) return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
 

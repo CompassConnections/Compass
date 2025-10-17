@@ -22,6 +22,9 @@ export type profileQueryType = {
   is_smoker?: boolean | undefined,
   shortBio?: boolean | undefined,
   geodbCityIds?: String[] | undefined,
+  lat?: number | undefined,
+  lon?: number | undefined,
+  radius?: number | undefined,
   compatibleWithUserId?: string | undefined,
   skipId?: string | undefined,
   orderBy?: string | undefined,
@@ -49,11 +52,16 @@ export const loadProfiles = async (props: profileQueryType) => {
     is_smoker,
     shortBio,
     geodbCityIds,
+    lat,
+    lon,
+    radius,
     compatibleWithUserId,
     orderBy: orderByParam = 'created_time',
     lastModificationWithin,
     skipId,
   } = props
+
+  const filterLocation = lat && lon && radius
 
   const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
   // console.debug('keywords:', keywords)
@@ -90,6 +98,12 @@ export const loadProfiles = async (props: profileQueryType) => {
         (l.id.toString() != skipId) &&
         (!geodbCityIds ||
           (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
+        (!filterLocation ||(
+          l.city_latitude && l.city_longitude &&
+          Math.abs(l.city_latitude - lat) < radius / 69.0 &&
+          Math.abs(l.city_longitude - lon) < radius / (69.0 * Math.cos(lat * Math.PI / 180)) &&
+          Math.pow(l.city_latitude - lat, 2) + Math.pow((l.city_longitude - lon) * Math.cos(lat * Math.PI / 180), 2) < Math.pow(radius / 69.0, 2)
+          )) &&
         ((l.bio_length ?? 0) >= MIN_BIO_LENGTH)
     )
 
@@ -137,13 +151,13 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_relation_styles?.length &&
     where(
       `pref_relation_styles IS NULL OR pref_relation_styles = '{}' OR pref_relation_styles && $(pref_relation_styles)`,
-      { pref_relation_styles }
+      {pref_relation_styles}
     ),
 
     pref_romantic_styles?.length &&
     where(
       `pref_romantic_styles IS NULL OR pref_romantic_styles = '{}' OR pref_romantic_styles && $(pref_romantic_styles)`,
-      { pref_romantic_styles }
+      {pref_romantic_styles}
     ),
 
     !!wants_kids_strength &&
@@ -163,6 +177,18 @@ export const loadProfiles = async (props: profileQueryType) => {
     geodbCityIds?.length &&
     where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 
+    // miles par degree of lat: earth's radius (3950 miles) * pi / 180 = 69.0
+    filterLocation && where(`
+      city_latitude BETWEEN $(target_lat) - ($(radius) / 69.0)
+           AND $(target_lat) + ($(radius) / 69.0)
+      AND city_longitude BETWEEN $(target_lon) - ($(radius) / (69.0 * COS(RADIANS($(target_lat)))))
+           AND $(target_lon) + ($(radius) / (69.0 * COS(RADIANS($(target_lat)))))
+      AND SQRT(
+            POWER(city_latitude - $(target_lat), 2)
+          + POWER((city_longitude - $(target_lon)) * COS(RADIANS($(target_lat))), 2)
+          ) <= $(radius) / 69.0
+      `, {target_lat: lat, target_lon: lon, radius}),
+
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
     orderBy(`${tablePrefix}.${orderByParam} DESC`),
@@ -174,7 +200,7 @@ export const loadProfiles = async (props: profileQueryType) => {
       LEFT JOIN ${userActivityJoin}
       WHERE profiles.id = $(after)
     )`,
-      { after }
+      {after}
     ),
 
     !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),

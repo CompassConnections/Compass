@@ -1,10 +1,8 @@
 import {Profile} from "common/love/profile";
 import {useIsLooking} from "web/hooks/use-is-looking";
 import {usePersistentLocalState} from "web/hooks/use-persistent-local-state";
-import {useCallback} from "react";
+import {useCallback, useEffect} from "react";
 import {debounce, isEqual} from "lodash";
-import {useNearbyCities} from "web/hooks/use-nearby-locations";
-import {useEffectCheckEquality} from "web/hooks/use-effect-check-equality";
 import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKidsFilter} from "common/wants-kids";
 import {FilterFields, initialFilters, OriginLocation} from "common/filters";
 import {MAX_INT, MIN_INT} from "common/constants";
@@ -13,8 +11,10 @@ export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
     isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'},
-    'profile-filters-2'
+    'profile-filters-4'
   )
+
+  // console.log('filters', filters)
 
   const updateFilter = (newState: Partial<FilterFields>) => {
     const updatedState = {...newState}
@@ -30,6 +30,8 @@ export const useFilters = (you: Profile | undefined) => {
         updatedState.pref_age_max = undefined
       }
     }
+
+    // console.log('updating filters', updatedState)
 
     setFilters((prevState) => ({...prevState, ...updatedState}))
   }
@@ -54,11 +56,17 @@ export const useFilters = (you: Profile | undefined) => {
     OriginLocation | undefined | null
   >(undefined, 'nearby-origin-location')
 
-  const nearbyCities = useNearbyCities(location?.id, radius)
+  // const nearbyCities = useNearbyCities(location?.id, radius)
+  //
+  // useEffectCheckEquality(() => {
+  //   updateFilter({geodbCityIds: nearbyCities})
+  // }, [nearbyCities])
 
-  useEffectCheckEquality(() => {
-    updateFilter({geodbCityIds: nearbyCities})
-  }, [nearbyCities])
+  useEffect(() => {
+    if (location?.lat && location?.lon) {
+      updateFilter({lat: location.lat, lon: location.lon, radius: radius})
+    }
+  }, [location?.id, radius]);
 
   const locationFilterProps = {
     location,
@@ -99,8 +107,8 @@ export const useFilters = (you: Profile | undefined) => {
       updateFilter(yourFilters)
       setRadius(100)
       debouncedSetRadius(100) // clear any pending debounced sets
-      if (you?.geodb_city_id && you.city) {
-        setLocation({id: you?.geodb_city_id, name: you?.city})
+      if (you?.geodb_city_id && you.city && you.city_latitude && you.city_longitude) {
+        setLocation({id: you?.geodb_city_id, name: you?.city, lat: you?.city_latitude, lon: you?.city_longitude})
       }
     } else {
       clearFilters()

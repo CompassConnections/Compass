@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     pref_age_min INTEGER NULL,
     pref_gender TEXT[] NOT NULL,
     pref_relation_styles TEXT[] NOT NULL,
+    pref_romantic_styles TEXT[],
     referred_by_username TEXT,
     region_code TEXT,
     religious_belief_strength INTEGER,

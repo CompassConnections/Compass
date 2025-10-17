@@ -438,6 +438,7 @@ export type Database = {
           pref_age_min: number | null
           pref_gender: string[]
           pref_relation_styles: string[]
+          pref_romantic_styles: string[] | null
           referred_by_username: string | null
           region_code: string | null
           religious_belief_strength: number | null
@@ -485,6 +486,7 @@ export type Database = {
           pref_age_min?: number | null
           pref_gender: string[]
           pref_relation_styles: string[]
+          pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
           religious_belief_strength?: number | null
@@ -532,6 +534,7 @@ export type Database = {
           pref_age_min?: number | null
           pref_gender?: string[]
           pref_relation_styles?: string[]
+          pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
           religious_belief_strength?: number | null

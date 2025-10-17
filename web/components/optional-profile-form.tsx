@@ -28,7 +28,7 @@ import {City, CityRow, profileToCity, useCitySearch} from "web/components/search
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/love/multiple-choice";
-import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
+import {RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
 export const OptionalLoveUserForm = (props: {
@@ -42,7 +42,7 @@ export const OptionalLoveUserForm = (props: {
   const {profile, user, buttonLabel, setProfile, fromSignup, onSubmit} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lookingRelationship, setLookingRelationship] = useState(false)
+  const [lookingRelationship, setLookingRelationship] = useState((profile.pref_relation_styles || []).includes('relationship'))
   const router = useRouter()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
     profile.height_in_inches
@@ -553,6 +553,17 @@ export const OptionalLoveUserForm = (props: {
                     }}
                     currentChoice={profile.wants_kids_strength ?? -1}
                 />
+            </Col>
+
+            <Col className={clsx(colClassName)}>
+              <label className={clsx(labelClassName)}>Relationship style</label>
+              <MultiCheckbox
+                choices={ROMANTIC_CHOICES}
+                selected={profile['pref_romantic_styles'] || []}
+                onChange={(selected) => {
+                  setProfile('pref_romantic_styles', selected)
+                }}
+              />
             </Col>
         </>}
 

@@ -16,6 +16,7 @@ export type profileQueryType = {
   pref_age_min?: number | undefined,
   pref_age_max?: number | undefined,
   pref_relation_styles?: String[] | undefined,
+  pref_romantic_styles?: String[] | undefined,
   wants_kids_strength?: number | undefined,
   has_kids?: number | undefined,
   is_smoker?: boolean | undefined,
@@ -42,6 +43,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_age_min,
     pref_age_max,
     pref_relation_styles,
+    pref_romantic_styles,
     wants_kids_strength,
     has_kids,
     is_smoker,
@@ -73,6 +75,8 @@ export const loadProfiles = async (props: profileQueryType) => {
         (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
         (!pref_relation_styles ||
           intersection(pref_relation_styles, l.pref_relation_styles).length) &&
+        (!pref_romantic_styles ||
+          intersection(pref_romantic_styles, l.pref_romantic_styles).length) &&
         (!wants_kids_strength ||
           wants_kids_strength == -1 ||
           (wants_kids_strength >= 2
@@ -134,6 +138,12 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(
       `pref_relation_styles IS NULL OR pref_relation_styles = '{}' OR pref_relation_styles && $(pref_relation_styles)`,
       { pref_relation_styles }
+    ),
+
+    pref_romantic_styles?.length &&
+    where(
+      `pref_romantic_styles IS NULL OR pref_romantic_styles = '{}' OR pref_romantic_styles && $(pref_romantic_styles)`,
+      { pref_romantic_styles }
     ),
 
     !!wants_kids_strength &&

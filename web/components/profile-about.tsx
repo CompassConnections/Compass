@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-relationship-type'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
+import {REVERTED_ROMANTIC_CHOICES} from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
@@ -126,7 +127,7 @@ function Seeking(props: { profile: Profile }) {
 function RelationshipType(props: { profile: Profile }) {
   const {profile} = props
   const relationshipTypes = profile.pref_relation_styles
-  const seekingGenderText = stringOrStringArrayToText({
+  let seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes.map((rel) =>
       convertRelationshipType(rel as RelationshipType).toLowerCase()
     ).sort(),
@@ -138,6 +139,15 @@ function RelationshipType(props: { profile: Profile }) {
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
+  if (relationshipTypes.includes('relationship')) {
+    const romanticStyles = profile.pref_romantic_styles
+      ?.map((style) => REVERTED_ROMANTIC_CHOICES[style].toLowerCase())
+      .filter(Boolean)
+    if (romanticStyles && romanticStyles.length > 0) {
+      seekingGenderText += ` (${romanticStyles.join(', ')})`
+    }
+
+  }
   return (
     <AboutRow
       icon={<BsPersonHeart className="h-5 w-5"/>}

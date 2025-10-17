@@ -14,7 +14,7 @@ import {Title} from "web/components/widgets/title";
 import toast from "react-hot-toast";
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
 
-export function VoteComponent(props: {}) {
+export function VoteComponent() {
   const user = useUser()
 
   const {data: votes, refresh: refreshVotes} = useGetter(

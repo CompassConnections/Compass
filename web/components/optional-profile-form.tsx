@@ -28,7 +28,7 @@ import {City, CityRow, profileToCity, useCitySearch} from "web/components/search
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/love/multiple-choice";
-import {RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
+import {POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
 export const OptionalLoveUserForm = (props: {
@@ -393,21 +393,7 @@ export const OptionalLoveUserForm = (props: {
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Political beliefs</label>
           <MultiCheckbox
-            choices={{
-              Progressive: 'progressive',
-              Liberal: 'liberal',
-              'Moderate / Centrist': 'moderate',
-              Conservative: 'conservative',
-              Socialist: 'socialist',
-              Nationalist: 'nationalist',
-              Populist: 'populist',
-              'Green / Eco-Socialist': 'green',
-              Technocratic: 'technocratic',
-              Libertarian: 'libertarian',
-              'Effective Accelerationism': 'e/acc',
-              'Pause AI / Tech Skeptic': 'pause ai',
-              'Independent / Other': 'other',
-            }}
+            choices={POLITICAL_CHOICES}
             selected={profile['political_beliefs'] ?? []}
             onChange={(selected) => setProfile('political_beliefs', selected)}
           />

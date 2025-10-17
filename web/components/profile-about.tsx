@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-relationship-type'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
-import {REVERTED_ROMANTIC_CHOICES} from 'web/components/filters/choices'
+import {REVERTED_POLITICAL_CHOICES, REVERTED_ROMANTIC_CHOICES} from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
@@ -60,7 +60,7 @@ export default function ProfileAbout(props: {
       <HasKids profile={profile}/>
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
-        text={profile.political_beliefs}
+        text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}
       />
       <Education profile={profile}/>
       <Occupation profile={profile}/>

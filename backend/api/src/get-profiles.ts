@@ -104,7 +104,7 @@ export const loadProfiles = async (props: profileQueryType) => {
           Math.abs(l.city_longitude - lon) < radius / (69.0 * Math.cos(lat * Math.PI / 180)) &&
           Math.pow(l.city_latitude - lat, 2) + Math.pow((l.city_longitude - lon) * Math.cos(lat * Math.PI / 180), 2) < Math.pow(radius / 69.0, 2)
           )) &&
-        ((l.bio_length ?? 0) >= MIN_BIO_LENGTH)
+        (shortBio || (l.bio_length ?? 0) >= MIN_BIO_LENGTH)
     )
 
     const cursor = after

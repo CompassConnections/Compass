@@ -236,9 +236,7 @@ export const Search = (props: {
       </RightModal>
       <Row className={'mb-2 gap-2'}>
         <Button
-          disabled={
-            loadingBookmark || isEqual(filters, initialFilters)
-          }
+          disabled={loadingBookmark}
           loading={loadingBookmark}
           onClick={() => {
             if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {

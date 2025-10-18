@@ -36,10 +36,10 @@ type ImportanceColorsType = {
 }
 
 export const IMPORTANCE_RADIO_COLORS: ImportanceColorsType = {
-  0: `bg-stone-400 ring-stone-400 dark:bg-stone-500 dark:ring-stone-500`,
-  1: `bg-teal-200 ring-teal-200 dark:bg-teal-100 dark:ring-teal-100 `,
-  2: `bg-teal-300 ring-teal-300 dark:bg-teal-200 dark:ring-teal-200 `,
-  3: `bg-teal-400 ring-teal-400`,
+  0: `bg-teal-300 ring-teal-200`,
+  1: `bg-teal-500 ring-teal-200`,
+  2: `bg-teal-700 ring-teal-300`,
+  3: `bg-teal-900 ring-teal-400`,
 }
 
 export const IMPORTANCE_DISPLAY_COLORS: ImportanceColorsType = {

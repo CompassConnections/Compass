@@ -24,7 +24,7 @@ export function VoteItem(props: {
   useEffect(() => {
     getVoteCreator(vote.creator_id).then(setCreator)
   }, [vote.creator_id])
-  console.debug('creator', creator)
+  // console.debug('creator', creator)
   return (
     <Col className={'mb-4 rounded-lg border border-ink-200 p-4'}>
       <Row className={'mb-2'}>

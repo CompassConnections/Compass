@@ -201,7 +201,7 @@ function RegisterComponent() {
                 </div>
 
                 <div>
-                  <p className="text-sm mt-2 text-center customlink">
+                  <p className="text-sm mt-2 text-center custom-link">
                     By signing up, I agree to the{" "}
                     <Link href="/terms">
                       Terms and Conditions
@@ -238,7 +238,7 @@ function RegisterComponent() {
                 </div>
               </form>
               <div className="my-8"/>
-              <div className="text-center customlink">
+              <div className="text-center custom-link">
                 <p className="">
                   Already have an account?{' '}
                   <Link href="/signin">

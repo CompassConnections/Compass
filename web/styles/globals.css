@@ -365,27 +365,27 @@ ul {
     padding-left: 1.25rem;
     margin-top: 0.5rem;
 }
-.customlink a,
-.customlink button{
+.custom-link a,
+.custom-link button{
     color: rgb(var(--color-primary-500));
     text-decoration: none;
     font-family: var(--font-main), serif;
 }
 
-.dark .customlink a,
-.dark .customlink button {
+.dark .custom-link a,
+.dark .custom-link button {
     color: rgb(var(--color-primary-600));
     text-decoration: none;
     font-family: var(--font-main), serif;
 }
 
-.customlink a:hover,
-.customlink button:hover {
+.custom-link a:hover,
+.custom-link button:hover {
     text-decoration: underline;
 }
 
-.dark .customlink a:hover,
-.dark .customlink button:hover {
+.dark .custom-link a:hover,
+.dark .custom-link button:hover {
     text-decoration: underline;
 }
 

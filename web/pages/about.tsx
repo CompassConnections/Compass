@@ -61,7 +61,7 @@ export default function About() {
                 <AboutBlock
                   title="Democratic"
                   text={<span
-                    className="customlink">Governed and <Link href="/vote">voted</Link> by the community, while ensuring no drift through our <Link
+                    className="custom-link">Governed and <Link href="/vote">voted</Link> by the community, while ensuring no drift through our <Link
                     href="/constitution">constitution</Link>.</span>}
                 />
 
@@ -126,7 +126,7 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
-                  <p className="mb-4 text-center customlink"><Link href="/support">Support</Link> our not-for-profit
+                  <p className="mb-4 text-center custom-link"><Link href="/support">Support</Link> our not-for-profit
                     infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                     <a

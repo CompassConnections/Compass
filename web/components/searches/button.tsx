@@ -180,7 +180,7 @@ function StarModal(props: {
                 {visibleUsers.map((user) => (
                   <li key={user.id}
                       className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                    <a className={'customlink'}>
+                    <a className={'custom-link'}>
                       {user.name} (<Link
                       href={`/${user.username}`}
                       // style={{color: "#2563eb", textDecoration: "none"}}

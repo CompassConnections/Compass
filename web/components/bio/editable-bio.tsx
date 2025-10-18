@@ -28,7 +28,7 @@ Write a clear and engaging bio to help others understand who you are and the con
 
 export function BioTips() {
   return (
-    <ShowMore labelClosed="Tips" labelOpen="Hide info" className={'customlink text-sm'}>
+    <ShowMore labelClosed="Tips" labelOpen="Hide info" className={'custom-link text-sm'}>
       <ReactMarkdown>{tips}</ReactMarkdown>
       <Link href="/tips-bio" target="_blank">Read full tips for writing a high-quality bio</Link>
     </ShowMore>

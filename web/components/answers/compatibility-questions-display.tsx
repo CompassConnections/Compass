@@ -190,7 +190,7 @@ export function CompatibilityQuestionsDisplay(props: {
       ) : (
         <>
           {isCurrentUser && !fromProfilePage && (
-            <span className='customlink'>
+            <span className='custom-link'>
               {otherQuestions.length < 1 ? (
                 <span className="text-ink-600 text-sm">
                   You've already answered all the compatibility questions—

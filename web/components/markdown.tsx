@@ -29,7 +29,7 @@ export default function MarkdownPage({content, filename}: Props) {
   return (
     <LovePage trackPageView={filename} className={'col-span-8'}>
       <Col className="items-center">
-        <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 customlink'>
+        <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
           <ReactMarkdown
             components={{
               a: ({node: _node, children, ...props}) => <MarkdownLink {...props}>{children}</MarkdownLink>

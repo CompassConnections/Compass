@@ -54,7 +54,7 @@ export function VoteComponent() {
           </select>
         </div>
       </Row>
-      <p className={'customlink'}>
+      <p className={'custom-link'}>
         You can discuss any of those proposals through the <Link href={'/contact'}>contact form</Link>, the <Link href={formLink}>feedback form</Link>, or any of our <Link href={'/social'}>socials</Link>.
       </p>
 

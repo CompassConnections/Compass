@@ -182,7 +182,7 @@ function RegisterComponent() {
               <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading}/>
             </div>
           </form>
-          <div className="text-center customlink">
+          <div className="text-center custom-link">
             <p className="">
               No account?{' '}
               <Link href="/register">

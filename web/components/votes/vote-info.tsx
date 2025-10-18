@@ -6,7 +6,7 @@ import {TextEditor, useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import {getVotes} from "web/lib/supabase/votes";
 import {MAX_DESCRIPTION_LENGTH} from "common/envs/constants";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Button} from "web/components/buttons/button";
 import {Input} from "web/components/widgets/input";
 import {api} from "web/lib/api";

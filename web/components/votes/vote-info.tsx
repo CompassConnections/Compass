@@ -39,7 +39,7 @@ export function VoteComponent() {
       <Row className="items-center justify-between flex-col xxs:flex-row mb-4 xxs:mb-0 gap-2">
         <Title className="text-3xl">Proposals</Title>
         <div className="flex items-center gap-2 text-sm justify-end">
-          <label htmlFor="orderBy" className="text-gray-600">Order by:</label>
+          <label htmlFor="orderBy" className="text-ink-700">Order by:</label>
           <select
             id="orderBy"
             value={orderBy}
@@ -71,7 +71,7 @@ export function VoteComponent() {
           <VoteCreator
               onEditor={(e) => setEditor(e)}
           />
-          <Row className="mx-2 mb-2 items-center gap-2 text-sm text-gray-500">
+          <Row className="mx-2 mb-2 items-center gap-2 text-sm">
               <input
                   type="checkbox"
                   id="anonymous"

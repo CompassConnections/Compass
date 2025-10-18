@@ -26,11 +26,11 @@ export function VoteItem(props: {
   }, [vote.creator_id])
   // console.debug('creator', creator)
   return (
-    <Col className={'mb-4 rounded-lg border border-ink-200 p-4'}>
+    <Col className={'mb-4 rounded-lg border border-canvas-200 p-4'}>
       <Row className={'mb-2'}>
         <Col className={'flex-grow'}>
           <p className={'text-2xl'}>{vote.title}</p>
-          <Col className='text-sm text-gray-500 italic'>
+          <Col className='text-sm italic'>
             <Content className="w-full" content={vote.description as JSONContent}/>
           </Col>
           <Row className={'gap-2 mt-2 items-center justify-between w-full custom-link flex-wrap'}>

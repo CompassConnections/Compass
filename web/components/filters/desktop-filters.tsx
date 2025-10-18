@@ -249,7 +249,7 @@ export function DesktopFilters(props: {
       {/*  menuWidth="w-40"*/}
       {/*/>*/}
       <button
-        className="text-ink-500 hover:text-primary-500 underline"
+        className="text-ink-900 hover:text-primary-500 underline"
         onClick={clearFilters}
       >
         Clear filters

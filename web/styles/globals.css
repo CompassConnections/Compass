@@ -10,6 +10,7 @@
 .main-font {
     font-family: var(--font-main), serif;
 }
+
 .main-font a,
 .main-font label,
 .main-font button {
@@ -35,19 +36,35 @@
 
     :root {
         /* Text / Ink Grey Scale */
+        /* High Contrast */
         --color-ink-0: 255 255 255; /* white */
-        --color-ink-50: 245 245 245;
-        --color-ink-100: 230 230 230;
-        --color-ink-200: 200 200 200;
-        --color-ink-300: 170 170 170;
-        --color-ink-400: 140 140 140;
-        --color-ink-500: 110 110 110;
-        --color-ink-600: 85 85 85;
-        --color-ink-700: 60 60 60;
-        --color-ink-800: 40 40 40;
-        --color-ink-900: 25 25 25;
-        --color-ink-950: 12 12 12;
+        --color-ink-50: 255 255 255;
+        --color-ink-100: 255 255 255;
+        --color-ink-200: 255 255 255;
+        --color-ink-300: 160 160 160;
+        --color-ink-400: 160 160 160;
+        --color-ink-500: 80 80 80;
+        --color-ink-600: 0 0 0;
+        --color-ink-700: 0 0 0;
+        --color-ink-800: 0 0 0;
+        --color-ink-900: 0 0 0;
+        --color-ink-950: 0 0 0;
         --color-ink-1000: 0 0 0; /* black */
+
+        /* Medium Contrast */
+        /*--color-ink-0: 255 255 255; !* white *!*/
+        /*--color-ink-50: 245 245 245;*/
+        /*--color-ink-100: 230 230 230;*/
+        /*--color-ink-200: 200 200 200;*/
+        /*--color-ink-300: 170 170 170;*/
+        /*--color-ink-400: 140 140 140;*/
+        /*--color-ink-500: 110 110 110;*/
+        /*--color-ink-600: 85 85 85;*/
+        /*--color-ink-700: 60 60 60;*/
+        /*--color-ink-800: 40 40 40;*/
+        /*--color-ink-900: 25 25 25;*/
+        /*--color-ink-950: 12 12 12;*/
+        /*--color-ink-1000: 0 0 0; !* black *!*/
 
         /* Background / Canvas Grey Scale */
         --color-canvas-0: 255 255 255; /* white */
@@ -69,7 +86,7 @@
         --color-primary-900: 30 58 138;
         --color-primary-800: 30 64 175;
         --color-primary-700: 29 78 216;
-        --color-primary-600: 37 99 235;
+        --color-primary-600: 29 78 216;
         --color-primary-500: 59 130 246; /* standard blue */
         --color-primary-400: 96 165 250;
         --color-primary-300: 147 197 253;
@@ -115,19 +132,7 @@
         --color-green-300: 110 231 183; /* vibrant but not neon */
         --color-green-200: 167 243 208; /* gentle mid-light tone */
         --color-green-100: 209 260 229; /* soft and airy */
-        --color-green-50: 240 263 245;  /* subtle, barely tinted background */
-
-        --color-red-950: 69 10 10; /* darkest red */
-        --color-red-900: 127 29 29;
-        --color-red-800: 153 27 27;
-        --color-red-700: 185 28 28;
-        --color-red-600: 220 38 38;
-        --color-red-500: 239 68 68; /* standard red */
-        --color-red-400: 248 113 113;
-        --color-red-300: 252 165 165;
-        --color-red-200: 254 202 202;
-        --color-red-100: 254 226 226;
-        --color-red-50: 254 242 242; /* lightest red */
+        --color-green-50: 240 263 245; /* subtle, barely tinted background */
 
         --color-yellow-950: 66 50 3; /* darkest yellow */
         --color-yellow-900: 113 63 18;
@@ -140,60 +145,51 @@
         --color-yellow-200: 253 230 138;
         --color-yellow-100: 254 243 199;
         --color-yellow-50: 255 251 235; /* lightest yellow */
+
+        --color-red-950: 69 10 10; /* darkest red */
+        --color-red-900: 127 29 29;
+        --color-red-800: 153 27 27;
+        --color-red-700: 185 28 28;
+        --color-red-600: 220 38 38;
+        --color-red-500: 239 68 68; /* standard red */
+        --color-red-400: 248 113 113;
+        --color-red-300: 252 165 165;
+        --color-red-200: 254 202 202;
+        --color-red-100: 254 226 226;
+        --color-red-50: 254 242 242; /* lightest red */
     }
 
     .dark {
         color-scheme: dark;
 
-        --color-green-50: 240 253 244; /* lightest green */
-        --color-green-100: 220 252 231;
-        --color-green-200: 187 247 208;
-        --color-green-300: 134 239 172;
-        --color-green-400: 74 222 128;
-        --color-green-500: 34 197 94; /* standard green */
-        --color-green-600: 22 163 74;
-        --color-green-700: 21 128 61;
-        --color-green-800: 22 101 52;
-        --color-green-900: 20 83 45;
-        --color-green-950: 5 46 22; /* darkest green */
-
-        --color-red-50: 254 242 242; /* lightest red */
-        --color-red-100: 254 226 226;
-        --color-red-200: 254 202 202;
-        --color-red-300: 252 165 165;
-        --color-red-400: 248 113 113;
-        --color-red-500: 239 68 68; /* standard red */
-        --color-red-600: 220 38 38;
-        --color-red-700: 185 28 28;
-        --color-red-800: 153 27 27;
-        --color-red-900: 127 29 29;
-        --color-red-950: 69 10 10; /* darkest red */
-
-        --color-yellow-50: 255 251 235; /* lightest yellow */
-        --color-yellow-100: 254 243 199;
-        --color-yellow-200: 253 230 138;
-        --color-yellow-300: 252 211 77;
-        --color-yellow-400: 251 191 36;
-        --color-yellow-500: 245 158 11; /* standard yellow */
-        --color-yellow-600: 217 119 6;
-        --color-yellow-700: 180 83 9;
-        --color-yellow-800: 146 64 14;
-        --color-yellow-900: 113 63 18;
-        --color-yellow-950: 66 50 3; /* darkest yellow */
-
+        /* High Contrast */
         --color-ink-1000: 255 255 255; /* white */
-        --color-ink-950: 250 250 250; /* #FAFAFA */
-        --color-ink-900: 242 242 242; /* #F2F2F2 */
-        --color-ink-800: 217 217 217; /* #D9D9D9 */
-        --color-ink-700: 191 191 191; /* #BFBFBF */
-        --color-ink-600: 166 166 166; /* #A6A6A6 */
-        --color-ink-500: 140 140 140; /* #8C8C8C */
-        --color-ink-400: 115 115 115; /* #737373 */
-        --color-ink-300: 89 89 89; /* #595959 */
-        --color-ink-200: 64 64 64; /* #404040 */
-        --color-ink-100: 34 34 34; /* #222222 */
-        --color-ink-50: 17 17 17; /* #111111 */
+        --color-ink-950: 255 255 255;
+        --color-ink-900: 255 255 255;
+        --color-ink-800: 255 255 255;
+        --color-ink-700: 255 255 255;
+        --color-ink-600: 255 255 255;
+        --color-ink-500: 200 200 200;
+        --color-ink-400: 100 100 100;
+        --color-ink-300: 100 100 100;
+        --color-ink-200: 0 0 0;
+        --color-ink-100: 0 0 0;
+        --color-ink-50: 0 0 0;
         --color-ink-0: 0 0 0; /* black */
+        /* Medium Contrast */
+        /*--color-ink-1000: 255 255 255; !* white *!*/
+        /*--color-ink-950: 250 250 250; !* #FAFAFA *!*/
+        /*--color-ink-900: 242 242 242; !* #F2F2F2 *!*/
+        /*--color-ink-800: 217 217 217; !* #D9D9D9 *!*/
+        /*--color-ink-700: 191 191 191; !* #BFBFBF *!*/
+        /*--color-ink-600: 166 166 166; !* #A6A6A6 *!*/
+        /*--color-ink-500: 140 140 140; !* #8C8C8C *!*/
+        /*--color-ink-400: 115 115 115; !* #737373 *!*/
+        /*--color-ink-300: 89 89 89; !* #595959 *!*/
+        /*--color-ink-200: 64 64 64; !* #404040 *!*/
+        /*--color-ink-100: 34 34 34; !* #222222 *!*/
+        /*--color-ink-50: 17 17 17; !* #111111 *!*/
+        /*--color-ink-0: 0 0 0; !* black *!*/
 
         --color-canvas-25: 0 0 0;
         --color-canvas-0: 20 20 20;
@@ -204,16 +200,15 @@
 
         --color-primary-950: 255 255 255;
         --color-primary-900: 255 255 255;
-        --color-primary-800: 255 255 255;
+        --color-primary-800: 170 220 250;
         --color-primary-700: 255 255 255;
-        --color-primary-600: 96 165 250;
+        --color-primary-600: 150 200 250;
         --color-primary-500: 59 130 246; /* standard blue */
         --color-primary-400: 37 99 235;
         --color-primary-300: 29 78 216;
         --color-primary-200: 30 64 175;
         --color-primary-100: 30 58 138;
         --color-primary-50: 23 37 84; /* very dark navy */
-
 
         --color-no-950: 255 255 255; /* white */
         --color-no-900: 242 242 242;
@@ -228,7 +223,6 @@
         --color-no-50: 17 17 17;
         --color-no-0: 0 0 0; /* black */
 
-
         --color-yes-950: 255 255 255; /* white */
         --color-yes-900: 242 242 242;
         --color-yes-800: 217 217 217;
@@ -241,6 +235,42 @@
         --color-yes-100: 34 34 34;
         --color-yes-50: 17 17 17;
         --color-yes-0: 0 0 0; /* black */
+
+        --color-green-50: 240 253 244; /* lightest green */
+        --color-green-100: 220 252 231;
+        --color-green-200: 187 247 208;
+        --color-green-300: 134 239 172;
+        --color-green-400: 74 222 128;
+        --color-green-500: 34 197 94; /* standard green */
+        --color-green-600: 22 163 74;
+        --color-green-700: 21 128 61;
+        --color-green-800: 22 101 52;
+        --color-green-900: 20 83 45;
+        --color-green-950: 5 46 22; /* darkest green */
+
+        --color-yellow-50: 255 251 235; /* lightest yellow */
+        --color-yellow-100: 254 243 199;
+        --color-yellow-200: 253 230 138;
+        --color-yellow-300: 252 211 77;
+        --color-yellow-400: 251 191 36;
+        --color-yellow-500: 245 158 11; /* standard yellow */
+        --color-yellow-600: 217 119 6;
+        --color-yellow-700: 180 83 9;
+        --color-yellow-800: 146 64 14;
+        --color-yellow-900: 113 63 18;
+        --color-yellow-950: 66 50 3; /* darkest yellow */
+
+        --color-red-50: 254 242 242; /* lightest red */
+        --color-red-100: 254 226 226;
+        --color-red-200: 254 202 202;
+        --color-red-300: 252 165 165;
+        --color-red-400: 248 113 113;
+        --color-red-500: 239 68 68; /* standard red */
+        --color-red-600: 220 38 38;
+        --color-red-700: 185 28 28;
+        --color-red-800: 153 27 27;
+        --color-red-900: 127 29 29;
+        --color-red-950: 69 10 10; /* darkest red */
 
     }
 }
@@ -365,9 +395,10 @@ ul {
     padding-left: 1.25rem;
     margin-top: 0.5rem;
 }
+
 .custom-link a,
-.custom-link button{
-    color: rgb(var(--color-primary-500));
+.custom-link button {
+    color: rgb(var(--color-primary-600));
     text-decoration: none;
     font-family: var(--font-main), serif;
 }
@@ -402,12 +433,12 @@ ol {
     list-style-position: inside; /* or 'inside' if you prefer */
     /*margin: 0 0 1rem 0;*/
     list-style: decimal;
-    padding-left: 0.5rem;     /* space for numbers */
+    padding-left: 0.5rem; /* space for numbers */
 }
 
 /* Ensure li behaves as a list item (some resets or flex can break markers) */
 ol > li {
-    display: list-item;           /* prevents flex from removing marker layout */
+    display: list-item; /* prevents flex from removing marker layout */
     /*padding-left: 0rem;   !* extra spacing after number *!*/
     /*text-indent: -0rem;   !* pull first line back so text aligns *!*/
 }

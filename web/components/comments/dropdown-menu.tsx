@@ -90,7 +90,7 @@ export default function DropdownMenu(props: {
                     className={clsx(
                       selectedItemName && item.name == selectedItemName
                         ? 'bg-primary-100'
-                        : 'hover:bg-ink-100 hover:text-ink-900',
+                        : 'hover:bg-ink-300 hover:text-ink-900',
                       'text-ink-700',
                       'flex w-full gap-2 px-4 py-2 text-left text-sm'
                     )}

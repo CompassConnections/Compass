@@ -27,7 +27,7 @@ export function RadioToggleGroup(props: {
 
   const length = orderedChoicesMap.length
   return (
-    <Row className="text-ink-500 dark:text-ink-500 mb-6 items-center gap-3 text-sm">
+    <Row className="text-ink-600 mb-6 items-center gap-3 text-sm">
       {orderedChoicesMap[0][0]}
       <RadioGroup
         className={clsx(

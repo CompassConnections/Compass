@@ -1,12 +1,12 @@
-import { Html, Head, Main, NextScript } from 'next/document'
-import { ENV_CONFIG } from 'common/envs/constants'
+import {Head, Html, Main, NextScript} from 'next/document'
+import {ENV_CONFIG, IS_DEPLOYED} from 'common/envs/constants'
 import Script from 'next/script'
 
 export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" href={ENV_CONFIG.faviconPath} />
+        <link rel="icon" href={ENV_CONFIG.faviconPath}/>
         <link
           // href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"
           href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&display=swap"
@@ -14,11 +14,25 @@ export default function Document() {
           // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <Script src="/init-theme.js" strategy="beforeInteractive" />
+        <Script src="/init-theme.js" strategy="beforeInteractive"/>
+        {IS_DEPLOYED && <Script id="devtools-warning" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `(() => { try {
+            const title = 'Hold Up!';
+            const msg1 = "If someone told you to copy/paste something here you have an 11/10 chance you're being scammed.";
+            const msg2 = 'Pasting anything in here could give attackers access to your Compass account.';
+            const msg3 = 'Unless you understand exactly what you are doing, close this window and stay safe.';
+            const styleText = 'font-size:24px;font-weight:700;padding:8px 12px;border-radius:4px;';
+            const styleTitle = 'color:#d32f2f;font-size:28px;font-weight:700;padding:8px 12px;border-radius:4px;';
+            console.log('%c' + title, styleTitle);
+            console.log('%c' + msg1, styleText);
+            console.log('%c' + msg2, styleTitle);
+            console.log('%c' + msg3, styleText);
+          } catch(e){} })();`
+        }}/>}
       </Head>
       <body className="body-bg text-ink-1000">
-        <Main />
-        <NextScript />
+      <Main/>
+      <NextScript/>
       </body>
     </Html>
   )

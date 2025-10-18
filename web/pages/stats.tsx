@@ -58,10 +58,10 @@ export default function Stats() {
           {!!data.private_user_message_channels && <StatBox value={data.private_user_message_channels} label={'Discussions'} />}
           {!!data.private_user_messages && <StatBox value={data.private_user_messages} label={'Messages'} />}
           {!!data.bookmarked_searches && <StatBox value={data.bookmarked_searches} label={'Searches Bookmarked'} />}
-          {!!data.profile_comments && <StatBox value={data.profile_comments} label={'Endorsements'} />}
           {!!data.love_compatibility_answers && <StatBox value={data.love_compatibility_answers} label={'Prompts Answered'} />}
           {!!data.votes && <StatBox value={data.votes} label={'Proposals'} />}
           {!!data.vote_results && <StatBox value={data.vote_results} label={'Votes'} />}
+          {!!data.profile_comments && <StatBox value={data.profile_comments} label={'Endorsements'} />}
         </Col>
       </Col>
     </LovePage>

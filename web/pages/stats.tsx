@@ -19,6 +19,8 @@ export default function Stats() {
         'private_user_messages',
         'profile_comments',
         'love_compatibility_answers',
+        'votes',
+        'vote_results',
       ] as const
 
       const settled = await Promise.allSettled(
@@ -58,6 +60,8 @@ export default function Stats() {
           {!!data.bookmarked_searches && <StatBox value={data.bookmarked_searches} label={'Searches Bookmarked'} />}
           {!!data.profile_comments && <StatBox value={data.profile_comments} label={'Endorsements'} />}
           {!!data.love_compatibility_answers && <StatBox value={data.love_compatibility_answers} label={'Prompts Answered'} />}
+          {!!data.votes && <StatBox value={data.votes} label={'Proposals'} />}
+          {!!data.vote_results && <StatBox value={data.vote_results} label={'Votes'} />}
         </Col>
       </Col>
     </LovePage>

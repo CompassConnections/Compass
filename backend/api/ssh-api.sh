@@ -9,7 +9,8 @@ set -e
 SERVICE_NAME="api"
 SERVICE_GROUP="${SERVICE_NAME}-group"
 ZONE="us-west1-c"
-ENV=${1:-dev}
+#ENV=${1:-dev}
+ENV=prod
 
 case $ENV in
     dev)
@@ -28,10 +29,19 @@ INSTANCE_ID=$(gcloud compute instances list \
   --format="value(name)" \
   --limit=1)
 
-echo "Forwarding debugging port 9229 to ${INSTANCE_ID}. Open chrome://inspect in Chrome to connect."
-echo gcloud compute ssh ${INSTANCE_ID} --project=${GCLOUD_PROJECT} --zone=${ZONE}
-gcloud compute ssh ${INSTANCE_ID} \
-       --project=${GCLOUD_PROJECT} \
-       --zone=${ZONE} \
+#echo "Forwarding debugging port 9229 to ${INSTANCE_ID}. Open chrome://inspect in Chrome to connect."
+
+if [ "$1" = "logs" ]; then
+  CMD=(--command="sudo docker logs -f \$(sudo docker ps -alq)")
+else
+  CMD=()
+fi
+
+gcloud compute ssh "${INSTANCE_ID}" \
+  --project="${GCLOUD_PROJECT}" \
+  --zone="${ZONE}" \
+  "${CMD[@]}"
+
 #       -- \
 #       -NL 9229:localhost:9229
+

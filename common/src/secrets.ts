@@ -22,6 +22,7 @@ export const secrets = (
     'DISCORD_WEBHOOK_GENERAL',
     'DISCORD_WEBHOOK_HEALTH',
     'DISCORD_WEBHOOK_REPORTS',
+    'DISCORD_WEBHOOK_CONTACT',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

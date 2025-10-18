@@ -25,6 +25,7 @@ import {Profile} from 'common/love/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 import {IS_MAINTENANCE} from "common/constants";
 import {MdThumbUp} from "react-icons/md";
+import {FaEnvelope} from "react-icons/fa";
 
 export function LovePage(props: {
   trackPageView: string | false
@@ -115,6 +116,7 @@ const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon
 const Social = {name: 'Social', href: '/social', icon: LinkIcon};
 const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon};
 const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp};
+const Contact = {name: 'Contact', href: '/contact', icon: FaEnvelope};
 
 const base = [
   About,
@@ -122,6 +124,7 @@ const base = [
   Vote,
   Social,
   Organization,
+  Contact,
 ]
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {

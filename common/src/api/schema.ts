@@ -555,6 +555,16 @@ export const API = (_apiTypeCheck = {
       radius: z.number().min(1).max(500),
     }),
   },
+  'contact': {
+    method: 'POST',
+    authed: false,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      content: contentSchema,
+      userId: z.string().optional(),
+    }),
+  },
   'get-messages-count': {
     method: 'GET',
     authed: false,

@@ -44,6 +44,35 @@ export type Database = {
         }
         Relationships: []
       }
+      contact: {
+        Row: {
+          content: Json | null
+          created_time: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          content?: Json | null
+          created_time?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json | null
+          created_time?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'contact_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       love_answers: {
         Row: {
           created_time: string

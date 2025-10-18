@@ -40,9 +40,7 @@ const reRenderTheme = () => {
   const theme: theme_option | null =
     JSON.parse(localStorage.getItem('theme') ?? 'null') ?? 'auto'
 
-  const autoDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-  if (theme === 'dark' || (theme !== 'light' && autoDark)) {
+  if (theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark')
   } else {
     document.documentElement.classList.remove('dark')

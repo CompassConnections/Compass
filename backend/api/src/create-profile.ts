@@ -53,7 +53,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
       if (body.bio) {
         const bioText = jsonToMarkdown(body.bio)
-        if (bioText) message += `\n > ${bioText}`
+        if (bioText) message += `\n${bioText}`
       }
       await sendDiscordMessage(message, 'members')
     } catch (e) {

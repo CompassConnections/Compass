@@ -21,6 +21,7 @@ export default function Organization() {
         <GeneralButton url={'/stats'} content={'Growth & Stats'}/>
         <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>
         <GeneralButton url={'/privacy'} content={'Privacy Policy'}/>
+        <GeneralButton url={'/contact'} content={'Contact'}/>
       </Col>
     </LovePage>
   )

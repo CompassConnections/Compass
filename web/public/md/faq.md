@@ -108,6 +108,10 @@ We chose the name Compass because our goal is to help people orient themselves t
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection.
 
+### How can I contact the community?
+
+You can reach us through the [contact form](/contact), the [feedback form](https://forms.gle/tKnXUMAbEreMK6FC6), or any of our [socials](/social).
+
 ### How fast is Compass growing?
 
 Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/stats). It includes information such as:

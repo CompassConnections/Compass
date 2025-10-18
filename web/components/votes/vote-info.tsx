@@ -6,13 +6,15 @@ import {TextEditor, useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import {getVotes} from "web/lib/supabase/votes";
 import {MAX_DESCRIPTION_LENGTH} from "common/envs/constants";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button} from "web/components/buttons/button";
 import {Input} from "web/components/widgets/input";
 import {api} from "web/lib/api";
 import {Title} from "web/components/widgets/title";
 import toast from "react-hot-toast";
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
+import Link from "next/link";
+import {formLink} from "common/constants";
 
 export function VoteComponent() {
   const user = useUser()
@@ -29,11 +31,12 @@ export function VoteComponent() {
 
   const hideButton = title.length == 0
 
-  console.debug('votes', votes)
-
   return (
     <Col className="mx-2">
-      <Title className="!mb-2 text-3xl">Proposals</Title>
+      <Title className="text-3xl">Proposals</Title>
+      <p className={'customlink'}>
+        You can discuss any of those proposals through the <Link href={'/contact'}>contact form</Link>, the <Link href={formLink}>feedback form</Link>, or any of our <Link href={'/social'}>socials</Link>.
+      </p>
       {votes && votes.length > 0 && <Col className={'mt-4'}>
         {votes.map((vote: Vote) => {
           return (

@@ -103,13 +103,13 @@ export function VoteComponent() {
   )
 }
 
-interface BaseBioProps {
+interface VoteCreatorProps {
   defaultValue?: any
   onBlur?: (editor: any) => void
   onEditor?: (editor: any) => void
 }
 
-export function VoteCreator({defaultValue, onBlur, onEditor}: BaseBioProps) {
+export function VoteCreator({defaultValue, onBlur, onEditor}: VoteCreatorProps) {
   const editor = useTextEditor({
     // extensions: [StarterKit],
     max: MAX_DESCRIPTION_LENGTH,

@@ -12,6 +12,7 @@ import {useEffect, useState} from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link"
 import {MIN_BIO_LENGTH} from "common/constants";
+import {ShowMore} from 'web/components/widgets/show-more'
 
 const placeHolder = "Tell us about yourself — and what you're looking for!";
 
@@ -26,32 +27,11 @@ Write a clear and engaging bio to help others understand who you are and the con
 `
 
 export function BioTips() {
-  const [showMoreInfo, setShowMoreInfo] = useState(false)
-
   return (
-    <div className="mt-2 mb-4">
-      <button
-        type="button"
-        onClick={() => setShowMoreInfo(!showMoreInfo)}
-        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center"
-      >
-        {showMoreInfo ? 'Hide info' : 'Tips'}
-        <svg
-          className={`w-4 h-4 ml-1 transition-transform ${showMoreInfo ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-        </svg>
-      </button>
-      {showMoreInfo && (
-        <div className="mt-2 p-3 rounded-md text-sm customlink">
-          <ReactMarkdown>{tips}</ReactMarkdown>
-          <Link href="/tips-bio" target="_blank">Read full tips for writing a high-quality bio</Link>
-        </div>
-      )}
-    </div>
+    <ShowMore labelClosed="Tips" labelOpen="Hide info" className={'customlink text-sm'}>
+      <ReactMarkdown>{tips}</ReactMarkdown>
+      <Link href="/tips-bio" target="_blank">Read full tips for writing a high-quality bio</Link>
+    </ShowMore>
   )
 }
 

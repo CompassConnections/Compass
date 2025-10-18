@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
 import Link from "next/link";
 import {formLink} from "common/constants";
+import { ShowMore } from "../widgets/show-more";
 
 export function VoteComponent() {
   const user = useUser()
@@ -37,15 +38,9 @@ export function VoteComponent() {
       <p className={'customlink'}>
         You can discuss any of those proposals through the <Link href={'/contact'}>contact form</Link>, the <Link href={formLink}>feedback form</Link>, or any of our <Link href={'/social'}>socials</Link>.
       </p>
-      {votes && votes.length > 0 && <Col className={'mt-4'}>
-        {votes.map((vote: Vote) => {
-          return (
-            <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes}/>
-          )
-        })}
-      </Col>}
+
       {user && <Col>
-          <Title className="!mb-2 text-3xl">Add a new proposal</Title>
+        <ShowMore labelClosed="Add a new proposal" labelOpen="Hide">
           <Input
               value={title}
               placeholder={'Title'}
@@ -92,8 +87,18 @@ export function VoteComponent() {
             </Button>
           </Row>
         )}
+      </ShowMore>
       </Col>
       }
+
+      {votes && votes.length > 0 && <Col className={'mt-4'}>
+        {votes.map((vote: Vote) => {
+          return (
+            <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes}/>
+          )
+        })}
+      </Col>}
+
     </Col>
   )
 }

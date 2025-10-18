@@ -33,9 +33,15 @@ CREATE INDEX vote_id_idx ON vote_results (vote_id);
 DROP INDEX IF EXISTS idx_vote_results_vote_choice;
 CREATE INDEX idx_vote_results_vote_choice ON vote_results (vote_id, choice);
 
+DROP INDEX IF EXISTS idx_vote_results_vote_choice_priority;
+CREATE INDEX idx_vote_results_vote_choice_priority ON vote_results (vote_id, choice, priority);
+
+DROP INDEX IF EXISTS idx_votes_created_time;
+CREATE INDEX idx_votes_created_time ON votes (created_time DESC);
+
 
 drop function if exists get_votes_with_results;
-create or replace function get_votes_with_results()
+create or replace function get_votes_with_results(order_by text default 'recent')
     returns table (
       id BIGINT,
       title text,
@@ -49,21 +55,40 @@ create or replace function get_votes_with_results()
       priority int
     )
 as $$
+with results as (
+  SELECT
+      v.id,
+      v.title,
+      v.description,
+      v.created_time,
+      v.creator_id,
+      v.is_anonymous,
+      COALESCE(SUM(CASE WHEN r.choice = 1 THEN 1 ELSE 0 END), 0) AS votes_for,
+      COALESCE(SUM(CASE WHEN r.choice = -1 THEN 1 ELSE 0 END), 0) AS votes_against,
+      COALESCE(SUM(CASE WHEN r.choice = 0 THEN 1 ELSE 0 END), 0) AS votes_abstain,
+      COALESCE(SUM(r.priority), 0)::float / GREATEST(COALESCE(SUM(CASE WHEN r.choice = 1 THEN 1 ELSE 0 END), 1), 1) * 100 / 3 AS priority
+  FROM votes v
+           LEFT JOIN vote_results r ON v.id = r.vote_id
+  GROUP BY v.id
+)
 SELECT
-    v.id,
-    v.title,
-    v.description,
-    v.created_time,
-    v.creator_id,
-    v.is_anonymous,
-    COALESCE(SUM(CASE WHEN r.choice = 1 THEN 1 ELSE 0 END), 0) AS votes_for,
-    COALESCE(SUM(CASE WHEN r.choice = -1 THEN 1 ELSE 0 END), 0) AS votes_against,
-    COALESCE(SUM(CASE WHEN r.choice = 0 THEN 1 ELSE 0 END), 0) AS votes_abstain,
-    coalesce(SUM(r.priority), 0) AS priority
-FROM votes v
-         LEFT JOIN vote_results r ON v.id = r.vote_id
-GROUP BY v.id
-ORDER BY v.created_time DESC;
+  id,
+  title,
+  description,
+  created_time,
+  creator_id,
+  is_anonymous,
+  votes_for,
+  votes_against,
+  votes_abstain,
+  priority
+FROM results
+ORDER BY
+  CASE WHEN order_by = 'recent' THEN created_time END DESC,
+  CASE WHEN order_by = 'mostVoted' THEN (votes_for + votes_against + votes_abstain) END DESC,
+  CASE WHEN order_by = 'mostVoted' THEN created_time END DESC,
+  CASE WHEN order_by = 'priority' THEN priority END DESC,
+  CASE WHEN order_by = 'priority' THEN created_time END DESC;
 $$ language sql stable;
 
 

@@ -16,13 +16,15 @@ import {Vote, VoteItem} from 'web/components/votes/vote-item'
 import Link from "next/link";
 import {formLink} from "common/constants";
 import { ShowMore } from "../widgets/show-more";
+import {ORDER_BY, Constants, OrderBy} from "common/votes/constants";
 
 export function VoteComponent() {
   const user = useUser()
+  const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
   const {data: votes, refresh: refreshVotes} = useGetter(
     'votes',
-    {},
+    {orderBy},
     getVotes
   )
 
@@ -34,7 +36,24 @@ export function VoteComponent() {
 
   return (
     <Col className="mx-2">
-      <Title className="text-3xl">Proposals</Title>
+      <Row className="items-center justify-between flex-col xxs:flex-row mb-4 xxs:mb-0 gap-2">
+        <Title className="text-3xl">Proposals</Title>
+        <div className="flex items-center gap-2 text-sm justify-end">
+          <label htmlFor="orderBy" className="text-gray-600">Order by:</label>
+          <select
+            id="orderBy"
+            value={orderBy}
+            onChange={(e) => setOrderBy(e.target.value as OrderBy)}
+            className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-canvas-50"
+          >
+            {ORDER_BY.map((key) => (
+              <option key={key} value={key}>
+                {Constants[key]}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Row>
       <p className={'customlink'}>
         You can discuss any of those proposals through the <Link href={'/contact'}>contact form</Link>, the <Link href={formLink}>feedback form</Link>, or any of our <Link href={'/social'}>socials</Link>.
       </p>

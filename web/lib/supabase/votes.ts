@@ -1,13 +1,14 @@
 import {run} from 'common/supabase/utils'
 import {db} from 'web/lib/supabase/db'
 
-export const getVotes = async () => {
-  const {data, error} = await db.rpc('get_votes_with_results' as any);
-  if (error) throw error;
+import {OrderBy} from "common/votes/constants";
 
-  // data.forEach((vote: any) => {
-  //   console.log(vote.title, vote.votes_for, vote.votes_against, vote.votes_abstain);
-  // });
+export const getVotes = async (params: { orderBy: OrderBy }) => {
+  const { orderBy } = params
+  const {data, error} = await db.rpc('get_votes_with_results' as any, {
+    order_by: orderBy,
+  });
+  if (error) throw error;
 
   return data
 }

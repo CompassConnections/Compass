@@ -20,11 +20,11 @@ function VoteButton(props: {
     <Button
       size="xs"
       disabled={disabled}
-      className={clsx('px-4 py-2 rounded-lg', color)}
+      className={clsx('px-2 xs:px-4 py-2 rounded-lg', color)}
       onClick={onClick}
       color={'gray-white'}
     >
-      <div className="font-semibold mx-2">{count}</div>
+      <div className="font-semibold mx-1 xs:mx-2">{count}</div>
       <div className="text-sm">{title}</div>
     </Button>
   )
@@ -102,7 +102,7 @@ export function VoteButtons(props: {
   }
 
   return (
-    <Row className={clsx('gap-4 mt-2', className)}>
+    <Row className={clsx('gap-2 xs:gap-4 mt-2 flex-wrap', className)}>
       <div className="relative" ref={containerRef}>
         <VoteButton
           color={clsx('bg-green-700 text-white hover:bg-green-500')}

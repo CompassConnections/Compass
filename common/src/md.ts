@@ -37,17 +37,17 @@ export function jsonToMarkdown(node: JSONContent): string {
 
   switch (node.type) {
     case 'paragraph':
-      return `${content}\n\n`
+      return `${content}\n`
     case 'heading': {
       const level = node.attrs?.level || 1
-      return `${'#'.repeat(level)} ${content}\n\n`
+      return `${'#'.repeat(level)} ${content}\n`
     }
     case 'bulletList':
       return `${content}`
     case 'orderedList':
       return `${content}`
     case 'listItem':
-      return `- ${content}\n`
+      return `- ${content}`
     case 'blockquote':
       return content
         .split('\n')

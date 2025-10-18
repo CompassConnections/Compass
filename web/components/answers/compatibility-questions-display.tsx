@@ -402,7 +402,7 @@ function CompatibilityAnswerBlock(props: {
           )}
         </Row>
       </Row>
-      <Row className="bg-canvas-50 w-fit gap-1 rounded px-2 py-1 text-sm">
+      <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
         {answerText}
       </Row>
       <Row className="px-2 -mt-4">
@@ -417,11 +417,11 @@ function CompatibilityAnswerBlock(props: {
               ? 'Acceptable'
               : 'Also acceptable'}
           </div>
-          <Row className="flex-wrap gap-2 -mt-2">
+          <Row className="flex-wrap gap-2 mt-0">
             {distinctPreferredAnswersText.map((text) => (
               <Row
                 key={text}
-                className="bg-canvas-50 w-fit gap-1 rounded px-2 py-1 text-sm"
+                className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm"
               >
                 {text}
               </Row>

@@ -1,6 +1,6 @@
 create table if not exists
   contact (
-    id text default uuid_generate_v4 () not null,
+    id text default uuid_generate_v4 () not null primary key,
     created_time timestamp with time zone default now(),
     user_id text,
     content jsonb

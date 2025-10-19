@@ -87,6 +87,8 @@ export const loadProfiles = async (props: profileQueryType) => {
           intersection(pref_romantic_styles, l.pref_romantic_styles).length) &&
         (!wants_kids_strength ||
           wants_kids_strength == -1 ||
+          !l.wants_kids_strength ||
+          l.wants_kids_strength == -1 ||
           (wants_kids_strength >= 2
             ? l.wants_kids_strength >= wants_kids_strength
             : l.wants_kids_strength <= wants_kids_strength)) &&
@@ -163,9 +165,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     !!wants_kids_strength &&
     wants_kids_strength !== -1 &&
     where(
-      wants_kids_strength >= 2
-        ? `wants_kids_strength >= $(wants_kids_strength)`
-        : `wants_kids_strength <= $(wants_kids_strength)`,
+      'wants_kids_strength = -1 OR wants_kids_strength IS NULL OR ' + (wants_kids_strength >= 2 ? `wants_kids_strength >= $(wants_kids_strength)` : `wants_kids_strength <= $(wants_kids_strength)`),
       {wants_kids_strength}
     ),
 

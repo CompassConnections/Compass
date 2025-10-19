@@ -15,7 +15,7 @@ export function PrefGenderFilterText(props: {
   if (!pref_gender || pref_gender.length < 1) {
     return (
       <span>
-        <span className="hidden sm:inline">Interested in </span>
+        <span className="hidden sm:inline">Gender they seek: </span>
         <span
           className={clsx(
             'text-semibold capitalize sm:normal-case',
@@ -29,7 +29,7 @@ export function PrefGenderFilterText(props: {
   }
   return (
     <Row className="items-center gap-0.5 font-semibold">
-      <span className="hidden sm:inline">Interested in </span>
+      <span className="hidden sm:inline">Gender they seek: </span>
       {pref_gender.map((gender) => {
         return (
           <GenderIcon

@@ -10,7 +10,7 @@ import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/love/profile'
 import {Gender} from 'common/gender'
-import {RelationshipType} from 'web/lib/util/convert-relationship-type'
+import {RelationshipType, RomanticType} from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
@@ -19,6 +19,7 @@ import {wantsKidsLabels} from "common/wants-kids";
 import {FaChild} from "react-icons/fa"
 import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
 import {hasKidsLabels} from "common/has-kids";
+import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -28,6 +29,7 @@ function MobileFilters(props: {
   setYourFilters: (checked: boolean) => void
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
+  includeRelationshipFilters: boolean | undefined
 }) {
   const {
     filters,
@@ -37,6 +39,7 @@ function MobileFilters(props: {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
+    includeRelationshipFilters,
   } = props
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
@@ -60,6 +63,7 @@ function MobileFilters(props: {
           hidden={!youProfile}
         />
       </Col>
+
       {/* RELATIONSHIP STYLE */}
       <MobileFilterSection
         title="Seeking"
@@ -79,6 +83,7 @@ function MobileFilters(props: {
       >
         <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
+
       {/* LOCATION */}
       <MobileFilterSection
         title="Location"
@@ -103,6 +108,7 @@ function MobileFilters(props: {
           locationFilterProps={locationFilterProps}
         />
       </MobileFilterSection>
+
       {/* AGE RANGE */}
       <MobileFilterSection
         title="Age"
@@ -122,6 +128,7 @@ function MobileFilters(props: {
       >
         <AgeFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
+
       {/* GENDER */}
       <MobileFilterSection
         title="Gender"
@@ -142,7 +149,7 @@ function MobileFilters(props: {
 
       {/* PREFERRED GENDER */}
       <MobileFilterSection
-        title="Interested in"
+        title="Gender they seek"
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.pref_gender)}
@@ -157,6 +164,28 @@ function MobileFilters(props: {
       >
         <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
+
+      {includeRelationshipFilters && <>
+
+        {/* ROMANTIC STYLE */}
+          <MobileFilterSection
+              title="Style"
+              openFilter={openFilter}
+              setOpenFilter={setOpenFilter}
+              isActive={hasAny(filters.pref_romantic_styles || undefined)}
+              selection={
+                <RomanticFilterText
+                  relationship={filters.pref_romantic_styles as RomanticType[]}
+                  highlightedClass={
+                    hasAny(filters.pref_romantic_styles || undefined)
+                      ? 'text-primary-600'
+                      : 'text-ink-900'
+                  }
+                />
+              }
+          >
+              <RomanticFilter filters={filters} updateFilter={updateFilter}/>
+          </MobileFilterSection>
 
       {/* WANTS KIDS */}
       <MobileFilterSection
@@ -205,6 +234,8 @@ function MobileFilters(props: {
       >
         <HasKidsFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
+
+      </>}
 
       {/* Short Bios */}
       <Col className="p-4 pb-2">

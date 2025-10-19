@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {RelationshipType} from 'web/lib/util/convert-relationship-type'
+import {RelationshipType, RomanticType} from 'web/lib/util/convert-relationship-type'
 import {ReactNode} from 'react'
 import {FaUserGroup} from 'react-icons/fa6'
 import {Col} from 'web/components/layout/col'
@@ -19,6 +19,8 @@ import DropdownMenu from "web/components/comments/dropdown-menu";
 import {KidsLabel, wantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
 import {hasKidsLabels} from "common/has-kids";
 import {HasKidsLabel} from "web/components/filters/has-kids-filter";
+import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
+import {FaHeart} from "react-icons/fa";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -28,6 +30,7 @@ export function DesktopFilters(props: {
   setYourFilters: (checked: boolean) => void
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
+  includeRelationshipFilters: boolean | undefined
 }) {
   const {
     filters,
@@ -37,6 +40,7 @@ export function DesktopFilters(props: {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
+    includeRelationshipFilters,
   } = props
 
   return (
@@ -47,6 +51,7 @@ export function DesktopFilters(props: {
         on={isYourFilters}
         hidden={!youProfile}
       />
+
       {/* CONNECTION */}
       <CustomizeableDropdown
         buttonContent={(open) => (
@@ -73,6 +78,7 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
+
       {/* LOCATION */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
@@ -142,7 +148,7 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
       />
 
-      {/* PREFERRED GENDER */}
+      {/* GENDER THEY SEEK */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
           <DropdownButton
@@ -162,6 +168,35 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
       />
+
+      {includeRelationshipFilters && <>
+
+        {/* CONNECTION */}
+          <CustomizeableDropdown
+              buttonContent={(open) => (
+                <DropdownButton
+                  open={open}
+                  content={
+                    <Row className="items-center gap-1">
+                      <FaHeart className="h-4 w-4"/>
+                      <RomanticFilterText
+                        relationship={
+                          filters.pref_romantic_styles as
+                            | RomanticType[]
+                            | undefined
+                        }
+                        highlightedClass={open ? 'text-primary-500' : undefined}
+                      />
+                    </Row>
+                  }
+                />
+              )}
+              dropdownMenuContent={
+                <RomanticFilter filters={filters} updateFilter={updateFilter}/>
+              }
+              popoverClassName="bg-canvas-50"
+              menuWidth="w-50"
+          />
 
       {/* WANTS KIDS */}
       <DropdownMenu
@@ -252,6 +287,9 @@ export function DesktopFilters(props: {
         menuItemsClass="bg-canvas-50"
         menuWidth="w-40"
       />
+
+      </>
+      }
 
       {/* Short Bios */}
       <ShortBioToggle

@@ -133,6 +133,7 @@ export const Search = (props: {
   const [openBookmarks, setOpenBookmarks] = useState(false);
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
+  const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
 
   useEffect(() => {
     if (isHolding) return;
@@ -216,6 +217,7 @@ export const Search = (props: {
           setYourFilters={setYourFilters}
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
+          includeRelationshipFilters={youSeekingRelationship}
         />
       </Row>
       <RightModal
@@ -231,6 +233,7 @@ export const Search = (props: {
           setYourFilters={setYourFilters}
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
+          includeRelationshipFilters={youSeekingRelationship}
         />
       </RightModal>
       <Row className={'mb-2 gap-2'}>

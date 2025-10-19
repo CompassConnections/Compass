@@ -83,6 +83,7 @@ export const useFilters = (you: Profile | undefined) => {
     pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
     pref_age_min: (you?.pref_age_min ?? MIN_INT) > 18 ? you?.pref_age_min : undefined,
     pref_relation_styles: you?.pref_relation_styles.length ? you.pref_relation_styles : undefined,
+    pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
     wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
     ),
@@ -96,10 +97,9 @@ export const useFilters = (you: Profile | undefined) => {
     !!you &&
     (!location || location.id === you.geodb_city_id) &&
     isEqual(filters.genders?.length ? filters.genders : undefined, yourFilters.genders?.length ? yourFilters.genders : undefined) &&
-    // isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender) &&
-    // you?.pref_gender.length &&
-    // filters.pref_gender.length == 1 &&
-    // filters.pref_gender[0] == you.gender &&
+    filters.pref_gender?.length == 1 && isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender) &&
+    isEqual(new Set(filters.pref_romantic_styles), new Set(you.pref_romantic_styles)) &&
+    isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles)) &&
     filters.pref_age_max == yourFilters.pref_age_max &&
     filters.pref_age_min == yourFilters.pref_age_min &&
     filters.wants_kids_strength == yourFilters.wants_kids_strength

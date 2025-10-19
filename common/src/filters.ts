@@ -21,6 +21,7 @@ export type FilterFields = {
   ProfileRow,
   | 'wants_kids_strength'
   | 'pref_relation_styles'
+  | 'pref_romantic_styles'
   | 'is_smoker'
   | 'has_kids'
   | 'pref_gender'
@@ -60,6 +61,7 @@ export const initialFilters: Partial<FilterFields> = {
   wants_kids_strength: undefined,
   is_smoker: undefined,
   pref_relation_styles: undefined,
+  pref_romantic_styles: undefined,
   pref_gender: undefined,
   shortBio: undefined,
   orderBy: 'created_time',

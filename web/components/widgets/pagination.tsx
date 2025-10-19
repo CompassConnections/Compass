@@ -150,7 +150,7 @@ export function PageNumbers(props: {
 }) {
   const { pageNumber, setPage, page } = props
   if (pageNumber === PAGE_ELLIPSES || typeof pageNumber === 'string') {
-    return <div className="text-ink-400 select-none">{PAGE_ELLIPSES}</div>
+    return <div className="text-ink-600 select-none">{PAGE_ELLIPSES}</div>
   }
   return (
     <button
@@ -159,7 +159,7 @@ export function PageNumbers(props: {
         'select-none rounded-lg px-2',
         page === pageNumber
           ? 'bg-primary-100 text-primary-700'
-          : 'text-ink-400 hover:bg-ink-100'
+          : 'text-ink-600 hover:bg-ink-100'
       )}
     >
       {pageNumber + 1}

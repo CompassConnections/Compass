@@ -142,7 +142,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     genders?.length && where(`gender = ANY($(gender))`, {gender: genders}),
 
     pref_gender?.length &&
-    where(`pref_gender && $(pref_gender)`, {pref_gender}),
+    where(`pref_gender is NULL or pref_gender = '{}' OR pref_gender && $(pref_gender)`, {pref_gender}),
 
     pref_age_min &&
     where(`age >= $(pref_age_min) or age is null`, {pref_age_min}),

@@ -17,7 +17,6 @@ import {ShowMore} from 'web/components/widgets/show-more'
 const placeHolder = "Tell us about yourself — and what you're looking for!";
 
 const tips = `
-Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:
 - Your core values, interests, and activities
 - Connection goals (friendship, romantic, collaborative) and availability
 - What makes you unique and what you care about
@@ -29,6 +28,7 @@ Write a clear and engaging bio to help others understand who you are and the con
 export function BioTips() {
   return (
     <ShowMore labelClosed="Tips" labelOpen="Hide info" className={'custom-link text-sm'}>
+      <p>Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:</p>
       <ReactMarkdown>{tips}</ReactMarkdown>
       <Link href="/tips-bio" target="_blank">Read full tips for writing a high-quality bio</Link>
     </ShowMore>

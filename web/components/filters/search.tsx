@@ -9,7 +9,7 @@ import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {DesktopFilters} from './desktop-filters'
 import {LocationFilterProps} from './location-filter'
-import {MobileFilters} from './mobile-filters'
+import MobileFilters from './mobile-filters'
 import {BookmarkSearchButton, BookmarkStarButton} from "web/components/searches/button";
 import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
@@ -25,7 +25,7 @@ function isOrderBy(input: string): input is FilterFields['orderBy'] {
 }
 
 const TYPING_SPEED = 100; // ms per character
-const HOLD_TIME = 2000; // ms to hold full word before deleting or switching
+const HOLD_TIME = 2000; // ms to hold the full word before deleting or switching
 export const WORDS: string[] = [
   // Values
   "Minimalism",

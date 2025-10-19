@@ -65,6 +65,8 @@ export const useFilters = (you: Profile | undefined) => {
   useEffect(() => {
     if (location?.lat && location?.lon) {
       updateFilter({lat: location.lat, lon: location.lon, radius: radius})
+    } else {
+      updateFilter({lat: undefined, lon: undefined, radius: undefined})
     }
   }, [location?.id, radius]);
 

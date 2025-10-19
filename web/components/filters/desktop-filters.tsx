@@ -14,6 +14,11 @@ import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/love/profile'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
+import {PrefGenderFilter, PrefGenderFilterText} from "web/components/filters/pref-gender-filter";
+import DropdownMenu from "web/components/comments/dropdown-menu";
+import {KidsLabel, wantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
+import {hasKidsLabels} from "common/has-kids";
+import {HasKidsLabel} from "web/components/filters/has-kids-filter";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -92,6 +97,7 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-80"
       />
+
       {/* AGE RANGE */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
@@ -114,6 +120,7 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-80"
       />
+
       {/* GENDER */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
@@ -134,120 +141,125 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
       />
+
+      {/* PREFERRED GENDER */}
+      <CustomizeableDropdown
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            content={
+              <PrefGenderFilterText
+                pref_gender={filters.pref_gender as Gender[]}
+                highlightedClass={open ? 'text-primary-500' : undefined}
+              />
+            }
+            open={open}
+          />
+        )}
+        dropdownMenuContent={
+          <Col>
+            <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
+      />
+
+      {/* WANTS KIDS */}
+      <DropdownMenu
+        items={[
+          {
+            name: wantsKidsLabelsWithIcon.no_preference.name,
+            icon: wantsKidsLabelsWithIcon.no_preference.icon,
+            onClick: () => {
+              updateFilter({
+                wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
+              })
+            },
+          },
+          {
+            name: wantsKidsLabelsWithIcon.wants_kids.name,
+            icon: wantsKidsLabelsWithIcon.wants_kids.icon,
+            onClick: () => {
+              updateFilter({
+                wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
+              })
+            },
+          },
+          {
+            name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
+            icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
+            onClick: () => {
+              updateFilter({
+                wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
+              })
+            },
+          },
+        ]}
+        closeOnClick
+        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            content={
+              <KidsLabel
+                strength={
+                  filters.wants_kids_strength ??
+                  wantsKidsLabelsWithIcon.no_preference.strength
+                }
+                highlightedClass={open ? 'text-primary-500' : ''}
+              />
+            }
+            open={open}
+          />
+        )}
+        menuItemsClass={'bg-canvas-50'}
+        menuWidth="w-48"
+      />
+
+      {/* HAS KIDS */}
+      <DropdownMenu
+        items={[
+          {
+            name: hasKidsLabels.no_preference.name,
+            onClick: () => {
+              updateFilter({has_kids: hasKidsLabels.no_preference.value})
+            },
+          },
+          {
+            name: hasKidsLabels.doesnt_have_kids.name,
+            onClick: () => {
+              updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
+            },
+          },
+          {
+            name: hasKidsLabels.has_kids.name,
+            onClick: () => {
+              updateFilter({has_kids: hasKidsLabels.has_kids.value})
+            },
+          },
+        ]}
+        closeOnClick
+        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            content={
+              <HasKidsLabel
+                has_kids={filters.has_kids ?? -1}
+                highlightedClass={open ? 'text-primary-500' : ''}
+              />
+            }
+            open={open}
+          />
+        )}
+        menuItemsClass="bg-canvas-50"
+        menuWidth="w-40"
+      />
+
       {/* Short Bios */}
       <ShortBioToggle
         updateFilter={updateFilter}
         filters={filters}
         hidden={false}
       />
-      {/* PREFERRED GENDER */}
-      {/*<CustomizeableDropdown*/}
-      {/*  buttonContent={(open: boolean) => (*/}
-      {/*    <DropdownButton*/}
-      {/*      content={*/}
-      {/*        <PrefGenderFilterText*/}
-      {/*          pref_gender={filters.pref_gender as Gender[]}*/}
-      {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
-      {/*        />*/}
-      {/*      }*/}
-      {/*      open={open}*/}
-      {/*    />*/}
-      {/*  )}*/}
-      {/*  dropdownMenuContent={*/}
-      {/*    <Col>*/}
-      {/*      <PrefGenderFilter filters={filters} updateFilter={updateFilter} />*/}
-      {/*    </Col>*/}
-      {/*  }*/}
-      {/*  popoverClassName="bg-canvas-50"*/}
-      {/*/>*/}
-      {/* WANTS KIDS */}
-      {/*<DropdownMenu*/}
-      {/*  items={[*/}
-      {/*    {*/}
-      {/*      name: wantsKidsLabels.no_preference.name,*/}
-      {/*      icon: wantsKidsLabels.no_preference.icon,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({*/}
-      {/*          wants_kids_strength: wantsKidsLabels.no_preference.strength,*/}
-      {/*        })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*    {*/}
-      {/*      name: wantsKidsLabels.wants_kids.name,*/}
-      {/*      icon: wantsKidsLabels.wants_kids.icon,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({*/}
-      {/*          wants_kids_strength: wantsKidsLabels.wants_kids.strength,*/}
-      {/*        })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*    {*/}
-      {/*      name: wantsKidsLabels.doesnt_want_kids.name,*/}
-      {/*      icon: wantsKidsLabels.doesnt_want_kids.icon,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({*/}
-      {/*          wants_kids_strength: wantsKidsLabels.doesnt_want_kids.strength,*/}
-      {/*        })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*  closeOnClick*/}
-      {/*  buttonClass={'!text-ink-600 !hover:!text-ink-600'}*/}
-      {/*  buttonContent={(open: boolean) => (*/}
-      {/*    <DropdownButton*/}
-      {/*      content={*/}
-      {/*        <KidsLabel*/}
-      {/*          strength={*/}
-      {/*            filters.wants_kids_strength ??*/}
-      {/*            wantsKidsLabels.no_preference.strength*/}
-      {/*          }*/}
-      {/*          highlightedClass={open ? 'text-primary-500' : ''}*/}
-      {/*        />*/}
-      {/*      }*/}
-      {/*      open={open}*/}
-      {/*    />*/}
-      {/*  )}*/}
-      {/*  menuItemsClass={'bg-canvas-50'}*/}
-      {/*  menuWidth="w-48"*/}
-      {/*/>*/}
-      {/* HAS KIDS */}
-      {/*<DropdownMenu*/}
-      {/*  items={[*/}
-      {/*    {*/}
-      {/*      name: hasKidsLabels.no_preference.name,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({ has_kids: hasKidsLabels.no_preference.value })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*    {*/}
-      {/*      name: hasKidsLabels.doesnt_have_kids.name,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({ has_kids: hasKidsLabels.doesnt_have_kids.value })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*    {*/}
-      {/*      name: hasKidsLabels.has_kids.name,*/}
-      {/*      onClick: () => {*/}
-      {/*        updateFilter({ has_kids: hasKidsLabels.has_kids.value })*/}
-      {/*      },*/}
-      {/*    },*/}
-      {/*  ]}*/}
-      {/*  closeOnClick*/}
-      {/*  buttonClass={'!text-ink-600 !hover:!text-ink-600'}*/}
-      {/*  buttonContent={(open: boolean) => (*/}
-      {/*    <DropdownButton*/}
-      {/*      content={*/}
-      {/*        <HasKidsLabel*/}
-      {/*          has_kids={filters.has_kids ?? -1}*/}
-      {/*          highlightedClass={open ? 'text-primary-500' : ''}*/}
-      {/*        />*/}
-      {/*      }*/}
-      {/*      open={open}*/}
-      {/*    />*/}
-      {/*  )}*/}
-      {/*  menuItemsClass="bg-canvas-50"*/}
-      {/*  menuWidth="w-40"*/}
-      {/*/>*/}
+
       <button
         className="text-ink-900 hover:text-primary-500 underline"
         onClick={clearFilters}

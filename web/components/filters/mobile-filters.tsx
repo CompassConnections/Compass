@@ -13,8 +13,14 @@ import {Gender} from 'common/gender'
 import {RelationshipType} from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
+import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
+import {KidsLabel, WantsKidsFilter, WantsKidsIcon} from "web/components/filters/wants-kids-filter";
+import {wantsKidsLabels} from "common/wants-kids";
+import {FaChild} from "react-icons/fa"
+import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
+import {hasKidsLabels} from "common/has-kids";
 
-export function MobileFilters(props: {
+function MobileFilters(props: {
   filters: Partial<FilterFields>
   youProfile: Profile | undefined | null
   updateFilter: (newState: Partial<FilterFields>) => void
@@ -133,8 +139,74 @@ export function MobileFilters(props: {
       >
         <GenderFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
-      {/* Short Bios */}
 
+      {/* PREFERRED GENDER */}
+      <MobileFilterSection
+        title="Interested in"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.pref_gender)}
+        selection={
+          <PrefGenderFilterText
+            pref_gender={filters.pref_gender as Gender[]}
+            highlightedClass={
+              hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* WANTS KIDS */}
+      <MobileFilterSection
+        title="Wants kids"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={
+          filters.wants_kids_strength != null &&
+          filters.wants_kids_strength !== -1
+        }
+        icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
+        selection={
+          <KidsLabel
+            strength={filters.wants_kids_strength ?? -1}
+            highlightedClass={
+              (filters.wants_kids_strength ?? -1) ==
+              wantsKidsLabels.no_preference.strength
+                ? 'text-ink-900'
+                : 'text-primary-600'
+            }
+            mobile
+          />
+        }
+      >
+        <WantsKidsFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* HAS KIDS */}
+      <MobileFilterSection
+        title="Has kids"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={filters.has_kids != null && filters.has_kids !== -1}
+        icon={<FaChild className="text-ink-900 h-4 w-4"/>}
+        selection={
+          <HasKidsLabel
+            has_kids={filters.has_kids ?? -1}
+            highlightedClass={
+              (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value
+                ? 'text-ink-900'
+                : 'text-primary-600'
+            }
+            mobile
+          />
+        }
+      >
+        <HasKidsFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* Short Bios */}
       <Col className="p-4 pb-2">
         <ShortBioToggle
           updateFilter={updateFilter}
@@ -142,69 +214,6 @@ export function MobileFilters(props: {
           hidden={false}
         />
       </Col>
-      {/* PREFERRED GENDER */}
-      {/*<MobileFilterSection*/}
-      {/*  title="Interested in"*/}
-      {/*  openFilter={openFilter}*/}
-      {/*  setOpenFilter={setOpenFilter}*/}
-      {/*  isActive={hasAny(filters.pref_gender)}*/}
-      {/*  selection={*/}
-      {/*    <PrefGenderFilterText*/}
-      {/*      pref_gender={filters.pref_gender as Gender[]}*/}
-      {/*      highlightedClass={*/}
-      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'*/}
-      {/*      }*/}
-      {/*    />*/}
-      {/*  }*/}
-      {/*>*/}
-      {/*  <PrefGenderFilter filters={filters} updateFilter={updateFilter} />*/}
-      {/*</MobileFilterSection>*/}
-      {/* WANTS KIDS */}
-      {/*<MobileFilterSection*/}
-      {/*  title="Wants kids"*/}
-      {/*  openFilter={openFilter}*/}
-      {/*  setOpenFilter={setOpenFilter}*/}
-      {/*  isActive={*/}
-      {/*    filters.wants_kids_strength != null &&*/}
-      {/*    filters.wants_kids_strength !== -1*/}
-      {/*  }*/}
-      {/*  icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1} />}*/}
-      {/*  selection={*/}
-      {/*    <KidsLabel*/}
-      {/*      strength={filters.wants_kids_strength ?? -1}*/}
-      {/*      highlightedClass={*/}
-      {/*        (filters.wants_kids_strength ?? -1) ==*/}
-      {/*        wantsKidsLabels.no_preference.strength*/}
-      {/*          ? 'text-ink-900'*/}
-      {/*          : 'text-primary-600'*/}
-      {/*      }*/}
-      {/*      mobile*/}
-      {/*    />*/}
-      {/*  }*/}
-      {/*>*/}
-      {/*  <WantsKidsFilter filters={filters} updateFilter={updateFilter} />*/}
-      {/*</MobileFilterSection>*/}
-      {/* HAS KIDS */}
-      {/*<MobileFilterSection*/}
-      {/*  title="Has kids"*/}
-      {/*  openFilter={openFilter}*/}
-      {/*  setOpenFilter={setOpenFilter}*/}
-      {/*  isActive={filters.has_kids != null && filters.has_kids !== -1}*/}
-      {/*  icon={<FaChild className="text-ink-900 h-4 w-4" />}*/}
-      {/*  selection={*/}
-      {/*    <HasKidsLabel*/}
-      {/*      has_kids={filters.has_kids ?? -1}*/}
-      {/*      highlightedClass={*/}
-      {/*        (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value*/}
-      {/*          ? 'text-ink-900'*/}
-      {/*          : 'text-primary-600'*/}
-      {/*      }*/}
-      {/*      mobile*/}
-      {/*    />*/}
-      {/*  }*/}
-      {/*>*/}
-      {/*  <HasKidsFilter filters={filters} updateFilter={updateFilter} />*/}
-      {/*</MobileFilterSection>*/}
       <button
         className="text-ink-500 hover:text-primary-500 underline"
         onClick={clearFilters}
@@ -214,6 +223,8 @@ export function MobileFilters(props: {
     </Col>
   )
 }
+
+export default MobileFilters
 
 export function MobileFilterSection(props: {
   title: string

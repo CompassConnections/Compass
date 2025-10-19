@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import clsx from 'clsx'
-import {MOD_IDS, VERIFIED_USERNAMES} from 'common/envs/constants'
+import {MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
 import {SparklesIcon} from '@heroicons/react/solid'
 import {Tooltip} from './tooltip'
 import {BadgeCheckIcon, ShieldCheckIcon} from '@heroicons/react/outline'
@@ -122,13 +122,12 @@ export function UserBadge(props: {
   username: string
   fresh?: boolean
 }) {
-  const {userId, username, fresh} = props
+  const {username, fresh} = props
   const badges = []
 
-  if (MOD_IDS.includes(userId)) {
+  if (MOD_USERNAMES.includes(username)) {
     badges.push(<ModBadge key="mod"/>)
-  }
-  if (VERIFIED_USERNAMES.includes(username)) {
+  } else if (VERIFIED_USERNAMES.includes(username)) {
     badges.push(<VerifiedBadge key="check"/>)
   }
   if (fresh) {

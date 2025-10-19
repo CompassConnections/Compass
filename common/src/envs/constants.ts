@@ -12,7 +12,7 @@ export function isAdminId(id: string) {
 }
 
 export function isModId(id: string) {
-  return MOD_IDS.includes(id)
+  return MOD_USERNAMES.includes(id)
 }
 
 export const ENV = isProd() ? 'prod' : 'dev'
@@ -58,8 +58,8 @@ export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(
   '_'
 )}`
 
-export const MOD_IDS = [
-  '...',
+export const MOD_USERNAMES = [
+  'Martin',
 ]
 
 export const VERIFIED_USERNAMES = [

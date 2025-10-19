@@ -46,9 +46,9 @@ export function UserHandles(props: { links: Socials; className?: string }) {
           <Row className="items-center gap-1">
             <SocialIcon
               site={platform as any}
-              className="text-primary-700 h-4 w-4"
+              className="text-primary-900 h-4 w-4"
             />
-            <span className="text-ink-400 text-sm">{label}</span>
+            <span className="text-primary-700 text-sm hover:text-primary-500">{label}</span>
           </Row>
         </a>
       ))}

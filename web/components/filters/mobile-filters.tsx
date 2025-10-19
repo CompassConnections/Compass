@@ -66,7 +66,7 @@ export function MobileFilters(props: {
             highlightedClass={
               hasAny(filters.pref_relation_styles)
                 ? 'text-primary-600'
-                : 'text-ink-400'
+                : 'text-ink-900'
             }
           />
         }
@@ -86,7 +86,7 @@ export function MobileFilters(props: {
             youProfile={youProfile}
             highlightedClass={
               !locationFilterProps.location
-                ? 'text-ink-400'
+                ? 'text-ink-900'
                 : 'text-primary-600'
             }
           />
@@ -109,7 +109,7 @@ export function MobileFilters(props: {
             pref_age_min={filters.pref_age_min}
             pref_age_max={filters.pref_age_max}
             highlightedClass={
-              noMinAge && noMaxAge ? 'text-ink-400' : 'text-primary-600'
+              noMinAge && noMaxAge ? 'text-ink-900' : 'text-primary-600'
             }
           />
         }
@@ -126,7 +126,7 @@ export function MobileFilters(props: {
           <GenderFilterText
             gender={filters.genders as Gender[]}
             highlightedClass={
-              hasAny(filters.genders) ? 'text-primary-600' : 'text-ink-400'
+              hasAny(filters.genders) ? 'text-primary-600' : 'text-ink-900'
             }
           />
         }
@@ -152,7 +152,7 @@ export function MobileFilters(props: {
       {/*    <PrefGenderFilterText*/}
       {/*      pref_gender={filters.pref_gender as Gender[]}*/}
       {/*      highlightedClass={*/}
-      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-400'*/}
+      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'*/}
       {/*      }*/}
       {/*    />*/}
       {/*  }*/}
@@ -175,7 +175,7 @@ export function MobileFilters(props: {
       {/*      highlightedClass={*/}
       {/*        (filters.wants_kids_strength ?? -1) ==*/}
       {/*        wantsKidsLabels.no_preference.strength*/}
-      {/*          ? 'text-ink-400'*/}
+      {/*          ? 'text-ink-900'*/}
       {/*          : 'text-primary-600'*/}
       {/*      }*/}
       {/*      mobile*/}
@@ -190,13 +190,13 @@ export function MobileFilters(props: {
       {/*  openFilter={openFilter}*/}
       {/*  setOpenFilter={setOpenFilter}*/}
       {/*  isActive={filters.has_kids != null && filters.has_kids !== -1}*/}
-      {/*  icon={<FaChild className="text-ink-400 h-4 w-4" />}*/}
+      {/*  icon={<FaChild className="text-ink-900 h-4 w-4" />}*/}
       {/*  selection={*/}
       {/*    <HasKidsLabel*/}
       {/*      has_kids={filters.has_kids ?? -1}*/}
       {/*      highlightedClass={*/}
       {/*        (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value*/}
-      {/*          ? 'text-ink-400'*/}
+      {/*          ? 'text-ink-900'*/}
       {/*          : 'text-primary-600'*/}
       {/*      }*/}
       {/*      mobile*/}
@@ -255,7 +255,7 @@ export function MobileFilterSection(props: {
           {icon}
           {title}: {selection}
         </Row>
-        <div className="text-ink-400">
+        <div className="text-ink-900">
           {isOpen ? (
             <ChevronUpIcon className="h-5 w-5"/>
           ) : (

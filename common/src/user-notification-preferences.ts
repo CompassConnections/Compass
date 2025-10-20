@@ -6,7 +6,7 @@ export type notification_preference = keyof notification_preferences
 export type notification_preferences = {
   new_match: notification_destination_types[]
   new_endorsement: notification_destination_types[]
-  new_love_like: notification_destination_types[]
+  new_profile_like: notification_destination_types[]
   new_love_ship: notification_destination_types[]
   new_search_alerts: notification_destination_types[]
 
@@ -40,7 +40,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
     new_match: constructPref(true, true, true),
     new_search_alerts: constructPref(true, true, true),
     new_endorsement: constructPref(true, true, true),
-    new_love_like: constructPref(true, false, false),
+    new_profile_like: constructPref(true, false, false),
     new_love_ship: constructPref(true, false, false),
 
     // User-related

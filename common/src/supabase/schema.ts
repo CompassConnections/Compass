@@ -136,7 +136,7 @@ export type Database = {
         }
         Relationships: []
       }
-      love_likes: {
+      profile_likes: {
         Row: {
           created_time: string
           creator_id: string

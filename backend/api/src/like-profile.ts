@@ -1,6 +1,6 @@
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { APIError, APIHandler } from './helpers/endpoint'
-import { createLoveLikeNotification } from 'shared/create-love-notification'
+import { createProfileLikeNotification } from 'shared/create-love-notification'
 import { getHasFreeLike } from './has-free-like'
 import { log } from 'shared/utils'
 import { tryCatch } from 'common/util/try-catch'
@@ -15,7 +15,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   if (remove) {
     const { error } = await tryCatch(
       pg.none(
-        'delete from love_likes where creator_id = $1 and target_id = $2',
+        'delete from profile_likes where creator_id = $1 and target_id = $2',
         [creatorId, targetUserId]
       )
     )
@@ -28,8 +28,8 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
 
   // Check if like already exists
   const { data: existing } = await tryCatch(
-    pg.oneOrNone<Row<'love_likes'>>(
-      'select * from love_likes where creator_id = $1 and target_id = $2',
+    pg.oneOrNone<Row<'profile_likes'>>(
+      'select * from profile_likes where creator_id = $1 and target_id = $2',
       [creatorId, targetUserId]
     )
   )
@@ -48,8 +48,8 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
 
   // Insert the new like
   const { data, error } = await tryCatch(
-    pg.one<Row<'love_likes'>>(
-      'insert into love_likes (creator_id, target_id) values ($1, $2) returning *',
+    pg.one<Row<'profile_likes'>>(
+      'insert into profile_likes (creator_id, target_id) values ($1, $2) returning *',
       [creatorId, targetUserId]
     )
   )
@@ -59,7 +59,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   }
 
   const continuation = async () => {
-    await createLoveLikeNotification(data)
+    await createProfileLikeNotification(data)
   }
 
   return {

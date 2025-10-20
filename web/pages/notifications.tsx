@@ -160,7 +160,7 @@ const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
       question: '... sends you a new message?',
     },
     {
-      type: 'new_love_like',
+      type: 'new_profile_like',
       question: '... likes your profile?',
     },
     {

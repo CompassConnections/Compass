@@ -20,10 +20,10 @@ export const getLikesAndShipsMain = async (userId: string) => {
     created_time: number
   }>(
     `
-      select target_id, love_likes.created_time
-      from love_likes
-      join profiles on profiles.user_id = love_likes.target_id
-      join users on users.id = love_likes.target_id
+      select target_id, profile_likes.created_time
+      from profile_likes
+      join profiles on profiles.user_id = profile_likes.target_id
+      join users on users.id = profile_likes.target_id
       where creator_id = $1
         and looking_for_matches
         and profiles.pinned_url is not null
@@ -42,10 +42,10 @@ export const getLikesAndShipsMain = async (userId: string) => {
     created_time: number
   }>(
     `
-      select creator_id, love_likes.created_time
-      from love_likes
-      join profiles on profiles.user_id = love_likes.creator_id
-      join users on users.id = love_likes.creator_id
+      select creator_id, profile_likes.created_time
+      from profile_likes
+      join profiles on profiles.user_id = profile_likes.creator_id
+      join users on users.id = profile_likes.creator_id
       where target_id = $1
         and looking_for_matches
         and profiles.pinned_url is not null

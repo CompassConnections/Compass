@@ -30,8 +30,8 @@ export function NotificationItem(props: { notification: Notification }) {
     return <CommentOnProfileNotification {...params} />
   } else if (sourceType === 'new_match') {
     return <NewMatchNotification {...params} />
-  } else if (reason === 'new_love_like') {
-    return <LoveLikeNotification {...params} />
+  } else if (reason === 'new_profile_like') {
+    return <ProfileLikeNotification {...params} />
   } else if (reason === 'new_love_ship') {
     return <LoveShipNotification {...params} />
   } else {
@@ -119,7 +119,7 @@ export function NewMatchNotification(props: {
   )
 }
 
-function LoveLikeNotification(props: {
+function ProfileLikeNotification(props: {
   notification: Notification
   highlighted: boolean
   setHighlighted: (highlighted: boolean) => void

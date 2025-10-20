@@ -53,8 +53,8 @@ function groupGeneralNotifications(
       new Date(n.createdTime).toDateString() +
       (n.sourceType === 'betting_streak_bonus' || n.reason === 'quest_payout'
         ? 'quest_payout'
-        : n.sourceType === 'love_like'
-        ? 'love_like'
+        : n.sourceType === 'profile_like'
+        ? 'profile_like'
         : n.sourceType === 'love_ship'
         ? 'love_ship'
         : n.data?.isPartner

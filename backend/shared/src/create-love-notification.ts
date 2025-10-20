@@ -6,7 +6,7 @@ import { Notification } from 'common/notifications'
 import { insertNotificationToSupabase } from './supabase/notifications'
 import { getProfile } from './love/supabase'
 
-export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
+export const createProfileLikeNotification = async (like: Row<'profile_likes'>) => {
   const { creator_id, target_id, like_id } = like
 
   const targetPrivateUser = await getPrivateUser(target_id)
@@ -16,7 +16,7 @@ export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
 
   const { sendToBrowser } = getNotificationDestinationsForUser(
     targetPrivateUser,
-    'new_love_like'
+    'new_profile_like'
   )
   if (!sendToBrowser) return
 
@@ -24,11 +24,11 @@ export const createLoveLikeNotification = async (like: Row<'love_likes'>) => {
   const notification: Notification = {
     id,
     userId: target_id,
-    reason: 'new_love_like',
+    reason: 'new_profile_like',
     createdTime: Date.now(),
     isSeen: false,
     sourceId: like_id,
-    sourceType: 'love_like',
+    sourceType: 'profile_like',
     sourceUpdateType: 'created',
     sourceUserName: profile.user.name,
     sourceUserUsername: profile.user.username,

@@ -17,7 +17,7 @@ export const getHasFreeLike = async (userId: string) => {
   const likeGivenToday = await pg.oneOrNone<object>(
     `
     select 1
-    from love_likes
+    from profile_likes
     where creator_id = $1
       and created_time at time zone 'UTC' at time zone 'America/Los_Angeles' >= (now() at time zone 'UTC' at time zone 'America/Los_Angeles')::date
       and created_time at time zone 'UTC' at time zone 'America/Los_Angeles' < ((now() at time zone 'UTC' at time zone 'America/Los_Angeles')::date + interval '1 day')

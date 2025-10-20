@@ -475,7 +475,7 @@ export type Database = {
           twitter: string | null
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['lover_visibility']
+          visibility: Database['public']['Enums']['profile_visibility']
           wants_kids_strength: number
           website: string | null
         }
@@ -523,7 +523,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -571,7 +571,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id?: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -831,10 +831,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Record<string, unknown>[]
       }
-      get_compatibility_answers_and_lovers: {
-        Args: { p_question_id: number }
-        Returns: Record<string, unknown>[]
-      }
       get_compatibility_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
@@ -912,7 +908,7 @@ export type Database = {
       }
     }
     Enums: {
-      lover_visibility: 'public' | 'member'
+      profile_visibility: 'public' | 'member'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1040,7 +1036,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      lover_visibility: ['public', 'member'],
+      profile_visibility: ['public', 'member'],
     },
   },
 } as const

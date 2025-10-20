@@ -24,14 +24,14 @@ export function convertRow(row: ProfileAndUserRow | undefined): Profile | null {
   return profile as Profile
 }
 
-const LOVER_COLS = 'profiles.*, name, username, users.data as user'
+const PROFILE_COLS = 'profiles.*, name, username, users.data as user'
 
 export const getProfile = async (userId: string) => {
   const pg = createSupabaseDirectClient()
   return await pg.oneOrNone(
     `
       select
-        ${LOVER_COLS}
+        ${PROFILE_COLS}
       from
         profiles
       join
@@ -49,7 +49,7 @@ export const getProfiles = async (userIds: string[]) => {
   return await pg.map(
     `
       select
-       ${LOVER_COLS}
+       ${PROFILE_COLS}
       from
         profiles
       join
@@ -67,7 +67,7 @@ export const getGenderCompatibleProfiles = async (profile: ProfileRow) => {
   const profiles = await pg.map(
     `
       select 
-        ${LOVER_COLS}
+        ${PROFILE_COLS}
       from profiles
       join
         users on users.id = profiles.user_id
@@ -92,7 +92,7 @@ export const getCompatibleProfiles = async (
   return await pg.map(
     `
       select 
-        ${LOVER_COLS}
+        ${PROFILE_COLS}
       from profiles
       join
         users on users.id = profiles.user_id

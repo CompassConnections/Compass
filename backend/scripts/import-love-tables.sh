@@ -12,7 +12,7 @@ DB_USER="postgres"
 PORT="5432"
 
 psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
--f ./love-stars-dump.sql \
+-f ./....sql \
 
 
 # psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
@@ -24,9 +24,6 @@ psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
 # psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
 # -f ../supabase/private_users.sql \
 # -f ../supabase/users.sql
-
-# psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
-# -f './import-love-finalize.sql'
 
 echo "Done"
 )

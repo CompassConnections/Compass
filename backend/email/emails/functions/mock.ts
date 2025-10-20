@@ -17,7 +17,6 @@ export const mockUser: User = {
   id: '0k1suGSJKVUnHbCPEhHNpgZPkUP2',
   username: 'Sinclair',
   name: 'Sinclair',
-  // url: 'https://manifold.love/Sinclair',
   // isAdmin: true,
   // isTrustworthy: false,
   link: {

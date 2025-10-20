@@ -1,5 +1,5 @@
 import { APIError, APIHandler } from 'api/helpers/endpoint'
-import { removePinnedUrlFromPhotoUrls } from 'shared/love/parse-photos'
+import { removePinnedUrlFromPhotoUrls } from 'shared/profiles/parse-photos'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { updateUser } from 'shared/supabase/users'
 import { log } from 'shared/utils'

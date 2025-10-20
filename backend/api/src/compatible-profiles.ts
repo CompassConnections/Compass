@@ -5,7 +5,7 @@ import {
   getProfile,
   getCompatibilityAnswers,
   getGenderCompatibleProfiles,
-} from 'shared/love/supabase'
+} from 'shared/profiles/supabase'
 import { log } from 'shared/utils'
 
 export const getCompatibleProfilesHandler: APIHandler<

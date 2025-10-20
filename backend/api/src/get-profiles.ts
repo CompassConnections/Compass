@@ -1,5 +1,5 @@
 import {type APIHandler} from 'api/helpers/endpoint'
-import {convertRow} from 'shared/love/supabase'
+import {convertRow} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {from, join, leftJoin, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
 import {getCompatibleProfiles} from 'api/compatible-profiles'

@@ -4,7 +4,7 @@ import { createSupabaseDirectClient } from './supabase/init'
 import { getNotificationDestinationsForUser } from 'common/user-notification-preferences'
 import { Notification } from 'common/notifications'
 import { insertNotificationToSupabase } from './supabase/notifications'
-import { getProfile } from './love/supabase'
+import { getProfile } from 'shared/profiles/supabase'
 
 export const createProfileLikeNotification = async (like: Row<'profile_likes'>) => {
   const { creator_id, target_id, like_id } = like

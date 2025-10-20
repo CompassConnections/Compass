@@ -1,6 +1,6 @@
 import {API, type APIPath} from 'common/api/schema'
 import {APIError, pathWithPrefix} from 'common/api/utils'
-import cors from 'cors'
+import cors, {CorsOptions} from 'cors'
 import * as crypto from 'crypto'
 import express, {type ErrorRequestHandler, type RequestHandler} from 'express'
 import {hrtime} from 'node:process'
@@ -60,6 +60,12 @@ import {createVote} from "api/create-vote";
 import {vote} from "api/vote";
 import {contact} from "api/contact";
 
+// const corsOptions: CorsOptions = {
+//   origin: ['*'], // Only allow requests from this domain
+//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true, // if you use cookies or auth headers
+// };
 const allowCorsUnrestricted: RequestHandler = cors({})
 
 function cacheController(policy?: string): RequestHandler {
@@ -123,7 +129,9 @@ const rootPath = pathWithPrefix("/")
 app.get(rootPath, swaggerUi.setup(swaggerDocument))
 app.use(rootPath, swaggerUi.serve)
 
-app.options('*', allowCorsUnrestricted)
+// Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info
+// May not be necessary
+// app.options('*', allowCorsUnrestricted)
 
 const handlers: { [k in APIPath]: APIHandler<k> } = {
   health: health,

@@ -15,12 +15,11 @@ export function ProfileBio(props: {
 }) {
   const {isCurrentUser, profile, refreshProfile, fromProfilePage} = props
   const [edit, setEdit] = useState(false)
+  const editor = useTextEditor({defaultValue: ''})
+  const [textLength, setTextLength] = useState(MAX_INT)
 
   if (!isCurrentUser && !profile.bio) return null
   if (fromProfilePage && !profile.bio) return null
-
-  const editor = useTextEditor({defaultValue: ''})
-  const [textLength, setTextLength] = useState(editor?.getText().length ?? MAX_INT)
 
   useEffect(() => {
     if (!editor) return

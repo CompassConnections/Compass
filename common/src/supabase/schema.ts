@@ -232,7 +232,7 @@ export type Database = {
         }
         Relationships: []
       }
-      love_waitlist: {
+      user_waitlist: {
         Row: {
           created_time: string
           email: string

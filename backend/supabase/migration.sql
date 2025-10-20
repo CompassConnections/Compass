@@ -15,7 +15,7 @@ BEGIN;
 \i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/profile_ships.sql
 \i backend/supabase/profile_stars.sql
-\i backend/supabase/love_waitlist.sql
+\i backend/supabase/user_waitlist.sql
 \i backend/supabase/user_events.sql
 \i backend/supabase/user_notifications.sql
 \i backend/supabase/functions_others.sql

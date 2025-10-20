@@ -1,15 +1,15 @@
-CREATE TABLE IF NOT EXISTS love_waitlist (
+CREATE TABLE IF NOT EXISTS user_waitlist (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     email TEXT NOT NULL
 );
 
 -- Row Level Security
-ALTER TABLE love_waitlist ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_waitlist ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-DROP POLICY IF EXISTS "anon insert" ON love_waitlist;
-CREATE POLICY "anon insert" ON love_waitlist
+DROP POLICY IF EXISTS "anon insert" ON user_waitlist;
+CREATE POLICY "anon insert" ON user_waitlist
     FOR INSERT WITH CHECK (true);
 
 -- Indexes

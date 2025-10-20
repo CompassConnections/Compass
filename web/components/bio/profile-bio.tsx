@@ -1,5 +1,5 @@
 import {Profile} from 'common/love/profile'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Subtitle} from '../widgets/profile-subtitle'
 import {BioBlock} from './profile-bio-block'

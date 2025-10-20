@@ -79,7 +79,7 @@ export function ProfileBio(props: {
 
   return (
     <Col>
-      {textLength < MIN_BIO_LENGTH && !edit && <TooShortBio/>}
+      {textLength < MIN_BIO_LENGTH && !edit && isCurrentUser && <TooShortBio/>}
       <Subtitle className="mb-4">About Me</Subtitle>
       <BioBlock
         isCurrentUser={isCurrentUser}

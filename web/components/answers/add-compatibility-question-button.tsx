@@ -16,7 +16,7 @@ import { Row as rowFor } from 'common/supabase/utils'
 import { AnswerCompatibilityQuestionContent } from './answer-compatibility-question-content'
 import { uniq } from 'lodash'
 import { QuestionWithCountType } from 'web/hooks/use-questions'
-import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/love/constants'
+import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/profiles/constants'
 
 export function AddCompatibilityQuestionButton(props: {
   refreshCompatibilityAll: () => void

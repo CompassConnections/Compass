@@ -1,6 +1,6 @@
 import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
-import {type ProfileRow} from 'common/love/profile'
+import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
 import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 import {Footer} from "email/utils";

@@ -4,7 +4,7 @@ import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-s
 import { api } from 'web/lib/api'
 import { APIResponse } from 'common/api/schema'
 import { useProfileByUserId } from './use-profile'
-import { getProfilesCompatibilityFactor } from 'common/love/compatibility-score'
+import { getProfilesCompatibilityFactor } from 'common/profiles/compatibility-score'
 
 export const useCompatibleProfiles = (
   userId: string | null | undefined,

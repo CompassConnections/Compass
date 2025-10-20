@@ -26,7 +26,7 @@ import {
 import { partition } from 'lodash'
 import { shortenName } from 'web/components/widgets/user-link'
 import { AddQuestionButton } from './free-response-add-question'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean

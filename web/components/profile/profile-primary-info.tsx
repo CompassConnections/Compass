@@ -7,7 +7,7 @@ import { Row } from 'web/components/layout/row'
 import GenderIcon from '../gender-icon'
 import { Gender, convertGender } from 'common/gender'
 import { formatProfileValue } from '../profile-about'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 
 export default function ProfilePrimaryInfo(props: { profile: Profile }) {
   const { profile } = props

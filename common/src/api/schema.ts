@@ -5,9 +5,9 @@ import {
   arraybeSchema,
 } from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
-import {CompatibilityScore} from 'common/love/compatibility-score'
-import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/love/constants'
-import {Profile, ProfileRow} from 'common/love/profile'
+import {CompatibilityScore} from 'common/profiles/compatibility-score'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
+import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
 import {z} from 'zod'

@@ -1,6 +1,6 @@
 import {Editor} from '@tiptap/core'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {tryCatch} from 'common/util/try-catch'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'

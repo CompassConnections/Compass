@@ -3,7 +3,7 @@ import {useEffect} from 'react'
 import {Row} from 'common/supabase/utils'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {User} from 'common/user'
-import {getProfileRow, Profile, ProfileRow} from 'common/love/profile'
+import {getProfileRow, Profile, ProfileRow} from 'common/profiles/profile'
 import {db} from 'web/lib/supabase/db'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 

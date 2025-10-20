@@ -11,7 +11,7 @@ import {GenderFilter, GenderFilterText} from './gender-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText,} from './location-filter'
 import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "web/components/filters/pref-gender-filter";

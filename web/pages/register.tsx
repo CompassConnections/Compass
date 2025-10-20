@@ -9,7 +9,7 @@ import {createUserWithEmailAndPassword} from "firebase/auth";
 import {auth} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
 import {LovePage} from "web/components/love-page";
-import {getProfileRow} from "common/love/profile";
+import {getProfileRow} from "common/profiles/profile";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {useUser} from "web/hooks/use-user";

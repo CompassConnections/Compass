@@ -3,7 +3,7 @@ import {from, renderSql, select} from "shared/supabase/sql-builder";
 import {loadProfiles, profileQueryType} from "api/get-profiles";
 import {Row} from "common/supabase/utils";
 import {sendSearchAlertsEmail} from "email/functions/helpers";
-import {MatchesByUserType} from "common/love/bookmarked_searches";
+import {MatchesByUserType} from "common/profiles/bookmarked_searches";
 import {keyBy} from "lodash";
 
 export function convertSearchRow(row: any): any {

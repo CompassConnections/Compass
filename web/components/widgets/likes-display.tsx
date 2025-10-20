@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { UserIcon } from '@heroicons/react/solid'
 
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 import { useProfileByUserId } from 'web/hooks/use-profile'
 import { Col } from 'web/components/layout/col'
 import { Avatar, EmptyAvatar } from 'web/components/widgets/avatar'

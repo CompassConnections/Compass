@@ -7,7 +7,7 @@ import {auth, firebaseLogin} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
 
 import {signInWithEmailAndPassword} from "firebase/auth";
-import {getProfileRow} from "common/love/profile";
+import {getProfileRow} from "common/profiles/profile";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {LovePage} from "web/components/love-page";

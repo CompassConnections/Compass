@@ -6,7 +6,7 @@ import { api } from 'web/lib/api'
 import { buttonClass } from 'web/components/buttons/button'
 import { track } from 'web/lib/service/analytics'
 import { Tooltip } from 'web/components/widgets/tooltip'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 
 export const StarButton = (props: {
   targetProfile: Profile

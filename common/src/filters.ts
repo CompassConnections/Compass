@@ -1,4 +1,4 @@
-import {Profile, ProfileRow} from "common/love/profile";
+import {Profile, ProfileRow} from "common/profiles/profile";
 import {cloneDeep} from "lodash";
 import {filterDefined} from "common/util/array";
 

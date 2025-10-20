@@ -1,4 +1,4 @@
-import {ProfileRow} from 'common/love/profile'
+import {ProfileRow} from 'common/profiles/profile'
 import type {User} from 'common/user'
 
 // for email template testing

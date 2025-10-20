@@ -21,7 +21,7 @@ import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
 import Sidebar from './nav/love-sidebar'
 import {useProfile} from 'web/hooks/use-profile'
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 import {IS_MAINTENANCE} from "common/constants";
 import {MdThumbUp} from "react-icons/md";

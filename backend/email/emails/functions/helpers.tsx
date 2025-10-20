@@ -6,7 +6,7 @@ import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
 import {getProfile} from 'shared/love/supabase'
 import { render } from "@react-email/render"
-import {MatchesType} from "common/love/bookmarked_searches";
+import {MatchesType} from "common/profiles/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";
 

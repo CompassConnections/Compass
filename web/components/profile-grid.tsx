@@ -1,5 +1,5 @@
-import {Profile} from 'common/love/profile'
-import {CompatibilityScore} from 'common/love/compatibility-score'
+import {Profile} from 'common/profiles/profile'
+import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {track} from 'web/lib/service/analytics'

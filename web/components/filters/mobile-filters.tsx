@@ -8,7 +8,7 @@ import {GenderFilter, GenderFilterText} from './gender-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText,} from './location-filter'
 import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {Gender} from 'common/gender'
 import {RelationshipType, RomanticType} from 'web/lib/util/convert-relationship-type'
 import {FilterFields} from "common/filters";

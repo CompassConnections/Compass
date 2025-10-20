@@ -1,5 +1,5 @@
 import { keyBy, sumBy } from 'lodash'
-import { ProfileRow } from 'common/love/profile'
+import { ProfileRow } from 'common/profiles/profile'
 import { Row as rowFor } from 'common/supabase/utils'
 import {
   areAgeCompatible,

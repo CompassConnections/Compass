@@ -16,7 +16,7 @@ import {track} from 'web/lib/service/analytics'
 import {Races} from './race'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
-import {ProfileRow} from 'common/love/profile'
+import {ProfileRow} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {isEqual, range} from 'lodash'
 import {PlatformSelect} from 'web/components/widgets/platform-select'
@@ -27,7 +27,7 @@ import {Select} from 'web/components/widgets/select'
 import {City, CityRow, profileToCity, useCitySearch} from "web/components/search-location";
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
-import {MultipleChoiceOptions} from "common/love/multiple-choice";
+import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
 import {POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 

@@ -1,4 +1,4 @@
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Search} from 'web/components/filters/search'
 import {useProfile} from 'web/hooks/use-profile'

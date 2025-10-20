@@ -2,7 +2,7 @@ import { PencilIcon, XIcon } from '@heroicons/react/outline'
 import { JSONContent } from '@tiptap/core'
 import clsx from 'clsx'
 
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'

@@ -1,5 +1,5 @@
-import { areGenderCompatible } from 'common/love/compatibility-util'
-import { type Profile, type ProfileRow } from 'common/love/profile'
+import { areGenderCompatible } from 'common/profiles/compatibility-util'
+import { type Profile, type ProfileRow } from 'common/profiles/profile'
 import { type User } from 'common/user'
 import { Row } from 'common/supabase/utils'
 import { createSupabaseDirectClient } from 'shared/supabase/init'

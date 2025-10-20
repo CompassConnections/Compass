@@ -1,4 +1,4 @@
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {useEffect, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'

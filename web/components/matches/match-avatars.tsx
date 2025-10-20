@@ -1,6 +1,6 @@
 import { Row } from 'web/components/layout/row'
 import { HeartIcon } from '@heroicons/react/solid'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 import Image from 'next/image'
 import { Col } from 'web/components/layout/col'
 import { UserIcon } from '@heroicons/react/solid'

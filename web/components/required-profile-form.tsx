@@ -10,7 +10,7 @@ import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Column} from 'common/supabase/utils'
-import {ProfileRow} from 'common/love/profile'
+import {ProfileRow} from 'common/profiles/profile'
 import {SignupBio} from "web/components/bio/editable-bio";
 import {Editor} from "@tiptap/core";
 

@@ -1,7 +1,7 @@
 import Router from 'next/router'
 import { firebaseLogin } from 'web/lib/firebase/users'
 import { db } from 'web/lib/supabase/db'
-import { getProfileRow } from 'common/love/profile'
+import { getProfileRow } from 'common/profiles/profile'
 
 export const signupThenMaybeRedirectToSignup = async () => {
   const creds = await firebaseLogin()

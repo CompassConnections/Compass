@@ -13,7 +13,7 @@ import { UserAvatarAndBadge } from 'web/components/widgets/user-link'
 import Link from 'next/link'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import { DotsHorizontalIcon, ReplyIcon } from '@heroicons/react/solid'
-import { manifoldLoveUserId } from 'common/love/constants'
+import { manifoldLoveUserId } from 'common/profiles/constants'
 import { DisplayUser } from 'common/api/user-types'
 
 export const ChatMessageItem = memo(function ChatMessageItem(props: {

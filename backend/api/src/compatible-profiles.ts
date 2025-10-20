@@ -1,6 +1,6 @@
 import { groupBy, sortBy } from 'lodash'
 import { APIError, type APIHandler } from 'api/helpers/endpoint'
-import { getCompatibilityScore } from 'common/love/compatibility-score'
+import { getCompatibilityScore } from 'common/profiles/compatibility-score'
 import {
   getProfile,
   getCompatibilityAnswers,

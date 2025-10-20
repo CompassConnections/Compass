@@ -17,7 +17,7 @@ import {convertGenderPlural, Gender} from 'common/gender'
 import {HiOutlineGlobe} from 'react-icons/hi'
 import {UserHandles} from 'web/components/user/user-handles'
 import {convertRace} from './race'
-import {Profile} from 'common/love/profile'
+import {Profile} from 'common/profiles/profile'
 import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
 

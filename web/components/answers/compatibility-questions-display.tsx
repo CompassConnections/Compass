@@ -1,6 +1,6 @@
 import {PencilIcon, TrashIcon} from '@heroicons/react/outline'
-import {getAnswerCompatibility, getScoredAnswerCompatibility,} from 'common/love/compatibility-score'
-import {Profile} from 'common/love/profile'
+import {getAnswerCompatibility, getScoredAnswerCompatibility,} from 'common/profiles/compatibility-score'
+import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {keyBy, partition, sortBy} from 'lodash'

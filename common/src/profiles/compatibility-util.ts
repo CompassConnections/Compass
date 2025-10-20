@@ -1,4 +1,4 @@
-import { ProfileRow } from 'common/love/profile'
+import { ProfileRow } from 'common/profiles/profile'
 import {MAX_INT, MIN_INT} from "common/constants";
 
 const isPreferredGender = (

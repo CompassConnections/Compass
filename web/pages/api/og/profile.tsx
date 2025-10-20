@@ -3,7 +3,7 @@ import { ImageResponseOptions } from '@vercel/og/dist/types'
 import { NextRequest } from 'next/server'
 import { classToTw } from 'web/components/og/utils'
 import { Gender, convertGender } from 'common/gender'
-import { LoveOgProps } from 'common/love/og-image'
+import { LoveOgProps } from 'common/profiles/og-image'
 
 export const config = { runtime: 'edge' }
 

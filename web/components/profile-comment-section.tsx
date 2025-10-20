@@ -13,7 +13,7 @@ import { updateProfile } from 'web/lib/api'
 import { Tooltip } from 'web/components/widgets/tooltip'
 import { toast } from 'react-hot-toast'
 import { Subtitle } from './widgets/profile-subtitle'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 
 export const ProfileCommentSection = (props: {
   onUser: User

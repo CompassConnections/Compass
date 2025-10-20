@@ -1,6 +1,6 @@
 import { Row } from 'web/components/layout/row'
 import clsx from 'clsx'
-import { Profile } from 'common/love/profile'
+import { Profile } from 'common/profiles/profile'
 
 export function MyMatchesToggle(props: {
   setYourFilters: (checked: boolean) => void

@@ -3,7 +3,7 @@ import {type User} from 'common/user'
 import {mockUser,} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
 import {container, content, Footer, main, paragraph} from "email/utils";
-import {MatchesType} from "common/love/bookmarked_searches";
+import {MatchesType} from "common/profiles/bookmarked_searches";
 import {formatFilters, locationType} from "common/searches"
 import {FilterFields} from "common/filters";
 

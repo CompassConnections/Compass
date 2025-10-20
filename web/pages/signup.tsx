@@ -12,7 +12,7 @@ import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
-import {ProfileRow} from 'common/love/profile'
+import {ProfileRow} from 'common/profiles/profile'
 import {LovePage} from "web/components/love-page";
 
 export default function SignupPage() {

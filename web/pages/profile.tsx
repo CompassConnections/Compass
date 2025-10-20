@@ -1,4 +1,4 @@
-import {Profile, ProfileRow} from 'common/love/profile'
+import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {OptionalLoveUserForm} from 'web/components/optional-profile-form'

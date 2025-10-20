@@ -12,7 +12,7 @@ BEGIN;
 \i backend/supabase/profile_comments.sql
 \i backend/supabase/compatibility_answers.sql
 \i backend/supabase/profile_likes.sql
-\i backend/supabase/love_questions.sql
+\i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/love_ships.sql
 \i backend/supabase/love_stars.sql
 \i backend/supabase/love_waitlist.sql

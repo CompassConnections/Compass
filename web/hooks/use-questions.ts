@@ -12,7 +12,7 @@ import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-s
 import { api } from 'web/lib/api'
 
 export const useQuestions = () => {
-  const [questions, setQuestions] = useState<Row<'love_questions'>[]>([])
+  const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
   useEffect(() => {
     getAllQuestions().then(setQuestions)
   }, [])
@@ -20,7 +20,7 @@ export const useQuestions = () => {
 }
 
 export const useFreeResponseQuestions = () => {
-  const [questions, setQuestions] = useState<Row<'love_questions'>[]>([])
+  const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
   useEffect(() => {
     getFreeResponseQuestions().then(setQuestions)
   }, [])
@@ -74,7 +74,7 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
   return { refreshCompatibilityAnswers, compatibilityAnswers }
 }
 
-export type QuestionWithCountType = Row<'love_questions'> & {
+export type QuestionWithCountType = Row<'compatibility_prompts'> & {
   answer_count: number
   score: number
 }

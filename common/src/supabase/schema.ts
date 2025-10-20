@@ -157,7 +157,7 @@ export type Database = {
         }
         Relationships: []
       }
-      love_questions: {
+      compatibility_prompts: {
         Row: {
           answer_type: string
           created_time: string
@@ -827,15 +827,15 @@ export type Database = {
         Args: { user_id: string }
         Returns: number
       }
-      get_compatibility_questions_with_answer_count: {
+      get_compatibility_prompts_with_answer_count: {
         Args: Record<PropertyKey, never>
         Returns: Record<string, unknown>[]
       }
-      get_love_question_answers_and_lovers: {
+      get_compatibility_answers_and_lovers: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
       }
-      get_love_question_answers_and_profiles: {
+      get_compatibility_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
       }

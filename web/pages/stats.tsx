@@ -18,7 +18,7 @@ export default function Stats() {
         'private_user_message_channels',
         'private_user_messages',
         'profile_comments',
-        'love_questions',
+        'compatibility_prompts',
         'compatibility_answers',
         'votes',
         'vote_results',
@@ -58,7 +58,7 @@ export default function Stats() {
           {!!data.active_members && <StatBox value={data.active_members} label={'Active Members (last month)'} />}
           {!!data.private_user_message_channels && <StatBox value={data.private_user_message_channels} label={'Discussions'} />}
           {!!data.private_user_messages && <StatBox value={data.private_user_messages} label={'Messages'} />}
-          {!!data.love_questions && <StatBox value={data.love_questions} label={'Compatibility Prompts'} />}
+          {!!data.compatibility_prompts && <StatBox value={data.compatibility_prompts} label={'Compatibility Prompts'} />}
           {!!data.compatibility_answers && <StatBox value={data.compatibility_answers} label={'Prompts Answered'} />}
           {!!data.votes && <StatBox value={data.votes} label={'Proposals'} />}
           {!!data.vote_results && <StatBox value={data.vote_results} label={'Votes'} />}

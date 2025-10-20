@@ -13,7 +13,7 @@ export const createCompatibilityQuestion: APIHandler<
   const pg = createSupabaseDirectClient()
 
   const { data, error } = await tryCatch(
-    insert(pg, 'love_questions', {
+    insert(pg, 'compatibility_prompts', {
       creator_id: creator.id,
       question,
       answer_type: 'compatibility_multiple_choice',

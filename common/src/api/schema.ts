@@ -265,7 +265,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as {
       status: 'success'
-      questions: (Row<'love_questions'> & {
+      questions: (Row<'compatibility_prompts'> & {
         answer_count: number
         score: number
       })[]

@@ -13,7 +13,7 @@ import { BiTachometer } from 'react-icons/bi'
 
 export function OpinionScale(props: {
   multiChoiceAnswers: rowFor<'prompt_answers'>[]
-  questions: rowFor<'love_questions'>[]
+  questions: rowFor<'compatibility_prompts'>[]
   isCurrentUser: boolean
 }) {
   const { multiChoiceAnswers, questions, isCurrentUser } = props
@@ -75,7 +75,7 @@ export function OpinionScale(props: {
 
 function OpinionScaleBlock(props: {
   answer: rowFor<'prompt_answers'>
-  questions: rowFor<'love_questions'>[]
+  questions: rowFor<'compatibility_prompts'>[]
 }) {
   const { answer, questions } = props
   const question = questions.find((q) => q.id === answer.question_id)

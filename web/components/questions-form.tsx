@@ -108,7 +108,7 @@ const submitAnswer = async (newForm: loveAnswerState) => {
   )
 }
 
-const QuestionRow = (props: { row: rowFor<'love_questions'>; user: User }) => {
+const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }) => {
   const { row, user } = props
   const { question, id, answer_type, multiple_choice_options } = row
   const options = multiple_choice_options as Record<string, number>
@@ -166,7 +166,7 @@ const QuestionRow = (props: { row: rowFor<'love_questions'>; user: User }) => {
 }
 
 export const IndividualQuestionRow = (props: {
-  row: rowFor<'love_questions'>
+  row: rowFor<'compatibility_prompts'>
   initialAnswer?: rowFor<'prompt_answers'>
   user: User
   onCancel: () => void

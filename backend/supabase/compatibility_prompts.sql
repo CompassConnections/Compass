@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS love_questions (
+CREATE TABLE IF NOT EXISTS compatibility_prompts (
     answer_type TEXT DEFAULT 'free_response' NOT NULL,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     creator_id TEXT NOT NULL,
@@ -9,11 +9,11 @@ CREATE TABLE IF NOT EXISTS love_questions (
 );
 
 -- Row Level Security
-ALTER TABLE love_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE compatibility_prompts ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-DROP POLICY IF EXISTS "public read" ON love_questions;
-CREATE POLICY "public read" ON love_questions
+DROP POLICY IF EXISTS "public read" ON compatibility_prompts;
+CREATE POLICY "public read" ON compatibility_prompts
 FOR ALL USING (true);
 
 -- Indexes

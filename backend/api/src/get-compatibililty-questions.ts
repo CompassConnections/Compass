@@ -17,22 +17,22 @@ export const getCompatibilityQuestions: APIHandler<
   const pg = createSupabaseDirectClient()
 
   const questions = await pg.manyOrNone<
-    Row<'love_questions'> & { answer_count: number; score: number }
+    Row<'compatibility_prompts'> & { answer_count: number; score: number }
   >(
     `SELECT 
-      love_questions.*,
+      compatibility_prompts.*,
       COUNT(compatibility_answers.question_id) as answer_count,
       AVG(POWER(compatibility_answers.importance + 1 + CASE WHEN compatibility_answers.explanation IS NULL THEN 1 ELSE 0 END, 2)) as score
     FROM 
-        love_questions
+        compatibility_prompts
     LEFT JOIN 
-        compatibility_answers ON love_questions.id = compatibility_answers.question_id
+        compatibility_answers ON compatibility_prompts.id = compatibility_answers.question_id
     WHERE 
-        love_questions.answer_type = 'compatibility_multiple_choice'
+        compatibility_prompts.answer_type = 'compatibility_multiple_choice'
     GROUP BY 
-        love_questions.id
+        compatibility_prompts.id
     ORDER BY
-         love_questions.importance_score
+         compatibility_prompts.importance_score
     `,
     []
   )

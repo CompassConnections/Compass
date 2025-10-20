@@ -15,7 +15,7 @@ export const deleteAnswer = async (
 }
 
 export const getOtherAnswers = async (question_id: number) => {
-  const { data } = await db.rpc('get_love_question_answers_and_profiles' as any, {
+  const { data } = await db.rpc('get_compatibility_answers_and_profiles' as any, {
     p_question_id: question_id,
   })
   return data

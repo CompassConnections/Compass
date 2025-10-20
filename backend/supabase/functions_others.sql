@@ -1,26 +1,26 @@
 
 
 create
-or replace function public.get_compatibility_questions_with_answer_count () returns setof record language plpgsql as $function$
+or replace function public.get_compatibility_prompts_with_answer_count () returns setof record language plpgsql as $function$
 BEGIN
 RETURN QUERY
 SELECT
-    love_questions.*,
+    compatibility_prompts.*,
     COUNT(compatibility_answers.question_id) as answer_count
 FROM
-    love_questions
+    compatibility_prompts
         LEFT JOIN
-    compatibility_answers ON love_questions.id = compatibility_answers.question_id
-WHERE love_questions.answer_type='compatibility_multiple_choice'
+    compatibility_answers ON compatibility_prompts.id = compatibility_answers.question_id
+WHERE compatibility_prompts.answer_type='compatibility_multiple_choice'
 GROUP BY
-    love_questions.id
+    compatibility_prompts.id
 ORDER BY
     answer_count DESC;
 END;
 $function$;
 
 create
-or replace function public.get_love_question_answers_and_profiles (p_question_id bigint) returns setof record language plpgsql as $function$
+or replace function public.get_compatibility_answers_and_profiles (p_question_id bigint) returns setof record language plpgsql as $function$
 BEGIN
 RETURN QUERY
 SELECT

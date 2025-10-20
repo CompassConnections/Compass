@@ -53,10 +53,10 @@ function AddCompatibilityQuestionModal(props: {
   onClose?: () => void
 }) {
   const { open, setOpen, user, onClose } = props
-  const [dbQuestion, setDbQuestion] = useState<rowFor<'love_questions'> | null>(
+  const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(
     null
   )
-  const afterAddQuestion = (newQuestion: rowFor<'love_questions'>) => {
+  const afterAddQuestion = (newQuestion: rowFor<'compatibility_prompts'>) => {
     setDbQuestion(newQuestion)
     console.debug('setDbQuestion', newQuestion)
   }
@@ -90,7 +90,7 @@ function AddCompatibilityQuestionModal(props: {
 }
 
 function CreateCompatibilityModalContent(props: {
-  afterAddQuestion: (question: rowFor<'love_questions'>) => void
+  afterAddQuestion: (question: rowFor<'compatibility_prompts'>) => void
   setOpen: (open: boolean) => void
 }) {
   const { afterAddQuestion, setOpen } = props
@@ -140,7 +140,7 @@ function CreateCompatibilityModalContent(props: {
       console.debug('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question
       if (q) {
-        afterAddQuestion(q as rowFor<'love_questions'>)
+        afterAddQuestion(q as rowFor<'compatibility_prompts'>)
       }
       track('create love compatibility question')
     } catch (e) {

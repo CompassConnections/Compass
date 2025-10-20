@@ -9,8 +9,8 @@ export const getProfileAnswers: APIHandler<'get-profile-answers'> = async (
   const { userId } = props
   const pg = createSupabaseDirectClient()
 
-  const answers = await pg.manyOrNone<Row<'love_compatibility_answers'>>(
-    `select * from love_compatibility_answers
+  const answers = await pg.manyOrNone<Row<'compatibility_answers'>>(
+    `select * from compatibility_answers
     where
       creator_id = $1
     order by created_time desc

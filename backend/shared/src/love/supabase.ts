@@ -122,9 +122,9 @@ export const getCompatibleProfiles = async (
 
 export const getCompatibilityAnswers = async (userIds: string[]) => {
   const pg = createSupabaseDirectClient()
-  return await pg.manyOrNone<Row<'love_compatibility_answers'>>(
+  return await pg.manyOrNone<Row<'compatibility_answers'>>(
     `
-      select * from love_compatibility_answers
+      select * from compatibility_answers
       where creator_id = any($1)
     `,
     [userIds]

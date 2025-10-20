@@ -20,7 +20,7 @@ import {filterKeys} from '../questions-form'
 import toast from "react-hot-toast";
 
 export type CompatibilityAnswerSubmitType = Omit<
-  rowFor<'love_compatibility_answers'>,
+  rowFor<'compatibility_answers'>,
   'created_time' | 'id'
 >
 
@@ -59,7 +59,7 @@ export const submitCompatibilityAnswer = async (
 
   try {
     await run(
-      db.from('love_compatibility_answers').upsert(input, {
+      db.from('compatibility_answers').upsert(input, {
         onConflict: 'question_id,creator_id',
       })
     );
@@ -69,7 +69,7 @@ export const submitCompatibilityAnswer = async (
       ...newAnswer,
     });
   } catch (error) {
-    console.error('Failed to upsert love_compatibility_answers:', error);
+    console.error('Failed to upsert compatibility_answers:', error);
     toast.error('Error submitting. Try again?')
   }
 }
@@ -82,7 +82,7 @@ export const deleteCompatibilityAnswer = async (
   try {
     await run(
       db
-        .from('love_compatibility_answers')
+        .from('compatibility_answers')
         .delete()
         .match({id: id, creator_id: userId})
     )
@@ -109,7 +109,7 @@ export function AnswerCompatibilityQuestionContent(props: {
   user: User
   index?: number
   total?: number
-  answer?: rowFor<'love_compatibility_answers'> | null
+  answer?: rowFor<'compatibility_answers'> | null
   onSubmit: () => void
   onNext?: () => void
   isLastQuestion: boolean

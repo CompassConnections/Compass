@@ -73,7 +73,7 @@ export type Database = {
           }
         ]
       }
-      love_answers: {
+      prompt_answers: {
         Row: {
           created_time: string
           creator_id: string
@@ -103,7 +103,7 @@ export type Database = {
         }
         Relationships: []
       }
-      love_compatibility_answers: {
+      compatibility_answers: {
         Row: {
           created_time: string
           creator_id: string

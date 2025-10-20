@@ -377,7 +377,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({userId: z.string()}).strict(),
     returns: {} as {
       status: 'success'
-      answers: Row<'love_compatibility_answers'>[]
+      answers: Row<'compatibility_answers'>[]
     },
   },
   'create-comment': {

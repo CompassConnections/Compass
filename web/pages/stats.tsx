@@ -19,7 +19,7 @@ export default function Stats() {
         'private_user_messages',
         'profile_comments',
         'love_questions',
-        'love_compatibility_answers',
+        'compatibility_answers',
         'votes',
         'vote_results',
       ] as const
@@ -59,7 +59,7 @@ export default function Stats() {
           {!!data.private_user_message_channels && <StatBox value={data.private_user_message_channels} label={'Discussions'} />}
           {!!data.private_user_messages && <StatBox value={data.private_user_messages} label={'Messages'} />}
           {!!data.love_questions && <StatBox value={data.love_questions} label={'Compatibility Prompts'} />}
-          {!!data.love_compatibility_answers && <StatBox value={data.love_compatibility_answers} label={'Prompts Answered'} />}
+          {!!data.compatibility_answers && <StatBox value={data.compatibility_answers} label={'Prompts Answered'} />}
           {!!data.votes && <StatBox value={data.votes} label={'Proposals'} />}
           {!!data.vote_results && <StatBox value={data.vote_results} label={'Votes'} />}
           {!!data.bookmarked_searches && <StatBox value={data.bookmarked_searches} label={'Searches Bookmarked'} />}

@@ -21,8 +21,8 @@ export type CompatibilityScore = {
 }
 
 export const getCompatibilityScore = (
-  answers1: rowFor<'love_compatibility_answers'>[],
-  answers2: rowFor<'love_compatibility_answers'>[]
+  answers1: rowFor<'compatibility_answers'>[],
+  answers2: rowFor<'compatibility_answers'>[]
 ): CompatibilityScore => {
   const {
     score: score1,
@@ -53,8 +53,8 @@ export const getCompatibilityScore = (
 }
 
 const getAnswersCompatibility = (
-  answers1: rowFor<'love_compatibility_answers'>[],
-  answers2: rowFor<'love_compatibility_answers'>[]
+  answers1: rowFor<'compatibility_answers'>[],
+  answers2: rowFor<'compatibility_answers'>[]
 ) => {
   const answers2ByQuestionId = keyBy(answers2, 'question_id')
   let maxScore = 0
@@ -77,8 +77,8 @@ const getAnswersCompatibility = (
 }
 
 export function getAnswerCompatibilityImportanceScore(
-  answer1: rowFor<'love_compatibility_answers'>,
-  answer2: rowFor<'love_compatibility_answers'>
+  answer1: rowFor<'compatibility_answers'>,
+  answer2: rowFor<'compatibility_answers'>
 ) {
   const importanceScore = importanceToScore[answer1.importance] ?? 0
   return answer1.pref_choices.includes(answer2.multiple_choice)
@@ -87,8 +87,8 @@ export function getAnswerCompatibilityImportanceScore(
 }
 
 export function getAnswerCompatibility(
-  answer1: rowFor<'love_compatibility_answers'>,
-  answer2: rowFor<'love_compatibility_answers'>
+  answer1: rowFor<'compatibility_answers'>,
+  answer2: rowFor<'compatibility_answers'>
 ) {
   if (answer1.importance < 0 || answer2.importance < 0) {
     return false
@@ -105,8 +105,8 @@ export function getAnswerCompatibility(
 }
 
 export function getScoredAnswerCompatibility(
-  answer1: rowFor<'love_compatibility_answers'>,
-  answer2: rowFor<'love_compatibility_answers'>
+  answer1: rowFor<'compatibility_answers'>,
+  answer2: rowFor<'compatibility_answers'>
 ) {
   if (answer1.importance < 0 || answer2.importance < 0) {
     return 0

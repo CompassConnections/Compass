@@ -21,12 +21,12 @@ export const getCompatibilityQuestions: APIHandler<
   >(
     `SELECT 
       love_questions.*,
-      COUNT(love_compatibility_answers.question_id) as answer_count,
-      AVG(POWER(love_compatibility_answers.importance + 1 + CASE WHEN love_compatibility_answers.explanation IS NULL THEN 1 ELSE 0 END, 2)) as score
+      COUNT(compatibility_answers.question_id) as answer_count,
+      AVG(POWER(compatibility_answers.importance + 1 + CASE WHEN compatibility_answers.explanation IS NULL THEN 1 ELSE 0 END, 2)) as score
     FROM 
         love_questions
     LEFT JOIN 
-        love_compatibility_answers ON love_questions.id = love_compatibility_answers.question_id
+        compatibility_answers ON love_questions.id = compatibility_answers.question_id
     WHERE 
         love_questions.answer_type = 'compatibility_multiple_choice'
     GROUP BY 

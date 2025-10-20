@@ -9,8 +9,8 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline'
 
 export function PreferredList(props: {
   question: QuestionWithCountType
-  answer: rowFor<'love_compatibility_answers'>
-  comparedAnswer: rowFor<'love_compatibility_answers'>
+  answer: rowFor<'compatibility_answers'>
+  comparedAnswer: rowFor<'compatibility_answers'>
   comparedUser: User
   isComparedUser?: boolean
 }) {
@@ -66,7 +66,7 @@ export function PreferredList(props: {
 
 export function PreferredListNoComparison(props: {
   question: QuestionWithCountType
-  answer: rowFor<'love_compatibility_answers'>
+  answer: rowFor<'compatibility_answers'>
 }) {
   const { question, answer } = props
   const { multiple_choice_options } = question

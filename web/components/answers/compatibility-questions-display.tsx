@@ -301,7 +301,7 @@ function CompatibilitySortWidget(props: {
 }
 
 function CompatibilityAnswerBlock(props: {
-  answer: rowFor<'love_compatibility_answers'>
+  answer: rowFor<'compatibility_answers'>
   yourQuestions: QuestionWithCountType[]
   user: User
   isCurrentUser: boolean
@@ -476,7 +476,7 @@ function CompatibilityDisplay(props: {
   question: QuestionWithCountType
   profile1: Profile
   profile2: Profile
-  answer1: rowFor<'love_compatibility_answers'>
+  answer1: rowFor<'compatibility_answers'>
   currentUserIsComparedProfile: boolean
   currentUser: User | null | undefined
   className?: string
@@ -491,11 +491,11 @@ function CompatibilityDisplay(props: {
   } = props
 
   const [answer2, setAnswer2] = useState<
-    rowFor<'love_compatibility_answers'> | null | undefined
+    rowFor<'compatibility_answers'> | null | undefined
   >(undefined)
 
   async function getComparedProfileAnswer() {
-    db.from('love_compatibility_answers')
+    db.from('compatibility_answers')
       .select()
       .eq('creator_id', profile2.user_id)
       .eq('question_id', question.id)

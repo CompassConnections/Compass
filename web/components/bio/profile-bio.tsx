@@ -18,14 +18,14 @@ export function ProfileBio(props: {
   const editor = useTextEditor({defaultValue: ''})
   const [textLength, setTextLength] = useState(MAX_INT)
 
-  if (!isCurrentUser && !profile.bio) return null
-  if (fromProfilePage && !profile.bio) return null
-
   useEffect(() => {
     if (!editor) return
     editor.commands.setContent(profile.bio as JSONContent)
     setTextLength(editor.getText().length)
   }, [profile.bio, editor])
+
+  if (!isCurrentUser && !profile.bio) return null
+  if (fromProfilePage && !profile.bio) return null
 
   return (
     <Col>

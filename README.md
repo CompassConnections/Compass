@@ -1,7 +1,7 @@
 
 [![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
 [![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
-![Vercel](https://deploy-badge.vercel.app/vercel/bayesbond)
+![Vercel](https://deploy-badge.vercel.app/vercel/compass)
 
 # Compass
 

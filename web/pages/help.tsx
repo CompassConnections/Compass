@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
@@ -6,7 +6,7 @@ import {Row} from 'web/components/layout/row'
 
 export default function HelpPage() {
   return (
-    <LovePage trackPageView={'help'} className={'relative p-2 sm:pt-0'}>
+    <PageBase trackPageView={'help'} className={'relative p-2 sm:pt-0'}>
       <SEO title={`Help`} description={'Get help with Compass'} url={`/help`}/>
       <Col className="max-w-3xl w-full mx-auto gap-6 custom-link">
         <h1 className="text-3xl font-semibold">Help & Support</h1>
@@ -73,6 +73,6 @@ export default function HelpPage() {
           </Row>
         </section>
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

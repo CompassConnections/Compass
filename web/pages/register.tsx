@@ -8,7 +8,7 @@ import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup";
 import {createUserWithEmailAndPassword} from "firebase/auth";
 import {auth} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import {getProfileRow} from "common/profiles/profile";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
@@ -110,7 +110,7 @@ function RegisterComponent() {
   }
 
   return (
-    <LovePage trackPageView={'register'}>
+    <PageBase trackPageView={'register'}>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {registrationSuccess ? (
@@ -251,6 +251,6 @@ function RegisterComponent() {
           }
         </div>
       </div>
-    </LovePage>
+    </PageBase>
   );
 }

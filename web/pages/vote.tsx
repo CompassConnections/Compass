@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {Col} from 'web/components/layout/col'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
@@ -12,7 +12,7 @@ export default function VotePage() {
   // console.log('user:', user)
 
   return (
-    <LovePage
+    <PageBase
       trackPageView={'vote page'}
       className={'relative p-2 sm:pt-0'}
     >
@@ -28,6 +28,6 @@ export default function VotePage() {
           <VoteComponent/>
         </Col>
       )}
-    </LovePage>
+    </PageBase>
   )
 }

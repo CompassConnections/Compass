@@ -13,7 +13,7 @@ import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileRow} from 'common/profiles/profile'
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
@@ -71,7 +71,7 @@ export default function SignupPage() {
   }, [existingProfile])
 
   if (step === 1 && user) {
-    return <LovePage trackPageView={'register'}>
+    return <PageBase trackPageView={'register'}>
       <Col className={'w-full px-6 py-4'}>
         <OptionalLoveUserForm
           setProfile={setProfileState}
@@ -80,7 +80,7 @@ export default function SignupPage() {
           fromSignup
         />
       </Col>
-    </LovePage>
+    </PageBase>
   }
 
   if (user === null && !holdLoading) {

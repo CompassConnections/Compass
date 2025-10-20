@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {ReactNode} from "react";
 import Link from "next/link";
 import {discordLink, formLink, githubRepo, stoatLink} from "common/constants";
@@ -17,7 +17,7 @@ export const AboutBlock = (props: {
 
 export default function About() {
   return (
-    <LovePage trackPageView={'about'}>
+    <PageBase trackPageView={'about'}>
       <div className="text-gray-600 dark:text-white min-h-screen p-6">
         <div className="w-full">
           <div className="relative py-8 mb-8 overflow-hidden">
@@ -171,6 +171,6 @@ export default function About() {
           </div>
         </div>
       </div>
-    </LovePage>
+    </PageBase>
   )
 }

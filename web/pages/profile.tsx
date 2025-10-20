@@ -9,7 +9,7 @@ import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 
 export default function ProfilePage() {
   const user = useUser()
@@ -40,7 +40,7 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
   const [username, setUsername] = useState(user.username)
 
   return (
-    <LovePage trackPageView={'profile'}>
+    <PageBase trackPageView={'profile'}>
       <Col className="items-center">
         <Col className={'w-full px-6 py-4'}>
           <RequiredLoveUserForm
@@ -67,6 +67,6 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
           />
         </Col>
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

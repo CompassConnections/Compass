@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {useRouter} from 'next/router'
 import Head from 'next/head'
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {Col} from 'web/components/layout/col'
 import {SEO} from 'web/components/SEO'
@@ -86,7 +86,7 @@ type ActiveUserPageProps = {
 export default function UserPage(props: UserPageProps) {
   // console.debug('Starting UserPage in /[username]')
   if (!props.user) {
-    return <LovePage
+    return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
     >
@@ -95,11 +95,11 @@ export default function UserPage(props: UserPageProps) {
           This account has been deleted.
         </div>
       </Col>
-    </LovePage>
+    </PageBase>
   }
 
   if (props.user.isBannedFromPosting) {
-    return <LovePage
+    return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
     >
@@ -108,7 +108,7 @@ export default function UserPage(props: UserPageProps) {
           This account has been suspended.
         </div>
       </Col>
-    </LovePage>
+    </PageBase>
   }
 
   return <UserPageInner {...props} />
@@ -136,7 +136,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
 
   return (
-    <LovePage
+    <PageBase
       trackPageView={'user page'}
       trackPageProps={{username: user.username}}
       className={'relative p-2 sm:pt-0'}
@@ -169,6 +169,6 @@ function UserPageInner(props: ActiveUserPageProps) {
           )}
         </Col>
       )}
-    </LovePage>
+    </PageBase>
   )
 }

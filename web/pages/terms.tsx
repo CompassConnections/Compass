@@ -1,10 +1,10 @@
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import {supportEmail} from "common/constants";
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function TermsPage() {
   return (
-    <LovePage
+    <PageBase
       trackPageView={'terms'}
       className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white col-span-8 bg-canvas-0"
     >
@@ -89,6 +89,6 @@ export default function TermsPage() {
           For questions regarding these Terms, please contact us at {supportEmail}.
         </p>
       </section>
-    </LovePage>
+    </PageBase>
   );
 }

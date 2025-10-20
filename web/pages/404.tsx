@@ -1,4 +1,4 @@
-import { LovePage } from 'web/components/love-page'
+import { PageBase } from 'web/components/page-base'
 import Link from 'next/link'
 import { Button } from 'web/components/buttons/button'
 import { Col } from 'web/components/layout/col'
@@ -9,9 +9,9 @@ import {discordLink, formLink, githubIssues} from "common/constants";
 
 export default function Custom404(props: { customText?: string }) {
   return (
-    <LovePage trackPageView={'404'}>
+    <PageBase trackPageView={'404'}>
       <Custom404Content customText={props.customText} />
-    </LovePage>
+    </PageBase>
   )
 }
 

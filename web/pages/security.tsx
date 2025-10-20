@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
@@ -9,7 +9,7 @@ export default function SecurityPage() {
   const mailto = `mailto:${email}?subject=${encodeURIComponent('Security vulnerability report')}`
 
   return (
-    <LovePage trackPageView={'security'} className={'relative p-2 sm:pt-0'}>
+    <PageBase trackPageView={'security'} className={'relative p-2 sm:pt-0'}>
       <SEO
         title={`Security`}
         description={'Report security vulnerabilities to the Compass team'}
@@ -73,6 +73,6 @@ export default function SecurityPage() {
           </Row>
         </section>
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {Col} from 'web/components/layout/col'
 import {useUser} from 'web/hooks/use-user'
 import {LoggedOutHome} from "web/components/home/home";
@@ -14,12 +14,12 @@ export default function ProfilesPage() {
   }
 
   return (
-    <LovePage trackPageView={'user profiles'}>
+    <PageBase trackPageView={'user profiles'}>
       <Col className="items-center">
         <Col className={'w-full rounded px-3 py-4 sm:px-6'}>
           {user ? <ProfilesHome/> : <LoggedOutHome/>}
         </Col>
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

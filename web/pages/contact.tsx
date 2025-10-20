@@ -1,11 +1,11 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {ContactComponent} from "web/components/contact";
 
 
 export default function ContactPage() {
   return (
-    <LovePage
+    <PageBase
       trackPageView={'vote page'}
       className={'relative p-2 sm:pt-0'}
     >
@@ -15,6 +15,6 @@ export default function ContactPage() {
         url={`/contact`}
       />
       <ContactComponent/>
-    </LovePage>
+    </PageBase>
   )
 }

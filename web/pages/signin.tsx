@@ -10,7 +10,7 @@ import {signInWithEmailAndPassword} from "firebase/auth";
 import {getProfileRow} from "common/profiles/profile";
 import {db} from "web/lib/supabase/db";
 import Router from "next/router";
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import {useUser} from "web/hooks/use-user";
 import {GoogleButton} from "web/components/buttons/sign-up-button";
 
@@ -117,7 +117,7 @@ function RegisterComponent() {
 
   console.debug('Form rendering');
   return (
-    <LovePage trackPageView={'signin'}>
+    <PageBase trackPageView={'signin'}>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
@@ -192,6 +192,6 @@ function RegisterComponent() {
           </div>
         </div>
       </div>
-    </LovePage>
+    </PageBase>
   );
 }

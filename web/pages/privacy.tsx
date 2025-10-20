@@ -1,10 +1,10 @@
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import {supportEmail} from "common/constants";
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function PrivacyPage() {
   return (
-    <LovePage
+    <PageBase
       trackPageView={'terms'}
       className="max-w-4xl mx-auto p-8 col-span-8 bg-canvas-0"
     >
@@ -53,6 +53,6 @@ export default function PrivacyPage() {
           For questions about this Privacy Policy, reach out at {supportEmail}.
         </p>
       </section>
-    </LovePage>
+    </PageBase>
   );
 }

@@ -9,7 +9,7 @@ import {Fragment, useCallback, useEffect, useMemo, useState} from 'react'
 import {NoSEO} from 'web/components/NoSEO'
 import {Col} from 'web/components/layout/col'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {NotificationItem} from 'web/components/notification-items'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Pagination} from 'web/components/widgets/pagination'
@@ -25,7 +25,7 @@ import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
   return (
-    <LovePage trackPageView={'notifications page'}>
+    <PageBase trackPageView={'notifications page'}>
       <NoSEO/>
       <Title>Updates</Title>
       <UncontrolledTabs
@@ -35,7 +35,7 @@ export default function NotificationsPage() {
         ]}
         trackingName={'notifications page'}
       />
-    </LovePage>
+    </PageBase>
   )
 }
 

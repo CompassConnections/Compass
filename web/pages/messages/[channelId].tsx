@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {useRouter} from 'next/router'
 import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
 import {Col} from 'web/components/layout/col'
@@ -43,13 +43,13 @@ export default function PrivateMessagesPage() {
     return <CompassLoadingIndicator/>
   }
   return (
-    <LovePage trackPageView={'private messages page'}>
+    <PageBase trackPageView={'private messages page'}>
       {router.isReady && channelId && user ? (
         <PrivateMessagesContent user={user} channelId={channelId}/>
       ) : (
         <CompassLoadingIndicator/>
       )}
-    </LovePage>
+    </PageBase>
   )
 }
 

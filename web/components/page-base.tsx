@@ -27,7 +27,7 @@ import {IS_MAINTENANCE} from "common/constants";
 import {MdThumbUp} from "react-icons/md";
 import {FaEnvelope} from "react-icons/fa";
 
-export function LovePage(props: {
+export function PageBase(props: {
   trackPageView: string | false
   trackPageProps?: Record<string, any>
   className?: string

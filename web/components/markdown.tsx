@@ -1,4 +1,4 @@
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import {Col} from "web/components/layout/col";
 import ReactMarkdown from "react-markdown";
 import React from "react";
@@ -27,7 +27,7 @@ const MarkdownLink = ({href, children}: { href?: string; children: React.ReactNo
 
 export default function MarkdownPage({content, filename}: Props) {
   return (
-    <LovePage trackPageView={filename} className={'col-span-8'}>
+    <PageBase trackPageView={filename} className={'col-span-8'}>
       <Col className="items-center">
         <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
           <ReactMarkdown
@@ -38,6 +38,6 @@ export default function MarkdownPage({content, filename}: Props) {
           </ReactMarkdown>
         </Col>
       </Col>
-    </LovePage>
+    </PageBase>
   );
 }

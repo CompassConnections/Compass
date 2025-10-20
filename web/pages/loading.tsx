@@ -1,10 +1,10 @@
 "use client";
 
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 
 export default function Loading() {
-  return <LovePage trackPageView={'loading'}>
+  return <PageBase trackPageView={'loading'}>
     <CompassLoadingIndicator/>
-  </LovePage>;
+  </PageBase>;
 }

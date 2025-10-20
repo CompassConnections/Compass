@@ -1,4 +1,4 @@
-import {LovePage} from 'web/components/love-page'
+import {PageBase} from 'web/components/page-base'
 import {GeneralButton} from "web/components/buttons/general-button";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
@@ -6,7 +6,7 @@ import {Col} from "web/components/layout/col";
 
 export default function Organization() {
   return (
-    <LovePage trackPageView={'social'}>
+    <PageBase trackPageView={'social'}>
       <h3 className="text-4xl font-bold text-center mt-8 mb-8">Organization</h3>
       <Col
         className={clsx(
@@ -25,6 +25,6 @@ export default function Organization() {
         <GeneralButton url={'/security'} content={'Security'}/>
         <GeneralButton url={'/contact'} content={'Contact'}/>
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

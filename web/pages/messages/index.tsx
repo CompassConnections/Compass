@@ -3,7 +3,7 @@ import { User } from 'common/user'
 import { parseJsonContentToText } from 'common/util/parse'
 import Link from 'next/link'
 import { Col } from 'web/components/layout/col'
-import { LovePage } from 'web/components/love-page'
+import { PageBase } from 'web/components/page-base'
 import { Row } from 'web/components/layout/row'
 import NewMessageButton from 'web/components/messaging/new-message-button'
 import { RelativeTimestamp } from 'web/components/relative-timestamp'
@@ -25,9 +25,9 @@ export default function MessagesPage() {
 
   const currentUser = useUser()
   return (
-    <LovePage trackPageView={'messages page'} className={'p-2'}>
+    <PageBase trackPageView={'messages page'} className={'p-2'}>
       {currentUser && <MessagesContent currentUser={currentUser} />}
-    </LovePage>
+    </PageBase>
   )
 }
 

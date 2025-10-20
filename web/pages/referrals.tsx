@@ -1,5 +1,5 @@
 import { ENV_CONFIG } from 'common/envs/constants'
-import { LovePage } from 'web/components/love-page'
+import { PageBase } from 'web/components/page-base'
 import { SEO } from 'web/components/SEO'
 import { CopyLinkRow } from 'web/components/buttons/copy-link-button'
 import { Col } from 'web/components/layout/col'
@@ -15,7 +15,7 @@ export default function ReferralsPage() {
     : `https://${ENV_CONFIG.domain}/`
 
   return (
-    <LovePage trackPageView={'love referrals'} className="items-center">
+    <PageBase trackPageView={'love referrals'} className="items-center">
       <SEO
         title="Share the love"
         description={`Invite someone to join Compass!`}
@@ -30,6 +30,6 @@ export default function ReferralsPage() {
 
         <QRCode url={url} className="mt-4 self-center" />
       </Col>
-    </LovePage>
+    </PageBase>
   )
 }

@@ -1,4 +1,4 @@
-import {LovePage} from "web/components/love-page";
+import {PageBase} from "web/components/page-base";
 import ChartMembers from "web/components/widgets/charts";
 import {getCount} from "web/lib/supabase/users";
 import {useEffect, useState} from "react";
@@ -42,7 +42,7 @@ export default function Stats() {
   }, [])
 
   return (
-    <LovePage trackPageView={'charts'}>
+    <PageBase trackPageView={'charts'}>
       <h1 className="text-3xl font-semibold text-center mb-6">Growth & Stats</h1>
       <Col className={'sm:mx-4 mx-1 mb-8'}>
         <ChartMembers/>
@@ -66,6 +66,6 @@ export default function Stats() {
           {!!data.profile_comments && <StatBox value={data.profile_comments} label={'Endorsements'} />}
         </Col>
       </Col>
-    </LovePage>
+    </PageBase>
   );
 }

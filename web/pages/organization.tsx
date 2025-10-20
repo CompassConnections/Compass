@@ -15,12 +15,14 @@ export default function Organization() {
         )}
       >
         <GeneralButton url={'/support'} content={'Support'}/>
+        <GeneralButton url={'/help'} content={'Help'}/>
         <GeneralButton url={'/constitution'} content={'Constitution'}/>
         <GeneralButton url={'/vote'} content={'Proposals'}/>
         <GeneralButton url={'/financials'} content={'Financials'}/>
         <GeneralButton url={'/stats'} content={'Growth & Stats'}/>
         <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>
         <GeneralButton url={'/privacy'} content={'Privacy Policy'}/>
+        <GeneralButton url={'/security'} content={'Security'}/>
         <GeneralButton url={'/contact'} content={'Contact'}/>
       </Col>
     </LovePage>

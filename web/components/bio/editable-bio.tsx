@@ -48,7 +48,7 @@ export function EditableBio(props: {
 
   const saveBio = async () => {
     if (!editor) return
-    console.log(editor.getText().length)
+    // console.log(editor.getText().length)
     const {error} = await tryCatch(updateProfile({bio: editor.getJSON(), bio_length: editor.getText().length}))
 
     if (error) {

@@ -211,7 +211,7 @@ export type Database = {
         }
         Relationships: []
       }
-      love_stars: {
+      profile_stars: {
         Row: {
           created_time: string
           creator_id: string

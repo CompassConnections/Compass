@@ -14,7 +14,7 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
   if (remove) {
     const { error } = await tryCatch(
       pg.none(
-        'delete from love_stars where creator_id = $1 and target_id = $2',
+        'delete from profile_stars where creator_id = $1 and target_id = $2',
         [creatorId, targetUserId]
       )
     )
@@ -27,8 +27,8 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
 
   // Check if star already exists
   const { data: existing } = await tryCatch(
-    pg.oneOrNone<Row<'love_stars'>>(
-      'select * from love_stars where creator_id = $1 and target_id = $2',
+    pg.oneOrNone<Row<'profile_stars'>>(
+      'select * from profile_stars where creator_id = $1 and target_id = $2',
       [creatorId, targetUserId]
     )
   )
@@ -40,7 +40,7 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
 
   // Insert the new star
   const { error } = await tryCatch(
-    insert(pg, 'love_stars', { creator_id: creatorId, target_id: targetUserId })
+    insert(pg, 'profile_stars', { creator_id: creatorId, target_id: targetUserId })
   )
 
   if (error) {

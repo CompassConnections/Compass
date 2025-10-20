@@ -5,7 +5,7 @@ import {DisplayUser} from "common/api/user-types";
 export const getStars = async (creatorId: string) => {
   const { data } = await run(
     db
-      .from('love_stars')
+      .from('profile_stars')
       .select('*')
       .filter('creator_id', 'eq', creatorId)
       .order('created_time', { ascending: false })

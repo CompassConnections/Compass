@@ -29,7 +29,7 @@ export const useFreeResponseQuestions = () => {
 
 export const useUserAnswers = (userId: string | undefined) => {
   const [answers, setAnswers] = usePersistentInMemoryState<
-    Row<'prompt_answers'>[]
+    Row<'compatibility_answers_free'>[]
   >([], `answers-${userId}`)
 
   useEffect(() => {

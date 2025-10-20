@@ -1,7 +1,7 @@
 import { Row, run } from 'common/supabase/utils'
 import { db } from 'web/lib/supabase/db'
 export type Question = Row<'compatibility_prompts'>
-export type Answer = Row<'prompt_answers'>
+export type Answer = Row<'compatibility_answers_free'>
 export const getAllQuestions = async () => {
   const res = await run(
     db.from('compatibility_prompts').select('*').order('created_time')
@@ -22,7 +22,7 @@ export const getFreeResponseQuestions = async () => {
 
 export const getUserAnswers = async (userId: string) => {
   const { data } = await run(
-    db.from('prompt_answers').select('*').eq('creator_id', userId)
+    db.from('compatibility_answers_free').select('*').eq('creator_id', userId)
   )
   return data
 }

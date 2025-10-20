@@ -12,7 +12,7 @@ import { Subtitle } from '../widgets/profile-subtitle'
 import { BiTachometer } from 'react-icons/bi'
 
 export function OpinionScale(props: {
-  multiChoiceAnswers: rowFor<'prompt_answers'>[]
+  multiChoiceAnswers: rowFor<'compatibility_answers_free'>[]
   questions: rowFor<'compatibility_prompts'>[]
   isCurrentUser: boolean
 }) {
@@ -74,7 +74,7 @@ export function OpinionScale(props: {
 }
 
 function OpinionScaleBlock(props: {
-  answer: rowFor<'prompt_answers'>
+  answer: rowFor<'compatibility_answers_free'>
   questions: rowFor<'compatibility_prompts'>[]
 }) {
   const { answer, questions } = props

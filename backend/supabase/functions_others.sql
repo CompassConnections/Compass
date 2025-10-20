@@ -24,11 +24,11 @@ or replace function public.get_compatibility_answers_and_profiles (p_question_id
 BEGIN
 RETURN QUERY
 SELECT
-    prompt_answers.question_id,
-    prompt_answers.created_time,
-    prompt_answers.free_response,
-    prompt_answers.multiple_choice,
-    prompt_answers.integer,
+    compatibility_answers_free.question_id,
+    compatibility_answers_free.created_time,
+    compatibility_answers_free.free_response,
+    compatibility_answers_free.multiple_choice,
+    compatibility_answers_free.integer,
     profiles.age,
     profiles.gender,
     profiles.city,
@@ -36,11 +36,11 @@ SELECT
 FROM
     profiles
         JOIN
-    prompt_answers ON profiles.user_id = prompt_answers.creator_id
+    compatibility_answers_free ON profiles.user_id = compatibility_answers_free.creator_id
         join
     users on profiles.user_id = users.id
 WHERE
-    prompt_answers.question_id = p_question_id
-order by prompt_answers.created_time desc;
+    compatibility_answers_free.question_id = p_question_id
+order by compatibility_answers_free.created_time desc;
 END;
 $function$;

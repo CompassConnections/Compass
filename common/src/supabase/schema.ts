@@ -73,7 +73,7 @@ export type Database = {
           }
         ]
       }
-      prompt_answers: {
+      compatibility_answers_free: {
         Row: {
           created_time: string
           creator_id: string

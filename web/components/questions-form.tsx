@@ -59,13 +59,13 @@ export const QuestionsForm = (props: { questionType: QuestionType }) => {
     </Col>
   )
 }
-type loveAnswer = rowFor<'prompt_answers'>
+type loveAnswer = rowFor<'compatibility_answers_free'>
 export type loveAnswerState = Omit<loveAnswer, 'id' | 'created_time'>
 
 const fetchPrevious = async (id: number, userId: string) => {
   const res = await run(
     db
-      .from('prompt_answers')
+      .from('compatibility_answers_free')
       .select('*')
       .eq('question_id', id)
       .eq('creator_id', userId)
@@ -103,7 +103,7 @@ const submitAnswer = async (newForm: loveAnswerState) => {
   } as loveAnswerState
   await run(
     db
-      .from('prompt_answers')
+      .from('compatibility_answers_free')
       .upsert(input, { onConflict: 'question_id,creator_id' })
   )
 }
@@ -167,7 +167,7 @@ const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }
 
 export const IndividualQuestionRow = (props: {
   row: rowFor<'compatibility_prompts'>
-  initialAnswer?: rowFor<'prompt_answers'>
+  initialAnswer?: rowFor<'compatibility_answers_free'>
   user: User
   onCancel: () => void
   onSubmit?: () => void

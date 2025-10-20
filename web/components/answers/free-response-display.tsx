@@ -92,7 +92,7 @@ export function FreeResponseDisplay(props: {
 }
 
 function AnswerBlock(props: {
-  answer: rowFor<'prompt_answers'>
+  answer: rowFor<'compatibility_answers_free'>
   questions: QuestionWithCountType[]
   isCurrentUser: boolean
   user: User

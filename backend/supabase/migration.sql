@@ -8,7 +8,7 @@ BEGIN;
 \i backend/supabase/private_users.sql
 \i backend/supabase/private_user_messages.sql
 \i backend/supabase/private_user_seen_message_channels.sql
-\i backend/supabase/prompt_answers.sql
+\i backend/supabase/compatibility_answers_free.sql
 \i backend/supabase/profile_comments.sql
 \i backend/supabase/compatibility_answers.sql
 \i backend/supabase/profile_likes.sql

@@ -28,9 +28,6 @@ export type User = {
   isBannedFromPosting?: boolean
   userDeleted?: boolean
 
-  // fromLove?: boolean // whether originally from manifold.love back when it was synced to manifold
-  // fromManifold?: boolean // whether has a manifold.markets account
-
   sweestakesVerified?: boolean
   verifiedPhone?: boolean
   idVerified?: boolean

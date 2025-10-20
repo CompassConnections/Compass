@@ -80,7 +80,7 @@ export default function ProfileHeader(props: {
             <Button
               color={'gray-outline'}
               onClick={() => {
-                track('edit love profile')
+                track('editprofile')
                 Router.push('profile')
               }}
               size="sm"

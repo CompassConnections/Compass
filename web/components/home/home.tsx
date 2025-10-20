@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {Col} from "web/components/layout/col";
-import {SignUpButton} from "web/components/nav/love-sidebar";
+import {SignUpButton} from "web/components/nav/sidebar";
 
 export function AboutBox(props: {
   title: string

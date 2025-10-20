@@ -21,7 +21,7 @@ export const NewMatchEmail = ({
                                 email
                               }: NewMatchEmailProps) => {
   const name = onUser.name.split(' ')[0]
-  // const userImgSrc = getLoveOgImageUrl(matchedWithUser, matchedProfile)
+  // const userImgSrc = getOgImageUrl(matchedWithUser, matchedProfile)
   const userUrl = `https://${DOMAIN}/${matchedWithUser.username}`
 
   return (

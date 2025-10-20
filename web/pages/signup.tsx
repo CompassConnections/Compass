@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
-import {initialRequiredState, RequiredLoveUserForm,} from 'web/components/required-profile-form'
-import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
+import {initialRequiredState, RequiredProfileUserForm,} from 'web/components/required-profile-form'
+import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {useUser} from 'web/hooks/use-user'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
@@ -20,7 +20,7 @@ export default function SignupPage() {
   const user = useUser()
   console.debug('user:', user)
   const router = useRouter()
-  useTracking('view love signup page')
+  useTracking('viewsignup page')
 
   // Hold loading indicator for 5s when user transitions from undefined -> null
   const prevUserRef = useRef<ReturnType<typeof useUser>>()
@@ -73,7 +73,7 @@ export default function SignupPage() {
   if (step === 1 && user) {
     return <PageBase trackPageView={'register'}>
       <Col className={'w-full px-6 py-4'}>
-        <OptionalLoveUserForm
+        <OptionalProfileUserForm
           setProfile={setProfileState}
           profile={profileForm}
           user={user}
@@ -95,7 +95,7 @@ export default function SignupPage() {
       ) : (
         <Col className={'w-full max-w-2xl px-6 py-4'}>
           {step === 0 ? (
-            <RequiredLoveUserForm
+            <RequiredProfileUserForm
               user={user}
               setProfile={setProfileState}
               profile={profileForm}
@@ -127,7 +127,7 @@ export default function SignupPage() {
                   setProfileForm(profile)
                   setStep(1)
                   scrollTo(0, 0)
-                  track('submit love required profile')
+                  track('submitrequired profile')
                 }
               }}
             />

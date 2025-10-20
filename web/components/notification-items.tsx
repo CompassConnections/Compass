@@ -33,7 +33,7 @@ export function NotificationItem(props: { notification: Notification }) {
   } else if (reason === 'new_profile_like') {
     return <ProfileLikeNotification {...params} />
   } else if (reason === 'new_profile_ship') {
-    return <LoveShipNotification {...params} />
+    return <ProfileShipNotification {...params} />
   } else {
     return <>unknown notification: {sourceType}</>
   }
@@ -164,7 +164,7 @@ function ProfileLikeNotification(props: {
   )
 }
 
-function LoveShipNotification(props: {
+function ProfileShipNotification(props: {
   notification: Notification
   highlighted: boolean
   setHighlighted: (highlighted: boolean) => void

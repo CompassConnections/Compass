@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
-import { Row } from 'web/components/layout/row'
-import { ExpandingInput } from 'web/components/widgets/expanding-input'
-import { PlusIcon, XIcon } from '@heroicons/react/outline'
-import { MAX_ANSWER_LENGTH } from 'common/envs/constants'
-import { useUser } from 'web/hooks/use-user'
-import { User } from 'common/user'
-import { useEvent } from 'web/hooks/use-event'
-import { track } from 'web/lib/service/analytics'
-import { toast } from 'react-hot-toast'
-import { api } from 'web/lib/api'
-import { Row as rowFor } from 'common/supabase/utils'
-import { AnswerCompatibilityQuestionContent } from './answer-compatibility-question-content'
-import { uniq } from 'lodash'
-import { QuestionWithCountType } from 'web/hooks/use-questions'
-import { MAX_COMPATIBILITY_QUESTION_LENGTH } from 'common/profiles/constants'
+import {useState} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {ExpandingInput} from 'web/components/widgets/expanding-input'
+import {PlusIcon, XIcon} from '@heroicons/react/outline'
+import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
+import {useUser} from 'web/hooks/use-user'
+import {User} from 'common/user'
+import {useEvent} from 'web/hooks/use-event'
+import {track} from 'web/lib/service/analytics'
+import {toast} from 'react-hot-toast'
+import {api} from 'web/lib/api'
+import {Row as rowFor} from 'common/supabase/utils'
+import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
+import {uniq} from 'lodash'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
 
 export function AddCompatibilityQuestionButton(props: {
   refreshCompatibilityAll: () => void
@@ -121,13 +121,13 @@ function CreateCompatibilityModalContent(props: {
   const noRepeatOptions = uniq(options).length == options.length
 
   const generateJson = () => {
-    const jsonObject = options.reduce((obj, item, index) => {
+     // Note the change in the generic type
+    return options.reduce((obj, item, index) => {
       if (item.trim() !== '') {
         obj[item] = index // Mapping each option to its index
       }
       return obj
-    }, {} as Record<string, number>) // Note the change in the generic type
-    return jsonObject
+    }, {} as Record<string, number>)
   }
 
   const onAddQuestion = useEvent(async () => {
@@ -142,7 +142,7 @@ function CreateCompatibilityModalContent(props: {
       if (q) {
         afterAddQuestion(q as rowFor<'compatibility_prompts'>)
       }
-      track('create love compatibility question')
+      track('create compatibility question')
     } catch (e) {
       toast.error('Error creating compatibility question. Try again?')
     }

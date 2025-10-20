@@ -9,7 +9,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useTracking} from 'web/hooks/use-tracking'
 import {BackButton} from 'web/components/back-button'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
-import {getLoveOgImageUrl} from 'common/profiles/og-image'
+import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {getProfileRow, ProfileRow} from 'common/profiles/profile'
 import {db} from 'web/lib/supabase/db'
 import {ProfileInfo} from 'web/components/profile/profile-info'
@@ -125,7 +125,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   // const isCurrentUser = currentUser?.id === user?.id
 
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
-  useTracking('view love profile', {username: user?.username})
+  useTracking('viewprofile', {username: user?.username})
 
   const [staticProfile] = useState(
     props.profile && user ? {...props.profile, user: user} : null
@@ -145,7 +145,7 @@ function UserPageInner(props: ActiveUserPageProps) {
         title={`${user.name}`}
         description={user.bio ?? ''}
         url={`/${user.username}`}
-        image={getLoveOgImageUrl(user, profile)}
+        image={getProfileOgImageUrl(user, profile)}
       />
       {(user.isBannedFromPosting || user.userDeleted) && (
         <Head>

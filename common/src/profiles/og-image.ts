@@ -3,7 +3,7 @@ import { ProfileRow } from 'common/profiles/profile'
 import { buildOgUrl } from 'common/util/og'
 
 // TODO: handle age, gender undefined better
-export type LoveOgProps = {
+export type ogProps = {
   // user props
   avatarUrl: string
   username: string
@@ -14,15 +14,15 @@ export type LoveOgProps = {
   gender: string
 }
 
-export function getLoveOgImageUrl(user: User, profile?: ProfileRow | null) {
-  const loveProps = {
+export function getProfileOgImageUrl(user: User, profile?: ProfileRow | null) {
+  const props = {
     avatarUrl: profile?.pinned_url,
     username: user.username,
     name: user.name,
     age: profile?.age?.toString() ?? '25',
     city: profile?.city ?? 'Internet',
     gender: profile?.gender ?? '???',
-  } as LoveOgProps
+  } as ogProps
 
-  return buildOgUrl(loveProps, 'profile')
+  return buildOgUrl(props, 'profile')
 }

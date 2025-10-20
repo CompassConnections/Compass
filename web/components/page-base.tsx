@@ -14,12 +14,12 @@ import {ReactNode, useState} from 'react'
 import {Toaster} from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
-import {BottomNavBar} from 'web/components/nav/love-bottom-nav-bar'
+import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
-import Sidebar from './nav/love-sidebar'
+import Sidebar from './nav/sidebar'
 import {useProfile} from 'web/hooks/use-profile'
 import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
@@ -55,7 +55,7 @@ export function PageBase(props: {
   const mobileSidebarOptions = getMobileSidebar(() => setIsAddFundsModalOpen(true))
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  trackPageView && useTracking(`view love ${trackPageView}`, trackPageProps)
+  trackPageView && useTracking(`view ${trackPageView}`, trackPageProps)
   useOnline()
   const [_, setIsAddFundsModalOpen] = useState(false)
 

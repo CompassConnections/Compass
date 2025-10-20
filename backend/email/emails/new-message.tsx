@@ -25,7 +25,7 @@ export const NewMessageEmail = ({
   const name = toUser.name.split(' ')[0]
   const creatorName = fromUser.name
   const messagesUrl = `https://${DOMAIN}/messages/${channelId}`
-  // const userImgSrc = getLoveOgImageUrl(fromUser, fromUserProfile)
+  // const userImgSrc = getOgImageUrl(fromUser, fromUserProfile)
 
   return (
     <Html>

@@ -15,18 +15,18 @@ export default function ReferralsPage() {
     : `https://${ENV_CONFIG.domain}/`
 
   return (
-    <PageBase trackPageView={'love referrals'} className="items-center">
+    <PageBase trackPageView={'referrals'} className="items-center">
       <SEO
-        title="Share the love"
+        title="Compass"
         description={`Invite someone to join Compass!`}
       />
 
       <Col className="bg-canvas-0 rounded-lg p-4 sm:p-8">
-        <Title>Share the love!</Title>
+        <Title>Invite someone to join Compass!</Title>
 
         <div className="mb-4">Invite someone to join</div>
 
-        <CopyLinkRow url={url} eventTrackingName="copy love referral" />
+        <CopyLinkRow url={url} eventTrackingName="copyreferral" />
 
         <QRCode url={url} className="mt-4 self-center" />
       </Col>

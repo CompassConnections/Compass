@@ -45,7 +45,7 @@ export const QuestionsForm = (props: { questionType: QuestionType }) => {
               <Button
                 color={'indigo-outline'}
                 onClick={() => {
-                  track(`submit love questions page ${questionType}`)
+                  track(`submitquestions page ${questionType}`)
                   if (user) router.push(`/${user.username}`)
                   else router.push('/')
                 }}
@@ -59,8 +59,8 @@ export const QuestionsForm = (props: { questionType: QuestionType }) => {
     </Col>
   )
 }
-type loveAnswer = rowFor<'compatibility_answers_free'>
-export type loveAnswerState = Omit<loveAnswer, 'id' | 'created_time'>
+type compatibilityAnswer = rowFor<'compatibility_answers_free'>
+export type compatibilityAnswerState = Omit<compatibilityAnswer, 'id' | 'created_time'>
 
 const fetchPrevious = async (id: number, userId: string) => {
   const res = await run(
@@ -96,11 +96,11 @@ export const filterKeys = (
   return Object.fromEntries(filteredEntries)
 }
 
-const submitAnswer = async (newForm: loveAnswerState) => {
+const submitAnswer = async (newForm: compatibilityAnswerState) => {
   if (!newForm) return
   const input = {
     ...filterKeys(newForm, (key, _) => !['id', 'created_time'].includes(key)),
-  } as loveAnswerState
+  } as compatibilityAnswerState
   await run(
     db
       .from('compatibility_answers_free')
@@ -112,9 +112,9 @@ const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }
   const { row, user } = props
   const { question, id, answer_type, multiple_choice_options } = row
   const options = multiple_choice_options as Record<string, number>
-  const [form, setForm] = usePersistentLocalState<loveAnswerState>(
+  const [form, setForm] = usePersistentLocalState<compatibilityAnswerState>(
     getInitialForm(user.id, id),
-    `love_answer_${id}_user_${user.id}`
+    `compatibility_answer_${id}_user_${user.id}`
   )
 
   useEffect(() => {
@@ -176,9 +176,9 @@ export const IndividualQuestionRow = (props: {
   const { row, user, onCancel, onSubmit, initialAnswer, className } = props
   const { id, answer_type, multiple_choice_options } = row
   const options = multiple_choice_options as Record<string, number>
-  const [form, setForm] = usePersistentLocalState<loveAnswerState>(
+  const [form, setForm] = usePersistentLocalState<compatibilityAnswerState>(
     initialAnswer ?? getInitialForm(user.id, id),
-    `love_answer_${id}_user_${user.id}`
+    `compatibility_answer_${id}_user_${user.id}`
   )
 
   useEffect(() => {

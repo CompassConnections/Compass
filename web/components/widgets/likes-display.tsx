@@ -14,7 +14,7 @@ import { useUserById } from 'web/hooks/use-user-supabase'
 import { SendMessageButton } from 'web/components/messaging/send-message-button'
 import { ShipsList } from './ships-display'
 import { Subtitle } from './profile-subtitle'
-import { LikeData, ShipData } from 'common/api/love-types'
+import { LikeData, ShipData } from 'common/api/profile-types'
 
 export const LikesDisplay = (props: {
   likesGiven: LikeData[]

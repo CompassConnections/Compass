@@ -1,6 +1,6 @@
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { APIError, APIHandler } from './helpers/endpoint'
-import { createLoveShipNotification } from 'shared/create-love-notification'
+import { createProfileShipNotification } from 'shared/create-profile-notification'
 import { log } from 'shared/utils'
 import { tryCatch } from 'common/util/try-catch'
 import { insert } from 'shared/supabase/utils'
@@ -61,8 +61,8 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
 
   const continuation = async () => {
     await Promise.all([
-      createLoveShipNotification(data, data.target1_id),
-      createLoveShipNotification(data, data.target2_id),
+      createProfileShipNotification(data, data.target1_id),
+      createProfileShipNotification(data, data.target2_id),
     ])
   }
 

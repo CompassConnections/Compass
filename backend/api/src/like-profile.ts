@@ -1,6 +1,6 @@
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { APIError, APIHandler } from './helpers/endpoint'
-import { createProfileLikeNotification } from 'shared/create-love-notification'
+import { createProfileLikeNotification } from 'shared/create-profile-notification'
 import { getHasFreeLike } from './has-free-like'
 import { log } from 'shared/utils'
 import { tryCatch } from 'common/util/try-catch'

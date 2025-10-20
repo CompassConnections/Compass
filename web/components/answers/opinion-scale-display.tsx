@@ -47,7 +47,7 @@ export function OpinionScale(props: {
             size="xs"
             className={''}
             onClick={() => {
-              track('edit love questions')
+              track('edit questions')
               Router.push('opinion-scale')
             }}
           >

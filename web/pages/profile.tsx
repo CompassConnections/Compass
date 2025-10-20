@@ -1,8 +1,8 @@
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {OptionalLoveUserForm} from 'web/components/optional-profile-form'
-import {RequiredLoveUserForm} from 'web/components/required-profile-form'
+import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
+import {RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
@@ -43,7 +43,7 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
     <PageBase trackPageView={'profile'}>
       <Col className="items-center">
         <Col className={'w-full px-6 py-4'}>
-          <RequiredLoveUserForm
+          <RequiredProfileUserForm
             user={user}
             setProfile={setProfileState}
             profile={profile}
@@ -53,7 +53,7 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
             setEditDisplayName={setDisplayName}
           />
           <div className={'h-4'}/>
-          <OptionalLoveUserForm
+          <OptionalProfileUserForm
             profile={profile}
             user={user}
             setProfile={setProfileState}

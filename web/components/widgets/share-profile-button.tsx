@@ -16,7 +16,7 @@ export const ShareProfileButton = (props: {
     <CopyLinkOrShareButton
       className={className}
       url={shareUrl}
-      eventTrackingName="share love profile"
+      eventTrackingName="shareprofile"
     >
       <div className="ml-2 text-sm">Share</div>
     </CopyLinkOrShareButton>

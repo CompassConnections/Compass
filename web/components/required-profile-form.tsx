@@ -35,7 +35,7 @@ export const initialRequiredState = {
 //   initialRequiredState
 // ) as (keyof typeof initialRequiredState)[]
 
-export const RequiredLoveUserForm = (props: {
+export const RequiredProfileUserForm = (props: {
   user: User
   // TODO thread this properly instead of this jank
   setEditUsername?: (name: string) => unknown

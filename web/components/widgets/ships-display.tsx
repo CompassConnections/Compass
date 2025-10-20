@@ -15,7 +15,7 @@ import { useUser } from 'web/hooks/use-user'
 import { Subtitle } from './profile-subtitle'
 import { ShipButton } from './ship-button'
 import { hasShipped } from 'web/lib/util/ship-util'
-import { ShipData } from 'common/api/love-types'
+import { ShipData } from 'common/api/profile-types'
 import { useUserById } from 'web/hooks/use-user-supabase'
 import { User } from 'common/user'
 

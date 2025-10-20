@@ -31,7 +31,7 @@ import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
 import {POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
-export const OptionalLoveUserForm = (props: {
+export const OptionalProfileUserForm = (props: {
   profile: ProfileRow
   setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K]) => void
   user: User
@@ -87,7 +87,7 @@ export const OptionalLoveUserForm = (props: {
 
     onSubmit && (await onSubmit())
     setIsSubmitting(false)
-    track('submit love optional profile')
+    track('submit optional profile')
     if (user)
       router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
     else router.push('/')

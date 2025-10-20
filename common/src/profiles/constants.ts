@@ -1,6 +1,6 @@
 import { isProd } from 'common/envs/is-prod'
 
-export const manifoldLoveUserId = isProd()
+export const compassUserId = isProd()
   ? 'tRZZ6ihugZQLXPf6aPRneGpWLmz1'
   : 'RlXR2xa4EFfAzdCbSe45wkcdarh1'
 

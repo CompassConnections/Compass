@@ -1,6 +1,6 @@
 import {
   contentSchema,
-  combinedLoveUsersSchema,
+  combinedProfileSchema,
   baseProfilesSchema,
   arraybeSchema,
 } from 'common/api/zod-types'
@@ -11,7 +11,7 @@ import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
 import {z} from 'zod'
-import {LikeData, ShipData} from './love-types'
+import {LikeData, ShipData} from './profile-types'
 import {DisplayUser, FullUser} from './user-types'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Notification} from 'common/notifications'
@@ -160,7 +160,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    props: combinedLoveUsersSchema.partial(),
+    props: combinedProfileSchema.partial(),
     returns: {} as ProfileRow,
   },
   'update-notif-settings': {

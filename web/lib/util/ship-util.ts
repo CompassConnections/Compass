@@ -1,4 +1,4 @@
-import { ShipData } from 'common/api/love-types'
+import { ShipData } from 'common/api/profile-types'
 import { User } from 'common/user'
 
 export const hasShipped = (

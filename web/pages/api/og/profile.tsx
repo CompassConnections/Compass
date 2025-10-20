@@ -3,7 +3,7 @@ import { ImageResponseOptions } from '@vercel/og/dist/types'
 import { NextRequest } from 'next/server'
 import { classToTw } from 'web/components/og/utils'
 import { Gender, convertGender } from 'common/gender'
-import { LoveOgProps } from 'common/profiles/og-image'
+import { ogProps } from 'common/profiles/og-image'
 
 export const config = { runtime: 'edge' }
 
@@ -42,7 +42,7 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-function OgProfile(props: LoveOgProps) {
+function OgProfile(props: ogProps) {
   const { avatarUrl, username, name, age, city, gender } = props
   return (
     <div
@@ -108,10 +108,10 @@ export default async function handler(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const options = await getCardOptions()
-    const loveOgProps = Object.fromEntries(
+    const ogProps = Object.fromEntries(
       searchParams.entries()
-    ) as LoveOgProps
-    const image = OgProfile(loveOgProps)
+    ) as ogProps
+    const image = OgProfile(ogProps)
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)
   } catch (e: any) {

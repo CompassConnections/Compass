@@ -94,5 +94,5 @@ const optionalProfilesSchema = z.object({
   pref_romantic_styles: z.array(z.string()),
 })
 
-export const combinedLoveUsersSchema =
+export const combinedProfileSchema =
   baseProfilesSchema.merge(optionalProfilesSchema)

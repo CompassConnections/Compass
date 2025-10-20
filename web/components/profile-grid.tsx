@@ -110,7 +110,7 @@ function ProfilePreview(props: {
 
   return (
     <Link
-      onClick={() => track('click love profile preview')}
+      onClick={() => track('clickprofile preview')}
       href={`/${user.username}`}
       className="cursor-pointer group block bg-canvas-100 rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-200 h-full"
     >

@@ -14,10 +14,6 @@ select
 from
   temp_users;
 
--- Rename temp_love_messages
--- alter table temp_love_messages
--- rename to private_user_messages;
-
 -- alter table private_user_messages
 -- alter column channel_id set not null,
 -- alter column content set not null,

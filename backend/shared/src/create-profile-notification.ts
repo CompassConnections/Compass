@@ -39,7 +39,7 @@ export const createProfileLikeNotification = async (like: Row<'profile_likes'>) 
   return await insertNotificationToSupabase(notification, pg)
 }
 
-export const createLoveShipNotification = async (
+export const createProfileShipNotification = async (
   ship: Row<'profile_ships'>,
   recipientId: string
 ) => {

@@ -33,7 +33,7 @@ export const NOTIFICATION_TYPES_TO_SELECT = [
   'new_match', // new match markets
   'comment_on_profile', // endorsements
   'profile_like',
-  'love_ship',
+  'profile_ship',
 ]
 
 export const NOTIFICATIONS_PER_PAGE = 30

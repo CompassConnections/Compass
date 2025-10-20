@@ -40,7 +40,7 @@ export const createProfileLikeNotification = async (like: Row<'profile_likes'>) 
 }
 
 export const createLoveShipNotification = async (
-  ship: Row<'love_ships'>,
+  ship: Row<'profile_ships'>,
   recipientId: string
 ) => {
   const { creator_id, target1_id, target2_id, ship_id } = ship
@@ -61,7 +61,7 @@ export const createLoveShipNotification = async (
 
   const { sendToBrowser } = getNotificationDestinationsForUser(
     targetPrivateUser,
-    'new_love_ship'
+    'new_profile_ship'
   )
   if (!sendToBrowser) return
 
@@ -69,11 +69,11 @@ export const createLoveShipNotification = async (
   const notification: Notification = {
     id,
     userId: recipientId,
-    reason: 'new_love_ship',
+    reason: 'new_profile_ship',
     createdTime: Date.now(),
     isSeen: false,
     sourceId: ship_id,
-    sourceType: 'love_ship',
+    sourceType: 'profile_ship',
     sourceUpdateType: 'created',
     sourceUserName: profile.user.name,
     sourceUserUsername: profile.user.username,

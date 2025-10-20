@@ -55,8 +55,8 @@ function groupGeneralNotifications(
         ? 'quest_payout'
         : n.sourceType === 'profile_like'
         ? 'profile_like'
-        : n.sourceType === 'love_ship'
-        ? 'love_ship'
+        : n.sourceType === 'profile_ship'
+        ? 'profile_ship'
         : n.data?.isPartner
         ? 'isPartner'
         : 'unknown')

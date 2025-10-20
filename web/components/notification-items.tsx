@@ -32,7 +32,7 @@ export function NotificationItem(props: { notification: Notification }) {
     return <NewMatchNotification {...params} />
   } else if (reason === 'new_profile_like') {
     return <ProfileLikeNotification {...params} />
-  } else if (reason === 'new_love_ship') {
+  } else if (reason === 'new_profile_ship') {
     return <LoveShipNotification {...params} />
   } else {
     return <>unknown notification: {sourceType}</>

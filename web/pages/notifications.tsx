@@ -168,7 +168,7 @@ const LoadedNotificationSettings = (props: { privateUser: PrivateUser }) => {
       question: '... endorses you?',
     },
     {
-      type: 'new_love_ship',
+      type: 'new_profile_ship',
       question: '... ships you?',
     },
     {

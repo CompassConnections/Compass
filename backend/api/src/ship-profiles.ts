@@ -14,7 +14,7 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
   // Check if ship already exists or with swapped target IDs
   const existing = await tryCatch(
     pg.oneOrNone<{ ship_id: string }>(
-      `select ship_id from love_ships
+      `select ship_id from profile_ships
       where creator_id = $1
       and (
         target1_id = $2 and target2_id = $3
@@ -33,7 +33,7 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
   if (existing.data) {
     if (remove) {
       const { error } = await tryCatch(
-        pg.none('delete from love_ships where ship_id = $1', [
+        pg.none('delete from profile_ships where ship_id = $1', [
           existing.data.ship_id,
         ])
       )
@@ -48,7 +48,7 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
 
   // Insert the new ship
   const { data, error } = await tryCatch(
-    insert(pg, 'love_ships', {
+    insert(pg, 'profile_ships', {
       creator_id: creatorId,
       target1_id: targetUserId1,
       target2_id: targetUserId2,

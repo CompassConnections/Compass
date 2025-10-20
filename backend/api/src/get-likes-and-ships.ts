@@ -68,11 +68,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
   }>(
     `
     select 
-      target1_id, target2_id, creator_id, love_ships.created_time,
+      target1_id, target2_id, creator_id, profile_ships.created_time,
       target1_id as target_id
-    from love_ships
-    join profiles on profiles.user_id = love_ships.target1_id
-    join users on users.id = love_ships.target1_id
+    from profile_ships
+    join profiles on profiles.user_id = profile_ships.target1_id
+    join users on users.id = profile_ships.target1_id
     where target2_id = $1
       and profiles.looking_for_matches
       and profiles.pinned_url is not null
@@ -81,11 +81,11 @@ export const getLikesAndShipsMain = async (userId: string) => {
     union all
 
     select
-      target1_id, target2_id, creator_id, love_ships.created_time,
+      target1_id, target2_id, creator_id, profile_ships.created_time,
       target2_id as target_id
-    from love_ships
-    join profiles on profiles.user_id = love_ships.target2_id
-    join users on users.id = love_ships.target2_id
+    from profile_ships
+    join profiles on profiles.user_id = profile_ships.target2_id
+    join users on users.id = profile_ships.target2_id
     where target1_id = $1
       and profiles.looking_for_matches
       and profiles.pinned_url is not null

@@ -1,7 +1,7 @@
 import {PageBase} from "web/components/page-base";
 import ChartMembers from "web/components/widgets/charts";
 import {getCount} from "web/lib/supabase/users";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import StatBox from "web/components/widgets/stat-box";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";

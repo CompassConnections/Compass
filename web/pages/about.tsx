@@ -1,5 +1,5 @@
 import {PageBase} from 'web/components/page-base'
-import React, {ReactNode} from "react";
+import {ReactNode} from "react";
 import Link from "next/link";
 import {discordLink, formLink, githubRepo} from "common/constants";
 import {SEO} from "web/components/SEO";

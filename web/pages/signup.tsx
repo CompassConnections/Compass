@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {initialRequiredState, RequiredProfileUserForm,} from 'web/components/required-profile-form'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'

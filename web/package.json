@@ -2,6 +2,7 @@
   "name": "web",
   "version": "1.0.0",
   "private": true,
+  "homepage": ".",
   "scripts": {
     "serve": "next dev -p 3000",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",

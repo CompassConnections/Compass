@@ -51,6 +51,18 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   useHasLoaded()
 
   useEffect(() => {
+    console.log('registering service worker...');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((reg) => console.log('✅ registered', reg))
+        .catch((err) => console.error('❌ failed', err));
+    } else {
+      console.warn('Service workers not supported in this browser');
+    }
+  }, []);
+
+  useEffect(() => {
     initTracking()
 
     const handleRouteChange = () => posthog?.capture('$pageview')

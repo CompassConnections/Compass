@@ -1,0 +1,16 @@
+{
+  "short_name": "Compass",
+  "name": "Compass",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "500x500",
+      "type": "image/ico"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait-primary"
+}

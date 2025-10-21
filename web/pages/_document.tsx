@@ -14,6 +14,14 @@ export default function Document() {
           // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+
+        {/* PWA primary color */}
+        <meta name="theme-color" content="#0d6efd" />
+        {/*/!* Link to your manifest *!/*/}
+        <link rel="manifest" href="/manifest.json" />
+        {/*/!* App icons *!/*/}
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+
         <Script src="/init-theme.js" strategy="beforeInteractive"/>
         {IS_DEPLOYED && <Script id="devtools-warning" strategy="afterInteractive" dangerouslySetInnerHTML={{
           __html: `(() => { try {

@@ -398,14 +398,14 @@ ul {
 
 .custom-link a,
 .custom-link button {
-    color: rgb(var(--color-primary-600));
+    color: #0969da;
     text-decoration: none;
     font-family: var(--font-main), serif;
 }
 
 .dark .custom-link a,
 .dark .custom-link button {
-    color: rgb(var(--color-primary-600));
+    color: #4493f8;
     text-decoration: none;
     font-family: var(--font-main), serif;
 }

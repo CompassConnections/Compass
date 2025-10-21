@@ -1,7 +1,7 @@
 import {PageBase} from 'web/components/page-base'
 import {ReactNode} from "react";
 import Link from "next/link";
-import {discordLink, formLink, githubRepo, stoatLink} from "common/constants";
+import {discordLink, formLink, githubRepo} from "common/constants";
 
 
 export const AboutBlock = (props: {
@@ -108,20 +108,20 @@ export default function About() {
                   <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
                   <p className="mb-4 text-center">Let's shape the platform together.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
-                  <a
-                    href={discordLink}
-                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                    target="_blank" rel="noopener noreferrer"
-                  >
-                    Join the Discord
-                  </a>
-                  {/*<a*/}
-                  {/*  href={stoatLink}*/}
-                  {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"*/}
-                  {/*  target="_blank" rel="noopener noreferrer"*/}
-                  {/*>*/}
-                  {/*  Join on Stoat / Revolt*/}
-                  {/*</a>*/}
+                    <a
+                      href={discordLink}
+                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
+                      target="_blank" rel="noopener noreferrer"
+                    >
+                      Join the Discord
+                    </a>
+                    {/*<a*/}
+                    {/*  href={stoatLink}*/}
+                    {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"*/}
+                    {/*  target="_blank" rel="noopener noreferrer"*/}
+                    {/*>*/}
+                    {/*  Join on Stoat / Revolt*/}
+                    {/*</a>*/}
                   </div>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">

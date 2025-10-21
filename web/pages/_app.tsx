@@ -51,7 +51,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   useHasLoaded()
 
   useEffect(() => {
-    console.log('registering service worker...');
+    console.log('Registering service worker...');
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/service-worker.js')

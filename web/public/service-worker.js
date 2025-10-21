@@ -12,6 +12,13 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
+    // Ignore Next.js dev HMR and static chunks
+    if (url.pathname.startsWith('/_next/') || url.pathname.startsWith('/__next/')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) return cachedResponse;

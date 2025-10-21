@@ -1,7 +1,7 @@
 import {PageBase} from "web/components/page-base";
 import {supportEmail} from "common/constants";
 import {SEO} from "web/components/SEO";
-import React from "react";
+
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function PrivacyPage() {

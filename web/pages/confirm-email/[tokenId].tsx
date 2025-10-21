@@ -1,7 +1,7 @@
 import {PageBase} from 'web/components/page-base'
 import {Col} from 'web/components/layout/col'
 import {SEO} from "web/components/SEO";
-import React from "react";
+
 
 export default function ConfirmEmail() {
   return (

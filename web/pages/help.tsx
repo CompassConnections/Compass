@@ -3,7 +3,7 @@ import {SEO} from 'web/components/SEO'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import React from "react";
+
 
 export default function HelpPage() {
   return (

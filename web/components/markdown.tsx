@@ -1,7 +1,7 @@
 import {PageBase} from "web/components/page-base";
 import {Col} from "web/components/layout/col";
 import ReactMarkdown from "react-markdown";
-import React from "react";
+
 import Link from "next/link";
 import {SEO} from "web/components/SEO";
 import {capitalize} from "lodash";

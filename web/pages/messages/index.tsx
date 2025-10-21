@@ -20,7 +20,7 @@ import { MultipleOrSingleAvatars } from 'web/components/multiple-or-single-avata
 import { BannedBadge } from 'web/components/widgets/user-link'
 import { PrivateMessageChannel } from 'common/supabase/private-messages'
 import {SEO} from "web/components/SEO";
-import React from "react";
+
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()

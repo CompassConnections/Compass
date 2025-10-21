@@ -7,7 +7,7 @@ import { Title } from 'web/components/widgets/title'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import {discordLink, formLink, githubIssues} from "common/constants";
 import {SEO} from "web/components/SEO";
-import React from "react";
+
 
 export default function Custom404(props: { customText?: string }) {
   return (

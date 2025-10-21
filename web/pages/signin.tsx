@@ -1,7 +1,7 @@
 "use client";
 
 import {useSearchParams} from "next/navigation";
-import {Suspense, useEffect, useState} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
 import {auth, firebaseLogin} from "web/lib/firebase/users";
 import FavIcon from "web/public/FavIcon";
@@ -13,6 +13,7 @@ import Router from "next/router";
 import {PageBase} from "web/components/page-base";
 import {useUser} from "web/hooks/use-user";
 import {GoogleButton} from "web/components/buttons/sign-up-button";
+import {SEO} from "web/components/SEO";
 
 export default function LoginPage() {
   return (
@@ -118,6 +119,11 @@ function RegisterComponent() {
   console.debug('Form rendering');
   return (
     <PageBase trackPageView={'signin'}>
+      <SEO
+        title={'Sign In'}
+        description={'Sign in to your account'}
+        url={`/signin`}
+      />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>

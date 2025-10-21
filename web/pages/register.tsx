@@ -1,6 +1,6 @@
 "use client";
 
-import {Suspense, useEffect, useState} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import Link from "next/link";
 import {useSearchParams} from "next/navigation";
 import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup";
@@ -14,6 +14,7 @@ import {db} from "web/lib/supabase/db";
 import Router from "next/router";
 import {useUser} from "web/hooks/use-user";
 import {GoogleButton} from "web/components/buttons/sign-up-button";
+import {SEO} from "web/components/SEO";
 
 
 export default function RegisterPage() {
@@ -111,6 +112,11 @@ function RegisterComponent() {
 
   return (
     <PageBase trackPageView={'register'}>
+      <SEO
+        title={'Register'}
+        description={'Register for a new account'}
+        url={`/register`}
+      />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {registrationSuccess ? (

@@ -2,11 +2,18 @@ import {PageBase} from 'web/components/page-base'
 import {GeneralButton} from "web/components/buttons/general-button";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 
 export default function Organization() {
   return (
     <PageBase trackPageView={'social'}>
+      <SEO
+        title={'Organization'}
+        description={'Organization'}
+        url={`/organization`}
+      />
       <h3 className="text-4xl font-bold text-center mt-8 mb-8">Organization</h3>
       <Col
         className={clsx(

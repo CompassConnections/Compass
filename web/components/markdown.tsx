@@ -3,6 +3,8 @@ import {Col} from "web/components/layout/col";
 import ReactMarkdown from "react-markdown";
 import React from "react";
 import Link from "next/link";
+import {SEO} from "web/components/SEO";
+import {capitalize} from "lodash";
 
 type Props = {
   content: string;
@@ -26,8 +28,14 @@ const MarkdownLink = ({href, children}: { href?: string; children: React.ReactNo
 }
 
 export default function MarkdownPage({content, filename}: Props) {
+  const title = /[A-Z]/.test(filename) ? filename : capitalize(filename)
   return (
     <PageBase trackPageView={filename} className={'col-span-8'}>
+      <SEO
+        title={title}
+        description={title}
+        url={`/` + filename}
+      />
       <Col className="items-center">
         <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
           <ReactMarkdown

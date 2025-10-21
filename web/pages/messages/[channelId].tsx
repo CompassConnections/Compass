@@ -3,7 +3,7 @@ import {useRouter} from 'next/router'
 import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
 import {Col} from 'web/components/layout/col'
 import {User} from 'common/user'
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {track} from 'web/lib/service/analytics'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {uniq} from 'lodash'
@@ -32,6 +32,7 @@ import {useGroupedMessages, usePaginatedScrollingMessages,} from 'web/lib/supaba
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {ChatMessage} from 'common/chat-message'
 import {BackButton} from 'web/components/back-button'
+import {SEO} from "web/components/SEO";
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
@@ -44,6 +45,11 @@ export default function PrivateMessagesPage() {
   }
   return (
     <PageBase trackPageView={'private messages page'}>
+      <SEO
+        title={'Messages'}
+        description={'Messages'}
+        url={`/messages/${channelIdString}`}
+      />
       {router.isReady && channelId && user ? (
         <PrivateMessagesContent user={user} channelId={channelId}/>
       ) : (

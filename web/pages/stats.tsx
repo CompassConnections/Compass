@@ -1,10 +1,11 @@
 import {PageBase} from "web/components/page-base";
 import ChartMembers from "web/components/widgets/charts";
 import {getCount} from "web/lib/supabase/users";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import StatBox from "web/components/widgets/stat-box";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
+import {SEO} from "web/components/SEO";
 
 export default function Stats() {
   const [data, setData] = useState<Record<string, number | null>>({})
@@ -42,7 +43,12 @@ export default function Stats() {
   }, [])
 
   return (
-    <PageBase trackPageView={'charts'}>
+    <PageBase trackPageView={'stats'}>
+      <SEO
+        title={'Stats'}
+        description={'Stats'}
+        url={`/stats`}
+      />
       <h1 className="text-3xl font-semibold text-center mb-6">Growth & Stats</h1>
       <Col className={'sm:mx-4 mx-1 mb-8'}>
         <ChartMembers/>

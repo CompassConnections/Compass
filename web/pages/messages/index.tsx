@@ -19,6 +19,8 @@ import { useRedirectIfSignedOut } from 'web/hooks/use-redirect-if-signed-out'
 import { MultipleOrSingleAvatars } from 'web/components/multiple-or-single-avatars'
 import { BannedBadge } from 'web/components/widgets/user-link'
 import { PrivateMessageChannel } from 'common/supabase/private-messages'
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()
@@ -26,6 +28,11 @@ export default function MessagesPage() {
   const currentUser = useUser()
   return (
     <PageBase trackPageView={'messages page'} className={'p-2'}>
+      <SEO
+        title={'Messages'}
+        description={'Your Messages'}
+        url={`/messages`}
+      />
       {currentUser && <MessagesContent currentUser={currentUser} />}
     </PageBase>
   )

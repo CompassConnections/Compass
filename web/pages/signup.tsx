@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {initialRequiredState, RequiredProfileUserForm,} from 'web/components/required-profile-form'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
@@ -14,6 +14,7 @@ import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileRow} from 'common/profiles/profile'
 import {PageBase} from "web/components/page-base";
+import {SEO} from "web/components/SEO";
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
@@ -72,6 +73,11 @@ export default function SignupPage() {
 
   if (step === 1 && user) {
     return <PageBase trackPageView={'register'}>
+      <SEO
+        title={'Sign Up'}
+        description={'Sign Up to Compass'}
+        url={`/signup`}
+      />
       <Col className={'w-full px-6 py-4'}>
         <OptionalProfileUserForm
           setProfile={setProfileState}

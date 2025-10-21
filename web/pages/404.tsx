@@ -6,10 +6,17 @@ import { Col } from 'web/components/layout/col'
 import { Title } from 'web/components/widgets/title'
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 import {discordLink, formLink, githubIssues} from "common/constants";
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 export default function Custom404(props: { customText?: string }) {
   return (
     <PageBase trackPageView={'404'}>
+      <SEO
+        title={'Not Found'}
+        description={'Not Found'}
+        url={`/404`}
+      />
       <Custom404Content customText={props.customText} />
     </PageBase>
   )

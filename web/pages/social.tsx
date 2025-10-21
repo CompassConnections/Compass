@@ -3,11 +3,18 @@ import {discordLink, githubRepo, redditLink, stoatLink, supportEmail, xLink} fro
 import {GeneralButton} from "web/components/buttons/general-button";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 
 export default function Social() {
   return (
     <PageBase trackPageView={'social'}>
+      <SEO
+        title={'Socials'}
+        description={'Socials'}
+        url={`/social`}
+      />
       <h3 className="text-4xl font-bold text-center mt-8 mb-8">Socials</h3>
       <Col
         className={clsx(

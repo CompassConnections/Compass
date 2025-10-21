@@ -3,6 +3,7 @@ import {Col} from 'web/components/layout/col'
 import {useUser} from 'web/hooks/use-user'
 import {LoggedOutHome} from "web/components/home/home";
 import {ProfilesHome} from "web/components/profiles/profiles-home";
+import React from "react";
 
 
 export default function ProfilesPage() {

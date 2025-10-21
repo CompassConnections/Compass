@@ -1,5 +1,7 @@
 import {PageBase} from "web/components/page-base";
 import {supportEmail} from "common/constants";
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function TermsPage() {
@@ -8,6 +10,11 @@ export default function TermsPage() {
       trackPageView={'terms'}
       className="max-w-4xl mx-auto p-8 text-gray-800 dark:text-white col-span-8 bg-canvas-0"
     >
+      <SEO
+        title={'Terms & Conditions'}
+        description={'Terms & Conditions for Compass'}
+        url={`/terms`}
+      />
       <h1 className="text-3xl font-semibold text-center mb-6">Terms & Conditions</h1>
 
       <p className="text-center text-gray-500 dark:text-white mb-12">

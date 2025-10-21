@@ -1,7 +1,8 @@
 import {PageBase} from 'web/components/page-base'
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
 import Link from "next/link";
 import {discordLink, formLink, githubRepo} from "common/constants";
+import {SEO} from "web/components/SEO";
 
 
 export const AboutBlock = (props: {
@@ -18,6 +19,11 @@ export const AboutBlock = (props: {
 export default function About() {
   return (
     <PageBase trackPageView={'about'}>
+      <SEO
+        title={'About'}
+        description={'About Compass'}
+        url={`/about`}
+      />
       <div className="text-gray-600 dark:text-white min-h-screen p-6">
         <div className="w-full">
           <div className="relative py-8 mb-8 overflow-hidden">

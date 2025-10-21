@@ -3,10 +3,16 @@ import {SEO} from 'web/components/SEO'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import React from "react";
 
 export default function HelpPage() {
   return (
     <PageBase trackPageView={'help'} className={'relative p-2 sm:pt-0'}>
+      <SEO
+        title={'Help'}
+        description={'Help and support for Compass'}
+        url={`/help`}
+      />
       <SEO title={`Help`} description={'Get help with Compass'} url={`/help`}/>
       <Col className="max-w-3xl w-full mx-auto gap-6 custom-link">
         <h1 className="text-3xl font-semibold">Help & Support</h1>

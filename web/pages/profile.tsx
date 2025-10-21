@@ -5,11 +5,12 @@ import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import Router from 'next/router'
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {PageBase} from "web/components/page-base";
+import {SEO} from "web/components/SEO";
 
 export default function ProfilePage() {
   const user = useUser()
@@ -41,6 +42,11 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
 
   return (
     <PageBase trackPageView={'profile'}>
+      <SEO
+        title={'Profile'}
+        description={'Your Profile'}
+        url={`/profile`}
+      />
       <Col className="items-center">
         <Col className={'w-full px-6 py-4'}>
           <RequiredProfileUserForm

@@ -1,5 +1,7 @@
 import {PageBase} from "web/components/page-base";
 import {supportEmail} from "common/constants";
+import {SEO} from "web/components/SEO";
+import React from "react";
 
 // TODO: convert to MarkDown for better readability during modifications?
 export default function PrivacyPage() {
@@ -8,6 +10,11 @@ export default function PrivacyPage() {
       trackPageView={'terms'}
       className="max-w-4xl mx-auto p-8 col-span-8 bg-canvas-0"
     >
+      <SEO
+        title={'Privacy'}
+        description={'Privacy Policy for Compass'}
+        url={`/privacy`}
+      />
       <h1 className="text-3xl font-semibold text-center mb-6">Privacy Policy</h1>
 
       <p className="text-center mb-12">

@@ -16,11 +16,15 @@ export default function Document() {
         />
 
         {/* PWA primary color */}
-        <meta name="theme-color" content="#0d6efd" />
+        <Head>
+          <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff"/>
+          <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117"/>
+        </Head>
+
         {/*/!* Link to your manifest *!/*/}
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json"/>
         {/*/!* App icons *!/*/}
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico"/>
 
         <Script src="/init-theme.js" strategy="beforeInteractive"/>
         {IS_DEPLOYED && <Script id="devtools-warning" strategy="afterInteractive" dangerouslySetInnerHTML={{

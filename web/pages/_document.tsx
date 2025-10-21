@@ -16,10 +16,8 @@ export default function Document() {
         />
 
         {/* PWA primary color */}
-        <Head>
-          <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff"/>
-          <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117"/>
-        </Head>
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff"/>
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117"/>
 
         {/*/!* Link to your manifest *!/*/}
         <link rel="manifest" href="/manifest.json"/>

@@ -27,4 +27,4 @@ Compass is built entirely by volunteers and contributors, meaning every dollar d
 - No marketing budget.
 - No hidden private spending.
 
-This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and accessible.
+This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and accessible. You can donate [here](/support).

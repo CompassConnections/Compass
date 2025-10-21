@@ -106,7 +106,7 @@ export default function About() {
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="join-chats" className="font-bold mb-4 text-xl text-center">Join the Community</h5>
-                  <p className="mb-4 text-center">Shape the product or chat with like-minded people.</p>
+                  <p className="mb-4 text-center">Let's shape the platform together.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                   <a
                     href={discordLink}
@@ -115,41 +115,46 @@ export default function About() {
                   >
                     Join the Discord
                   </a>
-                  <a
-                    href={stoatLink}
-                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                    target="_blank" rel="noopener noreferrer"
-                  >
-                    Join on Stoat / Revolt
-                  </a>
+                  {/*<a*/}
+                  {/*  href={stoatLink}*/}
+                  {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"*/}
+                  {/*  target="_blank" rel="noopener noreferrer"*/}
+                  {/*>*/}
+                  {/*  Join on Stoat / Revolt*/}
+                  {/*</a>*/}
                   </div>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="donate" className="font-bold mb-4 text-xl text-center">Donate</h5>
-                  <p className="mb-4 text-center custom-link"><Link href="/support">Support</Link> our not-for-profit
-                    infrastructure.</p>
+                  <p className="mb-4 text-center custom-link">Support our not-for-profit infrastructure.</p>
                   <div className="flex flex-col gap-4 w-full items-center">
                     <a
-                      href="https://patreon.com/CompassMeet"
+                      href="/support"
                       className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
-                      target="_blank" rel="noopener noreferrer"
                     >
-                      Donate on Patreon
+                      Donation Options
                     </a>
-                    <a
-                      href="https://www.paypal.com/paypalme/CompassConnections"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
-                      target="_blank" rel="noopener noreferrer"
-                    >
-                      Donate on PayPal
-                    </a>
-                    <a
-                      href="https://ko-fi.com/compassconnections"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
-                      target="_blank" rel="noopener noreferrer"
-                    >
-                      Donate on Ko-fi
-                    </a>
+                    {/*<a*/}
+                    {/*  href="https://patreon.com/CompassMeet"*/}
+                    {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"*/}
+                    {/*  target="_blank" rel="noopener noreferrer"*/}
+                    {/*>*/}
+                    {/*  Donate on Patreon*/}
+                    {/*</a>*/}
+                    {/*<a*/}
+                    {/*  href="https://www.paypal.com/paypalme/CompassConnections"*/}
+                    {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"*/}
+                    {/*  target="_blank" rel="noopener noreferrer"*/}
+                    {/*>*/}
+                    {/*  Donate on PayPal*/}
+                    {/*</a>*/}
+                    {/*<a*/}
+                    {/*  href="https://ko-fi.com/compassconnections"*/}
+                    {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"*/}
+                    {/*  target="_blank" rel="noopener noreferrer"*/}
+                    {/*>*/}
+                    {/*  Donate on Ko-fi*/}
+                    {/*</a>*/}
                     {/*<a*/}
                     {/*  href="https://github.com/sponsors/CompassConnections"*/}
                     {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition w-full text-center"*/}

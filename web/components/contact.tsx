@@ -18,7 +18,7 @@ export function ContactComponent() {
     placeholder: 'Contact us here...',
   })
 
-  const hideButton = editor?.getText().length == 0
+  const showButton = !!editor?.getText().length
 
   return (
     <Col className="mx-2">
@@ -29,7 +29,7 @@ export function ContactComponent() {
             editor={editor}
           />
         </div>
-        {!hideButton && (
+        {showButton && (
           <Row className="right-1 justify-between gap-2">
             <Button
               size="xs"

@@ -17,6 +17,7 @@ import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {type GetStaticProps} from 'next'
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import Custom404 from '../404'
 
 export const getStaticProps: GetStaticProps<
   UserPageProps,
@@ -27,11 +28,12 @@ export const getStaticProps: GetStaticProps<
 
   const user = await getUserForStaticProps(db, username)
 
+  // console.log(user)
+
   if (!user) {
     return {
-      notFound: true,
       props: {
-        customText:
+        notFoundCustomText:
           'The profile you are looking for is not on this site... or perhaps you just mistyped?',
       },
     }
@@ -48,6 +50,7 @@ export const getStaticProps: GetStaticProps<
   }
 
   if (user.userDeleted) {
+    console.debug('User deleted')
     return {
       props: {
         user: false,
@@ -57,6 +60,15 @@ export const getStaticProps: GetStaticProps<
   }
 
   const profile = await getProfileRow(user.id, db)
+  if (!profile) {
+    console.debug('No profile', `${user.username} hasn't created a profile yet.`)
+    return {
+      props: {
+        notFoundCustomText: `${user.username} hasn't created a profile yet.`,
+      },
+    }
+  }
+  // console.debug('profile', profile)
   return {
     props: {
       user,
@@ -71,7 +83,7 @@ export const getStaticPaths = () => {
   return {paths: [], fallback: 'blocking'}
 }
 
-type UserPageProps = DeletedUserPageProps | ActiveUserPageProps
+type UserPageProps = DeletedUserPageProps | ActiveUserPageProps | NotFoundPageProps
 
 type DeletedUserPageProps = {
   user: false
@@ -82,9 +94,16 @@ type ActiveUserPageProps = {
   username: string
   profile: ProfileRow
 }
+type NotFoundPageProps = {
+  notFoundCustomText: string
+}
 
 export default function UserPage(props: UserPageProps) {
   // console.debug('Starting UserPage in /[username]')
+  if ('notFoundCustomText' in props) {
+    return <Custom404 customText={props.notFoundCustomText}/>
+  }
+
   if (!props.user) {
     return <PageBase
       trackPageView={'user page'}

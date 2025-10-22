@@ -20,7 +20,7 @@ export function useGroupedUnseenNotifications(
 
 export function useGroupedNotifications(user: User, selectTypes?: string[]) {
   const notifications = useNotifications(user.id)?.filter((n) =>
-    selectTypes?.includes(n.sourceType)
+    selectTypes ? selectTypes.includes(n.sourceType) : true
   )
   const sortedNotifications = notifications
     ? sortBy(notifications, (n) => -n.createdTime)

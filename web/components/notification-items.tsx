@@ -35,7 +35,7 @@ export function NotificationItem(props: { notification: Notification }) {
   } else if (reason === 'new_profile_ship') {
     return <ProfileShipNotification {...params} />
   } else {
-    return <>unknown notification: {sourceType}</>
+    return <BaseNotification {...params}/>
   }
 }
 
@@ -71,6 +71,34 @@ export function CommentOnProfileNotification(props: {
         />{' '}
         {reasonText}
         {!isChildOfGroup && <span>on your profile</span>}
+      </div>
+    </NotificationFrame>
+  )
+}
+
+export function BaseNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+}) {
+  const { notification, highlighted, setHighlighted } = props
+  return (
+    <NotificationFrame
+      notification={notification}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={
+        <AvatarNotificationIcon notification={notification} />
+      }
+      subtitle={
+        <div className="line-clamp-2">
+          <Linkify text={notification.sourceText} />
+        </div>
+      }
+      link={notification.sourceSlug}
+    >
+      <div className="line-clamp-3">
+        <span>{notification.title}</span>
       </div>
     </NotificationFrame>
   )
@@ -250,7 +278,7 @@ export function NotificationUserLink(props: {
 
 export function AvatarNotificationIcon(props: {
   notification: Notification
-  symbol: string | ReactNode
+  symbol?: string | ReactNode
 }) {
   const { notification, symbol } = props
   const { sourceUserName, sourceUserAvatarUrl, sourceUserUsername } =

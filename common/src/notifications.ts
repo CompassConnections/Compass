@@ -3,6 +3,7 @@ import { Row, SupabaseClient } from 'common/supabase/utils'
 export type Notification = {
   id: string
   userId: string
+  title?: string
   reasonText?: string
   reason: string
   createdTime: number

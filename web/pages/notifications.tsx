@@ -1,4 +1,4 @@
-import {type Notification, NOTIFICATION_TYPES_TO_SELECT, NOTIFICATIONS_PER_PAGE,} from 'common/notifications'
+import {type Notification, NOTIFICATIONS_PER_PAGE,} from 'common/notifications'
 import {PrivateUser, type User} from 'common/src/user'
 import {
   notification_destination_types,
@@ -25,7 +25,7 @@ import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
   return (
-    <PageBase trackPageView={'notifications page'}>
+    <PageBase trackPageView={'notifications page'} className={'mx-4'}>
       <NoSEO/>
       <Title>Updates</Title>
       <UncontrolledTabs
@@ -49,8 +49,10 @@ function LoadedNotificationsContent(props: { user: User }) {
   const {user} = props
   const privateUser = usePrivateUser()
 
-  const {groupedNotifications, mostRecentNotification} =
-    useGroupedNotifications(user, NOTIFICATION_TYPES_TO_SELECT)
+  const {groupedNotifications, mostRecentNotification} = useGroupedNotifications(
+    user,
+    // NOTIFICATION_TYPES_TO_SELECT
+  )
 
   const [page, setPage] = useState(0)
 

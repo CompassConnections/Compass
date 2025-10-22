@@ -173,12 +173,13 @@ const notifyOtherUserInChannelIfInactive = async (
   const subscriptions = await getSubscriptionsFromDB(otherUser.id, pg);
   for (const subscription of subscriptions) {
     try {
-      console.log('Sending notification to:', subscription.endpoint);
-      await webPush.sendNotification(subscription, JSON.stringify({
+      const payload = JSON.stringify({
         title: `${creator.name}`,
         body: textContent,
         url: `/messages/${channelId}`,
-      }));
+      })
+      console.log('Sending notification to:', subscription.endpoint, payload);
+      await webPush.sendNotification(subscription, payload);
     } catch (err) {
       console.error('Failed to send notification', err);
       // optionally remove invalid subscription from DB

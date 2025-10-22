@@ -1,6 +1,7 @@
 # Financials
 
-See [this spreadsheet](https://docs.google.com/spreadsheets/d/18GJr-xSi_ypkgQIxfwPTMaKgQsfLLTjrZBtYd-TeGbc/edit?usp=sharing) for the most up-to-date breakdown.
+See [this spreadsheet](https://docs.google.com/spreadsheets/d/18GJr-xSi_ypkgQIxfwPTMaKgQsfLLTjrZBtYd-TeGbc/edit?usp=sharing) for the most up-to-date breakdown. You can support Compass by donating [here](/support).
+
 ### Expenses
 
 - **Hosting & Infrastructure**: $100    
@@ -27,4 +28,4 @@ Compass is built entirely by volunteers and contributors, meaning every dollar d
 - No marketing budget.
 - No hidden private spending.
 
-This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and accessible. You can donate [here](/support).
+This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and accessible.

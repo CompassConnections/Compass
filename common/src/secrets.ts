@@ -23,6 +23,8 @@ export const secrets = (
     'DISCORD_WEBHOOK_HEALTH',
     'DISCORD_WEBHOOK_REPORTS',
     'DISCORD_WEBHOOK_CONTACT',
+    'VAPID_PUBLIC_KEY',
+    'VAPID_PRIVATE_KEY',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

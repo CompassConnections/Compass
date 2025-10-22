@@ -14,6 +14,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import webPush from 'web-push';
+import {parseJsonContentToText} from "common/util/parse";
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -103,7 +104,7 @@ export const createPrivateUserMessageMain = async (
   if (!authorized)
     throw new APIError(403, 'You are not authorized to post to this channel')
 
-  await notifyOtherUserInChannelIfInactive(channelId, creator, pg)
+  await notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)
   await insertPrivateMessage(content, channelId, creator.id, visibility, pg)
 
   const privateMessage = {
@@ -137,6 +138,7 @@ export const createPrivateUserMessageMain = async (
 const notifyOtherUserInChannelIfInactive = async (
   channelId: number,
   creator: User,
+  content: JSONContent,
   pg: SupabaseDirectClient
 ) => {
   const otherUserIds = await pg.manyOrNone<{ user_id: string }>(
@@ -154,6 +156,35 @@ const notifyOtherUserInChannelIfInactive = async (
   const otherUserId = first(otherUserIds)
   if (!otherUserId) return
 
+  // TODO: notification only for active user
+
+  const otherUser = await getUser(otherUserId.user_id)
+  console.debug('otherUser:', otherUser)
+  if (!otherUser) return
+
+  // Push notif
+  webPush.setVapidDetails(
+    'mailto:hello@compassmeet.com',
+    process.env.VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
+  const textContent = parseJsonContentToText(content)
+  // Retrieve subscription from the database
+  const subscriptions = await getSubscriptionsFromDB(otherUser.id, pg);
+  for (const subscription of subscriptions) {
+    try {
+      console.log('Sending notification to:', subscription.endpoint);
+      await webPush.sendNotification(subscription, JSON.stringify({
+        title: `${creator.name}`,
+        body: textContent,
+        url: `/messages/${channelId}`,
+      }));
+    } catch (err) {
+      console.error('Failed to send notification', err);
+      // optionally remove invalid subscription from DB
+    }
+  }
+
   const startOfDay = dayjs()
     .tz('America/Los_Angeles')
     .startOf('day')
@@ -170,48 +201,17 @@ const notifyOtherUserInChannelIfInactive = async (
   log('previous messages this day', previousMessagesThisDayBetweenTheseUsers)
   if (previousMessagesThisDayBetweenTheseUsers.count > 0) return
 
-  // TODO: notification only for active user
-
-  const otherUser = await getUser(otherUserId.user_id)
-  console.debug('otherUser:', otherUser)
-  if (!otherUser) return
-
-  await createNewMessageNotification(creator, otherUser, channelId, pg)
+  await createNewMessageNotification(creator, otherUser, channelId)
 }
 
 const createNewMessageNotification = async (
   fromUser: User,
   toUser: User,
   channelId: number,
-  pg: SupabaseDirectClient
 ) => {
   const privateUser = await getPrivateUser(toUser.id)
   console.debug('privateUser:', privateUser)
   if (!privateUser) return
-
-  webPush.setVapidDetails(
-    'mailto:you@example.com',
-    process.env.VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-  );
-
-  // Retrieve subscription from your database
-  const subscriptions = await getSubscriptionsFromDB(toUser.id, pg);
-
-  for (const subscription of subscriptions) {
-    try {
-      console.log('Sending notification to:', subscription.endpoint);
-      await webPush.sendNotification(subscription, JSON.stringify({
-        title: `Message from ${fromUser.name}`,
-        body: 'You have a new message!',
-        url: `/messages/${channelId}`,
-      }));
-    } catch (err) {
-      console.error('Failed to send notification', err);
-      // optionally remove invalid subscription from DB
-    }
-  }
-
   await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
 }
 

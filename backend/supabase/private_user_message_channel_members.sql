@@ -30,12 +30,10 @@ END$$;
 ALTER TABLE private_user_message_channel_members ENABLE ROW LEVEL SECURITY;
 
 -- Indexes
-DROP INDEX IF EXISTS pumcm_members_idx;
-CREATE INDEX pumcm_members_idx
+CREATE INDEX IF NOT EXISTS pumcm_members_idx
     ON public.private_user_message_channel_members
     USING btree (channel_id, user_id);
 
-DROP INDEX IF EXISTS unique_user_channel;
-CREATE UNIQUE INDEX unique_user_channel
+CREATE UNIQUE INDEX IF NOT EXISTS unique_user_channel
     ON public.private_user_message_channel_members
     USING btree (channel_id, user_id);

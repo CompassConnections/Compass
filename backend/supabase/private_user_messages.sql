@@ -16,7 +16,5 @@ CREATE TABLE IF NOT EXISTS private_user_messages (
 ALTER TABLE private_user_messages ENABLE ROW LEVEL SECURITY;
 
 -- Indexes
-DROP INDEX IF EXISTS private_user_messages_channel_id_idx;
-
 CREATE INDEX IF NOT EXISTS private_user_messages_channel_id_idx
     ON public.private_user_messages USING btree (channel_id, created_time DESC);

@@ -10,11 +10,8 @@ create table push_subscriptions (
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Indexes
-DROP INDEX IF EXISTS user_id_idx;
-CREATE INDEX user_id_idx ON push_subscriptions (user_id);
+CREATE INDEX IF not exists user_id_idx ON push_subscriptions (user_id);
 
-DROP INDEX IF EXISTS endpoint_idx;
-CREATE INDEX endpoint_idx ON push_subscriptions (endpoint);
+CREATE INDEX IF not exists endpoint_idx ON push_subscriptions (endpoint);
 
-DROP INDEX IF EXISTS endpoint_user_id_idx;
-CREATE INDEX endpoint_user_id_idx ON push_subscriptions (endpoint, user_id);
+CREATE INDEX IF not exists endpoint_user_id_idx ON push_subscriptions (endpoint, user_id);

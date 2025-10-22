@@ -16,6 +16,4 @@ FOR SELECT USING (true);
 
 -- Indexes
 -- The primary key already creates a unique index on (creator_id, star_id), so no need to recreate it.
-
-DROP INDEX IF EXISTS profile_stars_target_id_idx;
-CREATE INDEX profile_stars_target_id_idx ON public.profile_stars USING btree (target_id);
+CREATE INDEX IF NOT EXISTS profile_stars_target_id_idx ON public.profile_stars USING btree (target_id);

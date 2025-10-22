@@ -17,9 +17,6 @@ FOR SELECT USING (true);
 
 -- Indexes
 -- Primary key automatically creates a unique index on (creator_id, ship_id), so no need to recreate it.
--- Keep additional indexes for query optimization:
-DROP INDEX IF EXISTS profile_ships_target1_id;
-CREATE INDEX profile_ships_target1_id ON public.profile_ships USING btree (target1_id);
+CREATE INDEX IF NOT EXISTS profile_ships_target1_id ON public.profile_ships USING btree (target1_id);
 
-DROP INDEX IF EXISTS profile_ships_target2_id;
-CREATE INDEX profile_ships_target2_id ON public.profile_ships USING btree (target2_id);
+CREATE INDEX IF NOT EXISTS profile_ships_target2_id ON public.profile_ships USING btree (target2_id);

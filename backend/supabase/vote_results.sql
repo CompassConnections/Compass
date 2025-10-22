@@ -24,20 +24,15 @@ CREATE POLICY "public read" ON vote_results
 FOR ALL USING (true);
 
 -- Indexes
-DROP INDEX IF EXISTS user_id_idx;
-CREATE INDEX user_id_idx ON vote_results (user_id);
+CREATE INDEX IF NOT EXISTS user_id_idx ON vote_results (user_id);
 
-DROP INDEX IF EXISTS vote_id_idx;
-CREATE INDEX vote_id_idx ON vote_results (vote_id);
+CREATE INDEX IF NOT EXISTS vote_id_idx ON vote_results (vote_id);
 
-DROP INDEX IF EXISTS idx_vote_results_vote_choice;
-CREATE INDEX idx_vote_results_vote_choice ON vote_results (vote_id, choice);
+CREATE INDEX IF NOT EXISTS idx_vote_results_vote_choice ON vote_results (vote_id, choice);
 
-DROP INDEX IF EXISTS idx_vote_results_vote_choice_priority;
-CREATE INDEX idx_vote_results_vote_choice_priority ON vote_results (vote_id, choice, priority);
+CREATE INDEX IF NOT EXISTS idx_vote_results_vote_choice_priority ON vote_results (vote_id, choice, priority);
 
-DROP INDEX IF EXISTS idx_votes_created_time;
-CREATE INDEX idx_votes_created_time ON votes (created_time DESC);
+CREATE INDEX IF NOT EXISTS idx_votes_created_time ON votes (created_time DESC);
 
 
 drop function if exists get_votes_with_results;

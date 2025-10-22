@@ -47,8 +47,6 @@ FOR SELECT
     );
 
 -- Indexes
-DROP INDEX IF EXISTS user_seen_private_messages_created_time_desc_idx;
-
-CREATE INDEX user_seen_private_messages_created_time_desc_idx
+CREATE INDEX IF NOT EXISTS user_seen_private_messages_created_time_desc_idx
     ON public.private_user_seen_message_channels
     USING btree (user_id, channel_id, created_time DESC);

@@ -69,11 +69,9 @@ FOR UPDATE
                     WITH CHECK ((user_id = firebase_uid()));
 
 -- Indexes
-DROP INDEX IF EXISTS profiles_user_id_idx;
-CREATE INDEX profiles_user_id_idx ON public.profiles USING btree (user_id);
+CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON public.profiles USING btree (user_id);
 
-DROP INDEX IF EXISTS unique_user_id;
-CREATE UNIQUE INDEX unique_user_id ON public.profiles USING btree (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_user_id ON public.profiles USING btree (user_id);
 
 CREATE INDEX IF NOT EXISTS idx_profiles_last_mod_24h
     ON public.profiles USING btree (last_modification_time);
@@ -82,13 +80,10 @@ CREATE INDEX IF NOT EXISTS idx_profiles_bio_length
     ON profiles (bio_length);
 
 -- Fastest general-purpose index
-DROP INDEX IF EXISTS profiles_lat_lon_idx;
-CREATE INDEX profiles_lat_lon_idx ON profiles (city_latitude, city_longitude);
+CREATE INDEX IF NOT EXISTS profiles_lat_lon_idx ON profiles (city_latitude, city_longitude);
 
 -- Optional additional index for large tables / clustered inserts
-DROP INDEX IF EXISTS profiles_lat_lon_brin_idx;
-CREATE INDEX profiles_lat_lon_brin_idx ON profiles USING BRIN (city_latitude, city_longitude) WITH (pages_per_range = 32);
-
+CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (city_latitude, city_longitude) WITH (pages_per_range = 32);
 
 
 -- Functions and Triggers

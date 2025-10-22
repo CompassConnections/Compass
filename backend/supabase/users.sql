@@ -18,20 +18,16 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Policies
 DROP POLICY IF EXISTS "public read" ON users;
-
 CREATE POLICY "public read" ON users
 FOR SELECT
                     USING (true);
 
 -- Indexes
-DROP INDEX IF EXISTS user_username_idx;
-CREATE INDEX user_username_idx ON public.users USING btree (username);
+CREATE INDEX IF NOT EXISTS user_username_idx ON public.users USING btree (username);
 
-DROP INDEX IF EXISTS users_created_time;
-CREATE INDEX users_created_time ON public.users USING btree (created_time DESC);
+CREATE INDEX IF NOT EXISTS users_created_time ON public.users USING btree (created_time DESC);
 
-DROP INDEX IF EXISTS users_name_idx;
-CREATE INDEX users_name_idx ON public.users USING btree (name);
+CREATE INDEX IF NOT EXISTS users_name_idx ON public.users USING btree (name);
 
 -- Remove these if you trust PRIMARY KEY auto-index:
 -- DROP INDEX IF EXISTS users_pkey;

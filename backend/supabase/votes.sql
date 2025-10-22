@@ -20,8 +20,6 @@ CREATE POLICY "public read" ON votes
 FOR ALL USING (true);
 
 -- Indexes
-DROP INDEX IF EXISTS creator_id_idx;
-CREATE INDEX creator_id_idx ON votes (creator_id);
+CREATE INDEX IF NOT EXISTS creator_id_idx ON votes (creator_id);
 
-DROP INDEX IF EXISTS idx_votes_created_time;
-CREATE INDEX idx_votes_created_time ON votes (created_time DESC);
+CREATE INDEX IF NOT EXISTS idx_votes_created_time ON votes (created_time DESC);

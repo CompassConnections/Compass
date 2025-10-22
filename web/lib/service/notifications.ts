@@ -3,6 +3,8 @@ import {urlBase64ToUint8Array} from "common/util/parse";
 import {api} from "web/lib/api";
 import {useUser} from "web/hooks/use-user";
 
+const vapidPublicKey = 'BF80q7LrDa4a5ksS2BZrX6PPvL__y0jCNvNqyUzvk8Y4ofTdrS0kRnKfGpClCQAHWmcPHIUmWq8jgQ4ROquSpJQ'
+
 export default function PushSubscriber() {
   const user = useUser(); // authenticated user
 
@@ -32,7 +34,7 @@ export default function PushSubscriber() {
 
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array('BF80q7LrDa4a5ksS2BZrX6PPvL__y0jCNvNqyUzvk8Y4ofTdrS0kRnKfGpClCQAHWmcPHIUmWq8jgQ4ROquSpJQ'),
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
           });
 
           // Send subscription to server

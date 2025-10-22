@@ -180,9 +180,20 @@ const notifyOtherUserInChannelIfInactive = async (
       })
       console.log('Sending notification to:', subscription.endpoint, payload);
       await webPush.sendNotification(subscription, payload);
-    } catch (err) {
-      console.error('Failed to send notification', err);
-      // optionally remove invalid subscription from DB
+    } catch (err: any) {
+      console.log('Failed to send notification', err);
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        console.warn('Removing expired subscription', subscription.endpoint);
+        await pg.none(
+          `DELETE
+           FROM push_subscriptions
+           WHERE endpoint = $1
+             AND user_id = $2`,
+          [subscription.endpoint, otherUser.id]
+        );
+      } else {
+        console.error('Push failed', err);
+      }
     }
   }
 
@@ -223,8 +234,9 @@ export async function getSubscriptionsFromDB(
 ) {
   try {
     const subscriptions = await pg.manyOrNone(`
-      select endpoint, keys from push_subscriptions
-      where user_id = $1
+                select endpoint, keys
+                from push_subscriptions
+                where user_id = $1
       `, [userId]
     );
 

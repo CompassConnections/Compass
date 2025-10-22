@@ -1,24 +1,24 @@
 import clsx from 'clsx'
-import { User } from 'common/user'
-import { parseJsonContentToText } from 'common/util/parse'
+import {User} from 'common/user'
+import {parseJsonContentToText} from 'common/util/parse'
 import Link from 'next/link'
-import { Col } from 'web/components/layout/col'
-import { PageBase } from 'web/components/page-base'
-import { Row } from 'web/components/layout/row'
+import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
+import {Row} from 'web/components/layout/row'
 import NewMessageButton from 'web/components/messaging/new-message-button'
-import { RelativeTimestamp } from 'web/components/relative-timestamp'
-import { Title } from 'web/components/widgets/title'
+import {RelativeTimestamp} from 'web/components/relative-timestamp'
+import {Title} from 'web/components/widgets/title'
 import {
   usePrivateMessages,
   useSortedPrivateMessageMemberships,
   useUnseenPrivateMessageChannels,
 } from 'web/hooks/use-private-messages'
-import { useUser } from 'web/hooks/use-user'
-import { useUsersInStore } from 'web/hooks/use-user-supabase'
-import { useRedirectIfSignedOut } from 'web/hooks/use-redirect-if-signed-out'
-import { MultipleOrSingleAvatars } from 'web/components/multiple-or-single-avatars'
-import { BannedBadge } from 'web/components/widgets/user-link'
-import { PrivateMessageChannel } from 'common/supabase/private-messages'
+import {useUser} from 'web/hooks/use-user'
+import {useUsersInStore} from 'web/hooks/use-user-supabase'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
+import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {BannedBadge} from 'web/components/widgets/user-link'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {SEO} from "web/components/SEO";
 
 
@@ -33,17 +33,17 @@ export default function MessagesPage() {
         description={'Your Messages'}
         url={`/messages`}
       />
-      {currentUser && <MessagesContent currentUser={currentUser} />}
+      {currentUser && <MessagesContent currentUser={currentUser}/>}
     </PageBase>
   )
 }
 
 export function MessagesContent(props: { currentUser: User }) {
-  const { currentUser } = props
-  const { channels, memberIdsByChannelId } = useSortedPrivateMessageMemberships(
+  const {currentUser} = props
+  const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(
     currentUser.id
   )
-  const { lastSeenChatTimeByChannelId } = useUnseenPrivateMessageChannels(
+  const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(
     currentUser.id,
     true
   )
@@ -52,7 +52,7 @@ export function MessagesContent(props: { currentUser: User }) {
     <>
       <Row className="justify-between">
         <Title>Messages</Title>
-        <NewMessageButton />
+        <NewMessageButton/>
       </Row>
       <Col className={'w-full overflow-hidden'}>
         {channels && channels.length === 0 && (
@@ -79,13 +79,14 @@ export function MessagesContent(props: { currentUser: User }) {
     </>
   )
 }
+
 export const MessageChannelRow = (props: {
   otherUserIds: string[]
   currentUser: User
   channel: PrivateMessageChannel
   lastSeenTime: string
 }) => {
-  const { otherUserIds, lastSeenTime, currentUser, channel } = props
+  const {otherUserIds, lastSeenTime, currentUser, channel} = props
   const channelId = channel.channel_id
   const otherUsers = useUsersInStore(otherUserIds, `${channelId}`, 100)
   const messages = usePrivateMessages(channelId, 1, currentUser.id)
@@ -120,10 +121,10 @@ export const MessageChannelRow = (props: {
                   {otherUsers.length > 2 && ` & ${otherUsers.length - 2} more`}
                 </span>
               )}
-              {isBanned && <BannedBadge />}
+              {isBanned && <BannedBadge/>}
             </span>
             <span className={'text-ink-400 dark:text-ink-500 text-xs'}>
-              {chat && <RelativeTimestamp time={chat.createdTime} />}
+              {chat && <RelativeTimestamp time={chat.createdTime}/>}
             </span>
           </Row>
           <Row className="items-center justify-between gap-1">

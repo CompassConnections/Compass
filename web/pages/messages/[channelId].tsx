@@ -146,7 +146,7 @@ export const PrivateChat = (props: {
   })
 
   useEffect(() => {
-    if (editor) {
+    if (editor && !isMobile) {
       editor.commands.focus()
     }
   }, [editor])

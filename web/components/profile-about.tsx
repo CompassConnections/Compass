@@ -20,6 +20,7 @@ import {convertRace} from './race'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
+import {MAX_INT, MIN_INT} from "common/constants";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -102,14 +103,17 @@ function Seeking(props: { profile: Profile }) {
     capitalizeFirstLetterOption: false,
   })
 
+  const noMin = (min ?? MIN_INT) <= 18
+  const noMax = (max ?? MAX_INT) >= 99
+
   const ageRangeText =
-    min == 18 && max == 100 || min == undefined && max == undefined
+    noMin && noMax
       ? 'of any age'
       : min == max
         ? `exactly ${min} years old`
-        : max == 100 || max == undefined
+        : noMax
           ? `older than ${min}`
-          : min == 18 || min == undefined
+          : noMin
             ? `younger than ${max}`
             : `between ${min} - ${max} years old`
 

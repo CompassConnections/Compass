@@ -8,10 +8,10 @@ import { usePersistentLocalState } from './use-persistent-local-state'
 
 export function useGroupedUnseenNotifications(
   userId: string,
-  selectTypes: string[]
+  selectTypes?: string[]
 ) {
   const notifications = useUnseenNotifications(userId)?.filter((n) =>
-    selectTypes.includes(n.sourceType)
+    selectTypes? selectTypes.includes(n.sourceType) : true
   )
   return useMemo(() => {
     return notifications ? groupNotificationsForIcon(notifications) : undefined

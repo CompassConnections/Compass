@@ -1,8 +1,6 @@
-import {getPrivateUser} from 'shared/utils'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {Notification} from 'common/notifications'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
-import {getProfile} from 'shared/profiles/supabase'
 import {tryCatch} from "common/util/try-catch";
 import {Row} from "common/supabase/utils";
 
@@ -36,11 +34,6 @@ export const createVoteNotificationAll = async () => {
 }
 
 export const createVoteNotification = async (user: Row<'users'>, pg: SupabaseDirectClient) => {
-  const targetPrivateUser = await getPrivateUser(user.id)
-  const profile = await getProfile(user.id)
-
-  if (!targetPrivateUser || !profile) return
-
   const id = `vote-${Date.now()}`
   const notification: Notification = {
     id,

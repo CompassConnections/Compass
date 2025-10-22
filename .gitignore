@@ -68,6 +68,7 @@ email-preview
 *.jpeg
 *.gif
 *.svg
+*.ico
 *.mp4
 *.mov
 *.avi

@@ -146,6 +146,12 @@ export const PrivateChat = (props: {
   })
 
   useEffect(() => {
+    if (editor) {
+      editor.commands.focus()
+    }
+  }, [editor])
+
+  useEffect(() => {
     setAsSeen(channelId)
   }, [JSON.stringify(messages)])
 

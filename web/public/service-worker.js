@@ -44,8 +44,8 @@ self.addEventListener('push', event => {
     const title = data.title || 'Notification';
     const options = {
         body: data.body || 'You have a new message',
-        // icon: '/icons/icon-192x192.png',
-        // badge: '/icons/icon-192x192.png',
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/icon-192x192.png',
         data: data.url || '/'
     };
     event.waitUntil(self.registration.showNotification(title, options));

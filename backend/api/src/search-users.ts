@@ -20,15 +20,15 @@ export const searchUsers: APIHandler<'search-users'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
 
   const offset = page * limit
-  const userId = auth?.uid
-  const searchFollowersSQL = getSearchUserSQL({ term, offset, limit, userId })
+  // const userId = auth?.uid
+  // const searchFollowersSQL = getSearchUserSQL({ term, offset, limit, userId })
   const searchAllSQL = getSearchUserSQL({ term, offset, limit })
-  const [followers, all] = await Promise.all([
-    pg.map(searchFollowersSQL, null, convertUser),
+  const [all] = await Promise.all([
+    // pg.map(searchFollowersSQL, null, convertUser),
     pg.map(searchAllSQL, null, convertUser),
   ])
 
-  return uniqBy([...followers, ...all], 'id')
+  return uniqBy([...all], 'id')
     .map(toUserAPIResponse)
     .slice(0, limit)
 }
@@ -39,17 +39,18 @@ function getSearchUserSQL(props: {
   limit: number
   userId?: string // search only this user's followers
 }) {
-  const { term, userId } = props
+  const { term } = props
 
   return renderSql(
-    userId
-      ? [
-          select('users.*'),
-          from('users'),
-          join('user_follows on user_follows.follow_id = users.id'),
-          where('user_follows.user_id = $1', [userId]),
-        ]
-      : [select('*'), from('users')],
+    // userId
+    //   ? [
+    //       select('users.*'),
+    //       from('users'),
+    //       join('user_follows on user_follows.follow_id = users.id'),
+    //       where('user_follows.user_id = $1', [userId]),
+    //     ]
+    //   :
+  [select('*'), from('users')],
     term
       ? [
           where(

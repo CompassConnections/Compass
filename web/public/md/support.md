@@ -6,10 +6,11 @@ Your contribution directly helps cover hosting, development, and community growt
 
 ## Ways to Contribute Financially
 
-- [Patreon](https://patreon.com/CompassMeet) – one-time or ongoing monthly support
-- [Ko-fi](https://ko-fi.com/compassconnections) – one-time or ongoing monthly support
-- [PayPal](https://www.paypal.com/paypalme/CompassConnections) – one-time or flexible contributions
-- [GitHub Sponsors](https://github.com/sponsors/CompassConnections) – increased transparency, but requires a GitHub account
+- [Patreon](https://patreon.com/CompassMeet)
+- [Open Collective](https://opencollective.com/compass-connection)
+- [Ko-fi](https://ko-fi.com/compassconnections)
+- [GitHub Sponsors](https://github.com/sponsors/CompassConnections) – requires a GitHub account
+- [PayPal](https://www.paypal.com/paypalme/CompassConnections)
 
 
 ## Why Donate?

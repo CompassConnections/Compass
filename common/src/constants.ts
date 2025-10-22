@@ -8,6 +8,7 @@ export const githubRepo = "https://github.com/CompassConnections/Compass";
 export const githubIssues = `${githubRepo}/issues`
 
 export const paypalLink = "https://www.paypal.com/paypalme/CompassConnections"
+export const openCollectiveLink = "https://opencollective.com/compass-connection"
 export const patreonLink = "https://patreon.com/CompassMeet"
 export const discordLink = "https://discord.gg/8Vd7jzqjun"
 export const stoatLink = "https://stt.gg/YKQp81yA"

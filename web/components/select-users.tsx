@@ -38,6 +38,16 @@ export function SelectUsers(props: {
   const requestId = useRef(0)
   const queryReady = query.length > 1
 
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Wait for the modal (and transition) to finish
+    const timeout = setTimeout(() => {
+      inputRef.current?.focus()
+    }, 100)
+    return () => clearTimeout(timeout)
+  }, [])
+
   useEffect(() => {
     const id = ++requestId.current
     if (queryReady) {
@@ -66,6 +76,7 @@ export function SelectUsers(props: {
         <>
           <Col className="relative mt-1 w-full rounded-md">
             <Input
+              ref={inputRef}
               type="text"
               name="user name"
               id="user name"

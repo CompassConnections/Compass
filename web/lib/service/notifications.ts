@@ -17,38 +17,38 @@ export default function PushSubscriber() {
       navigator.serviceWorker
         .register('/service-worker.js')
         .then(async (registration) => {
-          console.log('Service worker registered:', registration);
+          console.log('Service worker registered:', registration)
 
           const permission = await Notification.requestPermission();
           if (permission !== 'granted') {
-            console.log('Notification permission denied');
+            console.log('Notification permission denied')
             return
-          };
+          }
 
           // Check if already subscribed
           const existing = await registration.pushManager.getSubscription();
           if (existing) {
-            console.log('Already subscribed:', existing);
+            console.log('Already subscribed:', existing)
             return
           } // already subscribed
 
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-          });
+          })
 
           // Send subscription to server
-          const {data} = await api('save-subscription', {subscription});
-          console.log('Subscription saved:', data);
+          const {data} = await api('save-subscription', {subscription})
+          console.log('Subscription saved:', data)
         })
         .catch((err) => {
           console.error('SW registration failed:', err)
           return
-        });
+        })
     };
 
-    registerPush();
-  }, [user?.id]);
+    registerPush()
+  }, [user?.id])
 
   return null; // component doesn't render anything
 }

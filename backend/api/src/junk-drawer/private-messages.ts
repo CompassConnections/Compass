@@ -104,7 +104,6 @@ export const createPrivateUserMessageMain = async (
   if (!authorized)
     throw new APIError(403, 'You are not authorized to post to this channel')
 
-  await notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)
   await insertPrivateMessage(content, channelId, creator.id, visibility, pg)
 
   const privateMessage = {
@@ -126,6 +125,12 @@ export const createPrivateUserMessageMain = async (
   otherUserIds.concat(creator.id).forEach((otherUserId) => {
     broadcast(`private-user-messages/${otherUserId}`, {})
   })
+
+  // Fire and forget safely
+  void notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)
+    .catch((err) => {
+      console.error('notifyOtherUserInChannelIfInactive failed', err)
+    });
 
   track(creator.id, 'send private message', {
     channelId,

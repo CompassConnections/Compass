@@ -2,14 +2,16 @@ console.log('SW loaded');
 
 // const CACHE_NAME = 'compass-cache-v1';
 
-self.addEventListener('install', (_event) => {
+self.addEventListener('install', (event) => {
     console.log('SW installing…');
-    self.skipWaiting();
+    event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', (_event) => {
+self.addEventListener('activate', (event) => {
     console.log('SW activated!');
+    event.waitUntil(self.clients.claim());
 });
+
 
 self.addEventListener('fetch', (_event) => {
     // const url = new URL(event.request.url);

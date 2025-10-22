@@ -572,6 +572,15 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as { count: number },
   },
+  'save-subscription': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      subscription: z.record(z.any())
+    }),
+  },
 } as const)
 
 export type APIPath = keyof typeof API

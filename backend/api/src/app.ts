@@ -1,6 +1,6 @@
 import {API, type APIPath} from 'common/api/schema'
 import {APIError, pathWithPrefix} from 'common/api/utils'
-import cors, {CorsOptions} from 'cors'
+import cors from 'cors'
 import * as crypto from 'crypto'
 import express, {type ErrorRequestHandler, type RequestHandler} from 'express'
 import {hrtime} from 'node:process'
@@ -59,6 +59,7 @@ import {getMessagesCount} from "api/get-messages-count";
 import {createVote} from "api/create-vote";
 import {vote} from "api/vote";
 import {contact} from "api/contact";
+import {saveSubscription} from "api/save-subscription";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -183,6 +184,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'set-channel-seen-time': setChannelLastSeenTime,
   'get-messages-count': getMessagesCount,
   'set-last-online-time': setLastOnlineTime,
+  'save-subscription': saveSubscription,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

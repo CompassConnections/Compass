@@ -10,6 +10,7 @@ import {SEO} from "web/components/SEO";
 
 
 export default function Custom404(props: { customText?: string }) {
+  // console.log('props:', props)
   return (
     <PageBase trackPageView={'404'}>
       <SEO
@@ -26,7 +27,7 @@ export function Custom404Content(props: { customText?: string }) {
   const { customText } = props
   return (
     <div className="flex h-[50vh] flex-col items-center justify-center">
-      <Col className="">
+      <Col className="mx-4">
         <Title>404: Oops!</Title>
         {customText ? <p>{customText}</p> : <p>I can't find that page.</p>}
         <p>

@@ -16,6 +16,8 @@ const filterLabels: Record<string, string> = {
   pref_relation_styles: "Seeking",
   pref_gender: "",
   orderBy: "",
+  diet: "Diet",
+  political_beliefs: "Political views",
 }
 
 export type locationType = {

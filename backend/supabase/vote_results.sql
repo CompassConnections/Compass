@@ -21,7 +21,7 @@ ALTER TABLE vote_results ENABLE ROW LEVEL SECURITY;
 -- Policies
 DROP POLICY IF EXISTS "public read" ON vote_results;
 CREATE POLICY "public read" ON vote_results
-FOR ALL USING (true);
+FOR SELECT USING (true);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS user_id_idx ON vote_results (user_id);

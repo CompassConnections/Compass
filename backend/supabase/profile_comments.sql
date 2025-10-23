@@ -26,9 +26,13 @@ ALTER TABLE profile_comments
 -- Row Level Security
 ALTER TABLE profile_comments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "public read" ON profile_comments;
+CREATE POLICY "public read" ON profile_comments
+    FOR SELECT USING (true);
+
 -- Policies
 DROP POLICY IF EXISTS "public read" ON profile_comments;
-CREATE POLICY "public read" ON profile_comments FOR ALL USING (true);
+CREATE POLICY "public read" ON profile_comments FOR SELECT USING (true);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS profile_comments_user_id_idx

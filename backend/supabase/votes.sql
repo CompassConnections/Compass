@@ -17,7 +17,7 @@ ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
 -- Policies
 DROP POLICY IF EXISTS "public read" ON votes;
 CREATE POLICY "public read" ON votes
-FOR ALL USING (true);
+FOR SELECT USING (true);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS creator_id_idx ON votes (creator_id);

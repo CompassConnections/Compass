@@ -9,12 +9,12 @@ CREATE TABLE IF NOT EXISTS private_user_message_channels (
 -- Row Level Security
 ALTER TABLE private_user_message_channels ENABLE ROW LEVEL SECURITY;
 
+
+
 -- Policies
 DROP POLICY IF EXISTS "public read" ON private_user_message_channels;
-
 CREATE POLICY "public read" ON private_user_message_channels
-    FOR ALL
-    USING (true);
+    FOR SELECT USING (true);
 
 -- Indexes
 -- Removed redundant primary key index creation because PRIMARY KEY already creates a unique index on id

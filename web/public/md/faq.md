@@ -121,15 +121,16 @@ You can reach us through the [contact form](/contact), the [feedback form](https
 Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/stats). It includes information such as:
 
 * Community growth over time
+* Number of active users
 * Messages sent
 * Discussions started
-* Search Bookmarks created
+* Search bookmarks created
 * Endorsements given
+* Compatibility prompts
 * Prompts answered
+* Number of proposals and votes
 
-[//]: # (* Feature votes and participation rates)
 [//]: # (* Contributions and donations)
-[//]: # (* Number of active users)
 
 Because Compass is fully transparent and community-owned, you can see how the ecosystem evolves — not just in numbers, but in how people connect, collaborate, and help shape the platform together.
 

@@ -14,6 +14,7 @@ import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {getBucket} from "shared/firebase-utils";
 import {sendWelcomeEmail} from "email/functions/helpers";
+import {setLastOnlineTimeUser} from "api/set-last-online-time";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,
@@ -133,6 +134,11 @@ export const createUser: APIHandler<'create-user'> = async (
       if (!IS_LOCAL) await sendWelcomeEmail(user, privateUser)
     } catch (e) {
       console.error('Failed to sendWelcomeEmail', e)
+    }
+    try {
+      await setLastOnlineTimeUser(auth.uid)
+    } catch (e) {
+      console.error('Failed to set last online time', e)
     }
   }
 

@@ -9,7 +9,7 @@ export const useOnline = () => {
   useEffect(() => {
     if (!profile || !isAuthed) return
     void (async () => {
-      const date = new Date().toISOString()
+      // const date = new Date().toISOString()
       // const result = await run(
       //   db
       //     .from('profiles')

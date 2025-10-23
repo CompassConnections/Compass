@@ -31,8 +31,8 @@ No contribution is too small—whether it’s changing a color, resizing a butto
 
 The complete, official list of tasks is available [here on ClickUp](https://sharing.clickup.com/90181043445/l/h/6-901810339879-1/bbfd32f4f4bf64b). If you are working on one task, just assign it to yourself and move its status to "in progress". If there is also a GitHub issue for that task, assign it to yourself as well.
 
-To have edit access to the ClickUp workspace, you need an admin to manually give you permission (one time thing). To do so, just use your preferred option:
-- Ask or DM an admin on Discord
+To have edit access to the ClickUp workspace, you need an admin to manually give you permission (one time thing). To do so, use your preferred option:
+- Ask or DM an admin on [Discord](https://discord.gg/8Vd7jzqjun)
 - Email hello@compassmeet.com
 - Raise an issue on GitHub
 
@@ -66,9 +66,9 @@ Everything is open to anyone for collaboration, but the following ones are parti
 
 - [x] Clean up learn more page
 - [x] Add dark theme
-- [ ] Add profile features (intellectual interests, cause areas, personality type, conflict style, etc.)
-- [ ] Add filters to search through remaining profile features (politics, religion, education level, etc.)
-- [ ] Cover with tests (very important, just the test template and framework are ready)
+- [ ] Add profile fields (intellectual interests, cause areas, personality type, conflict style, timezone, etc.)
+- [ ] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
+- [ ] Cover with tests (crucial, just the test template and framework are ready)
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
 - [ ] Clean up privacy notice (convert to Markdown)
@@ -162,7 +162,7 @@ You can also add `console.log()` statements in the code.
 
 If you are new to Typescript or the open-source space, you could start with small changes, such as tweaking some web components or improving wording in some pages. You can find those files in `web/public/md/`.
 
-See [development.md](docs/development.md) for additional instructions, such as adding new profile features.
+See [development.md](docs/development.md) for additional instructions, such as adding new profile field.
 
 ### Submission
 

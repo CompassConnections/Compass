@@ -48,7 +48,7 @@ function groupGeneralNotifications(
   if (!sortedNotifications) return []
 
   const groupedNotificationsByDayAndContract = groupBy(
-    sortedNotifications.filter((n) => !except.includes(n.reason)),
+    sortedNotifications.filter((n) => !except.includes(n.reason ?? '')),
     (n) =>
       new Date(n.createdTime).toDateString() +
       (n.sourceType === 'betting_streak_bonus' || n.reason === 'quest_payout'

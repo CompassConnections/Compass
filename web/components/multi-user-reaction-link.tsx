@@ -20,8 +20,8 @@ export function MultiUserReactionModal(props: {
             className="w-full"
             user={{
               id: notif.userId,
-              name: notif.sourceUserName,
-              username: notif.sourceUserUsername,
+              name: notif.sourceUserName ?? 'Name',
+              username: notif.sourceUserUsername ?? 'Username',
             }}
           />
         ))}

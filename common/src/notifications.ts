@@ -5,18 +5,18 @@ export type Notification = {
   userId: string
   title?: string
   reasonText?: string
-  reason: string
+  reason?: string
   createdTime: number
   viewTime?: number
   isSeen: boolean
 
-  sourceId: string
+  sourceId?: string
   sourceType: string
   sourceUpdateType?: 'created' | 'updated' | 'deleted'
 
-  sourceUserName: string
-  sourceUserUsername: string
-  sourceUserAvatarUrl: string
+  sourceUserName?: string
+  sourceUserUsername?: string
+  sourceUserAvatarUrl?: string
   sourceText: string
   data?: { [key: string]: any }
 

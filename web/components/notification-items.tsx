@@ -39,6 +39,34 @@ export function NotificationItem(props: { notification: Notification }) {
   }
 }
 
+export function BaseNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+}) {
+  const { notification, highlighted, setHighlighted } = props
+  return (
+    <NotificationFrame
+      notification={notification}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={
+        <AvatarNotificationIcon notification={notification} />
+      }
+      subtitle={
+        <div className="line-clamp-2">
+          <Linkify text={notification.sourceText} />
+        </div>
+      }
+      link={notification.sourceSlug}
+    >
+      <div className="line-clamp-3">
+        <span>{notification.title}</span>
+      </div>
+    </NotificationFrame>
+  )
+}
+
 export function CommentOnProfileNotification(props: {
   notification: Notification
   highlighted: boolean
@@ -71,34 +99,6 @@ export function CommentOnProfileNotification(props: {
         />{' '}
         {reasonText}
         {!isChildOfGroup && <span>on your profile</span>}
-      </div>
-    </NotificationFrame>
-  )
-}
-
-export function BaseNotification(props: {
-  notification: Notification
-  highlighted: boolean
-  setHighlighted: (highlighted: boolean) => void
-}) {
-  const { notification, highlighted, setHighlighted } = props
-  return (
-    <NotificationFrame
-      notification={notification}
-      highlighted={highlighted}
-      setHighlighted={setHighlighted}
-      icon={
-        <AvatarNotificationIcon notification={notification} />
-      }
-      subtitle={
-        <div className="line-clamp-2">
-          <Linkify text={notification.sourceText} />
-        </div>
-      }
-      link={notification.sourceSlug}
-    >
-      <div className="line-clamp-3">
-        <span>{notification.title}</span>
       </div>
     </NotificationFrame>
   )
@@ -281,9 +281,8 @@ export function AvatarNotificationIcon(props: {
   symbol?: string | ReactNode
 }) {
   const { notification, symbol } = props
-  const { sourceUserName, sourceUserAvatarUrl, sourceUserUsername } =
-    notification
-  const href = `/${sourceUserUsername}`
+  const { sourceUserName, sourceUserAvatarUrl, sourceUserUsername, sourceSlug } = notification
+  const href = !!sourceUserUsername ? `/${sourceUserUsername}` : sourceSlug ?? '/'
   return (
     <div className="relative">
       <Link

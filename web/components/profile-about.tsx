@@ -58,13 +58,12 @@ export default function ProfileAbout(props: {
     >
       <Seeking profile={profile}/>
       <RelationshipType profile={profile}/>
-      <HasKids profile={profile}/>
+      <Education profile={profile}/>
+      <Occupation profile={profile}/>
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
         text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}
       />
-      <Education profile={profile}/>
-      <Occupation profile={profile}/>
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
         text={profile.religious_beliefs}
@@ -81,6 +80,7 @@ export default function ProfileAbout(props: {
         icon={<PiPlantBold className="h-5 w-5"/>}
         text={profile.is_vegetarian_or_vegan ? 'Vegetarian/Vegan' : null}
       />
+      <HasKids profile={profile}/>
       <WantsKids profile={profile}/>
       {!isCurrentUser && <LastOnline lastOnlineTime={userActivity?.last_online_time}/>}
       <UserHandles links={profile.user.link}/>

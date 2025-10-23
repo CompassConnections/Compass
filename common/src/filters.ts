@@ -23,6 +23,7 @@ export type FilterFields = {
   | 'pref_relation_styles'
   | 'pref_romantic_styles'
   | 'diet'
+  | 'political_beliefs'
   | 'is_smoker'
   | 'has_kids'
   | 'pref_gender'
@@ -64,6 +65,7 @@ export const initialFilters: Partial<FilterFields> = {
   pref_relation_styles: undefined,
   pref_romantic_styles: undefined,
   diet: undefined,
+  political_beliefs: undefined,
   pref_gender: undefined,
   shortBio: undefined,
   orderBy: 'created_time',

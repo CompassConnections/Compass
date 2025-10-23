@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
+import {DietType, PoliticalType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {ReactNode} from 'react'
 import {FaUserGroup} from 'react-icons/fa6'
 import {Col} from 'web/components/layout/col'
@@ -22,6 +22,7 @@ import {HasKidsLabel} from "web/components/filters/has-kids-filter";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
 import {FaHeart} from "react-icons/fa";
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
+import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -313,6 +314,32 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <DietFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
+      {/* POLITICS */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <PoliticalFilterText
+                  options={
+                    filters.political_beliefs as
+                      | PoliticalType[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"

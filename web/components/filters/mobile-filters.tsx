@@ -10,7 +10,7 @@ import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/profiles/profile'
 import {Gender} from 'common/gender'
-import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
+import {DietType, PoliticalType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
@@ -21,6 +21,7 @@ import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
 import {hasKidsLabels} from "common/has-kids";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
+import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -188,53 +189,53 @@ function MobileFilters(props: {
               <RomanticFilter filters={filters} updateFilter={updateFilter}/>
           </MobileFilterSection>
 
-      {/* WANTS KIDS */}
-      <MobileFilterSection
-        title="Wants kids"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={
-          filters.wants_kids_strength != null &&
-          filters.wants_kids_strength !== -1
-        }
-        icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
-        selection={
-          <KidsLabel
-            strength={filters.wants_kids_strength ?? -1}
-            highlightedClass={
-              (filters.wants_kids_strength ?? -1) ==
-              wantsKidsLabels.no_preference.strength
-                ? 'text-ink-900'
-                : 'text-primary-600'
-            }
-            mobile
-          />
-        }
-      >
-        <WantsKidsFilter filters={filters} updateFilter={updateFilter}/>
-      </MobileFilterSection>
+        {/* WANTS KIDS */}
+          <MobileFilterSection
+              title="Wants kids"
+              openFilter={openFilter}
+              setOpenFilter={setOpenFilter}
+              isActive={
+                filters.wants_kids_strength != null &&
+                filters.wants_kids_strength !== -1
+              }
+              icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
+              selection={
+                <KidsLabel
+                  strength={filters.wants_kids_strength ?? -1}
+                  highlightedClass={
+                    (filters.wants_kids_strength ?? -1) ==
+                    wantsKidsLabels.no_preference.strength
+                      ? 'text-ink-900'
+                      : 'text-primary-600'
+                  }
+                  mobile
+                />
+              }
+          >
+              <WantsKidsFilter filters={filters} updateFilter={updateFilter}/>
+          </MobileFilterSection>
 
-      {/* HAS KIDS */}
-      <MobileFilterSection
-        title="Has kids"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={filters.has_kids != null && filters.has_kids !== -1}
-        icon={<FaChild className="text-ink-900 h-4 w-4"/>}
-        selection={
-          <HasKidsLabel
-            has_kids={filters.has_kids ?? -1}
-            highlightedClass={
-              (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value
-                ? 'text-ink-900'
-                : 'text-primary-600'
-            }
-            mobile
-          />
-        }
-      >
-        <HasKidsFilter filters={filters} updateFilter={updateFilter}/>
-      </MobileFilterSection>
+        {/* HAS KIDS */}
+          <MobileFilterSection
+              title="Has kids"
+              openFilter={openFilter}
+              setOpenFilter={setOpenFilter}
+              isActive={filters.has_kids != null && filters.has_kids !== -1}
+              icon={<FaChild className="text-ink-900 h-4 w-4"/>}
+              selection={
+                <HasKidsLabel
+                  has_kids={filters.has_kids ?? -1}
+                  highlightedClass={
+                    (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value
+                      ? 'text-ink-900'
+                      : 'text-primary-600'
+                  }
+                  mobile
+                />
+              }
+          >
+              <HasKidsFilter filters={filters} updateFilter={updateFilter}/>
+          </MobileFilterSection>
 
       </>}
 
@@ -256,6 +257,26 @@ function MobileFilters(props: {
         }
       >
         <DietFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* POLITICS */}
+      <MobileFilterSection
+        title="Politics"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.political_beliefs || undefined)}
+        selection={
+          <PoliticalFilterText
+            options={filters.political_beliefs as PoliticalType[]}
+            highlightedClass={
+              hasAny(filters.political_beliefs || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* Short Bios */}

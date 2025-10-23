@@ -287,8 +287,9 @@ function MobileFilters(props: {
           hidden={false}
         />
       </Col>
+
       <button
-        className="text-ink-500 hover:text-primary-500 underline"
+        className="text-ink-500 hover:text-primary-500 underline mt-4 mb-8"
         onClick={clearFilters}
       >
         Reset filters

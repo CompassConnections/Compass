@@ -221,7 +221,7 @@ export const Search = (props: {
         />
       </Row>
       <RightModal
-        className="bg-canvas-0 w-2/3 text-sm sm:hidden"
+        className="bg-canvas-0 w-2/3 text-sm sm:hidden h-full max-h-screen overflow-y-auto"
         open={openFiltersModal}
         setOpen={setOpenFiltersModal}
       >

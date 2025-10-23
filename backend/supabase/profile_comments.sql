@@ -11,6 +11,18 @@ CREATE TABLE IF NOT EXISTS profile_comments (
     user_username TEXT NOT NULL
 );
 
+ALTER TABLE profile_comments
+    ADD CONSTRAINT profile_comments_user_id_fkey
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+ALTER TABLE profile_comments
+    ADD CONSTRAINT profile_comments_on_user_id_fkey
+        FOREIGN KEY (on_user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_comments ENABLE ROW LEVEL SECURITY;
 

@@ -1,12 +1,19 @@
 CREATE TABLE IF NOT EXISTS compatibility_prompts (
     answer_type TEXT DEFAULT 'free_response' NOT NULL,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
-    creator_id TEXT NOT NULL,
+    creator_id TEXT,
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     importance_score NUMERIC DEFAULT 0 NOT NULL,
     multiple_choice_options JSONB,
     question TEXT NOT NULL
 );
+
+ALTER TABLE compatibility_prompts
+    ADD CONSTRAINT compatibility_prompts_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE SET NULL;
+
 
 -- Row Level Security
 ALTER TABLE compatibility_prompts ENABLE ROW LEVEL SECURITY;

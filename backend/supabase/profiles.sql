@@ -54,6 +54,13 @@ CREATE TABLE IF NOT EXISTS profiles (
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
     );
 
+
+ALTER TABLE profiles
+    ADD CONSTRAINT profiles_user_id_fkey
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 

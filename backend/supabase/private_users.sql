@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS private_users (
     CONSTRAINT private_users_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE private_users
+    ADD CONSTRAINT private_users_id_fkey
+        FOREIGN KEY (id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE private_users ENABLE ROW LEVEL SECURITY;
 

@@ -6,6 +6,18 @@ CREATE TABLE IF NOT EXISTS profile_stars (
     CONSTRAINT profile_stars_pkey PRIMARY KEY (creator_id, star_id)
 );
 
+ALTER TABLE profile_stars
+    ADD CONSTRAINT profile_stars_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+ALTER TABLE profile_stars
+    ADD CONSTRAINT profile_stars_target_id_fkey
+        FOREIGN KEY (target_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_stars ENABLE ROW LEVEL SECURITY;
 

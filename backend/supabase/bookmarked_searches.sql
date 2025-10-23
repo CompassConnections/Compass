@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS bookmarked_searches (
     search_name TEXT DEFAULT NULL
 );
 
+ALTER TABLE bookmarked_searches
+    ADD CONSTRAINT bookmarked_searches_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+
 -- Row Level Security
 ALTER TABLE bookmarked_searches ENABLE ROW LEVEL SECURITY;
 

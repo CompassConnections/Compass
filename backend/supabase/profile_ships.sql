@@ -7,6 +7,12 @@ CREATE TABLE IF NOT EXISTS profile_ships (
     CONSTRAINT profile_ships_pkey PRIMARY KEY (creator_id, ship_id)
 );
 
+ALTER TABLE profile_ships
+    ADD CONSTRAINT profile_ships_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_ships ENABLE ROW LEVEL SECURITY;
 

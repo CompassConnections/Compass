@@ -6,6 +6,12 @@ CREATE TABLE IF NOT EXISTS profile_likes (
     CONSTRAINT profile_likes_pkey PRIMARY KEY (creator_id, like_id)
 );
 
+ALTER TABLE profile_likes
+    ADD CONSTRAINT profile_likes_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_likes ENABLE ROW LEVEL SECURITY;
 

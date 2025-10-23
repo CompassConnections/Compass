@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS compatibility_answers_free (
     question_id BIGINT NOT NULL
     );
 
+ALTER TABLE compatibility_answers_free
+    ADD CONSTRAINT compatibility_answers_free_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+
 -- Row Level Security
 ALTER TABLE compatibility_answers_free ENABLE ROW LEVEL SECURITY;
 

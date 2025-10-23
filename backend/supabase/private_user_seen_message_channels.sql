@@ -7,6 +7,12 @@ CREATE TABLE IF NOT EXISTS private_user_seen_message_channels (
     );
 
 -- Foreign Keys
+ALTER TABLE private_user_seen_message_channels
+    ADD CONSTRAINT private_user_seen_message_channels_user_id_fkey
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 DO $$
 BEGIN
     IF NOT EXISTS (

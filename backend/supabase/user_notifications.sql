@@ -5,6 +5,13 @@ CREATE TABLE IF NOT EXISTS user_notifications (
     CONSTRAINT user_notifications_pkey PRIMARY KEY (notification_id, user_id)
 );
 
+
+ALTER TABLE user_notifications
+    ADD CONSTRAINT user_notifications_user_id_fkey
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
 

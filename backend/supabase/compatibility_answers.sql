@@ -9,6 +9,13 @@ CREATE TABLE IF NOT EXISTS compatibility_answers (
     question_id BIGINT NOT NULL
 );
 
+ALTER TABLE compatibility_answers
+    ADD CONSTRAINT compatibility_answers_creator_id_fkey
+        FOREIGN KEY (creator_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+
 -- Row Level Security
 ALTER TABLE compatibility_answers ENABLE ROW LEVEL SECURITY;
 

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.5'
+    PostgrestVersion: '13.0.4'
   }
   public: {
     Tables: {
@@ -42,7 +42,15 @@ export type Database = {
           search_filters?: Json | null
           search_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'bookmarked_searches_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       compatibility_answers: {
         Row: {
@@ -75,7 +83,15 @@ export type Database = {
           pref_choices?: number[]
           question_id?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'compatibility_answers_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       compatibility_answers_free: {
         Row: {
@@ -105,13 +121,21 @@ export type Database = {
           multiple_choice?: number | null
           question_id?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'compatibility_answers_free_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       compatibility_prompts: {
         Row: {
           answer_type: string
           created_time: string
-          creator_id: string
+          creator_id: string | null
           id: number
           importance_score: number
           multiple_choice_options: Json | null
@@ -120,7 +144,7 @@ export type Database = {
         Insert: {
           answer_type?: string
           created_time?: string
-          creator_id: string
+          creator_id?: string | null
           id?: number
           importance_score?: number
           multiple_choice_options?: Json | null
@@ -129,13 +153,21 @@ export type Database = {
         Update: {
           answer_type?: string
           created_time?: string
-          creator_id?: string
+          creator_id?: string | null
           id?: number
           importance_score?: number
           multiple_choice_options?: Json | null
           question?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'compatibility_prompts_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       contact: {
         Row: {
@@ -200,6 +232,13 @@ export type Database = {
             columns: ['channel_id']
             isOneToOne: false
             referencedRelation: 'private_user_message_channels'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'private_user_message_channel_members_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
             referencedColumns: ['id']
           },
         ]
@@ -267,6 +306,13 @@ export type Database = {
             referencedRelation: 'private_user_message_channels'
             referencedColumns: ['id']
           },
+          {
+            foreignKeyName: 'private_user_messages_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
         ]
       }
       private_user_seen_message_channels: {
@@ -296,6 +342,13 @@ export type Database = {
             referencedRelation: 'private_user_message_channels'
             referencedColumns: ['id']
           },
+          {
+            foreignKeyName: 'private_user_seen_message_channels_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
         ]
       }
       private_users: {
@@ -311,7 +364,15 @@ export type Database = {
           data?: Json
           id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'private_users_id_fkey'
+            columns: ['id']
+            isOneToOne: true
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profile_comments: {
         Row: {
@@ -350,7 +411,22 @@ export type Database = {
           user_name?: string
           user_username?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'profile_comments_on_user_id_fkey'
+            columns: ['on_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_comments_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profile_likes: {
         Row: {
@@ -371,7 +447,15 @@ export type Database = {
           like_id?: string
           target_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'profile_likes_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profile_ships: {
         Row: {
@@ -395,7 +479,15 @@ export type Database = {
           target1_id?: string
           target2_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'profile_ships_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profile_stars: {
         Row: {
@@ -416,7 +508,22 @@ export type Database = {
           star_id?: string
           target_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'profile_stars_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_stars_target_id_fkey'
+            columns: ['target_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -489,7 +596,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           last_modification_time?: string
           looking_for_matches?: boolean
@@ -537,7 +644,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: never
+          id?: number
           is_smoker?: boolean | null
           last_modification_time?: string
           looking_for_matches?: boolean
@@ -563,7 +670,15 @@ export type Database = {
           wants_kids_strength?: number
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       push_subscriptions: {
         Row: {
@@ -720,7 +835,15 @@ export type Database = {
           notification_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'user_notifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_waitlist: {
         Row: {

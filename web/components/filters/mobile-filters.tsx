@@ -198,7 +198,7 @@ function MobileFilters(props: {
                 filters.wants_kids_strength != null &&
                 filters.wants_kids_strength !== -1
               }
-              icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
+              // icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
               selection={
                 <KidsLabel
                   strength={filters.wants_kids_strength ?? -1}
@@ -221,7 +221,7 @@ function MobileFilters(props: {
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={filters.has_kids != null && filters.has_kids !== -1}
-              icon={<FaChild className="text-ink-900 h-4 w-4"/>}
+              // icon={<FaChild className="text-ink-900 h-4 w-4"/>}
               selection={
                 <HasKidsLabel
                   has_kids={filters.has_kids ?? -1}

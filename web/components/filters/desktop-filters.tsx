@@ -23,6 +23,8 @@ import {RomanticFilter, RomanticFilterText} from "web/components/filters/romanti
 import {FaHeart} from "react-icons/fa";
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
+import {GiFruitBowl} from "react-icons/gi";
+import {RiScales3Line} from "react-icons/ri";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -200,95 +202,95 @@ export function DesktopFilters(props: {
               menuWidth="w-50"
           />
 
-      {/* WANTS KIDS */}
-      <DropdownMenu
-        items={[
-          {
-            name: wantsKidsLabelsWithIcon.no_preference.name,
-            icon: wantsKidsLabelsWithIcon.no_preference.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
-              })
-            },
-          },
-          {
-            name: wantsKidsLabelsWithIcon.wants_kids.name,
-            icon: wantsKidsLabelsWithIcon.wants_kids.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
-              })
-            },
-          },
-          {
-            name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
-            icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
-            onClick: () => {
-              updateFilter({
-                wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
-              })
-            },
-          },
-        ]}
-        closeOnClick
-        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <KidsLabel
-                strength={
-                  filters.wants_kids_strength ??
-                  wantsKidsLabelsWithIcon.no_preference.strength
-                }
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
+        {/* WANTS KIDS */}
+          <DropdownMenu
+              items={[
+                {
+                  name: wantsKidsLabelsWithIcon.no_preference.name,
+                  icon: wantsKidsLabelsWithIcon.no_preference.icon,
+                  onClick: () => {
+                    updateFilter({
+                      wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
+                    })
+                  },
+                },
+                {
+                  name: wantsKidsLabelsWithIcon.wants_kids.name,
+                  icon: wantsKidsLabelsWithIcon.wants_kids.icon,
+                  onClick: () => {
+                    updateFilter({
+                      wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
+                    })
+                  },
+                },
+                {
+                  name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
+                  icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
+                  onClick: () => {
+                    updateFilter({
+                      wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
+                    })
+                  },
+                },
+              ]}
+              closeOnClick
+              buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+              buttonContent={(open: boolean) => (
+                <DropdownButton
+                  content={
+                    <KidsLabel
+                      strength={
+                        filters.wants_kids_strength ??
+                        wantsKidsLabelsWithIcon.no_preference.strength
+                      }
+                      highlightedClass={open ? 'text-primary-500' : ''}
+                    />
+                  }
+                  open={open}
+                />
+              )}
+              menuItemsClass={'bg-canvas-50'}
+              menuWidth="w-48"
           />
-        )}
-        menuItemsClass={'bg-canvas-50'}
-        menuWidth="w-48"
-      />
 
-      {/* HAS KIDS */}
-      <DropdownMenu
-        items={[
-          {
-            name: hasKidsLabels.no_preference.name,
-            onClick: () => {
-              updateFilter({has_kids: hasKidsLabels.no_preference.value})
-            },
-          },
-          {
-            name: hasKidsLabels.doesnt_have_kids.name,
-            onClick: () => {
-              updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
-            },
-          },
-          {
-            name: hasKidsLabels.has_kids.name,
-            onClick: () => {
-              updateFilter({has_kids: hasKidsLabels.has_kids.value})
-            },
-          },
-        ]}
-        closeOnClick
-        buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <HasKidsLabel
-                has_kids={filters.has_kids ?? -1}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
+        {/* HAS KIDS */}
+          <DropdownMenu
+              items={[
+                {
+                  name: hasKidsLabels.no_preference.name,
+                  onClick: () => {
+                    updateFilter({has_kids: hasKidsLabels.no_preference.value})
+                  },
+                },
+                {
+                  name: hasKidsLabels.doesnt_have_kids.name,
+                  onClick: () => {
+                    updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
+                  },
+                },
+                {
+                  name: hasKidsLabels.has_kids.name,
+                  onClick: () => {
+                    updateFilter({has_kids: hasKidsLabels.has_kids.value})
+                  },
+                },
+              ]}
+              closeOnClick
+              buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+              buttonContent={(open: boolean) => (
+                <DropdownButton
+                  content={
+                    <HasKidsLabel
+                      has_kids={filters.has_kids ?? -1}
+                      highlightedClass={open ? 'text-primary-500' : ''}
+                    />
+                  }
+                  open={open}
+                />
+              )}
+              menuItemsClass="bg-canvas-50"
+              menuWidth="w-40"
           />
-        )}
-        menuItemsClass="bg-canvas-50"
-        menuWidth="w-40"
-      />
 
       </>
       }
@@ -300,6 +302,7 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
+                <GiFruitBowl className="h-4 w-4"/>
                 <DietFilterText
                   options={
                     filters.diet as
@@ -326,6 +329,7 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
+                <RiScales3Line className="h-4 w-4"/>
                 <PoliticalFilterText
                   options={
                     filters.political_beliefs as

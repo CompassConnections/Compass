@@ -46,9 +46,6 @@ export const deleteBookmarkedSearch = async (
   id: number,
 ) => {
   if (!id) return
-  await run(
-    db.from('bookmarked_searches').delete().eq('id', id)
-  ).then(() => {
-    track('bookmarked_searches delete', {id})
-  })
+  await api('delete-bookmarked-search', {id})
+  track('bookmarked_searches delete', {id})
 }

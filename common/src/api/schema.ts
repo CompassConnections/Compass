@@ -595,6 +595,15 @@ export const API = (_apiTypeCheck = {
         search_name: z.string().nullable().optional(),
       }),
   },
+  'delete-bookmarked-search': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      id: z.number(),
+    }),
+  },
 } as const)
 
 export type APIPath = keyof typeof API

@@ -583,6 +583,18 @@ export const API = (_apiTypeCheck = {
       subscription: z.record(z.any())
     }),
   },
+  'create-bookmarked-search': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as Row<'bookmarked_searches'>,
+    props: z
+      .object({
+        search_filters: z.any().optional(),
+        location: z.any().optional(),
+        search_name: z.string().nullable().optional(),
+      }),
+  },
 } as const)
 
 export type APIPath = keyof typeof API

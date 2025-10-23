@@ -60,6 +60,7 @@ import {createVote} from "api/create-vote";
 import {vote} from "api/vote";
 import {contact} from "api/contact";
 import {saveSubscription} from "api/save-subscription";
+import {createBookmarkedSearch} from './create-bookmarked-search'
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -185,6 +186,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-messages-count': getMessagesCount,
   'set-last-online-time': setLastOnlineTime,
   'save-subscription': saveSubscription,
+  'create-bookmarked-search': createBookmarkedSearch,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

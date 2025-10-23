@@ -4,6 +4,7 @@ import {filterKeys} from "web/components/questions-form";
 import {track} from "web/lib/service/analytics";
 import {removeNullOrUndefinedProps} from "common/util/object";
 import {FilterFields} from "common/filters";
+import {api} from "web/lib/api";
 
 
 export const getUserBookmarkedSearches = async (userId: string) => {
@@ -19,7 +20,7 @@ export const getUserBookmarkedSearches = async (userId: string) => {
 
 export type BookmarkedSearchSubmitType = Omit<
   Row<'bookmarked_searches'>,
-  'created_time' | 'id' | 'last_notified_at'
+  'created_time' | 'id' | 'last_notified_at' | 'creator_id'
 >
 
 export const submitBookmarkedSearch = async (
@@ -33,17 +34,12 @@ export const submitBookmarkedSearch = async (
   const row = {
     search_filters: removeNullOrUndefinedProps(filters),
     location: locationFilterProps?.location ? locationFilterProps : null,
-    creator_id: userId,
   }
-  const input = {
-    ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at'].includes(key)),
+  const props = {
+    ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at', 'creator_id'].includes(key)),
   } as BookmarkedSearchSubmitType
 
-  await run(
-    db.from('bookmarked_searches').upsert(input)
-  ).then(() => {
-    track('bookmarked_searches submit', {...filters})
-  })
+  await api('create-bookmarked-search', props)
 }
 
 export const deleteBookmarkedSearch = async (

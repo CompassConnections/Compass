@@ -1,26 +1,26 @@
 import clsx from 'clsx'
-import {convertRomanticTypes, RomanticType,} from 'web/lib/util/convert-types'
+import {convertDietTypes, DietType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {ROMANTIC_CHOICES} from "web/components/filters/choices";
+import {DIET_CHOICES} from "web/components/filters/choices";
 import {FilterFields} from "common/filters";
 
-export function RomanticFilterText(props: {
-  relationship: RomanticType[] | undefined
+export function DietFilterText(props: {
+  options: DietType[] | undefined
   highlightedClass?: string
 }) {
-  const {relationship, highlightedClass} = props
-  const length = (relationship ?? []).length
+  const {options, highlightedClass} = props
+  const length = (options ?? []).length
 
-  if (!relationship || length < 1) {
+  if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any relationship</span>
+      <span className={clsx('text-semibold', highlightedClass)}>Any diet</span>
     )
   }
 
-  const convertedTypes = relationship.map((r) =>
-    convertRomanticTypes(r)
+  const convertedTypes = options.map((r) =>
+    convertDietTypes(r)
   )
 
   if (length > 1) {
@@ -44,17 +44,17 @@ export function RomanticFilterText(props: {
   )
 }
 
-export function RomanticFilter(props: {
+export function DietFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
   const {filters, updateFilter} = props
   return (
     <MultiCheckbox
-      selected={filters.pref_romantic_styles ?? []}
-      choices={ROMANTIC_CHOICES as any}
+      selected={filters.diet ?? []}
+      choices={DIET_CHOICES as any}
       onChange={(c) => {
-        updateFilter({pref_romantic_styles: c})
+        updateFilter({diet: c})
       }}
     />
   )

@@ -454,7 +454,7 @@ export type Database = {
           height_in_inches: number | null
           id: number
           is_smoker: boolean | null
-          is_vegetarian_or_vegan: boolean | null
+          diet: string[] | null
           last_modification_time: string
           looking_for_matches: boolean
           messaging_status: string
@@ -502,7 +502,7 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
-          is_vegetarian_or_vegan?: boolean | null
+          diet?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
@@ -550,7 +550,7 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
-          is_vegetarian_or_vegan?: boolean | null
+          diet?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
           messaging_status?: string

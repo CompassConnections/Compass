@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {convertRelationshipType, RelationshipType,} from 'web/lib/util/convert-relationship-type'
+import {convertRelationshipType, RelationshipType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 

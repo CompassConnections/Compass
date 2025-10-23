@@ -27,6 +27,16 @@ export const POLITICAL_CHOICES = {
   'Independent / Other': 'other',
 }
 
+export const DIET_CHOICES = {
+  Omnivore: 'omnivore',
+  Vegetarian: 'veg',
+  Vegan: 'vegan',
+  Keto: 'keto',
+  Paleo: 'paleo',
+  Pescetarian: 'pescetarian',
+  Other: 'other',
+}
+
 export const REVERTED_RELATIONSHIP_CHOICES = Object.fromEntries(
   Object.entries(RELATIONSHIP_CHOICES).map(([key, value]) => [value, key])
 );
@@ -37,4 +47,8 @@ export const REVERTED_ROMANTIC_CHOICES = Object.fromEntries(
 
 export const REVERTED_POLITICAL_CHOICES = Object.fromEntries(
   Object.entries(POLITICAL_CHOICES).map(([key, value]) => [value, key])
+);
+
+export const REVERTED_DIET_CHOICES = Object.fromEntries(
+  Object.entries(DIET_CHOICES).map(([key, value]) => [value, key])
 );

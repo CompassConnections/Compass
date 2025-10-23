@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     height_in_inches INTEGER,
     id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     is_smoker BOOLEAN,
-    is_vegetarian_or_vegan BOOLEAN,
+    diet TEXT[],
     last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     looking_for_matches BOOLEAN DEFAULT TRUE NOT NULL,
     messaging_status TEXT DEFAULT 'open'::TEXT NOT NULL,

@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {RelationshipType, RomanticType} from 'web/lib/util/convert-relationship-type'
+import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {ReactNode} from 'react'
 import {FaUserGroup} from 'react-icons/fa6'
 import {Col} from 'web/components/layout/col'
@@ -21,6 +21,7 @@ import {hasKidsLabels} from "common/has-kids";
 import {HasKidsLabel} from "web/components/filters/has-kids-filter";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
 import {FaHeart} from "react-icons/fa";
+import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -171,7 +172,7 @@ export function DesktopFilters(props: {
 
       {includeRelationshipFilters && <>
 
-        {/* CONNECTION */}
+        {/* RELATIONSHIP STYLE */}
           <CustomizeableDropdown
               buttonContent={(open) => (
                 <DropdownButton
@@ -290,6 +291,32 @@ export function DesktopFilters(props: {
 
       </>
       }
+
+      {/* DIET */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <DietFilterText
+                  options={
+                    filters.diet as
+                      | DietType[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <DietFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
 
       {/* Short Bios */}
       <ShortBioToggle

@@ -80,7 +80,7 @@ const optionalProfilesSchema = z.object({
   education_level: z.string().optional(),
   is_smoker: z.boolean().optional(),
   drinks_per_month: z.number().min(0).optional(),
-  is_vegetarian_or_vegan: z.boolean().optional(),
+  diet: z.array(z.string()).optional(),
   has_kids: z.number().min(0).optional(),
   university: z.string().optional(),
   occupation_title: z.string().optional(),

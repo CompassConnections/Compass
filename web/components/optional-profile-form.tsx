@@ -28,7 +28,7 @@ import {City, CityRow, profileToCity, useCitySearch} from "web/components/search
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
-import {POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
+import {DIET_CHOICES, POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
 export const OptionalProfileUserForm = (props: {
@@ -406,6 +406,15 @@ export const OptionalProfileUserForm = (props: {
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
             value={profile['religious_beliefs'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Diet</label>
+          <MultiCheckbox
+            choices={DIET_CHOICES}
+            selected={profile['diet'] ?? []}
+            onChange={(selected) => setProfile('diet', selected)}
           />
         </Col>
 

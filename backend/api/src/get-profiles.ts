@@ -17,6 +17,7 @@ export type profileQueryType = {
   pref_age_max?: number | undefined,
   pref_relation_styles?: String[] | undefined,
   pref_romantic_styles?: String[] | undefined,
+  diet?: String[] | undefined,
   wants_kids_strength?: number | undefined,
   has_kids?: number | undefined,
   is_smoker?: boolean | undefined,
@@ -47,6 +48,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_age_max,
     pref_relation_styles,
     pref_romantic_styles,
+    diet,
     wants_kids_strength,
     has_kids,
     is_smoker,
@@ -85,6 +87,8 @@ export const loadProfiles = async (props: profileQueryType) => {
           intersection(pref_relation_styles, l.pref_relation_styles).length) &&
         (!pref_romantic_styles ||
           intersection(pref_romantic_styles, l.pref_romantic_styles).length) &&
+        (!diet ||
+          intersection(diet, l.diet).length) &&
         (!wants_kids_strength ||
           wants_kids_strength == -1 ||
           !l.wants_kids_strength ||
@@ -160,6 +164,12 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(
       `pref_romantic_styles IS NULL OR pref_romantic_styles = '{}' OR pref_romantic_styles && $(pref_romantic_styles)`,
       {pref_romantic_styles}
+    ),
+
+    diet?.length &&
+    where(
+      `diet IS NULL OR diet = '{}' OR diet && $(diet)`,
+      {diet}
     ),
 
     !!wants_kids_strength &&

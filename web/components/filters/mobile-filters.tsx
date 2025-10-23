@@ -10,7 +10,7 @@ import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/profiles/profile'
 import {Gender} from 'common/gender'
-import {RelationshipType, RomanticType} from 'web/lib/util/convert-relationship-type'
+import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
@@ -20,6 +20,7 @@ import {FaChild} from "react-icons/fa"
 import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
 import {hasKidsLabels} from "common/has-kids";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
+import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -236,6 +237,26 @@ function MobileFilters(props: {
       </MobileFilterSection>
 
       </>}
+
+      {/* DIET */}
+      <MobileFilterSection
+        title="Diet"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.diet || undefined)}
+        selection={
+          <DietFilterText
+            options={filters.diet as DietType[]}
+            highlightedClass={
+              hasAny(filters.diet || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <DietFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
 
       {/* Short Bios */}
       <Col className="p-4 pb-2">

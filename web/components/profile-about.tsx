@@ -1,14 +1,18 @@
 import clsx from 'clsx'
-import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-relationship-type'
+import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
-import {REVERTED_POLITICAL_CHOICES, REVERTED_ROMANTIC_CHOICES} from 'web/components/filters/choices'
+import {
+  REVERTED_DIET_CHOICES,
+  REVERTED_POLITICAL_CHOICES,
+  REVERTED_ROMANTIC_CHOICES
+} from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap,} from 'react-icons/lu'
 import {MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
-import {PiHandsPrayingBold, PiMagnifyingGlassBold, PiPlantBold,} from 'react-icons/pi'
+import {PiHandsPrayingBold, PiMagnifyingGlassBold,} from 'react-icons/pi'
 import {RiScales3Line} from 'react-icons/ri'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -21,6 +25,7 @@ import {Profile} from 'common/profiles/profile'
 import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
 import {MAX_INT, MIN_INT} from "common/constants";
+import {GiFruitBowl} from "react-icons/gi";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -77,8 +82,8 @@ export default function ProfileAbout(props: {
       <Smoker profile={profile}/>
       <Drinks profile={profile}/>
       <AboutRow
-        icon={<PiPlantBold className="h-5 w-5"/>}
-        text={profile.is_vegetarian_or_vegan ? 'Vegetarian/Vegan' : null}
+        icon={<GiFruitBowl className="h-5 w-5"/>}
+        text={profile.diet?.map(e => REVERTED_DIET_CHOICES[e])}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>
@@ -296,7 +301,7 @@ export const formatProfileValue = (key: string, value: any) => {
     case 'last_online_time':
       return fromNow(new Date(value).valueOf())
     case 'is_smoker':
-    case 'is_vegetarian_or_vegan':
+    case 'diet':
     case 'has_pets':
       return value ? 'Yes' : 'No'
     case 'height_in_inches':

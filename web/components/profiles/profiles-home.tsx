@@ -50,11 +50,13 @@ export function ProfilesHome() {
     if (!user) return;
     setIsReloading(true);
     const current = ++id.current;
-    api('get-profiles', removeNullOrUndefinedProps({
+    const args = removeNullOrUndefinedProps({
       limit: 20,
       compatibleWithUserId: user?.id,
       ...filters
-    }) as any)
+    });
+    console.debug('Refreshing profiles, filters:', args);
+    api('get-profiles', args as any)
       .then(({profiles}) => {
         if (current === id.current) setProfiles(profiles);
       })

@@ -32,7 +32,7 @@ export function encryptMessage(plaintext: string) {
   const ciphertext = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
 
-  console.debug(plaintext, iv, ciphertext, tag)
+  // console.debug(plaintext, iv, ciphertext, tag)
 
   return {
     ciphertext: ciphertext.toString("base64"),

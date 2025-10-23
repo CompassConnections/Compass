@@ -4,7 +4,7 @@ import { createSupabaseDirectClient } from 'shared/supabase/init'
 import {
   insertPrivateMessage,
   leaveChatContent,
-} from 'api/junk-drawer/private-messages'
+} from 'api/helpers/private-messages'
 
 export const leavePrivateUserMessageChannel: APIHandler<
   'leave-private-user-message-channel'

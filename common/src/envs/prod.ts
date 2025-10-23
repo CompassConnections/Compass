@@ -1,6 +1,7 @@
 export type EnvConfig = {
   domain: string
   firebaseConfig: FirebaseConfig
+  dbEncryptionKey: string
   supabaseInstanceId: string
   supabaseAnonKey: string
   supabasePwd?: string
@@ -38,6 +39,7 @@ export const PROD_CONFIG: EnvConfig = {
   supabaseInstanceId: 'ltzepxnhhnrnvovqblfr',
   supabaseAnonKey: '',
   supabasePwd: '',
+  dbEncryptionKey: '',
   googleApplicationCredentials: undefined,
   firebaseConfig: {
     apiKey: '',
@@ -63,6 +65,7 @@ export const refreshConfig = () => {
   PROD_CONFIG.supabasePwd = process.env.SUPABASE_DB_PASSWORD || ''
   PROD_CONFIG.googleApplicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS
   PROD_CONFIG.firebaseConfig.apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || ''
+  PROD_CONFIG.dbEncryptionKey = process.env.DB_ENC_MASTER_KEY_BASE64 || ''
 }
 
 refreshConfig()

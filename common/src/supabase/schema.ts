@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.4'
+    PostgrestVersion: '13.0.5'
   }
   public: {
     Tables: {
@@ -228,28 +228,34 @@ export type Database = {
       private_user_messages: {
         Row: {
           channel_id: number
-          content: Json
+          ciphertext: string | null
+          content: Json | null
           created_time: string
           id: number
-          old_id: number | null
+          iv: string | null
+          tag: string | null
           user_id: string
           visibility: string
         }
         Insert: {
           channel_id: number
-          content: Json
+          ciphertext?: string | null
+          content?: Json | null
           created_time?: string
           id?: never
-          old_id?: number | null
+          iv?: string | null
+          tag?: string | null
           user_id: string
           visibility?: string
         }
         Update: {
           channel_id?: number
-          content?: Json
+          ciphertext?: string | null
+          content?: Json | null
           created_time?: string
           id?: never
-          old_id?: number | null
+          iv?: string | null
+          tag?: string | null
           user_id?: string
           visibility?: string
         }
@@ -483,7 +489,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           is_smoker?: boolean | null
           last_modification_time?: string
           looking_for_matches?: boolean
@@ -531,7 +537,7 @@ export type Database = {
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           is_smoker?: boolean | null
           last_modification_time?: string
           looking_for_matches?: boolean

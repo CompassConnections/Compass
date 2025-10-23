@@ -1,9 +1,11 @@
 CREATE TABLE IF NOT EXISTS private_user_messages (
     channel_id BIGINT NOT NULL,
-    content JSONB NOT NULL,
+    content JSONB,
+    ciphertext text,       -- base64
+    iv text,               -- base64
+    tag text,              -- base64 (GCM auth tag)
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    old_id BIGINT,
     user_id TEXT NOT NULL,
     visibility TEXT DEFAULT 'private'::TEXT NOT NULL,
     CONSTRAINT private_user_messages_channel_id_fkey

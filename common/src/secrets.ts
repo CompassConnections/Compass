@@ -25,6 +25,7 @@ export const secrets = (
     'DISCORD_WEBHOOK_CONTACT',
     'VAPID_PUBLIC_KEY',
     'VAPID_PRIVATE_KEY',
+    'DB_ENC_MASTER_KEY_BASE64',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

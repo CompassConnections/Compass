@@ -15,6 +15,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import webPush from 'web-push';
 import {parseJsonContentToText} from "common/util/parse";
+import {encryptMessage} from "shared/encryption";
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -47,11 +48,13 @@ export const insertPrivateMessage = async (
   visibility: ChatVisibility,
   pg: SupabaseDirectClient
 ) => {
+  const plaintext = JSON.stringify(content);
+  const {ciphertext, iv, tag} = encryptMessage(plaintext);
   const lastMessage = await pg.one(
-    `insert into private_user_messages (content, channel_id, user_id, visibility)
-     values ($1, $2, $3, $4)
+    `insert into private_user_messages (ciphertext, iv, tag, channel_id, user_id, visibility)
+     values ($1, $2, $3, $4, $5, $6)
      returning created_time`,
-    [content, channelId, userId, visibility]
+    [ciphertext, iv, tag, channelId, userId, visibility]
   )
   await pg.none(
     `update private_user_message_channels
@@ -93,6 +96,7 @@ export const createPrivateUserMessageMain = async (
   visibility: ChatVisibility
 ) => {
   log('createPrivateUserMessageMain', creator, channelId, content)
+
   // Normally, users can only submit messages to channels that they are members of
   const authorized = await pg.oneOrNone(
     `select 1

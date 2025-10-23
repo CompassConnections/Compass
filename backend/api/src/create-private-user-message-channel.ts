@@ -2,7 +2,7 @@ import { APIError, APIHandler } from 'api/helpers/endpoint'
 import { filterDefined } from 'common/util/array'
 import { uniq } from 'lodash'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { addUsersToPrivateMessageChannel } from 'api/junk-drawer/private-messages'
+import { addUsersToPrivateMessageChannel } from 'api/helpers/private-messages'
 import { getPrivateUser, getUser } from 'shared/utils'
 
 export const createPrivateUserMessageChannel: APIHandler<

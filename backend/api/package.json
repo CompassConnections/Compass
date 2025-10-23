@@ -9,6 +9,7 @@
     "dev": "npx concurrently -n COMPILE,SERVER -c cyan,green \"yarn watch:compile\" \"yarn watch:serve\"",
     "build": "yarn compile && yarn dist:clean && yarn dist:copy",
     "build:fast": "yarn compile && yarn dist:copy",
+    "clean": "rm -rf lib && (cd ../../common && rm -rf lib) && (cd ../shared && rm -rf lib) && (cd ../email && rm -rf lib)",
     "compile": "tsc -b && tsc-alias && (cd ../../common && tsc-alias) && (cd ../shared && tsc-alias) && (cd ../email && tsc-alias)",
     "debug": "nodemon -r tsconfig-paths/register --watch src -e ts --watch ../../common/src --watch ../shared/src --exec \"yarn build && node --inspect-brk src/serve.ts\"",
     "dist": "yarn dist:clean && yarn dist:copy",

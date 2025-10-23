@@ -44,6 +44,99 @@ export type Database = {
         }
         Relationships: []
       }
+      compatibility_answers: {
+        Row: {
+          created_time: string
+          creator_id: string
+          explanation: string | null
+          id: number
+          importance: number
+          multiple_choice: number
+          pref_choices: number[]
+          question_id: number
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          explanation?: string | null
+          id?: number
+          importance: number
+          multiple_choice: number
+          pref_choices: number[]
+          question_id: number
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          explanation?: string | null
+          id?: number
+          importance?: number
+          multiple_choice?: number
+          pref_choices?: number[]
+          question_id?: number
+        }
+        Relationships: []
+      }
+      compatibility_answers_free: {
+        Row: {
+          created_time: string
+          creator_id: string
+          free_response: string | null
+          id: number
+          integer: number | null
+          multiple_choice: number | null
+          question_id: number
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          free_response?: string | null
+          id?: number
+          integer?: number | null
+          multiple_choice?: number | null
+          question_id: number
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          free_response?: string | null
+          id?: number
+          integer?: number | null
+          multiple_choice?: number | null
+          question_id?: number
+        }
+        Relationships: []
+      }
+      compatibility_prompts: {
+        Row: {
+          answer_type: string
+          created_time: string
+          creator_id: string
+          id: number
+          importance_score: number
+          multiple_choice_options: Json | null
+          question: string
+        }
+        Insert: {
+          answer_type?: string
+          created_time?: string
+          creator_id: string
+          id?: number
+          importance_score?: number
+          multiple_choice_options?: Json | null
+          question: string
+        }
+        Update: {
+          answer_type?: string
+          created_time?: string
+          creator_id?: string
+          id?: number
+          importance_score?: number
+          multiple_choice_options?: Json | null
+          question?: string
+        }
+        Relationships: []
+      }
       contact: {
         Row: {
           content: Json | null
@@ -70,185 +163,8 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          }
+          },
         ]
-      }
-      compatibility_answers_free: {
-        Row: {
-          created_time: string
-          creator_id: string
-          free_response: string | null
-          id: number
-          integer: number | null
-          multiple_choice: number | null
-          question_id: number
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          free_response?: string | null
-          id?: never
-          integer?: number | null
-          multiple_choice?: number | null
-          question_id: number
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          free_response?: string | null
-          id?: never
-          integer?: number | null
-          multiple_choice?: number | null
-          question_id?: number
-        }
-        Relationships: []
-      }
-      compatibility_answers: {
-        Row: {
-          created_time: string
-          creator_id: string
-          explanation: string | null
-          id: number
-          importance: number
-          multiple_choice: number
-          pref_choices: number[]
-          question_id: number
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          explanation?: string | null
-          id?: never
-          importance: number
-          multiple_choice: number
-          pref_choices: number[]
-          question_id: number
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          explanation?: string | null
-          id?: never
-          importance?: number
-          multiple_choice?: number
-          pref_choices?: number[]
-          question_id?: number
-        }
-        Relationships: []
-      }
-      profile_likes: {
-        Row: {
-          created_time: string
-          creator_id: string
-          like_id: string
-          target_id: string
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          like_id?: string
-          target_id: string
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          like_id?: string
-          target_id?: string
-        }
-        Relationships: []
-      }
-      compatibility_prompts: {
-        Row: {
-          answer_type: string
-          created_time: string
-          creator_id: string
-          id: number
-          importance_score: number
-          multiple_choice_options: Json | null
-          question: string
-        }
-        Insert: {
-          answer_type?: string
-          created_time?: string
-          creator_id: string
-          id?: never
-          importance_score?: number
-          multiple_choice_options?: Json | null
-          question: string
-        }
-        Update: {
-          answer_type?: string
-          created_time?: string
-          creator_id?: string
-          id?: never
-          importance_score?: number
-          multiple_choice_options?: Json | null
-          question?: string
-        }
-        Relationships: []
-      }
-      profile_ships: {
-        Row: {
-          created_time: string
-          creator_id: string
-          ship_id: string
-          target1_id: string
-          target2_id: string
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          ship_id?: string
-          target1_id: string
-          target2_id: string
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          ship_id?: string
-          target1_id?: string
-          target2_id?: string
-        }
-        Relationships: []
-      }
-      profile_stars: {
-        Row: {
-          created_time: string
-          creator_id: string
-          star_id: string
-          target_id: string
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          star_id?: string
-          target_id: string
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          star_id?: string
-          target_id?: string
-        }
-        Relationships: []
-      }
-      user_waitlist: {
-        Row: {
-          created_time: string
-          email: string
-          id: number
-        }
-        Insert: {
-          created_time?: string
-          email: string
-          id?: never
-        }
-        Update: {
-          created_time?: string
-          email?: string
-          id?: never
-        }
-        Relationships: []
       }
       private_user_message_channel_members: {
         Row: {
@@ -285,7 +201,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'private_user_message_channels'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       private_user_message_channels: {
@@ -344,7 +260,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'private_user_message_channels'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       private_user_seen_message_channels: {
@@ -373,7 +289,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'private_user_message_channels'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       private_users: {
@@ -430,13 +346,79 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_likes: {
+        Row: {
+          created_time: string
+          creator_id: string
+          like_id: string
+          target_id: string
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          like_id?: string
+          target_id: string
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          like_id?: string
+          target_id?: string
+        }
+        Relationships: []
+      }
+      profile_ships: {
+        Row: {
+          created_time: string
+          creator_id: string
+          ship_id: string
+          target1_id: string
+          target2_id: string
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          ship_id?: string
+          target1_id: string
+          target2_id: string
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          ship_id?: string
+          target1_id?: string
+          target2_id?: string
+        }
+        Relationships: []
+      }
+      profile_stars: {
+        Row: {
+          created_time: string
+          creator_id: string
+          star_id: string
+          target_id: string
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          star_id?: string
+          target_id: string
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          star_id?: string
+          target_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
           bio: Json | null
           bio_length: number | null
           bio_text: string | null
-          bio_tsv: unknown | null
+          bio_tsv: unknown
           born_in_location: string | null
           city: string
           city_latitude: number | null
@@ -445,6 +427,7 @@ export type Database = {
           company: string | null
           country: string | null
           created_time: string
+          diet: string[] | null
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
@@ -454,7 +437,6 @@ export type Database = {
           height_in_inches: number | null
           id: number
           is_smoker: boolean | null
-          diet: string[] | null
           last_modification_time: string
           looking_for_matches: boolean
           messaging_status: string
@@ -475,7 +457,7 @@ export type Database = {
           twitter: string | null
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['profile_visibility']
+          visibility: Database['public']['Enums']['lover_visibility']
           wants_kids_strength: number
           website: string | null
         }
@@ -484,7 +466,7 @@ export type Database = {
           bio?: Json | null
           bio_length?: number | null
           bio_text?: string | null
-          bio_tsv?: unknown | null
+          bio_tsv?: unknown
           born_in_location?: string | null
           city: string
           city_latitude?: number | null
@@ -493,6 +475,7 @@ export type Database = {
           company?: string | null
           country?: string | null
           created_time?: string
+          diet?: string[] | null
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
@@ -502,7 +485,6 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
-          diet?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
@@ -523,7 +505,7 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id: string
-          visibility?: Database['public']['Enums']['profile_visibility']
+          visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
@@ -532,7 +514,7 @@ export type Database = {
           bio?: Json | null
           bio_length?: number | null
           bio_text?: string | null
-          bio_tsv?: unknown | null
+          bio_tsv?: unknown
           born_in_location?: string | null
           city?: string
           city_latitude?: number | null
@@ -541,6 +523,7 @@ export type Database = {
           company?: string | null
           country?: string | null
           created_time?: string
+          diet?: string[] | null
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
@@ -550,7 +533,6 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
-          diet?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
           messaging_status?: string
@@ -571,11 +553,43 @@ export type Database = {
           twitter?: string | null
           university?: string | null
           user_id?: string
-          visibility?: Database['public']['Enums']['profile_visibility']
+          visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number
           website?: string | null
         }
         Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: number
+          keys: Json
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: number
+          keys: Json
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: number
+          keys?: Json
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'push_subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       reports: {
         Row: {
@@ -625,7 +639,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       user_activity: {
@@ -648,7 +662,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: 'users'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       user_events: {
@@ -702,13 +716,31 @@ export type Database = {
         }
         Relationships: []
       }
+      user_waitlist: {
+        Row: {
+          created_time: string
+          email: string
+          id: number
+        }
+        Insert: {
+          created_time?: string
+          email: string
+          id?: number
+        }
+        Update: {
+          created_time?: string
+          email?: string
+          id?: number
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_time: string
           data: Json
           id: string
           name: string
-          name_username_vector: unknown | null
+          name_username_vector: unknown
           username: string
         }
         Insert: {
@@ -716,7 +748,7 @@ export type Database = {
           data: Json
           id?: string
           name: string
-          name_username_vector?: unknown | null
+          name_username_vector?: unknown
           username: string
         }
         Update: {
@@ -724,7 +756,7 @@ export type Database = {
           data?: Json
           id?: string
           name?: string
-          name_username_vector?: unknown | null
+          name_username_vector?: unknown
           username?: string
         }
         Relationships: []
@@ -768,7 +800,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'votes'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       votes: {
@@ -803,7 +835,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
     }
@@ -819,24 +851,22 @@ export type Database = {
         Args: { channel_id: number; user_id: string }
         Returns: boolean
       }
-      firebase_uid: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_average_rating: {
-        Args: { user_id: string }
-        Returns: number
-      }
-      get_compatibility_prompts_with_answer_count: {
-        Args: Record<PropertyKey, never>
+      firebase_uid: { Args: never; Returns: string }
+      get_average_rating: { Args: { user_id: string }; Returns: number }
+      get_compatibility_questions_with_answer_count: {
+        Args: never
         Returns: Record<string, unknown>[]
       }
-      get_compatibility_answers_and_profiles: {
+      get_love_question_answers_and_lovers: {
+        Args: { p_question_id: number }
+        Returns: Record<string, unknown>[]
+      }
+      get_love_question_answers_and_profiles: {
         Args: { p_question_id: number }
         Returns: Record<string, unknown>[]
       }
       get_votes_with_results: {
-        Args: Record<PropertyKey, never>
+        Args: { order_by?: string }
         Returns: {
           created_time: string
           creator_id: string
@@ -850,65 +880,21 @@ export type Database = {
           votes_for: number
         }[]
       }
-      gtrgm_compress: {
-        Args: { '': unknown }
-        Returns: unknown
-      }
-      gtrgm_decompress: {
-        Args: { '': unknown }
-        Returns: unknown
-      }
-      gtrgm_in: {
-        Args: { '': unknown }
-        Returns: unknown
-      }
-      gtrgm_options: {
-        Args: { '': unknown }
-        Returns: undefined
-      }
-      gtrgm_out: {
-        Args: { '': unknown }
-        Returns: unknown
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never> | { user_id: string }
-        Returns: boolean
-      }
+      is_admin:
+        | { Args: { user_id: string }; Returns: boolean }
+        | { Args: never; Returns: boolean }
       millis_interval: {
         Args: { end_millis: number; start_millis: number }
         Returns: unknown
       }
-      millis_to_ts: {
-        Args: { millis: number }
-        Returns: string
-      }
-      random_alphanumeric: {
-        Args: { length: number }
-        Returns: string
-      }
-      set_limit: {
-        Args: { '': number }
-        Returns: number
-      }
-      show_limit: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      show_trgm: {
-        Args: { '': string }
-        Returns: string[]
-      }
-      to_jsonb: {
-        Args: { '': Json }
-        Returns: Json
-      }
-      ts_to_millis: {
-        Args: { ts: string } | { ts: string }
-        Returns: number
-      }
+      millis_to_ts: { Args: { millis: number }; Returns: string }
+      random_alphanumeric: { Args: { length: number }; Returns: string }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { '': string }; Returns: string[] }
+      to_jsonb: { Args: { '': Json }; Returns: Json }
     }
     Enums: {
-      profile_visibility: 'public' | 'member'
+      lover_visibility: 'public' | 'member'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -929,7 +915,7 @@ export type Tables<
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -940,14 +926,14 @@ export type Tables<
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])
-  ? (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+        DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
@@ -957,7 +943,7 @@ export type TablesInsert<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -967,12 +953,12 @@ export type TablesInsert<
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
@@ -982,7 +968,7 @@ export type TablesUpdate<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -992,12 +978,12 @@ export type TablesUpdate<
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
@@ -1007,14 +993,14 @@ export type Enums<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never = never
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-  ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
@@ -1024,19 +1010,19 @@ export type CompositeTypes<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-  ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
     Enums: {
-      profile_visibility: ['public', 'member'],
+      lover_visibility: ['public', 'member'],
     },
   },
 } as const

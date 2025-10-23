@@ -45,10 +45,12 @@
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "nodemon": "2.0.20",
-    "prettier": "2.8.4",
     "ts-node": "10.9.1",
     "tsc-alias": "1.8.2",
     "tsconfig-paths": "4.2.0",
+    "prettier": "3.6.2",
+    "prettier-plugin-sql": "0.19.2",
+    "prettier-plugin-tailwindcss": "^0.2.1",
     "typescript": "5.5.4"
   },
   "resolutions": {

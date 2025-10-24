@@ -441,7 +441,7 @@ export function DesktopFilters(props: {
         className="text-ink-900 hover:text-primary-500 underline"
         onClick={clearFilters}
       >
-        Clear filters
+        Reset filters
       </button>
     </>
   )

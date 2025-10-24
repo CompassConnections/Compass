@@ -42,7 +42,7 @@ export default function Sidebar(props: {
   return (
     <nav
       aria-label="Sidebar"
-      className={clsx('flex h-screen flex-col', className)}
+      className={clsx('flex h-screen flex-col h-full max-h-screen overflow-y-auto', className)}
     >
       <SiteLogo />
 

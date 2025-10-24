@@ -59,14 +59,22 @@ function MobileFilters(props: {
 
   return (
     <Col>
-      <Col className="p-4 pb-2">
-        <MyMatchesToggle
-          setYourFilters={setYourFilters}
-          youProfile={youProfile}
-          on={isYourFilters}
-          hidden={!youProfile}
-        />
-      </Col>
+      <Row>
+        <Col className="p-4 pb-2">
+          <MyMatchesToggle
+            setYourFilters={setYourFilters}
+            youProfile={youProfile}
+            on={isYourFilters}
+            hidden={!youProfile}
+          />
+        </Col>
+        <button
+          className="text-ink-500 hover:text-primary-500 underline mt-4 mb-8 right absolute right-4"
+          onClick={clearFilters}
+        >
+          Reset filters
+        </button>
+      </Row>
 
       {/* RELATIONSHIP STYLE */}
       <MobileFilterSection
@@ -266,16 +274,22 @@ function MobileFilters(props: {
         title="Drinks"
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
-        isActive={(() => { const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max); return !noMin || !noMax })()}
+        isActive={(() => {
+          const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max);
+          return !noMin || !noMax
+        })()}
         selection={
           <DrinksFilterText
             drinks_min={filters.drinks_min}
             drinks_max={filters.drinks_max}
-            highlightedClass={(() => { const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max); return (noMin && noMax) ? 'text-ink-900' : 'text-primary-600' })()}
+            highlightedClass={(() => {
+              const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max);
+              return (noMin && noMax) ? 'text-ink-900' : 'text-primary-600'
+            })()}
           />
         }
       >
-        <DrinksFilter filters={filters} updateFilter={updateFilter} />
+        <DrinksFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* SMOKER */}
@@ -292,7 +306,7 @@ function MobileFilters(props: {
           />
         }
       >
-        <SmokerFilter filters={filters} updateFilter={updateFilter} />
+        <SmokerFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* POLITICS */}
@@ -341,13 +355,6 @@ function MobileFilters(props: {
           hidden={false}
         />
       </Col>
-
-      <button
-        className="text-ink-500 hover:text-primary-500 underline mt-4 mb-8"
-        onClick={clearFilters}
-      >
-        Reset filters
-      </button>
     </Col>
   )
 }

@@ -91,7 +91,6 @@ export function DrinksFilter(props: {
       lowValue={filters.drinks_min ?? DRINKS_MIN}
       highValue={filters.drinks_max ?? DRINKS_MAX}
       setValues={(low: number, high: number) => {
-        console.log('setValues', low, high)
         updateFilter({
           drinks_min: Number(low),
           drinks_max: Number(high),

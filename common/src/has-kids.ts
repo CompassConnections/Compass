@@ -11,7 +11,7 @@ export interface HasKidsLabelsMap {
 export const hasKidsLabels: HasKidsLabelsMap = {
   no_preference: {
     name: 'Any kids',
-    shortName: 'Any kids',
+    shortName: 'Either',
     value: -1,
   },
   has_kids: {

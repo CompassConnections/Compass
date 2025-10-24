@@ -38,7 +38,6 @@ export const DIET_CHOICES = {
 }
 
 export const EDUCATION_CHOICES = {
-  None: 'none',
   'High school': 'high-school',
   'College': 'some-college',
   Bachelors: 'bachelors',

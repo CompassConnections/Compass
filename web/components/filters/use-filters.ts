@@ -86,8 +86,8 @@ export const useFilters = (you: Profile | undefined) => {
     !!you
     && (!location || location.id === you.geodb_city_id)
     && isEqual(filters.genders?.length ? filters.genders : undefined, yourFilters.genders?.length ? yourFilters.genders : undefined)
-    && isEqual(new Set(filters.education_levels), new Set([you.education_level]))
-    && (!you.gender || filters.pref_gender?.length == 1 && isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))
+    && (!you.gender && !filters.pref_gender?.length || filters.pref_gender?.length == 1 && isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))
+    && (!you.education_level && !filters.education_levels?.length || filters.education_levels?.length == 1 && isEqual(filters.education_levels?.length ? filters.education_levels[0] : undefined, you.education_level))
     && isEqual(new Set(filters.pref_romantic_styles), new Set(you.pref_romantic_styles))
     && isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles))
     && isEqual(new Set(filters.diet), new Set(you.diet))

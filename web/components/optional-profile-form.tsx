@@ -28,7 +28,13 @@ import {City, CityRow, profileToCity, useCitySearch} from "web/components/search
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
-import {DIET_CHOICES, POLITICAL_CHOICES, RELATIONSHIP_CHOICES, ROMANTIC_CHOICES} from "web/components/filters/choices";
+import {
+  DIET_CHOICES,
+  EDUCATION_CHOICES,
+  POLITICAL_CHOICES,
+  RELATIONSHIP_CHOICES,
+  ROMANTIC_CHOICES
+} from "web/components/filters/choices";
 import toast from "react-hot-toast";
 
 export const OptionalProfileUserForm = (props: {
@@ -537,14 +543,7 @@ export const OptionalProfileUserForm = (props: {
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
               currentChoice={profile['education_level'] ?? ''}
-              choicesMap={{
-                None: 'none',
-                'High school': 'high-school',
-                'Some college': 'some-college',
-                Bachelors: 'bachelors',
-                Masters: 'masters',
-                PhD: 'doctorate',
-              }}
+              choicesMap={EDUCATION_CHOICES}
               setChoice={(c) => setProfile('education_level', c)}
             />
           </Carousel>

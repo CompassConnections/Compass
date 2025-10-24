@@ -1,5 +1,5 @@
-export const MAX_INT = 99999
-export const MIN_INT = -MAX_INT
+export const MIN_INT = Number.MIN_SAFE_INTEGER
+export const MAX_INT = Number.MAX_SAFE_INTEGER
 
 export const supportEmail = 'hello@compassmeet.com';
 // export const marketingEmail = 'hello@compassmeet.com';

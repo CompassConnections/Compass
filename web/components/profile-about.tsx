@@ -3,7 +3,7 @@ import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/conv
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
 import {
-  REVERTED_DIET_CHOICES,
+  REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES,
   REVERTED_POLITICAL_CHOICES,
   REVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
@@ -170,21 +170,22 @@ function Education(props: { profile: Profile }) {
   const educationLevel = profile.education_level
   const university = profile.university
 
-  const noUniversity =
-    !educationLevel ||
-    educationLevel == 'high-school' ||
-    educationLevel == 'none'
+  let text = ''
 
-  if (!university || noUniversity) {
+  if (educationLevel) {
+    text += capitalizeAndRemoveUnderscores(REVERTED_EDUCATION_CHOICES[educationLevel])
+  }
+  if (university) {
+    if (educationLevel) text += ' at '
+    text += capitalizeAndRemoveUnderscores(university)
+  }
+  if (text.length === 0) {
     return <></>
   }
-  const universityText = `${
-    noUniversity ? '' : capitalizeAndRemoveUnderscores(educationLevel) + ' at '
-  }${capitalizeAndRemoveUnderscores(university)}`
   return (
     <AboutRow
       icon={<LuGraduationCap className="h-5 w-5"/>}
-      text={universityText}
+      text={text}
     />
   )
 }

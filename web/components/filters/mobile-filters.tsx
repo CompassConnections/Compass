@@ -14,14 +14,14 @@ import {DietType, PoliticalType, RelationshipType, RomanticType} from 'web/lib/u
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
-import {KidsLabel, WantsKidsFilter, WantsKidsIcon} from "web/components/filters/wants-kids-filter";
+import {KidsLabel, WantsKidsFilter} from "web/components/filters/wants-kids-filter";
 import {wantsKidsLabels} from "common/wants-kids";
-import {FaChild} from "react-icons/fa"
 import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
 import {hasKidsLabels} from "common/has-kids";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
+import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -198,7 +198,7 @@ function MobileFilters(props: {
                 filters.wants_kids_strength != null &&
                 filters.wants_kids_strength !== -1
               }
-              // icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
+            // icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
               selection={
                 <KidsLabel
                   strength={filters.wants_kids_strength ?? -1}
@@ -221,7 +221,7 @@ function MobileFilters(props: {
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={filters.has_kids != null && filters.has_kids !== -1}
-              // icon={<FaChild className="text-ink-900 h-4 w-4"/>}
+            // icon={<FaChild className="text-ink-900 h-4 w-4"/>}
               selection={
                 <HasKidsLabel
                   has_kids={filters.has_kids ?? -1}
@@ -277,6 +277,24 @@ function MobileFilters(props: {
         }
       >
         <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* EDUCATION */}
+      <MobileFilterSection
+        title="Education"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.education_levels)}
+        selection={
+          <EducationFilterText
+            options={filters.education_levels as string[]}
+            highlightedClass={
+              hasAny(filters.education_levels) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <EducationFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* Short Bios */}

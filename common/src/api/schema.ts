@@ -345,6 +345,7 @@ export const API = (_apiTypeCheck = {
         // Search and filter parameters
         name: z.string().optional(),
         genders: arraybeSchema.optional(),
+        education_levels: arraybeSchema.optional(),
         pref_gender: arraybeSchema.optional(),
         pref_age_min: z.coerce.number().optional(),
         pref_age_max: z.coerce.number().optional(),

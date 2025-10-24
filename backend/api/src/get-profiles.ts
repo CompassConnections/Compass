@@ -12,6 +12,7 @@ export type profileQueryType = {
   // Search and filter parameters
   name?: string | undefined,
   genders?: String[] | undefined,
+  education_levels?: String[] | undefined,
   pref_gender?: String[] | undefined,
   pref_age_min?: number | undefined,
   pref_age_max?: number | undefined,
@@ -44,6 +45,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     after,
     name,
     genders,
+    education_levels,
     pref_gender,
     pref_age_min,
     pref_age_max,
@@ -82,6 +84,7 @@ export const loadProfiles = async (props: profileQueryType) => {
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender)) &&
+        (!education_levels || education_levels.includes(l.education_level ?? '')) &&
         (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
         (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&
         (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
@@ -147,7 +150,9 @@ export const loadProfiles = async (props: profileQueryType) => {
       {word}
     )),
 
-    genders?.length && where(`gender = ANY($(gender))`, {gender: genders}),
+    genders?.length && where(`gender = ANY($(genders))`, {genders}),
+
+    education_levels?.length && where(`education_level = ANY($(education_levels))`, {education_levels}),
 
     pref_gender?.length &&
     where(`pref_gender is NULL or pref_gender = '{}' OR pref_gender && $(pref_gender)`, {pref_gender}),

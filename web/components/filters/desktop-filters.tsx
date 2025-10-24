@@ -25,6 +25,8 @@ import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
+import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
+import {LuGraduationCap} from "react-icons/lu";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -347,6 +349,30 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
+      />
+
+      {/* EDUCATION */}
+      <CustomizeableDropdown
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            content={
+              <Row className="items-center gap-1">
+                <LuGraduationCap className="h-4 w-4"/>
+                <EducationFilterText
+                  options={filters.education_levels as string[]}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+            open={open}
+          />
+        )}
+        dropdownMenuContent={
+          <Col>
+            <EducationFilter filters={filters} updateFilter={updateFilter}/>
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
       />
 
       {/* Short Bios */}

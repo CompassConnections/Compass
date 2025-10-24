@@ -15,6 +15,7 @@ export type FilterFields = {
   lon: number | null
   radius: number | null
   genders: string[]
+  education_levels: string[]
   name: string | undefined
   shortBio: boolean | undefined
 } & Pick<
@@ -57,6 +58,7 @@ export const initialFilters: Partial<FilterFields> = {
   radius: undefined,
   name: undefined,
   genders: undefined,
+  education_levels: undefined,
   pref_age_max: undefined,
   pref_age_min: undefined,
   has_kids: undefined,

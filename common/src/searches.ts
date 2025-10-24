@@ -8,6 +8,7 @@ const filterLabels: Record<string, string> = {
   location: "",
   name: "Searching",
   genders: "",
+  education_levels: "Education",
   pref_age_max: "Max age",
   pref_age_min: "Min age",
   has_kids: "",

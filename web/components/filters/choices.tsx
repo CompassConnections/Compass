@@ -40,7 +40,7 @@ export const DIET_CHOICES = {
 export const EDUCATION_CHOICES = {
   None: 'none',
   'High school': 'high-school',
-  'Some college': 'some-college',
+  'College': 'some-college',
   Bachelors: 'bachelors',
   Masters: 'masters',
   PhD: 'doctorate',

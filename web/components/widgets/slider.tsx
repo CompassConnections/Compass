@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import * as RxSlider from '@radix-ui/react-slider'
-import {ReactNode, useState} from 'react'
+import {ReactNode, useEffect, useState} from 'react'
 
 const colors = {
   green: ['bg-teal-400', 'focus:outline-teal-600/30 bg-teal-600'],
@@ -111,6 +111,20 @@ export function RangeSlider(props: {
   const [trackClasses, thumbClasses] = colors[color]
   const [dragValues, setDragValues] = useState<[number, number]>([lowValue, highValue])
 
+  // keep local drag state in sync with external values
+  useEffect(() => {
+    setDragValues([lowValue, highValue])
+  }, [lowValue, highValue])
+
+  // debounce parent updates while dragging to avoid excessive re-renders/queries
+  useEffect(() => {
+    const [low, high] = dragValues
+    const t = setTimeout(() => {
+      setValues(low, high)
+    }, 200)
+    return () => clearTimeout(t)
+  }, [dragValues])
+
   return (
     <RxSlider.Root
       className={clsx(
@@ -120,7 +134,6 @@ export function RangeSlider(props: {
       value={dragValues}
       step={step ?? 1}
       onValueChange={(vals: number[]) => setDragValues([vals[0], vals[1]])} // update continuously for UI feedback
-      onValueCommit={([low, high]) => setValues(low, high)} // update only on release
       min={min}
       max={max}
       disabled={disabled}

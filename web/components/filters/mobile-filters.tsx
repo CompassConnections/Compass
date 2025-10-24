@@ -22,6 +22,7 @@ import {RomanticFilter, RomanticFilterText} from "web/components/filters/romanti
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
+import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from "./drinks-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -257,6 +258,23 @@ function MobileFilters(props: {
         }
       >
         <DietFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* DRINKS PER MONTH */}
+      <MobileFilterSection
+        title="Drinks"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={(() => { const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max); return !noMin || !noMax })()}
+        selection={
+          <DrinksFilterText
+            drinks_min={filters.drinks_min}
+            drinks_max={filters.drinks_max}
+            highlightedClass={(() => { const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max); return (noMin && noMax) ? 'text-ink-900' : 'text-primary-600' })()}
+          />
+        }
+      >
+        <DrinksFilter filters={filters} updateFilter={updateFilter} />
       </MobileFilterSection>
 
       {/* POLITICS */}

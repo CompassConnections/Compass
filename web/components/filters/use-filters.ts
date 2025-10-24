@@ -6,6 +6,8 @@ import {debounce, isEqual} from "lodash";
 import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKidsFilter} from "common/wants-kids";
 import {FilterFields, initialFilters, OriginLocation} from "common/filters";
 import {MAX_INT, MIN_INT} from "common/constants";
+import {DRINKS_MAX, DRINKS_MIN} from "web/components/filters/drinks-filter";
+import {PREF_AGE_MAX, PREF_AGE_MIN} from "web/components/filters/age-filter";
 
 export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()
@@ -19,17 +21,11 @@ export const useFilters = (you: Profile | undefined) => {
   const updateFilter = (newState: Partial<FilterFields>) => {
     const updatedState = {...newState}
 
-    if ('pref_age_min' in updatedState && updatedState.pref_age_min !== undefined) {
-      if (updatedState.pref_age_min != null && updatedState.pref_age_min <= 18) {
-        updatedState.pref_age_min = undefined
-      }
-    }
+    if ((updatedState?.pref_age_min ?? MAX_INT) <= PREF_AGE_MIN) updatedState.pref_age_min = undefined
+    if ((updatedState?.pref_age_max ?? MIN_INT) >= PREF_AGE_MAX) updatedState.pref_age_max = undefined
 
-    if ('pref_age_max' in updatedState && updatedState.pref_age_max !== undefined) {
-      if (updatedState.pref_age_max != null && updatedState.pref_age_max >= 100) {
-        updatedState.pref_age_max = undefined
-      }
-    }
+    if ((updatedState?.drinks_min ?? DRINKS_MIN) <= DRINKS_MIN) updatedState.drinks_min = undefined
+    if ((updatedState?.drinks_max ?? DRINKS_MIN) >= DRINKS_MAX) updatedState.drinks_max = undefined
 
     // console.log('updating filters', updatedState)
 

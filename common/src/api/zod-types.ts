@@ -92,6 +92,8 @@ const optionalProfilesSchema = z.object({
   twitter: z.string().optional(),
   avatar_url: z.string().optional(),
   pref_romantic_styles: z.array(z.string()),
+  drinks_min: z.number().min(0).optional(),
+  drinks_max: z.number().min(0).optional(),
 })
 
 export const combinedProfileSchema =

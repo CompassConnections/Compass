@@ -16,6 +16,8 @@ export type profileQueryType = {
   pref_gender?: String[] | undefined,
   pref_age_min?: number | undefined,
   pref_age_max?: number | undefined,
+  drinks_min?: number | undefined,
+  drinks_max?: number | undefined,
   pref_relation_styles?: String[] | undefined,
   pref_romantic_styles?: String[] | undefined,
   diet?: String[] | undefined,
@@ -49,6 +51,8 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_gender,
     pref_age_min,
     pref_age_max,
+    drinks_min,
+    drinks_max,
     pref_relation_styles,
     pref_romantic_styles,
     diet,
@@ -88,6 +92,8 @@ export const loadProfiles = async (props: profileQueryType) => {
         (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
         (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&
         (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
+        (!drinks_min || (l.drinks_per_month ?? MAX_INT) >= drinks_min) &&
+        (!drinks_max || (l.drinks_per_month ?? MIN_INT) <= drinks_max) &&
         (!pref_relation_styles ||
           intersection(pref_relation_styles, l.pref_relation_styles).length) &&
         (!pref_romantic_styles ||
@@ -162,6 +168,12 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     pref_age_max &&
     where(`age <= $(pref_age_max) or age is null`, {pref_age_max}),
+
+    drinks_min &&
+    where(`drinks_per_month >= $(drinks_min) or drinks_per_month is null`, {drinks_min}),
+
+    drinks_max &&
+    where(`drinks_per_month <= $(drinks_max) or drinks_per_month is null`, {drinks_max}),
 
     pref_relation_styles?.length &&
     where(

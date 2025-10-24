@@ -27,6 +27,8 @@ import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 import {LuGraduationCap} from "react-icons/lu";
+import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
+import {MdLocalBar} from 'react-icons/md'
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -322,6 +324,32 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
+      />
+
+      {/* DRINKS PER MONTH */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <MdLocalBar className="h-4 w-4"/>
+                <DrinksFilterText
+                  drinks_min={filters.drinks_min}
+                  drinks_max={filters.drinks_max}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <Col className="mx-2 mb-4">
+            <DrinksFilter filters={filters} updateFilter={updateFilter}/>
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-80"
       />
 
       {/* POLITICS */}

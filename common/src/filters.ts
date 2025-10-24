@@ -18,6 +18,8 @@ export type FilterFields = {
   education_levels: string[]
   name: string | undefined
   shortBio: boolean | undefined
+  drinks_min: number | undefined
+  drinks_max: number | undefined
 } & Pick<
   ProfileRow,
   | 'wants_kids_strength'
@@ -70,6 +72,8 @@ export const initialFilters: Partial<FilterFields> = {
   political_beliefs: undefined,
   pref_gender: undefined,
   shortBio: undefined,
+  drinks_min: undefined,
+  drinks_max: undefined,
   orderBy: 'created_time',
 }
 

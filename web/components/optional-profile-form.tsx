@@ -503,8 +503,8 @@ export const OptionalProfileUserForm = (props: {
                   }
                 }}
                 className={'w-20'}
-                value={heightFeet !== undefined && heightInches !== undefined
-                  ? Math.round((heightFeet * 12 + heightInches) * 2.54)
+                value={heightFeet !== undefined
+                  ? Math.round((heightFeet * 12 + (heightInches ?? 0)) * 2.54)
                   : ''}
               />
             </Col>

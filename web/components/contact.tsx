@@ -8,6 +8,8 @@ import {Button} from "web/components/buttons/button";
 import {api} from "web/lib/api";
 import {Title} from "web/components/widgets/title";
 import toast from "react-hot-toast";
+import Link from "next/link";
+import {formLink} from "common/constants";
 
 export function ContactComponent() {
   const user = useUser()
@@ -23,6 +25,10 @@ export function ContactComponent() {
   return (
     <Col className="mx-2">
       <Title className="!mb-2 text-3xl">Contact</Title>
+      <p className={'custom-link mb-4'}>
+        You can also contact us through this <Link href={formLink}>feedback form</Link> or any of our <Link
+        href={'/social'}>socials</Link>.
+      </p>
       <Col>
         <div className={'mb-2'}>
           <TextEditor

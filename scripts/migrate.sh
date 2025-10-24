@@ -8,8 +8,8 @@ source .env
 export PGPASSWORD=$SUPABASE_DB_PASSWORD
 
 psql \
-  -h db.ltzepxnhhnrnvovqblfr.supabase.co \
+  -h db.zbspxezubpzxmuxciurg.supabase.co \
   -p 5432 \
   -d postgres \
   -U postgres \
-  -f backend/supabase/migration.sql
+  -f "$1" \

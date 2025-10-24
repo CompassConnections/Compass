@@ -459,13 +459,12 @@ export const OptionalProfileUserForm = (props: {
                     setHeightFeet(undefined)
                   } else {
                     setHeightFeet(Number(e.target.value))
-                    const heightInInches =
-                      Number(e.target.value) * 12 + (heightInches ?? 0)
+                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={heightFeet ?? ''}
+                value={heightFeet ? Math.floor(heightFeet) : ''}
               />
             </Col>
             <Col>
@@ -477,13 +476,36 @@ export const OptionalProfileUserForm = (props: {
                     setHeightInches(undefined)
                   } else {
                     setHeightInches(Number(e.target.value))
-                    const heightInInches =
-                      Number(e.target.value) + 12 * (heightFeet ?? 0)
+                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={heightInches ?? ''}
+                value={heightInches ? Math.floor(heightInches) : ''}
+              />
+            </Col>
+            <div className="self-end mb-2 text-ink-700 mx-2">OR</div>
+            <Col>
+              <span>Centimeters</span>
+              <Input
+                type="number"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    setHeightFeet(undefined)
+                    setHeightInches(undefined)
+                    setProfile('height_in_inches', null)
+                  } else {
+                    // Convert cm to inches
+                    const totalInches = Number(e.target.value) / 2.54
+                    setHeightFeet(Math.floor(totalInches / 12))
+                    setHeightInches(totalInches % 12)
+                    setProfile('height_in_inches', totalInches)
+                  }
+                }}
+                className={'w-20'}
+                value={heightFeet !== undefined && heightInches !== undefined
+                  ? Math.round((heightFeet * 12 + heightInches) * 2.54)
+                  : ''}
               />
             </Col>
           </Row>

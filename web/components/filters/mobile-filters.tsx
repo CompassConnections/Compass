@@ -23,6 +23,7 @@ import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from "./drinks-filter";
+import {SmokerFilter, SmokerFilterText} from "./smoker-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -275,6 +276,23 @@ function MobileFilters(props: {
         }
       >
         <DrinksFilter filters={filters} updateFilter={updateFilter} />
+      </MobileFilterSection>
+
+      {/* SMOKER */}
+      <MobileFilterSection
+        title="Smoker"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={filters.is_smoker != null}
+        selection={
+          <SmokerFilterText
+            is_smoker={filters.is_smoker}
+            highlightedClass={filters.is_smoker == null ? 'text-ink-900' : 'text-primary-600'}
+            mobile
+          />
+        }
+      >
+        <SmokerFilter filters={filters} updateFilter={updateFilter} />
       </MobileFilterSection>
 
       {/* POLITICS */}

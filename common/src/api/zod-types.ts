@@ -42,6 +42,10 @@ const genderType = z.string()
 // ])
 const genderTypes = z.array(genderType)
 
+export const zBoolean = z
+  .union([z.boolean(), z.string()])
+  .transform((val) => val === true || val === "true");
+
 export const baseProfilesSchema = z.object({
   // Required fields
   age: z.number().min(18).max(100).optional(),
@@ -51,7 +55,7 @@ export const baseProfilesSchema = z.object({
   pref_age_max: z.number().min(18).max(100).optional(),
   pref_relation_styles: z.array(z.string()),
   wants_kids_strength: z.number(),
-  looking_for_matches: z.boolean(),
+  looking_for_matches: zBoolean,
   photo_urls: z.array(z.string()),
   visibility: z.union([z.literal('public'), z.literal('member')]),
 
@@ -76,9 +80,9 @@ const optionalProfilesSchema = z.object({
   ethnicity: z.array(z.string()).optional(),
   born_in_location: z.string().optional(),
   height_in_inches: z.number().optional(),
-  has_pets: z.boolean().optional(),
+  has_pets: zBoolean.optional().optional(),
   education_level: z.string().optional(),
-  is_smoker: z.boolean().optional(),
+  is_smoker: zBoolean.optional().optional(),
   drinks_per_month: z.number().min(0).optional(),
   diet: z.array(z.string()).optional(),
   has_kids: z.number().min(0).optional(),
@@ -86,7 +90,7 @@ const optionalProfilesSchema = z.object({
   occupation_title: z.string().optional(),
   occupation: z.string().optional(),
   company: z.string().optional(),
-  comments_enabled: z.boolean().optional(),
+  comments_enabled: zBoolean.optional().optional(),
   website: z.string().optional(),
   bio: contentSchema.optional().nullable(),
   twitter: z.string().optional(),

@@ -2,7 +2,7 @@ import {
   contentSchema,
   combinedProfileSchema,
   baseProfilesSchema,
-  arraybeSchema,
+  arraybeSchema, zBoolean,
 } from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
@@ -357,8 +357,8 @@ export const API = (_apiTypeCheck = {
         political_beliefs: arraybeSchema.optional(),
         wants_kids_strength: z.coerce.number().optional(),
         has_kids: z.coerce.number().optional(),
-        is_smoker: z.coerce.boolean().optional(),
-        shortBio: z.coerce.boolean().optional(),
+        is_smoker: zBoolean.optional().optional(),
+        shortBio: zBoolean.optional().optional(),
         geodbCityIds: arraybeSchema.optional(),
         lat: z.coerce.number().optional(),
         lon: z.coerce.number().optional(),

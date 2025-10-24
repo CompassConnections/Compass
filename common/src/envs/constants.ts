@@ -14,7 +14,7 @@ export const IS_DEPLOYED = IS_GOOGLE_CLOUD || IS_VERCEL
 export const IS_LOCAL = !IS_DEPLOYED
 export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
 
-if (IS_LOCAL && !process.env.ENVIRONMENT) {
+if (IS_LOCAL && !process.env.ENVIRONMENT && !process.env.NEXT_PUBLIC_FIREBASE_ENV) {
   console.warn("No ENVIRONMENT set, defaulting to DEV")
   process.env.ENVIRONMENT = 'DEV'
 }

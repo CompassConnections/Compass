@@ -29,6 +29,8 @@ import {EducationFilter, EducationFilterText} from "web/components/filters/educa
 import {LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
 import {MdLocalBar} from 'react-icons/md'
+import {SmokerFilter, SmokerFilterText} from 'web/components/filters/smoker-filter'
+import {LuCigarette} from 'react-icons/lu'
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -374,6 +376,31 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
+      {/* SMOKER */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <LuCigarette className="h-4 w-4"/>
+                <SmokerFilterText
+                  is_smoker={filters.is_smoker}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <Col className="mx-2 mb-4">
+            <SmokerFilter filters={filters} updateFilter={updateFilter} />
+          </Col>
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"

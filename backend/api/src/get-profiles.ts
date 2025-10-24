@@ -113,7 +113,7 @@ export const loadProfiles = async (props: profileQueryType) => {
           has_kids == -1 ||
           (has_kids == 0 && !l.has_kids) ||
           (l.has_kids && l.has_kids > 0)) &&
-        (!is_smoker || l.is_smoker === is_smoker) &&
+        (is_smoker === undefined || l.is_smoker === is_smoker) &&
         (l.id.toString() != skipId) &&
         (!geodbCityIds ||
           (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
@@ -209,7 +209,12 @@ export const loadProfiles = async (props: profileQueryType) => {
     has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
     has_kids && has_kids > 0 && where(`has_kids > 0`),
 
-    is_smoker !== undefined && where(`is_smoker = $(is_smoker)`, {is_smoker}),
+    is_smoker !== undefined && (
+      where(
+        (is_smoker ? '' : 'is_smoker IS NULL OR ') + // smokers are rare, so we don't include the people who didn't answer if we're looking for smokers
+        `is_smoker = $(is_smoker)`, {is_smoker}
+      )
+    ),
 
     geodbCityIds?.length &&
     where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),

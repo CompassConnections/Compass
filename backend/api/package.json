@@ -4,9 +4,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "watch:serve": "tsx watch src/serve.ts",
     "watch:compile": "npx concurrently \"tsc -b --watch --preserveWatchOutput\" \"(cd ../../common && tsc-alias --watch)\" \"(cd ../shared && tsc-alias --watch)\" \"(cd ../email && tsc-alias --watch)\" \"tsc-alias --watch\"",
-    "watch:serve": "nodemon -r tsconfig-paths/register --watch lib --ignore 'lib/**/*.map' src/serve.ts",
-    "dev": "npx concurrently -n COMPILE,SERVER -c cyan,green \"yarn watch:compile\" \"yarn watch:serve\"",
+    "dev": "yarn watch:serve",
+    "prod": "npx concurrently -n COMPILE,SERVER -c cyan,green \"yarn watch:compile\" \"yarn watch:serve\"",
     "build": "yarn compile && yarn dist:clean && yarn dist:copy",
     "build:fast": "yarn compile && yarn dist:copy",
     "clean": "rm -rf lib && (cd ../../common && rm -rf lib) && (cd ../shared && rm -rf lib) && (cd ../email && rm -rf lib)",

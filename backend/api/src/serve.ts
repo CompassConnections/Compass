@@ -1,3 +1,4 @@
+import "tsconfig-paths/register";
 import * as admin from 'firebase-admin'
 import {initAdmin} from 'shared/init-admin'
 import {loadSecretsToEnv} from 'common/secrets'

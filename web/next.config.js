@@ -51,7 +51,13 @@ module.exports = {
       { hostname: 'localhost' },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { dev }) => {
+    console.log({dev})
+    if (dev) {
+        config.cache = { type: 'filesystem' };
+        config.infrastructureLogging = { level: 'warn' };
+        config.stats = 'minimal';
+    }
     config.module.rules.push({
       test: /\.svg$/,
       use: [

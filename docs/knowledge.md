@@ -5,8 +5,7 @@
 
 ## Development Workflow
 
-- Current progress in [TODO.md](TODO.md)
-- Global packages should be installed with `bun`, not npm or yarn.
+- See the To Do section in the root [README.md](../README.md) for all the tasks. Some other tasks are in this [TODO.md](TODO.md), but they are secondary and need to be migrated to the main README.
 
 ## Project Structure
 
@@ -262,14 +261,7 @@ import { runScript } from 'run-script'
 
 runScript(async ({ pg }) => {
   const userPrompt = process.argv[2]
-  // E.g.:
-  // I want to create a new page which shows off what's happening right now. Can you use our websocket api to get recent bets on markets and illustrate what's happening in a compelling and useful way?
-  if (!userPrompt) {
-    console.log('Please provide a prompt on what code to change.')
-    return
-  }
-
-  await manicode(pg, userPrompt)
+  await pg.none(...)
 })
 ```
 

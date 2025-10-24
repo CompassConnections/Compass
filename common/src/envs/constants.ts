@@ -5,6 +5,20 @@ import {isProd} from "common/envs/is-prod";
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
 
+export const LOCAL_WEB_DOMAIN = 'localhost:3000';
+export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';
+
+export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
+export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
+export const IS_DEPLOYED = IS_GOOGLE_CLOUD || IS_VERCEL
+export const IS_LOCAL = !IS_DEPLOYED
+export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
+
+if (IS_LOCAL && !process.env.ENVIRONMENT) {
+  console.warn("No ENVIRONMENT set, defaulting to DEV")
+  process.env.ENVIRONMENT = 'DEV'
+}
+
 export const ENV_CONFIG = isProd() ? PROD_CONFIG : DEV_CONFIG
 
 export function isAdminId(id: string) {
@@ -19,14 +33,6 @@ export const ENV = isProd() ? 'prod' : 'dev'
 export const IS_PROD = ENV === 'prod'
 export const IS_DEV = ENV === 'dev'
 
-export const LOCAL_WEB_DOMAIN = 'localhost:3000';
-export const LOCAL_BACKEND_DOMAIN = 'localhost:8088';
-
-export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
-export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
-export const IS_DEPLOYED = IS_GOOGLE_CLOUD || IS_VERCEL
-export const IS_LOCAL = !IS_DEPLOYED
-export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_LOCAL ? 'local' : 'unknown'
 console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 
 // class MissingKeyError implements Error {

@@ -12,6 +12,7 @@ import {blockUser, unblockUser} from './block-user'
 import {getCompatibleProfilesHandler} from './compatible-profiles'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
+import {setCompatibilityAnswer} from './set-compatibility-answer'
 import {createProfile} from './create-profile'
 import {createUser} from './create-user'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
@@ -170,6 +171,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'create-comment': createComment,
   'hide-comment': hideComment,
   'create-compatibility-question': createCompatibilityQuestion,
+  'set-compatibility-answer': setCompatibilityAnswer,
   'create-vote': createVote,
   'vote': vote,
   'contact': contact,
@@ -188,7 +190,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'set-last-online-time': setLastOnlineTime,
   'save-subscription': saveSubscription,
   'create-bookmarked-search': createBookmarkedSearch,
-    'delete-bookmarked-search': deleteBookmarkedSearch,
+  'delete-bookmarked-search': deleteBookmarkedSearch,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

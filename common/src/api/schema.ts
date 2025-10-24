@@ -515,6 +515,21 @@ export const API = (_apiTypeCheck = {
       options: z.record(z.string(), z.number()),
     }),
   },
+  'set-compatibility-answer': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as Row<'compatibility_answers'>,
+    props: z
+      .object({
+        questionId: z.number(),
+        multipleChoice: z.number(),
+        prefChoices: z.array(z.number()),
+        importance: z.number(),
+        explanation: z.string().nullable().optional(),
+      })
+      .strict(),
+  },
   'create-vote': {
     method: 'POST',
     authed: true,

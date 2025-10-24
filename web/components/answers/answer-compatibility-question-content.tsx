@@ -16,6 +16,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {track} from 'web/lib/service/analytics'
 import {db} from 'web/lib/supabase/db'
+import {api} from 'web/lib/api'
 import {filterKeys} from '../questions-form'
 import toast from "react-hot-toast";
 
@@ -58,18 +59,20 @@ export const submitCompatibilityAnswer = async (
   } as CompatibilityAnswerSubmitType
 
   try {
-    await run(
-      db.from('compatibility_answers').upsert(input, {
-        onConflict: 'question_id,creator_id',
-      })
-    );
+    await api('set-compatibility-answer', {
+      questionId: input.question_id,
+      multipleChoice: input.multiple_choice,
+      prefChoices: input.pref_choices ?? [],
+      importance: input.importance,
+      explanation: input.explanation ?? null,
+    })
 
     // Track only if upsert succeeds
     track('answer compatibility question', {
       ...newAnswer,
     });
   } catch (error) {
-    console.error('Failed to upsert compatibility_answers:', error);
+    console.error('Failed to set compatibility answer:', error);
     toast.error('Error submitting. Try again?')
   }
 }

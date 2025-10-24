@@ -79,6 +79,7 @@ export const useFilters = (you: Profile | undefined) => {
     has_kids: wantsKidsToHasKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
     ),
+    is_smoker: you?.is_smoker,
   }
   console.debug(you, yourFilters)
 
@@ -95,6 +96,7 @@ export const useFilters = (you: Profile | undefined) => {
     && filters.pref_age_max == yourFilters.pref_age_max
     && filters.pref_age_min == yourFilters.pref_age_min
     && filters.wants_kids_strength == yourFilters.wants_kids_strength
+    && filters.is_smoker == yourFilters.is_smoker
 
   const setYourFilters = (checked: boolean) => {
     if (checked) {

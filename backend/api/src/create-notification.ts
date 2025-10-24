@@ -4,6 +4,24 @@ import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {tryCatch} from "common/util/try-catch";
 import {Row} from "common/supabase/utils";
 
+export const createShareNotifications = async () => {
+  const createdTime = Date.now();
+  const id = `share-${createdTime}`
+  const notification: Notification = {
+    id,
+    userId: 'todo',
+    createdTime: createdTime,
+    isSeen: false,
+    sourceType: 'info',
+    sourceUpdateType: 'created',
+    sourceSlug: '/contact',
+    sourceUserAvatarUrl: 'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Ficon-outreach-outstrip-outreach-272151502.jpg?alt=media&token=6d6fcecb-818c-4fca-a8e0-d2d0069b9445',
+    title: 'Give us tips to reach more people',
+    sourceText: '250 members already! Tell us where and how we can best share Compass.',
+  }
+  return await createNotifications(notification)
+}
+
 export const createVoteNotifications = async () => {
   const createdTime = Date.now();
   const id = `vote-${createdTime}`

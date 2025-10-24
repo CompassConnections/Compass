@@ -124,7 +124,10 @@ export async function getChannelMessages(props: {
     [channelId, userId, limit, id],
     convertPrivateChatMessage
   ))
-  if (error) throw new APIError(401, 'Error getting messages')
+  if (error) {
+    console.error(error)
+    throw new APIError(401, 'Error getting messages')
+  }
   // console.log('final messages', data)
   return data
 }

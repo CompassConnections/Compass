@@ -272,7 +272,7 @@ export const typedEndpoint = <N extends APIPath>(
       if (!res.headersSent) {
         // Convert bigint to number, b/c JSON doesn't support bigint.
         const convertedResult = deepConvertBigIntToNumber(result)
-
+        // console.debug('API result', convertedResult)
         res.status(200).json(convertedResult ?? {success: true})
       }
 

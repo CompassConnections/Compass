@@ -18,6 +18,17 @@ export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => 
     row,
     {created_time: tsToMillis as any,}
   );
+  parseMessageObject(message);
+  return message
+}
+
+type MessageObject = Omit<ChatMessage, "id"> & { id: number; createdTimeTs: string } & {
+  ciphertext: string;
+  iv: string;
+  tag: string
+}
+
+export function parseMessageObject(message: MessageObject) {
   if (message.ciphertext && message.iv && message.tag) {
     const plaintText = decryptMessage({
       ciphertext: message.ciphertext,
@@ -29,5 +40,9 @@ export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => 
     delete (message as any).iv
     delete (message as any).tag
   }
-  return message
+}
+
+export function getDecryptedMessage(message: MessageObject) {
+  parseMessageObject(message)
+  return message.content
 }

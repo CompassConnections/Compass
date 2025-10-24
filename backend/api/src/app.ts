@@ -41,7 +41,7 @@ import {getCurrentPrivateUser} from './get-current-private-user'
 import {createPrivateUserMessage} from './create-private-user-message'
 import {
   getChannelMemberships,
-  getChannelMessages,
+  getChannelMessagesEndpoint,
   getLastSeenChannelTime,
   setChannelLastSeenTime,
 } from 'api/get-private-messages'
@@ -183,7 +183,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
   'leave-private-user-message-channel': leavePrivateUserMessageChannel,
   'get-channel-memberships': getChannelMemberships,
-  'get-channel-messages': getChannelMessages,
+  'get-channel-messages': getChannelMessagesEndpoint,
   'get-channel-seen-time': getLastSeenChannelTime,
   'set-channel-seen-time': setChannelLastSeenTime,
   'get-messages-count': getMessagesCount,

@@ -53,6 +53,6 @@ export function decryptMessage({ciphertext, iv, tag}: { ciphertext: string; iv: 
   const decipher = crypto.createDecipheriv("aes-256-gcm", getMasterKey(), ivBuf);
   decipher.setAuthTag(tagBuf);
   const plaintext = Buffer.concat([decipher.update(ctBuf), decipher.final()]).toString("utf8");
-  console.debug("Decrypted message:", plaintext);
+  // console.debug("Decrypted message:", plaintext);
   return plaintext;
 }

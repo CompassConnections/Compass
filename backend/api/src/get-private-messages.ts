@@ -1,8 +1,9 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIHandler} from './helpers/endpoint'
+import {APIError, APIHandler} from './helpers/endpoint'
 import {PrivateMessageChannel,} from 'common/supabase/private-messages'
 import {groupBy, mapValues} from 'lodash'
 import {convertPrivateChatMessage} from "shared/supabase/messages";
+import {tryCatch} from "common/util/try-catch";
 
 export const getChannelMemberships: APIHandler<
   'get-channel-memberships'
@@ -90,14 +91,24 @@ export const getChannelMemberships: APIHandler<
   }
 }
 
-export const getChannelMessages: APIHandler<'get-channel-messages'> = async (
+export const getChannelMessagesEndpoint: APIHandler<'get-channel-messages'> = async (
   props,
   auth
 ) => {
+  const userId = auth.uid
+  return await getChannelMessages({...props, userId})
+}
+
+export async function getChannelMessages(props: {
+  channelId: number;
+  limit: number;
+  id?: number | undefined;
+  userId: string;
+}) {
+  // console.log('initial message request', props)
+  const {channelId, limit, id, userId} = props
   const pg = createSupabaseDirectClient()
-  const {channelId, limit, id} = props
-  // console.log('initial message', props)
-  return await pg.map(
+  const {data, error} = await tryCatch(pg.map(
     `select *, created_time as created_time_ts
      from private_user_messages
      where channel_id = $1
@@ -110,9 +121,12 @@ export const getChannelMessages: APIHandler<'get-channel-messages'> = async (
      order by created_time desc
      limit $3
     `,
-    [channelId, auth.uid, limit, id],
+    [channelId, userId, limit, id],
     convertPrivateChatMessage
-  )
+  ))
+  if (error) throw new APIError(401, 'Error getting messages')
+  // console.log('final messages', data)
+  return data
 }
 
 export const getLastSeenChannelTime: APIHandler<

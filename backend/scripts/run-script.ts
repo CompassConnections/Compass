@@ -1,19 +1,24 @@
 import {initAdmin} from 'shared/init-admin'
-import {loadSecretsToEnv} from 'common/secrets'
 import {createSupabaseDirectClient, type SupabaseDirectClient,} from 'shared/supabase/init'
-import {getServiceAccountCredentials} from "shared/firebase-utils";
-
-initAdmin()
+import {refreshConfig} from "common/envs/prod";
 
 export const runScript = async (
   main: (services: { pg: SupabaseDirectClient }) => Promise<any> | any
 ) => {
-  const credentials = getServiceAccountCredentials()
+  initAdmin()
+  await initEnvVariables()
+  console.debug('Environment variables in runScript:')
+  for (const k of Object.keys(process.env)) console.debug(`${k}=${process.env[k]}`)
 
-  await loadSecretsToEnv(credentials)
-
+  console.debug('runScript: creating pg client...')
   const pg = createSupabaseDirectClient()
+  console.debug('runScript: running main...')
   await main({pg})
+}
 
-  process.exit()
+
+export async function initEnvVariables() {
+  const {config} = await import('dotenv')
+  config({ path: __dirname + '/../../.env' })
+  refreshConfig()
 }

@@ -464,7 +464,7 @@ export const OptionalProfileUserForm = (props: {
                   }
                 }}
                 className={'w-16'}
-                value={heightFeet ? Math.floor(heightFeet) : ''}
+                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
               />
             </Col>
             <Col>
@@ -481,7 +481,7 @@ export const OptionalProfileUserForm = (props: {
                   }
                 }}
                 className={'w-16'}
-                value={heightInches ? Math.floor(heightInches) : ''}
+                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
               />
             </Col>
             <div className="self-end mb-2 text-ink-700 mx-2">OR</div>

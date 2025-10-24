@@ -3,7 +3,7 @@ import {RangeSlider} from 'web/components/widgets/slider'
 import {FilterFields} from 'common/filters'
 
 export const DRINKS_MIN = 0
-export const DRINKS_MAX = 30
+export const DRINKS_MAX = 20
 
 export function getNoMinMaxDrinks(
   drinks_min: number | null | undefined,
@@ -92,14 +92,14 @@ export function DrinksFilter(props: {
       highValue={filters.drinks_max ?? DRINKS_MAX}
       setValues={(low: number, high: number) => {
         updateFilter({
-          drinks_min: Number(low),
-          drinks_max: Number(high),
+          drinks_min: low > DRINKS_MIN ? Number(low) : undefined,
+          drinks_max: high < DRINKS_MAX ? Number(high) : undefined,
         })
       }}
       min={DRINKS_MIN}
       max={DRINKS_MAX}
       marks={[
-        { value: 0, label: `${DRINKS_MIN}` },
+        {value: 0, label: `${DRINKS_MIN}`},
         {
           value: ((5 - DRINKS_MIN) / (DRINKS_MAX - DRINKS_MIN)) * 100,
           label: `5`,
@@ -109,10 +109,10 @@ export function DrinksFilter(props: {
           label: `10`,
         },
         {
-          value: ((20 - DRINKS_MIN) / (DRINKS_MAX - DRINKS_MIN)) * 100,
-          label: `20`,
+          value: ((15 - DRINKS_MIN) / (DRINKS_MAX - DRINKS_MIN)) * 100,
+          label: `15`,
         },
-        { value: 100, label: `${DRINKS_MAX}+` },
+        {value: 100, label: `${DRINKS_MAX}+`},
       ]}
     />
   )

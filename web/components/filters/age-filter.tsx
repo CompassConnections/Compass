@@ -64,6 +64,8 @@ export function AgeFilterText(props: {
   )
 }
 
+const FILTER_MAX = 60;
+
 export function AgeFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
@@ -72,30 +74,30 @@ export function AgeFilter(props: {
   return (
     <RangeSlider
       lowValue={filters.pref_age_min ?? PREF_AGE_MIN}
-      highValue={filters.pref_age_max ?? PREF_AGE_MAX}
+      highValue={filters.pref_age_max ?? FILTER_MAX}
       setValues={(low: number, high: number) => {
         updateFilter({
-          pref_age_min: Number(low),
-          pref_age_max: Number(high),
+          pref_age_min: low > PREF_AGE_MIN ? Number(low) : undefined,
+          pref_age_max: high < FILTER_MAX ? Number(high) : undefined,
         })
       }}
       min={PREF_AGE_MIN}
-      max={PREF_AGE_MAX}
+      max={FILTER_MAX}
       marks={[
         { value: 0, label: `${PREF_AGE_MIN}` },
         {
-          value: ((30 - PREF_AGE_MIN) / (PREF_AGE_MAX - PREF_AGE_MIN)) * 100,
+          value: ((30 - PREF_AGE_MIN) / (FILTER_MAX - PREF_AGE_MIN)) * 100,
           label: `30`,
         },
         {
-          value: ((50 - PREF_AGE_MIN) / (PREF_AGE_MAX - PREF_AGE_MIN)) * 100,
-          label: `50`,
+          value: ((40 - PREF_AGE_MIN) / (FILTER_MAX - PREF_AGE_MIN)) * 100,
+          label: `40`,
         },
         {
-          value: ((70 - PREF_AGE_MIN) / (PREF_AGE_MAX - PREF_AGE_MIN)) * 100,
-          label: `70`,
+          value: ((50 - PREF_AGE_MIN) / (FILTER_MAX - PREF_AGE_MIN)) * 100,
+          label: `50`,
         },
-        { value: 100, label: `${PREF_AGE_MAX}+` },
+        { value: 100, label: `${FILTER_MAX}+` },
       ]}
     />
   )

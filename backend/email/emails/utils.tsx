@@ -1,3 +1,4 @@
+import React from 'react';
 import {Column, Img, Link, Row, Section, Text} from "@react-email/components";
 import {DOMAIN} from "common/envs/constants";
 

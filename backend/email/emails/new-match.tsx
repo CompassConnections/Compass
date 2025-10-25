@@ -1,3 +1,4 @@
+import React from 'react';
 import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'

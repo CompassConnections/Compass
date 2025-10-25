@@ -1,3 +1,4 @@
+import React from 'react';
 import {Body, Button, Column, Container, Head, Html, Preview, Row, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
 import {DOMAIN} from 'common/envs/constants'

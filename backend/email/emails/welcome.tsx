@@ -1,3 +1,4 @@
+import React from 'react';
 import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
 import {type User} from 'common/user'
 import {mockUser,} from './functions/mock'

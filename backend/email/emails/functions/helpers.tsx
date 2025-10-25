@@ -1,3 +1,4 @@
+import React from 'react';
 import {PrivateUser, User} from 'common/user'
 import {getNotificationDestinationsForUser, UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
 import {sendEmail} from './send-email'
@@ -10,7 +11,7 @@ import {MatchesType} from "common/profiles/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";
 
-const from = 'Compass <compass@compassmeet.com>'
+export const fromEmail = 'Compass <compass@compassmeet.com>'
 
 // export const sendNewMatchEmail = async (
 //   privateUser: PrivateUser,
@@ -60,7 +61,7 @@ export const sendNewMessageEmail = async (
   }
 
   return await sendEmail({
-    from,
+    from: fromEmail,
     subject: `${fromUser.name} sent you a message!`,
     to: privateUser.email,
     html: await render(
@@ -82,7 +83,7 @@ export const sendWelcomeEmail = async (
 ) => {
   if (!privateUser.email) return
   return await sendEmail({
-    from,
+    from: fromEmail,
     subject: `Welcome to Compass!`,
     to: privateUser.email,
     html: await render(
@@ -108,7 +109,7 @@ export const sendSearchAlertsEmail = async (
   if (!email || !sendToEmail) return
 
   return await sendEmail({
-    from,
+    from: fromEmail,
     subject: `People aligned with your values just joined`,
     to: email,
     html: await render(
@@ -135,7 +136,7 @@ export const sendNewEndorsementEmail = async (
   if (!privateUser.email || !sendToEmail) return
 
   return await sendEmail({
-    from,
+    from: fromEmail,
     subject: `${fromUser.name} just endorsed you!`,
     to: privateUser.email,
     html: await render(
@@ -152,7 +153,7 @@ export const sendNewEndorsementEmail = async (
 
 export const sendTestEmail = async (toEmail: string) => {
   return await sendEmail({
-    from,
+    from: fromEmail,
     subject: 'Test email from Compass',
     to: toEmail,
     html: await render(<Test name="Test User"/>),

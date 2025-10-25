@@ -273,7 +273,7 @@ export type Database = {
           id: number
           iv: string | null
           tag: string | null
-          user_id: string
+          user_id: string | null
           visibility: string
         }
         Insert: {
@@ -284,7 +284,7 @@ export type Database = {
           id?: never
           iv?: string | null
           tag?: string | null
-          user_id: string
+          user_id?: string | null
           visibility?: string
         }
         Update: {
@@ -295,7 +295,7 @@ export type Database = {
           id?: never
           iv?: string | null
           tag?: string | null
-          user_id?: string
+          user_id?: string | null
           visibility?: string
         }
         Relationships: [

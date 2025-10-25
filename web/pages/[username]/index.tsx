@@ -18,6 +18,7 @@ import {getUserForStaticProps} from 'common/supabase/users'
 import {type GetStaticProps} from 'next'
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import Custom404 from '../404'
+import {sleep} from "common/util/time";
 
 export const getStaticProps: GetStaticProps<
   UserPageProps,
@@ -63,7 +64,18 @@ export const getStaticProps: GetStaticProps<
     }
   }
 
-  const profile = await getProfileRow(user.id, db)
+  let profile
+  let i = 0
+  while (!profile) {
+    profile = await getProfileRow(user.id, db)
+    if (i > 0) await sleep(500)
+    i++
+    if (i >= 4) {
+      break
+    }
+  }
+  console.debug(`Profile loaded after ${i} tries`)
+
   if (!profile) {
     console.debug('No profile', `${user.username} hasn't created a profile yet.`)
     return {

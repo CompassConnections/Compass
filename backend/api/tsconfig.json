@@ -51,6 +51,7 @@
   "compileOnSave": true,
   "include": [
     "src/**/*.ts",
-    "openapi.json"
+    "package.json",
+    "backend/api/package.json"
   ]
 }

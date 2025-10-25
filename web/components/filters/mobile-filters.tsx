@@ -318,7 +318,7 @@ function MobileFilters(props: {
         isActive={hasAny(filters.political_beliefs || undefined)}
         selection={
           <PoliticalFilterText
-            options={filters.political_beliefs as PoliticalType[]}
+            options={filters.political_beliefs as string[]}
             highlightedClass={
               hasAny(filters.political_beliefs || undefined)
                 ? 'text-primary-600'

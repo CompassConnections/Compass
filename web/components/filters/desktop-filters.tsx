@@ -366,7 +366,7 @@ export function DesktopFilters(props: {
                 <PoliticalFilterText
                   options={
                     filters.political_beliefs as
-                      | PoliticalType[]
+                      | string[]
                       | undefined
                   }
                   highlightedClass={open ? 'text-primary-500' : undefined}

@@ -1,13 +1,14 @@
 import clsx from 'clsx'
-import {convertPoliticalTypes, PoliticalType,} from 'web/lib/util/convert-types'
+import {convertPoliticalTypes,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
 import {POLITICAL_CHOICES} from "web/components/filters/choices";
 import {FilterFields} from "common/filters";
+import {getSortedOptions} from "common/util/sorting";
 
 export function PoliticalFilterText(props: {
-  options: PoliticalType[] | undefined
+  options: string[] | undefined
   highlightedClass?: string
 }) {
   const {options, highlightedClass} = props
@@ -19,11 +20,7 @@ export function PoliticalFilterText(props: {
     )
   }
 
-  const convertedTypes = options.map((r) =>
-    convertPoliticalTypes(r)
-  )
-
-  if (length > 1) {
+  if (length > 2) {
     return (
       <span>
         <span className={clsx('font-semibold', highlightedClass)}>
@@ -32,6 +29,10 @@ export function PoliticalFilterText(props: {
       </span>
     )
   }
+
+  const sortedOptions = getSortedOptions(options, POLITICAL_CHOICES)
+  const convertedTypes = sortedOptions.map((r) => convertPoliticalTypes(r as any))
+
   return (
     <div>
       <span className={clsx('font-semibold', highlightedClass)}>

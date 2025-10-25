@@ -21,6 +21,16 @@ export function ReligionFilterText(props: {
     )
   }
 
+  if (length > 2) {
+    return (
+      <span>
+        <span className={clsx('font-semibold', highlightedClass)}>
+          Multiple
+        </span>
+      </span>
+    )
+  }
+
   const sortedOptions = getSortedOptions(options, RELIGION_CHOICES)
   const convertedTypes = sortedOptions.map((r) => convertReligionTypes(r as any))
 

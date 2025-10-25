@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     region_code TEXT,
     religious_belief_strength INTEGER,
     religious_beliefs TEXT,
+    religion TEXT[],
     twitter TEXT,
     university TEXT,
     user_id TEXT NOT NULL,

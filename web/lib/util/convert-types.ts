@@ -3,6 +3,7 @@ import {
   REVERTED_EDUCATION_CHOICES,
   REVERTED_POLITICAL_CHOICES,
   REVERTED_RELATIONSHIP_CHOICES,
+  REVERTED_RELIGION_CHOICES,
   REVERTED_ROMANTIC_CHOICES
 } from "web/components/filters/choices";
 
@@ -11,6 +12,7 @@ export type RomanticType = keyof typeof REVERTED_ROMANTIC_CHOICES
 export type DietType = keyof typeof REVERTED_DIET_CHOICES
 export type PoliticalType = keyof typeof REVERTED_POLITICAL_CHOICES
 export type EducationType = keyof typeof REVERTED_EDUCATION_CHOICES
+export type ReligionType = keyof typeof REVERTED_RELIGION_CHOICES
 
 export function convertRelationshipType(relationshipType: RelationshipType) {
   return REVERTED_RELATIONSHIP_CHOICES[relationshipType]
@@ -30,4 +32,8 @@ export function convertPoliticalTypes(politicalType: PoliticalType) {
 
 export function convertEducationTypes(educationType: EducationType) {
   return REVERTED_EDUCATION_CHOICES[educationType]
+}
+
+export function convertReligionTypes(religionType: ReligionType) {
+  return REVERTED_RELIGION_CHOICES[religionType]
 }

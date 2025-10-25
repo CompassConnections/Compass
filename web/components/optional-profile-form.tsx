@@ -32,7 +32,7 @@ import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
   POLITICAL_CHOICES,
-  RELATIONSHIP_CHOICES,
+  RELATIONSHIP_CHOICES, RELIGION_CHOICES,
   ROMANTIC_CHOICES
 } from "web/components/filters/choices";
 import toast from "react-hot-toast";
@@ -407,6 +407,11 @@ export const OptionalProfileUserForm = (props: {
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Religious beliefs</label>
+          <MultiCheckbox
+            choices={RELIGION_CHOICES}
+            selected={profile['religion'] ?? []}
+            onChange={(selected) => setProfile('religion', selected)}
+          />
           <Input
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}

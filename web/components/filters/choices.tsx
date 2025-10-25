@@ -45,6 +45,24 @@ export const EDUCATION_CHOICES = {
   PhD: 'doctorate',
 }
 
+export const RELIGION_CHOICES = {
+  'Atheist': 'atheist',
+  'Agnostic': 'agnostic',
+  'Spiritual': 'spiritual',
+  'Christian': 'christian',
+  'Muslim': 'muslim',
+  'Jewish': 'jewish',
+  'Hindu': 'hindu',
+  'Buddhist': 'buddhist',
+  'Sikh': 'sikh',
+  'Taoist': 'taoist',
+  'Jain': 'jain',
+  'Shinto': 'shinto',
+  'Zoroastrian': 'zoroastrian',
+  'Unitarian Universalist': 'unitarian_universalist',
+  'Other': 'other',
+}
+
 export const REVERTED_RELATIONSHIP_CHOICES = Object.fromEntries(
   Object.entries(RELATIONSHIP_CHOICES).map(([key, value]) => [value, key])
 );
@@ -63,4 +81,8 @@ export const REVERTED_DIET_CHOICES = Object.fromEntries(
 
 export const REVERTED_EDUCATION_CHOICES = Object.fromEntries(
   Object.entries(EDUCATION_CHOICES).map(([key, value]) => [value, key])
+);
+
+export const REVERTED_RELIGION_CHOICES = Object.fromEntries(
+  Object.entries(RELIGION_CHOICES).map(([key, value]) => [value, key])
 );

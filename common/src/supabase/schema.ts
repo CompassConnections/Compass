@@ -565,6 +565,7 @@ export type Database = {
           pref_romantic_styles: string[] | null
           referred_by_username: string | null
           region_code: string | null
+          religion: string[] | null
           religious_belief_strength: number | null
           religious_beliefs: string | null
           twitter: string | null
@@ -613,6 +614,7 @@ export type Database = {
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
+          religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
           twitter?: string | null
@@ -661,6 +663,7 @@ export type Database = {
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
+          religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
           twitter?: string | null

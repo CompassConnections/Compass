@@ -4,7 +4,7 @@ import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-te
 import {ReactNode} from 'react'
 import {
   REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES,
-  REVERTED_POLITICAL_CHOICES,
+  REVERTED_POLITICAL_CHOICES, REVERTED_RELIGION_CHOICES,
   REVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
@@ -68,6 +68,10 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
         text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}
+      />
+      <AboutRow
+        icon={<PiHandsPrayingBold className="h-5 w-5"/>}
+        text={profile.religion?.map(belief => REVERTED_RELIGION_CHOICES[belief])}
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}

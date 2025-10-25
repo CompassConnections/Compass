@@ -85,6 +85,7 @@ export const WORDS: string[] = [
   "Graphics design",
   "Math",
   "Ethereum",
+  "Finance",
 ]
 
 function getRandomPair(count = 3): string {

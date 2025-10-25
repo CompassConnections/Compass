@@ -13,9 +13,7 @@ See those other useful documents as well:
 
 A profile field is any variable associated with a user profile, such as age, politics, diet, etc. You may want to add a new profile field if it helps people find better matches.
 
-To do so, you can add code in a similar way as in [this commit](https://github.com/CompassConnections/Compass/commit/b94cdba5af377b06c31cebb97c0a772ad6324690) for the `diet` field.
-
-[//]: # (If you also want people to filter by that profile field, you'll also need to add it to the search filters, as done in [this commit]&#40;https://github.com/CompassConnections/Compass/commit/591798e98c51144fe257e28cf463707be748c2aa&#41; for the education level. )
+To do so, you can add code in a similar way as in [this commit](https://github.com/CompassConnections/Compass/commit/940c1f5692f63bf72ddccd4ec3b00b1443801682) for the `religion` field. If you also want people to filter by that profile field, you'll also need to add it to the search filters, as done in [this commit](https://github.com/CompassConnections/Compass/commit/a4bb184e95553184a4c8773d7896e4b570508fe5) (for the `religion` field as well). 
 
 Note that you will also need to add a column to the `profiles` table in the dev database before running the code; you can do so via this SQL command (change the type if not `TEXT`):
 ```sql

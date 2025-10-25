@@ -25,11 +25,6 @@ export const deleteMe: APIHandler<'me/delete'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
   await pg.none('DELETE FROM users WHERE id = $1', [userId])
   // Should cascade delete in other tables
-  // await pg.none('DELETE FROM private_users WHERE id = $1', [userId])
-  // await pg.none('DELETE FROM profiles WHERE user_id = $1', [userId])
-  // await pg.none('DELETE FROM bookmarked_searches WHERE creator_id = $1', [userId])
-  // await pg.none('DELETE FROM compatibility_answers WHERE creator_id = $1', [userId])
-  // May need to also delete from other tables in the future (such as messages, compatibility responses, etc.)
 
   // Delete user files from Firebase Storage
   await deleteUserFiles(user.username)

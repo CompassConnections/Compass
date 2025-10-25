@@ -50,7 +50,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       console.error('Failed to track create profile', e)
     }
     try {
-      await sleep(2000) // Wait until the profile is fully in the db, otherwise ISR may cache "profile not created yet"
+      await sleep(10000) // Wait until the profile is fully in the db, otherwise ISR may cache "profile not created yet"
       let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
       if (body.bio) {
         const bioText = jsonToMarkdown(body.bio)

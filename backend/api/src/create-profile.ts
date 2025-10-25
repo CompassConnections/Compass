@@ -1,7 +1,7 @@
 import { APIError, APIHandler } from 'api/helpers/endpoint'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { log, getUser } from 'shared/utils'
-import { HOUR_MS } from 'common/util/time'
+import {HOUR_MS, sleep} from 'common/util/time'
 import { removePinnedUrlFromPhotoUrls } from 'shared/profiles/parse-photos'
 import { track } from 'shared/analytics'
 import { updateUser } from 'shared/supabase/users'
@@ -41,7 +41,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     throw new APIError(500, 'Error creating user')
   }
 
-  log('Created user', data)
+  log('Created profile', data)
 
   const continuation = async () => {
     try {
@@ -50,6 +50,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       console.error('Failed to track create profile', e)
     }
     try {
+      await sleep(2000) // Wait until the profile is fully in the db, otherwise ISR may cache "profile not created yet"
       let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
       if (body.bio) {
         const bioText = jsonToMarkdown(body.bio)

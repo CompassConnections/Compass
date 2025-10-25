@@ -21,7 +21,7 @@ export default function SignupPage() {
   const user = useUser()
   console.debug('user:', user)
   const router = useRouter()
-  useTracking('viewsignup page')
+  useTracking('view signup page')
 
   // Hold loading indicator for 5s when user transitions from undefined -> null
   const prevUserRef = useRef<ReturnType<typeof useUser>>()
@@ -118,8 +118,7 @@ export default function SignupPage() {
 
                 setIsSubmitting(true)
                 console.debug('profileForm', profileForm)
-                const profile = await api(
-                  'create-profile',
+                const profile = await api('create-profile',
                   removeNullOrUndefinedProps({
                     ...profileForm,
                     referred_by_username: referredByUsername,
@@ -133,7 +132,7 @@ export default function SignupPage() {
                   setProfileForm(profile)
                   setStep(1)
                   scrollTo(0, 0)
-                  track('submitrequired profile')
+                  track('submit required profile')
                 }
               }}
             />

@@ -291,7 +291,12 @@ const swaggerDocument: OpenAPIV3.Document = {
 
 
 const rootPath = pathWithPrefix("/")
-app.get(rootPath, swaggerUi.setup(swaggerDocument))
+app.get(
+  rootPath,
+  swaggerUi.setup(swaggerDocument, {
+    customSiteTitle: 'Compass API Docs',
+  }),
+)
 app.use(rootPath, swaggerUi.serve)
 
 // Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info

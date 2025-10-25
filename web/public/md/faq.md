@@ -112,7 +112,7 @@ Yes. Compass exposes a **public API** for developers who want to build tools, in
 * **Rate-limiting** to protect server stability
 * **Versioned** to ensure backward compatibility
 
-You can explore or test the API at [https://api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new endpoints or suggest improvements.
+You can explore or test the API at [api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new endpoints or suggest improvements.
 
 ### How can I help?
 

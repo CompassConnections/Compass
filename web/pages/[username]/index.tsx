@@ -23,23 +23,26 @@ export const getStaticProps: GetStaticProps<
   UserPageProps,
   { username: string }
 > = async (props) => {
-  console.log('Starting getStaticProps in /[username]')
+  // console.log('Starting getStaticProps in /[username]')
   const {username} = props.params!
 
   const user = await getUserForStaticProps(db, username)
 
-  console.log('getStaticProps', {user})
+  console.debug('getStaticProps', {user})
 
   if (!user) {
+    console.debug('No user')
     return {
       props: {
         notFoundCustomText:
           'The profile you are looking for is not on this site... or perhaps you just mistyped?',
       },
+      revalidate: 15,
     }
   }
 
   if (user.username !== username) {
+    console.debug('Found a case-insensitive match')
     // Found a case-insensitive match, redirect to correct casing
     return {
       redirect: {
@@ -56,6 +59,7 @@ export const getStaticProps: GetStaticProps<
         user: false,
         username,
       },
+      revalidate: 15,
     }
   }
 
@@ -66,6 +70,7 @@ export const getStaticProps: GetStaticProps<
       props: {
         notFoundCustomText: `${user.username} hasn't created a profile yet.`,
       },
+      revalidate: 15,
     }
   }
   // console.debug('profile', profile)

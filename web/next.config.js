@@ -54,9 +54,9 @@ module.exports = {
   webpack: (config, { dev }) => {
     console.log({dev})
     if (dev) {
-        // config.cache = { type: 'filesystem' };
-        // config.infrastructureLogging = { level: 'warn' };
-        // config.stats = 'minimal';
+        config.cache = { type: 'filesystem' };
+        config.infrastructureLogging = { level: 'warn' };
+        config.stats = 'minimal';
     }
     config.module.rules.push({
       test: /\.svg$/,

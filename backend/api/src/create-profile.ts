@@ -1,7 +1,7 @@
 import { APIError, APIHandler } from 'api/helpers/endpoint'
 import { createSupabaseDirectClient } from 'shared/supabase/init'
 import { log, getUser } from 'shared/utils'
-import {HOUR_MS, sleep} from 'common/util/time'
+import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
 import { removePinnedUrlFromPhotoUrls } from 'shared/profiles/parse-photos'
 import { track } from 'shared/analytics'
 import { updateUser } from 'shared/supabase/users'
@@ -50,7 +50,10 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       console.error('Failed to track create profile', e)
     }
     try {
-      await sleep(10000) // Wait until the profile is fully in the db, otherwise ISR may cache "profile not created yet"
+      // Let the user fill in the optional form with all their info and pictures before notifying discord of their arrival.
+      // So we can sse their full profile as soon as we get the notif on discord. And that allows OG to pull their pic for the link preview.
+      // Regardless, you need to wait for at least 5 seconds that the profile is fully in the db—otherwise ISR may cache "profile not created yet"
+      await sleep(10 * MINUTE_MS)
       let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
       if (body.bio) {
         const bioText = jsonToMarkdown(body.bio)

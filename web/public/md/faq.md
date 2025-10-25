@@ -6,6 +6,10 @@ Compass is a **gift from the community** — built by its members like you who c
 
 Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes **values, interests, and personality over swipes and ads**, giving you full control over who you discover and how you connect.
 
+### Why is the platform called Compass?
+
+We chose the name Compass because our goal is to help people orient themselves toward the connections that matter most — not just romantically, but intellectually, socially, and collaboratively. Just as a compass points you toward true north, this platform is designed to guide you toward people who align with your values, interests, and deeper goals, helping you navigate the complexity of human relationships with more clarity and intention. It’s not about endless swiping or superficial matches; it’s about finding direction and meaning in the connections you build.
+
 ### Who is Compass for?
 
 Anyone who wants more than small talk or casual networking. If you value **depth over quantity** and want relationships grounded in **shared values, trust, and understanding**, Compass is for you.
@@ -20,7 +24,7 @@ Anyone who wants more than small talk or casual networking. If you value **depth
 
 ### Is Compass for dating or friendship?
 
-Both. You can specify whether you’re looking for **platonic, romantic, or collaborative connections**.
+Both, and others things. You can specify whether you’re looking for **platonic, romantic, or collaborative connections**.
 
 ### Who started Compass?
 
@@ -99,9 +103,16 @@ Compass is fully **open source**, which means anyone can view the code, suggest 
 
 Whether it’s fixing a small bug, adding a new feature, improving design, or writing tests, contributions of all sizes are welcome. You can explore the code and instructions on our [GitHub repository](https://github.com/CompassConnections/Compass).
 
-### Why is the platform called Compass?
+### Does Compass have an API?
 
-We chose the name Compass because our goal is to help people orient themselves toward the connections that matter most — not just romantically, but intellectually, socially, and collaboratively. Just as a compass points you toward true north, this platform is designed to guide you toward people who align with your values, interests, and deeper goals, helping you navigate the complexity of human relationships with more clarity and intention. It’s not about endless swiping or superficial matches; it’s about finding direction and meaning in the connections you build.
+Yes. Compass exposes a **public API** for developers who want to build tools, integrations, or visualizations around the platform. The API is fully **documented via Swagger/OpenAPI**, and follows the same transparency principles as the rest of the project:
+
+* **Open access** to non-sensitive public endpoints
+* **Authenticated endpoints** for user-specific or administrative actions
+* **Rate-limiting** to protect server stability
+* **Versioned** to ensure backward compatibility
+
+You can explore or test the API at [https://api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new endpoints or suggest improvements.
 
 ### How can I help?
 

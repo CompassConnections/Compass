@@ -31,21 +31,32 @@ export function AboutRow(props: {
   icon: ReactNode
   text?: string | null | string[]
   preText?: string
+  suffix?: string | null
 }) {
-  const {icon, text, preText} = props
-  if (!text || text.length < 1) {
+  const {icon, text, preText, suffix} = props
+  if (!text?.length && !preText && !suffix) {
     return <></>
+  }
+  let formattedText = ''
+  if (preText) {
+    formattedText += preText
+  }
+  if (text?.length) {
+    formattedText += stringOrStringArrayToText({
+      text: text,
+      preText: preText,
+      asSentence: false,
+      capitalizeFirstLetterOption: true,
+    })
+  }
+  if (suffix) {
+    formattedText += formattedText ? ` (${suffix})` : suffix
   }
   return (
     <Row className="items-center gap-2">
       <div className="text-ink-600 w-5">{icon}</div>
       <div>
-        {stringOrStringArrayToText({
-          text: text,
-          preText: preText,
-          asSentence: false,
-          capitalizeFirstLetterOption: true,
-        })}
+        {formattedText}
       </div>
     </Row>
   )
@@ -72,10 +83,7 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
         text={profile.religion?.map(belief => REVERTED_RELIGION_CHOICES[belief])}
-      />
-      <AboutRow
-        icon={<PiHandsPrayingBold className="h-5 w-5"/>}
-        text={profile.religious_beliefs}
+        suffix={profile.religious_beliefs}
       />
       <AboutRow
         icon={<HiOutlineGlobe className="h-5 w-5"/>}

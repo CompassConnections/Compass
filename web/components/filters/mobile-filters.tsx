@@ -10,7 +10,7 @@ import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/profiles/profile'
 import {Gender} from 'common/gender'
-import {DietType, PoliticalType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
+import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"

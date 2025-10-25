@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {DietType, PoliticalType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
+import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {ReactNode} from 'react'
 import {FaUserGroup} from 'react-icons/fa6'
 import {Col} from 'web/components/layout/col'

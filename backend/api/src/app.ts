@@ -121,10 +121,7 @@ app.use(requestMonitoring)
 
 const schemaCache = new WeakMap<ZodTypeAny, any>();
 
-export function zodToOpenApiSchema(
-  zodObj: ZodTypeAny,
-  nameHint?: string
-): any {  // Prevent infinite recursion
+export function zodToOpenApiSchema(zodObj: ZodTypeAny,): any {
   if (schemaCache.has(zodObj)) {
     return schemaCache.get(zodObj);
   }
@@ -161,7 +158,7 @@ export function zodToOpenApiSchema(
 
       for (const key in shape) {
         const child = shape[key];
-        properties[key] = zodToOpenApiSchema(child, key);
+        properties[key] = zodToOpenApiSchema(child);
         if (!child.isOptional()) required.push(key);
       }
 
@@ -185,10 +182,7 @@ export function zodToOpenApiSchema(
       break;
     }
     case 'ZodLazy':
-      // Recursive schema: use a $ref placeholder name
-      schema = {
-        $ref: `#/components/schemas/${nameHint ?? 'RecursiveType'}`,
-      };
+      schema = { type: 'object', description: 'Lazy schema - details omitted' };
       break;
     case 'ZodUnion':
       schema = {

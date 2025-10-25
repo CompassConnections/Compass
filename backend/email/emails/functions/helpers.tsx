@@ -5,7 +5,7 @@ import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
 import {getProfile} from 'shared/profiles/supabase'
-import { render } from "@react-email/render"
+import {render} from "@react-email/render"
 import {MatchesType} from "common/profiles/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";

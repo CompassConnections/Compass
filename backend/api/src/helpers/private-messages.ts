@@ -220,7 +220,7 @@ const notifyOtherUserInChannelIfInactive = async (
     [channelId, creator.id, startOfDay]
   )
   log('previous messages this day', previousMessagesThisDayBetweenTheseUsers)
-  if (previousMessagesThisDayBetweenTheseUsers.count > 0) return
+  if (previousMessagesThisDayBetweenTheseUsers.count > 1) return
 
   await createNewMessageNotification(creator, otherUser, channelId)
 }

@@ -27,7 +27,7 @@ export function ContactComponent() {
       <Title className="!mb-2 text-3xl">Contact</Title>
       <p className={'custom-link mb-4'}>
         You can also contact us through this <Link href={formLink}>feedback form</Link> or any of our <Link
-        href={'/social'}>socials</Link>.
+        href={'/social'}>socials</Link>. Feel free to give your contact information if you'd like us to get back to you.
       </p>
       <Col>
         <div className={'mb-2'}>

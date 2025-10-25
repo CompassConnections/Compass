@@ -176,7 +176,7 @@ export const PrivateChat = (props: {
         editor.commands.focus()
       })
       .catch((e) => {
-        toast.error(e.message)
+        toast.error("Couldn't send message. Please try again later or contact support if the problem persists.")
         console.error(e)
       })
     setIsSubmitting(false)

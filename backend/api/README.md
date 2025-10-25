@@ -161,5 +161,4 @@ docker rmi -f $(docker images -aq)
 
 ### Documentation
 
-The API docs are available at https://api.compassmeet.com. They are defined in [openapi.json](openapi.json).
-Just a few endpoints are mentioned in that JSON doc. Feel free to help by adding the remaining ones!
+The API doc is available at https://api.compassmeet.com. It's dynamically prepared in [app.ts](src/app.ts).

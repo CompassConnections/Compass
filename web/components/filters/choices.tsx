@@ -58,6 +58,7 @@ export const RELIGION_CHOICES = {
   'Taoist': 'taoist',
   'Jain': 'jain',
   'Shinto': 'shinto',
+  'Animist': 'animist',
   'Zoroastrian': 'zoroastrian',
   'Unitarian Universalist': 'unitarian_universalist',
   'Other': 'other',

@@ -404,6 +404,48 @@ app.post(pathWithPrefix("/internal/send-search-notifications"),
   }
 );
 
+const responses = {
+  200: {
+    description: "Request successful",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            status: { type: "string", example: "success" }
+          },
+        },
+      },
+    },
+  },
+  401: {
+    description: "Unauthorized (e.g., invalid or missing API key)",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            error: { type: "string", example: "Unauthorized" },
+          },
+        },
+      },
+    },
+  },
+  500: {
+    description: "Internal server error during request processing",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            error: { type: "string", example: "Internal server error" },
+          },
+        },
+      },
+    },
+  },
+};
+
 swaggerDocument.paths["/internal/send-search-notifications"] = {
   post: {
     summary: "Trigger daily search notifications",
@@ -418,47 +460,7 @@ swaggerDocument.paths["/internal/send-search-notifications"] = {
     requestBody: {
       required: false,
     },
-    responses: {
-      200: {
-        description: "Notifications sent successfully",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                status: { type: "string", example: "success" }
-              },
-            },
-          },
-        },
-      },
-      401: {
-        description: "Unauthorized (invalid or missing API key)",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                error: { type: "string", example: "Unauthorized" },
-              },
-            },
-          },
-        },
-      },
-      500: {
-        description: "Internal server error during notification send",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                error: { type: "string", example: "Internal server error" },
-              },
-            },
-          },
-        },
-      },
-    },
+    responses: responses,
   },
 } as any
 
@@ -486,6 +488,7 @@ swaggerDocument.paths["/local/send-test-email"] = {
     requestBody: {
       required: false,
     },
+    responses: responses,
   },
 } as any
 

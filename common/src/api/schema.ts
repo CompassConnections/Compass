@@ -402,6 +402,7 @@ export const API = (_apiTypeCheck = {
         pref_age_max: z.coerce.number().optional(),
         drinks_min: z.coerce.number().optional(),
         drinks_max: z.coerce.number().optional(),
+        religion: arraybeSchema.optional(),
         pref_relation_styles: arraybeSchema.optional(),
         pref_romantic_styles: arraybeSchema.optional(),
         diet: arraybeSchema.optional(),

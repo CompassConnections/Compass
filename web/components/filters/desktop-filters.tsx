@@ -26,11 +26,12 @@ import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/polit
 import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
-import {LuGraduationCap} from "react-icons/lu";
+import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
 import {MdLocalBar} from 'react-icons/md'
-import {SmokerFilter, SmokerFilterText} from 'web/components/filters/smoker-filter'
-import {LuCigarette} from 'react-icons/lu'
+import {SmokerFilter, SmokerFilterText} from "web/components/filters/smoker-filter"
+import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
+import {PiHandsPrayingBold} from "react-icons/pi";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -381,6 +382,33 @@ export function DesktopFilters(props: {
         menuWidth="w-50"
       />
 
+      {/* RELIGION */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <PiHandsPrayingBold className="h-4 w-4"/>
+                <ReligionFilterText
+                  options={
+                    filters.religion as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <ReligionFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
       {/* SMOKER */}
       <CustomizeableDropdown
         buttonContent={(open) => (
@@ -399,7 +427,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <SmokerFilter filters={filters} updateFilter={updateFilter} />
+            <SmokerFilter filters={filters} updateFilter={updateFilter}/>
           </Col>
         }
         popoverClassName="bg-canvas-50"

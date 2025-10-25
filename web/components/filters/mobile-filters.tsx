@@ -24,6 +24,7 @@ import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/polit
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from "./drinks-filter";
 import {SmokerFilter, SmokerFilterText} from "./smoker-filter";
+import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -327,6 +328,24 @@ function MobileFilters(props: {
         }
       >
         <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* RELIGION */}
+      <MobileFilterSection
+        title="Religion"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.religion || undefined)}
+        selection={
+          <ReligionFilterText
+            options={filters.religion as string[]}
+            highlightedClass={
+              hasAny(filters.religion || undefined) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <ReligionFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* EDUCATION */}

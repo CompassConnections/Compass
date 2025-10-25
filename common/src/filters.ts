@@ -32,6 +32,7 @@ export type FilterFields = {
   | 'pref_gender'
   | 'pref_age_min'
   | 'pref_age_max'
+  | 'religion'
 >
 
 export const orderProfiles = (
@@ -70,6 +71,7 @@ export const initialFilters: Partial<FilterFields> = {
   pref_romantic_styles: undefined,
   diet: undefined,
   political_beliefs: undefined,
+  religion: undefined,
   pref_gender: undefined,
   shortBio: undefined,
   drinks_min: undefined,

@@ -77,6 +77,7 @@ const optionalProfilesSchema = z.object({
   political_beliefs: z.array(z.string()).optional(),
   religious_belief_strength: z.number().optional(),
   religious_beliefs: z.string().optional(),
+  religion: z.array(z.string()).optional(),
   ethnicity: z.array(z.string()).optional(),
   born_in_location: z.string().optional(),
   height_in_inches: z.number().optional(),

@@ -2,12 +2,13 @@ import clsx from 'clsx'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
 import {FilterFields} from "common/filters";
-import {EDUCATION_CHOICES} from "web/components/filters/choices";
-import {convertEducationTypes} from "web/lib/util/convert-types";
+import {RELIGION_CHOICES} from "web/components/filters/choices";
+import {convertReligionTypes} from "web/lib/util/convert-types";
 import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
 import {getSortedOptions} from "common/util/sorting";
 
-export function EducationFilterText(props: {
+
+export function ReligionFilterText(props: {
   options: string[] | undefined
   highlightedClass?: string
 }) {
@@ -16,12 +17,12 @@ export function EducationFilterText(props: {
 
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any education</span>
+      <span className={clsx('text-semibold', highlightedClass)}>Any religion</span>
     )
   }
 
-  const sortedOptions = getSortedOptions(options, EDUCATION_CHOICES)
-  const convertedTypes = sortedOptions.map((r) => convertEducationTypes(r as any))
+  const sortedOptions = getSortedOptions(options, RELIGION_CHOICES)
+  const convertedTypes = sortedOptions.map((r) => convertReligionTypes(r as any))
 
   return (
     <div>
@@ -35,7 +36,7 @@ export function EducationFilterText(props: {
   )
 }
 
-export function EducationFilter(props: {
+export function ReligionFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
@@ -43,10 +44,10 @@ export function EducationFilter(props: {
   return (
     <>
       <MultiCheckbox
-        selected={filters.education_levels ?? []}
-        choices={EDUCATION_CHOICES}
+        selected={filters.religion ?? []}
+        choices={RELIGION_CHOICES}
         onChange={(c) => {
-          updateFilter({education_levels: c})
+          updateFilter({religion: c})
         }}
       />
     </>

@@ -79,6 +79,7 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
         text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}
+        suffix={profile.political_details}
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}

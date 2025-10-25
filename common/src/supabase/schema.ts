@@ -558,6 +558,7 @@ export type Database = {
           photo_urls: string[] | null
           pinned_url: string | null
           political_beliefs: string[] | null
+          political_details: string | null
           pref_age_max: number | null
           pref_age_min: number | null
           pref_gender: string[]
@@ -607,6 +608,7 @@ export type Database = {
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null
+          political_details?: string | null
           pref_age_max?: number | null
           pref_age_min?: number | null
           pref_gender: string[]
@@ -656,6 +658,7 @@ export type Database = {
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null
+          political_details?: string | null
           pref_age_max?: number | null
           pref_age_min?: number | null
           pref_gender?: string[]

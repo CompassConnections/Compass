@@ -51,6 +51,7 @@ export const sinclairProfile: ProfileRow = {
   political_beliefs: ['e/acc', 'libertarian'],
   religious_belief_strength: null,
   religious_beliefs: null,
+  political_details: '',
   photo_urls: [
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FSinclair%2Flove-images%2FnJz22lr3Bl.jpg?alt=media&token=f1e99ba3-39cc-4637-8702-16a3a8dd49db',
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FSinclair%2Flove-images%2FygM0mGgP_j.HEIC?alt=media&token=573b23d9-693c-4d6e-919b-097309f370e1',
@@ -153,6 +154,7 @@ export const jamesProfile: ProfileRow = {
   political_beliefs: ['libertarian'],
   religious_belief_strength: null,
   religious_beliefs: '',
+  political_details: '',
   photo_urls: [
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FJamesGrugett%2Flove-images%2FKl0WtbZsZW.jpg?alt=media&token=c928604f-e5ff-4406-a229-152864a4aa48',
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FJamesGrugett%2Flove-images%2Fsii17zOItz.jpg?alt=media&token=474034b9-0d23-4005-97ad-5864abfd85fe',

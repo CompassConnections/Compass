@@ -403,6 +403,13 @@ export const OptionalProfileUserForm = (props: {
             selected={profile['political_beliefs'] ?? []}
             onChange={(selected) => setProfile('political_beliefs', selected)}
           />
+          <p>Details:</p>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('political_details', e.target.value)}
+            className={'w-full sm:w-96'}
+            value={profile['political_details'] ?? undefined}
+          />
         </Col>
 
         <Col className={clsx(colClassName)}>
@@ -412,6 +419,7 @@ export const OptionalProfileUserForm = (props: {
             selected={profile['religion'] ?? []}
             onChange={(selected) => setProfile('religion', selected)}
           />
+          <p>Details:</p>
           <Input
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}

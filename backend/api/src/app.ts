@@ -65,6 +65,8 @@ import {OpenAPIV3} from 'openapi-types';
 import {version as pkgVersion} from './../package.json'
 import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
 import {getUser} from "api/get-user";
+import {IS_LOCAL} from "common/envs/constants";
+import {localSendTestEmail} from "api/test";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -118,113 +120,6 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 
 export const app = express()
 app.use(requestMonitoring)
-
-// Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info
-// May not be necessary
-// app.options('*', allowCorsUnrestricted)
-
-const handlers: { [k in APIPath]: APIHandler<k> } = {
-  health: health,
-  'get-supabase-token': getSupabaseToken,
-  'get-notifications': getNotifications,
-  'mark-all-notifs-read': markAllNotifsRead,
-  // 'user/:username': getUser,
-  // 'user/:username/lite': getDisplayUser,
-  'user/by-id/:id': getUser,
-  // 'user/by-id/:id/lite': getDisplayUser,
-  'user/by-id/:id/block': blockUser,
-  'user/by-id/:id/unblock': unblockUser,
-  'search-users': searchUsers,
-  'ban-user': banUser,
-  report: report,
-  'create-user': createUser,
-  'create-profile': createProfile,
-  me: getMe,
-  'me/private': getCurrentPrivateUser,
-  'me/update': updateMe,
-  'update-notif-settings': updateNotifSettings,
-  'me/delete': deleteMe,
-  'update-profile': updateProfile,
-  'like-profile': likeProfile,
-  'ship-profiles': shipProfiles,
-  'get-likes-and-ships': getLikesAndShips,
-  'has-free-like': hasFreeLike,
-  'star-profile': starProfile,
-  'get-profiles': getProfiles,
-  'get-profile-answers': getProfileAnswers,
-  'get-compatibility-questions': getCompatibilityQuestions,
-  'remove-pinned-photo': removePinnedPhoto,
-  'create-comment': createComment,
-  'hide-comment': hideComment,
-  'create-compatibility-question': createCompatibilityQuestion,
-  'set-compatibility-answer': setCompatibilityAnswer,
-  'create-vote': createVote,
-  'vote': vote,
-  'contact': contact,
-  'compatible-profiles': getCompatibleProfilesHandler,
-  'search-location': searchLocation,
-  'search-near-city': searchNearCity,
-  'create-private-user-message': createPrivateUserMessage,
-  'create-private-user-message-channel': createPrivateUserMessageChannel,
-  'update-private-user-message-channel': updatePrivateUserMessageChannel,
-  'leave-private-user-message-channel': leavePrivateUserMessageChannel,
-  'get-channel-memberships': getChannelMemberships,
-  'get-channel-messages': getChannelMessagesEndpoint,
-  'get-channel-seen-time': getLastSeenChannelTime,
-  'set-channel-seen-time': setChannelLastSeenTime,
-  'get-messages-count': getMessagesCount,
-  'set-last-online-time': setLastOnlineTime,
-  'save-subscription': saveSubscription,
-  'create-bookmarked-search': createBookmarkedSearch,
-  'delete-bookmarked-search': deleteBookmarkedSearch,
-}
-
-Object.entries(handlers).forEach(([path, handler]) => {
-  const api = API[path as APIPath]
-  const cache = cacheController((api as any).cache)
-  const url = pathWithPrefix('/' + path as APIPath)
-
-  const apiRoute = [
-    url,
-    express.json(),
-    allowCorsUnrestricted,
-    cache,
-    typedEndpoint(path as any, handler as any),
-    apiErrorHandler,
-  ] as const
-
-  if (api.method === 'POST') {
-    app.post(...apiRoute)
-  } else if (api.method === 'GET') {
-    app.get(...apiRoute)
-    // } else if (api.method === 'PUT') {
-    //   app.put(...apiRoute)
-  } else {
-    throw new Error('Unsupported API method')
-  }
-})
-
-// Internal Endpoints
-app.post(pathWithPrefix("/internal/send-search-notifications"),
-  async (req, res) => {
-    const apiKey = req.header("x-api-key");
-    if (apiKey !== process.env.COMPASS_API_KEY) {
-      return res.status(401).json({error: "Unauthorized"});
-    }
-
-    try {
-      const result = await sendSearchNotifications()
-      return res.status(200).json(result)
-    } catch (err) {
-      console.error("Failed to send notifications:", err);
-      await sendDiscordMessage(
-        "Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...",
-        "health"
-      )
-      return res.status(500).json({error: "Internal server error"});
-    }
-  }
-);
 
 
 const schemaCache = new WeakMap<ZodTypeAny, any>();
@@ -402,6 +297,113 @@ const swaggerDocument: OpenAPIV3.Document = {
   }
 } as OpenAPIV3.Document;
 
+// Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info
+// May not be necessary
+// app.options('*', allowCorsUnrestricted)
+
+const handlers: { [k in APIPath]: APIHandler<k> } = {
+  health: health,
+  'get-supabase-token': getSupabaseToken,
+  'get-notifications': getNotifications,
+  'mark-all-notifs-read': markAllNotifsRead,
+  // 'user/:username': getUser,
+  // 'user/:username/lite': getDisplayUser,
+  'user/by-id/:id': getUser,
+  // 'user/by-id/:id/lite': getDisplayUser,
+  'user/by-id/:id/block': blockUser,
+  'user/by-id/:id/unblock': unblockUser,
+  'search-users': searchUsers,
+  'ban-user': banUser,
+  report: report,
+  'create-user': createUser,
+  'create-profile': createProfile,
+  me: getMe,
+  'me/private': getCurrentPrivateUser,
+  'me/update': updateMe,
+  'update-notif-settings': updateNotifSettings,
+  'me/delete': deleteMe,
+  'update-profile': updateProfile,
+  'like-profile': likeProfile,
+  'ship-profiles': shipProfiles,
+  'get-likes-and-ships': getLikesAndShips,
+  'has-free-like': hasFreeLike,
+  'star-profile': starProfile,
+  'get-profiles': getProfiles,
+  'get-profile-answers': getProfileAnswers,
+  'get-compatibility-questions': getCompatibilityQuestions,
+  'remove-pinned-photo': removePinnedPhoto,
+  'create-comment': createComment,
+  'hide-comment': hideComment,
+  'create-compatibility-question': createCompatibilityQuestion,
+  'set-compatibility-answer': setCompatibilityAnswer,
+  'create-vote': createVote,
+  'vote': vote,
+  'contact': contact,
+  'compatible-profiles': getCompatibleProfilesHandler,
+  'search-location': searchLocation,
+  'search-near-city': searchNearCity,
+  'create-private-user-message': createPrivateUserMessage,
+  'create-private-user-message-channel': createPrivateUserMessageChannel,
+  'update-private-user-message-channel': updatePrivateUserMessageChannel,
+  'leave-private-user-message-channel': leavePrivateUserMessageChannel,
+  'get-channel-memberships': getChannelMemberships,
+  'get-channel-messages': getChannelMessagesEndpoint,
+  'get-channel-seen-time': getLastSeenChannelTime,
+  'set-channel-seen-time': setChannelLastSeenTime,
+  'get-messages-count': getMessagesCount,
+  'set-last-online-time': setLastOnlineTime,
+  'save-subscription': saveSubscription,
+  'create-bookmarked-search': createBookmarkedSearch,
+  'delete-bookmarked-search': deleteBookmarkedSearch,
+}
+
+Object.entries(handlers).forEach(([path, handler]) => {
+  const api = API[path as APIPath]
+  const cache = cacheController((api as any).cache)
+  const url = pathWithPrefix('/' + path as APIPath)
+
+  const apiRoute = [
+    url,
+    express.json(),
+    allowCorsUnrestricted,
+    cache,
+    typedEndpoint(path as any, handler as any),
+    apiErrorHandler,
+  ] as const
+
+  if (api.method === 'POST') {
+    app.post(...apiRoute)
+  } else if (api.method === 'GET') {
+    app.get(...apiRoute)
+    // } else if (api.method === 'PUT') {
+    //   app.put(...apiRoute)
+  } else {
+    throw new Error('Unsupported API method')
+  }
+})
+
+// Internal Endpoints
+app.post(pathWithPrefix("/internal/send-search-notifications"),
+  async (req, res) => {
+    const apiKey = req.header("x-api-key");
+    if (apiKey !== process.env.COMPASS_API_KEY) {
+      return res.status(401).json({error: "Unauthorized"});
+    }
+
+    try {
+      const result = await sendSearchNotifications()
+      return res.status(200).json(result)
+    } catch (err) {
+      console.error("Failed to send notifications:", err);
+      await sendDiscordMessage(
+        "Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...",
+        "health"
+      )
+      return res.status(500).json({error: "Internal server error"});
+    }
+  }
+);
+
 swaggerDocument.paths["/internal/send-search-notifications"] = {
   post: {
     summary: "Trigger daily search notifications",
@@ -456,6 +458,33 @@ swaggerDocument.paths["/internal/send-search-notifications"] = {
           },
         },
       },
+    },
+  },
+} as any
+
+// Local Endpoints
+app.post(pathWithPrefix("/local/send-test-email"),
+  async (req, res) => {
+    if (!IS_LOCAL) {
+      return res.status(401).json({error: "Unauthorized"});
+    }
+
+    try {
+      const result = await localSendTestEmail()
+      return res.status(200).json(result)
+    } catch (err) {
+      return res.status(500).json({error: err});
+    }
+  }
+);
+
+swaggerDocument.paths["/local/send-test-email"] = {
+  post: {
+    summary: "Send a test email",
+    description: "Local endpoint to send a test email.",
+    tags: ["Local"],
+    requestBody: {
+      required: false,
     },
   },
 } as any

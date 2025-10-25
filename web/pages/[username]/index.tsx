@@ -23,12 +23,12 @@ export const getStaticProps: GetStaticProps<
   UserPageProps,
   { username: string }
 > = async (props) => {
-  // console.debug('Starting getStaticProps in /[username]')
+  console.log('Starting getStaticProps in /[username]')
   const {username} = props.params!
 
   const user = await getUserForStaticProps(db, username)
 
-  // console.log(user)
+  console.log('getStaticProps', {user})
 
   if (!user) {
     return {

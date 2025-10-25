@@ -70,7 +70,7 @@ export const getStaticProps: GetStaticProps<
     profile = await getProfileRow(user.id, db)
     if (i > 0) await sleep(500)
     i++
-    if (i >= 4) {
+    if (i >= 8) {
       break
     }
   }

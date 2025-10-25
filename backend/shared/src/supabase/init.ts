@@ -11,7 +11,7 @@ export {SupabaseClient} from 'common/supabase/utils'
 export const pgp = pgPromise({
   error(err: any, e: pgPromise.IEventContext) {
     // Read more: https://node-postgres.com/apis/pool#error
-    log.error('pgPromise background error', {
+    log.error(`pgPromise background error: ${err?.detail}`, {
       error: err,
       event: e,
     })

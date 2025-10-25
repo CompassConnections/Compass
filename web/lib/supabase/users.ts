@@ -1,7 +1,6 @@
 import {db} from './db'
 import {run} from 'common/supabase/utils'
 import {api} from 'web/lib/api'
-import {unauthedApi} from 'common/util/api'
 import type {DisplayUser} from 'common/api/user-types'
 import {MIN_BIO_LENGTH} from "common/constants";
 import {MONTH_MS} from "common/util/time";
@@ -28,20 +27,20 @@ export async function getPrivateUserSafe() {
   }
 }
 
-export async function getUserById(id: string) {
-  return unauthedApi('user/by-id/:id/lite', {id})
-}
+// export async function getUserById(id: string) {
+//   return unauthedApi('user/by-id/:id/lite', {id})
+// }
 
-export async function getUserByUsername(username: string) {
-  return unauthedApi('user/:username/lite', {username})
-}
-
-export async function getFullUserByUsername(username: string) {
-  return unauthedApi('user/:username', {username})
-}
+// export async function getUserByUsername(username: string) {
+//   return unauthedApi('user/:username/lite', {username})
+// }
+//
+// export async function getFullUserByUsername(username: string) {
+//   return unauthedApi('user/:username', {username})
+// }
 
 export async function getFullUserById(id: string) {
-  return unauthedApi('user/by-id/:id', {id})
+  return api('user/by-id/:id', {id})
 }
 
 export async function searchUsers(prompt: string, limit: number) {

@@ -20,7 +20,6 @@ import {getLikesAndShips} from './get-likes-and-ships'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
-import {getDisplayUser, getUser} from './get-user'
 import {getMe} from './get-me'
 import {hasFreeLike} from './has-free-like'
 import {health} from './health'
@@ -53,7 +52,6 @@ import {getNotifications} from './get-notifications'
 import {updateNotifSettings} from './update-notif-setting'
 import {setLastOnlineTime} from './set-last-online-time'
 import swaggerUi from "swagger-ui-express"
-import * as fs from "fs"
 import {sendSearchNotifications} from "api/send-search-notifications";
 import {sendDiscordMessage} from "common/discord/core";
 import {getMessagesCount} from "api/get-messages-count";
@@ -63,6 +61,10 @@ import {contact} from "api/contact";
 import {saveSubscription} from "api/save-subscription";
 import {createBookmarkedSearch} from './create-bookmarked-search'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
+import {OpenAPIV3} from 'openapi-types';
+import {version as pkgVersion} from './../package.json'
+import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
+import {getUser} from "api/get-user";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -117,17 +119,182 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 export const app = express()
 app.use(requestMonitoring)
 
-const swaggerDocument = JSON.parse(fs.readFileSync("./openapi.json", "utf-8"))
-swaggerDocument.info = {
-  ...swaggerDocument.info,
-  description: "Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.",
-  version: "1.0.0",
-  contact: {
-    name: "Compass",
-    email: "hello@compassmeet.com",
-    url: "https://compassmeet.com"
+const schemaCache = new WeakMap<ZodTypeAny, any>();
+
+export function zodToOpenApiSchema(
+  zodObj: ZodTypeAny,
+  nameHint?: string
+): any {  // Prevent infinite recursion
+  if (schemaCache.has(zodObj)) {
+    return schemaCache.get(zodObj);
   }
-};
+
+  const def: any = (zodObj as any)._def;
+  const typeName = def.typeName as ZodFirstPartyTypeKind;
+
+  // Placeholder so recursive references can point here
+  const placeholder: any = {};
+  schemaCache.set(zodObj, placeholder);
+
+  let schema: any;
+
+  switch (typeName) {
+    case 'ZodString':
+      schema = { type: 'string' };
+      break;
+    case 'ZodNumber':
+      schema = { type: 'number' };
+      break;
+    case 'ZodBoolean':
+      schema = { type: 'boolean' };
+      break;
+    case 'ZodEnum':
+      schema = { type: 'string', enum: def.values };
+      break;
+    case 'ZodArray':
+      schema = { type: 'array', items: zodToOpenApiSchema(def.type) };
+      break;
+    case 'ZodObject': {
+      const shape = def.shape();
+      const properties: Record<string, any> = {};
+      const required: string[] = [];
+
+      for (const key in shape) {
+        const child = shape[key];
+        properties[key] = zodToOpenApiSchema(child, key);
+        if (!child.isOptional()) required.push(key);
+      }
+
+      schema = {
+        type: 'object',
+        properties,
+        ...(required.length ? { required } : {}),
+      };
+      break;
+    }
+    case 'ZodRecord':
+      schema = {
+        type: 'object',
+        additionalProperties: zodToOpenApiSchema(def.valueType),
+      };
+      break;
+    case 'ZodIntersection': {
+      const left = zodToOpenApiSchema(def.left);
+      const right = zodToOpenApiSchema(def.right);
+      schema = { allOf: [left, right] };
+      break;
+    }
+    case 'ZodLazy':
+      // Recursive schema: use a $ref placeholder name
+      schema = {
+        $ref: `#/components/schemas/${nameHint ?? 'RecursiveType'}`,
+      };
+      break;
+    case 'ZodUnion':
+      schema = {
+        oneOf: def.options.map((opt: ZodTypeAny) => zodToOpenApiSchema(opt)),
+      };
+      break;
+    default:
+      schema = { type: 'string' }; // fallback for unhandled
+  }
+
+  Object.assign(placeholder, schema);
+  return schema;
+}
+
+function generateSwaggerPaths(api: typeof API) {
+  const paths: Record<string, any> = {};
+
+  for (const [route, config] of Object.entries(api)) {
+    const pathKey = '/' + route.replace(/_/g, '-'); // optional: convert underscores to dashes
+    const method = config.method.toLowerCase();
+    const summary = (config as any).summary ?? route;
+
+    // Include props in request body for POST/PUT
+    const operation: any = {
+      summary,
+      tags: [(config as any).tag ?? 'API'],
+      responses: {
+        200: {
+          description: 'OK',
+          content: {
+            'application/json': {
+              schema: {type: 'object'}, // could be improved by introspecting returns
+            },
+          },
+        },
+      },
+    };
+
+    // Include props in request body for POST/PUT
+    if (config.props && ['post', 'put', 'patch'].includes(method)) {
+      operation.requestBody = {
+        required: true,
+        content: {
+          'application/json': {
+            schema: zodToOpenApiSchema(config.props),
+          },
+        },
+      };
+    }
+
+    // Include props as query parameters for GET/DELETE
+    if (config.props && ['get', 'delete'].includes(method)) {
+      const shape = (config.props as z.ZodObject<any>)._def.shape();
+      operation.parameters = Object.entries(shape).map(([key, zodType]) => {
+        const typeMap: Record<string, string> = {
+          ZodString: 'string',
+          ZodNumber: 'number',
+          ZodBoolean: 'boolean',
+        };
+        const t = zodType as z.ZodTypeAny; // assert type to ZodTypeAny
+        return {
+          name: key,
+          in: 'query',
+          required: !(t.isOptional ?? false),
+          schema: {type: typeMap[t._def.typeName] ?? 'string'},
+        };
+      });
+    }
+
+    paths[pathKey] = {
+      [method]: operation,
+    }
+
+    if (config.authed) {
+      operation.security = [{BearerAuth: []}];
+    }
+  }
+
+  return paths;
+}
+
+
+const swaggerDocument: OpenAPIV3.Document = {
+  openapi: "3.0.0",
+  info: {
+    title: "Compass API",
+    description: "Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.",
+    version: pkgVersion,
+    contact: {
+      name: "Compass",
+      email: "hello@compassmeet.com",
+      url: "https://compassmeet.com"
+    }
+  },
+  paths: generateSwaggerPaths(API),
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  }
+} as OpenAPIV3.Document;
+
 
 const rootPath = pathWithPrefix("/")
 app.get(rootPath, swaggerUi.setup(swaggerDocument))
@@ -142,10 +309,10 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-supabase-token': getSupabaseToken,
   'get-notifications': getNotifications,
   'mark-all-notifs-read': markAllNotifsRead,
-  'user/:username': getUser,
-  'user/:username/lite': getDisplayUser,
+  // 'user/:username': getUser,
+  // 'user/:username/lite': getDisplayUser,
   'user/by-id/:id': getUser,
-  'user/by-id/:id/lite': getDisplayUser,
+  // 'user/by-id/:id/lite': getDisplayUser,
   'user/by-id/:id/block': blockUser,
   'user/by-id/:id/unblock': unblockUser,
   'search-users': searchUsers,
@@ -217,8 +384,6 @@ Object.entries(handlers).forEach(([path, handler]) => {
     throw new Error('Unsupported API method')
   }
 })
-
-// console.debug('COMPASS_API_KEY:', process.env.COMPASS_API_KEY)
 
 // Internal Endpoints
 app.post(pathWithPrefix("/internal/send-search-notifications"),

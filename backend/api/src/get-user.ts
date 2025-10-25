@@ -17,17 +17,18 @@ export const getUser = async (props: { id: string } | { username: string }) => {
   return toUserAPIResponse(user)
 }
 
-export const getDisplayUser = async (
-  props: { id: string } | { username: string }
-) => {
-  const pg = createSupabaseDirectClient()
-  const liteUser = await pg.oneOrNone(
-    `select ${displayUserColumns}
-            from users
-            where ${'id' in props ? 'id' : 'username'} = $1`,
-    ['id' in props ? props.id : props.username]
-  )
-  if (!liteUser) throw new APIError(404, 'User not found')
-
-  return removeNullOrUndefinedProps(liteUser)
-}
+// export const getDisplayUser = async (
+//   props: { id: string } | { username: string }
+// ) => {
+//   console.log('getDisplayUser', props)
+//   const pg = createSupabaseDirectClient()
+//   const liteUser = await pg.oneOrNone(
+//     `select ${displayUserColumns}
+//             from users
+//             where ${'id' in props ? 'id' : 'username'} = $1`,
+//     ['id' in props ? props.id : props.username]
+//   )
+//   if (!liteUser) throw new APIError(404, 'User not found')
+//
+//   return removeNullOrUndefinedProps(liteUser)
+// }

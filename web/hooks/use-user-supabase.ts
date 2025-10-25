@@ -8,7 +8,6 @@ import {
   DisplayUser,
   getDisplayUsers,
   getFullUserById,
-  getUserById,
 } from 'web/lib/supabase/users'
 import { FullUser } from 'common/api/user-types'
 
@@ -28,29 +27,29 @@ export function useUserById(userId: string | undefined) {
 
 const cache = new Map<string, DisplayUser | null>()
 
-export function useDisplayUserById(userId: string | undefined) {
-  const [user, setUser] = usePersistentInMemoryState<
-    DisplayUser | null | undefined
-  >(undefined, `user-${userId}`)
-
-  useEffect(() => {
-    if (userId) {
-      if (cache.has(userId)) {
-        setUser(cache.get(userId))
-      } else {
-        getUserById(userId)
-          .then((result) => {
-            cache.set(userId, result)
-            setUser(result)
-          })
-          .catch(() => {
-            setUser(null)
-          })
-      }
-    }
-  }, [userId])
-  return user
-}
+// export function useDisplayUserById(userId: string | undefined) {
+//   const [user, setUser] = usePersistentInMemoryState<
+//     DisplayUser | null | undefined
+//   >(undefined, `user-${userId}`)
+//
+//   useEffect(() => {
+//     if (userId) {
+//       if (cache.has(userId)) {
+//         setUser(cache.get(userId))
+//       } else {
+//         getUserById(userId)
+//           .then((result) => {
+//             cache.set(userId, result)
+//             setUser(result)
+//           })
+//           .catch(() => {
+//             setUser(null)
+//           })
+//       }
+//     }
+//   }, [userId])
+//   return user
+// }
 
 export function useUsers(userIds: string[]) {
   const [users, setUsers] = useState<(DisplayUser | null)[] | undefined>(

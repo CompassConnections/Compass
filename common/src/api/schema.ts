@@ -1,9 +1,4 @@
-import {
-  contentSchema,
-  combinedProfileSchema,
-  baseProfilesSchema,
-  arraybeSchema, zBoolean,
-} from 'common/api/zod-types'
+import {arraybeSchema, baseProfilesSchema, combinedProfileSchema, contentSchema, zBoolean,} from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
@@ -12,7 +7,7 @@ import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
 import {z} from 'zod'
 import {LikeData, ShipData} from './profile-types'
-import {DisplayUser, FullUser} from './user-types'
+import {FullUser} from './user-types'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Notification} from 'common/notifications'
 import {arrify} from 'common/util/array'
@@ -36,6 +31,10 @@ type APIGenericSchema = {
   returns?: Record<string, any>
   // Cache-Control header. like, 'max-age=60'
   cache?: string
+  // Description of the endpoint
+  summary?: string
+  // Tag for grouping endpoints in documentation
+  tag?: string
 }
 
 let _apiTypeCheck: { [x: string]: APIGenericSchema }
@@ -47,6 +46,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: false,
     props: z.object({}),
     returns: {} as { message: 'Server is working.'; uid?: string },
+    summary: 'Check whether the API server is running',
+    tag: 'General',
   },
   'get-supabase-token': {
     method: 'GET',
@@ -54,24 +55,69 @@ export const API = (_apiTypeCheck = {
     rateLimited: false,
     props: z.object({}),
     returns: {} as { jwt: string },
+    summary: 'Return a Supabase JWT for authenticated clients',
+    tag: 'Tokens',
   },
   'mark-all-notifs-read': {
     method: 'POST',
     authed: true,
     rateLimited: false,
     props: z.object({}),
+    summary: 'Mark all user notifications as read',
+    tag: 'Notifications',
   },
+  // 'user/:username': {
+  //   method: 'GET',
+  //   authed: false,
+  //   rateLimited: false,
+  //   cache: DEFAULT_CACHE_STRATEGY,
+  //   returns: {} as FullUser,
+  //   props: z.object({username: z.string()}).strict(),
+  //   summary: 'Get full public profile by username',
+  // },
+  // 'user/:username/lite': {
+  //   method: 'GET',
+  //   authed: false,
+  //   rateLimited: false,
+  //   cache: DEFAULT_CACHE_STRATEGY,
+  //   returns: {} as DisplayUser,
+  //   props: z.object({username: z.string()}).strict(),
+  //   summary: 'Get lightweight public profile by username',
+  // },
+  'user/by-id/:id': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    cache: DEFAULT_CACHE_STRATEGY,
+    returns: {} as FullUser,
+    props: z.object({id: z.string()}).strict(),
+    summary: 'Get full profile by user ID',
+    tag: 'Users',
+  },
+  // 'user/by-id/:id/lite': {
+  //   method: 'GET',
+  //   authed: false,
+  //   rateLimited: false,
+  //   cache: DEFAULT_CACHE_STRATEGY,
+  //   returns: {} as DisplayUser,
+  //   props: z.object({id: z.string()}).strict(),
+  //   summary: 'Get lightweight profile by user ID',
+  // },
   'user/by-id/:id/block': {
     method: 'POST',
     authed: true,
     rateLimited: false,
     props: z.object({id: z.string()}).strict(),
+    summary: 'Block a user by their ID',
+    tag: 'Users',
   },
   'user/by-id/:id/unblock': {
     method: 'POST',
     authed: true,
     rateLimited: false,
     props: z.object({id: z.string()}).strict(),
+    summary: 'Unblock a user by their ID',
+    tag: 'Users',
   },
   'ban-user': {
     method: 'POST',
@@ -83,9 +129,10 @@ export const API = (_apiTypeCheck = {
         unban: z.boolean().optional(),
       })
       .strict(),
+    summary: 'Ban or unban a user',
+    tag: 'Admin',
   },
   'create-user': {
-    // TODO rest
     method: 'POST',
     authed: true,
     rateLimited: true,
@@ -96,6 +143,8 @@ export const API = (_apiTypeCheck = {
         adminToken: z.string().optional(),
       })
       .strict(),
+    summary: 'Create a new user (admin or onboarding flow)',
+    tag: 'Users',
   },
   'create-profile': {
     method: 'POST',
@@ -103,6 +152,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     returns: {} as Row<'profiles'>,
     props: baseProfilesSchema,
+    summary: 'Create a new profile for the authenticated user',
+    tag: 'Profiles',
   },
   report: {
     method: 'POST',
@@ -119,6 +170,8 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     returns: {} as any,
+    summary: 'Submit a report for content or a user',
+    tag: 'Moderation',
   },
   me: {
     method: 'GET',
@@ -127,6 +180,8 @@ export const API = (_apiTypeCheck = {
     cache: DEFAULT_CACHE_STRATEGY,
     props: z.object({}),
     returns: {} as FullUser,
+    summary: 'Get the authenticated user full data',
+    tag: 'Users',
   },
   'me/update': {
     method: 'POST',
@@ -155,6 +210,8 @@ export const API = (_apiTypeCheck = {
       discordHandle: z.string().optional(),
     }),
     returns: {} as FullUser,
+    summary: 'Update authenticated user profile and settings',
+    tag: 'Users',
   },
   'update-profile': {
     method: 'POST',
@@ -162,6 +219,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: combinedProfileSchema.partial(),
     returns: {} as ProfileRow,
+    summary: 'Update profile fields for the authenticated user',
+    tag: 'Profiles',
   },
   'update-notif-settings': {
     method: 'POST',
@@ -172,6 +231,8 @@ export const API = (_apiTypeCheck = {
       medium: z.enum(['email', 'browser', 'mobile']),
       enabled: z.boolean(),
     }),
+    summary: 'Update a notification preference for the user',
+    tag: 'Notifications',
   },
   'me/delete': {
     method: 'POST',
@@ -180,6 +241,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       username: z.string(), // just so you're sure
     }),
+    summary: 'Delete the authenticated user account',
+    tag: 'Users',
   },
   'me/private': {
     method: 'GET',
@@ -187,38 +250,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: false,
     props: z.object({}),
     returns: {} as PrivateUser,
-  },
-  'user/:username': {
-    method: 'GET',
-    authed: false,
-    rateLimited: false,
-    cache: DEFAULT_CACHE_STRATEGY,
-    returns: {} as FullUser,
-    props: z.object({username: z.string()}).strict(),
-  },
-  'user/:username/lite': {
-    method: 'GET',
-    authed: false,
-    rateLimited: false,
-    cache: DEFAULT_CACHE_STRATEGY,
-    returns: {} as DisplayUser,
-    props: z.object({username: z.string()}).strict(),
-  },
-  'user/by-id/:id': {
-    method: 'GET',
-    authed: false,
-    rateLimited: false,
-    cache: DEFAULT_CACHE_STRATEGY,
-    returns: {} as FullUser,
-    props: z.object({id: z.string()}).strict(),
-  },
-  'user/by-id/:id/lite': {
-    method: 'GET',
-    authed: false,
-    rateLimited: false,
-    cache: DEFAULT_CACHE_STRATEGY,
-    returns: {} as DisplayUser,
-    props: z.object({id: z.string()}).strict(),
+    summary: 'Get private user data for the authenticated user',
+    tag: 'Users',
   },
   'search-users': {
     method: 'GET',
@@ -233,6 +266,8 @@ export const API = (_apiTypeCheck = {
         page: z.coerce.number().gte(0).default(0),
       })
       .strict(),
+    summary: 'Search users by term with pagination',
+    tag: 'Users',
   },
   'compatible-profiles': {
     method: 'GET',
@@ -246,6 +281,8 @@ export const API = (_apiTypeCheck = {
         [userId: string]: CompatibilityScore
       }
     },
+    summary: 'Find profiles compatible with a given user',
+    tag: 'Profiles',
   },
   'remove-pinned-photo': {
     method: 'POST',
@@ -257,6 +294,8 @@ export const API = (_apiTypeCheck = {
         userId: z.string(),
       })
       .strict(),
+    summary: 'Remove the pinned photo from a profile',
+    tag: 'Profiles',
   },
   'get-compatibility-questions': {
     method: 'GET',
@@ -270,6 +309,8 @@ export const API = (_apiTypeCheck = {
         score: number
       })[]
     },
+    summary: 'Retrieve compatibility questions and stats',
+    tag: 'Compatibility',
   },
   'like-profile': {
     method: 'POST',
@@ -282,6 +323,8 @@ export const API = (_apiTypeCheck = {
     returns: {} as {
       status: 'success'
     },
+    summary: 'Like or unlike a profile',
+    tag: 'Profiles',
   },
   'ship-profiles': {
     method: 'POST',
@@ -295,6 +338,8 @@ export const API = (_apiTypeCheck = {
     returns: {} as {
       status: 'success'
     },
+    summary: 'Create or remove a ship between two profiles',
+    tag: 'Profiles',
   },
   'get-likes-and-ships': {
     method: 'GET',
@@ -311,6 +356,8 @@ export const API = (_apiTypeCheck = {
       likesGiven: LikeData[]
       ships: ShipData[]
     },
+    summary: 'Fetch likes and ships for a user',
+    tag: 'Profiles',
   },
   'has-free-like': {
     method: 'GET',
@@ -321,6 +368,8 @@ export const API = (_apiTypeCheck = {
       status: 'success'
       hasFreeLike: boolean
     },
+    summary: 'Check whether the user has a free like available',
+    tag: 'Profiles',
   },
   'star-profile': {
     method: 'POST',
@@ -333,6 +382,8 @@ export const API = (_apiTypeCheck = {
     returns: {} as {
       status: 'success'
     },
+    summary: 'Star or unstar a profile',
+    tag: 'Profiles',
   },
   'get-profiles': {
     method: 'GET',
@@ -374,16 +425,8 @@ export const API = (_apiTypeCheck = {
       status: 'success' | 'fail'
       profiles: Profile[]
     },
-  },
-  'get-profile-answers': {
-    method: 'GET',
-    authed: true,
-    rateLimited: true,
-    props: z.object({userId: z.string()}).strict(),
-    returns: {} as {
-      status: 'success'
-      answers: Row<'compatibility_answers'>[]
-    },
+    summary: 'List profiles with filters, pagination and ordering',
+    tag: 'Profiles',
   },
   'create-comment': {
     method: 'POST',
@@ -395,6 +438,8 @@ export const API = (_apiTypeCheck = {
       replyToCommentId: z.string().optional(),
     }),
     returns: {} as any,
+    summary: 'Create a comment or reply',
+    tag: 'Profiles',
   },
   'hide-comment': {
     method: 'POST',
@@ -405,6 +450,8 @@ export const API = (_apiTypeCheck = {
       hide: z.boolean(),
     }),
     returns: {} as any,
+    summary: 'Hide or unhide a comment',
+    tag: 'Profiles',
   },
   'get-channel-memberships': {
     method: 'GET',
@@ -420,6 +467,8 @@ export const API = (_apiTypeCheck = {
       channels: [] as PrivateMessageChannel[],
       memberIdsByChannelId: {} as { [channelId: string]: string[] },
     },
+    summary: 'List private message channel memberships',
+    tag: 'Messages',
   },
   'get-channel-messages': {
     method: 'GET',
@@ -431,6 +480,8 @@ export const API = (_apiTypeCheck = {
       id: z.coerce.number().optional(),
     }),
     returns: [] as PrivateChatMessage[],
+    summary: 'Retrieve messages for a private channel',
+    tag: 'Messages',
   },
   'get-channel-seen-time': {
     method: 'GET',
@@ -443,6 +494,8 @@ export const API = (_apiTypeCheck = {
         .transform(arrify),
     }),
     returns: [] as [number, string][],
+    summary: 'Get last seen times for one or more channels',
+    tag: 'Messages',
   },
   'set-channel-seen-time': {
     method: 'POST',
@@ -451,12 +504,16 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       channelId: z.coerce.number(),
     }),
+    summary: 'Set last seen time for a channel',
+    tag: 'Messages',
   },
   'set-last-online-time': {
     method: 'POST',
     authed: true,
     rateLimited: false,
     props: z.object({}),
+    summary: 'Update the user last online timestamp',
+    tag: 'Users',
   },
   'get-notifications': {
     method: 'GET',
@@ -469,6 +526,8 @@ export const API = (_apiTypeCheck = {
         limit: z.coerce.number().gte(0).lte(1000).default(100),
       })
       .strict(),
+    summary: 'Fetch notifications for the authenticated user',
+    tag: 'Notifications',
   },
   'create-private-user-message': {
     method: 'POST',
@@ -479,6 +538,8 @@ export const API = (_apiTypeCheck = {
       content: contentSchema,
       channelId: z.number(),
     }),
+    summary: 'Send a message in a private channel',
+    tag: 'Messages',
   },
   'create-private-user-message-channel': {
     method: 'POST',
@@ -488,6 +549,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       userIds: z.array(z.string()),
     }),
+    summary: 'Create a new private message channel between users',
+    tag: 'Messages',
   },
   'update-private-user-message-channel': {
     method: 'POST',
@@ -498,6 +561,8 @@ export const API = (_apiTypeCheck = {
       channelId: z.number(),
       notifyAfterTime: z.number(),
     }),
+    summary: 'Update settings for a private message channel',
+    tag: 'Messages',
   },
   'leave-private-user-message-channel': {
     method: 'POST',
@@ -507,6 +572,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       channelId: z.number(),
     }),
+    summary: 'Leave a private message channel',
+    tag: 'Messages',
   },
   'create-compatibility-question': {
     method: 'POST',
@@ -517,6 +584,8 @@ export const API = (_apiTypeCheck = {
       question: z.string().min(1).max(MAX_COMPATIBILITY_QUESTION_LENGTH),
       options: z.record(z.string(), z.number()),
     }),
+    summary: 'Create a new compatibility question with options',
+    tag: 'Compatibility',
   },
   'set-compatibility-answer': {
     method: 'POST',
@@ -532,6 +601,20 @@ export const API = (_apiTypeCheck = {
         explanation: z.string().nullable().optional(),
       })
       .strict(),
+    summary: 'Submit or update a compatibility answer',
+    tag: 'Compatibility',
+  },
+  'get-profile-answers': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as {
+      status: 'success'
+      answers: Row<'compatibility_answers'>[]
+    },
+    summary: 'Get compatibility answers for a profile',
+    tag: 'Compatibility',
   },
   'create-vote': {
     method: 'POST',
@@ -543,6 +626,8 @@ export const API = (_apiTypeCheck = {
       isAnonymous: z.boolean(),
       description: contentSchema,
     }),
+    summary: 'Create a new vote/poll',
+    tag: 'Votes',
   },
   'vote': {
     method: 'POST',
@@ -554,6 +639,8 @@ export const API = (_apiTypeCheck = {
       priority: z.number(),
       choice: z.enum(['for', 'abstain', 'against']),
     }),
+    summary: 'Cast a vote on an existing poll',
+    tag: 'Votes',
   },
   'search-location': {
     method: 'POST',
@@ -564,6 +651,8 @@ export const API = (_apiTypeCheck = {
       term: z.string(),
       limit: z.number().optional(),
     }),
+    summary: 'Search for a location by text',
+    tag: 'Locations',
   },
   'search-near-city': {
     method: 'POST',
@@ -574,6 +663,8 @@ export const API = (_apiTypeCheck = {
       cityId: z.string(),
       radius: z.number().min(1).max(500),
     }),
+    summary: 'Find places near a GeoDB city ID within a radius',
+    tag: 'Locations',
   },
   'contact': {
     method: 'POST',
@@ -584,6 +675,8 @@ export const API = (_apiTypeCheck = {
       content: contentSchema,
       userId: z.string().optional(),
     }),
+    summary: 'Send a contact/support message',
+    tag: 'Contact',
   },
   'get-messages-count': {
     method: 'GET',
@@ -591,6 +684,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: false,
     props: z.object({}),
     returns: {} as { count: number },
+    summary: 'Get the total number of messages (public endpoint)',
+    tag: 'Messages',
   },
   'save-subscription': {
     method: 'POST',
@@ -600,6 +695,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       subscription: z.record(z.any())
     }),
+    summary: 'Save a push/browser subscription for the user',
+    tag: 'Notifications',
   },
   'create-bookmarked-search': {
     method: 'POST',
@@ -612,6 +709,8 @@ export const API = (_apiTypeCheck = {
         location: z.any().optional(),
         search_name: z.string().nullable().optional(),
       }),
+    summary: 'Create a bookmarked search for quick reuse',
+    tag: 'Searches',
   },
   'delete-bookmarked-search': {
     method: 'POST',
@@ -621,6 +720,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       id: z.number(),
     }),
+    summary: 'Delete a bookmarked search by ID',
+    tag: 'Searches',
   },
 } as const)
 

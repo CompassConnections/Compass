@@ -56,11 +56,11 @@ export const AddPhotosWidget = (props: {
       <Row className="flex-wrap gap-2">
         <label
           className={clsx(
-            'bg-ink-200 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[100px] w-[100px]  cursor-pointer flex-col items-center rounded-md transition-colors'
+            'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[100px] w-[100px]  cursor-pointer flex-col items-center rounded-md transition-colors'
           )}
           htmlFor="photo-upload"
         >
-          <PlusIcon className=" mx-auto my-auto h-16 w-16" />
+          <PlusIcon className=" mx-auto my-auto h-16 w-16 text-gray-500" />
         </label>
         {uniq(buildArray(pinned_url, photo_urls))?.map((url, index) => {
           const isPinned = url === pinned_url

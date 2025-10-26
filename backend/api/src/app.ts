@@ -464,33 +464,35 @@ swaggerDocument.paths["/internal/send-search-notifications"] = {
   },
 } as any
 
+
 // Local Endpoints
-app.post(pathWithPrefix("/local/send-test-email"),
-  async (req, res) => {
-    if (!IS_LOCAL) {
-      return res.status(401).json({error: "Unauthorized"});
-    }
+if (IS_LOCAL) {
+  app.post(pathWithPrefix("/local/send-test-email"),
+    async (req, res) => {
+      if (!IS_LOCAL) {
+        return res.status(401).json({error: "Unauthorized"});
+      }
 
-    try {
-      const result = await localSendTestEmail()
-      return res.status(200).json(result)
-    } catch (err) {
-      return res.status(500).json({error: err});
+      try {
+        const result = await localSendTestEmail()
+        return res.status(200).json(result)
+      } catch (err) {
+        return res.status(500).json({error: err});
+      }
     }
-  }
-);
-
-swaggerDocument.paths["/local/send-test-email"] = {
-  post: {
-    summary: "Send a test email",
-    description: "Local endpoint to send a test email.",
-    tags: ["Local"],
-    requestBody: {
-      required: false,
+  );
+  swaggerDocument.paths["/local/send-test-email"] = {
+    post: {
+      summary: "Send a test email",
+      description: "Local endpoint to send a test email.",
+      tags: ["Local"],
+      requestBody: {
+        required: false,
+      },
+      responses: responses,
     },
-    responses: responses,
-  },
-} as any
+  } as any
+}
 
 
 const rootPath = pathWithPrefix("/")

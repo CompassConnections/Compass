@@ -66,7 +66,9 @@ export default function WhatsNew() {
                   </span>
                 </div>
                 <div className="mt-4 prose text-ink-1000">
-                  <ReactMarkdown>{release.body || "_No release notes provided._"}</ReactMarkdown>
+                  <ReactMarkdown>
+                    {formatPullLinks(release.body || "_No release notes provided._")}
+                  </ReactMarkdown>
                 </div>
                 <Link href={release.html_url}>View on GitHub</Link>
               </div>
@@ -76,3 +78,15 @@ export default function WhatsNew() {
     </PageBase>
   )
 }
+
+function formatPullLinks(text = "") {
+  return text
+    .replace('CompassMeet', 'CompassConnections')
+    .replace(
+    /https:\/\/github\.com\/CompassConnections\/Compass\/pull\/(\d+)/g,
+    (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`)
+    .replace(
+      /https:\/\/github\.com\/CompassConnections\/Compass\/compare\/([\w.-]+\.\.\.[\w.-]+)/g,
+      (_, range) => `[${range}](https://github.com/CompassConnections/Compass/compare/${range})`)
+}
+

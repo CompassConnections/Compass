@@ -4,10 +4,9 @@ import {Row as rowFor} from 'common/supabase/utils'
 import {Content} from 'web/components/widgets/editor'
 import {JSONContent} from '@tiptap/core'
 import {VoteButtons} from 'web/components/votes/vote-buttons'
-import {getVoteCreator} from "web/lib/supabase/votes";
-import {useEffect, useState} from "react";
 import Link from "next/link";
 import {STATUS_CHOICES} from "common/votes/constants";
+import {useUserInStore} from "web/hooks/use-user-supabase";
 
 export type Vote = rowFor<'votes'> & {
   votes_for: number
@@ -17,15 +16,22 @@ export type Vote = rowFor<'votes'> & {
   status?: string
 }
 
+function Username(props: {
+  creatorId: string
+}) {
+  const {creatorId} = props
+  const creator = useUserInStore(creatorId)
+  return <>
+    {creator?.username &&
+        <Link href={`/${creator.username}`} className="custom-link">{creator.username}</Link>}
+  </>;
+}
+
 export function VoteItem(props: {
   vote: Vote
   onVoted?: () => void | Promise<void>
 }) {
   const {vote, onVoted} = props
-  const [creator, setCreator] = useState<any>(null)
-  useEffect(() => {
-    getVoteCreator(vote.creator_id).then(setCreator)
-  }, [vote.creator_id])
   // console.debug('creator', creator, vote)
   return (
     <Col className={'mb-4 rounded-lg border border-canvas-200 p-4'}>
@@ -37,8 +43,7 @@ export function VoteItem(props: {
           </Col>
           <Row className={'gap-2 mt-2 items-center justify-between w-full custom-link flex-wrap'}>
             {!!vote.priority ? <div>Priority: {vote.priority.toFixed(0)}%</div> : <p></p>}
-            {!vote.is_anonymous && creator?.username &&
-                <Link href={`/${creator.username}`} className="custom-link">{creator.username}</Link>}
+            {!vote.is_anonymous && <Username creatorId={vote.creator_id}/>}
           </Row>
         </Col>
       </Row>

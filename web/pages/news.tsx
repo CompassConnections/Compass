@@ -65,7 +65,7 @@ export default function WhatsNew() {
                     {new Date(release.published_at).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="mt-4 prose text-ink-1000">
+                <div className="mt-4 prose prose-neutral dark:prose-invert text-ink-1000">
                   <ReactMarkdown>
                     {formatPullLinks(release.body || "_No release notes provided._")}
                   </ReactMarkdown>

@@ -1,10 +1,11 @@
 export const MIN_INT = Number.MIN_SAFE_INTEGER
 export const MAX_INT = Number.MAX_SAFE_INTEGER
 
-export const supportEmail = 'hello@compassmeet.com';
-// export const marketingEmail = 'hello@compassmeet.com';
+export const supportEmail = 'hello@compassmeet.com'
+// export const marketingEmail = 'hello@compassmeet.com'
 
-export const githubRepo = "https://github.com/CompassConnections/Compass";
+export const githubRepoSlug = "CompassConnections/Compass"
+export const githubRepo = `https://github.com/${githubRepoSlug}`
 export const githubIssues = `${githubRepo}/issues`
 
 export const paypalLink = "https://www.paypal.com/paypalme/CompassConnections"
@@ -16,9 +17,9 @@ export const redditLink = "https://www.reddit.com/r/CompassConnect"
 export const xLink = "https://x.com/compassmeet"
 export const formLink = "https://forms.gle/tKnXUMAbEreMK6FC6"
 
-export const pStyle = "mt-1 text-gray-800 dark:text-white whitespace-pre-line";
+export const pStyle = "mt-1 text-gray-800 dark:text-white whitespace-pre-line"
 
-export const IS_MAINTENANCE = false; // set to true to enable maintenance mode banner
+export const IS_MAINTENANCE = false // set to true to enable the maintenance mode banner
 
-export const MIN_BIO_LENGTH = 250;
+export const MIN_BIO_LENGTH = 250
 

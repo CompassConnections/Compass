@@ -1,4 +1,4 @@
-import {HomeIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {HomeIcon, NewspaperIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
 import {
   GlobeAltIcon,
   HomeIcon as SolidHomeIcon,
@@ -117,11 +117,13 @@ const Social = {name: 'Social', href: '/social', icon: LinkIcon};
 const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon};
 const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp};
 const Contact = {name: 'Contact', href: '/contact', icon: FaEnvelope};
+const News = {name: "What's new", href: '/news', icon: NewspaperIcon};
 
 const base = [
   About,
   faq,
   Vote,
+  News,
   Social,
   Organization,
   Contact,

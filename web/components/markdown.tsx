@@ -27,6 +27,16 @@ const MarkdownLink = ({href, children}: { href?: string; children: React.ReactNo
   )
 }
 
+export const CompassMarkdown = ({children}: { children: string }) => {
+  return <ReactMarkdown
+    components={{
+      a: ({node: _node, children, ...props}) => <MarkdownLink {...props}>{children}</MarkdownLink>
+    }}
+  >
+    {children}
+  </ReactMarkdown>
+}
+
 export default function MarkdownPage({content, filename}: Props) {
   const title = /[A-Z]/.test(filename) ? filename : capitalize(filename)
   return (
@@ -38,12 +48,7 @@ export default function MarkdownPage({content, filename}: Props) {
       />
       <Col className="items-center mb-8">
         <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
-          <ReactMarkdown
-            components={{
-              a: ({node: _node, children, ...props}) => <MarkdownLink {...props}>{children}</MarkdownLink>
-            }}
-          >{content}
-          </ReactMarkdown>
+          <CompassMarkdown>{content}</CompassMarkdown>
         </Col>
       </Col>
     </PageBase>

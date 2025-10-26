@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react"
 import axios from "axios"
-import ReactMarkdown from "react-markdown"
 import {PageBase} from "web/components/page-base"
 import {SEO} from "web/components/SEO"
 import {Col} from "web/components/layout/col"
@@ -8,6 +7,7 @@ import {Title} from "web/components/widgets/title"
 import Link from "next/link"
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
 import {githubRepoSlug} from "common/constants";
+import {CompassMarkdown} from "web/components/markdown";
 
 type Release = {
   id: number
@@ -66,9 +66,9 @@ export default function WhatsNew() {
                   </span>
                 </div>
                 <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
-                  <ReactMarkdown>
+                  <CompassMarkdown>
                     {formatPullLinks(release.body || "_No release notes provided._")}
-                  </ReactMarkdown>
+                  </CompassMarkdown>
                 </div>
                 <Link href={release.html_url}>View on GitHub</Link>
               </div>
@@ -83,8 +83,8 @@ function formatPullLinks(text = "") {
   return text
     .replace('CompassMeet', 'CompassConnections')
     .replace(
-    /https:\/\/github\.com\/CompassConnections\/Compass\/pull\/(\d+)/g,
-    (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`)
+      /https:\/\/github\.com\/CompassConnections\/Compass\/pull\/(\d+)/g,
+      (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`)
     .replace(
       /\**Full Changelog\**: https:\/\/github\.com\/CompassConnections\/Compass\/compare\/([\w.-]+\.\.\.[\w.-]+)/g,
       '')

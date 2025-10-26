@@ -114,19 +114,6 @@ Yes. Compass exposes a **public API** for developers who want to build tools, in
 
 You can explore or test the API at [api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new endpoints or suggest improvements.
 
-### How can I help?
-
-* **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
-* **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
-* **Vote on proposals**: [vote here](/vote)
-* **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
-* **Donate**: [Support the infrastructure](/support)
-* **Spread the Word**: Tell friends and family who value depth and real connection.
-
-### How can I contact the community?
-
-You can reach us through the [contact form](/contact), the [feedback form](https://forms.gle/tKnXUMAbEreMK6FC6), or any of our [socials](/social).
-
 ### How fast is Compass growing?
 
 Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/stats). It includes information such as:
@@ -154,3 +141,16 @@ Our goal is for Compass to become what Linux is for software, Wikipedia is for k
 Our focus is now toward **gathering feedback**, **growing the community** and **securing donations** to sustain and expand the platform.
 
 Every action, whether sharing, donating, or contributing, directly helps Compass remain **ad-free, subscription-free, and community-owned**.
+
+### How can I help?
+
+* **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
+* **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
+* **Vote on proposals**: [vote here](/vote)
+* **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
+* **Donate**: [Support the infrastructure](/support)
+* **Spread the Word**: Tell friends and family who value depth and real connection. Post about it on forums, social media, etc. Share the URL or this [QR code](/referrals).
+
+### How can I contact the community?
+
+You can reach us through the [contact form](/contact), the [feedback form](https://forms.gle/tKnXUMAbEreMK6FC6), or any of our [socials](/social).

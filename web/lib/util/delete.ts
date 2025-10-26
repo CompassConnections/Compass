@@ -5,7 +5,7 @@ import posthog from "posthog-js";
 import {clearUserCookie} from "web/components/auth-context";
 
 export async function deleteAccount(username: string) {
-  track('delete profile')
+  track('delete account')
   await api('me/delete', {username})
   await firebaseLogout()
   clearUserCookie()

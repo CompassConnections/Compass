@@ -36,7 +36,7 @@ export default function MarkdownPage({content, filename}: Props) {
         description={title}
         url={`/` + filename}
       />
-      <Col className="items-center">
+      <Col className="items-center mb-8">
         <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
           <ReactMarkdown
             components={{

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import axios from "axios"
 import ReactMarkdown from "react-markdown"
 import {PageBase} from "web/components/page-base"

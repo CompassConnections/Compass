@@ -59,7 +59,7 @@ function MobileFilters(props: {
   )
 
   return (
-    <Col>
+    <Col className="mb-4">
       <Row>
         <Col className="p-4 pb-2">
           <MyMatchesToggle

@@ -16,7 +16,7 @@ import {Vote, VoteItem} from 'web/components/votes/vote-item'
 import Link from "next/link";
 import {formLink} from "common/constants";
 import { ShowMore } from "../widgets/show-more";
-import {ORDER_BY, Constants, OrderBy} from "common/votes/constants";
+import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from "common/votes/constants";
 
 export function VoteComponent() {
   const user = useUser()
@@ -48,7 +48,7 @@ export function VoteComponent() {
           >
             {ORDER_BY.map((key) => (
               <option key={key} value={key}>
-                {Constants[key]}
+                {ORDER_BY_CHOICES[key]}
               </option>
             ))}
           </select>

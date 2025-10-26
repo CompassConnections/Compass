@@ -17,7 +17,7 @@ export default function VotePage() {
       className={'relative p-2 sm:pt-0'}
     >
       <SEO
-        title={`Votes`}
+        title={`Proposals`}
         description={'A place to vote on decisions'}
         url={`/vote`}
       />

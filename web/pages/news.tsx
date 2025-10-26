@@ -65,7 +65,7 @@ export default function WhatsNew() {
                     {new Date(release.published_at).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="mt-4 prose prose-neutral dark:prose-invert text-ink-1000">
+                <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
                   <ReactMarkdown>
                     {formatPullLinks(release.body || "_No release notes provided._")}
                   </ReactMarkdown>
@@ -86,7 +86,7 @@ function formatPullLinks(text = "") {
     /https:\/\/github\.com\/CompassConnections\/Compass\/pull\/(\d+)/g,
     (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`)
     .replace(
-      /https:\/\/github\.com\/CompassConnections\/Compass\/compare\/([\w.-]+\.\.\.[\w.-]+)/g,
-      (_, range) => `[${range}](https://github.com/CompassConnections/Compass/compare/${range})`)
+      /\**Full Changelog\**: https:\/\/github\.com\/CompassConnections\/Compass\/compare\/([\w.-]+\.\.\.[\w.-]+)/g,
+      '')
 }
 

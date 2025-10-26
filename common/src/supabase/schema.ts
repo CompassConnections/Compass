@@ -945,6 +945,7 @@ export type Database = {
           description: Json | null
           id: number
           is_anonymous: boolean | null
+          status: string | null
           title: string
         }
         Insert: {
@@ -953,6 +954,7 @@ export type Database = {
           description?: Json | null
           id?: never
           is_anonymous?: boolean | null
+          status?: string | null
           title: string
         }
         Update: {
@@ -961,6 +963,7 @@ export type Database = {
           description?: Json | null
           id?: never
           is_anonymous?: boolean | null
+          status?: string | null
           title?: string
         }
         Relationships: [
@@ -1009,6 +1012,7 @@ export type Database = {
           id: number
           is_anonymous: boolean
           priority: number
+          status: string
           title: string
           votes_abstain: number
           votes_against: number

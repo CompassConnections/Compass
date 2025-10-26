@@ -42,13 +42,14 @@ export function VoteButtons(props: {
   counts: { for: number; abstain: number; against: number }
   onVoted?: () => void | Promise<void>
   className?: string
+  disabled?: boolean
 }) {
+  const {voteId, counts, onVoted, className, disabled: disabledProp} = props
   const user = useUser()
-  const {voteId, counts, onVoted, className} = props
   const [loading, setLoading] = useState<VoteChoice | null>(null)
   const [showPriority, setShowPriority] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const disabled = loading !== null
+  const disabled = disabledProp || loading !== null
 
   // Close the dropdown when clicking outside or pressing Escape
   useEffect(() => {

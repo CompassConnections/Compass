@@ -18,6 +18,7 @@ export const createVote: APIHandler<
       title,
       description,
       is_anonymous: isAnonymous,
+      status: 'voting_open',
     })
   )
 

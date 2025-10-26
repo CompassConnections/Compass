@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS votes (
     creator_id TEXT NOT NULL,
     title TEXT NOT NULL,
     is_anonymous BOOLEAN NOT NULL,
-    description JSONB
+    description JSONB,
+    status TEXT
 );
 
 -- Foreign Keys

@@ -23,6 +23,7 @@ import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 import {deleteAccount} from "web/lib/util/delete";
 import toast from "react-hot-toast";
 import {StarButton} from "web/components/widgets/star-button";
+import {disableProfile} from "web/lib/util/disable";
 
 export default function ProfileHeader(props: {
   user: User
@@ -47,12 +48,14 @@ export default function ProfileHeader(props: {
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
+  const disabled = profile.disabled
 
   console.debug('ProfileProfileHeader', {user, profile, userActivity, currentUser})
 
   return (
     <Col className="w-full">
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
+        {currentUser && isCurrentUser && disabled && <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
         <Row className="items-center gap-1">
           <Col className="gap-1">
             <Row className="items-center gap-1 text-xl">
@@ -128,6 +131,33 @@ export default function ProfileHeader(props: {
                         })
                         .then(() => {
                           // return true
+                        })
+                        .catch(() => {
+                          // return false
+                        })
+                    }
+                  },
+                },
+                {
+                  name: disabled ? 'Enable profile' : 'Disable profile',
+                  icon: null,
+                  onClick: async () => {
+                    const confirmed = true // confirm(
+                    //   'Are you sure you want to disable your profile? This will hide your profile from searches and listings..'
+                    // )
+                    if (confirmed) {
+                      toast
+                        .promise(disableProfile(!disabled), {
+                          loading: disabled ? 'Enabling profile...' : 'Disabling profile...',
+                          success: () => {
+                            return `Profile ${disabled ? 'enabled' : 'disabled'}`
+                          },
+                          error: () => {
+                            return `Failed to ${disabled ? 'enable' : 'disable'} profile`
+                          },
+                        })
+                        .then(() => {
+                          refreshProfile()
                         })
                         .catch(() => {
                           // return false

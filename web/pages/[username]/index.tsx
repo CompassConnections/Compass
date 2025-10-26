@@ -158,18 +158,31 @@ function UserPageInner(props: ActiveUserPageProps) {
   const fromSignup = query.fromSignup === 'true'
 
   const currentUser = useUser()
-  // const isCurrentUser = currentUser?.id === user?.id
+  const isCurrentUser = currentUser?.id === user?.id
 
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
-  useTracking('viewprofile', {username: user?.username})
+  useTracking('view profile', {username: user?.username})
 
   const [staticProfile] = useState(
     props.profile && user ? {...props.profile, user: user} : null
   )
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
-  // Show previous profile while loading another one
+  // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
   // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
+
+  if (!isCurrentUser && profile?.disabled) {
+    return <PageBase
+      trackPageView={'user page'}
+      className={'relative p-2 sm:pt-0'}
+    >
+      <Col className="items-center justify-center h-full">
+        <div className="text-xl font-semibold text-center mt-8">
+          The user disabled their profile.
+        </div>
+      </Col>
+    </PageBase>
+  }
 
   return (
     <PageBase

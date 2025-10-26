@@ -541,6 +541,7 @@ export type Database = {
           country: string | null
           created_time: string
           diet: string[] | null
+          disabled: boolean
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
@@ -591,6 +592,7 @@ export type Database = {
           country?: string | null
           created_time?: string
           diet?: string[] | null
+          disabled?: boolean
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
@@ -641,6 +643,7 @@ export type Database = {
           country?: string | null
           created_time?: string
           diet?: string[] | null
+          disabled?: boolean
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null

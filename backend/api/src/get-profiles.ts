@@ -118,6 +118,7 @@ export const loadProfiles = async (props: profileQueryType) => {
           (has_kids == 0 && !l.has_kids) ||
           (l.has_kids && l.has_kids > 0)) &&
         (is_smoker === undefined || l.is_smoker === is_smoker) &&
+        (!l.disabled) &&
         (l.id.toString() != skipId) &&
         (!geodbCityIds ||
           (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
@@ -149,6 +150,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     join('users on users.id = profiles.user_id'),
     leftJoin(userActivityJoin),
     where('looking_for_matches = true'),
+    where(`profiles.disabled != true`),
     // where(`pinned_url is not null and pinned_url != ''`),
     where(
       `(data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)`

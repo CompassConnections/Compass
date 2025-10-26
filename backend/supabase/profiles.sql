@@ -1,4 +1,3 @@
-
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_visibility') THEN
@@ -53,6 +52,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     visibility profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
     wants_kids_strength INTEGER DEFAULT 0 NOT NULL,
     website TEXT,
+    disabled BOOLEAN DEFAULT FALSE NOT NULL,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
     );
 

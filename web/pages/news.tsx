@@ -4,10 +4,10 @@ import {PageBase} from "web/components/page-base"
 import {SEO} from "web/components/SEO"
 import {Col} from "web/components/layout/col"
 import {Title} from "web/components/widgets/title"
-import Link from "next/link"
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
 import {githubRepoSlug} from "common/constants";
-import {CompassMarkdown} from "web/components/markdown";
+import {CustomMarkdown} from "web/components/markdown";
+import {CustomLink} from "web/components/links";
 
 type Release = {
   id: number
@@ -66,11 +66,11 @@ export default function WhatsNew() {
                   </span>
                 </div>
                 <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
-                  <CompassMarkdown>
+                  <CustomMarkdown>
                     {formatPullLinks(release.body || "_No release notes provided._")}
-                  </CompassMarkdown>
+                  </CustomMarkdown>
                 </div>
-                <Link href={release.html_url}>View on GitHub</Link>
+                <CustomLink href={release.html_url}>View on GitHub</CustomLink>
               </div>
             ))}
           </Col>

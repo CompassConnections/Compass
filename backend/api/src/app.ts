@@ -67,6 +67,7 @@ import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
 import {getUser} from "api/get-user";
 import {IS_LOCAL} from "common/envs/constants";
 import {localSendTestEmail} from "api/test";
+import path from "node:path";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -500,9 +501,12 @@ app.get(
   rootPath,
   swaggerUi.setup(swaggerDocument, {
     customSiteTitle: 'Compass API Docs',
+    customCssUrl: '/swagger.css',
   }),
 )
 app.use(rootPath, swaggerUi.serve)
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(allowCorsUnrestricted, (req, res) => {
   if (req.method === 'OPTIONS') {

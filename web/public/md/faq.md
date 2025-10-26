@@ -2,6 +2,10 @@
 
 Compass is a **gift from the community** — built by its members like you who care about deep, meaningful connections. Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
 
+## What’s New?
+
+Stay up to date with the latest releases, features, and improvements [here](/news).
+
 ### What is Compass?
 
 Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes **values, interests, and personality over swipes and ads**, giving you full control over who you discover and how you connect.

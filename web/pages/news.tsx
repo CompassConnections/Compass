@@ -38,7 +38,11 @@ export default function WhatsNew(props: { releases: Release[] }) {
     <PageBase trackPageView={'news'} className={'mx-4'}>
       <SEO
         title={"What's new"}
-        description={'All news and code updates'}
+        description={
+          releases.length
+            ? `See the latest updates and features: ${releases[0].name}`
+            : 'All news and code updates for Compass'
+        }
         url={`/news`}
       />
       <Title className="text-3xl">What's New</Title>

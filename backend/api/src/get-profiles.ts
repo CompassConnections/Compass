@@ -89,7 +89,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     const profiles = compatibleProfiles.filter(
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
-        (!genders || genders.includes(l.gender)) &&
+        (!genders || genders.includes(l.gender ?? '')) &&
         (!education_levels || education_levels.includes(l.education_level ?? '')) &&
         (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
         (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&

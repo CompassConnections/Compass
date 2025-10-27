@@ -55,9 +55,9 @@ export default function ProfileHeader(props: {
   return (
     <Col className="w-full">
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
-        {currentUser && isCurrentUser && disabled && <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
         <Row className="items-center gap-1">
           <Col className="gap-1">
+            {currentUser && isCurrentUser && disabled && <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
             <Row className="items-center gap-1 text-xl">
               {!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}
               <span>

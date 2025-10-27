@@ -533,7 +533,7 @@ export type Database = {
           bio_text: string | null
           bio_tsv: unknown
           born_in_location: string | null
-          city: string
+          city: string | null
           city_latitude: number | null
           city_longitude: number | null
           comments_enabled: boolean
@@ -545,7 +545,7 @@ export type Database = {
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
-          gender: string
+          gender: string | null
           geodb_city_id: string | null
           has_kids: number | null
           height_in_inches: number | null
@@ -562,8 +562,8 @@ export type Database = {
           political_details: string | null
           pref_age_max: number | null
           pref_age_min: number | null
-          pref_gender: string[]
-          pref_relation_styles: string[]
+          pref_gender: string[] | null
+          pref_relation_styles: string[] | null
           pref_romantic_styles: string[] | null
           referred_by_username: string | null
           region_code: string | null
@@ -574,7 +574,7 @@ export type Database = {
           university: string | null
           user_id: string
           visibility: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength: number
+          wants_kids_strength: number | null
           website: string | null
         }
         Insert: {
@@ -584,7 +584,7 @@ export type Database = {
           bio_text?: string | null
           bio_tsv?: unknown
           born_in_location?: string | null
-          city: string
+          city?: string | null
           city_latitude?: number | null
           city_longitude?: number | null
           comments_enabled?: boolean
@@ -596,7 +596,7 @@ export type Database = {
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
-          gender: string
+          gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
@@ -613,8 +613,8 @@ export type Database = {
           political_details?: string | null
           pref_age_max?: number | null
           pref_age_min?: number | null
-          pref_gender: string[]
-          pref_relation_styles: string[]
+          pref_gender?: string[] | null
+          pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
@@ -625,7 +625,7 @@ export type Database = {
           university?: string | null
           user_id: string
           visibility?: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength?: number
+          wants_kids_strength?: number | null
           website?: string | null
         }
         Update: {
@@ -635,7 +635,7 @@ export type Database = {
           bio_text?: string | null
           bio_tsv?: unknown
           born_in_location?: string | null
-          city?: string
+          city?: string | null
           city_latitude?: number | null
           city_longitude?: number | null
           comments_enabled?: boolean
@@ -647,7 +647,7 @@ export type Database = {
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
-          gender?: string
+          gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
           height_in_inches?: number | null
@@ -664,8 +664,8 @@ export type Database = {
           political_details?: string | null
           pref_age_max?: number | null
           pref_age_min?: number | null
-          pref_gender?: string[]
-          pref_relation_styles?: string[]
+          pref_gender?: string[] | null
+          pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
@@ -676,7 +676,7 @@ export type Database = {
           university?: string | null
           user_id?: string
           visibility?: Database['public']['Enums']['lover_visibility']
-          wants_kids_strength?: number
+          wants_kids_strength?: number | null
           website?: string | null
         }
         Relationships: [

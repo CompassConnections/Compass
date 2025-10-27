@@ -17,7 +17,7 @@ import {Races} from './race'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
 import {ProfileRow} from 'common/profiles/profile'
-import {removeNullOrUndefinedProps} from 'common/util/object'
+import {removeUndefinedProps} from 'common/util/object'
 import {isEqual, range} from 'lodash'
 import {PlatformSelect} from 'web/components/widgets/platform-select'
 import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
@@ -32,7 +32,8 @@ import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
   POLITICAL_CHOICES,
-  RELATIONSHIP_CHOICES, RELIGION_CHOICES,
+  RELATIONSHIP_CHOICES,
+  RELIGION_CHOICES,
   ROMANTIC_CHOICES
 } from "web/components/filters/choices";
 import toast from "react-hot-toast";
@@ -70,10 +71,10 @@ export const OptionalProfileUserForm = (props: {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const {bio: _, ...otherProfileProps} = profile
-    console.debug('otherProfileProps', removeNullOrUndefinedProps(otherProfileProps))
+    const {bio: _bio, bio_text: _bio_text, bio_tsv: _bio_tsv, bio_length: _bio_length, ...otherProfileProps} = profile
+    console.debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
     const {error} = await tryCatch(
-      updateProfile(removeNullOrUndefinedProps(otherProfileProps) as any)
+      updateProfile(removeUndefinedProps(otherProfileProps) as any)
     )
     if (error) {
       console.error(error)

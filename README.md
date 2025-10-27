@@ -7,8 +7,6 @@
 
 This repository contains the source code for [Compass](https://compassmeet.com) — an open platform for forming deep, authentic 1-on-1 connections with clarity and efficiency.
 
-**We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help our community thrive!
-
 ## Features
 
 - Extremely detailed profiles for deep connections
@@ -21,9 +19,7 @@ This repository contains the source code for [Compass](https://compassmeet.com) 
 You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and the [FAQ](https://www.compassmeet.com/faq) as well.
 A detailed description of the early vision is also available in this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass shifted to a more general audience).
 
-<p style="text-align: center;">
-  <img src="https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fdemo_compass.gif?alt=media&token=e3ae4334-4e3f-4026-b121-c08b4b724cd1" alt="Compass Demo" width="600">
-</p>
+**We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help our community thrive!
 
 ## To Do
 

@@ -82,4 +82,4 @@ export const initialFilters: Partial<FilterFields> = {
 
 export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]
 
-export type OriginLocation = { id: string; name: string, lat: number, lon: number }
+export type OriginLocation = { id: string; name: string | null, lat: number, lon: number }

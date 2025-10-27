@@ -1,7 +1,7 @@
 import { filterDefined } from 'common/util/array'
 
 export default function stringOrStringArrayToText(fields: {
-  text: string[] | string
+  text: string[] | string | null | undefined
   preText?: string
   postText?: string
   asSentence?: boolean

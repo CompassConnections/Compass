@@ -11,7 +11,7 @@ function isDigitString(value: string): boolean {
 
 export type City = {
   geodb_city_id: string
-  city: string
+  city: string | null
   region_code: string
   country: string
   country_code: string

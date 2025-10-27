@@ -113,9 +113,9 @@ function Seeking(props: { profile: Profile }) {
   const max = profile.pref_age_max
   const seekingGenderText = stringOrStringArrayToText({
     text:
-      prefGender.length == 5
+      prefGender?.length == 5
         ? ['people']
-        : prefGender.map((gender) => convertGenderPlural(gender as Gender)),
+        : prefGender?.map((gender) => convertGenderPlural(gender as Gender)),
     preText: 'Interested in',
     asSentence: true,
     capitalizeFirstLetterOption: false,
@@ -150,7 +150,7 @@ function RelationshipType(props: { profile: Profile }) {
   const {profile} = props
   const relationshipTypes = profile.pref_relation_styles
   let seekingGenderText = stringOrStringArrayToText({
-    text: relationshipTypes.map((rel) =>
+    text: relationshipTypes?.map((rel) =>
       convertRelationshipType(rel as RelationshipType).toLowerCase()
     ).sort(),
     preText: 'Seeking',
@@ -161,7 +161,7 @@ function RelationshipType(props: { profile: Profile }) {
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
-  if (relationshipTypes.includes('relationship')) {
+  if (relationshipTypes?.includes('relationship')) {
     const romanticStyles = profile.pref_romantic_styles
       ?.map((style) => REVERTED_ROMANTIC_CHOICES[style].toLowerCase())
       .filter(Boolean)

@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useRef, useState} from 'react'
+import {Fragment, useRef, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
@@ -112,10 +112,6 @@ export const OptionalProfileUserForm = (props: {
     }
   }
 
-  const [trans, setTrans] = useState<boolean | undefined>(
-    profile['gender'].includes('trans')
-  )
-
   function setProfileCity(inputCity: City | undefined) {
     if (!inputCity) {
       setProfile('geodb_city_id', null)
@@ -141,17 +137,6 @@ export const OptionalProfileUserForm = (props: {
       setProfile('city_longitude', city_longitude)
     }
   }
-
-  useEffect(() => {
-    const currentState = profile['gender']
-    if (currentState === 'non-binary') {
-      setTrans(undefined)
-    } else if (trans && !currentState.includes('trans-')) {
-      setProfile('gender', 'trans-' + currentState.replace('trans-', ''))
-    } else if (!trans && currentState.includes('trans-')) {
-      setProfile('gender', currentState.replace('trans-', ''))
-    }
-  }, [trans, profile['gender']])
 
   return (
     <>
@@ -214,7 +199,7 @@ export const OptionalProfileUserForm = (props: {
           <Col className={'gap-1'}>
             <label className={clsx(labelClassName)}>Gender</label>
             <ChoicesToggleGroup
-              currentChoice={profile['gender'].replace('trans-', '')}
+              currentChoice={profile['gender']}
               choicesMap={{
                 Woman: 'female',
                 Man: 'male',
@@ -233,7 +218,7 @@ export const OptionalProfileUserForm = (props: {
               Men: 'male',
               Other: 'other',
             }}
-            selected={profile['pref_gender']}
+            selected={profile['pref_gender'] || []}
             onChange={(selected) => setProfile('pref_gender', selected)}
           />
         </Col>
@@ -282,7 +267,7 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx(labelClassName)}>Connection type</label>
           <MultiCheckbox
             choices={RELATIONSHIP_CHOICES}
-            selected={profile['pref_relation_styles']}
+            selected={profile['pref_relation_styles'] || []}
             onChange={(selected) => {
               setProfile('pref_relation_styles', selected)
               setLookingRelationship((selected || []).includes('relationship'))

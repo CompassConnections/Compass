@@ -49,8 +49,8 @@ function MobileFilters(props: {
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
 
-  function hasAny(filterArray: any[] | undefined) {
-    return filterArray && filterArray.length > 0
+  function hasAny(filterArray: any[] | undefined | null): boolean {
+    return !!filterArray && filterArray.length > 0
   }
 
   const [noMinAge, noMaxAge] = getNoMinMaxAge(

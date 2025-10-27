@@ -69,7 +69,7 @@ export const useFilters = (you: Profile | undefined) => {
     education_levels: you?.education_level ? [you.education_level] : undefined,
     pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
     pref_age_min: (you?.pref_age_min ?? MIN_INT) > 18 ? you?.pref_age_min : undefined,
-    pref_relation_styles: you?.pref_relation_styles.length ? you.pref_relation_styles : undefined,
+    pref_relation_styles: you?.pref_relation_styles?.length ? you.pref_relation_styles : undefined,
     pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
     diet: you?.diet?.length ? you.diet : undefined,
     political_beliefs: you?.political_beliefs?.length ? you.political_beliefs : undefined,

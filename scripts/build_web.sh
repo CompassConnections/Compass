@@ -25,6 +25,14 @@ cat "$WEB_ENV"
 
 cd web
 
+rm -rf .next
+
 yarn build
 
+rm -rf .next/cache
 
+cd ..
+
+npx cap copy android
+npx cap sync android
+npx cap open android

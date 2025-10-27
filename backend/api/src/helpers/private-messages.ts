@@ -18,8 +18,6 @@ import {parseJsonContentToText} from "common/util/parse"
 import {encryptMessage} from "shared/encryption"
 import * as admin from 'firebase-admin'
 
-const fcm = admin.messaging()
-
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -307,6 +305,8 @@ export async function sendPushToToken(token: string, payload: PushPayload) {
     },
     data: payload.data, // optional custom key-value pairs
   }
+  // Fine to create at each call, as it's a cached singleton
+  const fcm = admin.messaging()
 
   try {
     console.log('Sending notification to:', token, payload)

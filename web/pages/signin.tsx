@@ -116,7 +116,7 @@ function RegisterComponent() {
     }
   }
 
-  console.debug('Form rendering');
+  // console.debug('Form rendering');
   return (
     <PageBase trackPageView={'signin'}>
       <SEO

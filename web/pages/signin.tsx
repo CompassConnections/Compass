@@ -1,48 +1,48 @@
-"use client";
+"use client"
 
-import {useSearchParams} from "next/navigation";
-import React, {Suspense, useEffect, useState} from "react";
-import Link from "next/link";
-import {auth, firebaseLogin} from "web/lib/firebase/users";
-import FavIcon from "web/public/FavIcon";
+import {useSearchParams} from "next/navigation"
+import React, {Suspense, useEffect, useState} from "react"
+import Link from "next/link"
+import {auth, firebaseLogin} from "web/lib/firebase/users"
+import FavIcon from "web/public/FavIcon"
 
-import {signInWithEmailAndPassword} from "firebase/auth";
-import {getProfileRow} from "common/profiles/profile";
-import {db} from "web/lib/supabase/db";
-import Router from "next/router";
-import {PageBase} from "web/components/page-base";
-import {useUser} from "web/hooks/use-user";
-import {GoogleButton} from "web/components/buttons/sign-up-button";
-import {SEO} from "web/components/SEO";
+import {signInWithEmailAndPassword} from "firebase/auth"
+import {getProfileRow} from "common/profiles/profile"
+import {db} from "web/lib/supabase/db"
+import Router from "next/router"
+import {PageBase} from "web/components/page-base"
+import {useUser} from "web/hooks/use-user"
+import {GoogleButton} from "web/components/buttons/sign-up-button"
+import {SEO} from "web/components/SEO"
 
 export default function LoginPage() {
   return (
     <Suspense fallback={<div></div>}>
       <RegisterComponent/>
     </Suspense>
-  );
+  )
 }
 
 function RegisterComponent() {
-  const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [_, setIsLoadingGoogle] = useState(false);
+  const searchParams = useSearchParams()
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [_, setIsLoadingGoogle] = useState(false)
   const user = useUser()
 
   useEffect(() => {
-    const error = searchParams.get('error');
+    const error = searchParams.get('error')
     if (error === 'OAuthAccountNotLinked') {
-      setError('This email is already registered with a different provider');
+      setError('This email is already registered with a different provider')
     } else if (error) {
-      setError('An error occurred during login');
+      setError('An error occurred during login')
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   useEffect(() => {
     const checkAndRedirect = async () => {
       if (user) {
-        console.debug("User signed in:", user);
+        console.debug("User signed in:", user)
         try {
           const profile = await getProfileRow(user.id, db)
           if (profile) {
@@ -51,18 +51,18 @@ function RegisterComponent() {
             await Router.push('/signup')
           }
         } catch (error) {
-          console.error("Error fetching profile profile:", error);
+          console.error("Error fetching profile profile:", error)
         }
-        setIsLoading(false);
-        setIsLoadingGoogle(false);
+        setIsLoading(false)
+        setIsLoadingGoogle(false)
       }
     }
     checkAndRedirect()
-  }, [user]);
+  }, [user])
 
   const handleGoogleSignIn = async () => {
-    setIsLoadingGoogle(true);
-    setError(null);
+    setIsLoadingGoogle(true)
+    setError(null)
     try {
       const creds = await firebaseLogin();
       if (creds) {
@@ -70,53 +70,53 @@ function RegisterComponent() {
         setIsLoadingGoogle(true);
       }
     } catch (error) {
-      console.error("Error signing in:", error);
-      const message = 'Failed to sign in with Google';
-      setError(message);
-      setIsLoading(false);
-      setIsLoadingGoogle(false);
-    }
-  };
-
-  const handleEmailPasswordSignIn = async (email: string, password: string) => {
-    try {
-      const creds = await signInWithEmailAndPassword(auth, email, password);
-      console.debug(creds)
-    } catch (error) {
-      console.error("Error signing in:", error);
-      const message = 'Failed to sign in with your email and password';
-      setError(message);
-      setIsLoading(false);
-      setIsLoadingGoogle(false);
-    }
-  };
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    try {
-      event.preventDefault();
-      setIsLoading(true);
-      setError(null);
-
-      const formData = new FormData(event.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      await handleEmailPasswordSignIn(email, password);
-
-      // if (response?.error) {
-      //   setError("Invalid email or password");
-      //   setIsLoading(false);
-      //   return;
-      // }
-
-      // router.push("/");
-      // router.refresh();
-    } catch {
-      setError("An error occurred during login");
-      setIsLoading(false);
+      console.error("Error signing in:", error)
+      const message = 'Failed to sign in with Google'
+      setError(message)
+      setIsLoading(false)
+      setIsLoadingGoogle(false)
     }
   }
 
-  // console.debug('Form rendering');
+  const handleEmailPasswordSignIn = async (email: string, password: string) => {
+    try {
+      const creds = await signInWithEmailAndPassword(auth, email, password)
+      console.debug(creds)
+    } catch (error) {
+      console.error("Error signing in:", error)
+      const message = 'Failed to sign in with your email and password'
+      setError(message)
+      setIsLoading(false)
+      setIsLoadingGoogle(false)
+    }
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    try {
+      event.preventDefault()
+      setIsLoading(true)
+      setError(null)
+
+      const formData = new FormData(event.currentTarget)
+      const email = formData.get("email") as string
+      const password = formData.get("password") as string
+      await handleEmailPasswordSignIn(email, password)
+
+      // if (response?.error) {
+      //   setError("Invalid email or password")
+      //   setIsLoading(false)
+      //   return
+      // }
+
+      // router.push("/")
+      // router.refresh()
+    } catch {
+      setError("An error occurred during login")
+      setIsLoading(false)
+    }
+  }
+
+  // console.debug('Form rendering')
   return (
     <PageBase trackPageView={'signin'}>
       <SEO
@@ -199,5 +199,5 @@ function RegisterComponent() {
         </div>
       </div>
     </PageBase>
-  );
+  )
 }

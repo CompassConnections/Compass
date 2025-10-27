@@ -10,7 +10,8 @@ import '../styles/globals.css'
 import {Major_Mono_Display} from 'next/font/google'
 import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
-import PushSubscriber from "web/lib/service/notifications";
+import WebPush from "web/lib/service/web-push";
+import AndroidPush from "web/lib/service/android-push";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -111,7 +112,8 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
           )}
         >
           <AuthProvider serverUser={pageProps.auth}>
-            <PushSubscriber/>
+            <WebPush/>
+            <AndroidPush/>
             <Component {...pageProps} />
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}

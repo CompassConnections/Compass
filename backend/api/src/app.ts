@@ -68,6 +68,7 @@ import {getUser} from "api/get-user";
 import {IS_LOCAL} from "common/envs/constants";
 import {localSendTestEmail} from "api/test";
 import path from "node:path";
+import {saveSubscriptionMobile} from "api/save-subscription-mobile";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -354,6 +355,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-messages-count': getMessagesCount,
   'set-last-online-time': setLastOnlineTime,
   'save-subscription': saveSubscription,
+  'save-subscription-mobile': saveSubscriptionMobile,
   'create-bookmarked-search': createBookmarkedSearch,
   'delete-bookmarked-search': deleteBookmarkedSearch,
 }

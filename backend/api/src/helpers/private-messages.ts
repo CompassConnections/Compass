@@ -13,9 +13,12 @@ import {sendNewMessageEmail} from 'email/functions/helpers'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import webPush from 'web-push';
-import {parseJsonContentToText} from "common/util/parse";
-import {encryptMessage} from "shared/encryption";
+import webPush from 'web-push'
+import {parseJsonContentToText} from "common/util/parse"
+import {encryptMessage} from "shared/encryption"
+import * as admin from 'firebase-admin'
+
+const fcm = admin.messaging()
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -29,17 +32,17 @@ export const leaveChatContent = (userName: string) => ({
     },
   ],
 })
-export const joinChatContent = (userName: string) => {
-  return {
-    type: 'doc',
-    content: [
-      {
-        type: 'paragraph',
-        content: [{text: `${userName} joined the chat!`, type: 'text'}],
-      },
-    ],
-  }
-}
+// export const joinChatContent = (userName: string) => {
+//   return {
+//     type: 'doc',
+//     content: [
+//       {
+//         type: 'paragraph',
+//         content: [{text: `${userName} joined the chat!`, type: 'text'}],
+//       },
+//     ],
+//   }
+// }
 
 export const insertPrivateMessage = async (
   content: Json,
@@ -48,8 +51,8 @@ export const insertPrivateMessage = async (
   visibility: ChatVisibility,
   pg: SupabaseDirectClient
 ) => {
-  const plaintext = JSON.stringify(content);
-  const {ciphertext, iv, tag} = encryptMessage(plaintext);
+  const plaintext = JSON.stringify(content)
+  const {ciphertext, iv, tag} = encryptMessage(plaintext)
   const lastMessage = await pg.one(
     `insert into private_user_messages (ciphertext, iv, tag, channel_id, user_id, visibility)
      values ($1, $2, $3, $4, $5, $6)
@@ -134,7 +137,7 @@ export const createPrivateUserMessageMain = async (
   void notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)
     .catch((err) => {
       console.error('notifyOtherUserInChannelIfInactive failed', err)
-    });
+    })
 
   track(creator.id, 'send private message', {
     channelId,
@@ -162,49 +165,24 @@ const notifyOtherUserInChannelIfInactive = async (
   // We're only sending notifs for 1:1 channels
   if (!otherUserIds || otherUserIds.length > 1) return
 
-  const otherUserId = first(otherUserIds)
-  if (!otherUserId) return
+  const receiverId = first(otherUserIds)?.user_id
+  if (!receiverId) return
 
   // TODO: notification only for active user
 
-  const otherUser = await getUser(otherUserId.user_id)
-  console.debug('otherUser:', otherUser)
-  if (!otherUser) return
+  const receiver = await getUser(receiverId)
+  console.debug('receiver:', receiver)
+  if (!receiver) return
 
-  // Push notif
-  webPush.setVapidDetails(
-    'mailto:hello@compassmeet.com',
-    process.env.VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-  );
+  // Push notifs
   const textContent = parseJsonContentToText(content)
-  // Retrieve subscription from the database
-  const subscriptions = await getSubscriptionsFromDB(otherUser.id, pg);
-  for (const subscription of subscriptions) {
-    try {
-      const payload = JSON.stringify({
-        title: `${creator.name}`,
-        body: textContent,
-        url: `/messages/${channelId}`,
-      })
-      console.log('Sending notification to:', subscription.endpoint, payload);
-      await webPush.sendNotification(subscription, payload);
-    } catch (err: any) {
-      console.log('Failed to send notification', err);
-      if (err.statusCode === 410 || err.statusCode === 404) {
-        console.warn('Removing expired subscription', subscription.endpoint);
-        await pg.none(
-          `DELETE
-           FROM push_subscriptions
-           WHERE endpoint = $1
-             AND user_id = $2`,
-          [subscription.endpoint, otherUser.id]
-        );
-      } else {
-        console.error('Push failed', err);
-      }
-    }
+  const payload = {
+    title: `${creator.name}`,
+    body: textContent,
+    url: `/messages/${channelId}`,
   }
+  await sendWebNotifications(pg, receiverId, JSON.stringify(payload))
+  await sendMobileNotifications(pg, receiverId, payload)
 
   const startOfDay = dayjs()
     .tz('America/Los_Angeles')
@@ -222,7 +200,7 @@ const notifyOtherUserInChannelIfInactive = async (
   log('previous messages this day', previousMessagesThisDayBetweenTheseUsers)
   if (previousMessagesThisDayBetweenTheseUsers.count > 1) return
 
-  await createNewMessageNotification(creator, otherUser, channelId)
+  await createNewMessageNotification(creator, receiver, channelId)
 }
 
 const createNewMessageNotification = async (
@@ -237,9 +215,38 @@ const createNewMessageNotification = async (
 }
 
 
-export async function getSubscriptionsFromDB(
+async function sendWebNotifications(
+  pg: SupabaseDirectClient,
   userId: string,
-  pg: SupabaseDirectClient
+  payload: string,
+) {
+  webPush.setVapidDetails(
+    'mailto:hello@compassmeet.com',
+    process.env.VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  )
+  // Retrieve subscription from the database
+  const subscriptions = await getSubscriptionsFromDB(pg, userId)
+  for (const subscription of subscriptions) {
+    try {
+      console.log('Sending notification to:', subscription.endpoint, payload)
+      await webPush.sendNotification(subscription, payload)
+    } catch (err: any) {
+      console.log('Failed to send notification', err)
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        console.warn('Removing expired subscription', subscription.endpoint)
+        await removeSubscription(pg, subscription.endpoint, userId)
+      } else {
+        console.error('Push failed', err)
+      }
+    }
+  }
+}
+
+
+export async function getSubscriptionsFromDB(
+  pg: SupabaseDirectClient,
+  userId: string,
 ) {
   try {
     const subscriptions = await pg.manyOrNone(`
@@ -247,14 +254,87 @@ export async function getSubscriptionsFromDB(
                 from push_subscriptions
                 where user_id = $1
       `, [userId]
-    );
+    )
 
     return subscriptions.map(sub => ({
       endpoint: sub.endpoint,
       keys: sub.keys,
-    }));
+    }))
   } catch (err) {
-    console.error('Error fetching subscriptions', err);
-    return [];
+    console.error('Error fetching subscriptions', err)
+    return []
+  }
+}
+
+async function removeSubscription(
+  pg: SupabaseDirectClient,
+  endpoint: any,
+  userId: string,
+) {
+  await pg.none(
+    `DELETE
+     FROM push_subscriptions
+     WHERE endpoint = $1
+       AND user_id = $2`,
+    [endpoint, userId]
+  )
+}
+
+
+async function sendMobileNotifications(
+  pg: SupabaseDirectClient,
+  userId: string,
+  payload: PushPayload,
+) {
+  const subscriptions = await getMobileSubscriptionsFromDB(pg, userId)
+  for (const subscription of subscriptions) {
+    await sendPushToToken(subscription.token, payload)
+  }
+}
+
+interface PushPayload {
+  title: string
+  body: string
+  data?: Record<string, string>
+}
+
+export async function sendPushToToken(token: string, payload: PushPayload) {
+  const message = {
+    token,
+    notification: {
+      title: payload.title,
+      body: payload.body,
+    },
+    data: payload.data, // optional custom key-value pairs
+  }
+
+  try {
+    console.log('Sending notification to:', token, payload)
+    const response = await fcm.send(message)
+    console.log('Push sent successfully:', response)
+    return response
+  } catch (err) {
+    console.error('Error sending push:', err)
+  }
+  return
+}
+
+
+export async function getMobileSubscriptionsFromDB(
+  pg: SupabaseDirectClient,
+  userId: string,
+) {
+  try {
+    const subscriptions = await pg.manyOrNone(`
+                select token
+                from push_subscriptions_mobile
+                where user_id = $1
+      `, [userId]
+    )
+
+    return subscriptions
+  } catch (err) {
+    console.error('Error fetching subscriptions', err)
+    return []
   }
 }

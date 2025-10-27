@@ -699,6 +699,17 @@ export const API = (_apiTypeCheck = {
     summary: 'Save a push/browser subscription for the user',
     tag: 'Notifications',
   },
+  'save-subscription-mobile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      token: z.string(),
+    }),
+    summary: 'Save a mobile push subscription for the user',
+    tag: 'Notifications',
+  },
   'create-bookmarked-search': {
     method: 'POST',
     authed: true,

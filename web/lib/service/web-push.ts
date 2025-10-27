@@ -5,13 +5,12 @@ import {useUser} from "web/hooks/use-user";
 
 const vapidPublicKey = 'BF80q7LrDa4a5ksS2BZrX6PPvL__y0jCNvNqyUzvk8Y4ofTdrS0kRnKfGpClCQAHWmcPHIUmWq8jgQ4ROquSpJQ'
 
-export default function PushSubscriber() {
+export default function WebPush() {
   const user = useUser(); // authenticated user
-
+  const isWeb = typeof window !== 'undefined' && 'serviceWorker' in navigator;
   useEffect(() => {
-    console.log('PushSubscriber', user, 'serviceWorker' in navigator)
-    if (!user) return; // only subscribe logged-in users
-    if (!('serviceWorker' in navigator)) return;
+    if (!user?.id || !isWeb) return;
+    console.log('WebPush', user)
 
     const registerPush = async () => {
       navigator.serviceWorker
@@ -37,7 +36,7 @@ export default function PushSubscriber() {
             applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
           })
 
-          // Send subscription to server
+          // Send subscription to backend
           const {data} = await api('save-subscription', {subscription})
           console.log('Subscription saved:', data)
         })
@@ -48,7 +47,7 @@ export default function PushSubscriber() {
     };
 
     registerPush()
-  }, [user?.id])
+  }, [user?.id, isWeb])
 
-  return null; // component doesn't render anything
+  return null
 }

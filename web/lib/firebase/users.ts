@@ -1,18 +1,16 @@
-import { type User } from 'common/user'
+import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {
-  GoogleAuthProvider,
-  OAuthProvider,
-  getAuth,
-  signInWithPopup,
-} from 'firebase/auth'
-import { safeLocalStorage } from '../util/local'
-import { app } from './init'
+import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, signInWithPopup,} from 'firebase/auth'
+
+import {safeLocalStorage} from '../util/local'
+import {app} from './init'
+import {SocialLogin} from "@capgo/capacitor-social-login";
+import {Capacitor} from "@capacitor/core";
 
 dayjs.extend(utc)
 
-export type { User }
+export type {User}
 
 export const auth = getAuth(app)
 
@@ -31,7 +29,7 @@ export function writeReferralInfo(
 ) {
   const local = safeLocalStorage
   const cachedReferralUser = local?.getItem(CACHED_REFERRAL_USERNAME_KEY)
-  const { explicitReferrer } = otherOptions || {}
+  const {explicitReferrer} = otherOptions || {}
 
   // Write the first referral username we see.
   if (!cachedReferralUser) {
@@ -47,7 +45,45 @@ export function writeReferralInfo(
   }
 }
 
+
+export async function googleNativeLogin() {
+  await SocialLogin.initialize({
+    google: {
+      webClientId: '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com',        // Required for Android and Web
+      // iOSClientId: 'YOUR_IOS_CLIENT_ID',        // Required for iOS
+      // iOSServerClientId: 'YOUR_WEB_CLIENT_ID',  // Required for iOS offline mode and server authorization (same as webClientId)
+      mode: 'online',  // 'online' or 'offline'
+    }
+  });
+  // Run the native Google OAuth
+  const result: any = await SocialLogin.login({provider: 'google', options: {}})
+
+  console.log('result', result)
+
+  // Extract the tokens from the native result
+  const idToken = result?.result?.idToken
+  const accessToken = result?.result?.accessToken?.token
+
+  if (!idToken) {
+    throw new Error('No idToken returned from Google login')
+  }
+
+  // Create a Firebase credential from the Google tokens
+  const credential = GoogleAuthProvider.credential(idToken, accessToken)
+
+  // Sign in with Firebase using the credential
+  const userCredential = await signInWithCredential(auth, credential)
+
+  console.log('Firebase user:', userCredential.user)
+
+  return userCredential
+}
+
+
 export async function firebaseLogin() {
+  if (Capacitor.isNativePlatform()) {
+    return await googleNativeLogin()
+  }
   const provider = new GoogleAuthProvider()
   return signInWithPopup(auth, provider).then(async (result) => {
     return result

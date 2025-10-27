@@ -150,7 +150,7 @@ Every action, whether sharing, donating, or contributing, directly helps Compass
 
 * **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
 * **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
-* **Vote on proposals**: [vote here](/vote)
+* **Make and vote on proposals**: [vote here](/vote)
 * **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
 * **Donate**: [Support the infrastructure](/support)
 * **Spread the Word**: Tell friends and family who value depth and real connection. Post about it on forums, social media, etc. Share the URL or this [QR code](/referrals).

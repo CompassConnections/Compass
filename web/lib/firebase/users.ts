@@ -6,7 +6,6 @@ import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, signIn
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
 import {SocialLogin} from "@capgo/capacitor-social-login";
-import {Capacitor} from "@capacitor/core";
 
 dayjs.extend(utc)
 
@@ -79,11 +78,14 @@ export async function googleNativeLogin() {
   return userCredential
 }
 
+export const isRunningInAPK = () => typeof window !== 'undefined' && (window as any).IS_APK === true
 
 export async function firebaseLogin() {
-  if (Capacitor.isNativePlatform()) {
+  if (isRunningInAPK()) {
+    console.log('Running in APK')
     return await googleNativeLogin()
   }
+  console.log('Running in web')
   const provider = new GoogleAuthProvider()
   return signInWithPopup(auth, provider).then(async (result) => {
     return result

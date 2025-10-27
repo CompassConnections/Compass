@@ -24,6 +24,7 @@
     "postinstall": "./scripts/post_install.sh"
   },
   "dependencies": {
+    "@capacitor/core": "7.4.4",
     "@playwright/test": "^1.54.2",
     "colorette": "^2.0.20",
     "prismjs": "^1.30.0",
@@ -32,6 +33,7 @@
     "react-markdown": "*"
   },
   "devDependencies": {
+    "@capacitor/cli": "7.4.4",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",

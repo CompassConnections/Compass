@@ -16,6 +16,7 @@
     "dev": "./scripts/run_local.sh dev",
     "prod": "./scripts/run_local.sh prod",
     "clean-install": "./scripts/install.sh",
+    "build-web": "./scripts/build_web.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "jest",
     "test:watch": "jest --watch",

@@ -6,6 +6,7 @@ import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, signIn
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
 import {SocialLogin} from "@capgo/capacitor-social-login";
+import {Capacitor} from "@capacitor/core";
 
 dayjs.extend(utc)
 
@@ -55,6 +56,10 @@ export async function googleNativeLogin() {
     }
   });
   console.log('Done initializing SocialLogin')
+
+  console.log('Platform:', Capacitor.getPlatform())
+  console.log('URL origin:', window.location.origin)
+
   // Run the native Google OAuth
   const result: any = await SocialLogin.login({provider: 'google', options: {}})
 

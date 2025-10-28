@@ -55,8 +55,10 @@ export function isAndroidWebView() {
 }
 
 
-
 export async function googleNativeLogin() {
+  console.log('Platform:', Capacitor.getPlatform())
+  console.log('URL origin:', window.location.origin)
+
   await SocialLogin.initialize({
     google: {
       webClientId: '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com',        // Required for Android and Web
@@ -66,9 +68,6 @@ export async function googleNativeLogin() {
     }
   });
   console.log('Done initializing SocialLogin')
-
-  console.log('Platform:', Capacitor.getPlatform())
-  console.log('URL origin:', window.location.origin)
 
   // Run the native Google OAuth
   const result: any = await SocialLogin.login({provider: 'google', options: {}})

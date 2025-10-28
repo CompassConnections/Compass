@@ -54,6 +54,7 @@ export async function googleNativeLogin() {
       mode: 'online',  // 'online' or 'offline'
     }
   });
+  console.log('Done initializing SocialLogin')
   // Run the native Google OAuth
   const result: any = await SocialLogin.login({provider: 'google', options: {}})
 

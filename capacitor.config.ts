@@ -9,7 +9,8 @@ const config: CapacitorConfig = {
   webDir: 'web/.next',
   server: {
     url: LOCAL_ANDROID ? "http://10.0.2.2:3000" : 'https://compassmeet.com',
-    cleartext: true
+    cleartext: true,
+    "allowNavigation": ["www.compassmeet.com"],
   },
 };
 

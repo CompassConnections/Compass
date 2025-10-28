@@ -5,6 +5,17 @@ A hybrid mobile app built with **Next.js (TypeScript)** frontend, **Firebase bac
 Right now it's just a webview wrapper around the web application, but in the future it may
 contain native code as well.
 
+/!\ This is still a work in progress, as google sign in does not work yet. Most of the issue is that Google doesn't allow to sign in inside the webview for security reasons. 
+
+We could sign in in a browser with signInWithRedirect and then redirect to the webview, but I haven't found a way to make it come back to the app and store the token. 
+
+We could also use a native sign in with SocialLogin, but it only runs on local assets, not on the webview that loads the remote sign-in page. So one way would be to force the webview to load the local assets, but it's not a clean solution and I haven't found a way to do it yet.
+
+Third solution is to implement a native app, not using webview, in React Native.
+
+If you can make it work, please contribute!
+
+
 This document describes how to:
 1. Build and run the web frontend and backend locally  
 2. Sync and build the Android WebView wrapper  
@@ -101,7 +112,7 @@ npx cap sync android
 
 ### Load from site
 
-During local development, open Android Studio project and run the app on an emulator or your physical device.
+During local development, open Android Studio project and run the app on an emulator or your physical device. Note that right now you can't use a physical device for the local web version (`10.0.2.2:3000 time out` )
 
 ```
 npx cap open android

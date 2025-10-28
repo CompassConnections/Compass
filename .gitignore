@@ -87,3 +87,5 @@ email-preview
 *.terraform
 /backups/firebase/auth/data/
 /backups/firebase/storage/data/
+
+android/app/release*

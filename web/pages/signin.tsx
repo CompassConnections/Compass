@@ -65,6 +65,7 @@ function RegisterComponent() {
     setError(null)
     try {
       const creds = await firebaseLogin();
+      console.debug('creds', creds)
       if (creds) {
         setIsLoading(true)
         setIsLoadingGoogle(true);

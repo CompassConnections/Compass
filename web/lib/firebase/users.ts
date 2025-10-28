@@ -1,7 +1,7 @@
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, signInWithPopup,} from 'firebase/auth'
+import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, signInWithPopup, signInWithRedirect} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
@@ -45,6 +45,16 @@ export function writeReferralInfo(
   }
 }
 
+export function isAndroidWebView() {
+  try {
+    // Detect if Android bridge exists
+    return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
+  } catch {
+    return false;
+  }
+}
+
+
 
 export async function googleNativeLogin() {
   await SocialLogin.initialize({
@@ -87,9 +97,10 @@ export async function googleNativeLogin() {
 export const isRunningInAPK = () => typeof window !== 'undefined' && (window as any).IS_APK === true
 
 export async function firebaseLogin() {
-  if (isRunningInAPK()) {
+  if (isAndroidWebView()) {
     console.log('Running in APK')
     return await googleNativeLogin()
+    // return await signInWithRedirect(auth, new GoogleAuthProvider())
   }
   console.log('Running in web')
   const provider = new GoogleAuthProvider()

@@ -1,6 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID !== undefined
+console.log("LOCAL_ANDROID in CapacitorConfig", LOCAL_ANDROID)
 
 const config: CapacitorConfig = {
   appId: 'com.compass.app',

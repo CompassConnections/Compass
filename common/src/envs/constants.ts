@@ -5,7 +5,7 @@ import {isProd} from "common/envs/is-prod";
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
 
-export const IS_LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID !== undefined
+export const IS_LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
 console.log('IS_LOCAL_ANDROID', IS_LOCAL_ANDROID)
 
 export const LOCAL_WEB_DOMAIN = `localhost:3000`

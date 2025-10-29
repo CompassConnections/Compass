@@ -69,14 +69,14 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [ ] Clean up terms and conditions (convert to Markdown)
 - [ ] Clean up privacy notice (convert to Markdown)
 - [ ] Add other authentication methods (GitHub, Facebook, Apple, phone, etc.)
-- [ ] Add email verification
-- [ ] Add password reset
+- [x] Add email verification
+- [x] Add password reset
 - [x] Add automated welcome email
 - [ ] Security audit and penetration testing
 - [ ] Make `deploy-api.sh` run automatically on push to `main` branch
-- [ ] Create settings page (change email, password, delete account, etc.)
+- [x] Create settings page (change email, password, delete account, etc.)
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
-- [ ] Improve loading sign (e.g., animation of a compass moving around)
+- [x] Improve loading sign (e.g., animation of a compass moving around)
 - [ ] Show compatibility score in profile page
 
 ## Implementation

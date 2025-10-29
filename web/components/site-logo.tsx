@@ -22,7 +22,7 @@ export default function SiteLogo(props: {
   }
   return (
     <Link
-      href={'/'}
+      href={'/home'}
       className={clsx('flex flex-row gap-1 pb-3 pt-6', className)}
     >
       {inner}

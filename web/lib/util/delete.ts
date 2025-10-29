@@ -4,9 +4,9 @@ import {firebaseLogout} from "web/lib/firebase/users";
 import posthog from "posthog-js";
 import {clearUserCookie} from "web/components/auth-context";
 
-export async function deleteAccount(username: string) {
+export async function deleteAccount() {
   track('delete account')
-  await api('me/delete', {username})
+  await api('me/delete')
   await firebaseLogout()
   clearUserCookie()
   localStorage.clear()

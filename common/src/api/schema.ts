@@ -238,9 +238,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    props: z.object({
-      username: z.string(), // just so you're sure
-    }),
+    props: z.object({}),
     summary: 'Delete the authenticated user account',
     tag: 'Users',
   },

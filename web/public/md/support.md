@@ -7,6 +7,7 @@ Your contribution directly helps cover hosting, development, and community growt
 ## Ways to Contribute Financially
 
 - [Open Collective](https://opencollective.com/compass-connection) — or [directly from Compass](/donate)
+- [Liberapay](https://liberapay.com/CompassConnections)
 - [Ko-fi](https://ko-fi.com/compassconnections)
 - [GitHub Sponsors](https://github.com/sponsors/CompassConnections) – requires a GitHub account
 - [Patreon](https://patreon.com/CompassMeet)

@@ -46,7 +46,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
     sizeClasses[size],
     color === 'green' && [solid, 'bg-teal-500 hover:bg-teal-600'],
     color === 'green-outline' && [outline, 'text-teal-500 hover:bg-teal-500'],
-    color === 'red' && [solid, 'bg-scarlet-500 hover:bg-scarlet-600'],
+    color === 'red' && [solid, 'bg-red-500 hover:bg-red-600'],
     color === 'red-outline' && [
       outline,
       'text-scarlet-500 hover:bg-scarlet-500',

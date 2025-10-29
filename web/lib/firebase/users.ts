@@ -1,7 +1,7 @@
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup} from 'firebase/auth'
+import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
@@ -106,19 +106,19 @@ export async function firebaseLogin() {
   })
 }
 
-export async function loginWithApple() {
-  const provider = new OAuthProvider('apple.com')
-  provider.addScope('email')
-  provider.addScope('name')
-
-  return signInWithPopup(auth, provider)
-    .then((result) => {
-      return result
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
+// export async function loginWithApple() {
+//   const provider = new OAuthProvider('apple.com')
+//   provider.addScope('email')
+//   provider.addScope('name')
+//
+//   return signInWithPopup(auth, provider)
+//     .then((result) => {
+//       return result
+//     })
+//     .catch((error) => {
+//       console.error(error)
+//     })
+// }
 
 export async function firebaseLogout() {
   await auth.signOut()

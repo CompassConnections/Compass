@@ -9,11 +9,19 @@ import {debounce} from "lodash";
 import {api} from "web/lib/api";
 import {MultiSelectAnswers} from "web/components/answers/answer-compatibility-question-content";
 import {usePrivateUser} from "web/hooks/use-user";
+import {PrivateUser} from "common/user";
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
 export const NotificationSettings = () => {
   const privateUser = usePrivateUser()
-  if (!privateUser) return null
+  if (!privateUser) return <CompassLoadingIndicator/>
+  return <LoadedNotificationSettings privateUser={privateUser}/>
+}
 
+function LoadedNotificationSettings(props: {
+  privateUser: PrivateUser,
+}) {
+  const {privateUser} = props
   const [prefs, setPrefs] =
     usePersistentInMemoryState<notification_preferences>(
       privateUser.notificationPreferences,

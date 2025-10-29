@@ -9,22 +9,21 @@ import toast from "react-hot-toast";
 import {deleteAccount} from "web/lib/util/delete";
 import router from "next/router";
 import {Button} from "web/components/buttons/button";
-import {getAuth, sendEmailVerification, sendPasswordResetEmail, User} from 'firebase/auth';
+import {getAuth, sendEmailVerification, sendPasswordResetEmail} from 'firebase/auth';
 import {auth} from "web/lib/firebase/users";
 import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
-  const privateUser = usePrivateUser()
-  const user = auth.currentUser
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4'}>
       <NoSEO/>
       <Title>Settings</Title>
       <UncontrolledTabs
         tabs={[
-          {title: 'General', content: <GeneralSettings privateUser={privateUser} user={user}/>},
+          {title: 'General', content: <GeneralSettings/>},
           {title: 'Notifications', content: <NotificationSettings/>},
         ]}
         trackingName={'settings page'}
@@ -33,12 +32,18 @@ export default function NotificationsPage() {
   )
 }
 
-const GeneralSettings = (props: {
-  privateUser: PrivateUser | null | undefined,
-  user: User | null,
+export const GeneralSettings = () => {
+  const privateUser = usePrivateUser()
+  if (!privateUser) return <CompassLoadingIndicator/>
+  return <LoadedGeneralSettings privateUser={privateUser}/>
+}
+
+const LoadedGeneralSettings = (props: {
+  privateUser: PrivateUser,
 }) => {
-  const {privateUser, user} = props
-  if (!privateUser || !user) return null
+  const {privateUser} = props
+  const user = auth.currentUser
+  if (!user) return null
 
   const handleDeleteAccount = async () => {
     const confirmed = confirm(

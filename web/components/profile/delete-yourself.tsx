@@ -8,9 +8,7 @@ import {Input} from '../widgets/input'
 import {Title} from '../widgets/title'
 import {deleteAccount} from "web/lib/util/delete";
 
-export function DeleteYourselfButton(props: { username: string }) {
-  const {username} = props
-
+export function DeleteYourselfButton() {
   const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState('')
 
   return (
@@ -29,7 +27,7 @@ export function DeleteYourselfButton(props: { username: string }) {
       onSubmitWithSuccess={async () => {
         if (deleteAccountConfirmation == 'delete my account') {
           toast
-            .promise(deleteAccount(username), {
+            .promise(deleteAccount(), {
               loading: 'Deleting account...',
               success: () => {
                 router.push('/')

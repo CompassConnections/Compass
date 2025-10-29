@@ -1,32 +1,33 @@
-import { usePrivateUser } from 'web/hooks/use-user'
-import { Button } from 'web/components/buttons/button'
-import { Modal } from 'web/components/layout/modal'
-import { useState } from 'react'
-import { Col } from 'web/components/layout/col'
-import { User } from 'common/user'
+import {usePrivateUser} from 'web/hooks/use-user'
+import {Button} from 'web/components/buttons/button'
+import {Modal} from 'web/components/layout/modal'
+import {useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {User} from 'common/user'
 import clsx from 'clsx'
-import { DotsHorizontalIcon } from '@heroicons/react/outline'
-import { useAdmin, useTrusted } from 'web/hooks/use-admin'
-import { UncontrolledTabs } from 'web/components/layout/tabs'
-import { BlockUser } from 'web/components/profile/block-user'
-import { ReportUser } from 'web/components/profile/report-user'
-import { Title } from 'web/components/widgets/title'
-import { Row } from '../layout/row'
-import { SimpleCopyTextButton } from 'web/components/buttons/copy-link-button'
-import { api } from 'web/lib/api'
-import { buildArray } from 'common/util/array'
-import { DeleteYourselfButton } from '../profile/delete-yourself'
+import {DotsHorizontalIcon} from '@heroicons/react/outline'
+import {useAdmin, useTrusted} from 'web/hooks/use-admin'
+import {UncontrolledTabs} from 'web/components/layout/tabs'
+import {BlockUser} from 'web/components/profile/block-user'
+import {ReportUser} from 'web/components/profile/report-user'
+import {Title} from 'web/components/widgets/title'
+import {Row} from '../layout/row'
+import {SimpleCopyTextButton} from 'web/components/buttons/copy-link-button'
+import {api} from 'web/lib/api'
+import {buildArray} from 'common/util/array'
+import {DeleteYourselfButton} from '../profile/delete-yourself'
 import {toast} from "react-hot-toast";
+import Router from "next/router";
 
 export function MoreOptionsUserButton(props: { user: User }) {
-  const { user } = props
-  const { id: userId, name } = user
+  const {user} = props
+  const {id: userId, name} = user
   const currentPrivateUser = usePrivateUser()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const isAdmin = useAdmin()
   const isTrusted = useTrusted()
 
-  if (!currentPrivateUser) return <div />
+  if (!currentPrivateUser) return <div/>
 
   const createdTime = new Date(user.createdTime).toLocaleDateString('en-us', {
     year: 'numeric',
@@ -76,6 +77,17 @@ export function MoreOptionsUserButton(props: { user: User }) {
                 >
                   {user.isBannedFromPosting ? 'Banned' : 'Ban User'}
                 </Button>
+                <Button
+                  size="sm"
+                  color="red"
+                  onClick={() => {
+                    api('remove-pinned-photo', {userId}).then(() =>
+                      Router.back()
+                    )
+                  }}
+                >
+                  Delete pinned photo
+                </Button>
               </Row>
             )}
           </div>
@@ -100,36 +112,36 @@ export function MoreOptionsUserButton(props: { user: User }) {
               // TODO: if isYou include a tab for users you've blocked?
               isYou
                 ? [
-                    {
-                      title: 'Delete Account',
-                      content: (
-                        <div className="flex min-h-[200px] items-center justify-center p-4">
-                          <DeleteYourselfButton/>
-                        </div>
-                      ),
-                    },
-                  ]
+                  {
+                    title: 'Delete Account',
+                    content: (
+                      <div className="flex min-h-[200px] items-center justify-center p-4">
+                        <DeleteYourselfButton/>
+                      </div>
+                    ),
+                  },
+                ]
                 : [
-                    {
-                      title: 'Block',
-                      content: (
-                        <BlockUser
-                          user={user}
-                          currentUser={currentPrivateUser}
-                          closeModal={() => setIsModalOpen(false)}
-                        />
-                      ),
-                    },
-                    {
-                      title: 'Report',
-                      content: (
-                        <ReportUser
-                          user={user}
-                          closeModal={() => setIsModalOpen(false)}
-                        />
-                      ),
-                    },
-                  ],
+                  {
+                    title: 'Block',
+                    content: (
+                      <BlockUser
+                        user={user}
+                        currentUser={currentPrivateUser}
+                        closeModal={() => setIsModalOpen(false)}
+                      />
+                    ),
+                  },
+                  {
+                    title: 'Report',
+                    content: (
+                      <ReportUser
+                        user={user}
+                        closeModal={() => setIsModalOpen(false)}
+                      />
+                    ),
+                  },
+                ],
             ])}
           />
         </Col>

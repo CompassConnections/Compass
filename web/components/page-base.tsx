@@ -53,7 +53,7 @@ export function PageBase(props: {
   // const [isModalOpen, setIsModalOpen] = useState(false)
   const desktopSidebarOptions = getDesktopNavigation(user)
 
-  const mobileSidebarOptions = getMobileSidebar(() => setIsAddFundsModalOpen(true))
+  const mobileSidebarOptions = getMobileSidebar(user, () => setIsAddFundsModalOpen(true))
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   trackPageView && useTracking(`view ${trackPageView}`, trackPageProps)
@@ -171,9 +171,17 @@ const getDesktopNavigation = (user: User | null | undefined) => {
   )
 }
 
-const getMobileSidebar = (_toggleModal: () => void) => {
+const getMobileSidebar = (
+  user: User | null | undefined,
+  _toggleModal: () => void,
+) => {
+  if (user)
+    return buildArray(
+      Settings,
+      ...base,
+    )
+
   return buildArray(
-    Settings,
     ...base,
   )
 }

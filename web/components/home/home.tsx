@@ -1,6 +1,7 @@
 import {useEffect} from "react";
 import {Col} from "web/components/layout/col";
 import {SignUpButton} from "web/components/nav/sidebar";
+import {useUser} from "web/hooks/use-user";
 
 export function AboutBox(props: {
   title: string
@@ -18,6 +19,8 @@ export function AboutBox(props: {
 }
 
 export function LoggedOutHome() {
+  const user = useUser()
+
   useEffect(() => {
     const text = "Search.";
     const el = document.getElementById("typewriter");
@@ -46,14 +49,14 @@ export function LoggedOutHome() {
 
   return (
     <>
-      <Col className="mb-4 gap-2 lg:hidden">
-        <SignUpButton
-          className="mt-4 flex-1 fixed bottom-[55px] w-full left-0 right-0 z-10 mx-auto px-4"
-          size="xl"
-          text="Sign up"
-        />
+      {user === null && <Col className="mb-4 gap-2 lg:hidden">
+          <SignUpButton
+              className="mt-4 flex-1 fixed bottom-[55px] w-full left-0 right-0 z-10 mx-auto px-4"
+              size="xl"
+              text="Sign up"
+          />
         {/*<SignUpAsMatchmaker className="flex-1"/>*/}
-      </Col>
+      </Col>}
       <h1
         className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">
         Don't Swipe.<br/>
@@ -68,13 +71,17 @@ export function LoggedOutHome() {
       <div className="w-full py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
-            <AboutBox title="Radically Transparent" text="No algorithms. Every profile searchable. You decide who to discover."/>
-            <AboutBox title="Built for Depth" text="Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter."/>
-            <AboutBox title="Community Owned & Open Source" text="Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone."/>
+            <AboutBox title="Radically Transparent"
+                      text="No algorithms. Every profile searchable. You decide who to discover."/>
+            <AboutBox title="Built for Depth"
+                      text="Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter."/>
+            <AboutBox title="Community Owned & Open Source"
+                      text="Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone."/>
           </div>
           <div className="mt-10 max-w-xl mx-auto">
-          <p className="text-center">
-              Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to browsing — a public digital good designed to serve people, not profit.
+            <p className="text-center">
+              Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to
+              browsing — a public digital good designed to serve people, not profit.
             </p>
           </div>
         </div>

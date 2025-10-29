@@ -84,12 +84,13 @@ export const useWebsocketPrivateUser = (userId: string | undefined) => {
   return privateUser
 }
 
-export const isBlocked = (
-  privateUser: PrivateUser | null | undefined,
-  otherUserId: string
-) => {
-  return (
-    privateUser?.blockedUserIds.includes(otherUserId) ||
-    privateUser?.blockedByUserIds.includes(otherUserId)
-  )
-}
+// export const isBlocked = (
+//   privateUser: PrivateUser | null | undefined,
+//   otherUserId: string
+// ) => {
+//   return (
+//     privateUser?.blockedUserIds.includes(otherUserId) ||
+//     privateUser?.blockedByUserIds.includes(otherUserId)
+//   )
+// }
+

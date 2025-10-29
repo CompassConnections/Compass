@@ -18,7 +18,6 @@ export default function NotificationsPage() {
   useRedirectIfSignedOut()
   const privateUser = usePrivateUser()
   const user = auth.currentUser
-  if (!privateUser || !user) return null
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4'}>
       <NoSEO/>
@@ -35,10 +34,11 @@ export default function NotificationsPage() {
 }
 
 const GeneralSettings = (props: {
-  privateUser: PrivateUser,
-  user: User,
+  privateUser: PrivateUser | null | undefined,
+  user: User | null,
 }) => {
   const {privateUser, user} = props
+  if (!privateUser || !user) return null
 
   const handleDeleteAccount = async () => {
     const confirmed = confirm(

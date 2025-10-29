@@ -8,15 +8,14 @@ import {useCallback} from "react";
 import {debounce} from "lodash";
 import {api} from "web/lib/api";
 import {MultiSelectAnswers} from "web/components/answers/answer-compatibility-question-content";
-import {usePrivateUser} from "web/hooks/use-user";
 import {PrivateUser} from "common/user";
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import {WithPrivateUser} from "web/components/user/with-user";
 
-export const NotificationSettings = () => {
-  const privateUser = usePrivateUser()
-  if (!privateUser) return <CompassLoadingIndicator/>
-  return <LoadedNotificationSettings privateUser={privateUser}/>
-}
+export const NotificationSettings = () => (
+  <WithPrivateUser>
+    {user => <LoadedNotificationSettings privateUser={user}/>}
+  </WithPrivateUser>
+)
 
 function LoadedNotificationSettings(props: {
   privateUser: PrivateUser,

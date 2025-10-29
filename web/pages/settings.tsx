@@ -3,7 +3,6 @@ import {NoSEO} from 'web/components/NoSEO'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
 import {PageBase} from 'web/components/page-base'
 import {Title} from 'web/components/widgets/title'
-import {usePrivateUser} from 'web/hooks/use-user'
 import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 import toast from "react-hot-toast";
 import {deleteAccount} from "web/lib/util/delete";
@@ -13,7 +12,7 @@ import {getAuth, sendEmailVerification, sendPasswordResetEmail} from 'firebase/a
 import {auth} from "web/lib/firebase/users";
 import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import {WithPrivateUser} from "web/components/user/with-user";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
@@ -32,11 +31,11 @@ export default function NotificationsPage() {
   )
 }
 
-export const GeneralSettings = () => {
-  const privateUser = usePrivateUser()
-  if (!privateUser) return <CompassLoadingIndicator/>
-  return <LoadedGeneralSettings privateUser={privateUser}/>
-}
+export const GeneralSettings = () => (
+  <WithPrivateUser>
+    {user => <LoadedGeneralSettings privateUser={user}/>}
+  </WithPrivateUser>
+)
 
 const LoadedGeneralSettings = (props: {
   privateUser: PrivateUser,

@@ -62,10 +62,12 @@ Supported entirely by **donations**, not by selling your data or attention.
 
 Through **[donations](/support) and contributions from the community**. Options include:
 
-* Patreon
-* PayPal
+* Open Collective
+* Liberapay
 * Ko-fi
 * GitHub Sponsors
+* Patreon
+* PayPal
 * Sharing ideas, feedback, or code
 
 Every contribution, no matter the size — from a small code tweak to helping refine the interface, or simply spreading the word — is part of the gift that keeps Compass free, ad-free, and community-owned. All funding and expenses are **publicly documented** [here](/financials).

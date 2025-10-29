@@ -1,33 +1,32 @@
 import {PrivateUser} from 'common/src/user'
-import {
-  notification_destination_types,
-  notification_preference,
-  notification_preferences,
-} from 'common/user-notification-preferences'
-import {useCallback} from 'react'
 import {NoSEO} from 'web/components/NoSEO'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
 import {PageBase} from 'web/components/page-base'
 import {Title} from 'web/components/widgets/title'
 import {usePrivateUser} from 'web/hooks/use-user'
-import {api} from 'web/lib/api'
-import {MultiSelectAnswers} from 'web/components/answers/answer-compatibility-question-content'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {debounce} from 'lodash'
 import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
+import toast from "react-hot-toast";
+import {deleteAccount} from "web/lib/util/delete";
+import router from "next/router";
+import {Button} from "web/components/buttons/button";
+import {getAuth, sendEmailVerification, sendPasswordResetEmail, User} from 'firebase/auth';
+import {auth} from "web/lib/firebase/users";
+import {NotificationSettings} from "web/components/notifications";
+import ThemeIcon from "web/components/theme-icon";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
   const privateUser = usePrivateUser()
-  if (!privateUser) return null
+  const user = auth.currentUser
+  if (!privateUser || !user) return null
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4'}>
       <NoSEO/>
       <Title>Settings</Title>
       <UncontrolledTabs
         tabs={[
-          {title: 'Account', content: <AccountSettings privateUser={privateUser}/>},
-          {title: 'Notifications', content: <NotificationSettings privateUser={privateUser}/>},
+          {title: 'General', content: <GeneralSettings privateUser={privateUser} user={user}/>},
+          {title: 'Notifications', content: <NotificationSettings/>},
         ]}
         trackingName={'settings page'}
       />
@@ -35,140 +34,97 @@ export default function NotificationsPage() {
   )
 }
 
-const AccountSettings = (props: { privateUser: PrivateUser }) => {
-  const {privateUser} = props
-  return <></>
-}
-
-const NotificationSettings = (props: { privateUser: PrivateUser }) => {
-  const {privateUser} = props
-
-  const [prefs, setPrefs] =
-    usePersistentInMemoryState<notification_preferences>(
-      privateUser.notificationPreferences,
-      'notification-preferences'
-    )
-
-  const notificationTypes: {
-    type: notification_preference
-    question: string
-  }[] = [
-    {
-      type: 'new_match',
-      question:
-        'Where do you want to be notified when someone ... matches with you?',
-    },
-    {
-      type: 'new_message',
-      question: '... sends you a new message?',
-    },
-    {
-      type: 'new_profile_like',
-      question: '... likes your profile?',
-    },
-    {
-      type: 'new_endorsement',
-      question: '... endorses you?',
-    },
-    {
-      type: 'new_profile_ship',
-      question: '... ships you?',
-    },
-    {
-      type: 'tagged_user',
-      question: '... mentions you?',
-    },
-    {
-      type: 'on_new_follow',
-      question: '... follows you?',
-    },
-    {
-      type: 'new_search_alerts',
-      question: 'Alerts from bookmarked searches?',
-    },
-    {
-      type: 'opt_out_all',
-      question:
-        'Do you want to opt out of all notifications? (You can always change this later)?',
-    },
-  ]
-
-  return (
-    <div className="mx-auto max-w-2xl">
-      <div className="flex flex-col gap-8 p-4">
-        {notificationTypes.map(({type, question}) => (
-          <NotificationOption
-            key={type}
-            type={type}
-            question={question}
-            selected={prefs[type]}
-            onUpdate={(selected) => {
-              setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-const NotificationOption = (props: {
-  type: notification_preference
-  question: string
-  selected: notification_destination_types[]
-  onUpdate: (selected: notification_destination_types[]) => void
+const GeneralSettings = (props: {
+  privateUser: PrivateUser,
+  user: User,
 }) => {
-  const {type, question, selected, onUpdate} = props
+  const {privateUser, user} = props
 
-  const getSelectedValues = (destinations: string[]) => {
-    const values: number[] = []
-    if ((destinations ?? []).includes('email')) values.push(0)
-    if ((destinations ?? []).includes('browser')) values.push(1)
-    return values
-  }
-
-  const setValue = async (value: number[]) => {
-    const newDestinations: notification_destination_types[] = []
-    if (value.includes(0)) newDestinations.push('email')
-    if (value.includes(1)) newDestinations.push('browser')
-
-    onUpdate(newDestinations)
-    save(selected, newDestinations)
-  }
-
-  const save = useCallback(
-    debounce(
-      (
-        oldDestinations: notification_destination_types[],
-        newDestinations: notification_destination_types[]
-      ) => {
-        // for each medium, if it changed, trigger a save
-        const mediums = ['email', 'browser'] as const
-        mediums.forEach((medium) => {
-          const wasEnabled = oldDestinations.includes(medium)
-          const isEnabled = newDestinations.includes(medium)
-          if (wasEnabled !== isEnabled) {
-            api('update-notif-settings', {
-              type,
-              medium,
-              enabled: isEnabled,
-            })
-          }
+  const handleDeleteAccount = async () => {
+    const confirmed = confirm(
+      'Are you sure you want to delete your profile? This cannot be undone.'
+    )
+    if (confirmed) {
+      toast
+        .promise(deleteAccount(), {
+          loading: 'Deleting account...',
+          success: () => {
+            router.push('/')
+            return 'Your account has been deleted.'
+          },
+          error: () => {
+            return 'Failed to delete account.'
+          },
         })
-      },
-      500
-    ),
-    []
-  )
+        .catch(() => {
+          console.log("Failed to delete account")
+        })
+    }
+  }
 
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="text-ink-700 font-medium">{question}</div>
-      <MultiSelectAnswers
-        options={['By email', 'On notifications page']}
-        values={getSelectedValues(selected)}
-        setValue={setValue}
-      />
+  const sendPasswordReset = async () => {
+    if (!privateUser?.email) {
+      toast.error('No email found on your account.')
+      return
+    }
+    const auth = getAuth()
+    toast.promise(
+      sendPasswordResetEmail(auth, privateUser.email),
+      {
+        loading: 'Sending password reset email...',
+        success: 'Password reset email sent — check your inbox and spam.',
+        error: 'Failed to send password reset email.',
+      }
+    )
+      .catch(() => {
+        console.log("Failed to send password reset email")
+      })
+  }
+
+  const sendVerificationEmail = async () => {
+    if (!privateUser?.email) {
+      toast.error('No email found on your account.')
+      return
+    }
+    if (!user) {
+      toast.error('You must be signed in to send a verification email.')
+      return
+    }
+    toast
+      .promise(sendEmailVerification(user), {
+        loading: 'Sending verification email...',
+        success: 'Verification email sent — check your inbox and spam.',
+        error: 'Failed to send verification email.',
+      })
+      .catch(() => {
+        console.log("Failed to send verification email")
+      })
+  }
+
+  const isEmailVerified = user.emailVerified
+
+  return <>
+    <div className="flex flex-col gap-2 max-w-fit">
+      <h3>Theme</h3>
+      <ThemeIcon className="h-6 w-6"/>
+      <h3>Account</h3>
+      <h5>Credentials</h5>
+      <Button
+        onClick={sendPasswordReset}
+      >
+        Send password reset email
+      </Button>
+
+      <h5>Verification</h5>
+      <Button onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
+        {isEmailVerified ? 'Email Verified' : 'Send verification email'}
+      </Button>
+
+      <h5>Dangerous</h5>
+      <Button color="red" onClick={handleDeleteAccount}>
+        Delete Account
+      </Button>
     </div>
-  )
+  </>
 }
+

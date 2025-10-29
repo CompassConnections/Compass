@@ -1,5 +1,6 @@
 import {HomeIcon, NewspaperIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
 import {
+  CogIcon,
   GlobeAltIcon,
   HomeIcon as SolidHomeIcon,
   LinkIcon,
@@ -118,6 +119,7 @@ const Organization = {name: 'Organization', href: '/organization', icon: GlobeAl
 const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp};
 const Contact = {name: 'Contact', href: '/contact', icon: FaEnvelope};
 const News = {name: "What's new", href: '/news', icon: NewspaperIcon};
+const Settings = {name: "Settings", href: '/settings', icon: CogIcon};
 
 const base = [
   About,
@@ -144,7 +146,7 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
       icon: (props) => (
         <PrivateMessagesIcon bubbleClassName={'-mr-5'} solid {...props} />
       ),
-    }
+    },
   )
 }
 
@@ -160,6 +162,7 @@ const getDesktopNavigation = (user: User | null | undefined) => {
       ProfilesHome,
       Notifs,
       Messages,
+      Settings,
       ...base,
     )
 
@@ -170,6 +173,7 @@ const getDesktopNavigation = (user: User | null | undefined) => {
 
 const getMobileSidebar = (_toggleModal: () => void) => {
   return buildArray(
+    Settings,
     ...base,
   )
 }

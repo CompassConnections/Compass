@@ -13,6 +13,7 @@ import {useGroupedNotifications} from 'web/hooks/use-notifications'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
+import {NotificationSettings} from "web/components/notifications";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
@@ -23,6 +24,7 @@ export default function NotificationsPage() {
       <UncontrolledTabs
         tabs={[
           {title: 'Notifications', content: <NotificationsContent/>},
+          {title: 'Settings', content: <NotificationSettings/>},
         ]}
         trackingName={'notifications page'}
       />

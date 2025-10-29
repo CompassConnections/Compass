@@ -1,61 +1,50 @@
-import {
-  LogoutIcon,
-  MoonIcon,
-  SunIcon,
-  LoginIcon,
-} from '@heroicons/react/outline'
+import {LoginIcon, LogoutIcon,} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { buildArray } from 'common/util/array'
-import Router, { useRouter } from 'next/router'
-import { useUser } from 'web/hooks/use-user'
-import { firebaseLogin, firebaseLogout } from 'web/lib/firebase/users'
-import { withTracking } from 'web/lib/service/analytics'
-import { ProfileSummary } from './profile-summary'
-import { Item, SidebarItem } from './sidebar-item'
+import {buildArray} from 'common/util/array'
+import Router, {useRouter} from 'next/router'
+import {useUser} from 'web/hooks/use-user'
+import {firebaseLogout} from 'web/lib/firebase/users'
+import {withTracking} from 'web/lib/service/analytics'
+import {ProfileSummary} from './profile-summary'
+import {Item, SidebarItem} from './sidebar-item'
 import SiteLogo from '../site-logo'
-import { Button, ColorType, SizeType } from 'web/components/buttons/button'
+import {Button, ColorType, SizeType} from 'web/components/buttons/button'
 import {signupRedirect} from 'web/lib/util/signup'
-import { useProfile } from 'web/hooks/use-profile'
-import { useTheme } from 'web/hooks/use-theme'
+import {useProfile} from 'web/hooks/use-profile'
 
 export default function Sidebar(props: {
   className?: string
   isMobile?: boolean
   navigationOptions: Item[]
 }) {
-  const { className, isMobile } = props
+  const {className, isMobile} = props
   const router = useRouter()
   const currentPage = router.pathname
 
   const user = useUser()
   const profile = useProfile()
 
-  const { theme, setTheme } = useTheme()
-
-  const toggleTheme = () => {
-    setTheme(theme === 'auto' ? 'dark' : theme === 'dark' ? 'light' : 'auto')
-  }
   const navOptions = props.navigationOptions
 
-  const bottomNavOptions = bottomNav(!!user, theme, toggleTheme)
+  const bottomNavOptions = bottomNav(!!user)
 
   return (
     <nav
       aria-label="Sidebar"
       className={clsx('flex h-screen flex-col h-full max-h-screen overflow-y-auto', className)}
     >
-      <SiteLogo />
+      <SiteLogo/>
 
-      {user === undefined && <div className="h-[56px]" />}
+      {user === undefined && <div className="h-[56px]"/>}
 
-      {user && !isMobile && <ProfileSummary user={user} className="mb-3" />}
+      {user && !isMobile && <ProfileSummary user={user} className="mb-3"/>}
 
       <div className="mb-4 flex flex-col gap-1">
         {navOptions.map((item) => (
-          <SidebarItem key={item.name} item={item} currentPage={currentPage} />
+          <SidebarItem key={item.name} item={item} currentPage={currentPage}/>
         ))}
 
-        {user === null && <SignUpButton className="mt-4" text="Sign up" />}
+        {user === null && <SignUpButton className="mt-4" text="Sign up"/>}
         {/*{user === null && <SignUpAsMatchmaker className="mt-2" />}*/}
 
         {user && profile === null && (
@@ -66,7 +55,7 @@ export default function Sidebar(props: {
       </div>
       <div className="mb-6 mt-auto flex flex-col gap-1">
         {bottomNavOptions.map((item) => (
-          <SidebarItem key={item.name} item={item} currentPage={currentPage} />
+          <SidebarItem key={item.name} item={item} currentPage={currentPage}/>
         ))}
       </div>
     </nav>
@@ -82,39 +71,10 @@ const logout = async () => {
 
 const bottomNav = (
   loggedIn: boolean,
-  theme: 'light' | 'dark' | 'auto' | 'loading',
-  toggleTheme: () => void
 ) =>
   buildArray<Item>(
-    {
-      name: theme ?? 'auto',
-      children:
-        theme === 'light' ? (
-          'Light'
-        ) : theme === 'dark' ? (
-          'Dark'
-        ) : (
-          <>
-            <span className="hidden dark:inline">Dark</span>
-            <span className="inline dark:hidden">Light</span> (auto)
-          </>
-        ),
-      icon: ({ className, ...props }) => (
-        <>
-          <MoonIcon
-            className={clsx(className, 'hidden dark:block')}
-            {...props}
-          />
-          <SunIcon
-            className={clsx(className, 'block dark:hidden')}
-            {...props}
-          />
-        </>
-      ),
-      onClick: toggleTheme,
-    },
-    !loggedIn && { name: 'Sign in', icon: LoginIcon, href: '/signin' },
-    loggedIn && { name: 'Sign out', icon: LogoutIcon, onClick: logout }
+    !loggedIn && {name: 'Sign in', icon: LoginIcon, href: '/signin'},
+    loggedIn && {name: 'Sign out', icon: LogoutIcon, onClick: logout}
   )
 
 export const SignUpButton = (props: {
@@ -123,7 +83,7 @@ export const SignUpButton = (props: {
   color?: ColorType
   size?: SizeType
 }) => {
-  const { className, text, color, size } = props
+  const {className, text, color, size} = props
 
   return (
     <Button
@@ -137,20 +97,20 @@ export const SignUpButton = (props: {
   )
 }
 
-export const SignUpAsMatchmaker = (props: {
-  className?: string
-  size?: SizeType
-}) => {
-  const { className, size } = props
-
-  return (
-    <Button
-      color={'indigo-outline'}
-      size={size ?? 'md'}
-      onClick={firebaseLogin}
-      className={clsx('w-full', className)}
-    >
-      Sign up as matchmaker
-    </Button>
-  )
-}
+// export const SignUpAsMatchmaker = (props: {
+//   className?: string
+//   size?: SizeType
+// }) => {
+//   const {className, size} = props
+//
+//   return (
+//     <Button
+//       color={'indigo-outline'}
+//       size={size ?? 'md'}
+//       onClick={firebaseLogin}
+//       className={clsx('w-full', className)}
+//     >
+//       Sign up as matchmaker
+//     </Button>
+//   )
+// }

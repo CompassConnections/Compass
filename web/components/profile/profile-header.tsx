@@ -1,7 +1,6 @@
 import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
 import Router from 'next/router'
-import router from 'next/router'
 import Link from 'next/link'
 import {User, UserActivity} from 'common/user'
 import {Button} from 'web/components/buttons/button'
@@ -20,7 +19,6 @@ import {linkClass} from 'web/components/widgets/site-link'
 import {updateProfile} from 'web/lib/api'
 import {useState} from 'react'
 import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
-import {deleteAccount} from "web/lib/util/delete";
 import toast from "react-hot-toast";
 import {StarButton} from "web/components/widgets/star-button";
 import {disableProfile} from "web/lib/util/disable";
@@ -57,7 +55,8 @@ export default function ProfileHeader(props: {
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
         <Row className="items-center gap-1">
           <Col className="gap-1">
-            {currentUser && isCurrentUser && disabled && <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
+            {currentUser && isCurrentUser && disabled &&
+                <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
             <Row className="items-center gap-1 text-xl">
               {!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}
               <span>
@@ -109,34 +108,6 @@ export default function ProfileHeader(props: {
                       <LockClosedIcon className="h-4 w-4"/>
                     ),
                   onClick: () => setShowVisibilityModal(true),
-                },
-                {
-                  name: 'Delete profile',
-                  icon: null,
-                  onClick: async () => {
-                    const confirmed = confirm(
-                      'Are you sure you want to delete your profile? This cannot be undone.'
-                    )
-                    if (confirmed) {
-                      toast
-                        .promise(deleteAccount(user.username), {
-                          loading: 'Deleting account...',
-                          success: () => {
-                            router.push('/')
-                            return 'Your account has been deleted.'
-                          },
-                          error: () => {
-                            return 'Failed to delete account.'
-                          },
-                        })
-                        .then(() => {
-                          // return true
-                        })
-                        .catch(() => {
-                          // return false
-                        })
-                    }
-                  },
                 },
                 {
                   name: disabled ? 'Enable profile' : 'Disable profile',

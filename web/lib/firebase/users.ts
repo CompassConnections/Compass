@@ -6,6 +6,7 @@ import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
 import {IS_LOCAL, WEB_URL} from "common/envs/constants";
+import {GOOGLE_CLIENT_ID} from "common/constants";
 
 dayjs.extend(utc)
 
@@ -69,10 +70,6 @@ async function generatePKCE() {
   return {codeVerifier, codeChallenge};
 }
 
-export const WEB_GOOGLE_CLIENT_ID = '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com'
-export const ANDROID_GOOGLE_CLIENT_ID = '253367029065-s9sr5vqgkhc8f7p5s6ti6a4chqsrqgc4.apps.googleusercontent.com'
-export const GOOGLE_CLIENT_ID = WEB_GOOGLE_CLIENT_ID
-
 /**
  * Authenticates a Firebase client running a webview APK on Android with Google OAuth.
  *
@@ -88,7 +85,7 @@ export async function webviewGoogleSignin() {
   localStorage.setItem('pkce_verifier', codeVerifier);
 
   const params = new URLSearchParams({
-    client_id: ANDROID_GOOGLE_CLIENT_ID,
+    client_id: GOOGLE_CLIENT_ID,
     redirect_uri: `${WEB_URL}/auth/callback`,
     response_type: 'code',
     scope: 'openid email profile',

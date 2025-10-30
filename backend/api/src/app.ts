@@ -69,6 +69,7 @@ import {IS_LOCAL} from "common/envs/constants";
 import {localSendTestEmail} from "api/test";
 import path from "node:path";
 import {saveSubscriptionMobile} from "api/save-subscription-mobile";
+import {authGoogle} from "api/auth-google";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -358,6 +359,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'save-subscription-mobile': saveSubscriptionMobile,
   'create-bookmarked-search': createBookmarkedSearch,
   'delete-bookmarked-search': deleteBookmarkedSearch,
+  'auth-google': authGoogle,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {

@@ -1,21 +1,18 @@
 import {useEffect} from "react";
-import {GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
 
 export default function GoogleAuthCallback() {
   useEffect(() => {
     async function fetchToken() {
       const params = new URLSearchParams(window.location.search);
-      console.log('/auth/callback code', params);
+      console.log('/auth/callback', params);
       const code = params.get('code');
-      const state = params.get('state');
-      console.log('/auth/callback code', code);
+      // const state = params.get('state');
 
       if (code) {
+        console.log('/auth/callback code', code);
         // Send code back to the native app
-        const deepLink = `com.compassmeet://auth?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`;
-        window.location.href = deepLink;
+        window.location.href = `com.compassmeet://auth?code=${encodeURIComponent(code)}}`;
 
-        //
         // const codeVerifier = localStorage.getItem('pkce_verifier');
         // const body = new URLSearchParams({
         //   client_id: GOOGLE_CLIENT_ID,

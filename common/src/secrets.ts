@@ -26,6 +26,7 @@ export const secrets = (
     'VAPID_PUBLIC_KEY',
     'VAPID_PRIVATE_KEY',
     'DB_ENC_MASTER_KEY_BASE64',
+    'GOOGLE_CLIENT_SECRET',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

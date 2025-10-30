@@ -733,6 +733,17 @@ export const API = (_apiTypeCheck = {
     summary: 'Delete a bookmarked search by ID',
     tag: 'Searches',
   },
+  'auth-google': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      code: z.string(),
+    }),
+    summary: 'Google Auth',
+    tag: 'Authentication',
+  },
 } as const)
 
 export type APIPath = keyof typeof API

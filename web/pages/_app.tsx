@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
-import {ANDROID_GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
+import {unauthedApi} from "common/util/api";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -81,24 +81,9 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         return;
       }
 
-      const codeVerifier = localStorage.getItem('pkce_verifier');
-
-      const body = {
-        client_id: ANDROID_GOOGLE_CLIENT_ID,
-        code,
-        code_verifier: codeVerifier!,
-        redirect_uri: 'com.compassmeet:/auth',
-        grant_type: 'authorization_code',
-      }
-      console.log('Body:', body);
-      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: new URLSearchParams(body),
-      });
-
-      const tokens = await tokenResponse.json();
-      console.log('Tokens:', tokens);
+      const {result} = await unauthedApi('auth-google', {code})
+      console.log('/auth-google result', result);
+      //   google sign in
     }
 
     // Expose globally for native bridge

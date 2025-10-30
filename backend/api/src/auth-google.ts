@@ -2,16 +2,17 @@ import {APIHandler} from './helpers/endpoint'
 import {GOOGLE_CLIENT_ID} from "common/constants";
 
 export const authGoogle: APIHandler<'auth-google'> = async (
-  {code},
+  {code, codeVerifier},
   _auth
 ) => {
-  console.log('Google Auth Code:', code)
-  if (!code) return {success: false, result: {}}
+  console.log('Google Auth Codes:', code, codeVerifier)
+  if (!code || !codeVerifier) return {success: false, result: {}}
 
   const body = {
     client_id: GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET!,
     code: code as string,
+    code_verifier: codeVerifier as string,
     grant_type: 'authorization_code',
     redirect_uri: 'https://www.compassmeet.com/auth/callback',
   };

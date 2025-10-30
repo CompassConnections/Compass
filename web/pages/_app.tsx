@@ -81,7 +81,13 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         return;
       }
 
-      const {result} = await unauthedApi('auth-google', {code})
+      const codeVerifier = localStorage.getItem('pkce_verifier');
+      if (!codeVerifier) {
+        console.error('No code verifier found in localStorage');
+        return;
+      }
+
+      const {result} = await unauthedApi('auth-google', {code, codeVerifier})
       console.log('/auth-google result', result);
       //   google sign in
     }

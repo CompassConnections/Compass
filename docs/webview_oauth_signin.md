@@ -1,6 +1,6 @@
 # WebView OAuth Sign-in
 
-How to let a WebView-based app safely complete OAuth with PKCE, even though Google blocks sign-in *inside* WebViews.
+How to let a WebView-based app safely complete OAuth, even though Google blocks sign-in *inside* WebViews.
 
 ---
 
@@ -49,25 +49,18 @@ You register this scheme in your `AndroidManifest.xml` so Android knows which ap
 
 ---
 
-## 3. How it fits into PKCE
+## 3. 
 
-Let’s map the PKCE flow to this setup.
-
-### Step 1 — Start PKCE flow inside the WebView
+### Step 1 — Start flow inside the WebView
 
 Your web code (running inside WebView) does:
 
 ```ts
-const { codeVerifier, codeChallenge } = await generatePKCE();
-localStorage.setItem('pkce_verifier', codeVerifier);
-
 const params = new URLSearchParams({
   client_id: GOOGLE_CLIENT_ID,
   redirect_uri: 'com.compassmeet://auth',  // your deep link
   response_type: 'code',
   scope: 'openid email profile',
-  code_challenge: codeChallenge,
-  code_challenge_method: 'S256',
 });
 
 window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, '_system'); 
@@ -108,20 +101,8 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     String data = intent.getDataString();
-    if (data != null && data.startsWith("com.compassmeet://auth")) {
-        bridge.triggerWindowJSEvent("oauthRedirect", data);
-    }
-}
-```
-
-Or in Kotlin:
-```kotlin
-override fun onNewIntent(intent: Intent) {
-    super.onNewIntent(intent)
-    val data = intent.dataString
-    if (data != null && data.startsWith("com.compassmeet://auth")) {
-        bridge.triggerWindowJSEvent("oauthRedirect", data)
-    }
+    String payload = new JSONObject().put("data", data).toString();  
+    bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("oauthRedirect(" + payload + ");", null));
 }
 ```
 
@@ -129,7 +110,7 @@ That line emits a custom JavaScript event inside the WebView so your web app can
 
 ---
 
-### Step 4 — WebView catches redirect event and exchanges the code
+### Step 4 — WebView catches redirect event and exchanges the code in backend
 
 In your web app (TypeScript side):
 
@@ -137,24 +118,29 @@ In your web app (TypeScript side):
 window.addEventListener('oauthRedirect', async (event: any) => {
   const url = new URL(event.detail);
   const code = url.searchParams.get('code');
-  const codeVerifier = localStorage.getItem('pkce_verifier');
 
-  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      code,
-      code_verifier: codeVerifier!,
-      redirect_uri: 'com.compassmeet://auth',
-      grant_type: 'authorization_code',
-    }),
-  });
-
-  const tokens = await tokenResponse.json();
-  console.log('Tokens:', tokens);
+  // fetch backend API
+  const tokens = await api('...', {code})
 });
 ```
+
+Backend endpoint
+```ts
+const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+method: 'POST',
+headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+body: new URLSearchParams({
+  client_id: GOOGLE_CLIENT_ID,
+  code,
+  redirect_uri: 'com.compassmeet://auth',
+  grant_type: 'authorization_code',
+}),
+});
+
+const tokens = await tokenResponse.json();
+console.log('Tokens:', tokens);
+```
+
 
 At this point:
 
@@ -166,9 +152,7 @@ At this point:
 ## 4. Why this works and what makes it safe
 
 * The login itself happens in Google’s **system browser**, not in your WebView.
-* The `code_verifier` ensures that only your app (which generated the challenge) can exchange the code.
 * The deep link ensures the token is delivered **only** to your app.
-* No backend is required.
 
 ---
 
@@ -187,10 +171,10 @@ However, universal links are more setup-heavy (require hosting a `.well-known/as
 
 ## 6. Summary
 
-| Step | What happens                                                   | Where          |
-| ---- |----------------------------------------------------------------| -------------- |
-| 1    | Generate PKCE challenge and open Google OAuth URL              | WebView        |
-| 2    | User signs in                                                  | System browser |
-| 3    | Browser redirects to deep link (e.g. `com.compassmeet://auth`) | OS → App       |
-| 4    | App intercepts deep link and injects it into WebView           | Native layer   |
-| 5    | WebView exchanges `code` for tokens via PKCE                   | Web app        |
+| Step | What happens                                                   | Where             |
+| ---- | -------------------------------------------------------------- | ----------------- |
+| 1    | Open Google OAuth URL                                          | WebView           |
+| 2    | User signs in                                                  | System browser    |
+| 3    | Browser redirects to deep link (e.g. `com.compassmeet://auth`) | OS → App          |
+| 4    | App intercepts deep link and injects it into WebView           | Native layer      |
+| 5    | WebView exchanges `code` with backend for tokens               | Web app + backend |

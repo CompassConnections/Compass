@@ -46,22 +46,6 @@ export function writeReferralInfo(
   }
 }
 
-async function generatePKCE() {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  const codeVerifier = btoa(String.fromCharCode(...array))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-  const encoder = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(codeVerifier));
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const codeChallenge = btoa(String.fromCharCode(...hashArray))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-  console.log({codeVerifier, codeChallenge})
-  return {codeVerifier, codeChallenge};
-}
-
 /**
  * Authenticates a Firebase client running a webview APK on Android with Google OAuth.
  *
@@ -73,16 +57,12 @@ async function generatePKCE() {
  * @public
  */
 export async function webviewGoogleSignin() {
-  const {codeVerifier, codeChallenge} = await generatePKCE();
-  localStorage.setItem('pkce_verifier', codeVerifier);
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     response_type: 'code',
     scope: 'openid email profile',
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
   });
   console.log('params', params)
 

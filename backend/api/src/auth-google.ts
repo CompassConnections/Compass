@@ -3,17 +3,16 @@ import {GOOGLE_CLIENT_ID} from "common/constants";
 import {REDIRECT_URI} from "common/envs/constants";
 
 export const authGoogle: APIHandler<'auth-google'> = async (
-  {code, codeVerifier},
+  {code},
   _auth
 ) => {
-  console.log('Google Auth Codes:', code, codeVerifier)
-  if (!code || !codeVerifier) return {success: false, result: {}}
+  console.log('Google Auth Codes:', code)
+  if (!code) return {success: false, result: {}}
 
   const body = {
     client_id: GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET!,
     code: code as string,
-    code_verifier: codeVerifier as string,
     grant_type: 'authorization_code',
     redirect_uri: REDIRECT_URI,
   };

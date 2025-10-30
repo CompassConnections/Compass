@@ -740,7 +740,6 @@ export const API = (_apiTypeCheck = {
     returns: {} as any,
     props: z.object({
       code: z.string(),
-      codeVerifier: z.string(),
     }),
     summary: 'Google Auth',
     tag: 'Authentication',

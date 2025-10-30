@@ -16,13 +16,14 @@ import {unauthedApi} from "common/util/api";
 import {GoogleAuthProvider, signInWithCredential} from "firebase/auth";
 import {auth} from "web/lib/firebase/users";
 import {isAndroidWebView} from "web/lib/util/webview";
-import { Capacitor } from '@capacitor/core';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import {Capacitor} from '@capacitor/core';
+import {StatusBar, Style} from '@capacitor/status-bar';
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
-  StatusBar.setOverlaysWebView({ overlay: false }).catch(console.warn);
-  StatusBar.setStyle({ style: Style.Light }).catch(console.warn);
+  // Note sure it's doing anything, though, need to check
+  StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn);
+  StatusBar.setStyle({style: Style.Light}).catch(console.warn);
 }
 
 
@@ -94,14 +95,8 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         return;
       }
 
-      const codeVerifier = localStorage.getItem('pkce_verifier');
-      if (!codeVerifier) {
-        console.error('No code verifier found in localStorage');
-        return;
-      }
-
       try {
-        const {result} = await unauthedApi('auth-google', {code, codeVerifier})
+        const {result} = await unauthedApi('auth-google', {code})
         const googleTokens = result.tokens
         console.log('/auth-google tokens', googleTokens);
         // Create a Firebase credential from the Google tokens

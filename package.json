@@ -29,7 +29,6 @@
     "@capacitor/core": "7.4.4",
     "@capacitor/push-notifications": "7.0.3",
     "@capacitor/status-bar": "7.0.3",
-    "@capgo/capacitor-social-login": "7.14.4",
     "@playwright/test": "^1.54.2",
     "colorette": "^2.0.20",
     "prismjs": "^1.30.0",

@@ -1156,11 +1156,6 @@
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-7.0.3.tgz#4e8c1ac49cf928576cfac1c78cc3f9886088ebfe"
   integrity sha512-JyRpVnKwHij9hgPWolF6PK+HT3e2HSPjN11/h2OmKxq8GAdPGARFLv+97eZl0pvuvm0Kka/LpiLb5whXISBg7Q==
 
-"@capgo/capacitor-social-login@7.14.4":
-  version "7.14.4"
-  resolved "https://registry.yarnpkg.com/@capgo/capacitor-social-login/-/capacitor-social-login-7.14.4.tgz#f5f18da0e5f72921a8379767a473e089cf8674a9"
-  integrity sha512-Z8SE+qx1EzGW3qW6+CKe43c2eqOj8Y4OZeRczta+89d3jCIkPM1ffowWeDrR2av4S7Xg/RqowWwacpc+uH4BuA==
-
 "@corex/deepmerge@^2.6.148":
   version "2.6.148"
   resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-2.6.148.tgz#8fa825d53ffd1cbcafce1b6a830eefd3dcc09dd5"

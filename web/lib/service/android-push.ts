@@ -11,10 +11,10 @@ export default function AndroidPush() {
     if (!user?.id || !isAndroid) return
     console.log('AndroidPush', user)
 
-    // PushNotifications.requestPermissions().then(result => {
-    //   if (result.receive !== 'granted') return
-    //   PushNotifications.register()
-    // })
+    PushNotifications.requestPermissions().then(result => {
+      if (result.receive !== 'granted') return
+      PushNotifications.register()
+    })
 
     PushNotifications.addListener('registration', async token => {
       console.log('Device token:', token.value)

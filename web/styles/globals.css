@@ -451,13 +451,13 @@ ol > li::marker {
 }
 
 .app-content {
-    padding-top: calc(env(safe-area-inset-top) + 30px);
+    padding-top: calc(env(safe-area-inset-top) + 20px);
     /*padding-bottom: env(safe-area-inset-bottom);*/
     box-sizing: border-box; /* ensure padding doesn’t break layout */
 }
 
 .safe-bottom {
     /*bottom: env(safe-area-inset-bottom);*/
-    bottom: calc(env(safe-area-inset-bottom) + 30px);
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
 }
 

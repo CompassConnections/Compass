@@ -5,8 +5,7 @@ import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
-import {IS_LOCAL} from "common/envs/constants";
-import {GOOGLE_CLIENT_ID} from "common/constants";
+import {GOOGLE_CLIENT_ID, REDIRECT_URI} from "common/constants";
 
 dayjs.extend(utc)
 
@@ -73,10 +72,10 @@ async function generatePKCE() {
 /**
  * Authenticates a Firebase client running a webview APK on Android with Google OAuth.
  *
- * `https://accounts.google.com/o/oauth2/v2/auth?${params}` to get the code (in external browser, as google blocks it in webview)
- * Redirects to `com.compassmeet://auth` (in webview java main activity)
- * 'https://oauth2.googleapis.com/token' to get the ID token (in javascript app)
- * signInWithCredential(auth, credential) to set up firebase user in client (auth.currentUser)
+ * Calls `https://accounts.google.com/o/oauth2/v2/auth?${params}` to get the code (in external browser, as Google blocks it in webview)
+ * Redirects to `com.compassmeet://auth` (in webview java main activity), which triggers oauthRedirect in the app (see _app.tsx)
+ * Calls backend endpoint `https://api.compassmeet.com/auth-google` to get the tokens from the code ('https://oauth2.googleapis.com/token')
+ * Uses signInWithCredential(auth, credential) to set up firebase user in the client (auth.currentUser)
  *
  * @public
  */
@@ -86,7 +85,7 @@ export async function webviewGoogleSignin() {
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: `https://compassmeet.com/auth/callback`,
+    redirect_uri: REDIRECT_URI,
     response_type: 'code',
     scope: 'openid email profile',
     code_challenge: codeChallenge,
@@ -97,48 +96,8 @@ export async function webviewGoogleSignin() {
   window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, '_system');
 }
 
-// export async function googleNativeLogin() {
-//   console.log('Platform:', Capacitor.getPlatform())
-//   console.log('URL origin:', window.location.origin)
-//
-//   await SocialLogin.initialize({
-//     google: {
-//       webClientId: '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com',        // Required for Android and Web
-//       // iOSClientId: 'YOUR_IOS_CLIENT_ID',        // Required for iOS
-//       // iOSServerClientId: 'YOUR_WEB_CLIENT_ID',  // Required for iOS offline mode and server authorization (same as webClientId)
-//       mode: 'online',  // 'online' or 'offline'
-//     }
-//   });
-//   console.log('Done initializing SocialLogin')
-//
-//   // Run the native Google OAuth
-//   const result: any = await SocialLogin.login({provider: 'google', options: {}})
-//
-//   console.log('result', result)
-//
-//   // Extract the tokens from the native result
-//   const idToken = result?.result?.idToken
-//   const accessToken = result?.result?.accessToken?.token
-//
-//   if (!idToken) {
-//     throw new Error('No idToken returned from Google login')
-//   }
-//
-//   // Create a Firebase credential from the Google tokens
-//   const credential = GoogleAuthProvider.credential(idToken, accessToken)
-//
-//   // Sign in with Firebase using the credential
-//   const userCredential = await signInWithCredential(auth, credential)
-//
-//   console.log('Firebase user:', userCredential.user)
-//
-//   return userCredential
-// }
-
-// export const isRunningInAPK = () => typeof window !== 'undefined' && (window as any).IS_APK === true
-
 export async function firebaseLogin() {
-  if (isAndroidWebView() || IS_LOCAL) {
+  if (isAndroidWebView()) {
     console.log('Running in APK')
     return await webviewGoogleSignin()
   }

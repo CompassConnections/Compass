@@ -183,9 +183,9 @@ Backend logs can be accessed from the output of `yarn prod / dev` like in the we
   
 Java/Kotlin logs can be accessed via Android Studio's Logcat.  
 ```  
+adb logcat | grep CompassApp
 adb logcat | grep com.compass.app
 adb logcat | grep Capacitor
-adb logcat | grep console
 ```
 
 You can also add this inside `MainActivity.java`:

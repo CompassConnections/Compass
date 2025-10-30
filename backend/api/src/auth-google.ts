@@ -1,5 +1,5 @@
 import {APIError, APIHandler} from './helpers/endpoint'
-import {GOOGLE_CLIENT_ID} from "common/constants";
+import {GOOGLE_CLIENT_ID, REDIRECT_URI} from "common/constants";
 
 export const authGoogle: APIHandler<'auth-google'> = async (
   {code, codeVerifier},
@@ -14,7 +14,7 @@ export const authGoogle: APIHandler<'auth-google'> = async (
     code: code as string,
     code_verifier: codeVerifier as string,
     grant_type: 'authorization_code',
-    redirect_uri: `https://compassmeet.com/auth/callback`,
+    redirect_uri: REDIRECT_URI,
   };
   console.log('Body:', body)
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {

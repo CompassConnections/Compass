@@ -98,13 +98,13 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
       try {
         const {result} = await unauthedApi('auth-google', {code})
         const googleTokens = result.tokens
-        console.log('/auth-google tokens', googleTokens);
+        // console.log('/auth-google tokens', googleTokens);
         // Create a Firebase credential from the Google tokens
         const credential = GoogleAuthProvider.credential(googleTokens.id_token, googleTokens.access_token)
         // Sign in with Firebase using the credential
         const userCredential = await signInWithCredential(auth, credential)
-        console.log('Creds:', userCredential)
-        console.log('Firebase user:', userCredential.user)
+        // console.log('Creds:', userCredential)
+        // console.log('Firebase user:', userCredential.user)
         return userCredential
       } catch (e) {
         console.error('Error during OAuth flow:', e);

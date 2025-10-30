@@ -88,7 +88,7 @@ export async function webviewGoogleSignin() {
   localStorage.setItem('pkce_verifier', codeVerifier);
 
   const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
+    client_id: ANDROID_GOOGLE_CLIENT_ID,
     redirect_uri: `${WEB_URL}/auth/callback`,
     response_type: 'code',
     scope: 'openid email profile',

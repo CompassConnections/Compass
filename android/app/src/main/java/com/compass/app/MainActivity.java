@@ -1,25 +1,25 @@
 package com.compass.app;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+
+import com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.ContextCompat;
-
 
 
 public class MainActivity extends BridgeActivity {
@@ -89,6 +89,12 @@ public class MainActivity extends BridgeActivity {
 
         settings.setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new NativeBridge(), "AndroidBridge");
+
+        registerPlugin(PushNotificationsPlugin.class);
+        // Initialize the Bridge with Push Notifications plugin
+//       this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
+//           add(com.getcapacitor.plugin.PushNotifications.class);
+//       }});
 
         askNotificationPermission();
     }

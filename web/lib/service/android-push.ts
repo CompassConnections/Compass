@@ -2,12 +2,13 @@ import {PushNotifications} from '@capacitor/push-notifications'
 import {useEffect} from "react"
 import {api} from "web/lib/api"
 import {useUser} from "web/hooks/use-user"
+import {isAndroidWebView} from "web/lib/util/webview";
 
 export default function AndroidPush() {
   const user = useUser() // authenticated user
-  const isWeb = typeof window !== 'undefined' && 'serviceWorker' in navigator
+  const isAndroid = isAndroidWebView()
   useEffect(() => {
-    if (!user?.id || isWeb) return
+    if (!user?.id || !isAndroid) return
     console.log('AndroidPush', user)
 
     PushNotifications.requestPermissions().then(result => {
@@ -28,7 +29,7 @@ export default function AndroidPush() {
     PushNotifications.addListener('pushNotificationReceived', notif => {
       console.log('Push received', notif)
     })
-  }, [user?.id, isWeb])
+  }, [user?.id, isAndroid])
 
   return null
 }

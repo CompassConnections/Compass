@@ -37,7 +37,7 @@ export function BottomNavBar(props: {
     return null
   }
 
-  return (
+  return (<Col>
     <nav
       className={clsx(
         "border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav",
@@ -69,6 +69,15 @@ export function BottomNavBar(props: {
         sidebarNavigationOptions={sidebarNavigationOptions}
       />
     </nav>
+
+      <div
+        className="fixed inset-x-0 bg-canvas-50"
+        style={{
+          bottom: 0,
+          height: 'env(safe-area-inset-bottom)',
+        }}
+      />
+    </Col>
   )
 }
 

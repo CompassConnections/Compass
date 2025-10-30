@@ -458,6 +458,6 @@ ol > li::marker {
 
 .safe-bottom {
     /*bottom: env(safe-area-inset-bottom);*/
-    bottom: calc(env(safe-area-inset-bottom) + 0px);
+    bottom: calc(env(safe-area-inset-bottom));
 }
 

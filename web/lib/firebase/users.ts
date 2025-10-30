@@ -92,6 +92,7 @@ export async function webviewGoogleSignin() {
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
   });
+  console.log('params', params)
 
   window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, '_system');
 }

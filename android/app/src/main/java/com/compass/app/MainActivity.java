@@ -2,12 +2,16 @@ package com.compass.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends BridgeActivity {
     public class NativeBridge {
@@ -17,32 +21,32 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
-//    private static final String LOCAL_URL = "file:///android_asset/public/server/pages";
-//    private static final String REMOTE_URL = "https://www.compassmeet.com";
-
-    // Optional helper for future use
-//    public void loadLocalContent() {
-//        Log.i("CompassApp", "Loading local assets...");
-//        this.bridge.getWebView().loadUrl(LOCAL_URL);
-//    }
-//
-//    public void loadRemoteContent() {
-//        Log.i("CompassApp", "Loading remote content...");
-//        this.bridge.getWebView().loadUrl(REMOTE_URL);
-//    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         String data = intent.getDataString();
-        if (data != null && data.startsWith("com.compassmeet:/auth")) {
-            bridge.triggerWindowJSEvent("oauthRedirect", data);
+        Log.i("CompassApp", "onNewIntent called with data: " + data);
+        if (data != null && data.startsWith("com.compassmeet://auth")) {
+            Log.i("CompassApp", "triggerWindowJSEvent oauthRedirect");
+            try {
+                String payload = new JSONObject().put("data", data).toString();
+                Log.i("CompassApp", "Payload: " + payload);
+                bridge.getWebView().post(() -> {
+                    bridge.getWebView().evaluateJavascript("oauthRedirect(" + payload + ");", null);
+                });
+//                bridge.triggerJSEvent("oauthRedirect", "window", payload);
+            } catch (JSONException e) {
+                Log.i("CompassApp", "Failed to encode JSON payload", e);
+            }
+        } else {
+            Log.i("CompassApp", "No relevant data");
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i("CompassApp", "onCreate called");
         super.onCreate(savedInstanceState);
 
         WebView webView = this.bridge.getWebView();
@@ -98,6 +102,20 @@ public class MainActivity extends BridgeActivity {
     // This function will never be called, leave it empty
 //    @Override
 //    public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {
+//    }
+
+//    private static final String LOCAL_URL = "file:///android_asset/public/server/pages";
+//    private static final String REMOTE_URL = "https://www.compassmeet.com";
+
+    // Optional helper for future use
+//    public void loadLocalContent() {
+//        Log.i("CompassApp", "Loading local assets...");
+//        this.bridge.getWebView().loadUrl(LOCAL_URL);
+//    }
+//
+//    public void loadRemoteContent() {
+//        Log.i("CompassApp", "Loading remote content...");
+//        this.bridge.getWebView().loadUrl(REMOTE_URL);
 //    }
 }
 

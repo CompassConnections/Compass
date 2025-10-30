@@ -7,6 +7,7 @@ import {safeLocalStorage} from '../util/local'
 import {app} from './init'
 import {GOOGLE_CLIENT_ID} from "common/constants";
 import {REDIRECT_URI} from "common/envs/constants";
+import {isAndroidWebView} from "web/lib/util/webview";
 
 dayjs.extend(utc)
 
@@ -42,15 +43,6 @@ export function writeReferralInfo(
   // Overwrite all referral info if we see an explicit referrer.
   if (explicitReferrer) {
     local?.setItem(CACHED_REFERRAL_USERNAME_KEY, explicitReferrer)
-  }
-}
-
-export function isAndroidWebView() {
-  try {
-    // Detect if Android bridge exists
-    return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
-  } catch {
-    return false;
   }
 }
 

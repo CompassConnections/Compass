@@ -15,6 +15,8 @@ import AndroidPush from "web/lib/service/android-push";
 import {unauthedApi} from "common/util/api";
 import {GoogleAuthProvider, signInWithCredential} from "firebase/auth";
 import {auth} from "web/lib/firebase/users";
+import {isAndroidWebView} from "web/lib/util/webview";
+
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -52,6 +54,7 @@ function printBuildInfo() {
 type PageProps = { auth?: AuthUser }
 
 function MyApp({Component, pageProps}: AppProps<PageProps>) {
+  console.log('isAndroidWebView app:', isAndroidWebView())
   useEffect(printBuildInfo, [])
   useHasLoaded()
 
@@ -147,7 +150,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"
+          content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no, viewport-fit=cover"
         />
       </Head>
       <PostHogProvider client={posthog}>

@@ -24,9 +24,9 @@ import Sidebar from './nav/sidebar'
 import {useProfile} from 'web/hooks/use-profile'
 import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
-import {IS_MAINTENANCE} from "common/constants";
-import {MdThumbUp} from "react-icons/md";
-import {FaEnvelope} from "react-icons/fa";
+import {IS_MAINTENANCE} from "common/constants"
+import {MdThumbUp} from "react-icons/md"
+import {FaEnvelope} from "react-icons/fa"
 
 export function PageBase(props: {
   trackPageView: string | false
@@ -106,20 +106,20 @@ export function PageBase(props: {
   )
 }
 
-const Profiles = {name: 'Profiles', href: '/', icon: SolidHomeIcon};
-const ProfilesHome = {name: 'Profiles', href: '/', icon: HomeIcon};
-const faq = {name: 'FAQ', href: '/faq', icon: SolidQuestionIcon};
-const About = {name: 'About', href: '/about', icon: QuestionMarkCircleIcon};
-const Signin = {name: 'Sign in', href: '/signin', icon: UserCircleIcon};
-const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon};
-const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon};
-const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon};
-const Social = {name: 'Social', href: '/social', icon: LinkIcon};
-const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon};
-const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp};
-const Contact = {name: 'Contact', href: '/contact', icon: FaEnvelope};
-const News = {name: "What's new", href: '/news', icon: NewspaperIcon};
-const Settings = {name: "Settings", href: '/settings', icon: CogIcon};
+const Profiles = {name: 'Profiles', href: '/', icon: SolidHomeIcon}
+const ProfilesHome = {name: 'Profiles', href: '/', icon: HomeIcon}
+const faq = {name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
+const About = {name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
+const Signin = {name: 'Sign in', href: '/signin', icon: UserCircleIcon}
+const Notifs = {name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
+const NotifsSolid = {name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon}
+const Messages = {name: 'Messages', href: '/messages', icon: PrivateMessagesIcon}
+const Social = {name: 'Social', href: '/social', icon: LinkIcon}
+const Organization = {name: 'Organization', href: '/organization', icon: GlobeAltIcon}
+const Vote = {name: 'Vote', href: '/vote', icon: MdThumbUp}
+const Contact = {name: 'Contact', href: '/contact', icon: FaEnvelope}
+const News = {name: "What's new", href: '/news', icon: NewspaperIcon}
+const Settings = {name: "Settings", href: '/settings', icon: CogIcon}
 
 const base = [
   About,

@@ -1,6 +1,7 @@
 import {Head, Html, Main, NextScript} from 'next/document'
 import {ENV_CONFIG, IS_DEPLOYED} from 'common/envs/constants'
 import Script from 'next/script'
+import clsx from "clsx";
 
 export default function Document() {
   return (
@@ -40,7 +41,10 @@ export default function Document() {
           } catch(e){} })();`
         }}/>}
       </Head>
-      <body className="body-bg text-ink-1000">
+      <body className={clsx(
+        "body-bg text-ink-1000",
+        'app-content',
+      )}>
       <Main/>
       <NextScript/>
       </body>

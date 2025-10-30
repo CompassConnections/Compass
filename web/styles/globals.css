@@ -449,3 +449,15 @@ ol > li::marker {
     font-size: 1em;
     color: #374151;               /* pick a visible color */
 }
+
+.app-content {
+    padding-top: calc(env(safe-area-inset-top) + 30px);
+    /*padding-bottom: env(safe-area-inset-bottom);*/
+    box-sizing: border-box; /* ensure padding doesn’t break layout */
+}
+
+.safe-bottom {
+    /*bottom: env(safe-area-inset-bottom);*/
+    bottom: calc(env(safe-area-inset-bottom) + 30px);
+}
+

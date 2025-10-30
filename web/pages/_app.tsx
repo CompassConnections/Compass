@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
-import {GOOGLE_CLIENT_ID, isAndroidWebView} from "web/lib/firebase/users";
+import {GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -32,6 +32,40 @@ const logoFont = Major_Mono_Display({
 //   variable: '--font-main',
 //   subsets: ['latin'],
 // })
+
+async function oauthRedirect(event: any) {
+  console.log('Received oauthRedirect event');
+  console.log('Received oauthRedirect event:', event.detail);
+  const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
+  console.log('OAuth data:', detail);
+  const url = new URL(detail);
+
+  const code = url.searchParams.get('code');
+  if (!code) {
+    console.error('No code found in URL');
+    return;
+  }
+
+  const codeVerifier = localStorage.getItem('pkce_verifier');
+
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      code,
+      code_verifier: codeVerifier!,
+      redirect_uri: 'com.compassmeet://auth',
+      grant_type: 'authorization_code',
+    }),
+  });
+
+  const tokens = await tokenResponse.json();
+  console.log('Tokens:', tokens);
+}
+
+// Expose globally for native bridge
+(window as any).oauthRedirect = oauthRedirect;
 
 function printBuildInfo() {
   // These are undefined if e.g. dev server
@@ -61,43 +95,6 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
 
     return () => {
       Router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (isAndroidWebView()) {
-      console.log('Registering OAuth redirect listener for Android WebView')
-
-      window.addEventListener('oauthRedirect', async (event: any) => {
-        console.log('Received oauthRedirect event');
-        console.log('Received oauthRedirect event:', event.detail);
-        const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
-        console.log('OAuth data:', detail);
-        const url = new URL(detail);
-
-        const code = url.searchParams.get('code');
-        if (!code) {
-          console.error('No code found in URL');
-          return;
-        }
-
-        const codeVerifier = localStorage.getItem('pkce_verifier');
-
-        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: new URLSearchParams({
-            client_id: GOOGLE_CLIENT_ID,
-            code,
-            code_verifier: codeVerifier!,
-            redirect_uri: 'com.compassmeet://auth',
-            grant_type: 'authorization_code',
-          }),
-        });
-
-        const tokens = await tokenResponse.json();
-        console.log('Tokens:', tokens);
-      });
     }
   }, [])
 

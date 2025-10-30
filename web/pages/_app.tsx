@@ -12,8 +12,7 @@ import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
-import {GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
-import {WEB_URL} from "common/envs/constants";
+import {ANDROID_GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -85,10 +84,10 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
       const codeVerifier = localStorage.getItem('pkce_verifier');
 
       const body = {
-        client_id: GOOGLE_CLIENT_ID,
+        client_id: ANDROID_GOOGLE_CLIENT_ID,
         code,
         code_verifier: codeVerifier!,
-        redirect_uri: `${WEB_URL}/auth/callback`,
+        redirect_uri: 'com.compassmeet:/auth',
         grant_type: 'authorization_code',
       }
       console.log('Body:', body);

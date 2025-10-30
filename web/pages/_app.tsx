@@ -33,40 +33,6 @@ const logoFont = Major_Mono_Display({
 //   subsets: ['latin'],
 // })
 
-async function oauthRedirect(event: any) {
-  console.log('Received oauthRedirect event');
-  console.log('Received oauthRedirect event:', event.detail);
-  const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
-  console.log('OAuth data:', detail);
-  const url = new URL(detail);
-
-  const code = url.searchParams.get('code');
-  if (!code) {
-    console.error('No code found in URL');
-    return;
-  }
-
-  const codeVerifier = localStorage.getItem('pkce_verifier');
-
-  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      code,
-      code_verifier: codeVerifier!,
-      redirect_uri: 'com.compassmeet://auth',
-      grant_type: 'authorization_code',
-    }),
-  });
-
-  const tokens = await tokenResponse.json();
-  console.log('Tokens:', tokens);
-}
-
-// Expose globally for native bridge
-(window as any).oauthRedirect = oauthRedirect;
-
 function printBuildInfo() {
   // These are undefined if e.g. dev server
   if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
@@ -97,6 +63,42 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
       Router.events.off('routeChangeComplete', handleRouteChange)
     }
   }, [])
+
+  useEffect(() => {
+    async function oauthRedirect(event: any) {
+      console.log('Received oauthRedirect event');
+      console.log('Received oauthRedirect event:', event.detail);
+      const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
+      console.log('OAuth data:', detail);
+      const url = new URL(detail);
+
+      const code = url.searchParams.get('code');
+      if (!code) {
+        console.error('No code found in URL');
+        return;
+      }
+
+      const codeVerifier = localStorage.getItem('pkce_verifier');
+
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+          client_id: GOOGLE_CLIENT_ID,
+          code,
+          code_verifier: codeVerifier!,
+          redirect_uri: 'com.compassmeet://auth',
+          grant_type: 'authorization_code',
+        }),
+      });
+
+      const tokens = await tokenResponse.json();
+      console.log('Tokens:', tokens);
+    }
+
+    // Expose globally for native bridge
+    (window as any).oauthRedirect = oauthRedirect;
+  }, []);
 
   const title = 'Compass'
   const description = 'The platform for intentional connections'

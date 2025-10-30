@@ -18,6 +18,7 @@ export default function ProfilesPage() {
     <PageBase trackPageView={'user profiles'}>
       <Col className="items-center">
         <Col className={'w-full rounded px-3 py-4 sm:px-6'}>
+          {/*<ProfilesHome/>*/}
           {user ? <ProfilesHome/> : <LoggedOutHome/>}
         </Col>
       </Col>

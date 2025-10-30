@@ -58,15 +58,15 @@ export function writeReferralInfo(
  */
 export async function webviewGoogleSignin() {
 
-  const params = new URLSearchParams({
+  const params = {
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     response_type: 'code',
     scope: 'openid email profile',
-  });
+  }
   console.log('params', params)
 
-  window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, '_system');
+  window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(params)}`, '_system');
 }
 
 export async function firebaseLogin() {

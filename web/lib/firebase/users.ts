@@ -43,15 +43,58 @@ export function writeReferralInfo(
   }
 }
 
-// export function isAndroidWebView() {
-//   try {
-//     // Detect if Android bridge exists
-//     return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
-//   } catch {
-//     return false;
-//   }
-// }
+export function isAndroidWebView() {
+  try {
+    // Detect if Android bridge exists
+    return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
+  } catch {
+    return false;
+  }
+}
 
+async function generatePKCE() {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  const codeVerifier = btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  const encoder = new TextEncoder();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(codeVerifier));
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const codeChallenge = btoa(String.fromCharCode(...hashArray))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  console.log({codeVerifier, codeChallenge})
+  return {codeVerifier, codeChallenge};
+}
+
+export const GOOGLE_CLIENT_ID = '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com'
+
+/**
+ * Authenticates a Firebase client running a webview APK on Android with Google OAuth.
+ *
+ * `https://accounts.google.com/o/oauth2/v2/auth?${params}` to get the code (in external browser, as google blocks it in webview)
+ * Redirects to `com.compassmeet:/auth` (in webview java main activity)
+ * 'https://oauth2.googleapis.com/token' to get the ID token (in javascript app)
+ * signInWithCredential(auth, credential) to set up firebase user in client (auth.currentUser)
+ *
+ * @public
+ */
+export async function webviewGoogleSignin() {
+  const {codeVerifier, codeChallenge} = await generatePKCE();
+  localStorage.setItem('pkce_verifier', codeVerifier);
+
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: 'com.compassmeet:/auth',  // your deep link
+    response_type: 'code',
+    scope: 'openid email profile',
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
+  });
+
+  window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, '_system');
+}
 
 // export async function googleNativeLogin() {
 //   console.log('Platform:', Capacitor.getPlatform())
@@ -94,12 +137,11 @@ export function writeReferralInfo(
 // export const isRunningInAPK = () => typeof window !== 'undefined' && (window as any).IS_APK === true
 
 export async function firebaseLogin() {
-  // if (isAndroidWebView()) {
-  //   console.log('Running in APK')
-  //   return await googleNativeLogin()
-  // return await signInWithRedirect(auth, new GoogleAuthProvider())
-  // }
-  // console.log('Running in web')
+  if (isAndroidWebView()) {
+    console.log('Running in APK')
+    return await webviewGoogleSignin()
+  }
+  console.log('Running in web')
   const provider = new GoogleAuthProvider()
   return signInWithPopup(auth, provider).then(async (result) => {
     return result

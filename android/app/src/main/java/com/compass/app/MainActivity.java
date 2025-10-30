@@ -13,7 +13,39 @@ import com.getcapacitor.BridgeWebViewClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+
+
+
 public class MainActivity extends BridgeActivity {
+
+    // Declare this at class level
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.i("CompassApp", "Permission granted");
+                    // Permission granted – you can show notifications
+                } else {
+                    Log.i("CompassApp", "Permission denied");
+                    // Permission denied – handle gracefully
+                }
+            });
+
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API 33
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission not yet granted; request it
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
     public static class NativeBridge {
         @JavascriptInterface
         public boolean isNativeApp() {
@@ -58,6 +90,7 @@ public class MainActivity extends BridgeActivity {
         settings.setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new NativeBridge(), "AndroidBridge");
 
+        askNotificationPermission();
     }
 
 }

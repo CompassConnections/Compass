@@ -5,6 +5,7 @@ export default function GoogleAuthCallback() {
   useEffect(() => {
     async function fetchToken() {
       const params = new URLSearchParams(window.location.search);
+      console.log('/auth/callback code', params);
       const code = params.get('code');
       const state = params.get('state');
       console.log('/auth/callback code', code);

@@ -5,6 +5,7 @@ import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
+import {IS_LOCAL, WEB_URL} from "common/envs/constants";
 
 dayjs.extend(utc)
 
@@ -88,7 +89,7 @@ export async function webviewGoogleSignin() {
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: 'https://www.compassmeet.com/auth/callback',
+    redirect_uri: `${WEB_URL}/auth/callback`,
     response_type: 'code',
     scope: 'openid email profile',
     code_challenge: codeChallenge,
@@ -139,7 +140,7 @@ export async function webviewGoogleSignin() {
 // export const isRunningInAPK = () => typeof window !== 'undefined' && (window as any).IS_APK === true
 
 export async function firebaseLogin() {
-  if (isAndroidWebView()) {
+  if (isAndroidWebView() || IS_LOCAL) {
     console.log('Running in APK')
     return await webviewGoogleSignin()
   }

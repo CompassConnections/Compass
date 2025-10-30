@@ -13,6 +13,7 @@ import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
 import {GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
+import {WEB_URL} from "common/envs/constants";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -87,7 +88,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         client_id: GOOGLE_CLIENT_ID,
         code,
         code_verifier: codeVerifier!,
-        redirect_uri: 'com.compassmeet://auth',
+        redirect_uri: `${WEB_URL}/auth/callback`,
         grant_type: 'authorization_code',
       }
       console.log('Body:', body);

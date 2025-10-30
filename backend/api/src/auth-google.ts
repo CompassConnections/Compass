@@ -1,5 +1,6 @@
 import {APIError, APIHandler} from './helpers/endpoint'
-import {GOOGLE_CLIENT_ID, REDIRECT_URI} from "common/constants";
+import {GOOGLE_CLIENT_ID} from "common/constants";
+import {REDIRECT_URI} from "common/envs/constants";
 
 export const authGoogle: APIHandler<'auth-google'> = async (
   {code, codeVerifier},

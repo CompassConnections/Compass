@@ -66,9 +66,8 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
 
   useEffect(() => {
     async function oauthRedirect(event: any) {
-      console.log('Received oauthRedirect event');
-      console.log('Received oauthRedirect event:', event.detail);
-      const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
+      console.log('Received oauthRedirect event:', event);
+      const detail = event
       console.log('OAuth data:', detail);
       const url = new URL(detail);
 

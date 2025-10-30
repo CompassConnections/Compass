@@ -1,4 +1,4 @@
-import {APIHandler} from './helpers/endpoint'
+import {APIError, APIHandler} from './helpers/endpoint'
 import {GOOGLE_CLIENT_ID} from "common/constants";
 
 export const authGoogle: APIHandler<'auth-google'> = async (
@@ -14,7 +14,7 @@ export const authGoogle: APIHandler<'auth-google'> = async (
     code: code as string,
     code_verifier: codeVerifier as string,
     grant_type: 'authorization_code',
-    redirect_uri: 'https://www.compassmeet.com/auth/callback',
+    redirect_uri: `https://compassmeet.com/auth/callback`,
   };
   console.log('Body:', body)
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -24,6 +24,10 @@ export const authGoogle: APIHandler<'auth-google'> = async (
   });
 
   const tokens = await tokenRes.json();
+  if (tokens.error) {
+    console.error('Google token error:', tokens);
+    throw new APIError(400, 'Google token error: ' + JSON.stringify(tokens))
+  }
   console.log('Google Tokens:', tokens);
 
   return {

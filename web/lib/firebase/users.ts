@@ -57,7 +57,6 @@ export function writeReferralInfo(
  * @public
  */
 export async function webviewGoogleSignin() {
-
   const params = {
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
@@ -65,7 +64,6 @@ export async function webviewGoogleSignin() {
     scope: 'openid email profile',
   }
   console.log('params', params)
-
   window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(params)}`, '_system');
 }
 

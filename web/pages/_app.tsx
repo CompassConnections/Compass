@@ -13,6 +13,8 @@ import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
 import {unauthedApi} from "common/util/api";
+import {GoogleAuthProvider, signInWithCredential} from "firebase/auth";
+import {auth} from "web/lib/firebase/users";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -87,9 +89,21 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
         return;
       }
 
-      const {result} = await unauthedApi('auth-google', {code, codeVerifier})
-      console.log('/auth-google result', result);
-      //   google sign in
+      try {
+        const {result} = await unauthedApi('auth-google', {code, codeVerifier})
+        const googleTokens = result.tokens
+        console.log('/auth-google tokens', googleTokens);
+        // Create a Firebase credential from the Google tokens
+        const credential = GoogleAuthProvider.credential(googleTokens.id_token, googleTokens.access_token)
+        // Sign in with Firebase using the credential
+        const userCredential = await signInWithCredential(auth, credential)
+        console.log('Creds:', userCredential)
+        console.log('Firebase user:', userCredential.user)
+        return userCredential
+      } catch (e) {
+        console.error('Error during OAuth flow:', e);
+        return
+      }
     }
 
     // Expose globally for native bridge

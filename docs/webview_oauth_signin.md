@@ -34,7 +34,7 @@ A **custom scheme** is a URL protocol that your app owns.
 Example:
 
 ```
-com.compassmeet:/auth
+com.compassmeet://auth
 ```
 
 or
@@ -63,7 +63,7 @@ localStorage.setItem('pkce_verifier', codeVerifier);
 
 const params = new URLSearchParams({
   client_id: GOOGLE_CLIENT_ID,
-  redirect_uri: 'com.compassmeet:/auth',  // your deep link
+  redirect_uri: 'com.compassmeet://auth',  // your deep link
   response_type: 'code',
   scope: 'openid email profile',
   code_challenge: codeChallenge,
@@ -82,7 +82,7 @@ Here, `_system` (or using Capacitor Browser plugin) opens the **system browser**
 After login, Google redirects to your registered `redirect_uri`, e.g.:
 
 ```
-com.compassmeet:/auth?code=4/0AfJohXyZ...
+com.compassmeet://auth?code=4/0AfJohXyZ...
 ```
 
 ---
@@ -100,13 +100,26 @@ In your **Android app code**, you register an intent filter in `AndroidManifest.
 </intent-filter>
 ```
 
-Then, in your app’s main activity (Kotlin/Java), you listen for deep links:
+Then, in your app’s main activity, you listen for deep links.
+In java:
+```java
+@Override
+protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
 
+    String data = intent.getDataString();
+    if (data != null && data.startsWith("com.compassmeet://auth")) {
+        bridge.triggerWindowJSEvent("oauthRedirect", data);
+    }
+}
+```
+
+Or in Kotlin:
 ```kotlin
 override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     val data = intent.dataString
-    if (data != null && data.startsWith("com.compassmeet:/auth")) {
+    if (data != null && data.startsWith("com.compassmeet://auth")) {
         bridge.triggerWindowJSEvent("oauthRedirect", data)
     }
 }
@@ -133,7 +146,7 @@ window.addEventListener('oauthRedirect', async (event: any) => {
       client_id: GOOGLE_CLIENT_ID,
       code,
       code_verifier: codeVerifier!,
-      redirect_uri: 'com.compassmeet:/auth',
+      redirect_uri: 'com.compassmeet://auth',
       grant_type: 'authorization_code',
     }),
   });
@@ -174,10 +187,10 @@ However, universal links are more setup-heavy (require hosting a `.well-known/as
 
 ## 6. Summary
 
-| Step | What happens                                                  | Where          |
-| ---- | ------------------------------------------------------------- | -------------- |
-| 1    | Generate PKCE challenge and open Google OAuth URL             | WebView        |
-| 2    | User signs in                                                 | System browser |
-| 3    | Browser redirects to deep link (e.g. `com.compassmeet:/auth`) | OS → App       |
-| 4    | App intercepts deep link and injects it into WebView          | Native layer   |
-| 5    | WebView exchanges `code` for tokens via PKCE                  | Web app        |
+| Step | What happens                                                   | Where          |
+| ---- |----------------------------------------------------------------| -------------- |
+| 1    | Generate PKCE challenge and open Google OAuth URL              | WebView        |
+| 2    | User signs in                                                  | System browser |
+| 3    | Browser redirects to deep link (e.g. `com.compassmeet://auth`) | OS → App       |
+| 4    | App intercepts deep link and injects it into WebView           | Native layer   |
+| 5    | WebView exchanges `code` for tokens via PKCE                   | Web app        |

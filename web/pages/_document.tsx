@@ -43,7 +43,7 @@ export default function Document() {
       </Head>
       <body className={clsx(
         "body-bg text-ink-1000",
-        'app-content',
+        'safe-top',
       )}>
       <Main/>
       <NextScript/>

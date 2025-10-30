@@ -67,8 +67,12 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   useEffect(() => {
     async function oauthRedirect(event: any) {
       console.log('Received oauthRedirect event:', event);
-      const detail = event
+      const detail = event.data
       console.log('OAuth data:', detail);
+      if (!detail) {
+        console.error('No detail found in event');
+        return;
+      }
       const url = new URL(detail);
 
       const code = url.searchParams.get('code');

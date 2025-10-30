@@ -13,7 +13,7 @@ import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
 import {GoogleAuthProvider, signInWithCredential} from "firebase/auth";
-import {auth} from "web/lib/firebase/users";
+import {auth, GOOGLE_CLIENT_ID} from "web/lib/firebase/users";
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -67,16 +67,39 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
 
   useEffect(() => {
     async function oauthRedirect(event: any) {
-      const {idToken, accessToken} = event
-      // Create a Firebase credential from the Google tokens
-      const credential = GoogleAuthProvider.credential(idToken, accessToken)
+      console.log('Received oauthRedirect event:', event);
+      const detail = event.data
+      console.log('OAuth data:', detail);
+      if (!detail) {
+        console.error('No detail found in event');
+        return;
+      }
+      const url = new URL(detail);
 
-      // Sign in with Firebase using the credential
-      const userCredential = await signInWithCredential(auth, credential)
+      const code = url.searchParams.get('code');
+      if (!code) {
+        console.error('No code found in URL');
+        return;
+      }
 
-      console.log('Firebase user:', userCredential.user)
+      const codeVerifier = localStorage.getItem('pkce_verifier');
 
-      return userCredential
+      const body = new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        code,
+        code_verifier: codeVerifier!,
+        redirect_uri: 'com.compassmeet://auth',
+        grant_type: 'authorization_code',
+      });
+      console.log('Body:', body);
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body,
+      });
+
+      const tokens = await tokenResponse.json();
+      console.log('Tokens:', tokens);
     }
 
     // Expose globally for native bridge

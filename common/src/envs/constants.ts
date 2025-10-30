@@ -58,8 +58,7 @@ console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 // }
 
 export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
-const protocol = IS_LOCAL ? 'http' : 'https'
-export const WEB_URL = `${protocol}://${DOMAIN}`
+export const WEB_URL = IS_LOCAL ? `http://${LOCAL_WEB_DOMAIN}` : `https://www.${DOMAIN}`
 export const BACKEND_DOMAIN = IS_LOCAL ? LOCAL_BACKEND_DOMAIN : ENV_CONFIG.backendDomain
 export const FIREBASE_CONFIG = ENV_CONFIG.firebaseConfig
 export const PROJECT_ID = ENV_CONFIG.firebaseConfig.projectId

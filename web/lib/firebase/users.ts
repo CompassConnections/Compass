@@ -5,7 +5,7 @@ import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
-import {IS_LOCAL, WEB_URL} from "common/envs/constants";
+import {IS_LOCAL} from "common/envs/constants";
 import {GOOGLE_CLIENT_ID} from "common/constants";
 
 dayjs.extend(utc)
@@ -86,7 +86,7 @@ export async function webviewGoogleSignin() {
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: `${WEB_URL}/auth/callback`,
+    redirect_uri: `https://compassmeet.com/auth/callback`,
     response_type: 'code',
     scope: 'openid email profile',
     code_challenge: codeChallenge,

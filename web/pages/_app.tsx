@@ -16,6 +16,14 @@ import {unauthedApi} from "common/util/api";
 import {GoogleAuthProvider, signInWithCredential} from "firebase/auth";
 import {auth} from "web/lib/firebase/users";
 import {isAndroidWebView} from "web/lib/util/webview";
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+
+if (Capacitor.isNativePlatform()) {
+  // Only runs on iOS/Android native
+  StatusBar.setOverlaysWebView({ overlay: false }).catch(console.warn);
+  StatusBar.setStyle({ style: Style.Light }).catch(console.warn);
+}
 
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts

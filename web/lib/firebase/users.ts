@@ -88,7 +88,7 @@ export async function webviewGoogleSignin() {
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: 'com.compassmeet:/auth',  // your deep link
+    redirect_uri: 'https://www.compassmeet.com/auth/callback',
     response_type: 'code',
     scope: 'openid email profile',
     code_challenge: codeChallenge,

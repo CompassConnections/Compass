@@ -69,8 +69,11 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
       console.log('Registering OAuth redirect listener for Android WebView')
 
       window.addEventListener('oauthRedirect', async (event: any) => {
+        console.log('Received oauthRedirect event');
         console.log('Received oauthRedirect event:', event.detail);
-        const url = new URL(event.detail);
+        const detail = typeof event.detail === 'string' ? JSON.parse(event.detail) : event.detail
+        console.log('OAuth data:', detail);
+        const url = new URL(detail);
 
         const code = url.searchParams.get('code');
         if (!code) {
@@ -87,7 +90,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
             client_id: GOOGLE_CLIENT_ID,
             code,
             code_verifier: codeVerifier!,
-            redirect_uri: 'com.compassmeet:/auth',
+            redirect_uri: 'com.compassmeet://auth',
             grant_type: 'authorization_code',
           }),
         });

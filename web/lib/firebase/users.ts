@@ -76,7 +76,7 @@ export const GOOGLE_CLIENT_ID = WEB_GOOGLE_CLIENT_ID
  * Authenticates a Firebase client running a webview APK on Android with Google OAuth.
  *
  * `https://accounts.google.com/o/oauth2/v2/auth?${params}` to get the code (in external browser, as google blocks it in webview)
- * Redirects to `com.compassmeet:/auth` (in webview java main activity)
+ * Redirects to `com.compassmeet://auth` (in webview java main activity)
  * 'https://oauth2.googleapis.com/token' to get the ID token (in javascript app)
  * signInWithCredential(auth, credential) to set up firebase user in client (auth.currentUser)
  *

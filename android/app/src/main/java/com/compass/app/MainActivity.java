@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends BridgeActivity {
-    public class NativeBridge {
+    public static class NativeBridge {
         @JavascriptInterface
         public boolean isNativeApp() {
             return true;
@@ -32,9 +32,7 @@ public class MainActivity extends BridgeActivity {
             try {
                 String payload = new JSONObject().put("data", data).toString();
                 Log.i("CompassApp", "Payload: " + payload);
-                bridge.getWebView().post(() -> {
-                    bridge.getWebView().evaluateJavascript("oauthRedirect(" + payload + ");", null);
-                });
+                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("oauthRedirect(" + payload + ");", null));
             } catch (JSONException e) {
                 Log.i("CompassApp", "Failed to encode JSON payload", e);
             }

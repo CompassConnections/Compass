@@ -78,7 +78,7 @@ Yes.
 
 * Your data will **never be sold**.
 * You can **control what is visible publicly**.
-* Messaging may move toward **end-to-end encryption** in future versions.
+* Chat messages are stored in the database with AES-256 encryption (it may move toward **end-to-end encryption** in future versions).
 * Stored in secure Supabase and Firebase databases.
 
 ### How is the compatibility score calculated?

@@ -149,7 +149,7 @@ const LoadedGeneralSettings = (props: {
       <h5>Email</h5>
 
       <Button onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
-        {isEmailVerified ? 'Email Verified' : 'Send verification email'}
+        {isEmailVerified ? 'Email Verified ✔️' : 'Send verification email'}
       </Button>
 
       {!isChangingEmail ? (

@@ -8,10 +8,11 @@ import FavIcon from "web/public/FavIcon"
 
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {getProfileRow} from "common/profiles/profile"
+import {sendPasswordReset} from "web/lib/firebase/password"
+import {useUser} from "web/hooks/use-user"
 import {db} from "web/lib/supabase/db"
 import Router from "next/router"
 import {PageBase} from "web/components/page-base"
-import {useUser} from "web/hooks/use-user"
 import {GoogleButton} from "web/components/buttons/sign-up-button"
 import {SEO} from "web/components/SEO"
 
@@ -162,6 +163,27 @@ function RegisterComponent() {
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                 />
+                <div className="text-right mt-1 custom-link">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget.closest('form');
+                      if (form) {
+                        const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
+                        if (emailInput?.value) {
+                          sendPasswordReset(emailInput.value);
+                        } else {
+                          // If no email is entered, show an error
+                          setError('Please enter your email first');
+                        }
+                      }
+                    }}
+                    className="text-sm focus:outline-none"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
               </div>
             </div>
 

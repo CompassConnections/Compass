@@ -12,11 +12,12 @@ import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 import {deleteAccount} from "web/lib/util/delete";
 import router from "next/router";
 import {Button} from "web/components/buttons/button";
-import {getAuth, sendEmailVerification, sendPasswordResetEmail, updateEmail} from 'firebase/auth';
+import {sendEmailVerification, updateEmail} from 'firebase/auth';
 import {auth} from "web/lib/firebase/users";
 import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
 import {WithPrivateUser} from "web/components/user/with-user";
+import {sendPasswordReset} from "web/lib/firebase/password";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
@@ -72,25 +73,6 @@ const LoadedGeneralSettings = (props: {
           console.log("Failed to delete account")
         })
     }
-  }
-
-  const sendPasswordReset = async () => {
-    if (!privateUser?.email) {
-      toast.error('No email found on your account.')
-      return
-    }
-    const auth = getAuth()
-    toast.promise(
-      sendPasswordResetEmail(auth, privateUser.email),
-      {
-        loading: 'Sending password reset email...',
-        success: 'Password reset email sent — check your inbox and spam.',
-        error: 'Failed to send password reset email.',
-      }
-    )
-      .catch(() => {
-        console.log("Failed to send password reset email")
-      })
   }
 
   const changeUserEmail = async (newEmail: string) => {
@@ -195,7 +177,7 @@ const LoadedGeneralSettings = (props: {
 
       <h5>Password</h5>
       <Button
-        onClick={sendPasswordReset}
+        onClick={() => sendPasswordReset(privateUser?.email)}
         className="mb-2"
       >
         Send password reset email

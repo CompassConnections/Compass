@@ -293,6 +293,7 @@ async function sendMobileNotifications(
 interface PushPayload {
   title: string
   body: string
+  url: string
   data?: Record<string, string>
 }
 
@@ -302,6 +303,9 @@ export async function sendPushToToken(token: string, payload: PushPayload) {
     notification: {
       title: payload.title,
       body: payload.body,
+      data: {
+        url: payload.url,
+      },
     },
     data: payload.data, // optional custom key-value pairs
   }

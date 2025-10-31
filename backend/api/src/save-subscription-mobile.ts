@@ -12,18 +12,14 @@ export const saveSubscriptionMobile: APIHandler<'save-subscription-mobile'> = as
 
   try {
     const pg = createSupabaseDirectClient()
-    // Check if a subscription already exists
-    const exists = await pg.oneOrNone(
-      'select id from push_subscriptions_mobile where token = $1',
-      [token]
+    await pg.none(`
+                insert into push_subscriptions_mobile(token, platform, user_id)
+                values ($1, $2, $3)
+                on conflict(token) do update set platform = excluded.platform,
+                                                 user_id = excluded.user_id
+      `,
+      [token, 'android', userId]
     );
-
-    if (!exists) {
-      await pg.none(`insert into push_subscriptions_mobile(token, platform, user_id) values($1, $2, $3) `,
-        [token, 'android', userId]
-      );
-    }
-
     return {success: true};
   } catch (err) {
     console.error('Error saving subscription', err);

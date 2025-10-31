@@ -50,6 +50,10 @@ export const useWebsocketUser = (userId: string | undefined) => {
       getFullUserById(userId).then((result) => {
         setUser(result)
       })
+        .catch(() => {
+          console.log('Failed to fetch user')
+          setUser(null)
+        })
     } else {
       setUser(null)
     }

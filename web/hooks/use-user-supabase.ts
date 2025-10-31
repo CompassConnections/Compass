@@ -16,6 +16,9 @@ export function useUserById(userId: string | undefined) {
       getFullUserById(userId).then((result) => {
         setUser(result)
       })
+        .catch(() => {
+          console.log('Failed to fetch user')
+        })
     }
   }, [userId])
   return user

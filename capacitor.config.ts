@@ -10,7 +10,11 @@ const config: CapacitorConfig = {
   server: {
     url: LOCAL_ANDROID ? "http://10.0.2.2:3000" : 'https://compassmeet.com',
     cleartext: true,
-    "allowNavigation": ["www.compassmeet.com"],
+    allowNavigation: [
+      "www.compassmeet.com",
+      "localhost",
+      "10.0.2.2",
+    ],
   },
 };
 

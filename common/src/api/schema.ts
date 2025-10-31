@@ -742,7 +742,7 @@ export const API = (_apiTypeCheck = {
       code: z.string(),
     }),
     summary: 'Google Auth',
-    tag: 'Authentication',
+    tag: 'Tokens',
   },
 } as const)
 

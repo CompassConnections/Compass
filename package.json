@@ -18,6 +18,7 @@
     "clean-install": "./scripts/install.sh",
     "build-web": "./scripts/build_web.sh",
     "build-sync-android": "./scripts/build_sync_android.sh",
+    "sync-android": "./scripts/sync_android.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "jest",
     "test:watch": "jest --watch",

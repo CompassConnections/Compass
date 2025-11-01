@@ -2,12 +2,13 @@ import {useEffect} from "react";
 import {urlBase64ToUint8Array} from "common/util/parse";
 import {api} from "web/lib/api";
 import {useUser} from "web/hooks/use-user";
+import {isNativeMobile} from "web/lib/util/webview";
 
 const vapidPublicKey = 'BF80q7LrDa4a5ksS2BZrX6PPvL__y0jCNvNqyUzvk8Y4ofTdrS0kRnKfGpClCQAHWmcPHIUmWq8jgQ4ROquSpJQ'
 
 export default function WebPush() {
   const user = useUser(); // authenticated user
-  const isWeb = typeof window !== 'undefined' && 'serviceWorker' in navigator;
+  const isWeb = typeof window !== 'undefined' && 'serviceWorker' in navigator && !isNativeMobile()
   useEffect(() => {
     if (!user?.id || !isWeb) return;
     console.log('WebPush', user)

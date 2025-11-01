@@ -68,6 +68,7 @@ export const VERIFIED_USERNAMES = [
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 
 export const RESERVED_PATHS = [
+  '',
   '404',
   '_app',
   '_document',

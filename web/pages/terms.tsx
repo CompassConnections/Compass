@@ -86,22 +86,31 @@ export default function TermsPage() {
           material will be removed and may lead to suspension or termination of accounts involved.
         </p>
         <p>
-          b. <strong>Violence and Harmful Content.</strong> Compass does <strong>not allow the sharing of real-world,
+          b. <strong>Child Sexual Abuse and Exploitation (CSAE).</strong> Compass maintains a <strong>zero-tolerance
+          policy</strong> toward any form of child sexual abuse or exploitation (“CSAE”). CSAE refers to content or
+          behavior that sexually exploits, abuses, or endangers children — including but not limited to grooming a child
+          for sexual exploitation, sextortion, trafficking of a child for sex, or otherwise sexually exploiting a child.
+          Any suspected CSAE will result in <strong>immediate account termination</strong> and may be reported
+          to <strong>law enforcement and the National Center for Missing and Exploited Children (NCMEC)</strong> as
+          required by law.
+        </p>
+        <p>
+          c. <strong>Violence and Harmful Content.</strong> Compass does <strong>not allow the sharing of real-world,
           graphic violence</strong> outside of a newsworthy, contextual, or educational purpose. Content that promotes
           or glorifies violence will be removed.
         </p>
         <p>
-          c. <strong>Location Sharing.</strong> Compass does <strong>not share users’ precise physical location with
+          d. <strong>Location Sharing.</strong> Compass does <strong>not share users’ precise physical location with
           other users</strong> without explicit consent. Any optional location-based features will clearly disclose how
           location data is used and shared.
         </p>
         <p>
-          d. <strong>Digital Goods and Transactions.</strong> Compass is a <strong>completely free platform</strong>. It
+          e. <strong>Digital Goods and Transactions.</strong> Compass is a <strong>completely free platform</strong>. It
           does <strong>not sell digital goods, offer in-app purchases, or charge for access to features</strong>. All
           functionality is available without payment.
         </p>
         <p>
-          e. <strong>User Safety Controls.</strong> Compass includes built-in features that allow users to:
+          f. <strong>User Safety Controls.</strong> Compass includes built-in features that allow users to:
           <ul className="list-disc list-inside mt-2">
             <li>Block other users or specific user-generated content.</li>
             <li>Report users or content that violates community standards.</li>

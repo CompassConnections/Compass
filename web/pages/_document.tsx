@@ -24,7 +24,7 @@ export default function Document() {
         {/*/!* Link to your manifest *!/*/}
         <link rel="manifest" href="/manifest.json"/>
         {/*/!* App icons *!/*/}
-        <link rel="apple-touch-icon" href="/favicon.ico"/>
+        <link rel="apple-touch-icon" href="https://www.compassmeet.com/favicon.ico"/>
 
         <Script src="/init-theme.js" strategy="beforeInteractive"/>
         {IS_DEPLOYED && <Script id="devtools-warning" strategy="afterInteractive" dangerouslySetInnerHTML={{

@@ -1,4 +1,4 @@
-package com.compass.app;
+package com.compassconnections.app;
 
 import android.Manifest;
 import android.content.Intent;

@@ -190,7 +190,7 @@ Backend logs can be accessed from the output of `yarn prod / dev` like in the we
 Java/Kotlin logs can be accessed via Android Studio's Logcat.  
 ```  
 adb logcat | grep CompassApp
-adb logcat | grep com.compass.app
+adb logcat | grep com.compassconnections.app
 adb logcat | grep Capacitor
 ```
 
@@ -211,7 +211,7 @@ webView.setWebChromeClient(new WebChromeClient() {
 ## 10. Deploy to Play Store
 
 1. Sign the release APK or AAB.
-2. Verify package name matches Firebase settings (`com.compass.app`).
+2. Verify package name matches Firebase settings (`com.compassconnections.app`).
 3. Upload to Google Play Console.
 4. Add Privacy Policy and content rating.
 5. Submit for review.
@@ -294,7 +294,7 @@ Was already done for Compass, so you only need to do the steps below if you crea
 1. Add a **Web app** → obtain `firebaseConfig`
 2. Add an **Android app**
 
-    * Package name: `com.compass.app`
+    * Package name: `com.compassconnections.app`
     * Add your SHA-1 and SHA-256 fingerprints (see below)
     * Download `google-services.json` and put it in:
 

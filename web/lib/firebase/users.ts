@@ -1,13 +1,14 @@
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {getAuth, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
+import {getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
-import {GOOGLE_CLIENT_ID} from "common/constants";
-import {REDIRECT_URI} from "common/envs/constants";
-import {isAndroidWebView} from "web/lib/util/webview";
+import {GOOGLE_CLIENT_ID} from "common/constants"
+import {isAndroidWebView} from "web/lib/util/webview"
+import {SocialLogin} from "@capgo/capacitor-social-login"
+import {Capacitor} from "@capacitor/core"
 
 dayjs.extend(utc)
 
@@ -54,23 +55,60 @@ export function writeReferralInfo(
  * Calls backend endpoint `https://api.compassmeet.com/auth-google` to get the tokens from the code ('https://oauth2.googleapis.com/token')
  * Uses signInWithCredential(auth, credential) to set up firebase user in the client (auth.currentUser)
  *
+ * Deprecated for SocialLogin with capacitor, which is native and faster
+ *
  * @public
  */
-export async function webviewGoogleSignin() {
-  const params = {
-    client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'code',
-    scope: 'openid email profile',
+// export async function webviewGoogleSignin() {
+//   const params = {
+//     client_id: GOOGLE_CLIENT_ID,
+//     redirect_uri: REDIRECT_URI,
+//     response_type: 'code',
+//     scope: 'openid email profile',
+//   }
+//   console.log('params', params)
+//   window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(params)}`, '_system')
+// }
+
+/**
+ * Authenticates a Firebase client running a webview APK on Android with native Google OAuth.
+ *
+ * @public
+ */
+export async function googleNativeLogin() {
+  console.log('Platform:', Capacitor.getPlatform())
+  console.log('URL origin:', window.location.origin)
+
+  await SocialLogin.initialize({google: {webClientId: GOOGLE_CLIENT_ID}})
+
+  // Run the native Google OAuth
+  const {result}: any = await SocialLogin.login({provider: 'google', options: {}})
+
+  console.log('SocialLogin.login result:', JSON.stringify(result))
+
+  // Extract the tokens from the native result
+  const idToken = result?.idToken
+  const accessToken = result?.accessToken?.token
+
+  if (!idToken) {
+    throw new Error('No idToken returned from Google login')
   }
-  console.log('params', params)
-  window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams(params)}`, '_system');
+
+  // Create a Firebase credential from the Google tokens
+  const credential = GoogleAuthProvider.credential(idToken, accessToken)
+
+  // Sign in with Firebase using the credential
+  const userCredential = await signInWithCredential(auth, credential)
+
+  console.log('Firebase user:', userCredential.user)
+
+  return userCredential
 }
 
 export async function firebaseLogin() {
   if (isAndroidWebView()) {
     console.log('Running in APK')
-    return await webviewGoogleSignin()
+    return await googleNativeLogin()
   }
   console.log('Running in web')
   const provider = new GoogleAuthProvider()

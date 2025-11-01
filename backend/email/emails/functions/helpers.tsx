@@ -10,6 +10,7 @@ import {render} from "@react-email/render"
 import {MatchesType} from "common/profiles/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";
+import * as admin from "firebase-admin";
 
 export const fromEmail = 'Compass <compass@compassmeet.com>'
 
@@ -82,6 +83,7 @@ export const sendWelcomeEmail = async (
   privateUser: PrivateUser,
 ) => {
   if (!privateUser.email) return
+  const verificationLink = await admin.auth().generateEmailVerificationLink(privateUser.email);
   return await sendEmail({
     from: fromEmail,
     subject: `Welcome to Compass!`,
@@ -91,6 +93,7 @@ export const sendWelcomeEmail = async (
         toUser={toUser}
         unsubscribeUrl={UNSUBSCRIBE_URL}
         email={privateUser.email}
+        verificationLink={verificationLink}
       />
     ),
   })

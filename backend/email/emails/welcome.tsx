@@ -4,27 +4,33 @@ import {type User} from 'common/user'
 import {mockUser,} from './functions/mock'
 import {button, container, content, Footer, main, paragraph} from "email/utils";
 
-function randomHex(length: number) {
-  const bytes = new Uint8Array(Math.ceil(length / 2));
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, b => b.toString(16).padStart(2, "0"))
-    .join("")
-    .slice(0, length);
-}
+// function randomHex(length: number) {
+//   const bytes = new Uint8Array(Math.ceil(length / 2));
+//   crypto.getRandomValues(bytes);
+//   return Array.from(bytes, b => b.toString(16).padStart(2, "0"))
+//     .join("")
+//     .slice(0, length);
+// }
 
 interface WelcomeEmailProps {
   toUser: User
   unsubscribeUrl: string
   email?: string
+  verificationLink?: string
 }
 
 export const WelcomeEmail = ({
                                toUser,
                                unsubscribeUrl,
                                email,
+                               verificationLink,
                              }: WelcomeEmailProps) => {
   const name = toUser.name.split(' ')[0]
-  const confirmUrl = `https://compassmeet.com/confirm-email/${randomHex(16)}`
+
+  // Some users may already have a verified email (e.g., signed it with Googl), but we send them a link anyway so that
+  // their email provider marks Compass as spam-free once they click the link.
+  // We can remove the verif link for them if we ask the user to click on another link in the email (which would not be related to email verification)
+  // const verificationLink = `https://compassmeet.com/confirm-email/${randomHex(16)}`
 
   return (
     <Html>
@@ -49,14 +55,14 @@ export const WelcomeEmail = ({
 
             <Button
               style={button}
-              href={confirmUrl}
+              href={verificationLink}
             >
               Confirm My Email
             </Button>
 
             <Text style={{marginTop: "40px", fontSize: "10px", color: "#555"}}>
               Or copy and paste this link into your browser: <br/>
-              <a href={confirmUrl}>{confirmUrl}</a>
+              <a href={verificationLink}>{verificationLink}</a>
             </Text>
 
             <Text style={{marginTop: "40px", fontSize: "12px", color: "#555"}}>

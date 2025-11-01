@@ -5,22 +5,32 @@ import {Title} from "web/components/widgets/title"
 import {githubRepoSlug} from "common/constants";
 import {CustomMarkdown} from "web/components/markdown";
 import {CustomLink} from "web/components/links";
+import {isNativeMobile} from "web/lib/util/webview";
+import {useEffect, useState} from "react";
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
-// Use SSR for SEO and better performance / caching
-export async function getStaticProps() {
+async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)
     .then(r => r.json())
     .catch(e => {
       console.error("Failed to fetch releases", e)
       return []
     })
+  return releases;
+}
 
+// Use SSR for SEO and better performance / caching
+export async function getStaticProps() {
+  if (isNativeMobile()) {
+    return {props: {}}
+  }
+
+  const releases = await fetchReleases()
   return {
     props: {releases},
     revalidate: 3600, // refresh every hour
   };
 }
-
 
 type Release = {
   id: number
@@ -31,8 +41,34 @@ type Release = {
   html_url: string
 }
 
-export default function WhatsNew(props: { releases: Release[] }) {
-  const {releases} = props
+export default function WhatsNew(props: { releases?: Release[] }) {
+  const nativeMobile = isNativeMobile()
+  const [releases, setReleases] = useState(props.releases || [])
+  const [loading, setLoading] = useState(nativeMobile)
+
+  useEffect(() => {
+    if (nativeMobile) {
+      // Mobile/WebView scenario: fetch profile dynamically
+      async function load() {
+        setLoading(true)
+        const fetchedReleases = await fetchReleases()
+        setReleases(fetchedReleases)
+        console.debug('fetched releases for native mobile')
+        setLoading(false)
+      }
+
+      load()
+    }
+    // On web, initialProfile from SSR/ISR is already loaded
+  }, [nativeMobile]);
+
+  if (loading) {
+    return <PageBase
+      trackPageView={'user page'}
+    >
+      <CompassLoadingIndicator/>
+    </PageBase>
+  }
 
   return (
     <PageBase trackPageView={'news'} className={'mx-4'}>

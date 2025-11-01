@@ -71,6 +71,7 @@ email-preview
 *.ico
 *.mp4
 *.mov
+*.webp
 *.avi
 *.wmv
 *.mp3
@@ -89,3 +90,4 @@ email-preview
 /backups/firebase/storage/data/
 
 android/app/release*
+icons/

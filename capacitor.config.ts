@@ -6,16 +6,8 @@ console.log("LOCAL_ANDROID in CapacitorConfig", LOCAL_ANDROID)
 const config: CapacitorConfig = {
   appId: 'com.compass.app',
   appName: 'Compass',
-  webDir: 'web/.next',
-  server: {
-    url: LOCAL_ANDROID ? "http://10.0.2.2:3000" : 'https://compassmeet.com',
-    cleartext: true,
-    allowNavigation: [
-      "www.compassmeet.com",
-      "localhost",
-      "10.0.2.2",
-    ],
-  },
+  webDir: 'web/out',
+  server: LOCAL_ANDROID ? { url: 'http://10.0.2.2:3000', cleartext: true } : {}
 };
 
 export default config;

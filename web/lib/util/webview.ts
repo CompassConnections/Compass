@@ -1,8 +1,14 @@
+import {Capacitor} from "@capacitor/core";
+import {IS_WEBVIEW} from "common/hosting/constants";
+
 export function isAndroidWebView() {
   try {
     // Detect if Android bridge exists
-    return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
+    // return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
+    return Capacitor.isNativePlatform() || IS_WEBVIEW
   } catch {
     return false;
   }
 }
+
+export function isNativeMobile() { return isAndroidWebView() }

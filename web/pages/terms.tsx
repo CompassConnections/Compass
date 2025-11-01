@@ -24,8 +24,7 @@ export default function TermsPage() {
       <section className="space-y-6 text-base leading-relaxed">
         <p>
           Welcome to <span className="font-semibold">Compass</span>, a platform to connect, collaborate, and build
-          meaningful interactions.
-          By accessing or using our service, you agree to the following Terms and Conditions.
+          meaningful interactions. By accessing or using our service, you agree to the following Terms and Conditions.
         </p>
 
         <h2 className="text-xl font-semibold">1. Eligibility</h2>
@@ -80,13 +79,44 @@ export default function TermsPage() {
           restrictions without prior community approval.
         </p>
 
-        <h2 className="text-xl font-semibold">4. Liability</h2>
+        <h2 className="text-xl font-semibold">4. Community Standards & Safety</h2>
+        <p>
+          a. <strong>Nudity and Sexual Content.</strong> Compass does <strong>not permit public sharing of nudity or
+          sexually explicit content</strong>. Any content that includes nudity, sexual acts, or sexually suggestive
+          material will be removed and may lead to suspension or termination of accounts involved.
+        </p>
+        <p>
+          b. <strong>Violence and Harmful Content.</strong> Compass does <strong>not allow the sharing of real-world,
+          graphic violence</strong> outside of a newsworthy, contextual, or educational purpose. Content that promotes
+          or glorifies violence will be removed.
+        </p>
+        <p>
+          c. <strong>Location Sharing.</strong> Compass does <strong>not share users’ precise physical location with
+          other users</strong> without explicit consent. Any optional location-based features will clearly disclose how
+          location data is used and shared.
+        </p>
+        <p>
+          d. <strong>Digital Goods and Transactions.</strong> Compass is a <strong>completely free platform</strong>. It
+          does <strong>not sell digital goods, offer in-app purchases, or charge for access to features</strong>. All
+          functionality is available without payment.
+        </p>
+        <p>
+          e. <strong>User Safety Controls.</strong> Compass includes built-in features that allow users to:
+          <ul className="list-disc list-inside mt-2">
+            <li>Block other users or specific user-generated content.</li>
+            <li>Report users or content that violates community standards.</li>
+            <li>Benefit from active chat moderation to ensure a safe and respectful environment.</li>
+            <li>Limit interactions to invited friends only, where supported by the app’s features.</li>
+          </ul>
+        </p>
+
+        <h2 className="text-xl font-semibold">5. Liability</h2>
         <p>
           Compass is not responsible for disputes between users or for damages arising
           from the use of the platform. Use the platform at your own discretion.
         </p>
 
-        <h2 className="text-xl font-semibold">5. Changes</h2>
+        <h2 className="text-xl font-semibold">6. Changes</h2>
         <p>
           We may update these Terms periodically. Continued use of Compass after updates
           constitutes acceptance of the new Terms.

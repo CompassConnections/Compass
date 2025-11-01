@@ -15,7 +15,6 @@ import AndroidPush from "web/lib/service/android-push";
 import {isAndroidWebView} from "web/lib/util/webview";
 import {Capacitor} from '@capacitor/core';
 import {StatusBar, Style} from '@capacitor/status-bar';
-import {oauthRedirect} from "web/lib/firebase/oauth";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -76,10 +75,10 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
     }
   }, [])
 
-  useEffect(() => {
-    // Expose globally for native bridge
-    (window as any).oauthRedirect = oauthRedirect;
-  }, []);
+  // useEffect(() => {
+  //   // Expose globally for native bridge
+  //   (window as any).oauthRedirect = oauthRedirect;
+  // }, []);
 
   const title = 'Compass'
   const description = 'The platform for intentional connections'

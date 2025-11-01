@@ -68,7 +68,6 @@ import {getUser} from "api/get-user";
 import {localSendTestEmail} from "api/test";
 import path from "node:path";
 import {saveSubscriptionMobile} from "api/save-subscription-mobile";
-import {authGoogle} from "api/auth-google";
 import {IS_LOCAL} from "common/hosting/constants";
 
 // const corsOptions: CorsOptions = {
@@ -143,19 +142,19 @@ export function zodToOpenApiSchema(zodObj: ZodTypeAny,): any {
 
   switch (typeName) {
     case 'ZodString':
-      schema = { type: 'string' };
+      schema = {type: 'string'};
       break;
     case 'ZodNumber':
-      schema = { type: 'number' };
+      schema = {type: 'number'};
       break;
     case 'ZodBoolean':
-      schema = { type: 'boolean' };
+      schema = {type: 'boolean'};
       break;
     case 'ZodEnum':
-      schema = { type: 'string', enum: def.values };
+      schema = {type: 'string', enum: def.values};
       break;
     case 'ZodArray':
-      schema = { type: 'array', items: zodToOpenApiSchema(def.type) };
+      schema = {type: 'array', items: zodToOpenApiSchema(def.type)};
       break;
     case 'ZodObject': {
       const shape = def.shape();
@@ -171,7 +170,7 @@ export function zodToOpenApiSchema(zodObj: ZodTypeAny,): any {
       schema = {
         type: 'object',
         properties,
-        ...(required.length ? { required } : {}),
+        ...(required.length ? {required} : {}),
       };
       break;
     }
@@ -184,11 +183,11 @@ export function zodToOpenApiSchema(zodObj: ZodTypeAny,): any {
     case 'ZodIntersection': {
       const left = zodToOpenApiSchema(def.left);
       const right = zodToOpenApiSchema(def.right);
-      schema = { allOf: [left, right] };
+      schema = {allOf: [left, right]};
       break;
     }
     case 'ZodLazy':
-      schema = { type: 'object', description: 'Lazy schema - details omitted' };
+      schema = {type: 'object', description: 'Lazy schema - details omitted'};
       break;
     case 'ZodUnion':
       schema = {
@@ -196,7 +195,7 @@ export function zodToOpenApiSchema(zodObj: ZodTypeAny,): any {
       };
       break;
     default:
-      schema = { type: 'string' }; // fallback for unhandled
+      schema = {type: 'string'}; // fallback for unhandled
   }
 
   Object.assign(placeholder, schema);
@@ -359,7 +358,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'save-subscription-mobile': saveSubscriptionMobile,
   'create-bookmarked-search': createBookmarkedSearch,
   'delete-bookmarked-search': deleteBookmarkedSearch,
-  'auth-google': authGoogle,
+  // 'auth-google': authGoogle,
 }
 
 Object.entries(handlers).forEach(([path, handler]) => {
@@ -417,7 +416,7 @@ const responses = {
         schema: {
           type: "object",
           properties: {
-            status: { type: "string", example: "success" }
+            status: {type: "string", example: "success"}
           },
         },
       },
@@ -430,7 +429,7 @@ const responses = {
         schema: {
           type: "object",
           properties: {
-            error: { type: "string", example: "Unauthorized" },
+            error: {type: "string", example: "Unauthorized"},
           },
         },
       },
@@ -443,7 +442,7 @@ const responses = {
         schema: {
           type: "object",
           properties: {
-            error: { type: "string", example: "Internal server error" },
+            error: {type: "string", example: "Internal server error"},
           },
         },
       },

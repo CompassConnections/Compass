@@ -2,7 +2,7 @@ import { format } from 'node:util'
 import { isError, pick, omit } from 'lodash'
 import { dim, red, yellow } from 'colors/safe'
 import { getMonitoringContext } from './context'
-import {IS_GOOGLE_CLOUD} from "common/envs/constants";
+import {IS_GOOGLE_CLOUD} from "common/hosting/constants";
 
 // mapping JS log levels (e.g. functions on console object) to GCP log levels
 const JS_TO_GCP_LEVELS = {

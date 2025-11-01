@@ -1,7 +1,8 @@
 import {Head, Html, Main, NextScript} from 'next/document'
-import {ENV_CONFIG, IS_DEPLOYED} from 'common/envs/constants'
+import {ENV_CONFIG} from 'common/envs/constants'
 import Script from 'next/script'
 import clsx from "clsx";
+import {IS_DEPLOYED} from "common/hosting/constants";
 
 export default function Document() {
   return (

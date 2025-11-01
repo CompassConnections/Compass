@@ -4,7 +4,7 @@ import {log} from './log'
 import {getInstanceInfo, InstanceInfo} from './instance-info'
 import {chunk} from 'lodash'
 import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry,} from './metrics'
-import {IS_GOOGLE_CLOUD} from "common/envs/constants";
+import {IS_GOOGLE_CLOUD} from "common/hosting/constants";
 
 // how often metrics are written. GCP says don't write for a single time series
 // more than once per 5 seconds.

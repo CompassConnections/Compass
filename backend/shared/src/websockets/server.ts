@@ -9,7 +9,7 @@ import {
   ServerMessage,
   CLIENT_MESSAGE_SCHEMA,
 } from 'common/api/websockets'
-import {IS_LOCAL} from "common/envs/constants";
+import {IS_LOCAL} from "common/hosting/constants";
 import {getWebsocketUrl} from "common/api/utils";
 
 // Extend the type definition locally

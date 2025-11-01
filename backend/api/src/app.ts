@@ -65,11 +65,11 @@ import {OpenAPIV3} from 'openapi-types';
 import {version as pkgVersion} from './../package.json'
 import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
 import {getUser} from "api/get-user";
-import {IS_LOCAL} from "common/envs/constants";
 import {localSendTestEmail} from "api/test";
 import path from "node:path";
 import {saveSubscriptionMobile} from "api/save-subscription-mobile";
 import {authGoogle} from "api/auth-google";
+import {IS_LOCAL} from "common/hosting/constants";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain

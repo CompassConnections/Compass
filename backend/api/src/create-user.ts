@@ -7,7 +7,7 @@ import {APIError, APIHandler} from './helpers/endpoint'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
 import {removeUndefinedProps} from 'common/util/object'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
-import {IS_LOCAL, RESERVED_PATHS} from 'common/envs/constants'
+import {RESERVED_PATHS} from 'common/envs/constants'
 import {getUser, getUserByUsername, log} from 'shared/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -15,6 +15,7 @@ import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {getBucket} from "shared/firebase-utils";
 import {sendWelcomeEmail} from "email/functions/helpers";
 import {setLastOnlineTimeUser} from "api/set-last-online-time";
+import {IS_LOCAL} from "common/hosting/constants";
 
 export const createUser: APIHandler<'create-user'> = async (
   props,

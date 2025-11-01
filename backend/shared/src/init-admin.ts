@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin'
 
 
 import {getServiceAccountCredentials} from "shared/firebase-utils";
-import {IS_LOCAL} from "common/envs/constants";
+import {IS_LOCAL} from "common/hosting/constants";
 
 // Locally initialize Firebase Admin.
 export const initAdmin = () => {

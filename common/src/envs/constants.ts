@@ -1,27 +1,10 @@
 import {DEV_CONFIG} from './dev'
 import {PROD_CONFIG} from './prod'
 import {isProd} from "common/envs/is-prod";
+import {HOSTING_ENV, IS_LOCAL, IS_LOCAL_ANDROID} from "common/hosting/constants";
 
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
-
-export const IS_LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
-console.log('IS_LOCAL_ANDROID', IS_LOCAL_ANDROID)
-
-export const LOCAL_WEB_DOMAIN = `localhost:3000`
-export const LOCAL_BACKEND_DOMAIN = `${IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`
-
-export const IS_WEBVIEW_BUILD = process.env.NEXT_PUBLIC_BUILD_TARGET === 'capacitor'
-export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
-export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
-export const IS_DEPLOYED = IS_GOOGLE_CLOUD || IS_VERCEL || IS_WEBVIEW_BUILD
-export const IS_LOCAL = !IS_DEPLOYED
-export const HOSTING_ENV = IS_GOOGLE_CLOUD ? 'Google Cloud' : IS_VERCEL ? 'Vercel' : IS_WEBVIEW_BUILD ? 'Capacitor WebView' : IS_LOCAL ? 'local' : 'unknown'
-
-if (IS_LOCAL && !process.env.ENVIRONMENT && !process.env.NEXT_PUBLIC_FIREBASE_ENV) {
-  console.warn("No ENVIRONMENT set, defaulting to DEV")
-  process.env.ENVIRONMENT = 'DEV'
-}
 
 export const ENV_CONFIG = isProd() ? PROD_CONFIG : DEV_CONFIG
 
@@ -34,7 +17,7 @@ export function isModId(id: string) {
 }
 
 export const ENV = isProd() ? 'prod' : 'dev'
-export const IS_PROD = ENV === 'prod'
+// export const IS_PROD = ENV === 'prod'
 export const IS_DEV = ENV === 'dev'
 
 console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
@@ -57,6 +40,9 @@ console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 // if (!ENV_CONFIG.firebaseConfig.apiKey) {
 //   throw new MissingKeyError('firebaseConfig.apiKey')
 // }
+
+export const LOCAL_WEB_DOMAIN = `localhost:3000`
+export const LOCAL_BACKEND_DOMAIN = `${IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`
 
 export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
 export const WEB_URL = IS_LOCAL ? `http://${LOCAL_WEB_DOMAIN}` : `https://${DOMAIN}`

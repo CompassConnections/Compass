@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin'
 import {initAdmin} from 'shared/init-admin'
 import {loadSecretsToEnv} from 'common/secrets'
 import {log} from 'shared/utils'
-import {IS_LOCAL} from "common/envs/constants";
+import {IS_LOCAL} from "common/hosting/constants";
 import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
 import {listen as webSocketListen} from 'shared/websockets/server'
 

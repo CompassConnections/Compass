@@ -28,5 +28,3 @@ cd web
 rm -rf .next
 
 yarn build
-
-yarn clear-nextjs-cache

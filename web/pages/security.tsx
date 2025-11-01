@@ -15,7 +15,7 @@ export default function SecurityPage() {
         description={'Report security vulnerabilities to the Compass team'}
         url={`/security`}
       />
-      <Col className="max-w-3xl w-full mx-auto gap-6 custom-link">
+      <Col className="max-w-3xl w-full mx-auto gap-6 custom-link mb-4">
         <h1 className="text-3xl font-semibold">Security</h1>
         <p className="text-ink-700">
           We take the security of our community seriously. If you believe you have found a vulnerability

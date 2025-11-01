@@ -14,7 +14,7 @@ export default function HelpPage() {
         url={`/help`}
       />
       <SEO title={`Help`} description={'Get help with Compass'} url={`/help`}/>
-      <Col className="max-w-3xl w-full mx-auto gap-6 custom-link">
+      <Col className="max-w-3xl w-full mx-auto gap-6 custom-link mb-4">
         <h1 className="text-3xl font-semibold">Help & Support</h1>
         <p className="text-ink-700">
           Run into a problem or have a question? This page lists the quickest ways to get help and find answers.

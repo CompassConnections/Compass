@@ -14,13 +14,13 @@ import WebPush from "web/lib/service/web-push";
 import AndroidPush from "web/lib/service/android-push";
 import {isAndroidWebView} from "web/lib/util/webview";
 import {Capacitor} from '@capacitor/core';
-import {StatusBar, Style} from '@capacitor/status-bar';
+import {StatusBar} from '@capacitor/status-bar';
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
   // Note sure it's doing anything, though, need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn);
-  StatusBar.setStyle({style: Style.Light}).catch(console.warn);
+  // StatusBar.setStyle({style: Style.Light}).catch(console.warn);
 }
 
 

@@ -278,6 +278,20 @@ async function removeSubscription(
   )
 }
 
+async function removeMobileSubscription(
+  pg: SupabaseDirectClient,
+  token: any,
+  userId: string,
+) {
+  await pg.none(
+    `DELETE
+     FROM push_subscriptions_mobile
+     WHERE token = $1
+       AND user_id = $2`,
+    [token, userId]
+  )
+}
+
 
 async function sendMobileNotifications(
   pg: SupabaseDirectClient,
@@ -286,7 +300,7 @@ async function sendMobileNotifications(
 ) {
   const subscriptions = await getMobileSubscriptionsFromDB(pg, userId)
   for (const subscription of subscriptions) {
-    await sendPushToToken(subscription.token, payload)
+    await sendPushToToken(pg, userId, subscription.token, payload)
   }
 }
 
@@ -297,7 +311,12 @@ interface PushPayload {
   data?: Record<string, string>
 }
 
-export async function sendPushToToken(token: string, payload: PushPayload) {
+export async function sendPushToToken(
+  pg: SupabaseDirectClient,
+  userId: string,
+  token: string,
+  payload: PushPayload,
+) {
   const message = {
     token,
     notification: {
@@ -317,8 +336,22 @@ export async function sendPushToToken(token: string, payload: PushPayload) {
     const response = await fcm.send(message)
     console.log('Push sent successfully:', response)
     return response
-  } catch (err) {
-    console.error('Error sending push:', err)
+  } catch (err: unknown) {
+    // Check if it's a Firebase Messaging error
+    if (err instanceof Error && 'code' in err) {
+      const firebaseError = err as { code: string; message: string }
+      console.warn('Firebase error:', firebaseError.code, firebaseError.message)
+      
+      // Handle specific error cases here if needed
+      // For example, if token is no longer valid:
+      if (firebaseError.code === 'messaging/registration-token-not-registered' ||
+          firebaseError.code === 'messaging/invalid-argument') {
+        console.warn('Removing invalid FCM token')
+        await removeMobileSubscription(pg, token, userId)
+      }
+    } else {
+      console.error('Unknown error:', err)
+    }
   }
   return
 }

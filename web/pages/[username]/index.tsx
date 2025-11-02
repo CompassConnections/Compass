@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useRouter} from 'next/router'
 import Head from 'next/head'
 import {PageBase} from 'web/components/page-base'
@@ -15,19 +15,64 @@ import {db} from 'web/lib/supabase/db'
 import {ProfileInfo} from 'web/components/profile/profile-info'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
-import {type GetStaticProps} from 'next'
+import {GetStaticPropsContext} from 'next'
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import Custom404 from '../404'
 import {sleep} from "common/util/time";
+import {isNativeMobile} from "web/lib/util/webview";
 
-export const getStaticProps: GetStaticProps<
-  UserPageProps,
-  { username: string }
-> = async (props) => {
-  // console.log('Starting getStaticProps in /[username]')
+async function getUser(username: string) {
+  const user = await getUserForStaticProps(db, username)
+  return user
+}
+
+async function getProfile(userId: string) {
+  let profile
+  let i = 0
+  while (!profile) {
+    profile = await getProfileRow(userId, db)
+    if (i > 0) await sleep(500)
+    i++
+    if (i >= 8) {
+      break
+    }
+  }
+  console.debug(`Profile loaded after ${i} tries`)
+  return profile;
+}
+
+// getServerSideProps is a Next.js function that can be used to fetch data and render the contents of a page at request time.
+// export async function getServerSideProps(context: any) {
+//   if (!isNativeMobile()) {
+//     // Not mobile → let SSG handle it
+//     return {notFound: true};
+//   }
+//
+//   // Mobile path: server-side fetch
+//   const username = context.params.username;
+//   const user = await getUser(username);
+//
+//   if (!user) {
+//     return {props: {notFoundCustomText: 'User not found'}};
+//   }
+//
+//   const profile = await getProfile(user.id);
+//
+//   console.log('getServerSideProps', {user, profile, username})
+//
+//   return {props: {user, profile, username}};
+// }
+
+// SSG: static site generation
+// Next.js will pre-render this page at build time using the props returned by getStaticProps
+export const getStaticProps = async (props: GetStaticPropsContext<{
+  username: string
+}>) => {
   const {username} = props.params!
 
-  const user = await getUserForStaticProps(db, username)
+  console.log('Starting getStaticProps in /[username]')
+
+  const user = await getUser(username)
 
   console.debug('getStaticProps', {user})
 
@@ -57,24 +102,13 @@ export const getStaticProps: GetStaticProps<
     console.debug('User deleted')
     return {
       props: {
-        user: false,
         username,
       },
       revalidate: 15,
     }
   }
 
-  let profile
-  let i = 0
-  while (!profile) {
-    profile = await getProfileRow(user.id, db)
-    if (i > 0) await sleep(500)
-    i++
-    if (i >= 8) {
-      break
-    }
-  }
-  console.debug(`Profile loaded after ${i} tries`)
+  const profile = await getProfile(user.id)
 
   if (!profile) {
     console.debug('No profile', `${user.username} hasn't created a profile yet.`)
@@ -96,32 +130,77 @@ export const getStaticProps: GetStaticProps<
   }
 }
 
+// Runs at build time for SSG (native mobile), or at runtime for ISR fallback in web
 export const getStaticPaths = () => {
+  console.log('Starting getStaticPaths in /[username]', isNativeMobile())
   return {paths: [], fallback: 'blocking'}
 }
 
-type UserPageProps = DeletedUserPageProps | ActiveUserPageProps | NotFoundPageProps
+type UserPageProps = Partial<ActiveUserPageProps> & {
+  username: string // to override Partial’s optional
+  notFoundCustomText?: string
+}
 
-type DeletedUserPageProps = {
-  user: false
-  username: string
-}
 type ActiveUserPageProps = {
-  user: User
   username: string
+  user: User
   profile: ProfileRow
-}
-type NotFoundPageProps = {
-  notFoundCustomText: string
 }
 
 export default function UserPage(props: UserPageProps) {
-  // console.debug('Starting UserPage in /[username]')
-  if ('notFoundCustomText' in props) {
-    return <Custom404 customText={props.notFoundCustomText}/>
+  // console.log('Starting UserPage in /[username]')
+
+  const nativeMobile = isNativeMobile()
+  const router = useRouter()
+  const username = (nativeMobile ? router.query.username : props.username) as string
+  const [user, setUser] = useState<User | undefined>(props.user)
+  const [profile, setProfile] = useState<ProfileRow | undefined>(props.profile)
+  const [notFoundCustomText, setNotFoundCustomText] = useState(props.notFoundCustomText)
+  const [loading, setLoading] = useState(nativeMobile)
+
+  console.log('UserPage state:', {username, user, profile, notFoundCustomText, loading, nativeMobile})
+
+  useEffect(() => {
+    if (nativeMobile) {
+      // Mobile/WebView scenario: fetch profile dynamically
+      async function load() {
+        setLoading(true)
+        const fetchedUser = await getUser(username)
+        if (!fetchedUser) return
+        if (fetchedUser.username !== username) {
+          console.debug('Found a case-insensitive match for native mobile')
+          await router.push(`/${fetchedUser.username}`)
+        }
+        setUser(fetchedUser)
+        console.debug('fetched user for native mobile:', fetchedUser)
+        const fetchedProfile = await getProfile(fetchedUser.id)
+        if (!fetchedProfile) {
+          setNotFoundCustomText(`${username} hasn't created a profile yet.`)
+        } else {
+          setProfile(fetchedProfile)
+          console.debug('fetched profile for native mobile:', fetchedProfile)
+        }
+        setLoading(false)
+      }
+
+      load()
+    }
+    // On web, initialProfile from SSR/ISR is already loaded
+  }, [username, nativeMobile]);
+
+  if (loading) {
+    return <PageBase
+      trackPageView={'user page'}
+    >
+      <CompassLoadingIndicator/>
+    </PageBase>
   }
 
-  if (!props.user) {
+  if (notFoundCustomText) {
+    return <Custom404 customText={notFoundCustomText}/>
+  }
+
+  if (!user) {
     return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
@@ -134,7 +213,7 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  if (props.user.isBannedFromPosting) {
+  if (user.isBannedFromPosting) {
     return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
@@ -147,7 +226,24 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  return <UserPageInner {...props} />
+  if (!profile) {
+    return <PageBase
+      trackPageView={'user page'}
+      className={'relative p-2 sm:pt-0'}
+    >
+      <Col className="items-center justify-center h-full">
+        <div className="text-xl font-semibold text-center mt-8">
+          This user hasn't created a profile yet.
+        </div>
+      </Col>
+    </PageBase>
+  }
+
+  return <UserPageInner
+    user={user}
+    username={username}
+    profile={profile}
+  />
 }
 
 function UserPageInner(props: ActiveUserPageProps) {

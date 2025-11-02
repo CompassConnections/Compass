@@ -18,8 +18,8 @@ export async function track(name: string, properties?: EventIds & EventData) {
   const { commentId, ...data } = properties || {}
   try {
     posthog?.capture(name, data)
-    const result = await insertUserEvent(name, data, db, null, commentId)
-    console.debug('result', result)
+    await insertUserEvent(name, data, db, null, commentId)
+    // console.debug('result', result)
   } catch (e) {
     console.error('error tracking event:', e)
   }
@@ -68,7 +68,7 @@ function insertUserEvent(
   userId?: string | null,
   commentId?: string | null
 ) {
-  console.debug('inserting user event', name, data, userId, commentId, db)
+  // console.debug('inserting user event', name, data, userId, commentId, db)
   return run(
     db.from('user_events').insert({
       name,

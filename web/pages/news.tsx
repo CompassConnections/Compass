@@ -62,14 +62,6 @@ export default function WhatsNew(props: { releases?: Release[] }) {
     // On web, initialProfile from SSR/ISR is already loaded
   }, [nativeMobile]);
 
-  if (loading) {
-    return <PageBase
-      trackPageView={'user page'}
-    >
-      <CompassLoadingIndicator/>
-    </PageBase>
-  }
-
   return (
     <PageBase trackPageView={'news'} className={'mx-4'}>
       <SEO
@@ -82,7 +74,8 @@ export default function WhatsNew(props: { releases?: Release[] }) {
         url={`/news`}
       />
       <Title className="text-3xl">What's New</Title>
-      {!releases.length ? <p>Failed to fetch releases.</p> :
+      {loading && <CompassLoadingIndicator/>}
+      {!loading && !releases.length ? <p>Failed to fetch releases.</p> :
         <Col className="max-w-3xl mx-auto py-10 px-4 custom-link">
           {releases.map((release: Release) => (
             <div key={release.id} className="mb-10 border-b pb-6">

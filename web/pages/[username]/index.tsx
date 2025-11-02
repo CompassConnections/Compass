@@ -20,6 +20,7 @@ import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
 import Custom404 from '../404'
 import {sleep} from "common/util/time";
 import {isNativeMobile} from "web/lib/util/webview";
+import {getPixelHeight} from "web/lib/util/css";
 
 async function getUser(username: string) {
   const user = await getUserForStaticProps(db, username)
@@ -149,6 +150,11 @@ type ActiveUserPageProps = {
 
 export default function UserPage(props: UserPageProps) {
   // console.log('Starting UserPage in /[username]')
+
+  useEffect(() => {
+    console.log('safe-area-inset-bottom:', getPixelHeight('safe-area-inset-bottom'))
+    console.log('safe-area-inset-top:', getPixelHeight('safe-area-inset-top'))
+  }, []);
 
   const nativeMobile = isNativeMobile()
   const router = useRouter()

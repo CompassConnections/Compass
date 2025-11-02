@@ -15,7 +15,6 @@ import AndroidPush from "web/lib/service/android-push";
 import {isAndroidWebView} from "web/lib/util/webview";
 import {Capacitor} from '@capacitor/core';
 import {StatusBar} from '@capacitor/status-bar';
-import {getPixelHeight} from "web/lib/util/css";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -83,9 +82,6 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
 
   const title = 'Compass'
   const description = 'The platform for intentional connections'
-
-  console.log('safe-area-inset-bottom:', getPixelHeight('safe-area-inset-bottom'))
-  console.log('safe-area-inset-top:', getPixelHeight('safe-area-inset-top'))
 
   return (
     <>

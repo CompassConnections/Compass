@@ -27,6 +27,7 @@
     "postinstall": "./scripts/post_install.sh"
   },
   "dependencies": {
+    "@capacitor/app": "7.1.0",
     "@capacitor/core": "7.4.4",
     "@capacitor/push-notifications": "7.0.3",
     "@capacitor/status-bar": "7.0.3",

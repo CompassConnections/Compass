@@ -10,17 +10,22 @@ import '../styles/globals.css'
 import {Major_Mono_Display} from 'next/font/google'
 import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
-import WebPush from "web/lib/service/web-push";
-import AndroidPush from "web/lib/service/android-push";
-import {isAndroidWebView} from "web/lib/util/webview";
-import {Capacitor} from '@capacitor/core';
-import {StatusBar} from '@capacitor/status-bar';
+import WebPush from "web/lib/service/web-push"
+import AndroidPush from "web/lib/service/android-push"
+import {isAndroidWebView} from "web/lib/util/webview"
+import {Capacitor} from '@capacitor/core'
+import {StatusBar} from '@capacitor/status-bar'
+import {App} from '@capacitor/app'
+import {useRouter} from "next/navigation";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
   // Note sure it's doing anything, though, need to check
-  StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn);
-  // StatusBar.setStyle({style: Style.Light}).catch(console.warn);
+  StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
+  // StatusBar.setStyle({style: Style.Light}).catch(console.warn)
+  App.addListener('backButton', ({canGoBack}) => {
+    window.dispatchEvent(new CustomEvent('appBackButton'))
+  })
 }
 
 
@@ -63,6 +68,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   console.log('isAndroidWebView app:', isAndroidWebView())
   useEffect(printBuildInfo, [])
   useHasLoaded()
+  const router = useRouter()
 
   useEffect(() => {
     initTracking()
@@ -75,10 +81,19 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
     }
   }, [])
 
+  useEffect(() => {
+    const handleBack = () => {
+      router.back()
+    }
+
+    window.addEventListener('appBackButton', handleBack)
+    return () => window.removeEventListener('appBackButton', handleBack)
+  }, [router])
+
   // useEffect(() => {
   //   // Expose globally for native bridge
-  //   (window as any).oauthRedirect = oauthRedirect;
-  // }, []);
+  //   (window as any).oauthRedirect = oauthRedirect
+  // }, [])
 
   const title = 'Compass'
   const description = 'The platform for intentional connections'

@@ -27,18 +27,18 @@ export async function track(name: string, properties?: EventIds & EventData) {
 
 export function initTracking() {
   posthog.init(ENV_CONFIG.posthogKey, {
-    api_host: '/ingest',
-    ui_host: 'https://us.posthog.com',
+    api_host: 'https://us.i.posthog.com',
+    // ui_host: 'https://us.posthog.com',
     loaded: (posthog) => {
       posthog.debug(false)
     },
     // Below was a failed attempt to remove that error in the browser console:
     // Cookie “dmn_chk_01993ec4-8420-79ca-85d3-28fec41426c0” has been rejected for invalid domain.
-    persistence: 'cookie',
-    cross_subdomain_cookie: true,        // top-level domain cookie
-    secure_cookie: window.location.protocol === 'https:',
-    cookie_expiration: 365,
-    capture_pageview: true,
+    // persistence: 'cookie',
+    // cross_subdomain_cookie: true,        // top-level domain cookie
+    // secure_cookie: window.location.protocol === 'https:',
+    // cookie_expiration: 365,
+    // capture_pageview: true,
   })
 }
 

@@ -451,13 +451,13 @@ ol > li::marker {
 }
 
 .safe-top {
-    /*padding-top: calc(env(safe-area-inset-top) + 0px);*/
+    /*padding-top: calc(20px);*/
     padding-top: env(safe-area-inset-top);
     box-sizing: border-box; /* ensure padding doesn’t break layout */
 }
 
 .safe-bottom {
-    /*bottom: calc(env(safe-area-inset-bottom));*/
+    /*bottom: calc(48px);*/
     bottom: env(safe-area-inset-bottom);
 }
 

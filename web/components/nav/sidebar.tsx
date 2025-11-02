@@ -31,7 +31,10 @@ export default function Sidebar(props: {
   return (
     <nav
       aria-label="Sidebar"
-      className={clsx('flex h-screen flex-col h-full max-h-screen overflow-y-auto', className)}
+      className={clsx(
+        'flex h-screen flex-col h-full max-h-screen overflow-y-auto mb-[calc(env(safe-area-inset-bottom))] mt-[calc(env(safe-area-inset-top))]',
+        className
+      )}
     >
       <SiteLogo/>
 

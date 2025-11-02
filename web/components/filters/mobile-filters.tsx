@@ -59,14 +59,14 @@ function MobileFilters(props: {
   )
 
   return (
-    <Col className="mb-4">
-      <div
-        // className="fixed inset-x-0 bg-canvas-50"
-        style={{
-          // bottom: 0,
-          height: 'env(safe-area-inset-top)',
-        }}
-      />
+    <Col className="mb-[calc(20px+env(safe-area-inset-bottom))] mt-[calc(20px+env(safe-area-inset-top))]">
+      {/*<div*/}
+      {/*  // className="fixed inset-x-0 bg-canvas-50"*/}
+      {/*  style={{*/}
+      {/*    // bottom: 0,*/}
+      {/*    height: 'env(safe-area-inset-top)',*/}
+      {/*  }}*/}
+      {/*/>*/}
       <Row>
         <Col className="p-4 pb-2">
           <MyMatchesToggle

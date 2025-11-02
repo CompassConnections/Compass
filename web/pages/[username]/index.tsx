@@ -190,6 +190,10 @@ export default function UserPage(props: UserPageProps) {
       }
 
       load()
+    } else {
+      setUser(props.user)
+      setProfile(props.profile)
+      setNotFoundCustomText(props.notFoundCustomText)
     }
     // On web, initialProfile from SSR/ISR is already loaded
   }, [username, nativeMobile]);

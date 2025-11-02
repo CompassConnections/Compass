@@ -32,7 +32,7 @@ export default function Sidebar(props: {
     <nav
       aria-label="Sidebar"
       className={clsx(
-        'flex h-screen flex-col h-full max-h-screen overflow-y-auto mb-[calc(env(safe-area-inset-bottom))] mt-[calc(env(safe-area-inset-top))]',
+        'flex h-screen flex-col h-full max-h-screen overflow-y-auto safe-bottom mt-[calc(env(safe-area-inset-top))]',
         className
       )}
     >
@@ -56,7 +56,7 @@ export default function Sidebar(props: {
           </Button>
         )}
       </div>
-      <div className="mb-6 mt-auto flex flex-col gap-1">
+      <div className="mb-[calc(24px+env(safe-area-inset-bottom))] mt-auto flex flex-col gap-1">
         {bottomNavOptions.map((item) => (
           <SidebarItem key={item.name} item={item} currentPage={currentPage}/>
         ))}

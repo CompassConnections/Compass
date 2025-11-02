@@ -294,7 +294,7 @@ export const PrivateChat = (props: {
           </Modal>
         )}
       </Row>
-      <Col className="relative h-[calc(100dvh-213px)]  lg:h-[calc(100dvh-184px)] xl:px-0">
+      <Col className="relative h-[calc(100dvh-213px-env(safe-area-inset-bottom))]  lg:h-[calc(100dvh-184px)] xl:px-0">
         <div
           ref={outerDiv}
           className="relative h-full overflow-y-auto"

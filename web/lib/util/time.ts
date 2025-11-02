@@ -3,8 +3,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 
-export function fromNow(time: number | string | Date) {
-  return dayjs(time).fromNow()
+export function fromNow(time: number | string | Date, privacy: boolean = false) {
+  const date = dayjs(time);
+  if (privacy && dayjs().diff(date, 'hour') < 24) {
+    return 'in the past day';
+  }
+  return date.fromNow();
 }
 
 const FORMATTER = new Intl.DateTimeFormat('default', {

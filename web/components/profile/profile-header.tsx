@@ -9,7 +9,6 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import ProfilePrimaryInfo from './profile-primary-info'
-import {OnlineIcon} from '../online-icon'
 import {track} from 'web/lib/service/analytics'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {ShareProfileButton} from '../widgets/share-profile-button'
@@ -58,7 +57,7 @@ export default function ProfileHeader(props: {
             {currentUser && isCurrentUser && disabled &&
                 <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
             <Row className="items-center gap-1 text-xl">
-              {!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}
+              {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
               <span>
                 {simpleView ? (
                   <Link className={linkClass} href={`/${user.username}`}>

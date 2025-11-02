@@ -292,7 +292,7 @@ function LastOnline(props: { lastOnlineTime?: string }) {
   return (
     <AboutRow
       icon={<ClockIcon className="h-5 w-5"/>}
-      text={'Last online ' + fromNow(lastOnlineTime)}
+      text={'Last online ' + fromNow(lastOnlineTime, true)}
     />
   )
 }

@@ -91,3 +91,4 @@ email-preview
 
 android/app/release*
 icons/
+*.bak

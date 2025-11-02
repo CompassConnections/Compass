@@ -1,9 +1,7 @@
 # Compass Android WebView App
 
 This folder contains the source code for the Android application of Compass.
-A hybrid mobile app built with **Next.js (TypeScript)** frontend, **Firebase backend**, and wrapped as a **Capacitor WebView** for Android.
-Right now it's just a webview wrapper around the web application, but in the future it may
-contain native code as well.
+A hybrid mobile app built with **Next.js (TypeScript)** frontend, **Firebase backend**, and wrapped as a **Capacitor WebView** for Android. In the future it may contain native code as well.
 
 This document describes how to:
 1. Build and run the web frontend and backend locally  
@@ -15,7 +13,7 @@ This document describes how to:
 
 ## 1. Project Overview
 
-The app is a Capacitor Android project that loads the deployed Next.js site (`https://compassmeet.com`) inside a WebView.
+The app is a Capacitor Android project that loads the local Next.js assests inside a WebView.
 
 During development, it can instead load the local frontend (`http://10.0.2.2:3000`) and backend (`http://10.0.2.2:8088`).
 
@@ -35,17 +33,17 @@ Project Structure
 - **Reliability:** Works offline or in poor connectivity environments.
 - **App Store policy compliance:** Apple and Google generally prefer that the main experience doesn’t depend on a remote site (for security, review, and performance reasons).
 - **Version consistency:** The web bundle is versioned with the app, ensuring no breaking updates outside your control.
-### **When Remote (No Local Assets) Is Used**
-Loading from a **remote URL** (e.g. `https://myapp.com`) is **less common**, but seen in a few cases:
+
+When Remote (No Local Assets) Is sometimes Used
+Loading from a **remote URL** (e.g. `https://compassmeet.com`) is **less common**, but seen in a few cases:
 - **Internal enterprise apps** where the WebView just wraps an existing web portal.
 - **Dynamic content** or **frequent updates** where pushing a new web build every time through app stores would be too slow.
 - To leverage the low latency of ISR and SSR.
-
 However, this approach requires:
 - Careful handling of **CORS**, **SSL**, and **login/session** persistence.
 - Compliance with **Google Play policies** (they may reject apps that are “just a webview of a website” unless there’s meaningful native integration).
 
-A middle ground we use:
+**A middle ground we use:**
 - The app ships with **local assets** for core functionality.
 - The app **fetches remote content or updates** (e.g., via Capacitor Live Updates, Ionic Appflow).
 

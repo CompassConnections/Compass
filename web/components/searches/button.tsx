@@ -132,7 +132,7 @@ export function BookmarkStarButton(props: {
   return (
     <>
       <Button onClick={() => setOpen(true)} color="gray-outline" size={'xs'}>
-        Saved Profiles
+        Saved People
       </Button>
       <StarModal
         open={open}
@@ -168,9 +168,9 @@ function StarModal(props: {
       // }}
     >
       <Col className={MODAL_CLASS}>
-        <h3>Saved Profiles</h3>
+        <h3>Saved People</h3>
         {visibleUsers?.length ? (<>
-            <p>Here are the profiles you saved:</p>
+            <p>Here are the people you saved:</p>
             <Col
               className={
                 'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'

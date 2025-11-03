@@ -97,7 +97,7 @@ export function ProfilesHome() {
   return (
     <>
       {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
-      <Title className="!mb-2 text-3xl">Profiles</Title>
+      <Title className="!mb-2 text-3xl">People</Title>
       <Search
         youProfile={you}
         starredUsers={starredUsers ?? []}

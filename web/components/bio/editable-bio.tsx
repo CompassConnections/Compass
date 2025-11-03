@@ -132,7 +132,7 @@ export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
       {textLength < MIN_BIO_LENGTH &&
           <p>
               Add {MIN_BIO_LENGTH - textLength} more {MIN_BIO_LENGTH - textLength === 1 ? 'character' : 'characters'} so
-              your profile can appear in search results—or leave it for now and explore others’ profiles first.
+              you can appear in search results—or take your time and start by exploring others.
           </p>
       }
       <BioTips/>

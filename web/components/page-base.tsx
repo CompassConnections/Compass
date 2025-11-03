@@ -106,8 +106,8 @@ export function PageBase(props: {
   )
 }
 
-const Profiles = {name: 'Profiles', href: '/', icon: SolidHomeIcon}
-const ProfilesHome = {name: 'Profiles', href: '/', icon: HomeIcon}
+const Profiles = {name: 'People', href: '/', icon: SolidHomeIcon}
+const ProfilesHome = {name: 'People', href: '/', icon: HomeIcon}
 const faq = {name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
 const About = {name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
 const Signin = {name: 'Sign in', href: '/signin', icon: UserCircleIcon}

@@ -23,6 +23,7 @@ module.exports = {
     experimental: {
         scrollRestoration: true,
     },
+    // Remove once confirmed that posthog.init works without it
     // rewrites: async () => {
     //     if (isAppBuild) {
     //         return []

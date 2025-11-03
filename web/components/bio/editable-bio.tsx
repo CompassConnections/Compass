@@ -18,10 +18,10 @@ const placeHolder = "Tell us about yourself — and what you're looking for!";
 
 const tips = `
 - Your core values, interests, and activities
-- Connection goals (friendship, romantic, collaborative) and availability
-- What makes you unique and what you care about
-- Expectations, boundaries, and personality traits
-- How to contact you or start a conversation (email, social media, etc.)
+- Personality traits, what makes you unique and what you care about
+- Connection goals (collaborative, friendship, romantic)
+- Expectations and boundaries
+- Availability, how to contact you or start a conversation (email, social media, etc.)
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `
 

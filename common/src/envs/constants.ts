@@ -45,6 +45,7 @@ export const LOCAL_WEB_DOMAIN = `localhost:3000`
 export const LOCAL_BACKEND_DOMAIN = `${IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`
 
 export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
+export const DEPLOYED_WEB_URL = `https://www.${ENV_CONFIG.domain}`
 export const WEB_URL = IS_LOCAL ? `http://${LOCAL_WEB_DOMAIN}` : `https://${DOMAIN}`
 export const BACKEND_DOMAIN = IS_LOCAL ? LOCAL_BACKEND_DOMAIN : ENV_CONFIG.backendDomain
 export const FIREBASE_CONFIG = ENV_CONFIG.firebaseConfig

@@ -16,11 +16,12 @@ import {ProfileInfo} from 'web/components/profile/profile-info'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {GetStaticPropsContext} from 'next'
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
 import Custom404 from '../404'
-import {sleep} from "common/util/time";
-import {isNativeMobile} from "web/lib/util/webview";
-import {getPixelHeight} from "web/lib/util/css";
+import {sleep} from "common/util/time"
+import {isNativeMobile} from "web/lib/util/webview"
+import {getPixelHeight} from "web/lib/util/css"
+import {getPageData} from "web/lib/util/page-data";
 
 async function getUser(username: string) {
   const user = await getUserForStaticProps(db, username)
@@ -39,29 +40,29 @@ async function getProfile(userId: string) {
     }
   }
   console.debug(`Profile loaded after ${i} tries`)
-  return profile;
+  return profile
 }
 
 // getServerSideProps is a Next.js function that can be used to fetch data and render the contents of a page at request time.
 // export async function getServerSideProps(context: any) {
 //   if (!isNativeMobile()) {
 //     // Not mobile → let SSG handle it
-//     return {notFound: true};
+//     return {notFound: true}
 //   }
 //
 //   // Mobile path: server-side fetch
-//   const username = context.params.username;
-//   const user = await getUser(username);
+//   const username = context.params.username
+//   const user = await getUser(username)
 //
 //   if (!user) {
-//     return {props: {notFoundCustomText: 'User not found'}};
+//     return {props: {notFoundCustomText: 'User not found'}}
 //   }
 //
-//   const profile = await getProfile(user.id);
+//   const profile = await getProfile(user.id)
 //
 //   console.log('getServerSideProps', {user, profile, username})
 //
-//   return {props: {user, profile, username}};
+//   return {props: {user, profile, username}}
 // }
 
 // SSG: static site generation
@@ -154,49 +155,37 @@ export default function UserPage(props: UserPageProps) {
   useEffect(() => {
     console.log('safe-area-inset-bottom:', getPixelHeight('safe-area-inset-bottom'))
     console.log('safe-area-inset-top:', getPixelHeight('safe-area-inset-top'))
-  }, []);
+  }, [])
 
   const nativeMobile = isNativeMobile()
   const router = useRouter()
   const username = (nativeMobile ? router.query.username : props.username) as string
-  const [user, setUser] = useState<User | undefined>(props.user)
-  const [profile, setProfile] = useState<ProfileRow | undefined>(props.profile)
-  const [notFoundCustomText, setNotFoundCustomText] = useState(props.notFoundCustomText)
+  const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
 
-  console.log('UserPage state:', {username, user, profile, notFoundCustomText, loading, nativeMobile})
+  console.log('UserPage state:', {username, fetchedProps, loading, nativeMobile})
 
   useEffect(() => {
     if (nativeMobile) {
-      // Mobile/WebView scenario: fetch profile dynamically
+      // Mobile/WebView scenario: fetch profile dynamically from the remote web server (to benefit from SSR and ISR)
       async function load() {
         setLoading(true)
-        const fetchedUser = await getUser(username)
-        if (!fetchedUser) return
-        if (fetchedUser.username !== username) {
-          console.debug('Found a case-insensitive match for native mobile')
-          await router.push(`/${fetchedUser.username}`)
-        }
-        setUser(fetchedUser)
-        console.debug('fetched user for native mobile:', fetchedUser)
-        const fetchedProfile = await getProfile(fetchedUser.id)
-        if (!fetchedProfile) {
-          setNotFoundCustomText(`${username} hasn't created a profile yet.`)
-        } else {
-          setProfile(fetchedProfile)
-          console.debug('fetched profile for native mobile:', fetchedProfile)
+        try {
+          const _props = await getPageData(username)
+          setFetchedProps(_props)
+        } catch (e) {
+          console.error('Failed to fetch profile for native mobile', e)
+          setFetchedProps({username, notFoundCustomText: 'Failed to fetch profile.'})
         }
         setLoading(false)
       }
 
       load()
     } else {
-      setUser(props.user)
-      setProfile(props.profile)
-      setNotFoundCustomText(props.notFoundCustomText)
+      setFetchedProps(props)
     }
     // On web, initialProfile from SSR/ISR is already loaded
-  }, [username, nativeMobile]);
+  }, [username, nativeMobile])
 
   if (loading) {
     return <PageBase
@@ -206,11 +195,11 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  if (notFoundCustomText) {
-    return <Custom404 customText={notFoundCustomText}/>
+  if (fetchedProps.notFoundCustomText) {
+    return <Custom404 customText={fetchedProps.notFoundCustomText}/>
   }
 
-  if (!user) {
+  if (!fetchedProps.user) {
     return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
@@ -223,7 +212,7 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  if (user.isBannedFromPosting) {
+  if (fetchedProps.user?.isBannedFromPosting) {
     return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
@@ -236,7 +225,7 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  if (!profile) {
+  if (!fetchedProps.profile) {
     return <PageBase
       trackPageView={'user page'}
       className={'relative p-2 sm:pt-0'}
@@ -249,11 +238,7 @@ export default function UserPage(props: UserPageProps) {
     </PageBase>
   }
 
-  return <UserPageInner
-    user={user}
-    username={username}
-    profile={profile}
-  />
+  return <UserPageInner {...fetchedProps as ActiveUserPageProps}/>
 }
 
 function UserPageInner(props: ActiveUserPageProps) {

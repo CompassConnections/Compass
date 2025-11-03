@@ -1192,6 +1192,11 @@
   dependencies:
     tslib "^2.1.0"
 
+"@capacitor/keyboard@7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@capacitor/keyboard/-/keyboard-7.0.3.tgz#8e05a70a386479f0cd2778fbec1adda5f6e18cee"
+  integrity sha512-BIBKjmky5rOYNhvYhNeDi0MMvjwYZ6YF9JoCYcGKvKY+XLJKtezsEL78XfOlgWZBkbfR8uq3tzktY6PqgoYLKA==
+
 "@capacitor/push-notifications@7.0.3":
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/@capacitor/push-notifications/-/push-notifications-7.0.3.tgz#b053f5c8db8cc8ceddda8dd9a1c744a72113e202"

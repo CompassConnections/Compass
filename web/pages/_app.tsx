@@ -17,6 +17,7 @@ import {Capacitor} from '@capacitor/core'
 import {StatusBar} from '@capacitor/status-bar'
 import {App} from '@capacitor/app'
 import {useRouter} from "next/navigation";
+import {Keyboard} from "@capacitor/keyboard";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -69,6 +70,19 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+    const onShow = () => document.body.classList.add('keyboard-open');
+    const onHide = () => document.body.classList.remove('keyboard-open');
+
+    Keyboard.addListener('keyboardWillShow', onShow);
+    Keyboard.addListener('keyboardWillHide', onHide);
+
+    return () => {
+      Keyboard.removeAllListeners();
+    };
+  }, []);
 
   useEffect(() => {
     initTracking()

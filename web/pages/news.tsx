@@ -8,6 +8,7 @@ import {CustomLink} from "web/components/links";
 import {isNativeMobile} from "web/lib/util/webview";
 import {useEffect, useState} from "react";
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import {getPageData} from "web/lib/util/page-data";
 
 async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)
@@ -43,24 +44,31 @@ type Release = {
 
 export default function WhatsNew(props: { releases?: Release[] }) {
   const nativeMobile = isNativeMobile()
-  const [releases, setReleases] = useState(props.releases || [])
+  const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
+  const releases = fetchedProps.releases || []
 
   useEffect(() => {
     if (nativeMobile) {
-      // Mobile/WebView scenario: fetch profile dynamically
+      // Mobile/WebView scenario: fetch data dynamically from the remote web server (to benefit from SSR and ISR)
       async function load() {
         setLoading(true)
-        const fetchedReleases = await fetchReleases()
-        setReleases(fetchedReleases)
-        console.debug('fetched releases for native mobile')
+        try {
+          const _props = await getPageData('news')
+          setFetchedProps(_props)
+        } catch (e) {
+          console.error('Failed to fetch data for native mobile', e)
+          setFetchedProps({releases: []})
+        }
         setLoading(false)
       }
 
       load()
+    } else {
+      setFetchedProps(props)
     }
-    // On web, initialProfile from SSR/ISR is already loaded
-  }, [nativeMobile]);
+    // On web, props from SSR/ISR is already loaded
+  }, [nativeMobile])
 
   return (
     <PageBase trackPageView={'news'} className={'mx-4'}>

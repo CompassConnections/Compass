@@ -1,13 +1,15 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-const LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
-console.log("LOCAL_ANDROID in CapacitorConfig", LOCAL_ANDROID)
+const WEBVIEW_DEV_PHONE = process.env.NEXT_PUBLIC_WEBVIEW_DEV_PHONE === '1'
+const LOCAL_ANDROID = WEBVIEW_DEV_PHONE || process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
+const LOCAL_URL = WEBVIEW_DEV_PHONE ? '192.168.1.3' : '10.0.2.2'
+console.log("CapacitorConfig", {LOCAL_ANDROID, WEBVIEW_DEV_PHONE})
 
 const config: CapacitorConfig = {
   appId: 'com.compassconnections.app',
   appName: 'Compass',
   webDir: 'web/out',
-  server: LOCAL_ANDROID ? { url: 'http://10.0.2.2:3000', cleartext: true } : {}
+  server: LOCAL_ANDROID ? { url: `http://${LOCAL_URL}:3000`, cleartext: true } : {}
 };
 
 export default config;

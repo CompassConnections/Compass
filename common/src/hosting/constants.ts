@@ -1,4 +1,5 @@
-export const IS_LOCAL_ANDROID = process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
+export const IS_WEBVIEW_DEV_PHONE = process.env.NEXT_PUBLIC_WEBVIEW_DEV_PHONE === '1'
+export const IS_LOCAL_ANDROID = IS_WEBVIEW_DEV_PHONE || process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
 export const IS_WEBVIEW = !!process.env.NEXT_PUBLIC_WEBVIEW
 export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
 export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
@@ -11,4 +12,4 @@ if (IS_LOCAL && !process.env.ENVIRONMENT && !process.env.NEXT_PUBLIC_FIREBASE_EN
   process.env.ENVIRONMENT = 'DEV'
 }
 
-console.log('IS_LOCAL_ANDROID', IS_LOCAL_ANDROID)
+// console.log('IS_LOCAL_ANDROID', IS_LOCAL_ANDROID)

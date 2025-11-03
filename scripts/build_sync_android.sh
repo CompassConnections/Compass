@@ -10,6 +10,8 @@ yarn build-web
 
 source web/.env
 
+export NEXT_PUBLIC_WEBVIEW_DEV_PHONE=1
+
 npx cap sync android
 
 # To generate icons

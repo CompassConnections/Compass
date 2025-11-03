@@ -6,6 +6,7 @@ import {
   LinkIcon,
   QuestionMarkCircleIcon as SolidQuestionIcon,
   UserCircleIcon,
+  UsersIcon,
 } from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {User} from 'common/user'
@@ -106,8 +107,8 @@ export function PageBase(props: {
   )
 }
 
-const Profiles = {name: 'People', href: '/', icon: SolidHomeIcon}
-const ProfilesHome = {name: 'People', href: '/', icon: HomeIcon}
+const Profiles = {name: 'People', href: '/', icon: UsersIcon}
+const Home = {name: 'Home', href: '/', icon: HomeIcon}
 const faq = {name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
 const About = {name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
 const Signin = {name: 'Sign in', href: '/signin', icon: UserCircleIcon}
@@ -151,7 +152,7 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
 }
 
 const getBottomSignedOutNavigation = () => [
-  Profiles,
+  Home,
   About,
   Signin,
 ]
@@ -159,7 +160,7 @@ const getBottomSignedOutNavigation = () => [
 const getDesktopNavigation = (user: User | null | undefined) => {
   if (user)
     return buildArray(
-      ProfilesHome,
+      Profiles,
       Notifs,
       Messages,
       Settings,

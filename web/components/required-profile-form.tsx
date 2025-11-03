@@ -87,7 +87,7 @@ export const RequiredProfileUserForm = (props: {
       <Title>The Basics</Title>
       {step === 1 && !profileCreatedAlready &&
           <div className="text-ink-500 mb-6 text-lg">No endless forms—write your own bio, your own way.</div>}
-      <Col className={'gap-8'}>
+      <Col className={'gap-8 pb-[env(safe-area-inset-bottom)]'}>
         {step === 0 && <Col>
             <label className={clsx(labelClassName)}>Display name</label>
             <Row className={'items-center gap-2'}>

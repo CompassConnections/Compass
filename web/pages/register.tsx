@@ -1,20 +1,21 @@
-"use client";
+"use client"
 
-import React, {Suspense, useEffect, useState} from "react";
-import Link from "next/link";
-import {useSearchParams} from "next/navigation";
-import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup";
+import React, {Suspense, useEffect, useState} from "react"
+import Link from "next/link"
+import {useSearchParams} from "next/navigation"
+import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup"
 
-import {createUserWithEmailAndPassword} from "firebase/auth";
-import {auth} from "web/lib/firebase/users";
-import FavIcon from "web/public/FavIcon";
-import {PageBase} from "web/components/page-base";
-import {getProfileRow} from "common/profiles/profile";
-import {db} from "web/lib/supabase/db";
-import Router from "next/router";
-import {useUser} from "web/hooks/use-user";
-import {GoogleButton} from "web/components/buttons/sign-up-button";
-import {SEO} from "web/components/SEO";
+import {createUserWithEmailAndPassword} from "firebase/auth"
+import {auth} from "web/lib/firebase/users"
+import FavIcon from "web/public/FavIcon"
+import {PageBase} from "web/components/page-base"
+import {getProfileRow} from "common/profiles/profile"
+import {db} from "web/lib/supabase/db"
+import Router from "next/router"
+import {useUser} from "web/hooks/use-user"
+import {GoogleButton} from "web/components/buttons/sign-up-button"
+import {SEO} from "web/components/SEO"
+import toast from "react-hot-toast"
 
 
 export default function RegisterPage() {
@@ -22,22 +23,22 @@ export default function RegisterPage() {
     <Suspense fallback={<div></div>}>
       <RegisterComponent/>
     </Suspense>
-  );
+  )
 }
 
-// const href = '/signup';
+// const href = '/signup'
 
 function RegisterComponent() {
-  const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(searchParams.get('error'));
-  const [isLoading, setIsLoading] = useState(false);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  const [registeredEmail, _] = useState('');
+  const searchParams = useSearchParams()
+  const [error, setError] = useState<string | null>(searchParams.get('error'))
+  const [isLoading, setIsLoading] = useState(false)
+  const [registrationSuccess, setRegistrationSuccess] = useState(false)
+  const [registeredEmail, _] = useState('')
   const user = useUser()
 
   // function redirect() {
   //   // Redirect to complete profile page
-  //   window.location.href = href;
+  //   window.location.href = href
   // }
 
   useEffect(() => {
@@ -51,62 +52,65 @@ function RegisterComponent() {
           console.log("Router.push('/signup')")
           await Router.push('/signup')
         }
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
     checkProfileAndRedirect()
-  }, [user]);
+  }, [user])
 
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
-      const creds = await createUserWithEmailAndPassword(auth, email, password);
-      console.debug("User signed up:", creds.user);
-    } catch (error) {
-      console.error("Error signing up:", error);
+      const creds = await createUserWithEmailAndPassword(auth, email, password)
+      console.debug("User signed up:", creds.user)
+    } catch (error: any) {
+      console.error("Error signing up:", error)
+      toast.error("Failed to sign up: " + error.message)
+      setError(error.message)
+      setIsLoading(false)
       if (error instanceof Error && error.message.includes("email-already-in-use")) {
-        throw new Error("This email is already registered");
+        throw new Error("This email is already registered")
       }
     }
-  };
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     function handleError(error: unknown) {
-      console.error("Registration error:", error);
-      setError(error instanceof Error ? error.message : "Registration failed");
+      console.error("Registration error:", error)
+      setError(error instanceof Error ? error.message : "Registration failed")
     }
 
     try {
-      event.preventDefault();
-      setIsLoading(true);
-      setError(null);
+      event.preventDefault()
+      setIsLoading(true)
+      setError(null)
 
-      const formData = new FormData(event.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
+      const formData = new FormData(event.currentTarget)
+      const email = formData.get("email") as string
+      const password = formData.get("password") as string
 
       // Basic validation
       if (!email || !password) {
-        handleError("All fields are required");
+        handleError("All fields are required")
       }
 
-      await handleEmailPasswordSignUp(email, password);
+      await handleEmailPasswordSignUp(email, password)
 
       // Show a success message with email verification notice
-      // setRegistrationSuccess(true);
-      // setRegisteredEmail(email);
+      // setRegistrationSuccess(true)
+      // setRegisteredEmail(email)
 
       // Sign in after successful registration
       // ...
 
       // if (response?.error) {
-      //   handleError("Failed to sign in after registration");
+      //   handleError("Failed to sign in after registration")
       // }
 
       // redirect()
 
     } catch (error) {
-      handleError(error);
-      setIsLoading(false);
+      handleError(error)
+      setIsLoading(false)
     }
   }
 
@@ -258,5 +262,5 @@ function RegisterComponent() {
         </div>
       </div>
     </PageBase>
-  );
+  )
 }

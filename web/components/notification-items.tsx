@@ -54,7 +54,7 @@ export function BaseNotification(props: {
         <AvatarNotificationIcon notification={notification} />
       }
       subtitle={
-        <div className="line-clamp-2">
+        <div className="line-clamp-4">
           <Linkify text={notification.sourceText} />
         </div>
       }

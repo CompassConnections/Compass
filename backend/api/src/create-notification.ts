@@ -4,6 +4,24 @@ import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {tryCatch} from "common/util/try-catch";
 import {Row} from "common/supabase/utils";
 
+export const createAndroidTestNotifications = async () => {
+  const createdTime = Date.now();
+  const id = `android-test-${createdTime}`
+  const notification: Notification = {
+    id,
+    userId: 'todo',
+    createdTime: createdTime,
+    isSeen: false,
+    sourceType: 'info',
+    sourceUpdateType: 'created',
+    sourceSlug: '/contact',
+    sourceUserAvatarUrl: 'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
+    title: 'Android App Ready for Review — Help Us Unlock the Google Play Release',
+    sourceText: 'To release our app, Google requires a closed test with at least 12 testers for 14 days. Please share your Google Play–registered email address so we can add you as a tester and complete the review process.',
+  }
+  return await createNotifications(notification)
+}
+
 export const createShareNotifications = async () => {
   const createdTime = Date.now();
   const id = `share-${createdTime}`

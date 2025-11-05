@@ -20,9 +20,51 @@ import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginHandle;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import ee.forgr.capacitor.social.login.GoogleProvider;
 import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 import ee.forgr.capacitor.social.login.SocialLoginPlugin;
+
+
+//import android.app.NotificationChannel;
+//import android.app.NotificationManager;
+//import android.os.Build;
+//import com.google.firebase.messaging.RemoteMessage;
+//import com.capacitorjs.plugins.pushnotifications.MessagingService;
+
+//public class MyMessagingService extends MessagingService {
+//
+//    @Override
+//    public void onMessageReceived(RemoteMessage remoteMessage) {
+//        // TODO(developer): Handle FCM messages here.
+//        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+//        Log.d(TAG, "From: " + remoteMessage.getFrom());
+//
+//        // Check if message contains a data payload.
+//        if (remoteMessage.getData().size() > 0) {
+//            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+//
+//            if (/* Check if data needs to be processed by long running job */ true) {
+//                // For long-running tasks (10 seconds or more) use WorkManager.
+//                scheduleJob();
+//            } else {
+//                // Handle message within 10 seconds
+//                handleNow();
+//            }
+//
+//        }
+//
+//        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+//        }
+//
+//        // Also if you intend on generating your own notifications as a result of a received FCM
+//        // message, here is where that should be initiated. See sendNotification method below.
+//    }
+//}
 
 
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
@@ -60,20 +102,21 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        String data = intent.getDataString();
-        Log.i("CompassApp", "onNewIntent called with data: " + data);
-//        if (data != null && data.startsWith("com.compassmeet://auth")) {
-//            Log.i("CompassApp", "triggerWindowJSEvent oauthRedirect");
-//            try {
-//                String payload = new JSONObject().put("data", data).toString();
-//                Log.i("CompassApp", "Payload: " + payload);
-//                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("oauthRedirect(" + payload + ");", null));
-//            } catch (JSONException e) {
-//                Log.i("CompassApp", "Failed to encode JSON payload", e);
-//            }
-//        } else {
-//            Log.i("CompassApp", "No relevant data");
-//        }
+//        String data = intent.getDataString();
+        String endpoint = intent.getStringExtra("endpoint");
+        Log.i("CompassApp", "onNewIntent called with endpoint: " + endpoint);
+        if (endpoint != null) {
+            Log.i("CompassApp", "redirecting to endpoint: " + endpoint);
+            try {
+                String payload = new JSONObject().put("endpoint", endpoint).toString();
+                Log.i("CompassApp", "Payload: " + payload);
+                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("bridgeRedirect(" + payload + ");", null));
+            } catch (JSONException e) {
+                Log.i("CompassApp", "Failed to encode JSON payload", e);
+            }
+        } else {
+            Log.i("CompassApp", "No relevant data");
+        }
     }
 
     @Override
@@ -124,6 +167,7 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
 
     // This function will never be called, leave it empty
     @Override
-    public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {}
+    public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {
+    }
 }
 

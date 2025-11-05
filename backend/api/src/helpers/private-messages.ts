@@ -17,6 +17,7 @@ import webPush from 'web-push'
 import {parseJsonContentToText} from "common/util/parse"
 import {encryptMessage} from "shared/encryption"
 import * as admin from 'firebase-admin'
+import {TokenMessage} from "firebase-admin/lib/messaging/messaging-api";
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -317,22 +318,23 @@ export async function sendPushToToken(
   token: string,
   payload: PushPayload,
 ) {
-  const message = {
+  const message: TokenMessage = {
     token,
-    notification: {
-      title: payload.title,
-      body: payload.body,
-      // data: {
-      //   url: payload.url,
-      // },
+    android: {
+      notification: {
+        title: payload.title,
+        body: payload.body,
+      },
     },
-    data: payload.data, // optional custom key-value pairs
+    data: {
+      endpoint: payload.url,
+    },
   }
-  // Fine to create at each call, as it's a cached singleton
-  const fcm = admin.messaging()
 
   try {
-    console.log('Sending notification to:', token, payload)
+    // Fine to create at each call, as it's a cached singleton
+    const fcm = admin.messaging()
+    console.log('Sending notification to:', token, message)
     const response = await fcm.send(message)
     console.log('Push sent successfully:', response)
     return response
@@ -341,11 +343,11 @@ export async function sendPushToToken(
     if (err instanceof Error && 'code' in err) {
       const firebaseError = err as { code: string; message: string }
       console.warn('Firebase error:', firebaseError.code, firebaseError.message)
-      
+
       // Handle specific error cases here if needed
       // For example, if token is no longer valid:
       if (firebaseError.code === 'messaging/registration-token-not-registered' ||
-          firebaseError.code === 'messaging/invalid-argument') {
+        firebaseError.code === 'messaging/invalid-argument') {
         console.warn('Removing invalid FCM token')
         await removeMobileSubscription(pg, token, userId)
       }

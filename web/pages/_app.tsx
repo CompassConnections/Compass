@@ -104,10 +104,15 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
     return () => window.removeEventListener('appBackButton', handleBack)
   }, [router])
 
-  // useEffect(() => {
-  //   // Expose globally for native bridge
-  //   (window as any).oauthRedirect = oauthRedirect
-  // }, [])
+  useEffect(() => {
+    const bridgeRedirect = (payload: any) => {
+      console.log('bridgeRedirect', payload)
+      const {endpoint} = payload
+      router.push(endpoint)
+    }
+    // Expose globally for native bridge
+    (window as any).bridgeRedirect = bridgeRedirect
+  }, [])
 
   const title = 'Compass'
   const description = 'The platform for intentional connections'

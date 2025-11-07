@@ -119,7 +119,12 @@ export function ChatMessageItem(props: {
                   </div>
                 </Row>
                 {/* Hidden host for emoji picker, opened via long-press */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 -mt-2">
+                <div
+                  className={clsx(
+                    'absolute -mt-2',
+                    isMe ? 'right-40' : 'left-40',
+                  )}
+                >
                   <MessageActions
                     message={{
                       id: chat.id,

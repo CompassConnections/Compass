@@ -113,7 +113,7 @@ export const useCitySearch = () => {
       } else {
         fetchData()
       }
-    }, 400)
+    }, 1000)
 
     return () => {
       clearTimeout(debounce)

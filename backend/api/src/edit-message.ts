@@ -13,7 +13,7 @@ export const editMessage: APIHandler<'edit-message'> = async ({messageId, conten
      FROM private_user_messages
      WHERE id = $1
        AND user_id = $2
-       AND created_time > NOW() - INTERVAL '1 day'
+--        AND created_time > NOW() - INTERVAL '1 day'
        AND deleted = FALSE`,
     [messageId, auth.uid]
   )

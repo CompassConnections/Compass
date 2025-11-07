@@ -574,6 +574,55 @@ export const API = (_apiTypeCheck = {
     summary: 'Leave a private message channel',
     tag: 'Messages',
   },
+  'edit-message': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      messageId: z.number(),
+      content: contentSchema,
+    }),
+    summary: 'Edit a private message',
+    tag: 'Messages',
+  },
+  'delete-message': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      messageId: z.number(),
+    }),
+    summary: 'Delete a private message',
+    tag: 'Messages',
+  },
+  'react-to-message': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      messageId: z.number(),
+      reaction: z.string(),
+      toDelete: z.boolean().optional(),
+    }),
+    summary: 'Add or remove a reaction to a message',
+    tag: 'Messages',
+  },
+  // 'get-message-reactions': {
+  //   method: 'GET',
+  //   authed: true,
+  //   rateLimited: false,
+  //   returns: {} as {
+  //     reactions: Record<string, number>
+  //   },
+  //   props: z.object({
+  //     messageId: z.string(),
+  //   }),
+  //   summary: 'Get reactions for a message',
+  //   tag: 'Messages',
+  // },
   'create-compatibility-question': {
     method: 'POST',
     authed: true,

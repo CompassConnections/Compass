@@ -3,7 +3,7 @@ import {useRouter} from 'next/router'
 import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
 import {Col} from 'web/components/layout/col'
 import {User} from 'common/user'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {track} from 'web/lib/service/analytics'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {uniq} from 'lodash'
@@ -100,11 +100,12 @@ export const PrivateChat = (props: {
   const isMobile = useIsMobile()
 
   const totalMessagesToLoad = 100
-  const realtimeMessages = usePrivateMessages(
+  const {messages: realtimeMessages, setMessages} = usePrivateMessages(
     channelId,
     totalMessagesToLoad,
     user.id
   )
+  // console.log('realtimeMessages', realtimeMessages)
 
   const [showUsers, setShowUsers] = useState(false)
   const maxUsersToGet = 100
@@ -132,18 +133,29 @@ export const PrivateChat = (props: {
         (m) =>
           ({
             ...m,
-            id: m.id.toString(),
+            id: m.id,
           } as ChatMessage)
       ),
       200,
       user?.id
     )
 
+  const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null)
+  // console.log('editingMessage', editingMessage)
+
   const editor = useTextEditor({
     key: `private-message-${channelId}-${user.id}`,
     size: 'sm',
     placeholder: 'Send a message',
   })
+
+  useEffect(() => {
+    if (!editor) return
+    if (editingMessage) {
+      editor.commands.setContent(editingMessage.content)
+      editor.commands.focus('end')
+    }
+  }, [editor, editingMessage])
 
   useEffect(() => {
     if (editor && !isMobile) {
@@ -157,9 +169,12 @@ export const PrivateChat = (props: {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // console.log('messages in privatechat', messages[0]?.reactions)
   const groupedMessages = useGroupedMessages(messages)
 
-  async function submitMessage() {
+  // console.log('groupedMessages', groupedMessages)
+
+  const submitMessage = useCallback(async (_type?: 'comment' | 'repost') => {
     if (!user) {
       track('sign in to comment')
       return await firebaseLogin()
@@ -167,20 +182,52 @@ export const PrivateChat = (props: {
     if (!editor || editor.isEmpty || isSubmitting || !channelId) return
     setIsSubmitting(true)
 
-    await api('create-private-user-message', {
-      channelId,
-      content: editor.getJSON(),
-    })
-      .then(() => {
-        editor.commands.clearContent()
+    try {
+      const content = editor.getJSON();
+      // console.log('editingMessage submitting message', {editingMessage}, JSON.stringify(content))
+      if (editingMessage) {
+        // console.log('editingMessage edit-message', editingMessage)
+        setMessages((prevMessages) =>
+          prevMessages?.map((m) =>
+            m.id === editingMessage.id ? {...m, content: content} : m
+          )
+        )
+        await api('edit-message', {
+          messageId: editingMessage.id,
+          content: content,
+        })
+        editor.commands.clearContent(true)
         editor.commands.focus()
-      })
-      .catch((e) => {
-        toast.error("Couldn't send message. Please try again later or contact support if the problem persists.")
-        console.error(e)
-      })
-    setIsSubmitting(false)
-  }
+      } else {
+        await api('create-private-user-message', {
+          channelId,
+          content: content,
+        })
+        editor.commands.clearContent(true)
+        editor.commands.focus()
+      }
+    } catch (e) {
+      toast.error(
+        editingMessage
+          ? "Couldn't edit message."
+          : "Couldn't send message. Please try again later or contact support if the problem persists."
+      )
+      console.error(e)
+    } finally {
+      setIsSubmitting(false)
+      setEditingMessage(null)
+    }
+  }, [user, editor, isSubmitting, channelId, editingMessage, setMessages])
+
+  const handleStartEdit = useCallback((chat: ChatMessage) => {
+    setEditingMessage(chat)
+  }, [])
+
+  const cancelEditing = useCallback(() => {
+    setEditingMessage(null)
+    editor?.commands.clearContent(true)
+    editor?.commands.focus()
+  }, [editor])
 
   const heightFromTop = 200
 
@@ -343,14 +390,11 @@ export const PrivateChat = (props: {
                       chats={messages}
                       currentUser={user}
                       otherUser={otherUser}
-                      beforeSameUser={
-                        groupedMessages[i + 1]?.[0].userId ===
-                        firstMessage.userId
-                      }
-                      firstOfUser={
-                        groupedMessages[i - 1]?.[0].userId !==
-                        firstMessage.userId
-                      }
+                      hideAvatar={(otherUsers?.length ?? 0) < 2}
+                      beforeSameUser={groupedMessages[i + 1]?.[0].userId === firstMessage.userId}
+                      firstOfUser={groupedMessages[i - 1]?.[0].userId !== firstMessage.userId}
+                      setMessages={setMessages}
+                      onRequestEdit={handleStartEdit}
                       onReplyClick={(chat) =>
                         setReplyToUserInfo({
                           id: chat.userId,
@@ -377,6 +421,8 @@ export const PrivateChat = (props: {
         isSubmitting={isSubmitting}
         submitOnEnter={!isMobile}
         replyTo={replyToUserInfo}
+        isEditing={!!editingMessage}
+        cancelEditing={cancelEditing}
       />
     </Col>
   )

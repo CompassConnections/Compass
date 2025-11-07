@@ -1,21 +1,17 @@
-import { PrivateChatMessage } from 'common/chat-message'
-import { millisToTs, tsToMillis } from 'common/supabase/utils'
-import { useEffect, useState } from 'react'
-import { max, orderBy, uniq, uniqBy } from 'lodash'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
-import {
-  getSortedChatMessageChannels,
-  getTotalChatMessages,
-} from 'web/lib/supabase/private-messages'
-import { useIsPageVisible } from 'web/hooks/use-page-visible'
-import { track } from 'web/lib/service/analytics'
-import { usePathname } from 'next/navigation'
-import { api } from 'web/lib/api'
-import { PrivateMessageChannel } from 'common/supabase/private-messages'
-import { useAPIGetter } from 'web/hooks/use-api-getter'
-import { useApiSubscription } from 'web/hooks/use-api-subscription'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import {getWebsocketUrl} from "common/api/utils";
+import {PrivateChatMessage} from 'common/chat-message'
+import {millisToTs, tsToMillis} from 'common/supabase/utils'
+import {useEffect, useState} from 'react'
+import {min, orderBy, uniq, uniqBy} from 'lodash'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {getSortedChatMessageChannels, getTotalChatMessages,} from 'web/lib/supabase/private-messages'
+import {useIsPageVisible} from 'web/hooks/use-page-visible'
+import {track} from 'web/lib/service/analytics'
+import {usePathname} from 'next/navigation'
+import {api} from 'web/lib/api'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
+import {useApiSubscription} from 'web/hooks/use-api-subscription'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 
 export function usePrivateMessages(
   channelId: number,
@@ -27,15 +23,17 @@ export function usePrivateMessages(
     PrivateChatMessage[] | undefined
   >(undefined, `private-messages-${channelId}-${limit}-v1`)
 
-  const fetchMessages = async () => {
-    const newMessages = await api('get-channel-messages', {
+  const fetchMessages = async (id?: number) => {
+    const data = {
       channelId,
       limit,
-      id: messages ? max(messages.map((m) => m.id)) : undefined,
-    })
+      id: id ?? (messages ? min(messages.map((m) => m.id)) : undefined),
+    }
+    const newMessages = await api('get-channel-messages', data)
+    // console.debug('get-channel-messages', newMessages, messages, data)
     setMessages((prevMessages) =>
       orderBy(
-        uniqBy([...newMessages, ...(prevMessages ?? [])], (m) => m.id),
+        uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
         'createdTime',
         'desc'
       )
@@ -44,16 +42,17 @@ export function usePrivateMessages(
 
   useEffect(() => {
     fetchMessages()
-  }, [channelId, limit, messages?.length])
+  }, [channelId, limit])
 
   useApiSubscription({
     topics: ['private-user-messages/' + userId],
     onBroadcast: () => {
+      // console.debug('private-user-messages broadcast', channelId)
       fetchMessages()
     },
   })
 
-  return messages
+  return {messages, fetchMessages, setMessages}
 }
 
 export const useUnseenPrivateMessageChannels = (
@@ -65,13 +64,13 @@ export const useUnseenPrivateMessageChannels = (
   const [lastSeenChatTimeByChannelId, setLastSeenChatTimeByChannelId] =
     useState<Record<number, string> | undefined>(undefined)
 
-  const { data, refresh } = useAPIGetter('get-channel-memberships', {
+  const {data, refresh} = useAPIGetter('get-channel-memberships', {
     lastUpdatedTime: ignorePageSeenTime
       ? new Date(0).toISOString()
       : millisToTs(lastSeenMessagesPageTime),
     limit: 100,
   })
-  const { channels } = data ?? {
+  const {channels} = data ?? {
     channels: [] as PrivateMessageChannel[],
     memberIdsByChannelId: {},
   }
@@ -116,7 +115,7 @@ export const useUnseenPrivateMessageChannels = (
   }, [channels?.length])
 
   if (!lastSeenChatTimeByChannelId)
-    return { unseenChannels: [], lastSeenChatTimeByChannelId: {} }
+    return {unseenChannels: [], lastSeenChatTimeByChannelId: {}}
   const unseenChannels = channels.filter((channel) => {
     const channelId = channel.channel_id
     const notifyAfterTime =
@@ -133,7 +132,7 @@ export const useUnseenPrivateMessageChannels = (
       !pathName?.endsWith(`/messages/${channelId}`)
     )
   })
-  return { unseenChannels, lastSeenChatTimeByChannelId }
+  return {unseenChannels, lastSeenChatTimeByChannelId}
 }
 
 const useLastSeenMessagesPageTime = () => {

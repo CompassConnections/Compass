@@ -106,6 +106,7 @@ export function CommentInput(props: {
     </Row>
   )
 }
+
 const emojiMenuActive = (view: { state: any }) => {
   const regex = /^emoji\$.*$/ // emoji$ can have random numbers following it....❤️ tiptap
   let active = false
@@ -126,8 +127,10 @@ export function CommentInputTextArea(props: {
   replyTo?: { id: string; username: string }
   editor: Editor | null
   submit?: (type: CommentType) => void
+  cancelEditing?: () => void
   isSubmitting: boolean
   submitOnEnter?: boolean
+  isEditing?: boolean
   commentTypes?: CommentType[]
 }) {
   const {
@@ -136,8 +139,10 @@ export function CommentInputTextArea(props: {
     editor,
     submit,
     isSubmitting,
+    isEditing,
     replyTo,
     commentTypes = ['comment'],
+    cancelEditing,
   } = props
   useEffect(() => {
     editor?.setEditable(!isSubmitting)
@@ -159,6 +164,7 @@ export function CommentInputTextArea(props: {
             // emoji list is closed
             !emojiMenuActive(view)
           ) {
+            // console.log('handleKeyDown')
             submit?.(commentTypes[0])
             event.preventDefault()
             return true
@@ -167,7 +173,7 @@ export function CommentInputTextArea(props: {
         },
       },
     })
-  }, [editor])
+  }, [editor, submit, submitOnEnter, commentTypes])
 
   useEffect(() => {
     if (!editor) return
@@ -201,6 +207,18 @@ export function CommentInputTextArea(props: {
               <BiRepost className="h-7 w-7" />
             </button>
           </Tooltip>
+        )}
+        {isEditing && (
+          <Row className="border-ink-200 bg-canvas-50 text-ink-600 items-center justify-between gap-2 border-t px-3 py-2 text-sm">
+            {/*<span>Editing message</span>*/}
+            <button
+              type="button"
+              className="text-primary-600 hover:underline"
+              onClick={cancelEditing}
+            >
+              Cancel
+            </button>
+          </Row>
         )}
         {!isSubmitting && submit && commentTypes.includes('comment') && (
           <button

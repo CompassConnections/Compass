@@ -1,9 +1,43 @@
-import { ChatMessage } from 'common/chat-message'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useIsVisible } from 'web/hooks/use-is-visible'
-import { forEach, last } from 'lodash'
-import { HOUR_MS, MINUTE_MS } from 'common/util/time'
-import { richTextToString } from 'common/util/parse'
+import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from 'react'
+import {useIsVisible} from 'web/hooks/use-is-visible'
+import {forEach, last, uniq} from 'lodash'
+import {HOUR_MS, MINUTE_MS} from 'common/util/time'
+import {richTextToString} from 'common/util/parse'
+
+// export const getMessagesKey = (messages: ChatMessage[] | undefined) => {
+//   return messages
+//     ?.map(m => `${m.id}:${JSON.stringify(m.content)}:${JSON.stringify(m.reactions)}:${JSON.stringify(m.isEdited)}`)
+//     .join('|')
+// }
+
+export function updateReactionUI(
+  message: any,
+  user: any,
+  reaction: string,
+  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>,
+  toDelete?: boolean,
+) {
+  if (!user) return
+  if (!setMessages) return
+  setMessages?.((prevMessages) =>
+    prevMessages?.map((m) =>
+      m.id === message.id && user?.id
+        ? {
+          ...m,
+          reactions: {
+            ...m.reactions,
+            [reaction]: toDelete ?
+              m.reactions?.[reaction]?.filter((id: string) => id !== user.id) || []
+              : uniq([
+                ...(m.reactions?.[reaction] || []),
+                user.id
+              ])
+          }
+        }
+        : m
+    ))
+}
 
 export const usePaginatedScrollingMessages = (
   realtimeMessages: ChatMessage[] | undefined,
@@ -17,7 +51,7 @@ export const usePaginatedScrollingMessages = (
   const scrollToOldTop = useRef(false)
   const [page, setPage] = useState(1)
   const [prevInnerDivHeight, setPrevInnerDivHeight] = useState<number>()
-  const { ref: topVisibleRef } = useIsVisible(() => {
+  const {ref: topVisibleRef} = useIsVisible(() => {
     scrollToOldTop.current = true
     setPage(page + 1)
   })
@@ -25,7 +59,7 @@ export const usePaginatedScrollingMessages = (
   const [showMessages, setShowMessages] = useState(false)
   const messages = useMemo(
     () => (realtimeMessages ?? []).slice(0, messagesPerPage * page).reverse(),
-    [realtimeMessages?.length, page]
+    [JSON.stringify(realtimeMessages), page]
   )
   useEffect(() => {
     const outerDivHeight = outerDiv?.current?.clientHeight ?? 0
@@ -68,10 +102,13 @@ export const usePaginatedScrollingMessages = (
 
     setPrevInnerDivHeight(innerDivHeight)
   }, [messages])
-  return { topVisibleRef, showMessages, messages, outerDiv, innerDiv }
+  return {topVisibleRef, showMessages, messages, outerDiv, innerDiv}
 }
 
 export const useGroupedMessages = (messages: ChatMessage[]) => {
+  // Create a string key that changes when any message's content or reactions change
+  console.log('messages in useGroupedMessages', messages[0]?.reactions)
+
   return useMemo(() => {
     // Group messages created within a short time of each other.
     const tempGrouped: ChatMessage[][] = []
@@ -125,13 +162,13 @@ export const useGroupedMessages = (messages: ChatMessage[]) => {
     if (systemStatusGroup.length > 0) tempGrouped.push(systemStatusGroup)
 
     return tempGrouped
-  }, [messages])
+  }, [JSON.stringify(messages)])
 }
 const systemStatusType = (message: ChatMessage) => {
   const chatContent = richTextToString(message.content)
   return chatContent.includes('left the chat')
     ? 'left'
     : chatContent.includes('joined the chat')
-    ? 'joined'
-    : 'other'
+      ? 'joined'
+      : 'other'
 }

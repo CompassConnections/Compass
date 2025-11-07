@@ -90,6 +90,27 @@ export const addUsersToPrivateMessageChannel = async (
   )
 }
 
+export async function broadcastPrivateMessages(
+  pg: SupabaseDirectClient,
+  channelId: number,
+  userId: string,
+) {
+  const otherUserIds = await pg.map<string>(
+    `select user_id
+     from private_user_message_channel_members
+     where channel_id = $1
+       and user_id != $2
+       and status != 'left'
+    `,
+    [channelId, userId],
+    (r) => r.user_id
+  )
+  otherUserIds.concat(userId).forEach((otherUserId) => {
+    broadcast(`private-user-messages/${otherUserId}`, {})
+  })
+  return otherUserIds;
+}
+
 export const createPrivateUserMessageMain = async (
   creator: User,
   channelId: number,
@@ -117,20 +138,7 @@ export const createPrivateUserMessageMain = async (
     channel_id: channelId,
     user_id: creator.id,
   }
-
-  const otherUserIds = await pg.map<string>(
-    `select user_id
-     from private_user_message_channel_members
-     where channel_id = $1
-       and user_id != $2
-       and status != 'left'
-    `,
-    [channelId, creator.id],
-    (r) => r.user_id
-  )
-  otherUserIds.concat(creator.id).forEach((otherUserId) => {
-    broadcast(`private-user-messages/${otherUserId}`, {})
-  })
+  const otherUserIds = await broadcastPrivateMessages(pg, channelId, creator.id);
 
   // Fire and forget safely
   void notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)

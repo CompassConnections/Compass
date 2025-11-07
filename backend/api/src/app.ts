@@ -69,6 +69,9 @@ import {localSendTestEmail} from "api/test";
 import path from "node:path";
 import {saveSubscriptionMobile} from "api/save-subscription-mobile";
 import {IS_LOCAL} from "common/hosting/constants";
+import {editMessage} from "api/edit-message";
+import {reactToMessage} from "api/react-to-message";
+import {deleteMessage} from "api/delete-message";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -358,6 +361,9 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'save-subscription-mobile': saveSubscriptionMobile,
   'create-bookmarked-search': createBookmarkedSearch,
   'delete-bookmarked-search': deleteBookmarkedSearch,
+  'delete-message': deleteMessage,
+  'edit-message': editMessage,
+  'react-to-message': reactToMessage,
   // 'auth-google': authGoogle,
 }
 

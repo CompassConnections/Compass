@@ -11,6 +11,7 @@ import {handleReaction} from "web/lib/util/message-reactions"
 import {useClickOutside} from "web/hooks/use-click-outside"
 import {PrivateChatMessage} from "common/chat-message";
 import {updateReactionUI} from "web/lib/supabase/chat-messages";
+import {useIsMobile} from "web/hooks/use-is-mobile";
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '👎']
 
@@ -35,6 +36,7 @@ export function MessageActions(props: {
   const emojiPickerRef = useRef<HTMLDivElement>(null)
   const user = useUser()
   const isOwner = user?.id === message.userId
+  const isMobile = useIsMobile()
 
   useClickOutside(emojiPickerRef, () => {
     setShowEmojiPicker(false)
@@ -65,34 +67,32 @@ export function MessageActions(props: {
 
   return (
     <div className={clsx('flex items-center gap-1', className)}>
-      <div className="relative">
-        {showEmojiPicker && (
-          <div
-            ref={emojiPickerRef}
-            className={clsx(
-              "absolute top-full mb-2 rounded-lg bg-canvas-200 p-2 shadow-lg pr-10 z-10",
-              isOwner && 'right-0',
-              !isOwner && 'left-0',
-            )}
-          >
-            <div className="grid grid-cols-6 gap-8">
-              {REACTIONS.map((reaction) => (
-                <button
-                  key={reaction}
-                  className="text-2xl hover:scale-125"
-                  onClick={async () => {
-                    setShowEmojiPicker(false)
-                    updateReactionUI(message, user, reaction, setMessages)
-                    await handleReaction(reaction, message.id)
-                  }}
-                >
-                  {reaction}
-                </button>
-              ))}
-            </div>
+      {showEmojiPicker && (
+        <div
+          ref={emojiPickerRef}
+          className={clsx(
+            'absolute mb-2 rounded-lg bg-canvas-200 p-2 shadow-lg pr-10 z-10 max-w-[250px]',
+            isMobile ? 'left-1/2 transform -translate-x-1/2'
+              : isOwner ? 'right-20' : 'left-20'
+          )}
+        >
+          <div className="grid grid-cols-6 gap-8">
+            {REACTIONS.map((reaction) => (
+              <button
+                key={reaction}
+                className="text-2xl hover:scale-125"
+                onClick={async () => {
+                  setShowEmojiPicker(false)
+                  updateReactionUI(message, user, reaction, setMessages)
+                  await handleReaction(reaction, message.id)
+                }}
+              >
+                {reaction}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {!hideTrigger && (
         <DropdownMenu
           items={[
@@ -117,7 +117,7 @@ export function MessageActions(props: {
           closeOnClick={true}
           icon={<DotsHorizontalIcon className="h-5 w-5 text-gray-500"/>}
           menuWidth="w-40"
-          className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-gray-100"
+          className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-canvas-50"
         />
       )}
       {/*{message.isEdited && (*/}

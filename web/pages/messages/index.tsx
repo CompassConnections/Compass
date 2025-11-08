@@ -96,20 +96,20 @@ export const MessageChannelRow = (props: {
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
-    <Link
-      className="hover:bg-canvas-0 rounded p-2 transition-colors"
-      key={channelId}
-      href={'/messages/' + channelId}
-    >
-      <Row className={'items-center gap-3 rounded-md'}>
-        <MultipleOrSingleAvatars
-          size="md"
-          spacing={numOthers === 2 ? 0.3 : 0.15}
-          startLeft={numOthers === 2 ? 2.2 : 1.2}
-          avatars={otherUsers ?? []}
-          className={numOthers > 1 ? '-ml-2' : ''}
-        />
-        <Col className={'w-full'}>
+    <Row className={'items-center gap-3 rounded-md'}>
+      <MultipleOrSingleAvatars
+        size="md"
+        spacing={numOthers === 2 ? 0.3 : 0.15}
+        startLeft={numOthers === 2 ? 2.2 : 1.2}
+        avatars={otherUsers ?? []}
+        className={numOthers > 1 ? '-ml-2' : ''}
+      />
+      <Link
+        className="hover:bg-canvas-0 rounded p-2 transition-colors w-full"
+        key={channelId}
+        href={'/messages/' + channelId}
+      >
+        <Col className={''}>
           <Row className={'items-center justify-between'}>
             <span className={'font-semibold'}>
               {otherUsers && (
@@ -150,7 +150,7 @@ export const MessageChannelRow = (props: {
             )}
           </Row>
         </Col>
-      </Row>
-    </Link>
+      </Link>
+    </Row>
   )
 }

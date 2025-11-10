@@ -2,17 +2,6 @@ import {PageBase} from 'web/components/page-base'
 import {Col} from 'web/components/layout/col'
 import {LoggedOutHome} from "web/components/home/home";
 
-export const TEST_DOWNTIME = true
-
-export async function getServerSideProps() {
-  if (TEST_DOWNTIME) {
-    // This will cause Next.js to return a 500 *at runtime*
-    throw new Error('500 - Test downtime');
-  }
-
-  return { props: {} };
-}
-
 export default function Home() {
   return (
     <PageBase trackPageView={'home'}>

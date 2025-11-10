@@ -4,10 +4,16 @@ import {LoggedOutHome} from "web/components/home/home";
 
 export const TEST_DOWNTIME = true
 
-export default function Home() {
+export async function getServerSideProps() {
   if (TEST_DOWNTIME) {
-    throw new Error('500 - This is a test error')
+    // This will cause Next.js to return a 500 *at runtime*
+    throw new Error('500 - Test downtime');
   }
+
+  return { props: {} };
+}
+
+export default function Home() {
   return (
     <PageBase trackPageView={'home'}>
       <Col className="items-center">

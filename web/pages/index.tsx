@@ -4,7 +4,7 @@ import {useUser} from 'web/hooks/use-user'
 import {LoggedOutHome} from "web/components/home/home";
 import {ProfilesHome} from "web/components/profiles/profiles-home";
 
-export const TEST_DOWNTIME = true
+export const TEST_DOWNTIME = false
 
 // To simulate downtime, you need the error to happen at runtime, not at build time.
 // That means the page must be server-rendered, not statically generated.

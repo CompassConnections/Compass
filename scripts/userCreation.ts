@@ -1,12 +1,12 @@
 //Run with:
-// export ENVIRONMENT=DEV && ./scripts/build_api.sh && npx tsx ./tests/e2e/backend/utils/userCreation.ts
+// export ENVIRONMENT=DEV && ./scripts/build_api.sh && npx tsx ./scripts/userCreation.ts
 
-import {createSupabaseDirectClient} from "../../../../backend/shared/lib/supabase/init";
-import {insert} from "../../../../backend/shared/lib/supabase/utils";
-import {PrivateUser} from "../../../../common/lib/user";
-import {getDefaultNotificationPreferences} from "../../../../common/lib/user-notification-preferences";
-import {randomString} from "../../../../common/lib/util/random";
-import UserAccountInformation  from "./userInformation";
+import {createSupabaseDirectClient} from "../backend/shared/lib/supabase/init";
+import {insert} from "../backend/shared/lib/supabase/utils";
+import {PrivateUser} from "../common/lib/user";
+import {getDefaultNotificationPreferences} from "../common/lib/user-notification-preferences";
+import {randomString} from "../common/lib/util/random";
+import UserAccountInformation  from "../tests/e2e/backend/utils/userInformation";
 
 type ProfileType = 'basic' | 'medium' | 'full'
 

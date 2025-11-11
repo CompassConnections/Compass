@@ -19,7 +19,7 @@ import {SEO} from "web/components/SEO";
 export default function SignupPage() {
   const [step, setStep] = useState(0)
   const user = useUser()
-  console.debug('user:', user)
+  // console.debug('user:', user)
   const router = useRouter()
   useTracking('view signup page')
 

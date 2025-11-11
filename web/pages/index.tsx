@@ -19,11 +19,12 @@ export async function getServerSideProps() {
 
 export default function ProfilesPage() {
   const user = useUser();
-  console.debug('user:', user)
 
   if (user === undefined) {
     return <PageBase trackPageView={'loading'}/>
   }
+
+  console.debug('user:', user)
 
   return (
     <PageBase trackPageView={'user profiles'}>

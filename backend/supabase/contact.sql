@@ -8,7 +8,7 @@ create table if not exists
 
 -- Foreign Keys
 alter table contact
-add constraint contact_user_id_fkey foreign key (user_id) references users (id);
+add constraint contact_user_id_fkey foreign key (user_id) references users (id) on delete set null;
 
 -- Row Level Security
 alter table contact enable row level security;

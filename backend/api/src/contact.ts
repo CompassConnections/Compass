@@ -25,8 +25,13 @@ export const contact: APIHandler<'contact'> = async (
 
   const continuation = async () => {
     try {
+      let user = null
+      if (userId) {
+        user = await pg.oneOrNone(` select name from users where id = $1 `, [userId])
+      }
       const md = jsonToMarkdown(content)
-      const message: string = `**New Contact Message**\n${md}`
+      const tile = user ? `New message from ${user.name}` : 'New message'
+      const message: string = `**${tile}**\n${md}`
       await sendDiscordMessage(message, 'contact')
     } catch (e) {
       console.error('Failed to send discord contact', e)

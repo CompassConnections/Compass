@@ -48,6 +48,7 @@
     "@capacitor/android": "7.4.4",
     "@capacitor/assets": "3.0.5",
     "@capacitor/cli": "7.4.4",
+    "@faker-js/faker": "10.1.0",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",

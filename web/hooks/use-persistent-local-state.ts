@@ -7,6 +7,7 @@ import { useEvent } from 'web/hooks/use-event'
 import { useIsClient } from 'web/hooks/use-is-client'
 
 export const usePersistentLocalState = <T>(initialValue: T, key: string) => {
+  // Note: use a version (like "-v1") in the key to increment after backwards-incompatible changes
   const isClient = useIsClient()
   const [state, setState] = useStateCheckEquality<T>(
     (isClient && safeJsonParse(safeLocalStorage?.getItem(key))) || initialValue

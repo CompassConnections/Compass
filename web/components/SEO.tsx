@@ -1,6 +1,7 @@
 import { removeUndefinedProps } from 'common/util/object'
 import { buildOgUrl } from 'common/util/og'
 import Head from 'next/head'
+import {isProd} from "common/envs/is-prod";
 
 export function SEO<P extends Record<string, string | undefined>>(props: {
   title: string
@@ -17,10 +18,11 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
       buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint))
 
   const absUrl = 'https://compassmeet.com' + url
+  const endTitle = isProd() ? 'Compass' : 'Compass dev'
 
   return (
     <Head>
-      <title>{`${title} | Compass`}</title>
+      <title>{`${title} | ${endTitle}`}</title>
 
       <meta
         property="og:title"

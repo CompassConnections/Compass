@@ -171,6 +171,7 @@ export default function UserPage(props: UserPageProps) {
       async function load() {
         setLoading(true)
         try {
+          // console.log('Loading profile for native mobile', username)
           const _props = await getPageData(username)
           setFetchedProps(_props)
         } catch (e) {

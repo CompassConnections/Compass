@@ -89,27 +89,27 @@ export const MessageChannelRow = (props: {
   const {otherUserIds, lastSeenTime, currentUser, channel} = props
   const channelId = channel.channel_id
   const otherUsers = useUsersInStore(otherUserIds, `${channelId}`, 100)
-  const messages = usePrivateMessages(channelId, 1, currentUser.id)
+  const {messages} = usePrivateMessages(channelId, 1, currentUser.id)
   const unseen = (messages?.[0]?.createdTimeTs ?? '0') > lastSeenTime
   const chat = messages?.[0]
   const numOthers = otherUsers?.length ?? 0
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
-    <Link
-      className="hover:bg-canvas-0 rounded p-2 transition-colors"
-      key={channelId}
-      href={'/messages/' + channelId}
-    >
-      <Row className={'items-center gap-3 rounded-md'}>
-        <MultipleOrSingleAvatars
-          size="md"
-          spacing={numOthers === 2 ? 0.3 : 0.15}
-          startLeft={numOthers === 2 ? 2.2 : 1.2}
-          avatars={otherUsers ?? []}
-          className={numOthers > 1 ? '-ml-2' : ''}
-        />
-        <Col className={'w-full'}>
+    <Row className={'items-center gap-3 rounded-md'}>
+      <MultipleOrSingleAvatars
+        size="md"
+        spacing={numOthers === 2 ? 0.3 : 0.15}
+        startLeft={numOthers === 2 ? 2.2 : 1.2}
+        avatars={otherUsers ?? []}
+        className={numOthers > 1 ? '-ml-2' : ''}
+      />
+      <Link
+        className="hover:bg-canvas-0 rounded p-2 transition-colors w-full"
+        key={channelId}
+        href={'/messages/' + channelId}
+      >
+        <Col className={''}>
           <Row className={'items-center justify-between'}>
             <span className={'font-semibold'}>
               {otherUsers && (
@@ -150,7 +150,7 @@ export const MessageChannelRow = (props: {
             )}
           </Row>
         </Col>
-      </Row>
-    </Link>
+      </Link>
+    </Row>
   )
 }

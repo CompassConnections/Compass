@@ -70,7 +70,7 @@ export default function DropdownMenu(props: {
               style={styles.popper}
               {...attributes.popper}
               className={clsx(
-                'bg-canvas-0 ring-ink-1000  z-30 mt-2 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none',
+                'bg-canvas-0 ring-ink-1000 z-30 mt-2 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none',
                 menuWidth ?? 'w-34',
                 menuItemsClass,
                 'py-1'
@@ -90,7 +90,7 @@ export default function DropdownMenu(props: {
                     className={clsx(
                       selectedItemName && item.name == selectedItemName
                         ? 'bg-primary-100'
-                        : 'hover:bg-ink-300 hover:text-ink-900',
+                        : 'hover:bg-canvas-100 hover:text-ink-900',
                       'text-ink-700',
                       'flex w-full gap-2 px-4 py-2 text-left text-sm'
                     )}

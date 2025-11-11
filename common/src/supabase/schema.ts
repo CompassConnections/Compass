@@ -270,8 +270,12 @@ export type Database = {
           ciphertext: string | null
           content: Json | null
           created_time: string
+          deleted: boolean | null
+          edited_at: string | null
           id: number
+          is_edited: boolean | null
           iv: string | null
+          reactions: Json | null
           tag: string | null
           user_id: string | null
           visibility: string
@@ -281,8 +285,12 @@ export type Database = {
           ciphertext?: string | null
           content?: Json | null
           created_time?: string
+          deleted?: boolean | null
+          edited_at?: string | null
           id?: never
+          is_edited?: boolean | null
           iv?: string | null
+          reactions?: Json | null
           tag?: string | null
           user_id?: string | null
           visibility?: string
@@ -292,8 +300,12 @@ export type Database = {
           ciphertext?: string | null
           content?: Json | null
           created_time?: string
+          deleted?: boolean | null
+          edited_at?: string | null
           id?: never
+          is_edited?: boolean | null
           iv?: string | null
+          reactions?: Json | null
           tag?: string | null
           user_id?: string | null
           visibility?: string
@@ -714,6 +726,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'push_subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      push_subscriptions_mobile: {
+        Row: {
+          created_at: string | null
+          id: number
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'push_subscriptions_mobile_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'users'

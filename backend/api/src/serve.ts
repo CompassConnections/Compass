@@ -40,4 +40,4 @@ const startupProcess = async () => {
 
   webSocketListen(httpServer, '/ws')
 }
-startupProcess().then(r => log('Server started successfully'))
+startupProcess().then(_r => log('Server started successfully'))

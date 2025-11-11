@@ -5,7 +5,7 @@
 
 # Compass
 
-This repository contains the source code for [Compass](https://compassmeet.com) — an open platform for forming deep, authentic 1-on-1 connections with clarity and efficiency.
+This repository contains the source code for [Compass](https://compassmeet.com) — a transparent platform for forming deep, authentic 1-on-1 connections with clarity and efficiency.
 
 ## Features
 

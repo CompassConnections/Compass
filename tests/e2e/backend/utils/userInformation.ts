@@ -1,4 +1,12 @@
 import { faker } from "@faker-js/faker";
+import { 
+    RELATIONSHIP_CHOICES,
+    POLITICAL_CHOICES,
+    RELIGION_CHOICES,
+    DIET_CHOICES,
+    EDUCATION_CHOICES,
+ } from "../../../../web/components/filters/choices";
+import { Races } from "../../../../web/components/race";
 
 class UserAccountInformation {
 
@@ -27,77 +35,14 @@ class UserAccountInformation {
         max: faker.number.int({min: 36, max:68})
     };
 
-    pref_relation_styles = [
-        'Collaboration',
-        'Friendship',
-        'Relationship'
-    ];
-
-    political_beliefs = [
-        'Progressive',
-        'Liberal',
-        'Moderate / Centrist',
-        'Conservative',
-        'Socialist',
-        'Nationalist',
-        'Populist',
-        'Green / Eco-Socialist',
-        'Technocratic',
-        'Libertarian',
-        'Effective Accelerationism',
-        'Pause AI / Tech Skeptic',
-        'Independent / Other',
-    ];
-
-    religion = [
-        'Atheist',
-        'Agnostic',
-        'Spiritual',
-        'Christian',
-        'Muslim',
-        'Jewish',
-        'Hindu',
-        'Buddhist',
-        'Sikh',
-        'Taoist',
-        'Jain',
-        'Shinto',
-        'Animist',
-        'Zoroastrian',
-        'Unitarian Universalist',
-        'Other',
-    ];
-
-    diet = [
-        'Omnivore',
-        'Vegetarian',
-        'Vegan',
-        'Keto',
-        'Paleo',
-        'Pescetarian',
-        'Other',
-    ];
-
+    pref_relation_styles = Object.values(RELATIONSHIP_CHOICES);
+    political_beliefs = Object.values(POLITICAL_CHOICES);
+    religion = Object.values(RELIGION_CHOICES);
+    diet = Object.values(DIET_CHOICES);
     drinks_per_month = faker.number.int({min: 4, max:40});
     height_in_inches = faker.number.float({min: 56, max: 78, fractionDigits:2});
-    ethnicity = [
-        'Black/African origin',
-        'East Asian',
-        'South/Southeast Asian',
-        'White/Caucasian',
-        'Hispanic/Latino',
-        'Middle Eastern',
-        'Native American/Indigenous',
-        'Other',
-    ];
-
-    education_level = [
-        'High school',
-        'College',
-        'Bachelors',
-        'Masters',
-        'PhD',
-    ];
+    ethnicity = Object.values(Races);
+    education_level = Object.values(EDUCATION_CHOICES);
     company = faker.company.name();
     occupation_title = faker.person.jobTitle();
     university = faker.company.name();
@@ -106,6 +51,5 @@ class UserAccountInformation {
         return array[Math.floor(Math.random() * array.length)].toLowerCase()
     }
 }
-
 
 export default UserAccountInformation;

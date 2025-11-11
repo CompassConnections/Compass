@@ -1,3 +1,5 @@
+import {invert} from "lodash";
+
 export const RELATIONSHIP_CHOICES = {
   // Other: 'other',
   Collaboration: 'collaboration',
@@ -64,26 +66,9 @@ export const RELIGION_CHOICES = {
   'Other': 'other',
 }
 
-export const REVERTED_RELATIONSHIP_CHOICES = Object.fromEntries(
-  Object.entries(RELATIONSHIP_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_ROMANTIC_CHOICES = Object.fromEntries(
-  Object.entries(ROMANTIC_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_POLITICAL_CHOICES = Object.fromEntries(
-  Object.entries(POLITICAL_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_DIET_CHOICES = Object.fromEntries(
-  Object.entries(DIET_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_EDUCATION_CHOICES = Object.fromEntries(
-  Object.entries(EDUCATION_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_RELIGION_CHOICES = Object.fromEntries(
-  Object.entries(RELIGION_CHOICES).map(([key, value]) => [value, key])
-);
+export const REVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
+export const REVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
+export const REVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
+export const REVERTED_DIET_CHOICES = invert(DIET_CHOICES)
+export const REVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
+export const REVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)

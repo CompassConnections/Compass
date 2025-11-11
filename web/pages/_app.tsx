@@ -66,12 +66,12 @@ function printBuildInfo() {
 type PageProps = { auth?: AuthUser }
 
 function MyApp({Component, pageProps}: AppProps<PageProps>) {
-  console.log('isAndroidWebView app:', isAndroidWebView())
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
 
   useEffect(() => {
+    console.log('isAndroidWebView app:', isAndroidWebView())
     if (!Capacitor.isNativePlatform()) return
     const onShow = () => document.body.classList.add('keyboard-open');
     const onHide = () => document.body.classList.remove('keyboard-open');

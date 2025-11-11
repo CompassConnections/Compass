@@ -3,7 +3,7 @@ import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/conv
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
 import {
-  REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES,
+  REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES, REVERTED_LANGUAGE_CHOICES,
   REVERTED_POLITICAL_CHOICES, REVERTED_RELIGION_CHOICES,
   REVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
@@ -11,7 +11,7 @@ import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap,} from 'react-icons/lu'
-import {MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
+import {MdLanguage, MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
 import {PiHandsPrayingBold, PiMagnifyingGlassBold,} from 'react-icons/pi'
 import {RiScales3Line} from 'react-icons/ri'
 import {Col} from 'web/components/layout/col'
@@ -76,6 +76,10 @@ export default function ProfileAbout(props: {
       <RelationshipType profile={profile}/>
       <Education profile={profile}/>
       <Occupation profile={profile}/>
+      <AboutRow
+        icon={<MdLanguage className="h-5 w-5"/>}
+        text={profile.languages?.map(v => REVERTED_LANGUAGE_CHOICES[v])}
+      />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
         text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}

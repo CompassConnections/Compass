@@ -22,6 +22,7 @@ export type profileQueryType = {
   pref_romantic_styles?: String[] | undefined,
   diet?: String[] | undefined,
   political_beliefs?: String[] | undefined,
+  languages?: String[] | undefined,
   religion?: String[] | undefined,
   wants_kids_strength?: number | undefined,
   has_kids?: number | undefined,
@@ -58,6 +59,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_romantic_styles,
     diet,
     political_beliefs,
+    languages,
     religion,
     wants_kids_strength,
     has_kids,
@@ -104,6 +106,8 @@ export const loadProfiles = async (props: profileQueryType) => {
           intersection(diet, l.diet).length) &&
         (!political_beliefs ||
           intersection(political_beliefs, l.political_beliefs).length) &&
+        (!languages ||
+          intersection(languages, l.languages).length) &&
         (!religion ||
           intersection(religion, l.religion).length) &&
         (!wants_kids_strength ||
@@ -203,6 +207,12 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(
       `political_beliefs IS NULL OR political_beliefs = '{}' OR political_beliefs && $(political_beliefs)`,
       {political_beliefs}
+    ),
+
+    languages?.length &&
+    where(
+      `languages && $(languages)`,
+      {languages}
     ),
 
     religion?.length &&

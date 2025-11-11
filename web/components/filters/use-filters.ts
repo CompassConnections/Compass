@@ -73,6 +73,7 @@ export const useFilters = (you: Profile | undefined) => {
     pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
     diet: you?.diet?.length ? you.diet : undefined,
     political_beliefs: you?.political_beliefs?.length ? you.political_beliefs : undefined,
+    languages: you?.languages?.length ? you.languages : undefined,
     religion: you?.religion?.length ? you.religion : undefined,
     wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
       (you?.wants_kids_strength ?? 2) as wantsKidsDatabase
@@ -94,6 +95,7 @@ export const useFilters = (you: Profile | undefined) => {
     && isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles))
     && isEqual(new Set(filters.diet), new Set(you.diet))
     && isEqual(new Set(filters.political_beliefs), new Set(you.political_beliefs))
+    && isEqual(new Set(filters.languages), new Set(you.languages))
     && isEqual(new Set(filters.religion), new Set(you.religion))
     && filters.pref_age_max == yourFilters.pref_age_max
     && filters.pref_age_min == yourFilters.pref_age_min

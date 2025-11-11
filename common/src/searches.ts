@@ -22,6 +22,7 @@ const filterLabels: Record<string, string> = {
   orderBy: "",
   diet: "Diet",
   political_beliefs: "Political views",
+  languages: "",
 }
 
 export type locationType = {

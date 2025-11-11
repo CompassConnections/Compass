@@ -405,6 +405,7 @@ export const API = (_apiTypeCheck = {
         pref_romantic_styles: arraybeSchema.optional(),
         diet: arraybeSchema.optional(),
         political_beliefs: arraybeSchema.optional(),
+        languages: arraybeSchema.optional(),
         wants_kids_strength: z.coerce.number().optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),

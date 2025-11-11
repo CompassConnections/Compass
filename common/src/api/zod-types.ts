@@ -67,6 +67,7 @@ export const baseProfilesSchema = z.object({
   region_code: z.string().optional().nullable(),
   visibility: z.union([z.literal('public'), z.literal('member')]),
   wants_kids_strength: z.number().nullable(),
+  languages: z.array(z.string()).optional().nullable(),
 })
 
 const optionalProfilesSchema = z.object({

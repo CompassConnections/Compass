@@ -28,10 +28,11 @@ import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
-import {MdLocalBar} from 'react-icons/md'
+import {MdLanguage, MdLocalBar} from 'react-icons/md'
 import {SmokerFilter, SmokerFilterText} from "web/components/filters/smoker-filter"
 import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
 import {PiHandsPrayingBold} from "react-icons/pi";
+import {LanguageFilter, LanguageFilterText} from "web/components/filters/language-filter";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -353,6 +354,33 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-80"
+      />
+
+      {/* LANGUAGES */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <MdLanguage className="h-4 w-4"/>
+                <LanguageFilterText
+                  options={
+                    filters.languages as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <LanguageFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
+        menuWidth="w-50"
       />
 
       {/* POLITICS */}

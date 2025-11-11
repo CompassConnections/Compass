@@ -31,6 +31,7 @@ import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  LANGUAGE_CHOICES,
   POLITICAL_CHOICES,
   RELATIONSHIP_CHOICES,
   RELIGION_CHOICES,
@@ -379,6 +380,21 @@ export const OptionalProfileUserForm = (props: {
               <PlusIcon className="h-6 w-6"/>
               <div className="sr-only">Add</div>
             </Button>
+          </div>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Languages</label>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="col-span-full max-h-60 overflow-y-auto w-full">
+                <MultiCheckbox
+                  choices={LANGUAGE_CHOICES}
+                  selected={profile.languages || []}
+                  onChange={(selected) => setProfile('languages', selected)}
+                />
+              </div>
+            </div>
           </div>
         </Col>
 

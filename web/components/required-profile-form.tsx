@@ -28,6 +28,7 @@ export const initialRequiredState = {
   city: '',
   pinned_url: '',
   photo_urls: [],
+  languages: ['english'],
   bio: null,
 }
 

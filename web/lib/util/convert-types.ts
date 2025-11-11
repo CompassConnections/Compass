@@ -1,6 +1,7 @@
 import {
   REVERTED_DIET_CHOICES,
   REVERTED_EDUCATION_CHOICES,
+  REVERTED_LANGUAGE_CHOICES,
   REVERTED_POLITICAL_CHOICES,
   REVERTED_RELATIONSHIP_CHOICES,
   REVERTED_RELIGION_CHOICES,
@@ -13,6 +14,7 @@ export type DietType = keyof typeof REVERTED_DIET_CHOICES
 export type PoliticalType = keyof typeof REVERTED_POLITICAL_CHOICES
 export type EducationType = keyof typeof REVERTED_EDUCATION_CHOICES
 export type ReligionType = keyof typeof REVERTED_RELIGION_CHOICES
+export type LanguageType = keyof typeof REVERTED_LANGUAGE_CHOICES
 
 export function convertRelationshipType(relationshipType: RelationshipType) {
   return REVERTED_RELATIONSHIP_CHOICES[relationshipType]
@@ -36,4 +38,8 @@ export function convertEducationTypes(educationType: EducationType) {
 
 export function convertReligionTypes(religionType: ReligionType) {
   return REVERTED_RELIGION_CHOICES[religionType]
+}
+
+export function convertLanguageTypes(languageType: LanguageType) {
+  return REVERTED_LANGUAGE_CHOICES[languageType]
 }

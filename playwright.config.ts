@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -6,15 +7,23 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', {outputFolder: `tests/reports/playwright-report`, open: 'on-falure'}]],
+  reporter: [['html', { outputFolder: `tests/reports/playwright-report`, open: 'on-failure' }]],
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*login\.spec\.ts/, 
+    },
+    {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: path.resolve(__dirname, 'tests/e2e/web/.auth/user.json'), 
+      },
+      dependencies: ['setup'], 
     },
     // {
     //   name: 'firefox',
@@ -25,4 +34,5 @@ export default defineConfig({
     //   use: { ...devices['Desktop Safari'] },
     // },
   ],
+
 });

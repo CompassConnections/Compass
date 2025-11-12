@@ -15,6 +15,7 @@
 
 # Playwright
 /tests/reports/playwright-report
+/tests/e2e/web/.auth/
 
 # next.js
 /.next/

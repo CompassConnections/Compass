@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     pinned_url TEXT,
     political_details TEXT,
     political_beliefs TEXT[],
+    relationship_status TEXT[],
     pref_age_max INTEGER NULL,
     pref_age_min INTEGER NULL,
     pref_gender TEXT[] NOT NULL,

@@ -109,20 +109,20 @@ export const RequiredProfileUserForm = (props: {
 
         {!profileCreatedAlready && <>
           {step === 0 && <Col>
-            <label className={clsx(labelClassName)}>Username</label>
-            <Row className={'items-center gap-2'}>
-              <Input
-                disabled={loadingUsername}
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => {
-                  updateUserState({username: e.target.value || ''})
-                }}
-                onBlur={updateUsername}
-              />
-              {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
-            </Row>
+              <label className={clsx(labelClassName)}>Username</label>
+              <Row className={'items-center gap-2'}>
+                  <Input
+                      disabled={loadingUsername}
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => {
+                        updateUserState({username: e.target.value || ''})
+                      }}
+                      onBlur={updateUsername}
+                  />
+                {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
+              </Row>
             {errorUsername && (
               <span className="text-error text-sm">{errorUsername}</span>
             )}

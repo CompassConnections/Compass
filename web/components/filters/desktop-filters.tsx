@@ -33,6 +33,11 @@ import {SmokerFilter, SmokerFilterText} from "web/components/filters/smoker-filt
 import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
 import {PiHandsPrayingBold} from "react-icons/pi";
 import {LanguageFilter, LanguageFilterText} from "web/components/filters/language-filter";
+import {
+  RelationshipStatusFilter,
+  RelationshipStatusFilterText
+} from "web/components/filters/relationship-status-filter";
+import {BsPersonHeart} from "react-icons/bs";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -86,6 +91,33 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
+      {/* RELATIONSHIP STATUS */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <BsPersonHeart className="h-4 w-4"/>
+                <RelationshipStatusFilterText
+                  options={
+                    filters.relationship_status as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <RelationshipStatusFilter filters={filters} updateFilter={updateFilter}/>
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"

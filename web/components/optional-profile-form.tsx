@@ -34,6 +34,7 @@ import {
   LANGUAGE_CHOICES,
   POLITICAL_CHOICES,
   RELATIONSHIP_CHOICES,
+  RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
   ROMANTIC_CHOICES
 } from "web/components/filters/choices";
@@ -273,6 +274,15 @@ export const OptionalProfileUserForm = (props: {
               setProfile('pref_relation_styles', selected)
               setLookingRelationship((selected || []).includes('relationship'))
             }}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Relationship status</label>
+          <MultiCheckbox
+            choices={RELATIONSHIP_STATUS_CHOICES}
+            selected={profile['relationship_status'] ?? []}
+            onChange={(selected) => setProfile('relationship_status', selected)}
           />
         </Col>
 

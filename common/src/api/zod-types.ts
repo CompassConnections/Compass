@@ -1,6 +1,6 @@
-import { z } from 'zod'
-import { type JSONContent } from '@tiptap/core'
-import { arrify } from 'common/util/array'
+import {z} from 'zod'
+import {type JSONContent} from '@tiptap/core'
+import {arrify} from 'common/util/array'
 
 /* GET request array can be like ?a=1 or ?a=1&a=2  */
 export const arraybeSchema = z
@@ -90,6 +90,7 @@ const optionalProfilesSchema = z.object({
   occupation: z.string().optional().nullable(),
   occupation_title: z.string().optional().nullable(),
   political_beliefs: z.array(z.string()).optional().nullable(),
+  relationship_status: z.array(z.string()).optional().nullable(),
   political_details: z.string().optional().nullable(),
   pref_romantic_styles: z.array(z.string()).nullable(),
   religion: z.array(z.string()).optional().nullable(),

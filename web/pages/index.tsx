@@ -14,7 +14,7 @@ export async function getServerSideProps() {
     throw new Error('500 - Test downtime');
   }
 
-  return { props: {} };
+  return {props: {}};
 }
 
 export default function ProfilesPage() {

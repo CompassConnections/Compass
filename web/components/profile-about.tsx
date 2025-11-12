@@ -3,8 +3,12 @@ import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/conv
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
 import {
-  REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES, REVERTED_LANGUAGE_CHOICES,
-  REVERTED_POLITICAL_CHOICES, REVERTED_RELIGION_CHOICES,
+  REVERTED_DIET_CHOICES,
+  REVERTED_EDUCATION_CHOICES,
+  REVERTED_LANGUAGE_CHOICES,
+  REVERTED_POLITICAL_CHOICES,
+  REVERTED_RELATIONSHIP_STATUS_CHOICES,
+  REVERTED_RELIGION_CHOICES,
   REVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
@@ -74,6 +78,10 @@ export default function ProfileAbout(props: {
     >
       <Seeking profile={profile}/>
       <RelationshipType profile={profile}/>
+      <AboutRow
+        icon={<BsPersonHeart className="h-5 w-5"/>}
+        text={profile.relationship_status?.map(v => REVERTED_RELATIONSHIP_STATUS_CHOICES[v])}
+      />
       <Education profile={profile}/>
       <Occupation profile={profile}/>
       <AboutRow

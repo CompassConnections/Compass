@@ -7,6 +7,14 @@ export const RELATIONSHIP_CHOICES = {
   Relationship: 'relationship',
 };
 
+export const RELATIONSHIP_STATUS_CHOICES = {
+  Single: 'single',
+  Married: 'married',
+  'Casual': 'casual',
+  'Long-term': 'long_term',
+  'Open': 'open',
+};
+
 export const ROMANTIC_CHOICES = {
   Monogamous: 'mono',
   Polyamorous: 'poly',
@@ -170,6 +178,7 @@ export const LANGUAGE_CHOICES  = {
 }
 
 export const REVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
+export const REVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const REVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
 export const REVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
 export const REVERTED_DIET_CHOICES = invert(DIET_CHOICES)

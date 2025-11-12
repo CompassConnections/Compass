@@ -177,11 +177,23 @@ export const LANGUAGE_CHOICES  = {
   'Zulu': 'zulu',
 }
 
-export const REVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
-export const REVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
-export const REVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
-export const REVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
-export const REVERTED_DIET_CHOICES = invert(DIET_CHOICES)
-export const REVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
-export const REVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
-export const REVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
+export const RACE_CHOICES = {
+  'Black/African origin': 'african',
+  'East Asian': 'asian',
+  'South/Southeast Asian': 'south_asian',
+  'White/Caucasian': 'caucasian',
+  'Hispanic/Latino': 'hispanic',
+  'Middle Eastern': 'middle_eastern',
+  'Native American/Indigenous': 'native_american',
+  Other: 'other',
+} as const
+
+export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
+export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
+export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
+export const INVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
+export const INVERTED_DIET_CHOICES = invert(DIET_CHOICES)
+export const INVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
+export const INVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
+export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
+export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)

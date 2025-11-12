@@ -13,7 +13,6 @@ import {updateProfile, updateUser} from 'web/lib/api'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {track} from 'web/lib/service/analytics'
-import {Races} from './race'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
 import {ProfileRow} from 'common/profiles/profile'
@@ -32,7 +31,7 @@ import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
   LANGUAGE_CHOICES,
-  POLITICAL_CHOICES,
+  POLITICAL_CHOICES, RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
@@ -555,7 +554,7 @@ export const OptionalProfileUserForm = (props: {
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Ethnicity/origin</label>
           <MultiCheckbox
-            choices={Races}
+            choices={RACE_CHOICES}
             selected={profile['ethnicity'] ?? []}
             onChange={(selected) => setProfile('ethnicity', selected)}
           />

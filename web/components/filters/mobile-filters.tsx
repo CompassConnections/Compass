@@ -30,6 +30,7 @@ import {
   RelationshipStatusFilter,
   RelationshipStatusFilterText
 } from "web/components/filters/relationship-status-filter";
+import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -399,6 +400,24 @@ function MobileFilters(props: {
         }
       >
         <ReligionFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* MBTI */}
+      <MobileFilterSection
+        title="MBTI"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.mbti)}
+        selection={
+          <MbtiFilterText
+            options={filters.mbti as string[]}
+            highlightedClass={
+              hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <MbtiFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* EDUCATION */}

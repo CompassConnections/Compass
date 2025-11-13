@@ -82,6 +82,7 @@ const optionalProfilesSchema = z.object({
   drinks_min: z.number().min(0).optional().nullable(),
   drinks_per_month: z.number().min(0).optional().nullable(),
   education_level: z.string().optional().nullable(),
+  mbti: z.string().optional().nullable(),
   ethnicity: z.array(z.string()).optional().nullable(),
   has_kids: z.number().min(0).optional().nullable(),
   has_pets: zBoolean.optional().nullable(),

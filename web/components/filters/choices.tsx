@@ -50,9 +50,9 @@ export const DIET_CHOICES = {
 export const EDUCATION_CHOICES = {
   'High school': 'high-school',
   'College': 'some-college',
-  Bachelors: 'bachelors',
-  Masters: 'masters',
-  PhD: 'doctorate',
+  'Bachelors': 'bachelors',
+  'Masters': 'masters',
+  'PhD': 'doctorate',
 }
 
 export const RELIGION_CHOICES = {
@@ -186,7 +186,26 @@ export const RACE_CHOICES = {
   'Middle Eastern': 'middle_eastern',
   'Native American/Indigenous': 'native_american',
   Other: 'other',
-} as const
+}
+
+export const MBTI_CHOICES = {
+  'INTJ': 'intj',
+  'INTP': 'intp',
+  'INFJ': 'infj',
+  'INFP': 'infp',
+  'ISTJ': 'istj',
+  'ISTP': 'istp',
+  'ISFJ': 'isfj',
+  'ISFP': 'isfp',
+  'ENTJ': 'entj',
+  'ENTP': 'entp',
+  'ENFJ': 'enfj',
+  'ENFP': 'enfp',
+  'ESTJ': 'estj',
+  'ESTP': 'estp',
+  'ESFJ': 'esfj',
+  'ESFP': 'esfp',
+}
 
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
@@ -197,3 +216,4 @@ export const INVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
 export const INVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
 export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
 export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
+export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)

@@ -6,13 +6,14 @@ import {
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
   INVERTED_LANGUAGE_CHOICES,
+  INVERTED_MBTI_CHOICES,
   INVERTED_POLITICAL_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
-import {BsPersonHeart} from 'react-icons/bs'
+import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap,} from 'react-icons/lu'
 import {MdLanguage, MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
@@ -108,6 +109,10 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
         text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
+      />
+      <AboutRow
+        icon={<BsPersonVcard className="h-5 w-5"/>}
+        text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>

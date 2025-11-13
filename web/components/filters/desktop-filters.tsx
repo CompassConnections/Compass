@@ -26,6 +26,8 @@ import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/polit
 import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
+import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
+import {BsPersonVcard} from "react-icons/bs";
 import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
 import {MdLanguage, MdLocalBar} from 'react-icons/md'
@@ -467,6 +469,29 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
+      />
+
+      {/* MBTI */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <BsPersonVcard className="h-4 w-4" />
+                <MbtiFilterText
+                  options={filters.mbti as string[] | undefined}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <MbtiFilter filters={filters} updateFilter={updateFilter} />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-[350px]"
       />
 
       {/* SMOKER */}

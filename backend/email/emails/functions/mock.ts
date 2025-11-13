@@ -44,6 +44,7 @@ export const sinclairProfile: ProfileRow = {
   wants_kids_strength: 3,
   looking_for_matches: true,
   visibility: 'public',
+  mbti: 'intj',
   messaging_status: 'open',
   comments_enabled: true,
   has_kids: 0,
@@ -160,6 +161,7 @@ export const jamesProfile: ProfileRow = {
   relationship_status: ['single'],
   religious_belief_strength: null,
   religious_beliefs: '',
+  mbti: 'intj',
   political_details: '',
   photo_urls: [
     'https://firebasestorage.googleapis.com/v0/b/mantic-markets.appspot.com/o/user-images%2FJamesGrugett%2Flove-images%2FKl0WtbZsZW.jpg?alt=media&token=c928604f-e5ff-4406-a229-152864a4aa48',

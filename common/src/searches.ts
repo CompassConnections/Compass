@@ -23,6 +23,7 @@ const filterLabels: Record<string, string> = {
   diet: "Diet",
   political_beliefs: "Political views",
   languages: "",
+  mbti: "MBTI",
 }
 
 export type locationType = {

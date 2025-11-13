@@ -22,6 +22,7 @@ export type profileQueryType = {
   pref_romantic_styles?: String[] | undefined,
   diet?: String[] | undefined,
   political_beliefs?: String[] | undefined,
+  mbti?: String[] | undefined,
   relationship_status?: String[] | undefined,
   languages?: String[] | undefined,
   religion?: String[] | undefined,
@@ -60,6 +61,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_romantic_styles,
     diet,
     political_beliefs,
+    mbti,
     relationship_status,
     languages,
     religion,
@@ -95,6 +97,7 @@ export const loadProfiles = async (props: profileQueryType) => {
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender ?? '')) &&
         (!education_levels || education_levels.includes(l.education_level ?? '')) &&
+        (!mbti || mbti.includes(l.mbti ?? '')) &&
         (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
         (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&
         (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
@@ -173,6 +176,8 @@ export const loadProfiles = async (props: profileQueryType) => {
     genders?.length && where(`gender = ANY($(genders))`, {genders}),
 
     education_levels?.length && where(`education_level = ANY($(education_levels))`, {education_levels}),
+
+    mbti?.length && where(`mbti = ANY($(mbti))`, {mbti}),
 
     pref_gender?.length &&
     where(`pref_gender is NULL or pref_gender = '{}' OR pref_gender && $(pref_gender)`, {pref_gender}),

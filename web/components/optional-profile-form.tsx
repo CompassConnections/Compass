@@ -31,7 +31,9 @@ import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
   LANGUAGE_CHOICES,
-  POLITICAL_CHOICES, RACE_CHOICES,
+  MBTI_CHOICES,
+  POLITICAL_CHOICES, 
+  RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
@@ -436,6 +438,16 @@ export const OptionalProfileUserForm = (props: {
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
             value={profile['religious_beliefs'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName, 'max-w-[550px]')}>
+          <label className={clsx(labelClassName)}>MBTI Personality Type</label>
+          <ChoicesToggleGroup
+            currentChoice={profile['mbti'] ?? ''}
+            choicesMap={MBTI_CHOICES}
+            setChoice={(c) => setProfile('mbti', c)}
+            className="grid grid-cols-4 xs:grid-cols-8"
           />
         </Col>
 

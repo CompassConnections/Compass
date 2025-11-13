@@ -74,6 +74,7 @@ export const useFilters = (you: Profile | undefined) => {
     pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
     diet: you?.diet?.length ? you.diet : undefined,
     political_beliefs: you?.political_beliefs?.length ? you.political_beliefs : undefined,
+    mbti: you?.mbti ? [you.mbti] : undefined,
     relationship_status: you?.relationship_status?.length ? you.relationship_status : undefined,
     languages: you?.languages?.length ? you.languages : undefined,
     religion: you?.religion?.length ? you.religion : undefined,
@@ -93,6 +94,7 @@ export const useFilters = (you: Profile | undefined) => {
     && isEqual(filters.genders?.length ? filters.genders : undefined, yourFilters.genders?.length ? yourFilters.genders : undefined)
     && (!you.gender && !filters.pref_gender?.length || filters.pref_gender?.length == 1 && isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))
     && (!you.education_level && !filters.education_levels?.length || filters.education_levels?.length == 1 && isEqual(filters.education_levels?.length ? filters.education_levels[0] : undefined, you.education_level))
+    && (!you.mbti && !filters.mbti?.length || filters.mbti?.length == 1 && isEqual(filters.mbti?.length ? filters.mbti[0] : undefined, you.mbti))
     && isEqual(new Set(filters.pref_romantic_styles), new Set(you.pref_romantic_styles))
     && isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles))
     && isEqual(new Set(filters.diet), new Set(you.diet))

@@ -16,6 +16,7 @@ export type FilterFields = {
   radius: number | null
   genders: string[]
   education_levels: string[]
+  mbti: string[]
   name: string | undefined
   shortBio: boolean | undefined
   drinks_min: number | undefined
@@ -76,6 +77,7 @@ export const initialFilters: Partial<FilterFields> = {
   relationship_status: undefined,
   languages: undefined,
   religion: undefined,
+  mbti: undefined,
   pref_gender: undefined,
   shortBio: undefined,
   drinks_min: undefined,

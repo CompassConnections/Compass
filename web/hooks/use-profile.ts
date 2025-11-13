@@ -6,6 +6,7 @@ import {User} from 'common/user'
 import {getProfileRow, Profile, ProfileRow} from 'common/profiles/profile'
 import {db} from 'web/lib/supabase/db'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {logger} from "common/logging";
 
 export const useProfile = () => {
   const user = useUser()
@@ -15,7 +16,7 @@ export const useProfile = () => {
 
   const refreshProfile = () => {
     if (user) {
-      console.debug('Refreshing profile in useProfile for', user?.username, profile);
+      logger.debug('Refreshing profile in useProfile for', user?.username, profile);
       getProfileRow(user.id, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)

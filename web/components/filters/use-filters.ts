@@ -6,6 +6,7 @@ import {debounce, isEqual} from "lodash";
 import {wantsKidsDatabase, wantsKidsDatabaseToWantsKidsFilter, wantsKidsToHasKidsFilter} from "common/wants-kids";
 import {FilterFields, initialFilters, OriginLocation} from "common/filters";
 import {MAX_INT, MIN_INT} from "common/constants";
+import {logger} from "common/logging";
 
 export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()
@@ -14,11 +15,11 @@ export const useFilters = (you: Profile | undefined) => {
     'profile-filters-4'
   )
 
-  // console.log('filters', filters)
+  // logger.log('filters', filters)
 
   const updateFilter = (newState: Partial<FilterFields>) => {
     const updatedState = {...newState}
-    // console.log('updating filters', updatedState)
+    // logger.log('updating filters', updatedState)
     setFilters((prevState) => ({...prevState, ...updatedState}))
   }
 
@@ -84,7 +85,7 @@ export const useFilters = (you: Profile | undefined) => {
     ),
     is_smoker: you?.is_smoker,
   }
-  console.debug(you, yourFilters)
+  logger.debug(you, yourFilters)
 
   const isYourFilters =
     !!you

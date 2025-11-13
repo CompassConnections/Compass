@@ -112,6 +112,7 @@ export function DesktopFilters(props: {
                       | string[]
                       | undefined
                   }
+                  defaultLabel={'Any relationship status'}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
@@ -486,6 +487,7 @@ export function DesktopFilters(props: {
                 <MbtiFilterText
                   options={filters.mbti as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
+                  defaultLabel={'Any MBTI'}
                 />
               </Row>
             }

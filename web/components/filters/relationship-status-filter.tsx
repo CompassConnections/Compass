@@ -10,13 +10,16 @@ import {getSortedOptions} from "common/util/sorting"
 export function RelationshipStatusFilterText(props: {
   options: string[] | undefined
   highlightedClass?: string
+  defaultLabel?: string
 }) {
-  const {options, highlightedClass} = props
+  const {options, highlightedClass, defaultLabel} = props
   const length = (options ?? []).length
+
+  const label = defaultLabel || 'Any'
 
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any relationship status</span>
+      <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
     )
   }
 

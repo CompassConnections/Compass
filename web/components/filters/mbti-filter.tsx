@@ -8,13 +8,16 @@ import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-te
 export function MbtiFilterText(props: {
   options: string[] | undefined
   highlightedClass?: string
+  defaultLabel?: string
 }) {
-  const {options, highlightedClass} = props
+  const {options, highlightedClass, defaultLabel} = props
   const length = (options ?? []).length
+
+  const label = defaultLabel || 'Any'
 
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any MBTI</span>
+      <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
     )
   }
 

@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 
-export class LoginPage{
+//sets up of all the functions that signin tests will use.
+export class SignInPage{
 private readonly signInLink: Locator;
 private readonly emailField: Locator;
 private readonly passwordField: Locator;

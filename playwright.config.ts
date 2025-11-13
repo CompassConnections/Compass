@@ -14,15 +14,20 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'setup',
-      testMatch: /.*login\.spec\.ts/, 
+      name: 'preSetup',
+      testMatch: /.*preSetup\.ts/, 
     },
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*setup\.ts/, 
+    },
+    {
+      name: 'postSetup',
       use: {
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'tests/e2e/web/.auth/user.json'), 
       },
+      testIgnore: [/.*preSetup\.ts/, /.*setup\.ts/],
       dependencies: ['setup'], 
     },
     // {

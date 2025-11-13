@@ -447,6 +447,7 @@ export function CompatibilityAnswerBlock(props: {
             1
           ).map(([label]) => label).map((label, i) => (
             <button
+              key={label}
               onClick={() => {
                 const _answer = getEmptyAnswer(user.id, question.id)
                 _answer.multiple_choice = i

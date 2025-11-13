@@ -358,7 +358,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       id: z.number(),
     }),
-    summary: 'Delete a compatibility question',
+    summary: 'Delete a compatibility answer',
     tag: 'Compatibility',
   },
   'like-profile': {

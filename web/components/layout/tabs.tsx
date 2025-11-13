@@ -167,8 +167,8 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
                 )}
                 <Row className={'items-center'}>
                   <Col>
-                    {tab.title.split('\n').map((line, _i) => (
-                      <Row className={'items-center justify-center'}>{line}</Row>
+                    {tab.title.split('\n').map((line, i) => (
+                      <Row className={'items-center justify-center'} key={i}>{line}</Row>
                     ))}
                   </Col>
                   {tab.inlineTabIcon}

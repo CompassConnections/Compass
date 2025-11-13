@@ -166,7 +166,11 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
                   <Row className="justify-center">{tab.stackedTabIcon}</Row>
                 )}
                 <Row className={'items-center'}>
-                  {tab.title}
+                  <Col>
+                    {tab.title.split('\n').map((line, _i) => (
+                      <Row className={'items-center justify-center'}>{line}</Row>
+                    ))}
+                  </Col>
                   {tab.inlineTabIcon}
                 </Row>
               </Tooltip>
@@ -212,6 +216,7 @@ export function UncontrolledTabs(props: TabProps & { defaultIndex?: number }) {
         setActiveIndex(i)
         onClick?.(titleOrQueryTitle, i)
       }}
+      labelsParentClassName={'gap-0 xs:gap-4'}
     />
   )
 }

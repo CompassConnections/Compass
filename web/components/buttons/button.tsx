@@ -81,7 +81,7 @@ export const Button = forwardRef(function Button(
   props: {
     className?: string
     size?: SizeType
-    color?: ColorType
+    color?: ColorType | null
     type?: 'button' | 'reset' | 'submit'
     loading?: boolean
   } & JSX.IntrinsicElements['button'],
@@ -101,7 +101,7 @@ export const Button = forwardRef(function Button(
   return (
     <button
       type={type}
-      className={clsx(buttonClass(size, color), className)}
+      className={clsx(color && buttonClass(size, color), className)}
       disabled={disabled || loading}
       ref={ref}
       {...rest}

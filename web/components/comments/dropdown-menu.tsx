@@ -10,7 +10,6 @@ export type DropdownItem = {
   onClick: () => void | Promise<void>
 }
 
-// NOTE: you can't conditionally render any of the items from a useEffect hook, or you'll get hydration errors
 export default function DropdownMenu(props: {
   items: DropdownItem[]
   icon?: ReactNode
@@ -90,7 +89,7 @@ export default function DropdownMenu(props: {
                     className={clsx(
                       selectedItemName && item.name == selectedItemName
                         ? 'bg-primary-100'
-                        : 'hover:bg-canvas-100 hover:text-ink-900',
+                        : 'hover:bg-canvas-200 hover:text-ink-900',
                       'text-ink-700',
                       'flex w-full gap-2 px-4 py-2 text-left text-sm'
                     )}

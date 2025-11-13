@@ -10,7 +10,7 @@ export function Checkbox(props: {
   const { label, checked, toggle, className, disabled } = props
 
   return (
-    <div className={clsx(className, 'space-y-5')}>
+    <div className={clsx(className, 'space-y-5 px-2 py-1 hover:bg-canvas-200 hover:rounded')}>
       <div className="relative flex items-center">
         <div className="flex h-6 items-center">
           <input

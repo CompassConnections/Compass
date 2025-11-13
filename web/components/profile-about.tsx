@@ -99,6 +99,10 @@ export default function ProfileAbout(props: {
         suffix={profile.religious_beliefs}
       />
       <AboutRow
+        icon={<BsPersonVcard className="h-5 w-5"/>}
+        text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
+      />
+      <AboutRow
         icon={<HiOutlineGlobe className="h-5 w-5"/>}
         text={profile.ethnicity
           ?.filter((r) => r !== 'other')
@@ -109,10 +113,6 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
         text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
-      />
-      <AboutRow
-        icon={<BsPersonVcard className="h-5 w-5"/>}
-        text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>

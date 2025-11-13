@@ -465,7 +465,11 @@ export function DesktopFilters(props: {
           />
         )}
         dropdownMenuContent={
-          <ReligionFilter filters={filters} updateFilter={updateFilter}/>
+          <ReligionFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            className={'w-[350px] grid grid-cols-2'}
+          />
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
@@ -491,7 +495,7 @@ export function DesktopFilters(props: {
           <MbtiFilter filters={filters} updateFilter={updateFilter} />
         }
         popoverClassName="bg-canvas-50"
-        menuWidth="w-[350px]"
+        menuWidth="w-[350px] grid-cols-2"
       />
 
       {/* SMOKER */}

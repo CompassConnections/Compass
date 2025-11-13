@@ -3,7 +3,7 @@ import path from 'path';
 import { config } from '../TESTING_CONFIG';
 
 /*
-Preforms login by directly contacting firebase using credentials from TESTING_CONFIG file.
+Performs login by directly contacting firebase using credentials from TESTING_CONFIG file.
 Saves the resulting authenticated session state to a JSON file for reuse in later tests.
 This was done to decrease flakiness and to avoid re-logging in every test.
 */

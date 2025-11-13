@@ -2,7 +2,7 @@ import { test as base, expect } from '@playwright/test';
 import { SignInPage } from '../pages/signInPage';
 import { config } from '../TESTING_CONFIG';
 
-//Baisc login using fixture created from signInPage
+// Basic login using fixture created from signInPage
 
 const test = base.extend<{ signInPage: SignInPage }>({
   signInPage: async ({ page }, use) => {

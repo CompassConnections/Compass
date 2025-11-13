@@ -80,6 +80,15 @@ export function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function cleanDoc(doc: JSONContent) {
+  try {
+    return _cleanDoc(doc)
+  } catch (e) {
+    console.error('error cleaning doc', doc, e)
+    return doc
+  }
+}
+
+function _cleanDoc(doc: JSONContent) {
   if (!doc || !Array.isArray(doc.content)) return doc;
 
   let content = [...doc.content];

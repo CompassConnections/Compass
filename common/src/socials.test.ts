@@ -76,6 +76,6 @@ describe('getSocialUrl', () => {
 
   it('should handle discord user IDs and default invite', () => {
     expect(getSocialUrl('discord', '123456789012345678')).toBe('https://discord.com/users/123456789012345678')
-    expect(getSocialUrl('discord', 'not-an-id')).toBe({discordLink})
+    expect(getSocialUrl('discord', 'not-an-id')).toBe(discordLink)
   })
 })

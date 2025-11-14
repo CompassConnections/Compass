@@ -21,13 +21,13 @@
     "sync-android": "./scripts/sync_android.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:update": "jest --updateSnapshot",
     "playwright": "playwright test",
     "playwright:ui": "playwright test --ui",
     "playwright:debug": "playwright test --debug",
     "playwright:report": "npx playwright show-report tests/reports/playwright-report",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:update": "jest --updateSnapshot",
     "postinstall": "./scripts/post_install.sh"
   },
   "dependencies": {

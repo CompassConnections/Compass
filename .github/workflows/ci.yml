@@ -41,9 +41,11 @@ jobs:
 
       # Optional: Playwright E2E tests
       - name: Install Playwright deps
-        run: npx playwright install --with-deps
-#        npm install @playwright/test
-#       npx playwright install
+        run: |
+#          echo skip
+          npx playwright install --with-deps
+          npm install @playwright/test
+          npx playwright install
 
       - name: Run E2E tests
         env:
@@ -52,19 +54,21 @@ jobs:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-          echo skip
-#          npx nyc --reporter=lcov yarn --cwd=web serve &
-#          npx wait-on http://localhost:3000
-#          npx playwright test tests/e2e
-#          SERVER_PID=$(fuser -k 3000/tcp)
-#          echo $SERVER_PID
-#          kill $SERVER_PID
+#          echo skip
+          npx nyc --reporter=lcov yarn --cwd=web serve &
+          npx wait-on http://localhost:3000
+          npx playwright test tests/e2e
+          SERVER_PID=$(fuser -k 3000/tcp)
+          echo $SERVER_PID
+          kill $SERVER_PID
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           flags: unit
           fail_ci_if_error: true
+          slug: CompassConnections/Compass
         env:
           CI: true

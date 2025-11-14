@@ -1,3 +1,7 @@
+# Next.js
+
+But how does page rendering work with Next.js?
+
 ### Terminology
 
 - SSR: server-side rendering

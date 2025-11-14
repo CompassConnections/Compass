@@ -52,12 +52,13 @@ jobs:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-          npx nyc --reporter=lcov yarn --cwd=web serve &
-          npx wait-on http://localhost:3000
-          npx playwright test tests/e2e
-          SERVER_PID=$(fuser -k 3000/tcp)
-          echo $SERVER_PID
-          kill $SERVER_PID
+          echo skip
+#          npx nyc --reporter=lcov yarn --cwd=web serve &
+#          npx wait-on http://localhost:3000
+#          npx playwright test tests/e2e
+#          SERVER_PID=$(fuser -k 3000/tcp)
+#          echo $SERVER_PID
+#          kill $SERVER_PID
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

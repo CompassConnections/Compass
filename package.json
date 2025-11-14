@@ -21,7 +21,7 @@
     "build-sync-android": "./scripts/build_sync_android.sh",
     "sync-android": "./scripts/sync_android.sh",
     "migrate": "./scripts/migrate.sh",
-    "test": "jest",
+    "test": "yarn workspaces run test",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "test:update": "jest --updateSnapshot",

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "email dev --port 3001",
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "test": "jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {
     "@react-email/components": "0.0.33",

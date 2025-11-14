@@ -32,7 +32,9 @@ jobs:
         run: npm run lint
 
       - name: Run Jest tests
-        run: npm run test:coverage
+        env:
+          NEXT_PUBLIC_FIREBASE_ENV: DEV
+        run: yarn test
 
 #      - name: Build app
 #        env:

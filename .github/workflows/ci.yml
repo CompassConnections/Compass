@@ -34,9 +34,21 @@ jobs:
       - name: Run Jest tests
         env:
           NEXT_PUBLIC_FIREBASE_ENV: DEV
-        run: yarn test:coverage
+        run: |
+          yarn test:coverage
+          npm install -g lcov-result-merger
+          mkdir coverage
+          lcov-result-merger \
+          "backend/api/coverage/lcov.info" \
+          "backend/shared/coverage/lcov.info" \
+          "backend/email/coverage/lcov.info" \
+          "common/coverage/lcov.info" \
+          "web/coverage/lcov.info" \
+          > coverage/lcov.info
+  
+  
 
-#      - name: Build app
+  #      - name: Build app
 #        env:
 #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 #        run: npm run build
@@ -65,7 +77,12 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
+          files: |
+            backend/api/coverage/lcov.info
+            backend/shared/coverage/lcov.info
+            backend/email/coverage/lcov.info
+            common/coverage/lcov.info
+            web/coverage/lcov.info
           flags: unit
           fail_ci_if_error: true
           slug: CompassConnections/Compass

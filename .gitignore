@@ -99,4 +99,4 @@ icons/
 test-results
 /.nyc_output/
 
-**/coverage/*
+**/coverage

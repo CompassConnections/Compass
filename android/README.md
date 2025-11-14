@@ -277,7 +277,7 @@ npx @capawesome/cli login
 
 Then,  run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
 ```
-yarn build-web
+yarn build-web-view
 npx @capawesome/cli apps:bundles:create --path web/out
 ```
 

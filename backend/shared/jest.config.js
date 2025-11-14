@@ -22,5 +22,10 @@ module.exports = {
         'ts-jest': {
             tsconfig: '<rootDir>/tsconfig.json'
         }
-    }
+    },
+
+    collectCoverageFrom: [
+        "src/**/*.{ts,tsx}",
+        "!src/**/*.d.ts"
+    ],
 };

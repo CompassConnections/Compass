@@ -34,7 +34,7 @@ jobs:
       - name: Run Jest tests
         env:
           NEXT_PUBLIC_FIREBASE_ENV: DEV
-        run: yarn test
+        run: yarn test:coverage
 
 #      - name: Build app
 #        env:

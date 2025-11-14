@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "api/*": ["src/*"],
+      "shared/*": ["../shared/src/*"],
+      "common/*": ["../../common/src/*"],
+      "email/*": ["../email/emails/*"]
+    }
+  },
+  "include": ["tests/**/*.ts", "src/**/*.ts"]
+}

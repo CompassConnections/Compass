@@ -42,10 +42,8 @@ jobs:
       # Optional: Playwright E2E tests
       - name: Install Playwright deps
         run: |
-#          echo skip
           npx playwright install --with-deps
-          npm install @playwright/test
-          npx playwright install
+#          npm install @playwright/test
 
       - name: Run E2E tests
         env:
@@ -54,7 +52,6 @@ jobs:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-#          echo skip
           npx nyc --reporter=lcov yarn --cwd=web serve &
           npx wait-on http://localhost:3000
           npx playwright test tests/e2e

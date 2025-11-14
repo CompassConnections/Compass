@@ -4,11 +4,9 @@ But how does page rendering work with Next.js?
 
 ### Terminology
 
-- SSR: server-side rendering
-- SSG
-- ISR
-- Edge
-- Lambda
+- SSR: server-side rendering (Edge or Lambda)
+- SSG: static site generation
+  - ISR: incremental static regeneration
 
 ### DOM
 

@@ -9,7 +9,12 @@ const config: CapacitorConfig = {
   appId: 'com.compassconnections.app',
   appName: 'Compass',
   webDir: 'web/out',
-  server: LOCAL_ANDROID ? { url: `http://${LOCAL_URL}:3000`, cleartext: true } : {}
+  server: LOCAL_ANDROID ? { url: `http://${LOCAL_URL}:3000`, cleartext: true } : {},
+  plugins: {
+    LiveUpdate: {
+      appId: "969bc540-8077-492f-8403-b554bee5de50"
+    }
+  }
 };
 
 export default config;

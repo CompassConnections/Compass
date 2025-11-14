@@ -257,14 +257,38 @@ npx cap sync android
 ## 14. Deployment Workflow
 
 ```bash
-# 1. Build web app for production
-yarn build-web
+# Build web app for production and Sync assets to Android
+yarn build-sync-android
 
-# 2. Sync assets to Android
-npx cap sync android
-
-# 3. Build signed release APK in Android Studio
+# Build signed release APK in Android Studio
 ```
+
+---
+
+## Live Updates
+
+To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in Capawesome Cloud (an alternative to Ionic). 
+
+First, you need to do this one-time setup:
+```
+npm install -g @capawesome/cli@latest
+npx @capawesome/cli login
+```
+
+Then,  run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
+```
+yarn build-web
+npx @capawesome/cli apps:bundles:create --path web/out
+```
+
+That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially updates the web app) to update the mobile app as well.
+Maybe we should add it to our CD. For example we set a file with `{liveUpdateVersion: 1}` and run the live update each time a push to main increments that counter.
+There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we scale. Next plan is $9 / month and allows 1000 MAUs.
+
+- ∞ Live Updates
+- 100 Monthly Active Users
+- 500 MB of Storage (around 10 MB per update, but we just delete the previous ones)
+- 5 GB of Bandwidth
 
 ---
 

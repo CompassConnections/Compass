@@ -36,6 +36,7 @@
     "@capacitor/keyboard": "7.0.3",
     "@capacitor/push-notifications": "7.0.3",
     "@capacitor/status-bar": "7.0.3",
+    "@capawesome/capacitor-live-update": "7.2.2",
     "@capgo/capacitor-social-login": "7.14.9",
     "@playwright/test": "^1.54.2",
     "colorette": "^2.0.20",

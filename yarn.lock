@@ -1207,6 +1207,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-7.0.3.tgz#4e8c1ac49cf928576cfac1c78cc3f9886088ebfe"
   integrity sha512-JyRpVnKwHij9hgPWolF6PK+HT3e2HSPjN11/h2OmKxq8GAdPGARFLv+97eZl0pvuvm0Kka/LpiLb5whXISBg7Q==
 
+"@capawesome/capacitor-live-update@7.2.2":
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/@capawesome/capacitor-live-update/-/capacitor-live-update-7.2.2.tgz#404581ef8a22329b6f61d36cb8a166ea8c8f2f82"
+  integrity sha512-38fltILlpVFofY+Bz9yYXz/fl/zmKxa5F/goXmmpY+DfkfJvhFbWj92yqvRI2GhlDKbOxNyCoc9p8zYztYM4dQ==
+
 "@capgo/capacitor-social-login@7.14.9":
   version "7.14.9"
   resolved "https://registry.yarnpkg.com/@capgo/capacitor-social-login/-/capacitor-social-login-7.14.9.tgz#19a79605dfbfbfe2afb9b6a082affa20460016f5"

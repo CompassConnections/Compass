@@ -2,6 +2,7 @@ import { getUser } from "api/get-user";
 import { createSupabaseDirectClient } from "shared/supabase/init";
 import { toUserAPIResponse } from "common/api/user-types";
 import { convertUser } from "common/supabase/users";
+import { APIError } from "common/src/api/utils";
 
 jest.mock("shared/supabase/init");
 jest.mock("common/supabase/users");

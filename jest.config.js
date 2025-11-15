@@ -13,4 +13,11 @@ module.exports = {
         // 'backend/api/src',
         // 'martin',
     ],
+    projects: [
+        "<rootDir>/backend/api",
+        "<rootDir>/backend/shared",
+        "<rootDir>/backend/email",
+        "<rootDir>/common",
+        "<rootDir>/web"
+    ],
 };

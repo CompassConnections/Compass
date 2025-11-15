@@ -21,7 +21,8 @@
     "verify:dir": "npx eslint . --max-warnings 0",
     "regen-types": "cd ../supabase && make ENV=prod regen-types",
     "regen-types-dev": "cd ../supabase && make ENV=dev regen-types-dev",
-    "test": "jest --config jest.config.js"
+    "test": "jest --config jest.config.js",
+    "test:coverage": "jest --config jest.config.js --coverage"
   },
   "engines": {
     "node": ">=20.0.0"

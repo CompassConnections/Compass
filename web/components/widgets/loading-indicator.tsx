@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import {useEffect, useRef} from 'react'
-import FavIcon from "web/public/FavIcon";
+import FavIcon from "web/components/FavIcon";
 
 export type SpinnerSize = 'sm' | 'md' | 'lg'
 

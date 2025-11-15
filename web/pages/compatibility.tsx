@@ -22,10 +22,8 @@ export default function CompatibilityPage() {
   const user = useUser()
   const isMobile = useIsMobile()
   const sep = isMobile ? '\n' : ''
-  const {compatibilityAnswers, refreshCompatibilityAnswers} =
-    useUserCompatibilityAnswers(user?.id)
-  const {compatibilityQuestions, refreshCompatibilityQuestions} =
-    useCompatibilityQuestionsWithAnswerCount()
+  const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
+  const {compatibilityQuestions, refreshCompatibilityQuestions} = useCompatibilityQuestionsWithAnswerCount()
   const [isLoading, setIsLoading] = useState(true)
 
   const questionsWithAnswers = useMemo(() => {
@@ -77,62 +75,59 @@ export default function CompatibilityPage() {
     refreshCompatibilityQuestions()
   }
 
-  if (!user) {
-    return (
-      <PageBase trackPageView={'compatibility'}>
+  return (
+    <PageBase trackPageView={'compatibility'}>
+      {user ?
+        <Col className="w-full p-4">
+          <Title className="mb-4">Your Compatibility Questions</Title>
+          <UncontrolledTabs
+            trackingName={'compatibility page'}
+            name={'compatibility-page'}
+            tabs={[
+              {
+                title: `Answered ${sep}(${answered.length})`,
+                content: (
+                  <QuestionList
+                    questions={answered}
+                    status="answered"
+                    isLoading={isLoading}
+                    user={user}
+                    refreshCompatibilityAll={refreshCompatibilityAll}
+                  />
+                ),
+              },
+              {
+                title: `To Answer ${sep}(${notAnswered.length})`,
+                content: (
+                  <QuestionList
+                    questions={notAnswered}
+                    status="not-answered"
+                    isLoading={isLoading}
+                    user={user}
+                    refreshCompatibilityAll={refreshCompatibilityAll}
+                  />
+                ),
+              },
+              {
+                title: `Skipped ${sep}(${skipped.length})`,
+                content: (
+                  <QuestionList
+                    questions={skipped}
+                    status="skipped"
+                    isLoading={isLoading}
+                    user={user}
+                    refreshCompatibilityAll={refreshCompatibilityAll}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Col>
+        :
         <div className="flex h-full flex-col items-center justify-center">
           <div className="text-xl">Please sign in to view your compatibility questions</div>
         </div>
-      </PageBase>
-    )
-  }
-
-  return (
-    <PageBase trackPageView={'compatibility'}>
-      <Col className="w-full p-4">
-        <Title className="mb-4">Your Compatibility Questions</Title>
-        <UncontrolledTabs
-          trackingName={'compatibility page'}
-          tabs={[
-            {
-              title: `Answered ${sep}(${answered.length})`,
-              content: (
-                <QuestionList
-                  questions={answered}
-                  status="answered"
-                  isLoading={isLoading}
-                  user={user}
-                  refreshCompatibilityAll={refreshCompatibilityAll}
-                />
-              ),
-            },
-            {
-              title: `To Answer ${sep}(${notAnswered.length})`,
-              content: (
-                <QuestionList
-                  questions={notAnswered}
-                  status="not-answered"
-                  isLoading={isLoading}
-                  user={user}
-                  refreshCompatibilityAll={refreshCompatibilityAll}
-                />
-              ),
-            },
-            {
-              title: `Skipped ${sep}(${skipped.length})`,
-              content: (
-                <QuestionList
-                  questions={skipped}
-                  status="skipped"
-                  isLoading={isLoading}
-                  user={user}
-                  refreshCompatibilityAll={refreshCompatibilityAll}
-                />
-              ),
-            },
-          ]}
-        />
-      </Col>
+      }
     </PageBase>
   )
 }

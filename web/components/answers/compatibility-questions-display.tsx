@@ -22,13 +22,17 @@ import {Subtitle} from '../widgets/profile-subtitle'
 import {AddCompatibilityQuestionButton} from './add-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionButton,
-  AnswerSkippedCompatibilityQuestionsButton, CompatibilityPageButton,
+  AnswerSkippedCompatibilityQuestionsButton,
+  CompatibilityPageButton,
 } from './answer-compatibility-question-button'
 import {
-  AnswerCompatibilityQuestionContent, CompatibilityAnswerSubmitType,
-  deleteCompatibilityAnswer, getEmptyAnswer,
+  AnswerCompatibilityQuestionContent,
+  CompatibilityAnswerSubmitType,
+  deleteCompatibilityAnswer,
+  getEmptyAnswer,
   IMPORTANCE_CHOICES,
   IMPORTANCE_DISPLAY_COLORS,
+  submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
 import clsx from 'clsx'
 import {shortenName} from 'web/components/widgets/user-link'
@@ -363,6 +367,7 @@ export function CompatibilityAnswerBlock(props: {
     answerText && !preferredAnswersText.includes(answerText)
 
   const isAnswered = answer && answer.multiple_choice > -1
+  const isSkipped = answer && answer.importance == -1
   return (
     <Col
       className={
@@ -403,6 +408,26 @@ export function CompatibilityAnswerBlock(props: {
                     icon: <TrashIcon className="h-5 w-5"/>,
                     onClick: () => {
                       deleteCompatibilityAnswer(answer.id, user.id).then(() => refreshCompatibilityAll())
+                    },
+                  },
+                ]}
+                closeOnClick
+                menuWidth="w-40"
+              />
+            </>
+          )}
+          {isCurrentUser && !isAnswered && !isSkipped && (
+            <>
+              <DropdownMenu
+                items={[
+                  {
+                    name: 'Skip',
+                    icon: <TrashIcon className="h-5 w-5"/>,
+                    onClick: () => {
+                      submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
+                        .then(() => {})
+                        .finally(() => {})
+                      refreshCompatibilityAll()
                     },
                   },
                 ]}
@@ -497,7 +522,7 @@ export function CompatibilityAnswerBlock(props: {
               refreshCompatibilityAll()
             }}
             isLastQuestion={true}
-            noSkip
+            noSkip={isAnswered}
           />
         </Col>
       </Modal>

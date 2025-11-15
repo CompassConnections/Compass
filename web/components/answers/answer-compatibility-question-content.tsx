@@ -325,7 +325,7 @@ export const SelectAnswer = (props: {
   )
 }
 
-// TODO: redo with checkbox semantics
+// redo with checkbox semantics
 export const MultiSelectAnswers = (props: {
   values: number[]
   setValue: (value: number[]) => void

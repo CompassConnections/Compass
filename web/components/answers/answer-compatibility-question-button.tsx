@@ -31,7 +31,7 @@ export function AnswerCompatibilityQuestionButton(props: {
     <>
       {size === 'md' ? (
         <Button onClick={() => setOpen(true)} color="none" className={'px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 hover:text-ink-900'}>
-          Answer Questions{' '}
+          Answer{isCore && ' Core'} Questions{' '}
           <span className="text-primary-600 ml-2">
             +{questionsToAnswer.length}
           </span>

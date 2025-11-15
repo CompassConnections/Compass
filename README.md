@@ -1,7 +1,9 @@
 
-[![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
-[![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
 ![Vercel](https://deploy-badge.vercel.app/vercel/compass)
+[![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
+[![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
+[![Users](https://img.shields.io/badge/Users-300%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 # Compass
 
@@ -51,7 +53,9 @@ Here is a tailored selection of things that would be very useful. If you want to
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
 - [x] Set up domain name (compassmeet.com)
-- [ ] Add mobile app (React Native on Android and iOS)
+- [ ] Cover with tests (unit, integration, e2e)
+- [x] Add Android mobile app
+- [ ] Add iOS mobile app
 - [ ] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
@@ -65,8 +69,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [x] Clean up learn more page
 - [x] Add dark theme
 - [ ] Add profile fields (intellectual interests, cause areas, personality type, conflict style, timezone, etc.)
-- [ ] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
-- [ ] Cover with tests (crucial, just the test template and framework are ready)
+- [x] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
 - [ ] Clean up privacy notice (convert to Markdown)
@@ -102,38 +105,23 @@ git clone https://github.com/<your-username>/Compass.git
 cd Compass
 ```
 
-Install `opentofu`, `docker`, and `yarn`. Try running this on Linux or macOS for a faster install:
+Install `yarn` (if not already installed):
 ```bash
-./setup.sh
+npm install --global yarn
 ```
-If it doesn't work, you can install them manually (google how to install `opentofu`, `docker`, and `yarn` for your OS).
 
 Then, install the dependencies for this project:
 ```bash
 yarn install
 ```
 
-### Environment Variables
-
-Almost all the features will work out of the box, so you can skip this step and come back later if you need to test the following services: email, geolocation.
-
-We can't make the following information public, for security and privacy reasons:
-- Database, otherwise anyone could access all the user data (including private messages)
-- Firebase, otherwise anyone could remove users or modify the media files
-- Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
-
-That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
-Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
-
-If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
-
 ### Tests
 
 Make sure the tests pass:
 ```bash
-yarn test tests/jest/
+yarn test
 ```
-TODO: make `yarn test` run all the tests, not just the ones in `tests/jest/`.
+If they don't and you can't find out why, simply raise an issue! Sometimes it's something on our end that we overlooked.
 
 ### Running the Development Server
 
@@ -160,7 +148,17 @@ You can also add `console.log()` statements in the code.
 
 If you are new to Typescript or the open-source space, you could start with small changes, such as tweaking some web components or improving wording in some pages. You can find those files in `web/public/md/`.
 
-See [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
+##### Resources
+
+There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
+- [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
+- [knowledge.md](docs/knowledge.md) for general information about the project structure.
+- [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
+- [web](web) for the web.
+- [backend/api](backend/api) for the backend API.
+- [android](android) for the Android app.
+
+There are a lot of useful scripts you can use in the [scripts](scripts) folder.
 
 ### Submission
 
@@ -186,6 +184,20 @@ git push origin <branch-name>
 ```
 
 Finally, open a Pull Request on GitHub from your `fork/<branch-name>` → `CompassConnections/Compass` main branch.
+
+### Environment Variables
+
+Almost all the features will work out of the box, so you can skip this step and come back later if you need to test the following services: email, geolocation.
+
+We can't make the following information public, for security and privacy reasons:
+- Database, otherwise anyone could access all the user data (including private messages)
+- Firebase, otherwise anyone could remove users or modify the media files
+- Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
+
+That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
+Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
+
+If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
 
 ## Acknowledgements
 This project is built on top of [manifold.love](https://github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

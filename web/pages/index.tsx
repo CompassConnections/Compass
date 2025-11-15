@@ -14,16 +14,17 @@ export async function getServerSideProps() {
     throw new Error('500 - Test downtime');
   }
 
-  return { props: {} };
+  return {props: {}};
 }
 
 export default function ProfilesPage() {
   const user = useUser();
-  console.debug('user:', user)
 
   if (user === undefined) {
     return <PageBase trackPageView={'loading'}/>
   }
+
+  console.debug('user:', user)
 
   return (
     <PageBase trackPageView={'user profiles'}>

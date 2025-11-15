@@ -27,9 +27,10 @@ cd web
 
 rm -rf .next
 
-# Hack to ignore getStaticProps and getStaticPaths for mobile webview build
-# as Next.js doesn't support SSR / ISR on mobile
+# Hack to ignore getServerSideProps, getStaticProps and getStaticPaths for mobile webview build
+# as Next.js doesn't support SSG, SSR and ISR on mobile
 USERNAME_PAGE=pages/[username]/index.tsx
+HOME_PAGE=pages/index.tsx
 
 # rename getStaticProps to _getStaticProps
 sed -i.bak 's/\bgetStaticProps\b/_getStaticProps/g' $USERNAME_PAGE
@@ -37,9 +38,11 @@ sed -i.bak 's/\bgetStaticProps\b/_getStaticProps/g' $USERNAME_PAGE
 # rename getStaticPaths to _getStaticPaths
 sed -i.bak 's/\bgetStaticPaths\b/_getStaticPaths/g' $USERNAME_PAGE
 
+# rename getServerSideProps to _getServerSideProps
+sed -i.bak 's/\bgetServerSideProps\b/_getServerSideProps/g' $HOME_PAGE
+
 yarn build
 
 sed -i.bak 's/\b_getStaticProps\b/getStaticProps/g' $USERNAME_PAGE
-
-# rename getStaticPaths to _getStaticPaths
 sed -i.bak 's/\b_getStaticPaths\b/getStaticPaths/g' $USERNAME_PAGE
+sed -i.bak 's/\b_getServerSideProps\b/getServerSideProps/g' $HOME_PAGE

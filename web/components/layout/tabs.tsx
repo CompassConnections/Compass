@@ -32,6 +32,7 @@ type TabProps = {
   trackingName?: string
   // Default is to lazy render tabs as they are selected. If true, it will render all tabs at once.
   renderAllTabs?: boolean
+  name?: string // a unique identifier for the tabs, used for caching
 }
 
 export function MinimalistTabs(props: TabProps & { activeIndex: number }) {
@@ -166,7 +167,11 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
                   <Row className="justify-center">{tab.stackedTabIcon}</Row>
                 )}
                 <Row className={'items-center'}>
-                  {tab.title}
+                  <Col>
+                    {tab.title.split('\n').map((line, i) => (
+                      <Row className={'items-center justify-center'} key={i}>{line}</Row>
+                    ))}
+                  </Col>
                   {tab.inlineTabIcon}
                 </Row>
               </Tooltip>
@@ -199,7 +204,7 @@ export function UncontrolledTabs(props: TabProps & { defaultIndex?: number }) {
   const { defaultIndex, onClick, ...rest } = props
   const [activeIndex, setActiveIndex] = usePersistentInMemoryState(
     defaultIndex ?? 0,
-    `tab-${props.trackingName}-${props.tabs[0]?.title}`
+    `tab-${props.trackingName}-${props.name ?? props.tabs[0]?.title}`
   )
   if ((defaultIndex ?? 0) > props.tabs.length - 1) {
     console.error('default index greater than tabs length')
@@ -212,6 +217,7 @@ export function UncontrolledTabs(props: TabProps & { defaultIndex?: number }) {
         setActiveIndex(i)
         onClick?.(titleOrQueryTitle, i)
       }}
+      labelsParentClassName={'gap-0 xs:gap-4'}
     />
   )
 }

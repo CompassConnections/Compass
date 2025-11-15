@@ -7,7 +7,7 @@
     "compile": "tsc -b",
     "verify": "yarn --cwd=.. verify",
     "verify:dir": "npx eslint . --max-warnings 0",
-    "test": "jest"
+    "test": "jest --config jest.config.js --passWithNoTests"
   },
   "sideEffects": false,
   "dependencies": {

@@ -49,8 +49,9 @@ export function ReligionFilterText(props: {
 export function ReligionFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
+  className?: string
 }) {
-  const {filters, updateFilter} = props
+  const {filters, updateFilter, className} = props
   return (
     <>
       <MultiCheckbox
@@ -59,6 +60,7 @@ export function ReligionFilter(props: {
         onChange={(c) => {
           updateFilter({religion: c})
         }}
+        className={className}
       />
     </>
   )

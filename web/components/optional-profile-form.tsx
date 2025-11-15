@@ -13,7 +13,6 @@ import {updateProfile, updateUser} from 'web/lib/api'
 import {Column} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {track} from 'web/lib/service/analytics'
-import {Races} from './race'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
 import {ProfileRow} from 'common/profiles/profile'
@@ -31,8 +30,12 @@ import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
-  POLITICAL_CHOICES,
+  LANGUAGE_CHOICES,
+  MBTI_CHOICES,
+  POLITICAL_CHOICES, 
+  RACE_CHOICES,
   RELATIONSHIP_CHOICES,
+  RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
   ROMANTIC_CHOICES
 } from "web/components/filters/choices";
@@ -275,6 +278,15 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Relationship status</label>
+          <MultiCheckbox
+            choices={RELATIONSHIP_STATUS_CHOICES}
+            selected={profile['relationship_status'] ?? []}
+            onChange={(selected) => setProfile('relationship_status', selected)}
+          />
+        </Col>
+
         {lookingRelationship && <>
             <Col className={clsx(colClassName)}>
                 <label className={clsx(labelClassName)}>Relationship style</label>
@@ -383,6 +395,21 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Languages</label>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="col-span-full max-h-60 overflow-y-auto w-full">
+                <MultiCheckbox
+                  choices={LANGUAGE_CHOICES}
+                  selected={profile.languages || []}
+                  onChange={(selected) => setProfile('languages', selected)}
+                />
+              </div>
+            </div>
+          </div>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Political beliefs</label>
           <MultiCheckbox
             choices={POLITICAL_CHOICES}
@@ -411,6 +438,16 @@ export const OptionalProfileUserForm = (props: {
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
             value={profile['religious_beliefs'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName, 'max-w-[550px]')}>
+          <label className={clsx(labelClassName)}>MBTI Personality Type</label>
+          <ChoicesToggleGroup
+            currentChoice={profile['mbti'] ?? ''}
+            choicesMap={MBTI_CHOICES}
+            setChoice={(c) => setProfile('mbti', c)}
+            className="grid grid-cols-4 xs:grid-cols-8"
           />
         </Col>
 
@@ -529,7 +566,7 @@ export const OptionalProfileUserForm = (props: {
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>Ethnicity/origin</label>
           <MultiCheckbox
-            choices={Races}
+            choices={RACE_CHOICES}
             selected={profile['ethnicity'] ?? []}
             onChange={(selected) => setProfile('ethnicity', selected)}
           />

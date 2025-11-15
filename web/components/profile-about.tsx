@@ -1,17 +1,22 @@
 import clsx from 'clsx'
-import {convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-types'
+import {convertRace, convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {ReactNode} from 'react'
 import {
-  REVERTED_DIET_CHOICES, REVERTED_EDUCATION_CHOICES,
-  REVERTED_POLITICAL_CHOICES, REVERTED_RELIGION_CHOICES,
-  REVERTED_ROMANTIC_CHOICES
+  INVERTED_DIET_CHOICES,
+  INVERTED_EDUCATION_CHOICES,
+  INVERTED_LANGUAGE_CHOICES,
+  INVERTED_MBTI_CHOICES,
+  INVERTED_POLITICAL_CHOICES,
+  INVERTED_RELATIONSHIP_STATUS_CHOICES,
+  INVERTED_RELIGION_CHOICES,
+  INVERTED_ROMANTIC_CHOICES
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
-import {BsPersonHeart} from 'react-icons/bs'
+import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap,} from 'react-icons/lu'
-import {MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
+import {MdLanguage, MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
 import {PiHandsPrayingBold, PiMagnifyingGlassBold,} from 'react-icons/pi'
 import {RiScales3Line} from 'react-icons/ri'
 import {Col} from 'web/components/layout/col'
@@ -20,7 +25,6 @@ import {fromNow} from 'web/lib/util/time'
 import {convertGenderPlural, Gender} from 'common/gender'
 import {HiOutlineGlobe} from 'react-icons/hi'
 import {UserHandles} from 'web/components/user/user-handles'
-import {convertRace} from './race'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
@@ -74,17 +78,29 @@ export default function ProfileAbout(props: {
     >
       <Seeking profile={profile}/>
       <RelationshipType profile={profile}/>
+      <AboutRow
+        icon={<BsPersonHeart className="h-5 w-5"/>}
+        text={profile.relationship_status?.map(v => INVERTED_RELATIONSHIP_STATUS_CHOICES[v])}
+      />
       <Education profile={profile}/>
       <Occupation profile={profile}/>
       <AboutRow
+        icon={<MdLanguage className="h-5 w-5"/>}
+        text={profile.languages?.map(v => INVERTED_LANGUAGE_CHOICES[v])}
+      />
+      <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
-        text={profile.political_beliefs?.map(belief => REVERTED_POLITICAL_CHOICES[belief])}
+        text={profile.political_beliefs?.map(belief => INVERTED_POLITICAL_CHOICES[belief])}
         suffix={profile.political_details}
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
-        text={profile.religion?.map(belief => REVERTED_RELIGION_CHOICES[belief])}
+        text={profile.religion?.map(belief => INVERTED_RELIGION_CHOICES[belief])}
         suffix={profile.religious_beliefs}
+      />
+      <AboutRow
+        icon={<BsPersonVcard className="h-5 w-5"/>}
+        text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
       />
       <AboutRow
         icon={<HiOutlineGlobe className="h-5 w-5"/>}
@@ -96,7 +112,7 @@ export default function ProfileAbout(props: {
       <Drinks profile={profile}/>
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
-        text={profile.diet?.map(e => REVERTED_DIET_CHOICES[e])}
+        text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>
@@ -163,7 +179,7 @@ function RelationshipType(props: { profile: Profile }) {
   })
   if (relationshipTypes?.includes('relationship')) {
     const romanticStyles = profile.pref_romantic_styles
-      ?.map((style) => REVERTED_ROMANTIC_CHOICES[style].toLowerCase())
+      ?.map((style) => INVERTED_ROMANTIC_CHOICES[style].toLowerCase())
       .filter(Boolean)
     if (romanticStyles && romanticStyles.length > 0) {
       seekingGenderText += ` (${romanticStyles.join(', ')})`
@@ -186,7 +202,7 @@ function Education(props: { profile: Profile }) {
   let text = ''
 
   if (educationLevel) {
-    text += capitalizeAndRemoveUnderscores(REVERTED_EDUCATION_CHOICES[educationLevel])
+    text += capitalizeAndRemoveUnderscores(INVERTED_EDUCATION_CHOICES[educationLevel])
   }
   if (university) {
     if (educationLevel) text += ' at '

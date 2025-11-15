@@ -1,7 +1,7 @@
 import {RadioGroup} from '@headlessui/react'
 import {UserIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import {Row as rowFor, run} from 'common/supabase/utils'
+import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
 import {sortBy} from 'lodash'
@@ -15,10 +15,9 @@ import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {track} from 'web/lib/service/analytics'
-import {db} from 'web/lib/supabase/db'
 import {api} from 'web/lib/api'
 import {filterKeys} from '../questions-form'
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"
 
 export type CompatibilityAnswerSubmitType = Omit<
   rowFor<'compatibility_answers'>,
@@ -70,9 +69,9 @@ export const submitCompatibilityAnswer = async (
     // Track only if upsert succeeds
     track('answer compatibility question', {
       ...newAnswer,
-    });
+    })
   } catch (error) {
-    console.error('Failed to set compatibility answer:', error);
+    console.error('Failed to set compatibility answer:', error)
     toast.error('Error submitting. Try again?')
   }
 }
@@ -83,20 +82,15 @@ export const deleteCompatibilityAnswer = async (
 ) => {
   if (!userId || !id) return
   try {
-    await run(
-      db
-        .from('compatibility_answers')
-        .delete()
-        .match({id: id, creator_id: userId})
-    )
-    await track('delete compatibility question', {id});
+    await api('delete-compatibility-answer', {id})
+    await track('delete compatibility question', {id})
   } catch (error) {
-    console.error('Failed to delete prompt answer:', error);
+    console.error('Failed to delete prompt answer:', error)
     toast.error('Error deleting. Try again?')
   }
 }
 
-function getEmptyAnswer(userId: string, questionId: number) {
+export function getEmptyAnswer(userId: string, questionId: number) {
   return {
     creator_id: userId,
     explanation: null,
@@ -112,7 +106,7 @@ export function AnswerCompatibilityQuestionContent(props: {
   user: User
   index?: number
   total?: number
-  answer?: rowFor<'compatibility_answers'> | null
+  answer?: CompatibilityAnswerSubmitType | null
   onSubmit: () => void
   onNext?: () => void
   isLastQuestion: boolean
@@ -160,11 +154,11 @@ export function AnswerCompatibilityQuestionContent(props: {
   return (
     <Col className="h-full w-full gap-4">
       <Col className="gap-1">
-        {compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">
-          <span>
-            Massive upgrade coming soon! More prompts, better predictive power, filtered by category, etc.
-          </span>
-        </Row>}
+        {/*{compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">*/}
+        {/*  <span>*/}
+        {/*    Massive upgrade coming soon! More prompts, better predictive power, filtered by category, etc.*/}
+        {/*  </span>*/}
+        {/*</Row>}*/}
         {index !== null &&
           index !== undefined &&
           total !== null &&
@@ -331,7 +325,7 @@ export const SelectAnswer = (props: {
   )
 }
 
-// TODO: redo with checkbox semantics
+// redo with checkbox semantics
 export const MultiSelectAnswers = (props: {
   values: number[]
   setValue: (value: number[]) => void

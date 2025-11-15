@@ -26,12 +26,20 @@ import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/polit
 import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
+import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
+import {BsPersonVcard} from "react-icons/bs";
 import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
-import {MdLocalBar} from 'react-icons/md'
+import {MdLanguage, MdLocalBar} from 'react-icons/md'
 import {SmokerFilter, SmokerFilterText} from "web/components/filters/smoker-filter"
 import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
 import {PiHandsPrayingBold} from "react-icons/pi";
+import {LanguageFilter, LanguageFilterText} from "web/components/filters/language-filter";
+import {
+  RelationshipStatusFilter,
+  RelationshipStatusFilterText
+} from "web/components/filters/relationship-status-filter";
+import {BsPersonHeart} from "react-icons/bs";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -85,6 +93,34 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
+      {/* RELATIONSHIP STATUS */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <BsPersonHeart className="h-4 w-4"/>
+                <RelationshipStatusFilterText
+                  options={
+                    filters.relationship_status as
+                      | string[]
+                      | undefined
+                  }
+                  defaultLabel={'Any relationship status'}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <RelationshipStatusFilter filters={filters} updateFilter={updateFilter}/>
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
@@ -355,6 +391,33 @@ export function DesktopFilters(props: {
         menuWidth="w-80"
       />
 
+      {/* LANGUAGES */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <MdLanguage className="h-4 w-4"/>
+                <LanguageFilterText
+                  options={
+                    filters.languages as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <LanguageFilter filters={filters} updateFilter={updateFilter}/>
+        }
+        popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
+        menuWidth="w-50"
+      />
+
       {/* POLITICS */}
       <CustomizeableDropdown
         buttonContent={(open) => (
@@ -403,10 +466,38 @@ export function DesktopFilters(props: {
           />
         )}
         dropdownMenuContent={
-          <ReligionFilter filters={filters} updateFilter={updateFilter}/>
+          <ReligionFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            className={'w-[350px] grid grid-cols-2'}
+          />
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
+      />
+
+      {/* MBTI */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <BsPersonVcard className="h-4 w-4" />
+                <MbtiFilterText
+                  options={filters.mbti as string[] | undefined}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                  defaultLabel={'Any MBTI'}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <MbtiFilter filters={filters} updateFilter={updateFilter} />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-[350px] grid-cols-2"
       />
 
       {/* SMOKER */}

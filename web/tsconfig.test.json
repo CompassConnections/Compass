@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Use / as the root for tests so path-mapped imports from
+    // ../shared and ../../common are within the configured rootDir.
+    // This avoids TS6059 during ts-jest compilation.
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "common/*": ["../../common/src/*"],
+    }
+  },
+  "include": ["tests/**/*.ts", "src/**/*.ts"]
+}

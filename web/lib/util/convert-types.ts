@@ -1,39 +1,65 @@
 import {
-  REVERTED_DIET_CHOICES,
-  REVERTED_EDUCATION_CHOICES,
-  REVERTED_POLITICAL_CHOICES,
-  REVERTED_RELATIONSHIP_CHOICES,
-  REVERTED_RELIGION_CHOICES,
-  REVERTED_ROMANTIC_CHOICES
+  INVERTED_DIET_CHOICES,
+  INVERTED_EDUCATION_CHOICES,
+  INVERTED_LANGUAGE_CHOICES,
+  INVERTED_POLITICAL_CHOICES,
+  INVERTED_RACE_CHOICES,
+  INVERTED_RELATIONSHIP_CHOICES,
+  INVERTED_RELATIONSHIP_STATUS_CHOICES,
+  INVERTED_RELIGION_CHOICES,
+  INVERTED_ROMANTIC_CHOICES
 } from "web/components/filters/choices";
 
-export type RelationshipType = keyof typeof REVERTED_RELATIONSHIP_CHOICES
-export type RomanticType = keyof typeof REVERTED_ROMANTIC_CHOICES
-export type DietType = keyof typeof REVERTED_DIET_CHOICES
-export type PoliticalType = keyof typeof REVERTED_POLITICAL_CHOICES
-export type EducationType = keyof typeof REVERTED_EDUCATION_CHOICES
-export type ReligionType = keyof typeof REVERTED_RELIGION_CHOICES
+export type RelationshipType = keyof typeof INVERTED_RELATIONSHIP_CHOICES
 
 export function convertRelationshipType(relationshipType: RelationshipType) {
-  return REVERTED_RELATIONSHIP_CHOICES[relationshipType]
+  return INVERTED_RELATIONSHIP_CHOICES[relationshipType]
 }
+
+export type RelationshipStatusType = keyof typeof INVERTED_RELATIONSHIP_STATUS_CHOICES
+
+export function convertRelationshipStatusTypes(relationshipStatusType: RelationshipStatusType) {
+  return INVERTED_RELATIONSHIP_STATUS_CHOICES[relationshipStatusType]
+}
+
+export type RomanticType = keyof typeof INVERTED_ROMANTIC_CHOICES
 
 export function convertRomanticTypes(romanticType: RomanticType) {
-  return REVERTED_ROMANTIC_CHOICES[romanticType]
+  return INVERTED_ROMANTIC_CHOICES[romanticType]
 }
+
+export type DietType = keyof typeof INVERTED_DIET_CHOICES
 
 export function convertDietTypes(dietType: DietType) {
-  return REVERTED_DIET_CHOICES[dietType]
+  return INVERTED_DIET_CHOICES[dietType]
 }
+
+export type PoliticalType = keyof typeof INVERTED_POLITICAL_CHOICES
 
 export function convertPoliticalTypes(politicalType: PoliticalType) {
-  return REVERTED_POLITICAL_CHOICES[politicalType]
+  return INVERTED_POLITICAL_CHOICES[politicalType]
 }
+
+export type EducationType = keyof typeof INVERTED_EDUCATION_CHOICES
 
 export function convertEducationTypes(educationType: EducationType) {
-  return REVERTED_EDUCATION_CHOICES[educationType]
+  return INVERTED_EDUCATION_CHOICES[educationType]
 }
 
+export type ReligionType = keyof typeof INVERTED_RELIGION_CHOICES
+
 export function convertReligionTypes(religionType: ReligionType) {
-  return REVERTED_RELIGION_CHOICES[religionType]
+  return INVERTED_RELIGION_CHOICES[religionType]
+}
+
+export type LanguageType = keyof typeof INVERTED_LANGUAGE_CHOICES
+
+export function convertLanguageTypes(languageType: LanguageType) {
+  return INVERTED_LANGUAGE_CHOICES[languageType]
+}
+
+export type RaceType = keyof typeof INVERTED_RACE_CHOICES
+
+export function convertRace(race: RaceType) {
+  return INVERTED_RACE_CHOICES[race]
 }

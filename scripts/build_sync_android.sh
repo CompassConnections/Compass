@@ -4,9 +4,7 @@ set -e
 
 cd "$(dirname "$0")"/..
 
-export NEXT_PUBLIC_WEBVIEW=1
-
-yarn build-web
+yarn build-web-view
 
 source web/.env
 

@@ -1,12 +1,12 @@
 import { faker } from "@faker-js/faker";
-import { 
-    RELATIONSHIP_CHOICES,
-    POLITICAL_CHOICES,
-    RELIGION_CHOICES,
-    DIET_CHOICES,
-    EDUCATION_CHOICES,
- } from "../../../../web/components/filters/choices";
-import { Races } from "../../../../web/components/race";
+import {
+  RELATIONSHIP_CHOICES,
+  POLITICAL_CHOICES,
+  RELIGION_CHOICES,
+  DIET_CHOICES,
+  EDUCATION_CHOICES,
+  RACE_CHOICES,
+} from "web/components/filters/choices";
 
 class UserAccountInformation {
 
@@ -41,7 +41,7 @@ class UserAccountInformation {
     diet = Object.values(DIET_CHOICES);
     drinks_per_month = faker.number.int({min: 4, max:40});
     height_in_inches = faker.number.float({min: 56, max: 78, fractionDigits:2});
-    ethnicity = Object.values(Races);
+    ethnicity = Object.values(RACE_CHOICES);
     education_level = Object.values(EDUCATION_CHOICES);
     company = faker.company.name();
     occupation_title = faker.person.jobTitle();

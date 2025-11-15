@@ -1,16 +1,7 @@
 {
-  "compilerOptions": {
-    "rootDir": ".",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitReturns": true,
-    "outDir": "lib",
-    "target": "es2022",
-    "skipLibCheck": true,
-    "paths": {
-      "common/*": ["./common/*"],
-      "backend/*": ["./backend/*"],
-    }
-  },
-  "include": ["tests/**/*.ts"]
+  "files": [],
+  "references": [
+    { "path": "./backend/api" },
+    { "path": "./backend/api/tsconfig.test.json" }
+  ]
 }

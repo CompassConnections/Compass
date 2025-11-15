@@ -8,15 +8,15 @@ create table if not exists
     id text default uuid_generate_v4 () not null,
     parent_id text,
     parent_type text,
-    user_id text not null
+    user_id text
   );
 
 -- Foreign Keys
 alter table reports
-add constraint reports_content_owner_id_fkey foreign key (content_owner_id) references users (id);
+add constraint reports_content_owner_id_fkey foreign key (content_owner_id) references users (id) on delete set null;
 
 alter table reports
-add constraint reports_user_id_fkey foreign key (user_id) references users (id);
+add constraint reports_user_id_fkey foreign key (user_id) references users (id) on delete set null;
 
 -- Row Level Security
 alter table reports enable row level security;

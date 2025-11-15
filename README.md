@@ -53,7 +53,9 @@ Here is a tailored selection of things that would be very useful. If you want to
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
 - [x] Set up domain name (compassmeet.com)
-- [ ] Add mobile app (React Native on Android and iOS)
+- [ ] Cover with tests (unit, integration, e2e)
+- [x] Add Android mobile app
+- [ ] Add iOS mobile app
 - [ ] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
@@ -67,8 +69,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [x] Clean up learn more page
 - [x] Add dark theme
 - [ ] Add profile fields (intellectual interests, cause areas, personality type, conflict style, timezone, etc.)
-- [ ] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
-- [ ] Cover with tests (crucial, just the test template and framework are ready)
+- [x] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
 - [ ] Clean up privacy notice (convert to Markdown)

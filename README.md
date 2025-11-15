@@ -150,12 +150,13 @@ If you are new to Typescript or the open-source space, you could start with smal
 
 ##### Resources
 
-There is a lof of documentation in the [docs](docs) folder, namely:
+There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
 - [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
 - [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
-- [backend/api/README.md](backend/api/README.md) for the backend API.
-- [android/README.md](android/README.md) for the Android app.
+- [web](web) for the web.
+- [backend/api](backend/api) for the backend API.
+- [android](android) for the Android app.
 
 There are a lot of useful scripts you can use in the [scripts](scripts) folder.
 

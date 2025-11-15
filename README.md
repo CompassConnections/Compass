@@ -105,11 +105,10 @@ git clone https://github.com/<your-username>/Compass.git
 cd Compass
 ```
 
-Install `opentofu`, `docker`, and `yarn`. Try running this on Linux or macOS for a faster install:
+Install `yarn` (if not already installed):
 ```bash
-./setup.sh
+npm install --global yarn
 ```
-If it doesn't work, you can install them manually (google how to install `opentofu`, `docker`, and `yarn` for your OS).
 
 Then, install the dependencies for this project:
 ```bash

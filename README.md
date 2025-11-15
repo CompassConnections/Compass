@@ -115,20 +115,6 @@ Then, install the dependencies for this project:
 yarn install
 ```
 
-### Environment Variables
-
-Almost all the features will work out of the box, so you can skip this step and come back later if you need to test the following services: email, geolocation.
-
-We can't make the following information public, for security and privacy reasons:
-- Database, otherwise anyone could access all the user data (including private messages)
-- Firebase, otherwise anyone could remove users or modify the media files
-- Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
-
-That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
-Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
-
-If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
-
 ### Tests
 
 Make sure the tests pass:
@@ -162,7 +148,16 @@ You can also add `console.log()` statements in the code.
 
 If you are new to Typescript or the open-source space, you could start with small changes, such as tweaking some web components or improving wording in some pages. You can find those files in `web/public/md/`.
 
-See [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
+##### Resources
+
+There is a lof of documentation in the [docs](docs) folder, namely:
+- [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
+- [knowledge.md](docs/knowledge.md) for general information about the project structure.
+- [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
+- [backend/api/README.md](backend/api/README.md) for the backend API.
+- [android/README.md](android/README.md) for the Android app.
+
+There are a lot of useful scripts you can use in the [scripts](scripts) folder.
 
 ### Submission
 
@@ -188,6 +183,20 @@ git push origin <branch-name>
 ```
 
 Finally, open a Pull Request on GitHub from your `fork/<branch-name>` → `CompassConnections/Compass` main branch.
+
+### Environment Variables
+
+Almost all the features will work out of the box, so you can skip this step and come back later if you need to test the following services: email, geolocation.
+
+We can't make the following information public, for security and privacy reasons:
+- Database, otherwise anyone could access all the user data (including private messages)
+- Firebase, otherwise anyone could remove users or modify the media files
+- Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
+
+That's why we separate all those services between production and development environments, so that you can code freely without impacting the functioning of the deployed platform.
+Contributors should use the default keys for local development. Production uses a separate environment with stricter rules and private keys that are not shared.
+
+If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
 
 ## Acknowledgements
 This project is built on top of [manifold.love](https://github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

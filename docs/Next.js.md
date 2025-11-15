@@ -47,6 +47,59 @@ You only need hydration if you have server-rendered HTML that must become intera
 
 ---
 
+React re-renders a component **whenever its state or props change**. Hooks don’t cause re-renders by themselves — **their returned values changing** does.
+
+### React re-renders when:
+
+1. **A state updater runs**
+    - `setState(...)` from `useState`
+    - `dispatch(...)` from `useReducer`
+        
+2. **Parent props change**
+    - Any parent re-render that produces new props for the child
+    
+3. **Context value changes**
+    - When a context provider updates its value, all consumers re-render
+        
+4. **External stores change** (in React 18+ “use sync external store” pattern)
+    - `useSyncExternalStore`
+    - Custom store hooks subscribing to something (auth store, Zustand, Redux, etc.)
+        
+5. **Server → Client hydration mismatch forces a re-render**
+    - Rare; usually an error condition
+
+Re-rendering **does NOT happen** simply because:
+
+- You called the component function manually
+- A hook _exists_
+- A ref changed (`useRef`)
+- An effect ran (`useEffect`)
+- A variable changed outside React state
+
+---
+
+# Difference Between Re-rendering and Hydration
+
+## Hydration
+
+- Happens **once**, right after the server-rendered HTML loads in the browser.
+- React attaches event listeners and internal state structures to the existing DOM.
+- Restores component tree in memory but does _not_ replace DOM unless mismatched.
+
+Hydration is **startup initialization**.
+
+## Re-rendering
+
+- Happens **after hydration**, repeatedly, whenever React thinks the UI must update.
+- Reconciliation compares new virtual DOM to old and mutates the real DOM minimally.
+
+### Important distinction:
+
+- Variables inside components do **not** persist across renders.
+- Only state, context, memoized values, refs, and hooks preserve information.
+
+
+---
 ### Next.js: What it adds
 
 Next.js is a React framework that controls **where** code runs (server vs client), **when** it runs (build vs request time), and how HTML is generated. It adds routing, rendering strategies, data fetching conventions, and server infrastructure.

@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/base";
+import { test, expect } from "../../fixtures/base";
 
 test('Check API health', async ({backendPage}) => {
     const responseHealth = await backendPage.api.get('/health');

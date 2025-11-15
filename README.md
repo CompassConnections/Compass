@@ -133,9 +133,9 @@ If you do need one of the few remaining services, you need to set them up and st
 
 Make sure the tests pass:
 ```bash
-yarn test tests/jest/
+yarn test
 ```
-TODO: make `yarn test` run all the tests, not just the ones in `tests/jest/`.
+If they don't and you can't find out why, simply raise an issue! Sometimes it's something on our end that we overlooked.
 
 ### Running the Development Server
 

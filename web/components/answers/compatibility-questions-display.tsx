@@ -42,6 +42,7 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {DropdownButton} from '../filters/desktop-filters'
 import {buildArray} from 'common/util/array'
+import toast from "react-hot-toast";
 
 const NUM_QUESTIONS_TO_SHOW = 8
 
@@ -407,7 +408,10 @@ export function CompatibilityAnswerBlock(props: {
                     name: 'Delete',
                     icon: <TrashIcon className="h-5 w-5"/>,
                     onClick: () => {
-                      deleteCompatibilityAnswer(answer.id, user.id).then(() => refreshCompatibilityAll())
+                      deleteCompatibilityAnswer(answer.id, user.id)
+                        .then(() => refreshCompatibilityAll())
+                        .catch((e) => {toast.error(e.message)})
+                        .finally(() => {})
                     },
                   },
                 ]}
@@ -425,9 +429,9 @@ export function CompatibilityAnswerBlock(props: {
                     icon: <TrashIcon className="h-5 w-5"/>,
                     onClick: () => {
                       submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
-                        .then(() => {})
+                        .then(() => {refreshCompatibilityAll()})
+                        .catch((e) => {toast.error(e.message)})
                         .finally(() => {})
-                      refreshCompatibilityAll()
                     },
                   },
                 ]}

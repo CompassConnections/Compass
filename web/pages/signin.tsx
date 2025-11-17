@@ -4,7 +4,6 @@ import {useSearchParams} from "next/navigation"
 import React, {Suspense, useEffect, useState} from "react"
 import Link from "next/link"
 import {auth, firebaseLogin} from "web/lib/firebase/users"
-import FavIcon from "web/public/FavIcon"
 
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {getProfileRow} from "common/profiles/profile"
@@ -16,6 +15,7 @@ import {PageBase} from "web/components/page-base"
 import {GoogleButton} from "web/components/buttons/sign-up-button"
 import {SEO} from "web/components/SEO"
 import {logger} from "common/logging";
+import FavIcon from "web/components/FavIcon";
 
 export default function LoginPage() {
   return (

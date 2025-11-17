@@ -76,7 +76,7 @@ javac -version
 
 ```
 yarn install
-yarn build-web
+yarn build-web-view
 ```
 
 ### Local mode
@@ -110,7 +110,7 @@ cd android
 Sync web files and native plugins with Android, for offline fallback. In root:
 ``` 
 export NEXT_PUBLIC_LOCAL_ANDROID=1 # if running your local web Compass
-yarn build-web # if you made changes to web app
+yarn build-web-view # if you made changes to web app
 npx cap sync android
 ```
 
@@ -247,7 +247,7 @@ yarn dev # or prod
 
 # Terminal 2: start frontend
 export NEXT_PUBLIC_LOCAL_ANDROID=1
-yarn build-web # if you made changes to web app  
+yarn build-web-view # if you made changes to web app  
 npx cap sync android
 # Run on emulator or device
 ```
@@ -275,7 +275,7 @@ npm install -g @capawesome/cli@latest
 npx @capawesome/cli login
 ```
 
-Then,  run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
+Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
 ```
 yarn build-web-view
 npx @capawesome/cli apps:bundles:create --path web/out

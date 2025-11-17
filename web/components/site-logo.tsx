@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import clsx from 'clsx'
 import {Row} from 'web/components/layout/row'
-import FavIcon from "web/public/FavIcon";
+import FavIcon from "web/components/FavIcon";
 import {isProd} from "common/envs/is-prod";
 
 export default function SiteLogo(props: {

@@ -14,21 +14,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'preSetup',
-      testMatch: /.*preSetup\.ts/, 
-    },
-    {
-      name: 'setup',
-      testMatch: /.*setup\.ts/, 
-    },
-    {
-      name: 'postSetup',
+      name: 'main',
       use: {
-        ...devices['Desktop Chrome'],
-        storageState: path.resolve(__dirname, 'tests/e2e/web/.auth/user.json'), 
-      },
-      testIgnore: [/.*preSetup\.ts/, /.*setup\.ts/],
-      dependencies: ['setup'], 
+        ...devices['Desktop Chrome'],      }, 
     },
     // {
     //   name: 'firefox',

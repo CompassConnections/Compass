@@ -25,6 +25,12 @@ import {EducationFilter, EducationFilterText} from "web/components/filters/educa
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from "./drinks-filter";
 import {SmokerFilter, SmokerFilterText} from "./smoker-filter";
 import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
+import {LanguageFilter, LanguageFilterText} from "web/components/filters/language-filter";
+import {
+  RelationshipStatusFilter,
+  RelationshipStatusFilterText
+} from "web/components/filters/relationship-status-filter";
+import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -102,6 +108,26 @@ function MobileFilters(props: {
         }
       >
         <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* Relationship Status */}
+      <MobileFilterSection
+        title="Relationship Status"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.relationship_status || undefined)}
+        selection={
+          <RelationshipStatusFilterText
+            options={filters.relationship_status as string[]}
+            highlightedClass={
+              hasAny(filters.relationship_status || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <RelationshipStatusFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* LOCATION */}
@@ -317,6 +343,27 @@ function MobileFilters(props: {
         <SmokerFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
+      {/* LANGUAGES */}
+      <MobileFilterSection
+        title="Languages"
+        // className="col-span-full max-h-80 overflow-y-auto"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.languages || undefined)}
+        selection={
+          <LanguageFilterText
+            options={filters.languages as string[]}
+            highlightedClass={
+              hasAny(filters.languages || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <LanguageFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
       {/* POLITICS */}
       <MobileFilterSection
         title="Politics"
@@ -353,6 +400,24 @@ function MobileFilters(props: {
         }
       >
         <ReligionFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* MBTI */}
+      <MobileFilterSection
+        title="MBTI"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.mbti)}
+        selection={
+          <MbtiFilterText
+            options={filters.mbti as string[]}
+            highlightedClass={
+              hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <MbtiFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* EDUCATION */}

@@ -32,7 +32,8 @@ import {useGroupedMessages, usePaginatedScrollingMessages,} from 'web/lib/supaba
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {ChatMessage} from 'common/chat-message'
 import {BackButton} from 'web/components/back-button'
-import {SEO} from "web/components/SEO";
+import {SEO} from "web/components/SEO"
+import {cleanDoc} from "common/util/parse";
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
@@ -183,8 +184,8 @@ export const PrivateChat = (props: {
     setIsSubmitting(true)
 
     try {
-      const content = editor.getJSON();
-      // console.log('editingMessage submitting message', {editingMessage}, JSON.stringify(content))
+      const content = cleanDoc(editor.getJSON())
+      // console.log('submitting message', JSON.stringify(content))
       if (editingMessage) {
         // console.log('editingMessage edit-message', editingMessage)
         setMessages((prevMessages) =>

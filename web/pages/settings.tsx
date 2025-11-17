@@ -26,6 +26,7 @@ export default function NotificationsPage() {
       <NoSEO/>
       <Title>Settings</Title>
       <UncontrolledTabs
+        name={'settings-page'}
         tabs={[
           {title: 'General', content: <GeneralSettings/>},
           {title: 'Notifications', content: <NotificationSettings/>},

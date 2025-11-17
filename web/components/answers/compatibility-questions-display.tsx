@@ -23,12 +23,16 @@ import {AddCompatibilityQuestionButton} from './add-compatibility-question-butto
 import {
   AnswerCompatibilityQuestionButton,
   AnswerSkippedCompatibilityQuestionsButton,
+  CompatibilityPageButton,
 } from './answer-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionContent,
+  CompatibilityAnswerSubmitType,
   deleteCompatibilityAnswer,
+  getEmptyAnswer,
   IMPORTANCE_CHOICES,
   IMPORTANCE_DISPLAY_COLORS,
+  submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
 import clsx from 'clsx'
 import {shortenName} from 'web/components/widgets/user-link'
@@ -38,10 +42,11 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {DropdownButton} from '../filters/desktop-filters'
 import {buildArray} from 'common/util/array'
+import toast from "react-hot-toast";
 
 const NUM_QUESTIONS_TO_SHOW = 8
 
-function separateQuestionsArray(
+export function separateQuestionsArray(
   questions: QuestionWithCountType[],
   skippedAnswerQuestionIds: Set<number>,
   answeredQuestionIds: Set<number>
@@ -199,7 +204,7 @@ export function CompatibilityQuestionsDisplay(props: {
                 <span className="text-ink-600 text-sm">
                   Answer more questions to increase your compatibility scores—or{' '}
                 </span>
-                )}
+              )}
               <AddCompatibilityQuestionButton
                 refreshCompatibilityAll={refreshCompatibilityAll}
               />
@@ -225,12 +230,15 @@ export function CompatibilityQuestionsDisplay(props: {
         </>
       )}
       {otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage && (
-        <AnswerCompatibilityQuestionButton
-          user={user}
-          otherQuestions={otherQuestions}
-          refreshCompatibilityAll={refreshCompatibilityAll}
-          fromSignup={fromSignup}
-        />
+        <Row className={'w-full justify-center gap-8'}>
+          <AnswerCompatibilityQuestionButton
+            user={user}
+            otherQuestions={otherQuestions}
+            refreshCompatibilityAll={refreshCompatibilityAll}
+            fromSignup={fromSignup}
+          />
+          <CompatibilityPageButton/>
+        </Row>
       )}
       {skippedQuestions.length > 0 && isCurrentUser && (
         <Row className="w-full justify-end">
@@ -300,12 +308,13 @@ function CompatibilitySortWidget(props: {
   )
 }
 
-function CompatibilityAnswerBlock(props: {
-  answer: rowFor<'compatibility_answers'>
+export function CompatibilityAnswerBlock(props: {
+  answer?: rowFor<'compatibility_answers'>
   yourQuestions: QuestionWithCountType[]
+  question?: QuestionWithCountType
   user: User
   isCurrentUser: boolean
-  profile: Profile
+  profile?: Profile
   refreshCompatibilityAll: () => void
   fromProfilePage?: Profile
 }) {
@@ -318,10 +327,16 @@ function CompatibilityAnswerBlock(props: {
     refreshCompatibilityAll,
     fromProfilePage,
   } = props
-  const question = yourQuestions.find((q) => q.id === answer.question_id)
+  const question = props.question || yourQuestions.find((q) => q.id === answer?.question_id)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const currentUser = useUser()
   const currentProfile = useProfile()
+
+  const [newAnswer, setNewAnswer] = useState<CompatibilityAnswerSubmitType | undefined>(props.answer)
+
+  useEffect(() => {
+    setNewAnswer(props.answer)
+  }, [props.answer]);
 
   const comparedProfile = isCurrentUser
     ? null
@@ -332,26 +347,28 @@ function CompatibilityAnswerBlock(props: {
   if (
     !question ||
     !question.multiple_choice_options ||
-    answer.multiple_choice == null
+    answer && answer?.multiple_choice == null
   )
     return null
 
-  const answerText = getStringKeyFromNumValue(
+  const answerText = answer ? getStringKeyFromNumValue(
     answer.multiple_choice,
     question.multiple_choice_options as Record<string, number>
-  )
-  const preferredAnswersText = answer.pref_choices.map((choice) =>
+  ) : null
+  const preferredAnswersText = answer ? answer.pref_choices.map((choice) =>
     getStringKeyFromNumValue(
       choice,
       question.multiple_choice_options as Record<string, number>
     )
-  )
+  ) : []
   const distinctPreferredAnswersText = preferredAnswersText.filter(
     (text) => text !== answerText
   )
   const preferredDoesNotIncludeAnswerText =
-    !preferredAnswersText.includes(answerText)
+    answerText && !preferredAnswersText.includes(answerText)
 
+  const isAnswered = answer && answer.multiple_choice > -1
+  const isSkipped = answer && answer.importance == -1
   return (
     <Col
       className={
@@ -361,7 +378,7 @@ function CompatibilityAnswerBlock(props: {
       <Row className="text-ink-800 justify-between gap-1 font-semibold">
         {question.question}
         <Row className="gap-4 font-normal">
-          {comparedProfile && (
+          {comparedProfile && isAnswered && (
             <div className="hidden sm:block">
               <CompatibilityDisplay
                 question={question}
@@ -373,7 +390,7 @@ function CompatibilityAnswerBlock(props: {
               />
             </div>
           )}
-          {isCurrentUser && (
+          {isCurrentUser && isAnswered && (
             <>
               <ImportanceButton
                 className="hidden sm:block"
@@ -391,7 +408,30 @@ function CompatibilityAnswerBlock(props: {
                     name: 'Delete',
                     icon: <TrashIcon className="h-5 w-5"/>,
                     onClick: () => {
-                      deleteCompatibilityAnswer(answer.id, user.id).then(() => refreshCompatibilityAll())
+                      deleteCompatibilityAnswer(answer.id, user.id)
+                        .then(() => refreshCompatibilityAll())
+                        .catch((e) => {toast.error(e.message)})
+                        .finally(() => {})
+                    },
+                  },
+                ]}
+                closeOnClick
+                menuWidth="w-40"
+              />
+            </>
+          )}
+          {isCurrentUser && !isAnswered && !isSkipped && (
+            <>
+              <DropdownMenu
+                items={[
+                  {
+                    name: 'Skip',
+                    icon: <TrashIcon className="h-5 w-5"/>,
+                    onClick: () => {
+                      submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
+                        .then(() => {refreshCompatibilityAll()})
+                        .catch((e) => {toast.error(e.message)})
+                        .finally(() => {})
                     },
                   },
                 ]}
@@ -402,11 +442,11 @@ function CompatibilityAnswerBlock(props: {
           )}
         </Row>
       </Row>
-      <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
+      {answerText && <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
         {answerText}
-      </Row>
+      </Row>}
       <Row className="px-2 -mt-4">
-        {answer.explanation && (
+        {answer?.explanation && (
           <Linkify className="" text={answer.explanation}/>
         )}
       </Row>
@@ -429,9 +469,30 @@ function CompatibilityAnswerBlock(props: {
           </Row>
         </Col>
       )}
+      {!isAnswered && (
+        <Row className="flex-wrap gap-2 mt-0">
+          {sortBy(
+            Object.entries(question.multiple_choice_options),
+            1
+          ).map(([label]) => label).map((label, i) => (
+            <button
+              key={label}
+              onClick={() => {
+                const _answer = getEmptyAnswer(user.id, question.id)
+                _answer.multiple_choice = i
+                setNewAnswer(_answer)
+                setEditOpen(true)
+              }}
+              className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded px-2 py-1 text-sm"
+            >
+              {label}
+            </button>
+          ))}
+        </Row>
+      )}
       <Col>
 
-        {comparedProfile && (
+        {comparedProfile && isAnswered && (
           <Row className="w-full justify-end sm:hidden">
             <CompatibilityDisplay
               question={question}
@@ -443,7 +504,7 @@ function CompatibilityAnswerBlock(props: {
             />
           </Row>
         )}
-        {isCurrentUser && (
+        {isCurrentUser && isAnswered && (
           <Row className="w-full justify-end sm:hidden">
             <ImportanceButton
               importance={answer.importance}
@@ -451,20 +512,21 @@ function CompatibilityAnswerBlock(props: {
             />
           </Row>
         )}
+        {/*{question.importance_score == 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
       </Col>
       <Modal open={editOpen} setOpen={setEditOpen}>
         <Col className={MODAL_CLASS}>
           <AnswerCompatibilityQuestionContent
             key={`edit answer.id`}
             compatibilityQuestion={question}
-            answer={answer}
+            answer={newAnswer}
             user={user}
             onSubmit={() => {
               setEditOpen(false)
               refreshCompatibilityAll()
             }}
             isLastQuestion={true}
-            noSkip
+            noSkip={isAnswered}
           />
         </Col>
       </Modal>
@@ -474,7 +536,7 @@ function CompatibilityAnswerBlock(props: {
 
 function CompatibilityDisplay(props: {
   question: QuestionWithCountType
-  profile1: Profile
+  profile1?: Profile
   profile2: Profile
   answer1: rowFor<'compatibility_answers'>
   currentUserIsComparedProfile: boolean
@@ -514,7 +576,7 @@ function CompatibilityDisplay(props: {
 
   const [open, setOpen] = useState(false)
 
-  if (profile1.id === profile2.id) return null
+  if (!profile1 || profile1.id === profile2.id) return null
 
   const showCreateAnswer =
     (!answer2 || answer2.importance == -1) &&

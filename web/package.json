@@ -17,7 +17,8 @@
     "format": "npx prettier --write .",
     "format-changed": "cd .. && git diff $(git merge-base --fork-point main) --name-only --diff-filter=d | xargs npx prettier -w",
     "verify": "(cd .. && yarn verify)",
-    "verify:dir": "npx prettier --check .; yarn lint --max-warnings 0; tsc --pretty --project tsconfig.json --noEmit"
+    "verify:dir": "npx prettier --check .; yarn lint --max-warnings 0; tsc --pretty --project tsconfig.json --noEmit",
+    "test": "jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {
     "@floating-ui/react": "0.19.0",

@@ -7,7 +7,7 @@ import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup"
 
 import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth} from "web/lib/firebase/users"
-import FavIcon from "web/public/FavIcon"
+import FavIcon from "web/components/FavIcon"
 import {PageBase} from "web/components/page-base"
 import {getProfileRow} from "common/profiles/profile"
 import {db} from "web/lib/supabase/db"

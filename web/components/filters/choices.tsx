@@ -1,8 +1,18 @@
+import {invert} from "lodash";
+
 export const RELATIONSHIP_CHOICES = {
   // Other: 'other',
   Collaboration: 'collaboration',
   Friendship: 'friendship',
   Relationship: 'relationship',
+};
+
+export const RELATIONSHIP_STATUS_CHOICES = {
+  Single: 'single',
+  Married: 'married',
+  'Casual': 'casual',
+  'Long-term': 'long_term',
+  'Open': 'open',
 };
 
 export const ROMANTIC_CHOICES = {
@@ -40,9 +50,9 @@ export const DIET_CHOICES = {
 export const EDUCATION_CHOICES = {
   'High school': 'high-school',
   'College': 'some-college',
-  Bachelors: 'bachelors',
-  Masters: 'masters',
-  PhD: 'doctorate',
+  'Bachelors': 'bachelors',
+  'Masters': 'masters',
+  'PhD': 'doctorate',
 }
 
 export const RELIGION_CHOICES = {
@@ -64,26 +74,146 @@ export const RELIGION_CHOICES = {
   'Other': 'other',
 }
 
-export const REVERTED_RELATIONSHIP_CHOICES = Object.fromEntries(
-  Object.entries(RELATIONSHIP_CHOICES).map(([key, value]) => [value, key])
-);
+export const LANGUAGE_CHOICES  = {
+  'Akan': 'akan',
+  'Amharic': 'amharic',
+  'Arabic': 'arabic',
+  'Assamese': 'assamese',
+  'Awadhi': 'awadhi',
+  'Azerbaijani': 'azerbaijani',
+  'Balochi': 'balochi',
+  'Belarusian': 'belarusian',
+  'Bengali': 'bengali',
+  'Bhojpuri': 'bhojpuri',
+  'Burmese': 'burmese',
+  'Cebuano': 'cebuano',
+  'Chewa': 'chewa',
+  'Chhattisgarhi': 'chhattisgarhi',
+  'Chittagonian': 'chittagonian',
+  'Czech': 'czech',
+  'Deccan': 'deccan',
+  'Dhundhari': 'dhundhari',
+  'Dutch': 'dutch',
+  'Eastern Min': 'eastern-min',
+  'English': 'english',
+  'French': 'french',
+  'Fula': 'fula',
+  'Gan': 'gan',
+  'German': 'german',
+  'Greek': 'greek',
+  'Gujarati': 'gujarati',
+  'Haitian Creole': 'haitian-creole',
+  'Hakka': 'hakka',
+  'Haryanvi': 'haryanvi',
+  'Hausa': 'hausa',
+  'Hiligaynon': 'hiligaynon',
+  'Hindi': 'hindi',
+  'Hmong': 'hmong',
+  'Hungarian': 'hungarian',
+  'Igbo': 'igbo',
+  'Ilocano': 'ilocano',
+  'Italian': 'italian',
+  'Japanese': 'japanese',
+  'Javanese': 'javanese',
+  'Jin': 'jin',
+  'Kannada': 'kannada',
+  'Kazakh': 'kazakh',
+  'Khmer': 'khmer',
+  'Kinyarwanda': 'kinyarwanda',
+  'Kirundi': 'kirundi',
+  'Konkani': 'konkani',
+  'Korean': 'korean',
+  'Kurdish': 'kurdish',
+  'Madurese': 'madurese',
+  'Magahi': 'magahi',
+  'Maithili': 'maithili',
+  'Malagasy': 'malagasy',
+  'Malay/Indonesian': 'malay/indonesian',
+  'Malayalam': 'malayalam',
+  'Mandarin': 'mandarin',
+  'Marathi': 'marathi',
+  'Marwari': 'marwari',
+  'Mossi': 'mossi',
+  'Nepali': 'nepali',
+  'Northern Min': 'northern-min',
+  'Odia': 'odia',
+  'Oromo': 'oromo',
+  'Pashto': 'pashto',
+  'Persian': 'persian',
+  'Polish': 'polish',
+  'Portuguese': 'portuguese',
+  'Punjabi': 'punjabi',
+  'Quechua': 'quechua',
+  'Romanian': 'romanian',
+  'Russian': 'russian',
+  'Saraiki': 'saraiki',
+  'Serbo-Croatian': 'serbo-croatian',
+  'Shona': 'shona',
+  'Sindhi': 'sindhi',
+  'Sinhala': 'sinhala',
+  'Somali': 'somali',
+  'Southern Min': 'southern-min',
+  'Spanish': 'spanish',
+  'Sundanese': 'sundanese',
+  'Swedish': 'swedish',
+  'Sylheti': 'sylheti',
+  'Tagalog': 'tagalog',
+  'Tamil': 'tamil',
+  'Telugu': 'telugu',
+  'Thai': 'thai',
+  'Turkish': 'turkish',
+  'Turkmen': 'turkmen',
+  'Ukrainian': 'ukrainian',
+  'Urdu': 'urdu',
+  'Uyghur': 'uyghur',
+  'Uzbek': 'uzbek',
+  'Vietnamese': 'vietnamese',
+  'Wu': 'wu',
+  'Xhosa': 'xhosa',
+  'Xiang': 'xiang',
+  'Yoruba': 'yoruba',
+  'Yue': 'yue',
+  'Zhuang': 'zhuang',
+  'Zulu': 'zulu',
+}
 
-export const REVERTED_ROMANTIC_CHOICES = Object.fromEntries(
-  Object.entries(ROMANTIC_CHOICES).map(([key, value]) => [value, key])
-);
+export const RACE_CHOICES = {
+  'Black/African origin': 'african',
+  'East Asian': 'asian',
+  'South/Southeast Asian': 'south_asian',
+  'White/Caucasian': 'caucasian',
+  'Hispanic/Latino': 'hispanic',
+  'Middle Eastern': 'middle_eastern',
+  'Native American/Indigenous': 'native_american',
+  Other: 'other',
+}
 
-export const REVERTED_POLITICAL_CHOICES = Object.fromEntries(
-  Object.entries(POLITICAL_CHOICES).map(([key, value]) => [value, key])
-);
+export const MBTI_CHOICES = {
+  'INTJ': 'intj',
+  'INTP': 'intp',
+  'INFJ': 'infj',
+  'INFP': 'infp',
+  'ISTJ': 'istj',
+  'ISTP': 'istp',
+  'ISFJ': 'isfj',
+  'ISFP': 'isfp',
+  'ENTJ': 'entj',
+  'ENTP': 'entp',
+  'ENFJ': 'enfj',
+  'ENFP': 'enfp',
+  'ESTJ': 'estj',
+  'ESTP': 'estp',
+  'ESFJ': 'esfj',
+  'ESFP': 'esfp',
+}
 
-export const REVERTED_DIET_CHOICES = Object.fromEntries(
-  Object.entries(DIET_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_EDUCATION_CHOICES = Object.fromEntries(
-  Object.entries(EDUCATION_CHOICES).map(([key, value]) => [value, key])
-);
-
-export const REVERTED_RELIGION_CHOICES = Object.fromEntries(
-  Object.entries(RELIGION_CHOICES).map(([key, value]) => [value, key])
-);
+export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
+export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
+export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
+export const INVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
+export const INVERTED_DIET_CHOICES = invert(DIET_CHOICES)
+export const INVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
+export const INVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
+export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
+export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
+export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)

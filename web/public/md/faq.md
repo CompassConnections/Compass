@@ -2,7 +2,7 @@
 
 Compass is a **gift from the community** — built by its members like you who care about deep, meaningful connections. Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
 
-## What’s New?
+## What’s new?
 
 Stay up to date with the latest releases, features, and improvements [here](/news).
 

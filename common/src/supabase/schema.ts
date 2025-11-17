@@ -563,8 +563,10 @@ export type Database = {
           height_in_inches: number | null
           id: number
           is_smoker: boolean | null
+          languages: string[] | null
           last_modification_time: string
           looking_for_matches: boolean
+          mbti: string | null
           messaging_status: string
           occupation: string | null
           occupation_title: string | null
@@ -579,6 +581,7 @@ export type Database = {
           pref_romantic_styles: string[] | null
           referred_by_username: string | null
           region_code: string | null
+          relationship_status: string[] | null
           religion: string[] | null
           religious_belief_strength: number | null
           religious_beliefs: string | null
@@ -614,8 +617,10 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
+          languages?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
+          mbti?: string | null
           messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
@@ -630,6 +635,7 @@ export type Database = {
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
+          relationship_status?: string[] | null
           religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
@@ -665,8 +671,10 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           is_smoker?: boolean | null
+          languages?: string[] | null
           last_modification_time?: string
           looking_for_matches?: boolean
+          mbti?: string | null
           messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
@@ -681,6 +689,7 @@ export type Database = {
           pref_romantic_styles?: string[] | null
           referred_by_username?: string | null
           region_code?: string | null
+          relationship_status?: string[] | null
           religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
@@ -775,7 +784,7 @@ export type Database = {
           id: string
           parent_id: string | null
           parent_type: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           content_id: string
@@ -786,7 +795,7 @@ export type Database = {
           id?: string
           parent_id?: string | null
           parent_type?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           content_id?: string
@@ -797,7 +806,7 @@ export type Database = {
           id?: string
           parent_id?: string | null
           parent_type?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {

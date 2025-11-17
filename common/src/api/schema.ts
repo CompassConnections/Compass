@@ -295,6 +295,47 @@ export const API = (_apiTypeCheck = {
     summary: 'Remove the pinned photo from a profile',
     tag: 'Profiles',
   },
+  'create-compatibility-question': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      question: z.string().min(1).max(MAX_COMPATIBILITY_QUESTION_LENGTH),
+      options: z.record(z.string(), z.number()),
+    }),
+    summary: 'Create a new compatibility question with options',
+    tag: 'Compatibility',
+  },
+  'set-compatibility-answer': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as Row<'compatibility_answers'>,
+    props: z
+      .object({
+        questionId: z.number(),
+        multipleChoice: z.number(),
+        prefChoices: z.array(z.number()),
+        importance: z.number(),
+        explanation: z.string().nullable().optional(),
+      })
+      .strict(),
+    summary: 'Submit or update a compatibility answer',
+    tag: 'Compatibility',
+  },
+  'get-profile-answers': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as {
+      status: 'success'
+      answers: Row<'compatibility_answers'>[]
+    },
+    summary: 'Get compatibility answers for a profile',
+    tag: 'Compatibility',
+  },
   'get-compatibility-questions': {
     method: 'GET',
     authed: true,
@@ -308,6 +349,16 @@ export const API = (_apiTypeCheck = {
       })[]
     },
     summary: 'Retrieve compatibility questions and stats',
+    tag: 'Compatibility',
+  },
+  'delete-compatibility-answer': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      id: z.number(),
+    }),
+    summary: 'Delete a compatibility answer',
     tag: 'Compatibility',
   },
   'like-profile': {
@@ -405,6 +456,9 @@ export const API = (_apiTypeCheck = {
         pref_romantic_styles: arraybeSchema.optional(),
         diet: arraybeSchema.optional(),
         political_beliefs: arraybeSchema.optional(),
+        mbti: arraybeSchema.optional(),
+        relationship_status: arraybeSchema.optional(),
+        languages: arraybeSchema.optional(),
         wants_kids_strength: z.coerce.number().optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),
@@ -623,47 +677,6 @@ export const API = (_apiTypeCheck = {
   //   summary: 'Get reactions for a message',
   //   tag: 'Messages',
   // },
-  'create-compatibility-question': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    returns: {} as any,
-    props: z.object({
-      question: z.string().min(1).max(MAX_COMPATIBILITY_QUESTION_LENGTH),
-      options: z.record(z.string(), z.number()),
-    }),
-    summary: 'Create a new compatibility question with options',
-    tag: 'Compatibility',
-  },
-  'set-compatibility-answer': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    returns: {} as Row<'compatibility_answers'>,
-    props: z
-      .object({
-        questionId: z.number(),
-        multipleChoice: z.number(),
-        prefChoices: z.array(z.number()),
-        importance: z.number(),
-        explanation: z.string().nullable().optional(),
-      })
-      .strict(),
-    summary: 'Submit or update a compatibility answer',
-    tag: 'Compatibility',
-  },
-  'get-profile-answers': {
-    method: 'GET',
-    authed: true,
-    rateLimited: true,
-    props: z.object({userId: z.string()}).strict(),
-    returns: {} as {
-      status: 'success'
-      answers: Row<'compatibility_answers'>[]
-    },
-    summary: 'Get compatibility answers for a profile',
-    tag: 'Compatibility',
-  },
   'create-vote': {
     method: 'POST',
     authed: true,

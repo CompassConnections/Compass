@@ -16,16 +16,29 @@ import {isAndroidWebView} from "web/lib/util/webview"
 import {Capacitor} from '@capacitor/core'
 import {StatusBar} from '@capacitor/status-bar'
 import {App} from '@capacitor/app'
-import {useRouter} from "next/navigation";
-import {Keyboard} from "@capacitor/keyboard";
+import {useRouter} from "next/navigation"
+import {Keyboard} from "@capacitor/keyboard"
+import {LiveUpdate} from "@capawesome/capacitor-live-update"
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
   // Note sure it's doing anything, though, need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
   // StatusBar.setStyle({style: Style.Light}).catch(console.warn)
+
   App.addListener('backButton', () => {
     window.dispatchEvent(new CustomEvent('appBackButton'))
+  })
+
+  App.addListener("resume", async () => {
+    const {nextBundleId} = await LiveUpdate.sync()
+    if (nextBundleId) {
+      // Ask the user if they want to apply the update immediately
+      const shouldReload = confirm("A new update is available. Would you like to install it?")
+      if (shouldReload) {
+        await LiveUpdate.reload()
+      }
+    }
   })
 }
 
@@ -66,23 +79,23 @@ function printBuildInfo() {
 type PageProps = { auth?: AuthUser }
 
 function MyApp({Component, pageProps}: AppProps<PageProps>) {
-  console.log('isAndroidWebView app:', isAndroidWebView())
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
 
   useEffect(() => {
+    console.log('isAndroidWebView app:', isAndroidWebView())
     if (!Capacitor.isNativePlatform()) return
-    const onShow = () => document.body.classList.add('keyboard-open');
-    const onHide = () => document.body.classList.remove('keyboard-open');
+    const onShow = () => document.body.classList.add('keyboard-open')
+    const onHide = () => document.body.classList.remove('keyboard-open')
 
-    Keyboard.addListener('keyboardWillShow', onShow);
-    Keyboard.addListener('keyboardWillHide', onHide);
+    Keyboard.addListener('keyboardWillShow', onShow)
+    Keyboard.addListener('keyboardWillHide', onHide)
 
     return () => {
-      Keyboard.removeAllListeners();
-    };
-  }, []);
+      Keyboard.removeAllListeners()
+    }
+  }, [])
 
   useEffect(() => {
     initTracking()

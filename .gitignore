@@ -65,7 +65,7 @@ email-preview
 *.last-run.json
 
 *lock.hcl
-/web/pages/test.tsx
+/web/pages/_test.tsx
 
 *.png
 *.jpg
@@ -96,3 +96,8 @@ email-preview
 android/app/release*
 icons/
 *.bak
+
+test-results
+/.nyc_output/
+
+**/coverage

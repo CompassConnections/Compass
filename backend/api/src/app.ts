@@ -13,6 +13,7 @@ import {getCompatibleProfilesHandler} from './compatible-profiles'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
 import {setCompatibilityAnswer} from './set-compatibility-answer'
+import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {createProfile} from './create-profile'
 import {createUser} from './create-user'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
@@ -341,6 +342,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'hide-comment': hideComment,
   'create-compatibility-question': createCompatibilityQuestion,
   'set-compatibility-answer': setCompatibilityAnswer,
+  'delete-compatibility-answer': deleteCompatibilityAnswer,
   'create-vote': createVote,
   'vote': vote,
   'contact': contact,

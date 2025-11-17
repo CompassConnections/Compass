@@ -21,12 +21,12 @@ export default function Organization() {
           'text-ink-1000 mx-auto w-full grid grid-cols-1 gap-8 max-w-3xl sm:grid-cols-2 lg:min-h-0 lg:pt-4 mt-4',
         )}
       >
+        <GeneralButton url={'/stats'} content={'Growth & Stats'}/>
         <GeneralButton url={'/support'} content={'Support'}/>
         <GeneralButton url={'/help'} content={'Help'}/>
         <GeneralButton url={'/constitution'} content={'Constitution'}/>
         <GeneralButton url={'/vote'} content={'Proposals'}/>
         <GeneralButton url={'/financials'} content={'Financials'}/>
-        <GeneralButton url={'/stats'} content={'Growth & Stats'}/>
         <GeneralButton url={'/terms'} content={'Terms and Conditions'}/>
         <GeneralButton url={'/privacy'} content={'Privacy Policy'}/>
         <GeneralButton url={'/security'} content={'Security'}/>

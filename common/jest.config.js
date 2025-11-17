@@ -1,12 +1,16 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-const { pathsToModuleNameMapper } = require('ts-jest')
-const { compilerOptions } = require('./tsconfig')
+const {pathsToModuleNameMapper} = require('ts-jest')
+const {compilerOptions} = require('./tsconfig')
 
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/',
-  }),
-  testMatch: ['**/*.test.ts'],
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+        prefix: '<rootDir>/',
+    }),
+    testMatch: ['**/*.test.ts'],
+    collectCoverageFrom: [
+        "src/**/*.{ts,tsx}",
+        "!src/**/*.d.ts"
+    ],
 }

@@ -76,7 +76,7 @@ javac -version
 
 ```
 yarn install
-yarn build-web
+yarn build-web-view
 ```
 
 ### Local mode
@@ -110,17 +110,24 @@ cd android
 Sync web files and native plugins with Android, for offline fallback. In root:
 ``` 
 export NEXT_PUBLIC_LOCAL_ANDROID=1 # if running your local web Compass
-yarn build-web # if you made changes to web app
+yarn build-web-view # if you made changes to web app
 npx cap sync android
 ```
 
 ### Load from site
 
-During local development, open Android Studio project and run the app on an emulator or your physical device. Note that right now you can't use a physical device for the local web version (`10.0.2.2:3000 time out` )
+During local development, open Android Studio project and run the app on an emulator or your physical device. 
 
+To use an emulator:
 ```
 npx cap open android
 ```
+
+To use a physical device for the local web version, you need your mobile and computer to be on the same network / Wi-Fi and point the URL (`LOCAL_BACKEND_DOMAIN` in the code) to your computer IP address (for example, `192.168.1.3:3000`). You also need to set
+```
+export NEXT_PUBLIC_WEBVIEW_DEV_PHONE=1
+```
+Then adb install the app your phone (or simply run it from Android Studio on your phone) and the app should be loading content directly from the local code on your computer. You can make changes in the code and it will refresh instantly on the phone.
 
 Building the Application:
 1. Open Android Studio.
@@ -174,6 +181,10 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
    ```bash
    ./gradlew assembleRelease
    ```
+
+### Release on App Stores
+
+To release on the app stores, you need to submit the .aab files, which are not signed, instead of APK. Google or Apple will then sign it with their own key.
 
 ---
 ## 9. Debugging
@@ -236,7 +247,7 @@ yarn dev # or prod
 
 # Terminal 2: start frontend
 export NEXT_PUBLIC_LOCAL_ANDROID=1
-yarn build-web # if you made changes to web app  
+yarn build-web-view # if you made changes to web app  
 npx cap sync android
 # Run on emulator or device
 ```
@@ -246,14 +257,38 @@ npx cap sync android
 ## 14. Deployment Workflow
 
 ```bash
-# 1. Build web app for production
-yarn build-web
+# Build web app for production and Sync assets to Android
+yarn build-sync-android
 
-# 2. Sync assets to Android
-npx cap sync android
-
-# 3. Build signed release APK in Android Studio
+# Build signed release APK in Android Studio
 ```
+
+---
+
+## Live Updates
+
+To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in Capawesome Cloud (an alternative to Ionic). 
+
+First, you need to do this one-time setup:
+```
+npm install -g @capawesome/cli@latest
+npx @capawesome/cli login
+```
+
+Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
+```
+yarn build-web-view
+npx @capawesome/cli apps:bundles:create --path web/out
+```
+
+That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially updates the web app) to update the mobile app as well.
+Maybe we should add it to our CD. For example we set a file with `{liveUpdateVersion: 1}` and run the live update each time a push to main increments that counter.
+There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we scale. Next plan is $9 / month and allows 1000 MAUs.
+
+- ∞ Live Updates
+- 100 Monthly Active Users
+- 500 MB of Storage (around 10 MB per update, but we just delete the previous ones)
+- 5 GB of Bandwidth
 
 ---
 
@@ -362,3 +397,17 @@ await admin.messaging().send(message)
 ```
 
 ---
+
+## Deep link / custom scheme
+
+A **custom scheme** is a URL protocol that your app owns.
+Example:
+
+```
+com.compassconnections.app://auth
+```
+
+
+When Android (or iOS) sees a redirect to one of these URLs, it **launches your app** and passes it the URL data. It's useful to open links in the app instead of the browser. For example, if there's a link to Compass on Discord and we click on it on a mobile device that has the app, we want the link to open in the app instead of the browser.
+
+You register this scheme in your `AndroidManifest.xml` so Android knows which app handles it.

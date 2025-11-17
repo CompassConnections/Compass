@@ -32,18 +32,32 @@ jobs:
         run: npm run lint
 
       - name: Run Jest tests
-        run: npm run test tests/jest
+        env:
+          NEXT_PUBLIC_FIREBASE_ENV: DEV
+        run: |
+          yarn test:coverage
+#          npm install -g lcov-result-merger
+#          mkdir coverage
+#          lcov-result-merger \
+#          "backend/api/coverage/lcov.info" \
+#          "backend/shared/coverage/lcov.info" \
+#          "backend/email/coverage/lcov.info" \
+#          "common/coverage/lcov.info" \
+#          "web/coverage/lcov.info" \
+#          > coverage/lcov.info
+  
+  
 
-#      - name: Build app
+  #      - name: Build app
 #        env:
 #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 #        run: npm run build
 
       # Optional: Playwright E2E tests
       - name: Install Playwright deps
-        run: npx playwright install --with-deps
-#        npm install @playwright/test
-#       npx playwright install
+        run: |
+          npx playwright install --with-deps
+#          npm install @playwright/test
 
       - name: Run E2E tests
         env:
@@ -52,9 +66,25 @@ jobs:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-          yarn --cwd=web serve &
+          npx nyc --reporter=lcov yarn --cwd=web serve &
           npx wait-on http://localhost:3000
           npx playwright test tests/e2e
           SERVER_PID=$(fuser -k 3000/tcp)
           echo $SERVER_PID
           kill $SERVER_PID
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            backend/api/coverage/lcov.info
+            backend/shared/coverage/lcov.info
+            backend/email/coverage/lcov.info
+            common/coverage/lcov.info
+            web/coverage/lcov.info
+          flags: unit
+          fail_ci_if_error: true
+          slug: CompassConnections/Compass
+        env:
+          CI: true

@@ -1,4 +1,4 @@
-import Router from 'next/router'
+import {useRouter} from 'next/router'
 import clsx from 'clsx'
 import {memo, MouseEvent, useEffect, useState} from 'react'
 import {UserIcon, UsersIcon} from '@heroicons/react/solid'
@@ -17,6 +17,7 @@ export const Avatar = memo(
   }) => {
     const {username, noLink, size, className, preventDefault} = props
     const [avatarUrl, setAvatarUrl] = useState(props.avatarUrl)
+    const router = useRouter()
     useEffect(() => setAvatarUrl(props.avatarUrl), [props.avatarUrl])
     const s =
       size == '2xs'
@@ -40,7 +41,7 @@ export const Avatar = memo(
           e.preventDefault()
         }
         e.stopPropagation()
-        Router.push(`/${username}`)
+        router.push(`/${username}`)
       }
     }
     const fallbackInitial = (username || 'U')[0]; // first character, not encoded string

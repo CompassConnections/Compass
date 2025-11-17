@@ -4,7 +4,6 @@ import {useSearchParams} from "next/navigation"
 import React, {Suspense, useEffect, useState} from "react"
 import Link from "next/link"
 import {auth, firebaseLogin} from "web/lib/firebase/users"
-import FavIcon from "web/public/FavIcon"
 
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {getProfileRow} from "common/profiles/profile"
@@ -15,6 +14,8 @@ import Router from "next/router"
 import {PageBase} from "web/components/page-base"
 import {GoogleButton} from "web/components/buttons/sign-up-button"
 import {SEO} from "web/components/SEO"
+import {logger} from "common/logging";
+import FavIcon from "web/components/FavIcon";
 
 export default function LoginPage() {
   return (
@@ -66,7 +67,7 @@ function RegisterComponent() {
     setError(null)
     try {
       const creds = await firebaseLogin();
-      console.debug('creds', creds)
+      logger.debug('creds', creds)
       if (creds) {
         setIsLoading(true)
         setIsLoadingGoogle(true);
@@ -83,7 +84,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password)
-      console.debug(creds)
+      logger.debug(creds)
     } catch (error) {
       console.error("Error signing in:", error)
       const message = 'Failed to sign in with your email and password'

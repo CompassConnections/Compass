@@ -1,0 +1,1 @@
+Note: may not be needed. `shared` rarely needs integration tests.

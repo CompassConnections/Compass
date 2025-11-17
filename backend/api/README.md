@@ -27,6 +27,12 @@ gcloud auth login
 gcloud config set project YOUR_PROJECT_ID
 ```
 
+You also need `opentofu` and `docker`. Try running this (from root) on Linux or macOS for a faster install:
+```bash
+./script/setup.sh
+```
+If it doesn't work, you can install them manually (google how to install `opentofu` and `docker` for your OS).
+
 ### Setup
 
 This section is only for the people who are creating a server from scratch, for instance for a forked project.

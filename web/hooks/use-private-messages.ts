@@ -1,7 +1,7 @@
 import {PrivateChatMessage} from 'common/chat-message'
 import {millisToTs, tsToMillis} from 'common/supabase/utils'
 import {useEffect, useState} from 'react'
-import {min, orderBy, uniq, uniqBy} from 'lodash'
+import {orderBy, uniq, uniqBy} from 'lodash'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getSortedChatMessageChannels, getTotalChatMessages,} from 'web/lib/supabase/private-messages'
 import {useIsPageVisible} from 'web/hooks/use-page-visible'
@@ -19,18 +19,21 @@ export function usePrivateMessages(
   userId: string
 ) {
   // console.debug('getWebsocketUrl', getWebsocketUrl())
+  const key = `private-messages-${channelId}-${limit}-v1`;
   const [messages, setMessages] = usePersistentLocalState<
     PrivateChatMessage[] | undefined
-  >(undefined, `private-messages-${channelId}-${limit}-v1`)
+  >(undefined, key)
 
   const fetchMessages = async (id?: number) => {
     const data = {
       channelId,
       limit,
-      id: id ?? (messages ? min(messages.map((m) => m.id)) : undefined),
+      // id filter is useful to pull up new messages (later than the last message in messages),
+      // but since messages can be deleted or edited, we can't rely on the id filter anymore (at least not in the same fashion)
+      // id: id ?? (messages?.length ? max(messages.map((m) => m.id)) : undefined),
     }
     const newMessages = await api('get-channel-messages', data)
-    // console.debug('get-channel-messages', newMessages, messages, data)
+    // console.debug(key, {newMessages, messages, data})
     setMessages((prevMessages) =>
       orderBy(
         uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),

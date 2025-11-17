@@ -17,12 +17,12 @@ To do so, you can add code in a similar way as in [this commit](https://github.c
 
 Note that you will also need to add a column to the `profiles` table in the dev database before running the code; you can do so via this SQL command (change the type if not `TEXT`):
 ```sql
-ALTER TABLE profiles ADD COLUMN some_new_profile_field TEXT;
+ALTER TABLE profiles ADD COLUMN profile_field TEXT;
 ```
 
-Store it in `add_some_some_profile_field.sql` in the [migrations](../backend/supabase/migrations) folder and run [migrate.sh](../scripts/migrate.sh) from the root folder:
+Store it in `add_profile_field.sql` in the [migrations](../backend/supabase/migrations) folder and run [migrate.sh](../scripts/migrate.sh) from the root folder:
 ```bash
-./scripts/migrate.sh backend/supabase/migrations/add_some_new_profile_field.sql
+./scripts/migrate.sh backend/supabase/migrations/add_profile_field.sql
 ```
 
 Then sync the database types from supabase to the local files (which assist Typescript in typing):

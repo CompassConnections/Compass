@@ -67,9 +67,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
           npx nyc --reporter=lcov yarn --cwd=web serve &
+          npx nyc --reporter=lcov yarn --cwd=backend/api dev &
           npx wait-on http://localhost:3000
           npx playwright test tests/e2e
           SERVER_PID=$(fuser -k 3000/tcp)
+          echo $SERVER_PID
+          kill $SERVER_PID
+          SERVER_PID=$(fuser -k 8088/tcp)
           echo $SERVER_PID
           kill $SERVER_PID
 

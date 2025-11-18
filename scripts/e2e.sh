@@ -10,9 +10,13 @@ export NEXT_PUBLIC_API_URL=localhost:8088
 export NEXT_PUBLIC_FIREBASE_ENV=DEV
 
 npx nyc --reporter=lcov yarn --cwd=web serve &
+npx nyc --reporter=lcov yarn --cwd=backend/api dev &
 npx wait-on http://localhost:3000
 npx playwright test tests/e2e
 SERVER_PID=$(fuser -k 3000/tcp)
 echo $SERVER_PID
 kill $SERVER_PID
 
+SERVER_PID=$(fuser -k 8088/tcp)
+echo $SERVER_PID
+kill $SERVER_PID

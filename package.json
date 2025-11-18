@@ -24,6 +24,7 @@
     "test:coverage": "yarn workspaces run test --coverage",
     "test:watch": "yarn workspaces run test --watch",
     "test:update": "yarn workspaces run test --updateSnapshot",
+    "test:e2e": "./scripts/e2e.sh",
     "playwright": "playwright test",
     "playwright:ui": "playwright test --ui",
     "playwright:debug": "playwright test --debug",

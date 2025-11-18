@@ -1,4 +1,4 @@
-import { test as base, Page } from '@playwright/test';
+import { test as base, Page, expect } from '@playwright/test';
 import { SignInPage } from '../pages/signInPage';
 import { config } from '../TESTING_CONFIG';
 
@@ -14,6 +14,10 @@ export const test = base.extend<{
     await signInPage.clickSignInWithEmailButton();
 
     await page.waitForLoadState('networkidle');
+
+    await page.waitForURL('/');
+
+    expect(page.url()).not.toContain('/signin')
 
     await use(page);
   },

@@ -101,7 +101,7 @@ export const PrivateChat = (props: {
   const isMobile = useIsMobile()
 
   const totalMessagesToLoad = 100
-  const {messages: realtimeMessages, setMessages} = usePrivateMessages(
+  const {messages: realtimeMessages, setMessages, fetchMessages} = usePrivateMessages(
     channelId,
     totalMessagesToLoad,
     user.id
@@ -206,6 +206,7 @@ export const PrivateChat = (props: {
         })
         editor.commands.clearContent(true)
         editor.commands.focus()
+        fetchMessages()
       }
     } catch (e) {
       toast.error(

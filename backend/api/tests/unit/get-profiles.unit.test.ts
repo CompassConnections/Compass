@@ -2,7 +2,7 @@ import * as profilesModule from "api/get-profiles";
 import { Profile } from "common/profiles/profile";
 import * as supabaseModule from "shared/supabase/init";
 
-describe.skip('getProfiles', () => {
+describe('getProfiles', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -70,16 +70,21 @@ describe.skip('getProfiles', () => {
 describe('loadProfiles', () => {
     let mockPg: any;
     
-    describe.skip('should call pg.map with an SQL query', () => {
+    describe('should call pg.map with an SQL query', () => {
         beforeEach(() => {
+            jest.clearAllMocks();
             mockPg = {
                 map: jest.fn().mockResolvedValue([]),
             };
             
             jest.spyOn(supabaseModule, 'createSupabaseDirectClient')
                 .mockReturnValue(mockPg);
-            jest.clearAllMocks();
         });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
         it('successfully', async () => {
             await profilesModule.loadProfiles({
                 limit: 10,
@@ -263,12 +268,13 @@ describe('loadProfiles', () => {
             
             expect(mockPg.map.mock.calls).toHaveLength(1)
             expect(query).toContain(`has_kids`);
-            expect(query).toContain('>= 0');
+            expect(query).toContain('> 0');
         });
     });
 
     describe('should', () => {
         beforeEach(() => {
+            jest.clearAllMocks();
             mockPg = {
                 map: jest.fn(),
             };
@@ -276,7 +282,7 @@ describe('loadProfiles', () => {
             jest.spyOn(supabaseModule, 'createSupabaseDirectClient')
                 .mockReturnValue(mockPg)
     
-            jest.clearAllMocks();
+
         });
         it('return profiles from the database', async () => {
             const mockProfiles = [

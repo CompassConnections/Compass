@@ -29,6 +29,11 @@ export function ContactComponent() {
         You can also contact us through this <Link href={formLink}>feedback form</Link> or any of our <Link
         href={'/social'}>socials</Link>. Feel free to give your contact information if you'd like us to get back to you.
       </p>
+      <h4 className="">Android App</h4>
+      <p className={'custom-link mb-4'}>
+        To release our app, Google requires a closed test with at least 12 testers for 14 days. Please share your Google Play–registered email address so we can add you as a tester and complete the review process.
+        You email address will NOT be shared with anyone else and will be used solely to send for the purpose of the review process.
+      </p>
       <Col>
         <div className={'mb-2'}>
           <TextEditor

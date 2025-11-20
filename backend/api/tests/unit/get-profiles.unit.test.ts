@@ -6,6 +6,10 @@ describe('getProfiles', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
+    
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
     describe('should fetch the user profiles', () => {
         it('successfully', async ()=> {            

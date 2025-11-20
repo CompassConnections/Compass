@@ -1,3 +1,5 @@
+jest.mock('shared/supabase/init');
+
 import * as setLastTimeOnlineModule from "api/set-last-online-time";
 import * as supabaseModule from "shared/supabase/init";
 
@@ -8,7 +10,7 @@ describe('Should', () => {
         mockPg = {
             none: jest.fn(),
         };
-        jest.spyOn(supabaseModule, 'createSupabaseDirectClient')
+        (supabaseModule.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
 
         jest.clearAllMocks();
@@ -24,6 +26,9 @@ describe('Should', () => {
         const [query, userId] = mockPg.none.mock.calls[0];
         
         expect(userId).toContain(mockProfile.user_id);
-        expect(query).toContain('user_activity.last_online_time')
+        expect(query).toContain("VALUES ($1, now())")
+        expect(query).toContain("ON CONFLICT (user_id)")
+        expect(query).toContain("DO UPDATE")
+        expect(query).toContain("user_activity.last_online_time < now() - interval '1 minute'")
     });
 })

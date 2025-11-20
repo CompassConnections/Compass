@@ -20,7 +20,7 @@ describe('updateProfiles', () => {
         jest.clearAllMocks();
     });
     describe('should', () => {
-        it('update an existing profile when profided the user id', async () => {
+        it('update an existing profile when provided the user id', async () => {
             const mockUserProfile = {
                 user_id: '234',
                 diet: 'Nothing',
@@ -55,11 +55,32 @@ describe('updateProfiles', () => {
             expect(result).toEqual(mockUpdatedProfile);            
         });
 
-        it('throw 404 error when profile not found', async () => {
+        it('throw an error if a profile is not found', async () => {
             mockPg.oneOrNone.mockResolvedValue(null);
             expect(updateProfile({} as any, {} as any, {} as any,))
                 .rejects
                 .toThrowError('Profile not found');
+        });
+
+        it('throw an error if unable to update the profile', async () => {
+            const mockUserProfile = {
+                user_id: '234',
+                diet: 'Nothing',
+                gender: 'female',
+                is_smoker: true,
+            }
+            const data = null;
+            const error = true;
+            const mockError = {
+                data,
+                error
+            }
+            mockPg.oneOrNone.mockResolvedValue(mockUserProfile);
+            (supabaseUtils.update as jest.Mock).mockRejectedValue(mockError);
+            expect(updateProfile({} as any, {} as any, {} as any,))
+                .rejects
+                .toThrowError('Error updating profile');
+            
         });
     });
 });

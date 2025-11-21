@@ -1,7 +1,7 @@
 jest.mock('shared/supabase/init');
 
 import * as setLastTimeOnlineModule from "api/set-last-online-time";
-import * as supabaseModule from "shared/supabase/init";
+import * as supabaseInit from "shared/supabase/init";
 
 describe('Should', () => {
     let mockPg: any;
@@ -10,7 +10,7 @@ describe('Should', () => {
         mockPg = {
             none: jest.fn(),
         };
-        (supabaseModule.createSupabaseDirectClient as jest.Mock)
+        (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
 
         jest.clearAllMocks();

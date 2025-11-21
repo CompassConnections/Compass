@@ -3,7 +3,7 @@ jest.mock("shared/supabase/utils");
 
 import { AuthedUser } from "api/helpers/endpoint";
 import { updateProfile } from "api/update-profile";
-import * as supabaseModule from "shared/supabase/init";
+import * as supabaseInit from "shared/supabase/init";
 import * as supabaseUtils from "shared/supabase/utils";
 
 describe('updateProfiles', () => {
@@ -14,7 +14,7 @@ describe('updateProfiles', () => {
             oneOrNone: jest.fn(),
         };
 
-        (supabaseModule.createSupabaseDirectClient as jest.Mock)
+        (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
 
         jest.clearAllMocks();

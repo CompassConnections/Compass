@@ -1,6 +1,6 @@
 import * as profilesModule from "api/get-profiles";
 import { Profile } from "common/profiles/profile";
-import * as supabaseModule from "shared/supabase/init";
+import * as supabaseInit from "shared/supabase/init";
 
 describe('getProfiles', () => {
     beforeEach(() => {
@@ -81,7 +81,7 @@ describe('loadProfiles', () => {
                 map: jest.fn().mockResolvedValue([]),
             };
             
-            jest.spyOn(supabaseModule, 'createSupabaseDirectClient')
+            jest.spyOn(supabaseInit, 'createSupabaseDirectClient')
                 .mockReturnValue(mockPg);
         });
 
@@ -283,11 +283,16 @@ describe('loadProfiles', () => {
                 map: jest.fn(),
             };
             
-            jest.spyOn(supabaseModule, 'createSupabaseDirectClient')
+            jest.spyOn(supabaseInit, 'createSupabaseDirectClient')
                 .mockReturnValue(mockPg)
     
 
         });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
         it('return profiles from the database', async () => {
             const mockProfiles = [
                 {
@@ -312,6 +317,15 @@ describe('loadProfiles', () => {
             const results = await profilesModule.loadProfiles(props);
             
             expect(results).toEqual(mockProfiles);
+        });
+
+        it.only('throw an error if there is no compatability', async () => {
+            const props = {
+                orderBy: 'compatibility_score'
+            }
+            expect(profilesModule.loadProfiles(props))
+                .rejects
+                .toThrowError('Incompatible with user ID')
         });
     })
 })

@@ -44,3 +44,10 @@ describe.skip('getSupabaseToken', () => {
     //     })
     // });
 });
+
+describe('getCompatibleProfiles', () => {
+    it('skip', async () => {
+        console.log('Skipped test suite');
+        
+    })
+})

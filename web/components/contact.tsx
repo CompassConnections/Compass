@@ -33,7 +33,7 @@ export function ContactComponent() {
       <p className={'custom-link mb-4'}>
         To release our app, Google requires a closed test with at least 12 testers for 14 days. Please share your Google Play–registered email address so we can add you as a tester.
         You'll be able to download the app from the Play Store and use it right away.
-        You email address will NOT be shared with anyone else and will be used solely for the purpose of the review process.
+        Your email address will NOT be shared with anyone else and will be used solely for the purpose of the review process.
       </p>
       <Col>
         <div className={'mb-2'}>

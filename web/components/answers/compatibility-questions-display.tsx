@@ -83,11 +83,9 @@ export function CompatibilityQuestionsDisplay(props: {
 }) {
   const {isCurrentUser, user, fromSignup, fromProfilePage, profile} = props
 
-  const {refreshCompatibilityQuestions, compatibilityQuestions} =
-    useCompatibilityQuestionsWithAnswerCount()
+  const {refreshCompatibilityQuestions, compatibilityQuestions} = useCompatibilityQuestionsWithAnswerCount()
 
-  const {refreshCompatibilityAnswers, compatibilityAnswers} =
-    useUserCompatibilityAnswers(user.id)
+  const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(user.id)
 
   const [skippedAnswers, answers] = partition(
     compatibilityAnswers,
@@ -102,8 +100,7 @@ export function CompatibilityQuestionsDisplay(props: {
     skippedAnswers.map((answer) => answer.question_id)
   )
 
-  const {skippedQuestions, answeredQuestions, otherQuestions} =
-    separateQuestionsArray(
+  const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
       compatibilityQuestions,
       skippedAnswerQuestionIds,
       answeredQuestionIds
@@ -167,6 +164,8 @@ export function CompatibilityQuestionsDisplay(props: {
     currentSlice,
     currentSlice + NUM_QUESTIONS_TO_SHOW
   )
+
+  if (!isCurrentUser && !answeredQuestions.length) return null
 
   return (
     <Col className="gap-4">

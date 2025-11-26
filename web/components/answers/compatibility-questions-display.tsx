@@ -119,8 +119,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const currentUser = useUser()
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
-  const {compatibilityAnswers: comparedAnswers} =
-    useUserCompatibilityAnswers(comparedUserId)
+  const {compatibilityAnswers: comparedAnswers} = useUserCompatibilityAnswers(comparedUserId)
   const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
 
   const sortedAndFilteredAnswers = sortBy(

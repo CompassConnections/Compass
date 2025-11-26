@@ -143,3 +143,13 @@ export const getProfilesCompatibilityFactor = (
   multiplier *= areLocationCompatible(profile1, profile2) ? 1 : 0.1
   return multiplier
 }
+
+export const hasAnsweredQuestions = (
+  questions: rowFor<'compatibility_answers'>[],
+) => {
+  if (!questions?.length) return false
+  for (const question of questions) {
+    if (question.importance >= 0) return true
+  }
+  return false
+}

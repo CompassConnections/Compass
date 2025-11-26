@@ -1,20 +1,17 @@
-import { groupBy, sortBy } from 'lodash'
-import { APIError, type APIHandler } from 'api/helpers/endpoint'
-import { getCompatibilityScore } from 'common/profiles/compatibility-score'
-import {
-  getProfile,
-  getCompatibilityAnswers,
-  getGenderCompatibleProfiles,
-} from 'shared/profiles/supabase'
-import { log } from 'shared/utils'
+import {groupBy, sortBy} from 'lodash'
+import {APIError, type APIHandler} from 'api/helpers/endpoint'
+import {getCompatibilityScore, hasAnsweredQuestions} from 'common/profiles/compatibility-score'
+import {getCompatibilityAnswers, getGenderCompatibleProfiles, getProfile,} from 'shared/profiles/supabase'
+import {log} from 'shared/utils'
 
-export const getCompatibleProfilesHandler: APIHandler<
-  'compatible-profiles'
-> = async (props) => {
-  return getCompatibleProfiles(props.userId)
+export const getCompatibleProfilesHandler: APIHandler<'compatible-profiles'> = async (props) => {
+  return getCompatibleProfiles(props.userId, false)
 }
 
-export const getCompatibleProfiles = async (userId: string) => {
+export const getCompatibleProfiles = async (
+  userId: string,
+  includeProfilesWithoutPromptAnswers: boolean = true,
+) => {
   const profile = await getProfile(userId)
 
   log('got profile', {
@@ -25,7 +22,7 @@ export const getCompatibleProfiles = async (userId: string) => {
 
   if (!profile) throw new APIError(404, 'Profile not found')
 
-  const profiles = await getGenderCompatibleProfiles(profile)
+  let profiles = await getGenderCompatibleProfiles(profile)
 
   const profileAnswers = await getCompatibilityAnswers([
     userId,
@@ -34,6 +31,10 @@ export const getCompatibleProfiles = async (userId: string) => {
   log('got profile answers ' + profileAnswers.length)
 
   const answersByUserId = groupBy(profileAnswers, 'creator_id')
+  if (!includeProfilesWithoutPromptAnswers) {
+    profiles = profiles.filter((l) => hasAnsweredQuestions(answersByUserId[l.user_id]))
+    if (!hasAnsweredQuestions(answersByUserId[profile.user_id])) profiles = []
+  }
   const profileCompatibilityScores = Object.fromEntries(
     profiles.map(
       (l) =>

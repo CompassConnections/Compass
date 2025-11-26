@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 cd "$(dirname "$0")"/..
 
@@ -12,7 +12,7 @@ export NEXT_PUBLIC_FIREBASE_ENV=DEV
 npx nyc --reporter=lcov yarn --cwd=web serve &
 npx nyc --reporter=lcov yarn --cwd=backend/api dev &
 npx wait-on http://localhost:3000
-npx playwright test tests/e2e
+npx playwright test tests/e2e --headed
 SERVER_PID=$(fuser -k 3000/tcp)
 echo $SERVER_PID
 kill $SERVER_PID

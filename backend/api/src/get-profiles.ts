@@ -84,7 +84,9 @@ export const loadProfiles = async (props: profileQueryType) => {
   const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
   // console.debug('keywords:', keywords)
 
-  // TODO: do this in SQL for better performance
+  // TODO: do this in SQL for better performance. Precompute compatibility scores:
+  // - Have a table compatibility_scores(user_id_1, user_id_2, score) that updates whenever answers from either user change.
+  // - Query this table directly with "ORDER BY score DESC LIMIT {limit}".
   if (orderByParam === 'compatibility_score') {
     if (!compatibleWithUserId) {
       console.error('Incompatible with user ID')

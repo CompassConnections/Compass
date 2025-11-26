@@ -11,6 +11,7 @@ BEGIN;
 \i backend/supabase/compatibility_answers_free.sql
 \i backend/supabase/profile_comments.sql
 \i backend/supabase/compatibility_answers.sql
+\i backend/supabase/compatibility_scores.sql
 \i backend/supabase/profile_likes.sql
 \i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/profile_ships.sql

@@ -134,6 +134,7 @@ export type Database = {
       compatibility_prompts: {
         Row: {
           answer_type: string
+          category: string | null
           created_time: string
           creator_id: string | null
           id: number
@@ -143,6 +144,7 @@ export type Database = {
         }
         Insert: {
           answer_type?: string
+          category?: string | null
           created_time?: string
           creator_id?: string | null
           id?: number
@@ -152,6 +154,7 @@ export type Database = {
         }
         Update: {
           answer_type?: string
+          category?: string | null
           created_time?: string
           creator_id?: string | null
           id?: number
@@ -163,6 +166,48 @@ export type Database = {
           {
             foreignKeyName: 'compatibility_prompts_creator_id_fkey'
             columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      compatibility_scores: {
+        Row: {
+          created_time: string
+          id: number
+          modified_time: string
+          score: number | null
+          user_id_1: string
+          user_id_2: string
+        }
+        Insert: {
+          created_time?: string
+          id?: never
+          modified_time?: string
+          score?: number | null
+          user_id_1: string
+          user_id_2: string
+        }
+        Update: {
+          created_time?: string
+          id?: never
+          modified_time?: string
+          score?: number | null
+          user_id_1?: string
+          user_id_2?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'compatibility_scores_user_id_1_fkey'
+            columns: ['user_id_1']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'compatibility_scores_user_id_2_fkey'
+            columns: ['user_id_2']
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']

@@ -1,6 +1,7 @@
 import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 
 export const setCompatibilityAnswer: APIHandler<'set-compatibility-answer'> = async (
   {questionId, multipleChoice, prefChoices, importance, explanation},
@@ -30,5 +31,13 @@ export const setCompatibilityAnswer: APIHandler<'set-compatibility-answer'> = as
     ],
   })
 
-  return result
+  const continuation = async () => {
+    // Recompute precomputed compatibility scores for this user
+    await recomputeCompatibilityScoresForUser(auth.uid, pg)
+  }
+
+  return {
+    result: result,
+    continue: continuation,
+  }
 }

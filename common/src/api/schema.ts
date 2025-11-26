@@ -273,8 +273,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: z.object({userId: z.string()}),
     returns: {} as {
-      profile: Profile
-      compatibleProfiles: Profile[]
+      // profile: Profile
+      // compatibleProfiles: Profile[]
       profileCompatibilityScores: {
         [userId: string]: CompatibilityScore
       }
@@ -358,6 +358,9 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       id: z.number(),
     }),
+    returns: {} as {
+      status: 'success'
+    },
     summary: 'Delete a compatibility answer',
     tag: 'Compatibility',
   },

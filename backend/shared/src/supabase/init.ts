@@ -77,6 +77,7 @@ export function createSupabaseDirectClient(
   password?: string
 ) {
   if (pgpDirect) return pgpDirect
+  console.log('Creating Supabase direct client')
   instanceId = instanceId ?? getInstanceId()
   if (!instanceId) {
     throw new Error(

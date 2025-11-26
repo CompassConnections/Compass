@@ -84,7 +84,7 @@ export const loadProfiles = async (props: profileQueryType) => {
   const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
   // console.debug('keywords:', keywords)
 
-  // compatibility. TODO: do this in sql
+  // TODO: do this in SQL for better performance
   if (orderByParam === 'compatibility_score') {
     if (!compatibleWithUserId) {
       console.error('Incompatible with user ID')
@@ -92,7 +92,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     }
 
     const {compatibleProfiles} = await getCompatibleProfiles(compatibleWithUserId)
-    const profiles = compatibleProfiles.filter(
+    let profiles = compatibleProfiles.filter(
       (l) =>
         (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
         (!genders || genders.includes(l.gender ?? '')) &&
@@ -133,33 +133,37 @@ export const loadProfiles = async (props: profileQueryType) => {
         (l.id.toString() != skipId) &&
         (!geodbCityIds ||
           (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
-        (!filterLocation ||(
+        (!filterLocation || (
           l.city_latitude && l.city_longitude &&
           Math.abs(l.city_latitude - lat) < radius / 69.0 &&
           Math.abs(l.city_longitude - lon) < radius / (69.0 * Math.cos(lat * Math.PI / 180)) &&
           Math.pow(l.city_latitude - lat, 2) + Math.pow((l.city_longitude - lon) * Math.cos(lat * Math.PI / 180), 2) < Math.pow(radius / 69.0, 2)
-          )) &&
+        )) &&
         (shortBio || (l.bio_length ?? 0) >= MIN_BIO_LENGTH)
     )
+
+    const count = profiles.length
 
     const cursor = after
       ? profiles.findIndex((l) => l.id.toString() === after) + 1
       : 0
     console.debug(cursor)
 
-    if (limitParam) return profiles.slice(cursor, cursor + limitParam)
+    if (limitParam) profiles = profiles.slice(cursor, cursor + limitParam)
 
-    return profiles
+    return {profiles, count}
   }
 
   const tablePrefix = userActivityColumns.includes(orderByParam) ? 'user_activity' : 'profiles'
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
 
-  const query = renderSql(
-    select('profiles.*, name, username, users.data as user, user_activity.last_online_time'),
+  const tableSelection = [
     from('profiles'),
     join('users on users.id = profiles.user_id'),
     leftJoin(userActivityJoin),
+  ]
+
+  const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
     // where(`pinned_url is not null and pinned_url != ''`),
@@ -270,35 +274,52 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
+    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
+
+    lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
+  ]
+
+  const query = renderSql(
+    select('profiles.*, name, username, users.data as user, user_activity.last_online_time'),
+    ...tableSelection,
+    ...filters,
+
     orderBy(`${tablePrefix}.${orderByParam} DESC`),
-    after &&
-    where(
+
+    after && where(
       `${tablePrefix}.${orderByParam} < (
       SELECT ${tablePrefix}.${orderByParam}
       FROM profiles
       LEFT JOIN ${userActivityJoin}
       WHERE profiles.id = $(after)
-    )`,
-      {after}
-    ),
+    )`, {after}),
 
-    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
-
-    lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
-
-    limitParam && limit(limitParam)
+    limitParam && limit(limitParam),
   )
 
   // console.debug('query:', query)
 
-  return await pg.map(query, [], convertRow)
+  const profiles = await pg.map(query, [], convertRow)
+
+  console.debug('profiles:', profiles)
+
+  const countQuery = renderSql(
+    select(`count(*) as count`),
+    ...tableSelection,
+    ...filters,
+  )
+
+  const count = await pg.one<number>(countQuery, [], (r) => Number(r.count))
+
+  return {profiles, count}
 }
 
-export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
+export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
   try {
-    const profiles = await loadProfiles(props)
-    return {status: 'success', profiles: profiles}
+    if (!props.skipId) props.skipId = auth.uid
+    const {profiles, count} = await loadProfiles(props)
+    return {status: 'success', profiles: profiles, count: count}
   } catch {
-    return {status: 'fail', profiles: []}
+    return {status: 'fail', profiles: [], count: 0}
   }
 }

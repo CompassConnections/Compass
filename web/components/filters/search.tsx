@@ -108,6 +108,7 @@ export const Search = (props: {
   locationFilterProps: LocationFilterProps
   bookmarkedSearches: BookmarkedSearchesType[]
   refreshBookmarkedSearches: () => void
+  profileCount: number | undefined
 }) => {
   const {
     youProfile,
@@ -121,6 +122,7 @@ export const Search = (props: {
     refreshBookmarkedSearches,
     starredUsers,
     refreshStars,
+    profileCount,
   } = props
 
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
@@ -237,48 +239,55 @@ export const Search = (props: {
           includeRelationshipFilters={youSeekingRelationship}
         />
       </RightModal>
-      <Row className={'mb-2 gap-2'}>
-        <Button
-          disabled={loadingBookmark}
-          loading={loadingBookmark}
-          onClick={() => {
-            if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
-              toast.error(`You can bookmark maximum ${MAX_BOOKMARKED_SEARCHES} searches; please delete one first.`)
-              setOpenBookmarks(true)
-              return
-            }
-            setLoadingBookmark(true)
-            submitBookmarkedSearch(filters, locationFilterProps, user?.id)
-              .finally(() => {
-                setLoadingBookmark(false)
-                setBookmarked(true)
-                refreshBookmarkedSearches()
+      <Row className="items-center justify-between w-full flex-wrap gap-2">
+        <Row className={'mb-2 gap-2'}>
+          <Button
+            disabled={loadingBookmark}
+            loading={loadingBookmark}
+            onClick={() => {
+              if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
+                toast.error(`You can bookmark maximum ${MAX_BOOKMARKED_SEARCHES} searches; please delete one first.`)
                 setOpenBookmarks(true)
-              })
-          }}
-          size={'xs'}
-          color={'none'}
-          className={'bg-canvas-100 hover:bg-canvas-200'}
-        >
-          {bookmarked ? 'Saved!' : loadingBookmark ? '' : 'Get Notified'}
-        </Button>
+                return
+              }
+              setLoadingBookmark(true)
+              submitBookmarkedSearch(filters, locationFilterProps, user?.id)
+                .finally(() => {
+                  setLoadingBookmark(false)
+                  setBookmarked(true)
+                  refreshBookmarkedSearches()
+                  setOpenBookmarks(true)
+                })
+            }}
+            size={'xs'}
+            color={'none'}
+            className={'bg-canvas-100 hover:bg-canvas-200'}
+          >
+            {bookmarked ? 'Saved!' : loadingBookmark ? '' : 'Get Notified'}
+          </Button>
 
-        <BookmarkSearchButton
-          refreshBookmarkedSearches={refreshBookmarkedSearches}
-          bookmarkedSearches={bookmarkedSearches}
-          open={openBookmarks}
-          setOpen={setOpenBookmarks}
-        />
+          <BookmarkSearchButton
+            refreshBookmarkedSearches={refreshBookmarkedSearches}
+            bookmarkedSearches={bookmarkedSearches}
+            open={openBookmarks}
+            setOpen={setOpenBookmarks}
+          />
 
-        <BookmarkStarButton
-          refreshStars={refreshStars}
-          starredUsers={starredUsers}
-          open={openStarBookmarks}
-          setOpen={(checked) => {
-            setOpenStarBookmarks(checked)
-            refreshStars()
-          }}
-        />
+          <BookmarkStarButton
+            refreshStars={refreshStars}
+            starredUsers={starredUsers}
+            open={openStarBookmarks}
+            setOpen={(checked) => {
+              setOpenStarBookmarks(checked)
+              refreshStars()
+            }}
+          />
+        </Row>
+        {(profileCount ?? 0) > 0 && (
+          <Col className="text-sm text-ink-500">
+            <p>{profileCount} {(profileCount ?? 0) > 1 ? 'people' : 'person'}</p>
+          </Col>
+        )}
       </Row>
     </Col>
   )

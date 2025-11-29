@@ -28,7 +28,7 @@ describe('getProfiles', () => {
                 }
             ] as Profile [];
     
-            jest.spyOn(profilesModule, 'loadProfiles').mockResolvedValue(mockProfiles);
+            jest.spyOn(profilesModule, 'loadProfiles').mockResolvedValue({profiles: mockProfiles, count: 3});
             
             const props = {
                 limit: 2,
@@ -48,7 +48,7 @@ describe('getProfiles', () => {
             expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1);
         });
 
-        it('unsucessfully', async () => {
+        it('unsuccessfully', async () => {
             jest.spyOn(profilesModule, 'loadProfiles').mockRejectedValue(null);
             
             const props = {
@@ -79,6 +79,7 @@ describe('loadProfiles', () => {
             jest.clearAllMocks();
             mockPg = {
                 map: jest.fn().mockResolvedValue([]),
+                one: jest.fn().mockResolvedValue(1),
             };
             
             jest.spyOn(supabaseInit, 'createSupabaseDirectClient')
@@ -281,6 +282,7 @@ describe('loadProfiles', () => {
             jest.clearAllMocks();
             mockPg = {
                 map: jest.fn(),
+                one: jest.fn().mockResolvedValue(1),
             };
             
             jest.spyOn(supabaseInit, 'createSupabaseDirectClient')
@@ -316,7 +318,7 @@ describe('loadProfiles', () => {
             const props = {} as any;
             const results = await profilesModule.loadProfiles(props);
             
-            expect(results).toEqual(mockProfiles);
+            expect(results).toEqual({profiles: mockProfiles, count: 1});
         });
 
         it('throw an error if there is no compatability', async () => {

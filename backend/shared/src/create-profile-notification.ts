@@ -11,7 +11,7 @@ export const createProfileLikeNotification = async (like: Row<'profile_likes'>) 
   const pg = createSupabaseDirectClient()
 
   const targetPrivateUser = await getPrivateUser(target_id)
-  const profile = await getProfile(creator_id, pg)
+  const profile = await getProfile(creator_id)
 
   if (!targetPrivateUser || !profile) return
 
@@ -49,7 +49,7 @@ export const createProfileShipNotification = async (
   const creator = await getUser(creator_id)
   const targetPrivateUser = await getPrivateUser(recipientId)
   const pg = createSupabaseDirectClient()
-  const profile = await getProfile(otherTargetId, pg)
+  const profile = await getProfile(otherTargetId)
 
   if (!creator || !targetPrivateUser || !profile) {
     console.error('Could not load user object', {

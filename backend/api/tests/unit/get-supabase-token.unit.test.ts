@@ -1,9 +1,5 @@
 jest.mock('jsonwebtoken');
 
-import { getSupabaseToken } from "api/get-supabase-token";
-import * as jsonWebtokenModules from "jsonwebtoken";
-import * as constants from "common/envs/constants";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe.skip('getSupabaseToken', () => {
     // const originalSupabaseJwtSecret = process.env.SUPABASE_JWT_SECRET

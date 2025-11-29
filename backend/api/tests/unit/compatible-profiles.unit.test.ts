@@ -6,7 +6,7 @@ jest.mock('shared/supabase/init')
 describe('getCompatibleProfiles', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    let mockPg = {
+    const mockPg = {
       none: jest.fn().mockResolvedValue(null),
       one: jest.fn().mockResolvedValue(null),
       oneOrNone: jest.fn().mockResolvedValue(null),

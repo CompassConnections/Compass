@@ -16,7 +16,7 @@ import { APIError, AuthedUser } from "api/helpers/endpoint"
 
 
 describe('banUser', () => {
-    let mockPg = {} as any;
+    const mockPg = {} as any;
 
     beforeEach(() => {
         jest.resetAllMocks();

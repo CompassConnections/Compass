@@ -1,14 +1,6 @@
 jest.mock('shared/supabase/init');
 
-import * as createCommentModules from "api/create-comment";
 import * as supabaseInit from "shared/supabase/init";
-import * as sharedUtils from "shared/utils";
-import * as utilParseModules from "common/util/parse";
-import { convertComment } from "common/supabase/comment";
-import * as websocketHelpers from "shared/websockets/helpers";
-import * as notificationPrefereneces from "common/user-notification-preferences";
-import * as supabaseNotification from "shared/supabase/notifications";
-import * as emailHelpers from "email/functions/helpers";
 import { AuthedUser } from "api/helpers/endpoint";
 
 describe('createComment', () => {

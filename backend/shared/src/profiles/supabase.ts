@@ -2,7 +2,7 @@ import {areGenderCompatible} from 'common/profiles/compatibility-util'
 import {type Profile, type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
 import {Row} from 'common/supabase/utils'
-import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export type ProfileAndUserRow = ProfileRow & {
   name: string
@@ -26,8 +26,8 @@ export function convertRow(row: ProfileAndUserRow | undefined): Profile | null {
 
 const PROFILE_COLS = 'profiles.*, name, username, users.data as user'
 
-export const getProfile = async (userId: string, client?: SupabaseDirectClient) => {
-  const pg = client ?? createSupabaseDirectClient()
+export const getProfile = async (userId: string) => {
+  const pg = createSupabaseDirectClient()
   return await pg.oneOrNone(
     `
         select ${PROFILE_COLS}
@@ -121,4 +121,15 @@ export const getCompatibilityAnswers = async (userIds: string[]) => {
     `,
     [userIds]
   )
+}
+
+type AnswerRow = Row<'compatibility_answers'>
+
+export async function getAnswersForUser(userId: string) {
+  const pg = createSupabaseDirectClient()
+  const answersSelf = await pg.manyOrNone<AnswerRow>(
+    'select * from compatibility_answers where creator_id = $1',
+    [userId]
+  )
+  return answersSelf
 }

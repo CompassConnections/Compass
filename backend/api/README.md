@@ -168,3 +168,6 @@ docker rmi -f $(docker images -aq)
 ### Documentation
 
 The API doc is available at https://api.compassmeet.com. It's dynamically prepared in [app.ts](src/app.ts).
+
+### Todo (Tests)
+- [ ] Finish get-supabase-token unit test when endpoint is implemented

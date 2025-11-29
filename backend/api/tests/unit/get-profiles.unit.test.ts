@@ -319,7 +319,7 @@ describe('loadProfiles', () => {
             expect(results).toEqual(mockProfiles);
         });
 
-        it.only('throw an error if there is no compatability', async () => {
+        it('throw an error if there is no compatability', async () => {
             const props = {
                 orderBy: 'compatibility_score'
             }

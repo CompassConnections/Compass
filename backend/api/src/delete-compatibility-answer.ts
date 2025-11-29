@@ -1,6 +1,7 @@
 import {APIHandler} from 'api/helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {APIError} from 'common/api/utils'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 
 export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'> = async (
   {id}, auth) => {
@@ -27,4 +28,14 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
        AND creator_id = $2`,
     [id, auth.uid]
   )
+
+  const continuation = async () => {
+    // Recompute precomputed compatibility scores for this user
+    await recomputeCompatibilityScoresForUser(auth.uid, pg)
+  }
+
+  return {
+    status: 'success',
+    continue: continuation,
+  }
 }

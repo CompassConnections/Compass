@@ -63,7 +63,7 @@ export function ProfileInfo(props: {
 
   const isProfileVisible = currentUser || profile.visibility === 'public'
 
-  const { data: userActivity } = useUserActivity(user?.id)
+  const {data: userActivity} = useUserActivity(user?.id)
 
   return (
     <>

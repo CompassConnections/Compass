@@ -43,6 +43,8 @@ import {useIsLooking} from 'web/hooks/use-is-looking'
 import {DropdownButton} from '../filters/desktop-filters'
 import {buildArray} from 'common/util/array'
 import toast from "react-hot-toast";
+import {useCompatibleProfiles} from "web/hooks/use-profiles";
+import {CompatibleBadge} from "web/components/widgets/compatible-badge";
 
 const NUM_QUESTIONS_TO_SHOW = 8
 
@@ -83,11 +85,13 @@ export function CompatibilityQuestionsDisplay(props: {
 }) {
   const {isCurrentUser, user, fromSignup, fromProfilePage, profile} = props
 
-  const {refreshCompatibilityQuestions, compatibilityQuestions} =
-    useCompatibilityQuestionsWithAnswerCount()
+  const currentUser = useUser()
+  const compatibleProfiles = useCompatibleProfiles(currentUser?.id)
+  const compatibilityScore = compatibleProfiles?.profileCompatibilityScores?.[profile.user_id]
 
-  const {refreshCompatibilityAnswers, compatibilityAnswers} =
-    useUserCompatibilityAnswers(user.id)
+  const {refreshCompatibilityQuestions, compatibilityQuestions} = useCompatibilityQuestionsWithAnswerCount()
+
+  const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(user.id)
 
   const [skippedAnswers, answers] = partition(
     compatibilityAnswers,
@@ -102,12 +106,11 @@ export function CompatibilityQuestionsDisplay(props: {
     skippedAnswers.map((answer) => answer.question_id)
   )
 
-  const {skippedQuestions, answeredQuestions, otherQuestions} =
-    separateQuestionsArray(
-      compatibilityQuestions,
-      skippedAnswerQuestionIds,
-      answeredQuestionIds
-    )
+  const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
+    compatibilityQuestions,
+    skippedAnswerQuestionIds,
+    answeredQuestionIds
+  )
 
   const refreshCompatibilityAll = () => {
     refreshCompatibilityAnswers()
@@ -120,10 +123,8 @@ export function CompatibilityQuestionsDisplay(props: {
     `compatibility-sort-${user.id}`
   )
 
-  const currentUser = useUser()
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
-  const {compatibilityAnswers: comparedAnswers} =
-    useUserCompatibilityAnswers(comparedUserId)
+  const {compatibilityAnswers: comparedAnswers} = useUserCompatibilityAnswers(comparedUserId)
   const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
 
   const sortedAndFilteredAnswers = sortBy(
@@ -168,15 +169,22 @@ export function CompatibilityQuestionsDisplay(props: {
     currentSlice + NUM_QUESTIONS_TO_SHOW
   )
 
+  if (!isCurrentUser && !answeredQuestions.length) return null
+
   return (
     <Col className="gap-4">
       <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
-        <Subtitle>{`${
-          isCurrentUser ? 'Your' : shortenName(user.name) + `'s`
-        } Compatibility Prompts`}</Subtitle>
+        <Row className={'gap-8'}>
+          <Subtitle>{`${
+            isCurrentUser ? 'Your' : shortenName(user.name) + `'s`
+          } Compatibility Prompts`}</Subtitle>
+          {compatibilityScore &&
+              <CompatibleBadge compatibility={compatibilityScore} className={'mt-4 mr-4'}/>
+          }
+        </Row>
         {(!isCurrentUser || fromProfilePage) && (
           <CompatibilitySortWidget
-            className="text-sm sm:flex"
+            className="text-sm sm:flex mt-4"
             sort={sort}
             setSort={setSort}
             user={user}
@@ -410,8 +418,11 @@ export function CompatibilityAnswerBlock(props: {
                     onClick: () => {
                       deleteCompatibilityAnswer(answer.id, user.id)
                         .then(() => refreshCompatibilityAll())
-                        .catch((e) => {toast.error(e.message)})
-                        .finally(() => {})
+                        .catch((e) => {
+                          toast.error(e.message)
+                        })
+                        .finally(() => {
+                        })
                     },
                   },
                 ]}
@@ -429,9 +440,14 @@ export function CompatibilityAnswerBlock(props: {
                     icon: <TrashIcon className="h-5 w-5"/>,
                     onClick: () => {
                       submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
-                        .then(() => {refreshCompatibilityAll()})
-                        .catch((e) => {toast.error(e.message)})
-                        .finally(() => {})
+                        .then(() => {
+                          refreshCompatibilityAll()
+                        })
+                        .catch((e) => {
+                          toast.error(e.message)
+                        })
+                        .finally(() => {
+                        })
                     },
                   },
                 ]}

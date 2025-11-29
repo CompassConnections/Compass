@@ -29,6 +29,7 @@ export function ProfilesHome() {
   } = useFilters(you ?? undefined);
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profiles');
+  const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(undefined, 'profile-count');
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isReloading, setIsReloading] = useState(false);
@@ -57,8 +58,11 @@ export function ProfilesHome() {
     });
     console.debug('Refreshing profiles, filters:', args);
     api('get-profiles', args as any)
-      .then(({profiles}) => {
-        if (current === id.current) setProfiles(profiles);
+      .then(({profiles, count}) => {
+        if (current === id.current) {
+          setProfiles(profiles)
+          setProfileCount(count)
+        }
       })
       .finally(() => {
         if (current === id.current) setIsReloading(false);
@@ -110,6 +114,7 @@ export function ProfilesHome() {
         locationFilterProps={locationFilterProps}
         bookmarkedSearches={bookmarkedSearches}
         refreshBookmarkedSearches={refreshBookmarkedSearches}
+        profileCount={profileCount}
       />
       {displayProfiles === undefined || compatibleProfiles === undefined ? (
         <CompassLoadingIndicator/>

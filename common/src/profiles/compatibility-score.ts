@@ -1,6 +1,6 @@
-import { keyBy, sumBy } from 'lodash'
-import { ProfileRow } from 'common/profiles/profile'
-import { Row as rowFor } from 'common/supabase/utils'
+import {keyBy, sumBy} from 'lodash'
+import {ProfileRow} from 'common/profiles/profile'
+import {Row as rowFor} from 'common/supabase/utils'
 import {
   areAgeCompatible,
   areLocationCompatible,
@@ -24,15 +24,8 @@ export const getCompatibilityScore = (
   answers1: rowFor<'compatibility_answers'>[],
   answers2: rowFor<'compatibility_answers'>[]
 ): CompatibilityScore => {
-  const {
-    score: score1,
-    maxScore: maxScore1,
-    answerCount,
-  } = getAnswersCompatibility(answers1, answers2)
-  const { score: score2, maxScore: maxScore2 } = getAnswersCompatibility(
-    answers2,
-    answers1
-  )
+  const {score: score1, maxScore: maxScore1, answerCount} = getAnswersCompatibility(answers1, answers2)
+  const {score: score2, maxScore: maxScore2} = getAnswersCompatibility(answers2, answers1)
 
   // >=100 answers in common leads to no weight toward 50%.
   // Use sqrt for diminishing returns to answering more questions.
@@ -49,7 +42,7 @@ export const getCompatibilityScore = (
   const confidence =
     answerCount < 10 ? 'low' : answerCount < 100 ? 'medium' : 'high'
 
-  return { score: geometricMean, confidence }
+  return {score: geometricMean, confidence}
 }
 
 const getAnswersCompatibility = (
@@ -73,7 +66,7 @@ const getAnswersCompatibility = (
     return getAnswerCompatibilityImportanceScore(a, answer2)
   })
 
-  return { score, maxScore, answerCount }
+  return {score, maxScore, answerCount}
 }
 
 export function getAnswerCompatibilityImportanceScore(
@@ -142,4 +135,14 @@ export const getProfilesCompatibilityFactor = (
   multiplier *= areWantKidsCompatible(profile1, profile2) ? 1 : 0.5
   multiplier *= areLocationCompatible(profile1, profile2) ? 1 : 0.1
   return multiplier
+}
+
+export const hasAnsweredQuestions = (
+  questions: rowFor<'compatibility_answers'>[],
+) => {
+  if (!questions?.length) return false
+  for (const question of questions) {
+    if (question.importance >= 0) return true
+  }
+  return false
 }

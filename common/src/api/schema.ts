@@ -273,8 +273,8 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: z.object({userId: z.string()}),
     returns: {} as {
-      profile: Profile
-      compatibleProfiles: Profile[]
+      // profile: Profile
+      // compatibleProfiles: Profile[]
       profileCompatibilityScores: {
         [userId: string]: CompatibilityScore
       }
@@ -358,6 +358,9 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       id: z.number(),
     }),
+    returns: {} as {
+      status: 'success'
+    },
     summary: 'Delete a compatibility answer',
     tag: 'Compatibility',
   },
@@ -468,6 +471,7 @@ export const API = (_apiTypeCheck = {
         lon: z.coerce.number().optional(),
         radius: z.coerce.number().optional(),
         compatibleWithUserId: z.string().optional(),
+        skipId: z.string().optional(),
         orderBy: z
           .enum(['last_online_time', 'created_time', 'compatibility_score'])
           .optional()
@@ -476,7 +480,8 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {
       status: 'success' | 'fail'
-      profiles: Profile[]
+      profiles: Profile[],
+      count: number,
     },
     summary: 'List profiles with filters, pagination and ordering',
     tag: 'Profiles',

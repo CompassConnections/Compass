@@ -1,4 +1,4 @@
-
+jest.mock('shared/supabase/init')
 import * as createCommentModules from "api/create-comment";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";

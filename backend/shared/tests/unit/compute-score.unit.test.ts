@@ -12,7 +12,7 @@ jest.mock('common/profiles/compatibility-score')
 describe('recomputeCompatibilityScoresForUser', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    let mockPg = {
+    const mockPg = {
       none: jest.fn().mockResolvedValue(null),
       one: jest.fn().mockResolvedValue(null),
       oneOrNone: jest.fn().mockResolvedValue(null),

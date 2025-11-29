@@ -38,7 +38,7 @@ export async function recomputeCompatibilityScoresForUser(
     )
     return
   }
-  let profiles = await getGenderCompatibleProfiles(profile)
+  const profiles = await getGenderCompatibleProfiles(profile)
   const otherUserIds = profiles.map((l) => l.user_id)
   const profileAnswers = await getCompatibilityAnswers([userId, ...otherUserIds])
   const answersByUser = groupBy(profileAnswers, 'creator_id')

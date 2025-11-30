@@ -16,7 +16,7 @@ export const useProfile = () => {
 
   const refreshProfile = () => {
     if (user) {
-      logger.debug('Refreshing profile in useProfile for', user?.username, profile);
+      // logger.debug('Refreshing profile in useProfile for', user?.username, profile);
       getProfileRow(user.id, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)
@@ -39,7 +39,7 @@ export const useProfileByUser = (user: User | undefined) => {
 
   function refreshProfile() {
     if (userId) {
-      console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
+      // console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
       getProfileRow(userId, db)
         .then((profile) => {
           if (!profile) setProfile(null)
@@ -67,7 +67,7 @@ export const useProfileByUserId = (userId: string | undefined) => {
   >(undefined, `profile-${userId}`)
 
   useEffect(() => {
-    console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
+    // console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
     if (userId)
       getProfileRow(userId, db).then((profile) => {
         if (!profile) setProfile(null)

@@ -7,8 +7,8 @@
     "rootDir": "../..",
     "baseUrl": ".",
     "paths": {
-      "api/*": ["src/*"],
-      "shared/*": ["../shared/src/*"],
+      "api/*": ["../api/src/*"],
+      "shared/*": ["src/*"],
       "common/*": ["../../common/src/*"],
       "email/*": ["../email/emails/*"]
     }

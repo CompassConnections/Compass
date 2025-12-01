@@ -149,7 +149,7 @@ const PhotoItem = ({
             index === 0 &&
               'after:bg-canvas-50/75 after:absolute after:inset-0 after:[mask-image:radial-gradient(transparent_32px,black_32px)]',
           ]
-        : ['h-[300px] w-[200px]'],
+        : ['h-[300px] w-[300px]'],
       isDragging && 'opacity-50'
     )}
     draggable

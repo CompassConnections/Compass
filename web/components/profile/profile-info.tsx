@@ -176,7 +176,7 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
-      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile}/>}
+      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile} refreshProfile={refreshProfile}/>}
       <ProfileCommentSection
         onUser={user}
         profile={profile}

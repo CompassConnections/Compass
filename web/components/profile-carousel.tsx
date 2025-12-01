@@ -15,8 +15,11 @@ import {PlusIcon} from '@heroicons/react/solid'
 import {EditablePhotoGrid} from './widgets/editable-photo-grid'
 import {AddPhotosWidget} from './widgets/add-photos'
 
-export default function ProfileCarousel(props: { profile: Profile }) {
-  const {profile} = props
+export default function ProfileCarousel(props: {
+  profile: Profile,
+  refreshProfile: () => void,
+}) {
+  const {profile, refreshProfile} = props
   const photoNums = profile.photo_urls ? profile.photo_urls.length : 0
 
   const [lightboxUrl, setLightboxUrl] = useState('')
@@ -36,19 +39,20 @@ export default function ProfileCarousel(props: { profile: Profile }) {
       photo_urls: photoUrls,
     })
     setIsEditMode(false)
+    refreshProfile()
   }
 
   if (!currentUser && profile.visibility !== 'public') {
     return (
       <Carousel>
         {profile.pinned_url && (
-          <div className="h-80 w-[250px] flex-none snap-start">
+          <div className="h-[300px] w-[300px] flex-none snap-start">
             <Image
               priority={true}
               src={profile.pinned_url}
-              height={360}
-              width={240}
-              sizes="(max-width: 640px) 100vw, 240px"
+              height={300}
+              width={300}
+              sizes="(max-width: 640px) 100vw, 300px"
               alt=""
               className="h-full cursor-pointer rounded object-cover"
             />
@@ -56,7 +60,7 @@ export default function ProfileCarousel(props: { profile: Profile }) {
         )}
         {photoNums > 0 && (
           <Col
-            className="bg-canvas-100 dark:bg-canvas-0 text-ink-500 relative h-80 w-[250px] flex-none items-center rounded text-6xl ">
+            className="bg-canvas-100 dark:bg-canvas-0 text-ink-500 relative h-[300px] w-[300px] flex-none items-center rounded text-6xl ">
             <Col className=" m-auto items-center gap-1">
               <div className="select-none font-semibold">+{photoNums}</div>
               <SignUpButton
@@ -149,13 +153,13 @@ export default function ProfileCarousel(props: { profile: Profile }) {
       ) : (
         <Carousel>
           {buildArray(profile.pinned_url, profile.photo_urls).map((url, i) => (
-            <div key={url} className="h-80 w-[250px] flex-none snap-start">
+            <div key={url} className="h-[300px] w-[300px] flex-none snap-start">
               <Image
                 priority={i < 3}
                 src={url}
-                height={360}
-                width={240}
-                sizes="(max-width: 640px) 100vw, 240px"
+                height={300}
+                width={300}
+                sizes="(max-width: 640px) 100vw, 300px"
                 alt=""
                 className="h-full cursor-pointer rounded object-cover"
                 onClick={() => {
@@ -167,7 +171,7 @@ export default function ProfileCarousel(props: { profile: Profile }) {
           ))}
           {isCurrentUser && (profile.photo_urls?.length ?? 0) > 1 && (
             <button
-              className="bg-ink-200 text-ink-0 group flex h-80 w-[250px] flex-none cursor-pointer snap-start items-center justify-center rounded ease-in-out"
+              className="bg-ink-200 text-ink-0 group flex h-[300px] w-[300px] flex-none cursor-pointer snap-start items-center justify-center rounded ease-in-out"
               onClick={() => setAddPhotosOpen(true)}
             >
               <PlusIcon className="w-20 transition-all group-hover:w-24"/>

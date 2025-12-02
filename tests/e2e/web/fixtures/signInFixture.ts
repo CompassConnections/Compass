@@ -1,21 +1,19 @@
 import { test as base, Page, expect } from '@playwright/test';
-import { SignInPage } from '../pages/signInPage';
-import { config } from '../TESTING_CONFIG';
+import { AuthPage } from '../pages/AuthPage';
+import { config } from '../SPEC_CONFIG';
 
 export const test = base.extend<{
   authenticatedPage: Page;
 }>({
   authenticatedPage: async ({ page }, use) => {
-    const signInPage = new SignInPage(page);
+    const authPage = new AuthPage(page);
 
     await page.goto('/signin');
-    await signInPage.fillEmailField(config.DEFAULT_LOGIN);
-    await signInPage.fillPasswprdField(config.DEFAULT_PASSWORD);
-    await signInPage.clickSignInWithEmailButton();
+    await authPage.fillEmailField(config.USERS.DEV_1.EMAIL);
+    await authPage.fillPasswordField(config.USERS.DEV_1.PASSWORD);
+    await authPage.clickSignInWithEmailButton();
 
-    await page.waitForLoadState('networkidle');
-
-    await page.waitForURL('/');
+    await page.waitForURL(/^(?!.*signin).*$/);
 
     expect(page.url()).not.toContain('/signin')
 

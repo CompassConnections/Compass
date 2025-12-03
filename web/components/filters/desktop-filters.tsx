@@ -424,6 +424,8 @@ export function DesktopFilters(props: {
 
       {/* Interests */}
       <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
             open={open}
@@ -457,6 +459,8 @@ export function DesktopFilters(props: {
 
       {/* Causes */}
       <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
             open={open}
@@ -490,6 +494,8 @@ export function DesktopFilters(props: {
 
       {/* Work */}
       <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
             open={open}

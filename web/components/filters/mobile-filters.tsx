@@ -31,6 +31,8 @@ import {
   RelationshipStatusFilterText
 } from "web/components/filters/relationship-status-filter";
 import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
+import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
+import {OptionTableKey} from "common/profiles/constants";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -41,6 +43,7 @@ function MobileFilters(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
+  choices: Record<OptionTableKey, Record<string, string[]>>
 }) {
   const {
     filters,
@@ -51,6 +54,7 @@ function MobileFilters(props: {
     isYourFilters,
     locationFilterProps,
     includeRelationshipFilters,
+    choices,
   } = props
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
@@ -362,6 +366,84 @@ function MobileFilters(props: {
         }
       >
         <LanguageFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* INTERESTS */}
+      <MobileFilterSection
+        title="Interests"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.interests || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.interests as string[]}
+            highlightedClass={
+              hasAny(filters.interests || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'interests'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.interests}
+          label={'interests'}
+        />
+      </MobileFilterSection>
+
+      {/* CAUSES */}
+      <MobileFilterSection
+        title="Causes"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.causes || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.causes as string[]}
+            highlightedClass={
+              hasAny(filters.causes || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'causes'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.causes}
+          label={'causes'}
+        />
+      </MobileFilterSection>
+
+      {/* WORK */}
+      <MobileFilterSection
+        title="Work"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.work || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.work as string[]}
+            highlightedClass={
+              hasAny(filters.work || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'work'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.work}
+          label={'work'}
+        />
       </MobileFilterSection>
 
       {/* POLITICS */}

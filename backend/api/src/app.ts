@@ -73,6 +73,8 @@ import {IS_LOCAL} from "common/hosting/constants";
 import {editMessage} from "api/edit-message";
 import {reactToMessage} from "api/react-to-message";
 import {deleteMessage} from "api/delete-message";
+import {updateOptions} from "api/update-options";
+import {getOptions} from "api/get-options";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -366,6 +368,8 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'delete-message': deleteMessage,
   'edit-message': editMessage,
   'react-to-message': reactToMessage,
+  'update-options': updateOptions,
+  'get-options': getOptions,
   // 'auth-google': authGoogle,
 }
 

@@ -9,8 +9,7 @@ import {labelClassName} from 'web/pages/signup'
 import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {Column} from 'common/supabase/utils'
-import {ProfileRow} from 'common/profiles/profile'
+import {ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {SignupBio} from "web/components/bio/editable-bio";
 import {Editor} from "@tiptap/core";
 
@@ -42,7 +41,7 @@ export const RequiredProfileUserForm = (props: {
   setEditUsername?: (name: string) => unknown
   setEditDisplayName?: (name: string) => unknown
   profile: ProfileRow
-  setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K] | undefined) => void
+  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K] | undefined) => void
   isSubmitting: boolean
   onSubmit?: () => void
   profileCreatedAlready?: boolean

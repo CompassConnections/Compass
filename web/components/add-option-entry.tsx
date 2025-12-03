@@ -7,7 +7,7 @@ import {MultiCheckbox} from "web/components/multi-checkbox";
 import {capitalize} from "lodash";
 
 export function AddOptionEntry(props: {
-  choices: {},
+  choices: { [key: string]: string }
   setChoices: (choices: any) => void
   profile: ProfileWithoutUser,
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void

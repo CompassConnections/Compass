@@ -53,7 +53,7 @@ Here is a tailored selection of things that would be very useful. If you want to
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
 - [x] Set up domain name (compassmeet.com)
-- [ ] Cover with tests (unit, integration, e2e)
+- [ ] Cover more than 90% with tests (unit, integration, e2e)
 - [x] Add Android mobile app
 - [ ] Add iOS mobile app
 - [ ] Add better onboarding (tooltips, modals, etc.)
@@ -68,7 +68,9 @@ Everything is open to anyone for collaboration, but the following ones are parti
 
 - [x] Clean up learn more page
 - [x] Add dark theme
-- [ ] Add profile fields (intellectual interests, cause areas, personality type, conflict style, timezone, etc.)
+- [x] Add profile fields (intellectual interests, cause areas, personality type, etc.)
+- [ ] Add profile fields: conflict style
+- [ ] Add profile fields: timezone
 - [x] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
@@ -82,7 +84,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [x] Create settings page (change email, password, delete account, etc.)
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
 - [x] Improve loading sign (e.g., animation of a compass moving around)
-- [ ] Show compatibility score in profile page
+- [x] Show compatibility score in profile page
 
 ## Implementation
 

@@ -8,7 +8,7 @@ import {capitalize} from "lodash";
 
 export function AddOptionEntry(props: {
   choices: {},
-  setChoices: (choices: {}) => void
+  setChoices: (choices: any) => void
   profile: ProfileWithoutUser,
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
   label: OptionTableKey,

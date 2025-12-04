@@ -1,7 +1,7 @@
 {
   "name": "@compass/api",
   "description": "Backend API endpoints",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": true,
   "scripts": {
     "watch:serve": "tsx watch src/serve.ts",

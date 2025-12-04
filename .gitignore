@@ -101,5 +101,3 @@ test-results
 /.nyc_output/
 
 **/coverage
-
-backend/api/metadata.json

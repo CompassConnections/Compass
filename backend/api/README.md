@@ -65,7 +65,21 @@ gcloud compute backend-services update api-backend \
   --timeout=600s
 ```
 
-#### API Deploy CD
+Set up the saved search notifications job:
+
+```bash
+gcloud scheduler jobs create http daily-saved-search-notifications \
+  --schedule="0 16 * * *" \
+  --uri="https://api.compassmeet.com/internal/send-search-notifications" \
+  --http-method=POST \
+  --headers="x-api-key=<API_KEY>" \
+  --time-zone="UTC" \
+  --location=us-west1
+```
+
+View it [here](https://console.cloud.google.com/cloudscheduler).
+
+##### API Deploy CD
 
 ```shell
 gcloud iam service-accounts create ci-deployer \
@@ -88,20 +102,6 @@ gcloud iam service-accounts add-iam-policy-binding \
   --role="roles/iam.serviceAccountUser"
 gcloud iam service-accounts keys create keyfile.json --iam-account=ci-deployer@compass-130ba.iam.gserviceaccount.com
 ```
-
-Set up the saved search notifications job:
-
-```bash
-gcloud scheduler jobs create http daily-saved-search-notifications \
-  --schedule="0 16 * * *" \
-  --uri="https://api.compassmeet.com/internal/send-search-notifications" \
-  --http-method=POST \
-  --headers="x-api-key=<API_KEY>" \
-  --time-zone="UTC" \
-  --location=us-west1
-```
-
-View it [here](https://console.cloud.google.com/cloudscheduler).
 
 ##### DNS
 
@@ -164,8 +164,9 @@ In root directory, run the local api with hot reload, along with all the other b
 
 ### Deploy
 
-Run in this directory to deploy your code to the server.
+To deploy the backend code, simply increment the version number in [package.json](package.json) and push to the `main` branch.
 
+Or if you have access to the project on google cloud, run in this directory:
 ```bash
 ./deploy-api.sh prod
 ```

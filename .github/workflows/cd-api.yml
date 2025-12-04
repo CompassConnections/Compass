@@ -56,6 +56,18 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: yarn install
 
+      - name: Authenticate to GCP
+        if: steps.check.outputs.changed == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Install gcloud CLI
+        if: steps.check.outputs.changed == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Run deploy script
         if: steps.check.outputs.changed == 'true'
         run: |

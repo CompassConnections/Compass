@@ -65,6 +65,16 @@ gcloud compute backend-services update api-backend \
   --timeout=600s
 ```
 
+#### API Deploy CD
+
+```shell
+gcloud iam service-accounts create ci-deployer \
+  --display-name="CI Deployer"
+gcloud projects add-iam-policy-binding compass-130ba --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding compass-130ba --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" --role="roles/storage.objectAdmin"
+gcloud iam service-accounts keys create keyfile.json --iam-account=ci-deployer@compass-130ba.iam.gserviceaccount.com
+```
+
 Set up the saved search notifications job:
 
 ```bash

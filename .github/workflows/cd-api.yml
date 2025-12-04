@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2   # required so we can compare with previous commit
+          fetch-depth: 0    # we need full history for git log
 
       - name: Install jq
         run: sudo apt-get install -y jq
@@ -66,7 +66,23 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: compass-130ba
+
+      - name: Install Tofu (Terraform)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          LATEST=https://github.com/opentofu/opentofu/releases/download/v1.10.5/tofu_1.10.5_linux_amd64.zip
+          cd /tmp || exit 1
+          curl -LO "$LATEST"
+          unzip -o tofu_*_linux_amd64.zip
+          sudo mv tofu /usr/local/bin/
+          rm tofu_*_linux_amd64.zip
+          info "OpenTofu version: $(tofu version)"
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
 
       - name: Run deploy script
         if: steps.check.outputs.changed == 'true'

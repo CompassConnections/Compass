@@ -54,16 +54,16 @@ export TF_VAR_image_url=$IMAGE_URL
 export TF_VAR_env=$ENV
 tofu apply -auto-approve
 
-INSTANCE_NAME=$(gcloud compute instances list \
-  --filter="zone:(us-west1-c)" \
-  --sort-by="~creationTimestamp" \
-  --format="value(name)" \
-  --limit=1)
-SERVICE_ACCOUNT_EMAIL=$(gcloud compute instances describe ${INSTANCE_NAME} \
-  --zone us-west1-c \
-  --format="value(serviceAccounts.email)")
-gcloud projects add-iam-policy-binding ${PROJECT} \
-  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
-  --role="roles/artifactregistry.reader"
+#INSTANCE_NAME=$(gcloud compute instances list \
+#  --filter="zone:(us-west1-c)" \
+#  --sort-by="~creationTimestamp" \
+#  --format="value(name)" \
+#  --limit=1)
+#SERVICE_ACCOUNT_EMAIL=$(gcloud compute instances describe ${INSTANCE_NAME} \
+#  --zone us-west1-c \
+#  --format="value(serviceAccounts.email)")
+#gcloud projects add-iam-policy-binding ${PROJECT} \
+#  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+#  --role="roles/artifactregistry.reader"
 
 echo "✅ Deployment complete! Image: ${IMAGE_URL}"

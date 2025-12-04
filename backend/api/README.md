@@ -70,8 +70,22 @@ gcloud compute backend-services update api-backend \
 ```shell
 gcloud iam service-accounts create ci-deployer \
   --display-name="CI Deployer"
-gcloud projects add-iam-policy-binding compass-130ba --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" --role="roles/artifactregistry.writer"
-gcloud projects add-iam-policy-binding compass-130ba --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" --role="roles/storage.objectAdmin"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/storage.objectAdmin"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/storage.admin"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/compute.admin"
+gcloud iam service-accounts add-iam-policy-binding \
+  253367029065-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
 gcloud iam service-accounts keys create keyfile.json --iam-account=ci-deployer@compass-130ba.iam.gserviceaccount.com
 ```
 

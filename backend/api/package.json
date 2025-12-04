@@ -15,7 +15,7 @@
     "debug": "nodemon -r tsconfig-paths/register --watch src -e ts --watch ../../common/src --watch ../shared/src --exec \"yarn build && node --inspect-brk src/serve.ts\"",
     "dist": "yarn dist:clean && yarn dist:copy",
     "dist:clean": "rm -rf dist && mkdir -p dist/common/lib dist/backend/shared/lib dist/backend/api/lib dist/backend/email/lib",
-    "dist:copy": "rsync -a --delete ../../common/lib/ dist/common/lib && rsync -a --delete ../shared/lib/ dist/backend/shared/lib && rsync -a --delete ../email/lib/ dist/backend/email/lib && rsync -a --delete ./lib/* dist/backend/api/lib && cp ../../yarn.lock dist && cp package.json dist && cp package.json dist/backend/api",
+    "dist:copy": "rsync -a --delete ../../common/lib/ dist/common/lib && rsync -a --delete ../shared/lib/ dist/backend/shared/lib && rsync -a --delete ../email/lib/ dist/backend/email/lib && rsync -a --delete ./lib/* dist/backend/api/lib && cp ../../yarn.lock dist && cp package.json dist && cp package.json dist/backend/api && cp metadata.json dist && cp metadata.json dist/backend/api",
     "watch": "tsc -w",
     "verify": "yarn --cwd=../.. verify",
     "verify:dir": "npx eslint . --max-warnings 0",

@@ -64,6 +64,7 @@ import {createBookmarkedSearch} from './create-bookmarked-search'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {OpenAPIV3} from 'openapi-types';
 import {version as pkgVersion} from './../package.json'
+import {git} from './../metadata.json'
 import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
 import {getUser} from "api/get-user";
 import {localSendTestEmail} from "api/test";
@@ -280,7 +281,7 @@ const swaggerDocument: OpenAPIV3.Document = {
   openapi: "3.0.0",
   info: {
     title: "Compass API",
-    description: "Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.",
+    description: `Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.\n Git: ${git.commitDate} (${git.revision}).`,
     version: pkgVersion,
     contact: {
       name: "Compass",

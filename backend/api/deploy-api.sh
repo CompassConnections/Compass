@@ -25,6 +25,19 @@ PROJECT="compass-130ba"
 SERVICE_NAME="api"
 
 GIT_REVISION=$(git rev-parse --short HEAD)
+GIT_COMMIT_DATE=$(git log -1 --format=%ci)
+GIT_COMMIT_AUTHOR=$(git log -1 --format='%an')
+
+cat > metadata.json << EOF
+{
+  "git": {
+    "revision": "${GIT_REVISION}",
+    "commitDate": "${GIT_COMMIT_DATE}",
+    "author": "${GIT_COMMIT_AUTHOR}"
+  }
+}
+EOF
+
 TIMESTAMP=$(date +"%s")
 IMAGE_TAG="${TIMESTAMP}-${GIT_REVISION}"
 IMAGE_URL="${REGION}-docker.pkg.dev/${PROJECT}/builds/${SERVICE_NAME}:${IMAGE_TAG}"

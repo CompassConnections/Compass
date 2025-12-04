@@ -1,0 +1,54 @@
+name: Deploy API on Version Change
+
+on:
+  push:
+    paths:
+      - "backend/api/package.json"
+      - ".github/workflows/cd-api.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # required so we can compare with previous commit
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Read current version
+        id: current
+        run: |
+          current=$(jq -r '.version' backend/api/package.json)
+          echo "version=$current" >> $GITHUB_OUTPUT
+
+      - name: Read previous version
+        id: previous
+        run: |
+          # Get previous commit’s package.json (if it existed)
+          if git show HEAD^:backend/api/package.json >/dev/null 2>&1; then
+            previous=$(git show HEAD^:backend/api/package.json | jq -r '.version')
+          else
+            previous="none"
+          fi
+          echo "version=$previous" >> $GITHUB_OUTPUT
+
+      - name: Check version change
+        id: check
+        run: |
+          echo "current=${{ steps.current.outputs.version }}"
+          echo "previous=${{ steps.previous.outputs.version }}"
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.previous.outputs.version }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run deploy script
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          chmod +x backend/api/deploy-api.sh
+          backend/api/deploy-api.sh

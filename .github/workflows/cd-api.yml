@@ -46,20 +46,6 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install Tofu (Terraform)
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          LATEST=https://github.com/opentofu/opentofu/releases/download/v1.10.5/tofu_1.10.5_linux_amd64.zip
-          curl -LO "$LATEST"
-          unzip -o tofu_*_linux_amd64.zip
-          sudo mv tofu /usr/local/bin/
-          rm tofu_*_linux_amd64.zip
-          echo "OpenTofu version: $(tofu version)"
-          cd backend/api || exit 1
-          tofu init
-
       - name: Setup Node.js
         if: steps.check.outputs.changed == 'true'
         uses: actions/setup-node@v4
@@ -86,6 +72,20 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |
           gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
+
+      - name: Install Tofu (Terraform)
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          LATEST=https://github.com/opentofu/opentofu/releases/download/v1.10.5/tofu_1.10.5_linux_amd64.zip
+          curl -LO "$LATEST"
+          unzip -o tofu_*_linux_amd64.zip
+          sudo mv tofu /usr/local/bin/
+          rm tofu_*_linux_amd64.zip
+          echo "OpenTofu version: $(tofu version)"
+          cd backend/api || exit 1
+          tofu init
 
       - name: Run deploy script
         if: steps.check.outputs.changed == 'true'

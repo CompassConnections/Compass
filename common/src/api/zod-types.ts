@@ -103,6 +103,7 @@ const optionalProfilesSchema = z.object({
   twitter: z.string().optional().nullable(),
   university: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
+  image_descriptions: z.any().optional().nullable(),
 })
 
 export const combinedProfileSchema =

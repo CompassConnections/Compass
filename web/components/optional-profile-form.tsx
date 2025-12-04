@@ -694,6 +694,13 @@ export const OptionalProfileUserForm = (props: {
             pinned_url={profile.pinned_url}
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
             setPinnedUrl={(url) => setProfile('pinned_url', url)}
+            setDescription={(url, description) =>
+              setProfile("image_descriptions", {
+                ...(profile?.image_descriptions as Record<string, string> ?? {}),
+                [url]: description,
+              })
+            }
+            image_descriptions={profile.image_descriptions as Record<string, string>}
           />
         </Col>
 

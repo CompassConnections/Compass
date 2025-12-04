@@ -758,6 +758,7 @@ export type Database = {
           has_kids: number | null
           height_in_inches: number | null
           id: number
+          image_descriptions: Json | null
           is_smoker: boolean | null
           languages: string[] | null
           last_modification_time: string
@@ -812,6 +813,7 @@ export type Database = {
           has_kids?: number | null
           height_in_inches?: number | null
           id?: number
+          image_descriptions?: Json | null
           is_smoker?: boolean | null
           languages?: string[] | null
           last_modification_time?: string
@@ -866,6 +868,7 @@ export type Database = {
           has_kids?: number | null
           height_in_inches?: number | null
           id?: number
+          image_descriptions?: Json | null
           is_smoker?: boolean | null
           languages?: string[] | null
           last_modification_time?: string

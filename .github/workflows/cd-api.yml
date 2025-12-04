@@ -58,6 +58,7 @@ jobs:
           sudo mv tofu /usr/local/bin/
           rm tofu_*_linux_amd64.zip
           echo "OpenTofu version: $(tofu version)"
+          tofu init
 
       - name: Setup Node.js
         if: steps.check.outputs.changed == 'true'

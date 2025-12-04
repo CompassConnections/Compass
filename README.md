@@ -81,7 +81,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [x] Add password reset
 - [x] Add automated welcome email
 - [ ] Security audit and penetration testing
-- [ ] Make `deploy-api.sh` run automatically on push to `main` branch
+- [x] Make `deploy-api.sh` run automatically on push to `main` branch
 - [x] Create settings page (change email, password, delete account, etc.)
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
 - [x] Improve loading sign (e.g., animation of a compass moving around)

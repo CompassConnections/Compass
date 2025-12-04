@@ -1,6 +1,7 @@
 name: CD API
 on:
   push:
+    branches: [ main, master ]
     paths:
       - "backend/api/package.json"
       - ".github/workflows/cd-api.yml"

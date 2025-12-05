@@ -1,7 +1,7 @@
 import {arraybeSchema, baseProfilesSchema, combinedProfileSchema, contentSchema, zBoolean,} from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
-import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
@@ -460,6 +460,9 @@ export const API = (_apiTypeCheck = {
         diet: arraybeSchema.optional(),
         political_beliefs: arraybeSchema.optional(),
         mbti: arraybeSchema.optional(),
+        interests: arraybeSchema.optional(),
+        causes: arraybeSchema.optional(),
+        work: arraybeSchema.optional(),
         relationship_status: arraybeSchema.optional(),
         languages: arraybeSchema.optional(),
         wants_kids_strength: z.coerce.number().optional(),
@@ -484,6 +487,33 @@ export const API = (_apiTypeCheck = {
       count: number,
     },
     summary: 'List profiles with filters, pagination and ordering',
+    tag: 'Profiles',
+  },
+  'get-options': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    returns: {},
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+      })
+      .strict(),
+    summary: 'Get profile options like interests',
+    tag: 'Profiles',
+  },
+  'update-options': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {},
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        names: arraybeSchema.optional(),
+      })
+      .strict(),
+    summary: 'Update profile options like interests',
     tag: 'Profiles',
   },
   'create-comment': {

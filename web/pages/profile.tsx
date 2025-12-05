@@ -1,5 +1,4 @@
-import {Profile, ProfileRow} from 'common/profiles/profile'
-import {Column} from 'common/supabase/utils'
+import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {RequiredProfileUserForm} from 'web/components/required-profile-form'
@@ -33,7 +32,7 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
     user,
   })
 
-  const setProfileState = <K extends Column<'profiles'>>(key: K, value: ProfileRow[K] | undefined) => {
+  const setProfileState = <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K] | undefined) => {
     setProfile((prevState) => ({...prevState, [key]: value}))
   }
 

@@ -64,6 +64,7 @@ import {createBookmarkedSearch} from './create-bookmarked-search'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {OpenAPIV3} from 'openapi-types';
 import {version as pkgVersion} from './../package.json'
+import {git} from './../metadata.json'
 import {z, ZodFirstPartyTypeKind, ZodTypeAny} from "zod";
 import {getUser} from "api/get-user";
 import {localSendTestEmail} from "api/test";
@@ -73,6 +74,8 @@ import {IS_LOCAL} from "common/hosting/constants";
 import {editMessage} from "api/edit-message";
 import {reactToMessage} from "api/react-to-message";
 import {deleteMessage} from "api/delete-message";
+import {updateOptions} from "api/update-options";
+import {getOptions} from "api/get-options";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -278,7 +281,7 @@ const swaggerDocument: OpenAPIV3.Document = {
   openapi: "3.0.0",
   info: {
     title: "Compass API",
-    description: "Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.",
+    description: `Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.\n Git: ${git.commitDate} (${git.revision}).`,
     version: pkgVersion,
     contact: {
       name: "Compass",
@@ -366,6 +369,8 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'delete-message': deleteMessage,
   'edit-message': editMessage,
   'react-to-message': reactToMessage,
+  'update-options': updateOptions,
+  'get-options': getOptions,
   // 'auth-google': authGoogle,
 }
 

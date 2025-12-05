@@ -11,7 +11,7 @@ export const updateProfile: APIHandler<'update-profile'> = async (
   parsedBody,
   auth
 ) => {
-  log('parsedBody', parsedBody)
+  log('Updating profile', parsedBody)
   const pg = createSupabaseDirectClient()
 
   const { data: existingProfile } = await tryCatch(

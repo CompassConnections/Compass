@@ -91,6 +91,9 @@ const optionalProfilesSchema = z.object({
   occupation: z.string().optional().nullable(),
   occupation_title: z.string().optional().nullable(),
   political_beliefs: z.array(z.string()).optional().nullable(),
+  interests: z.array(z.string()).optional().nullable(),
+  work: z.array(z.string()).optional().nullable(),
+  causes: z.array(z.string()).optional().nullable(),
   relationship_status: z.array(z.string()).optional().nullable(),
   political_details: z.string().optional().nullable(),
   pref_romantic_styles: z.array(z.string()).nullable(),
@@ -100,6 +103,7 @@ const optionalProfilesSchema = z.object({
   twitter: z.string().optional().nullable(),
   university: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
+  image_descriptions: z.any().optional().nullable(),
 })
 
 export const combinedProfileSchema =

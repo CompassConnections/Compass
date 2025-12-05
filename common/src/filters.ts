@@ -1,6 +1,7 @@
 import {Profile, ProfileRow} from "common/profiles/profile";
 import {cloneDeep} from "lodash";
 import {filterDefined} from "common/util/array";
+import {OptionTableKey} from "common/profiles/constants";
 
 // export type TargetArea = {
 //   lat: number
@@ -21,7 +22,10 @@ export type FilterFields = {
   shortBio: boolean | undefined
   drinks_min: number | undefined
   drinks_max: number | undefined
-} & Pick<
+} & {
+  [K in OptionTableKey]: string[]
+}
+  & Pick<
   ProfileRow,
   | 'wants_kids_strength'
   | 'pref_relation_styles'
@@ -74,6 +78,9 @@ export const initialFilters: Partial<FilterFields> = {
   pref_romantic_styles: undefined,
   diet: undefined,
   political_beliefs: undefined,
+  interests: undefined,
+  causes: undefined,
+  work: undefined,
   relationship_status: undefined,
   languages: undefined,
   religion: undefined,

@@ -31,6 +31,9 @@ import {
   RelationshipStatusFilterText
 } from "web/components/filters/relationship-status-filter";
 import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
+import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
+import {OptionTableKey} from "common/profiles/constants";
+import {NewBadge} from "web/components/new-badge";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -41,6 +44,7 @@ function MobileFilters(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
+  choices: Record<OptionTableKey, Record<string, string[]>>
 }) {
   const {
     filters,
@@ -51,6 +55,7 @@ function MobileFilters(props: {
     isYourFilters,
     locationFilterProps,
     includeRelationshipFilters,
+    choices,
   } = props
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
@@ -364,6 +369,90 @@ function MobileFilters(props: {
         <LanguageFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
+      {/* INTERESTS */}
+      <MobileFilterSection
+        showNewBadge
+        newBadgeClassName={"-top-0 -left-0"}
+        title="Interests"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.interests || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.interests as string[]}
+            highlightedClass={
+              hasAny(filters.interests || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'interests'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.interests}
+          label={'interests'}
+        />
+      </MobileFilterSection>
+
+      {/* CAUSES */}
+      <MobileFilterSection
+        showNewBadge
+        newBadgeClassName={"-top-0 -left-0"}
+        title="Causes"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.causes || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.causes as string[]}
+            highlightedClass={
+              hasAny(filters.causes || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'causes'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.causes}
+          label={'causes'}
+        />
+      </MobileFilterSection>
+
+      {/* WORK */}
+      <MobileFilterSection
+        showNewBadge
+        newBadgeClassName={"-top-0 -left-0"}
+        title="Work"
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny(filters.work || undefined)}
+        selection={
+          <InterestFilterText
+            options={filters.work as string[]}
+            highlightedClass={
+              hasAny(filters.work || undefined)
+                ? 'text-primary-600'
+                : 'text-ink-900'
+            }
+            label={'work'}
+          />
+        }
+      >
+        <InterestFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          choices={choices.work}
+          label={'work'}
+        />
+      </MobileFilterSection>
+
       {/* POLITICS */}
       <MobileFilterSection
         title="Politics"
@@ -462,6 +551,10 @@ export function MobileFilterSection(props: {
   childrenClassName?: string
   icon?: ReactNode
   selection?: ReactNode
+  // When true, shows a tiny "new" badge at the top-left of the button
+  showNewBadge?: boolean
+  // Optional extra classes for the badge container (to tweak position/size)
+  newBadgeClassName?: string
 }) {
   const {
     title,
@@ -473,19 +566,22 @@ export function MobileFilterSection(props: {
     childrenClassName,
     icon,
     selection,
+    showNewBadge,
+    newBadgeClassName,
   } = props
   const isOpen = openFilter == title
   return (
     <Col className={clsx(className)}>
       <button
         className={clsx(
-          'text-ink-600 flex w-full flex-row justify-between px-4 pt-4',
+          'text-ink-600 flex w-full flex-row justify-between px-4 pt-4 relative',
           isOpen ? 'pb-2' : 'pb-4'
         )}
         onClick={() =>
           isOpen ? setOpenFilter(undefined) : setOpenFilter(title)
         }
       >
+        {showNewBadge && <NewBadge classes={newBadgeClassName}/>}
         <Row
           className={clsx('items-center gap-0.5', isActive && 'font-semibold')}
         >

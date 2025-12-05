@@ -1,28 +1,30 @@
-import { CheckCircleIcon } from '@heroicons/react/outline'
-import { XIcon } from '@heroicons/react/solid'
+import {CheckCircleIcon} from '@heroicons/react/outline'
+import {PlusIcon, XIcon} from '@heroicons/react/solid'
 import Image from 'next/image'
-import { uniq } from 'lodash'
-import { useState } from 'react'
+import {uniq} from 'lodash'
+import {useState} from 'react'
 import clsx from 'clsx'
 
-import { Col } from 'web/components/layout/col'
-import { Button } from 'web/components/buttons/button'
-import { uploadImage } from 'web/lib/firebase/storage'
-import { buildArray } from 'common/util/array'
-import { Row } from 'web/components/layout/row'
-import { User } from 'common/user'
-import { PlusIcon } from '@heroicons/react/solid'
+import {Col} from 'web/components/layout/col'
+import {Button} from 'web/components/buttons/button'
+import {uploadImage} from 'web/lib/firebase/storage'
+import {buildArray} from 'common/util/array'
+import {Row} from 'web/components/layout/row'
+import {User} from 'common/user'
 
 export const AddPhotosWidget = (props: {
   user: User
+  image_descriptions: Record<string, string> | null
   photo_urls: string[] | null
   pinned_url: string | null
   setPhotoUrls: (urls: string[]) => void
   setPinnedUrl: (url: string) => void
+  setDescription: (url: string, description: string) => void
 }) => {
-  const { user, photo_urls, pinned_url, setPhotoUrls, setPinnedUrl } = props
+  const {user, photo_urls, pinned_url, setPhotoUrls, setPinnedUrl, setDescription, image_descriptions} = props
 
   const [uploadingImages, setUploadingImages] = useState(false)
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -56,11 +58,11 @@ export const AddPhotosWidget = (props: {
       <Row className="flex-wrap gap-2">
         <label
           className={clsx(
-            'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[100px] w-[100px]  cursor-pointer flex-col items-center rounded-md transition-colors'
+            'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px]  cursor-pointer flex-col items-center rounded-md transition-colors'
           )}
           htmlFor="photo-upload"
         >
-          <PlusIcon className=" mx-auto my-auto h-16 w-16 text-gray-500" />
+          <PlusIcon className=" mx-auto my-auto h-16 w-16 text-gray-500"/>
         </label>
         {uniq(buildArray(pinned_url, photo_urls))?.map((url, index) => {
           const isPinned = url === pinned_url
@@ -100,14 +102,29 @@ export const AddPhotosWidget = (props: {
                   'bg-canvas-0 absolute right-0 top-0 !rounded-full !px-1 py-1'
                 )}
               >
-                <XIcon className={'h-4 w-4'} />
+                <XIcon className={'h-4 w-4'}/>
               </Button>
               <Image
                 src={url}
                 width={80}
                 height={80}
                 alt={`preview ${index}`}
-                className="h-20 w-20 object-cover"
+                className="h-[200px] w-[200px] object-cover"
+              />
+
+              <textarea
+                // stop click bubbling so clicking/focusing the input doesn't pin the image
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`description for image ${index}`}
+                placeholder="Add description"
+                value={image_descriptions?.[url] ?? ''}
+                onChange={(e) => {
+                  e.stopPropagation()
+                  const v = e.target.value
+                  setDescription(url, v)
+                }}
+                rows={3}
+                className="mt-2 w-[200px] rounded border px-2 py-1 text-sm focus:outline-none bg-canvas-50 resize-none overflow-y-auto"
               />
             </div>
           )

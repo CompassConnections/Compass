@@ -61,8 +61,9 @@ export function from(clause: string, formatValues?: any) {
   return buildSql({ from })
 }
 
-export function join(clause: string) {
-  return buildSql({ join: clause })
+export function join(clause: string, formatValues?: any) {
+  const join = pgp.as.format(clause, formatValues)
+  return buildSql({ join })
 }
 
 export function leftJoin(clause: string, formatValues?: any) {

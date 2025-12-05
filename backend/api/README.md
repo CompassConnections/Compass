@@ -79,6 +79,30 @@ gcloud scheduler jobs create http daily-saved-search-notifications \
 
 View it [here](https://console.cloud.google.com/cloudscheduler).
 
+##### API Deploy CD
+
+```shell
+gcloud iam service-accounts create ci-deployer \
+  --display-name="CI Deployer"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/storage.objectAdmin"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/storage.admin"
+gcloud projects add-iam-policy-binding compass-130ba \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/compute.admin"
+gcloud iam service-accounts add-iam-policy-binding \
+  253367029065-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:ci-deployer@compass-130ba.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+gcloud iam service-accounts keys create keyfile.json --iam-account=ci-deployer@compass-130ba.iam.gserviceaccount.com
+```
+
 ##### DNS
 
 * After deployment, Terraform assigns a static external IP to this resource.
@@ -140,8 +164,9 @@ In root directory, run the local api with hot reload, along with all the other b
 
 ### Deploy
 
-Run in this directory to deploy your code to the server.
+To deploy the backend code, simply increment the version number in [package.json](package.json) and push to the `main` branch.
 
+Or if you have access to the project on google cloud, run in this directory:
 ```bash
 ./deploy-api.sh prod
 ```
@@ -168,3 +193,6 @@ docker rmi -f $(docker images -aq)
 ### Documentation
 
 The API doc is available at https://api.compassmeet.com. It's dynamically prepared in [app.ts](src/app.ts).
+
+### Todo (Tests)
+- [ ] Finish get-supabase-token unit test when endpoint is implemented

@@ -30,6 +30,7 @@ import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
 import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
+import {FaBriefcase, FaHandsHelping, FaStar} from "react-icons/fa";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -85,8 +86,8 @@ export default function ProfileAbout(props: {
       <Education profile={profile}/>
       <Occupation profile={profile}/>
       <AboutRow
-        icon={<MdLanguage className="h-5 w-5"/>}
-        text={profile.languages?.map(v => INVERTED_LANGUAGE_CHOICES[v])}
+        icon={<FaBriefcase className="h-5 w-5"/>}
+        text={profile.work}
       />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
@@ -97,6 +98,14 @@ export default function ProfileAbout(props: {
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
         text={profile.religion?.map(belief => INVERTED_RELIGION_CHOICES[belief])}
         suffix={profile.religious_beliefs}
+      />
+      <AboutRow
+        icon={<FaStar className="h-5 w-5"/>}
+        text={profile.interests}
+      />
+      <AboutRow
+        icon={<FaHandsHelping className="h-5 w-5"/>}
+        text={profile.causes}
       />
       <AboutRow
         icon={<BsPersonVcard className="h-5 w-5"/>}
@@ -113,6 +122,10 @@ export default function ProfileAbout(props: {
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
         text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
+      />
+      <AboutRow
+        icon={<MdLanguage className="h-5 w-5"/>}
+        text={profile.languages?.map(v => INVERTED_LANGUAGE_CHOICES[v])}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>

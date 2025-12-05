@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useEvent } from '../../hooks/use-event'
+import { useEvent } from 'web/hooks/use-event'
 
 export function VisibilityObserver(props: {
   className?: string
@@ -29,15 +29,18 @@ export function LoadMoreUntilNotVisible(props: {
   const { loadMore } = props
   const isVisibleRef = useRef(false)
   const loadMoreIfVisible = useEvent(async () => {
+    console.log('loadMoreIfVisible called')
     if (isVisibleRef.current && loadMore) {
-      const hasMoreResults = await loadMore()
-      if (hasMoreResults) {
-        setTimeout(() => {
-          if (isVisibleRef.current) {
-            loadMoreIfVisible()
-          }
-        }, 500)
-      }
+      console.log('loadMore calling')
+      await loadMore()
+      // const hasMoreResults = await loadMore()
+      // if (hasMoreResults) {
+      //   setTimeout(() => {
+      //     if (isVisibleRef.current) {
+      //       loadMoreIfVisible()
+      //     }
+      //   }, 500)
+      // }
     }
   })
 

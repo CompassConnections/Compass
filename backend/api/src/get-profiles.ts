@@ -1,36 +1,36 @@
 import {type APIHandler} from 'api/helpers/endpoint'
 import {convertRow} from 'shared/profiles/supabase'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
 import {from, join, leftJoin, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
-import {getCompatibleProfiles} from 'api/compatible-profiles'
-import {intersection} from 'lodash'
-import {MAX_INT, MIN_BIO_LENGTH, MIN_INT} from "common/constants";
+import {MIN_BIO_LENGTH} from "common/constants";
+import {compact} from "lodash";
+import {OptionTableKey} from "common/profiles/constants";
 
 export type profileQueryType = {
   limit?: number | undefined,
   after?: string | undefined,
   // Search and filter parameters
   name?: string | undefined,
-  genders?: String[] | undefined,
-  education_levels?: String[] | undefined,
-  pref_gender?: String[] | undefined,
+  genders?: string[] | undefined,
+  education_levels?: string[] | undefined,
+  pref_gender?: string[] | undefined,
   pref_age_min?: number | undefined,
   pref_age_max?: number | undefined,
   drinks_min?: number | undefined,
   drinks_max?: number | undefined,
-  pref_relation_styles?: String[] | undefined,
-  pref_romantic_styles?: String[] | undefined,
-  diet?: String[] | undefined,
-  political_beliefs?: String[] | undefined,
-  mbti?: String[] | undefined,
-  relationship_status?: String[] | undefined,
-  languages?: String[] | undefined,
-  religion?: String[] | undefined,
+  pref_relation_styles?: string[] | undefined,
+  pref_romantic_styles?: string[] | undefined,
+  diet?: string[] | undefined,
+  political_beliefs?: string[] | undefined,
+  mbti?: string[] | undefined,
+  relationship_status?: string[] | undefined,
+  languages?: string[] | undefined,
+  religion?: string[] | undefined,
   wants_kids_strength?: number | undefined,
   has_kids?: number | undefined,
   is_smoker?: boolean | undefined,
   shortBio?: boolean | undefined,
-  geodbCityIds?: String[] | undefined,
+  geodbCityIds?: string[] | undefined,
   lat?: number | undefined,
   lon?: number | undefined,
   radius?: number | undefined,
@@ -38,14 +38,16 @@ export type profileQueryType = {
   skipId?: string | undefined,
   orderBy?: string | undefined,
   lastModificationWithin?: string | undefined,
+} & {
+  [K in OptionTableKey]?: string[] | undefined
 }
 
-const userActivityColumns = ['last_online_time']
+// const userActivityColumns = ['last_online_time']
 
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  console.debug(props)
+  console.debug('loadProfiles', props)
   const {
     limit: limitParam,
     after,
@@ -67,6 +69,9 @@ export const loadProfiles = async (props: profileQueryType) => {
     religion,
     wants_kids_strength,
     has_kids,
+    interests,
+    causes,
+    work,
     is_smoker,
     shortBio,
     geodbCityIds,
@@ -84,82 +89,68 @@ export const loadProfiles = async (props: profileQueryType) => {
   const keywords = name ? name.split(",").map(q => q.trim()).filter(Boolean) : []
   // console.debug('keywords:', keywords)
 
-  // compatibility. TODO: do this in sql
-  if (orderByParam === 'compatibility_score') {
-    if (!compatibleWithUserId) {
-      console.error('Incompatible with user ID')
-      throw Error('Incompatible with user ID')
-    }
-
-    const {compatibleProfiles} = await getCompatibleProfiles(compatibleWithUserId)
-    const profiles = compatibleProfiles.filter(
-      (l) =>
-        (!name || l.user.name.toLowerCase().includes(name.toLowerCase())) &&
-        (!genders || genders.includes(l.gender ?? '')) &&
-        (!education_levels || education_levels.includes(l.education_level ?? '')) &&
-        (!mbti || mbti.includes(l.mbti ?? '')) &&
-        (!pref_gender || intersection(pref_gender, l.pref_gender).length) &&
-        (!pref_age_min || (l.age ?? MAX_INT) >= pref_age_min) &&
-        (!pref_age_max || (l.age ?? MIN_INT) <= pref_age_max) &&
-        (!drinks_min || (l.drinks_per_month ?? MAX_INT) >= drinks_min) &&
-        (!drinks_max || (l.drinks_per_month ?? MIN_INT) <= drinks_max) &&
-        (!pref_relation_styles ||
-          intersection(pref_relation_styles, l.pref_relation_styles).length) &&
-        (!pref_romantic_styles ||
-          intersection(pref_romantic_styles, l.pref_romantic_styles).length) &&
-        (!diet ||
-          intersection(diet, l.diet).length) &&
-        (!political_beliefs ||
-          intersection(political_beliefs, l.political_beliefs).length) &&
-        (!relationship_status ||
-          intersection(relationship_status, l.relationship_status).length) &&
-        (!languages ||
-          intersection(languages, l.languages).length) &&
-        (!religion ||
-          intersection(religion, l.religion).length) &&
-        (!wants_kids_strength ||
-          wants_kids_strength == -1 ||
-          !l.wants_kids_strength ||
-          l.wants_kids_strength == -1 ||
-          (wants_kids_strength >= 2
-            ? l.wants_kids_strength >= wants_kids_strength
-            : l.wants_kids_strength <= wants_kids_strength)) &&
-        (has_kids == undefined ||
-          has_kids == -1 ||
-          (has_kids == 0 && !l.has_kids) ||
-          (l.has_kids && l.has_kids > 0)) &&
-        (is_smoker === undefined || l.is_smoker === is_smoker) &&
-        (!l.disabled) &&
-        (l.id.toString() != skipId) &&
-        (!geodbCityIds ||
-          (l.geodb_city_id && geodbCityIds.includes(l.geodb_city_id))) &&
-        (!filterLocation ||(
-          l.city_latitude && l.city_longitude &&
-          Math.abs(l.city_latitude - lat) < radius / 69.0 &&
-          Math.abs(l.city_longitude - lon) < radius / (69.0 * Math.cos(lat * Math.PI / 180)) &&
-          Math.pow(l.city_latitude - lat, 2) + Math.pow((l.city_longitude - lon) * Math.cos(lat * Math.PI / 180), 2) < Math.pow(radius / 69.0, 2)
-          )) &&
-        (shortBio || (l.bio_length ?? 0) >= MIN_BIO_LENGTH)
-    )
-
-    const cursor = after
-      ? profiles.findIndex((l) => l.id.toString() === after) + 1
-      : 0
-    console.debug(cursor)
-
-    if (limitParam) return profiles.slice(cursor, cursor + limitParam)
-
-    return profiles
+  if (orderByParam === 'compatibility_score' && !compatibleWithUserId) {
+    console.error('Incompatible with user ID')
+    throw Error('Incompatible with user ID')
   }
 
-  const tablePrefix = userActivityColumns.includes(orderByParam) ? 'user_activity' : 'profiles'
+  const tablePrefix = orderByParam === 'compatibility_score'
+    ? 'compatibility_scores'
+    : orderByParam === 'last_online_time'
+      ? 'user_activity'
+      : 'profiles'
+
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
 
-  const query = renderSql(
-    select('profiles.*, name, username, users.data as user, user_activity.last_online_time'),
+  // Pre-aggregated interests per profile
+  function getManyToManyJoin(label: OptionTableKey) {
+    return `(
+        SELECT 
+            profile_${label}.profile_id,
+            ARRAY_AGG(${label}.name ORDER BY ${label}.name) AS ${label}
+        FROM profile_${label}
+        JOIN ${label} ON ${label}.id = profile_${label}.option_id
+        GROUP BY profile_${label}.profile_id
+    ) i ON i.profile_id = profiles.id`
+  }
+  const interestsJoin = getManyToManyJoin('interests')
+  const causesJoin = getManyToManyJoin('causes')
+  const workJoin = getManyToManyJoin('work')
+
+  const compatibilityScoreJoin = pgp.as.format(`compatibility_scores cs on (cs.user_id_1 = LEAST(profiles.user_id, $(compatibleWithUserId)) and cs.user_id_2 = GREATEST(profiles.user_id, $(compatibleWithUserId)))`, {compatibleWithUserId})
+
+  const joins = [
+    orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
+    orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
+    interests && leftJoin(interestsJoin),
+    causes && leftJoin(causesJoin),
+    work && leftJoin(workJoin),
+  ]
+
+  const _orderBy = orderByParam === 'compatibility_score' ? 'cs.score' : `${tablePrefix}.${orderByParam}`
+  const afterFilter = renderSql(
+    select(_orderBy),
+    from('profiles'),
+    ...joins,
+    where('profiles.id = $(after)', {after}),
+  )
+
+  const tableSelection = compact([
     from('profiles'),
     join('users on users.id = profiles.user_id'),
-    leftJoin(userActivityJoin),
+    ...joins,
+  ])
+
+  function getManyToManyClause(label: OptionTableKey) {
+    return `EXISTS (
+      SELECT 1 FROM profile_${label} pi2
+      JOIN ${label} ii2 ON ii2.id = pi2.option_id
+      WHERE pi2.profile_id = profiles.id
+        AND ii2.name = ANY (ARRAY[$(values)])
+      )`
+  }
+
+  const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
     // where(`pinned_url is not null and pinned_url != ''`),
@@ -236,6 +227,12 @@ export const loadProfiles = async (props: profileQueryType) => {
       {religion}
     ),
 
+    interests?.length && where(getManyToManyClause('interests'), {values: interests}),
+
+    causes?.length && where(getManyToManyClause('causes'), {values: causes}),
+
+    work?.length && where(getManyToManyClause('work'), {values: work}),
+
     !!wants_kids_strength &&
     wants_kids_strength !== -1 &&
     where(
@@ -270,35 +267,54 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
-    orderBy(`${tablePrefix}.${orderByParam} DESC`),
-    after &&
-    where(
-      `${tablePrefix}.${orderByParam} < (
-      SELECT ${tablePrefix}.${orderByParam}
-      FROM profiles
-      LEFT JOIN ${userActivityJoin}
-      WHERE profiles.id = $(after)
-    )`,
-      {after}
-    ),
-
     !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
 
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
+  ]
 
-    limitParam && limit(limitParam)
+  let selectCols = 'profiles.*, users.name, users.username, users.data as user'
+  if (orderByParam === 'compatibility_score') {
+    selectCols += ', cs.score as compatibility_score'
+  } else if (orderByParam === 'last_online_time') {
+    selectCols += ', user_activity.last_online_time'
+  }
+  if (interests) selectCols += `, COALESCE(i.interests, '{}') AS interests`
+  if (causes) selectCols += `, COALESCE(i.causes, '{}') AS causes`
+  if (work) selectCols += `, COALESCE(i.work, '{}') AS work`
+
+  const query = renderSql(
+    select(selectCols),
+    ...tableSelection,
+    ...filters,
+    orderBy(`${_orderBy} DESC`),
+    after && where(`${_orderBy} < (${afterFilter})`),
+    limitParam && limit(limitParam),
   )
 
-  // console.debug('query:', query)
+  console.debug('query:', query)
 
-  return await pg.map(query, [], convertRow)
+  const profiles = await pg.map(query, [], convertRow)
+
+  // console.debug('profiles:', profiles)
+
+  const countQuery = renderSql(
+    select(`count(*) as count`),
+    ...tableSelection,
+    ...filters,
+  )
+
+  const count = await pg.one<number>(countQuery, [], (r) => Number(r.count))
+
+  return {profiles, count}
 }
 
-export const getProfiles: APIHandler<'get-profiles'> = async (props, _auth) => {
+export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
   try {
-    const profiles = await loadProfiles(props)
-    return {status: 'success', profiles: profiles}
-  } catch {
-    return {status: 'fail', profiles: []}
+    if (!props.skipId) props.skipId = auth.uid
+    const {profiles, count} = await loadProfiles(props)
+    return {status: 'success', profiles: profiles, count: count}
+  } catch (error) {
+    console.log(error)
+    return {status: 'fail', profiles: [], count: 0}
   }
 }

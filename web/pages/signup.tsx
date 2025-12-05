@@ -12,7 +12,7 @@ import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
-import {ProfileRow} from 'common/profiles/profile'
+import {ProfileWithoutUser} from 'common/profiles/profile'
 import {PageBase} from "web/components/page-base";
 import {SEO} from "web/components/SEO";
 
@@ -54,10 +54,10 @@ export default function SignupPage() {
   }, [user, holdLoading])
 
   // Omit the id, created_time?
-  const [profileForm, setProfileForm] = useState<ProfileRow>({
+  const [profileForm, setProfileForm] = useState<ProfileWithoutUser>({
     ...initialRequiredState,
   } as any)
-  const setProfileState = (key: keyof ProfileRow, value: any) => {
+  const setProfileState = (key: keyof ProfileWithoutUser, value: any) => {
     setProfileForm((prevState) => ({...prevState, [key]: value}))
   }
 

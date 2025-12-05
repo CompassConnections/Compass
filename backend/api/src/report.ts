@@ -52,7 +52,7 @@ export const report: APIHandler<'report'> = async (body, auth) => {
         console.error('Failed to get reported user for report', userError)
         return
       }
-      let message: string = `
+      const message: string = `
       🚨 **New Report** 🚨
       **Type:** ${contentType}
       **Content ID:** ${contentId}

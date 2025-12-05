@@ -3,10 +3,9 @@ import {useEffect} from 'react'
 import {Row} from 'common/supabase/utils'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {User} from 'common/user'
-import {getProfileRow, Profile, ProfileRow} from 'common/profiles/profile'
+import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {db} from 'web/lib/supabase/db'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {logger} from "common/logging";
 
 export const useProfile = () => {
   const user = useUser()
@@ -16,7 +15,7 @@ export const useProfile = () => {
 
   const refreshProfile = () => {
     if (user) {
-      logger.debug('Refreshing profile in useProfile for', user?.username, profile);
+      // logger.debug('Refreshing profile in useProfile for', user?.username, profile);
       getProfileRow(user.id, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)
@@ -39,7 +38,7 @@ export const useProfileByUser = (user: User | undefined) => {
 
   function refreshProfile() {
     if (userId) {
-      console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
+      // console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
       getProfileRow(userId, db)
         .then((profile) => {
           if (!profile) setProfile(null)
@@ -63,11 +62,11 @@ export const useProfileByUser = (user: User | undefined) => {
 
 export const useProfileByUserId = (userId: string | undefined) => {
   const [profile, setProfile] = usePersistentInMemoryState<
-    ProfileRow | undefined | null
+    ProfileWithoutUser | undefined | null
   >(undefined, `profile-${userId}`)
 
   useEffect(() => {
-    console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
+    // console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
     if (userId)
       getProfileRow(userId, db).then((profile) => {
         if (!profile) setProfile(null)

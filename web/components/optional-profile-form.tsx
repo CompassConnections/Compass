@@ -1,4 +1,4 @@
-import {Fragment, useRef, useState} from 'react'
+import {Fragment, useEffect, useRef, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
@@ -9,13 +9,12 @@ import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {Button, IconButton} from 'web/components/buttons/button'
 import {colClassName, labelClassName} from 'web/pages/signup'
 import {useRouter} from 'next/router'
-import {updateProfile, updateUser} from 'web/lib/api'
-import {Column} from 'common/supabase/utils'
+import {api, updateProfile, updateUser} from 'web/lib/api'
 import {User} from 'common/user'
 import {track} from 'web/lib/service/analytics'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
-import {ProfileRow} from 'common/profiles/profile'
+import {ProfileWithoutUser} from 'common/profiles/profile'
 import {removeUndefinedProps} from 'common/util/object'
 import {isEqual, range} from 'lodash'
 import {PlatformSelect} from 'web/components/widgets/platform-select'
@@ -32,7 +31,7 @@ import {
   EDUCATION_CHOICES,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
-  POLITICAL_CHOICES, 
+  POLITICAL_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
@@ -40,10 +39,14 @@ import {
   ROMANTIC_CHOICES
 } from "web/components/filters/choices";
 import toast from "react-hot-toast";
+import {db} from "web/lib/supabase/db";
+import {fetchChoices} from "web/hooks/use-choices";
+import {AddOptionEntry} from "web/components/add-option-entry";
+
 
 export const OptionalProfileUserForm = (props: {
-  profile: ProfileRow
-  setProfile: <K extends Column<'profiles'>>(key: K, value: ProfileRow[K]) => void
+  profile: ProfileWithoutUser
+  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
   user: User
   buttonLabel?: string
   fromSignup?: boolean
@@ -71,15 +74,44 @@ export const OptionalProfileUserForm = (props: {
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
+  const [interestChoices, setInterestChoices] = useState({})
+  const [causeChoices, setCauseChoices] = useState({})
+  const [workChoices, setWorkChoices] = useState({})
+
+  useEffect(() => {
+    fetchChoices('interests').then(setInterestChoices)
+    fetchChoices('causes').then(setCauseChoices)
+    fetchChoices('work').then(setWorkChoices)
+  }, [db])
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const {bio: _bio, bio_text: _bio_text, bio_tsv: _bio_tsv, bio_length: _bio_length, ...otherProfileProps} = profile
+    const {
+      bio: _bio,
+      bio_text: _bio_text,
+      bio_tsv: _bio_tsv,
+      bio_length: _bio_length,
+      interests,
+      causes,
+      work,
+      ...otherProfileProps
+    } = profile
     console.debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
-    const {error} = await tryCatch(
-      updateProfile(removeUndefinedProps(otherProfileProps) as any)
-    )
-    if (error) {
+    const promises: Promise<any>[] = [
+      tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any))
+    ]
+    if (interests?.length) {
+      promises.push(api('update-options', {table: 'interests', names: interests}))
+    }
+    if (causes?.length) {
+      promises.push(api('update-options', {table: 'causes', names: causes}))
+    }
+    if (work?.length) {
+      promises.push(api('update-options', {table: 'work', names: work}))
+    }
+    try {
+      await Promise.all(promises)
+    } catch (error) {
       console.error(error)
       toast.error(
         `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`
@@ -94,7 +126,6 @@ export const OptionalProfileUserForm = (props: {
         return
       }
     }
-
     onSubmit && (await onSubmit())
     setIsSubmitting(false)
     track('submit optional profile')
@@ -441,6 +472,22 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        <AddOptionEntry
+          choices={interestChoices}
+          setChoices={setInterestChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'interests'}
+        />
+
+        <AddOptionEntry
+          choices={causeChoices}
+          setChoices={setCauseChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'causes'}
+        />
+
         <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>MBTI Personality Type</label>
           <ChoicesToggleGroup
@@ -457,6 +504,59 @@ export const OptionalProfileUserForm = (props: {
             choices={DIET_CHOICES}
             selected={profile['diet'] ?? []}
             onChange={(selected) => setProfile('diet', selected)}
+          />
+        </Col>
+
+        <AddOptionEntry
+          choices={workChoices}
+          setChoices={setWorkChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'work'}
+        />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Company</label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('company', e.target.value)}
+            className={'w-52'}
+            value={profile['company'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            Job title {profile['company'] ? 'at ' + profile['company'] : ''}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('occupation_title', e.target.value)}
+            className={'w-52'}
+            value={profile['occupation_title'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            Highest completed education level
+          </label>
+          <Carousel className="max-w-full">
+            <ChoicesToggleGroup
+              currentChoice={profile['education_level'] ?? ''}
+              choicesMap={EDUCATION_CHOICES}
+              setChoice={(c) => setProfile('education_level', c)}
+            />
+          </Carousel>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>University</label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('university', e.target.value)}
+            className={'w-52'}
+            value={profile['university'] ?? undefined}
           />
         </Col>
 
@@ -572,49 +672,6 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            Highest completed education level
-          </label>
-          <Carousel className="max-w-full">
-            <ChoicesToggleGroup
-              currentChoice={profile['education_level'] ?? ''}
-              choicesMap={EDUCATION_CHOICES}
-              setChoice={(c) => setProfile('education_level', c)}
-            />
-          </Carousel>
-        </Col>
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>University</label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('university', e.target.value)}
-            className={'w-52'}
-            value={profile['university'] ?? undefined}
-          />
-        </Col>
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Company</label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('company', e.target.value)}
-            className={'w-52'}
-            value={profile['company'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            Job title {profile['company'] ? 'at ' + profile['company'] : ''}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('occupation_title', e.target.value)}
-            className={'w-52'}
-            value={profile['occupation_title'] ?? undefined}
-          />
-        </Col>
-
         {/*<Col className={clsx(colClassName)}>*/}
         {/*  <label className={clsx(labelClassName)}>Looking for a relationship?</label>*/}
         {/*  <ChoicesToggleGroup*/}
@@ -637,6 +694,13 @@ export const OptionalProfileUserForm = (props: {
             pinned_url={profile.pinned_url}
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
             setPinnedUrl={(url) => setProfile('pinned_url', url)}
+            setDescription={(url, description) =>
+              setProfile("image_descriptions", {
+                ...(profile?.image_descriptions as Record<string, string> ?? {}),
+                [url]: description,
+              })
+            }
+            image_descriptions={profile.image_descriptions as Record<string, string>}
           />
         </Col>
 

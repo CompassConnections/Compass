@@ -63,7 +63,7 @@ export function ProfileInfo(props: {
 
   const isProfileVisible = currentUser || profile.visibility === 'public'
 
-  const { data: userActivity } = useUserActivity(user?.id)
+  const {data: userActivity} = useUserActivity(user?.id)
 
   return (
     <>
@@ -176,7 +176,7 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
-      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile}/>}
+      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile} refreshProfile={refreshProfile}/>}
       <ProfileCommentSection
         onUser={user}
         profile={profile}

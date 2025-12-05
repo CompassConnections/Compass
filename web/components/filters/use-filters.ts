@@ -74,6 +74,9 @@ export const useFilters = (you: Profile | undefined) => {
     pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
     diet: you?.diet?.length ? you.diet : undefined,
     political_beliefs: you?.political_beliefs?.length ? you.political_beliefs : undefined,
+    interests: you?.interests?.length ? you.interests : undefined,
+    work: you?.work?.length ? you.work : undefined,
+    causes: you?.causes?.length ? you.causes : undefined,
     mbti: you?.mbti ? [you.mbti] : undefined,
     relationship_status: you?.relationship_status?.length ? you.relationship_status : undefined,
     languages: you?.languages?.length ? you.languages : undefined,
@@ -99,6 +102,9 @@ export const useFilters = (you: Profile | undefined) => {
     && isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles))
     && isEqual(new Set(filters.diet), new Set(you.diet))
     && isEqual(new Set(filters.political_beliefs), new Set(you.political_beliefs))
+    && isEqual(new Set(filters.interests), new Set(you.interests))
+    && isEqual(new Set(filters.causes), new Set(you.causes))
+    && isEqual(new Set(filters.work), new Set(you.work))
     && isEqual(new Set(filters.relationship_status), new Set(you.relationship_status))
     && isEqual(new Set(filters.languages), new Set(you.languages))
     && isEqual(new Set(filters.religion), new Set(you.religion))

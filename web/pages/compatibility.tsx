@@ -1,6 +1,6 @@
 import {useUser} from 'web/hooks/use-user'
 import {useCompatibilityQuestionsWithAnswerCount, useUserCompatibilityAnswers} from 'web/hooks/use-questions'
-import {useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Row} from 'common/supabase/utils'
 import {Question} from 'web/lib/supabase/questions'
 import {Col} from 'web/components/layout/col'
@@ -11,6 +11,7 @@ import {CompatibilityAnswerBlock} from "web/components/answers/compatibility-que
 import {User} from "common/user";
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import {useIsMobile} from "web/hooks/use-is-mobile";
+import {LoadMoreUntilNotVisible} from "web/components/widgets/visibility-observer";
 
 type QuestionWithAnswer = Question & {
   answer?: Row<'compatibility_answers'>
@@ -145,6 +146,24 @@ function QuestionList({
   user: User
   refreshCompatibilityAll: () => void
 }) {
+  const BATCH_SIZE = 100
+  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE)
+
+  // Reset pagination when the questions list changes (e.g., switching tabs or refreshed data)
+  useEffect(() => {
+    console.log('resetting pagination')
+    setVisibleCount(BATCH_SIZE)
+  }, [questions])
+
+  const loadMore = useCallback(async () => {
+    console.log('start loadMore')
+    if (visibleCount >= questions.length) return false
+    console.log('loading more', visibleCount)
+    setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, questions.length))
+    console.log('end loadMore')
+    return true
+  }, [visibleCount, questions.length]);
+
   if (isLoading) {
     return <CompassLoadingIndicator/>
   }
@@ -159,9 +178,11 @@ function QuestionList({
     )
   }
 
+  const visibleQuestions = questions.slice(0, visibleCount)
+
   return (
     <div className="space-y-4 p-2">
-      {questions.map((q) => (
+      {visibleQuestions.map((q) => (
         <div
           key={q.id}
           className="bg-canvas-0 border-canvas-100 rounded-lg border px-2 pt-2 shadow-sm transition-colors"
@@ -177,6 +198,7 @@ function QuestionList({
           />
         </div>
       ))}
+      <LoadMoreUntilNotVisible loadMore={loadMore}/>
     </div>
   )
 }

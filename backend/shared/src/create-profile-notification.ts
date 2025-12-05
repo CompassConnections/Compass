@@ -8,6 +8,7 @@ import { getProfile } from 'shared/profiles/supabase'
 
 export const createProfileLikeNotification = async (like: Row<'profile_likes'>) => {
   const { creator_id, target_id, like_id } = like
+  const pg = createSupabaseDirectClient()
 
   const targetPrivateUser = await getPrivateUser(target_id)
   const profile = await getProfile(creator_id)
@@ -35,7 +36,6 @@ export const createProfileLikeNotification = async (like: Row<'profile_likes'>) 
     sourceUserAvatarUrl: profile.pinned_url ?? profile.user.avatarUrl,
     sourceText: '',
   }
-  const pg = createSupabaseDirectClient()
   return await insertNotificationToSupabase(notification, pg)
 }
 
@@ -48,6 +48,7 @@ export const createProfileShipNotification = async (
 
   const creator = await getUser(creator_id)
   const targetPrivateUser = await getPrivateUser(recipientId)
+  const pg = createSupabaseDirectClient()
   const profile = await getProfile(otherTargetId)
 
   if (!creator || !targetPrivateUser || !profile) {
@@ -86,6 +87,5 @@ export const createProfileShipNotification = async (
       otherTargetId,
     },
   }
-  const pg = createSupabaseDirectClient()
   return await insertNotificationToSupabase(notification, pg)
 }

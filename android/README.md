@@ -13,7 +13,7 @@ This document describes how to:
 
 ## 1. Project Overview
 
-The app is a Capacitor Android project that loads the local Next.js assests inside a WebView.
+The app is a Capacitor Android project that loads the local Next.js assets inside a WebView.
 
 During development, it can instead load the local frontend (`http://10.0.2.2:3000`) and backend (`http://10.0.2.2:8088`).
 

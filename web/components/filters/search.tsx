@@ -17,6 +17,7 @@ import {useUser} from "web/hooks/use-user";
 import toast from "react-hot-toast";
 import {FilterFields} from "common/filters";
 import {DisplayUser} from "common/api/user-types";
+import {useChoices} from "web/hooks/use-choices";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -137,6 +138,14 @@ export const Search = (props: {
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
+  const {choices: interestChoices} = useChoices('interests')
+  const {choices: causeChoices} = useChoices('causes')
+  const {choices: workChoices} = useChoices('work')
+  const choices = {
+    interests: interestChoices,
+    causes: causeChoices,
+    work: workChoices,
+  }
 
   useEffect(() => {
     if (isHolding) return;
@@ -221,6 +230,7 @@ export const Search = (props: {
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
           includeRelationshipFilters={youSeekingRelationship}
+          choices={choices}
         />
       </Row>
       <RightModal
@@ -237,6 +247,7 @@ export const Search = (props: {
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
           includeRelationshipFilters={youSeekingRelationship}
+          choices={choices}
         />
       </RightModal>
       <Row className="items-center justify-between w-full flex-wrap gap-2">

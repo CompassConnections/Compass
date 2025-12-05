@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     has_kids INTEGER,
     height_in_inches INTEGER,
     id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
+    image_descriptions jsonb,
     is_smoker BOOLEAN,
     diet TEXT[],
     last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,

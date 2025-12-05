@@ -20,7 +20,7 @@ import {KidsLabel, wantsKidsLabelsWithIcon} from "web/components/filters/wants-k
 import {hasKidsLabels} from "common/has-kids";
 import {HasKidsLabel} from "web/components/filters/has-kids-filter";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
-import {FaHeart} from "react-icons/fa";
+import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
 import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
 import {GiFruitBowl} from "react-icons/gi";
@@ -40,6 +40,8 @@ import {
   RelationshipStatusFilterText
 } from "web/components/filters/relationship-status-filter";
 import {BsPersonHeart} from "react-icons/bs";
+import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
+import {OptionTableKey} from "common/profiles/constants";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -50,6 +52,7 @@ export function DesktopFilters(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
+  choices: Record<OptionTableKey, Record<string, string[]>>
 }) {
   const {
     filters,
@@ -60,6 +63,7 @@ export function DesktopFilters(props: {
     isYourFilters,
     locationFilterProps,
     includeRelationshipFilters,
+    choices,
   } = props
 
   return (
@@ -416,6 +420,111 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
         menuWidth="w-50"
+      />
+
+      {/* Interests */}
+      <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <FaStar className="h-4 w-4"/>
+                <InterestFilterText
+                  options={
+                    filters.interests as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                  label={'interest'}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.interests}
+            label={'interests'}
+          />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50 max-h-[400px] overflow-y-auto"
+      />
+
+      {/* Causes */}
+      <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <FaHandsHelping className="h-4 w-4"/>
+                <InterestFilterText
+                  options={
+                    filters.causes as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                  label={'cause'}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.causes}
+            label={'causes'}
+          />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50 max-h-[400px] overflow-y-auto"
+      />
+
+      {/* Work */}
+      <CustomizeableDropdown
+        showNewBadge
+        newBadgeClassName={"-top-3 -left-2"}
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <FaBriefcase className="h-4 w-4"/>
+                <InterestFilterText
+                  options={
+                    filters.work as
+                      | string[]
+                      | undefined
+                  }
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                  label={'work'}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.work}
+            label={'work'}
+          />
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50 max-h-[400px] overflow-y-auto"
       />
 
       {/* POLITICS */}

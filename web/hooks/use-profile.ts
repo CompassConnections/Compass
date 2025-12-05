@@ -3,10 +3,9 @@ import {useEffect} from 'react'
 import {Row} from 'common/supabase/utils'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {User} from 'common/user'
-import {getProfileRow, Profile, ProfileRow} from 'common/profiles/profile'
+import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {db} from 'web/lib/supabase/db'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {logger} from "common/logging";
 
 export const useProfile = () => {
   const user = useUser()
@@ -63,7 +62,7 @@ export const useProfileByUser = (user: User | undefined) => {
 
 export const useProfileByUserId = (userId: string | undefined) => {
   const [profile, setProfile] = usePersistentInMemoryState<
-    ProfileRow | undefined | null
+    ProfileWithoutUser | undefined | null
   >(undefined, `profile-${userId}`)
 
   useEffect(() => {

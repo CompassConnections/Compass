@@ -4,6 +4,7 @@ import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
 import {from, join, leftJoin, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
 import {MIN_BIO_LENGTH} from "common/constants";
 import {compact} from "lodash";
+import {OptionTableKey} from "common/profiles/constants";
 
 export type profileQueryType = {
   limit?: number | undefined,
@@ -37,6 +38,8 @@ export type profileQueryType = {
   skipId?: string | undefined,
   orderBy?: string | undefined,
   lastModificationWithin?: string | undefined,
+} & {
+  [K in OptionTableKey]?: string[] | undefined
 }
 
 // const userActivityColumns = ['last_online_time']
@@ -44,7 +47,7 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  console.debug(props)
+  console.debug('loadProfiles', props)
   const {
     limit: limitParam,
     after,
@@ -66,6 +69,9 @@ export const loadProfiles = async (props: profileQueryType) => {
     religion,
     wants_kids_strength,
     has_kids,
+    interests,
+    causes,
+    work,
     is_smoker,
     shortBio,
     geodbCityIds,
@@ -95,23 +101,54 @@ export const loadProfiles = async (props: profileQueryType) => {
       : 'profiles'
 
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
+
+  // Pre-aggregated interests per profile
+  function getManyToManyJoin(label: OptionTableKey) {
+    return `(
+        SELECT 
+            profile_${label}.profile_id,
+            ARRAY_AGG(${label}.name ORDER BY ${label}.name) AS ${label}
+        FROM profile_${label}
+        JOIN ${label} ON ${label}.id = profile_${label}.option_id
+        GROUP BY profile_${label}.profile_id
+    ) i ON i.profile_id = profiles.id`
+  }
+  const interestsJoin = getManyToManyJoin('interests')
+  const causesJoin = getManyToManyJoin('causes')
+  const workJoin = getManyToManyJoin('work')
+
   const compatibilityScoreJoin = pgp.as.format(`compatibility_scores cs on (cs.user_id_1 = LEAST(profiles.user_id, $(compatibleWithUserId)) and cs.user_id_2 = GREATEST(profiles.user_id, $(compatibleWithUserId)))`, {compatibleWithUserId})
+
+  const joins = [
+    orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
+    orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
+    interests && leftJoin(interestsJoin),
+    causes && leftJoin(causesJoin),
+    work && leftJoin(workJoin),
+  ]
 
   const _orderBy = orderByParam === 'compatibility_score' ? 'cs.score' : `${tablePrefix}.${orderByParam}`
   const afterFilter = renderSql(
     select(_orderBy),
     from('profiles'),
-    orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
-    orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
+    ...joins,
     where('profiles.id = $(after)', {after}),
   )
 
   const tableSelection = compact([
     from('profiles'),
     join('users on users.id = profiles.user_id'),
-    orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
-    orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
+    ...joins,
   ])
+
+  function getManyToManyClause(label: OptionTableKey) {
+    return `EXISTS (
+      SELECT 1 FROM profile_${label} pi2
+      JOIN ${label} ii2 ON ii2.id = pi2.option_id
+      WHERE pi2.profile_id = profiles.id
+        AND ii2.name = ANY (ARRAY[$(values)])
+      )`
+  }
 
   const filters = [
     where('looking_for_matches = true'),
@@ -190,6 +227,12 @@ export const loadProfiles = async (props: profileQueryType) => {
       {religion}
     ),
 
+    interests?.length && where(getManyToManyClause('interests'), {values: interests}),
+
+    causes?.length && where(getManyToManyClause('causes'), {values: causes}),
+
+    work?.length && where(getManyToManyClause('work'), {values: work}),
+
     !!wants_kids_strength &&
     wants_kids_strength !== -1 &&
     where(
@@ -229,12 +272,15 @@ export const loadProfiles = async (props: profileQueryType) => {
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
   ]
 
-  let selectCols = 'profiles.*, name, username, users.data as user'
+  let selectCols = 'profiles.*, users.name, users.username, users.data as user'
   if (orderByParam === 'compatibility_score') {
     selectCols += ', cs.score as compatibility_score'
   } else if (orderByParam === 'last_online_time') {
     selectCols += ', user_activity.last_online_time'
   }
+  if (interests) selectCols += `, COALESCE(i.interests, '{}') AS interests`
+  if (causes) selectCols += `, COALESCE(i.causes, '{}') AS causes`
+  if (work) selectCols += `, COALESCE(i.work, '{}') AS work`
 
   const query = renderSql(
     select(selectCols),
@@ -267,7 +313,8 @@ export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
     if (!props.skipId) props.skipId = auth.uid
     const {profiles, count} = await loadProfiles(props)
     return {status: 'success', profiles: profiles, count: count}
-  } catch {
+  } catch (error) {
+    console.log(error)
     return {status: 'fail', profiles: [], count: 0}
   }
 }

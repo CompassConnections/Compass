@@ -6,7 +6,6 @@ import { usePopper } from 'react-popper'
 import { Col } from 'web/components/layout/col'
 import { AnimationOrNothing } from 'web/components/comments/dropdown-menu'
 
-// NOTE: you can't conditionally render any of the items from a useEffect hook, or you'll get hydration errors
 export default function DropdownMenu(props: {
   items: ReactNode[]
   icon?: ReactNode

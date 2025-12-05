@@ -52,6 +52,32 @@ export type Database = {
           },
         ]
       }
+      causes: {
+        Row: {
+          creator_id: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          creator_id?: string | null
+          id?: never
+          name: string
+        }
+        Update: {
+          creator_id?: string | null
+          id?: never
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'causes_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       compatibility_answers: {
         Row: {
           created_time: string
@@ -237,6 +263,32 @@ export type Database = {
           {
             foreignKeyName: 'contact_user_id_fkey'
             columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      interests: {
+        Row: {
+          creator_id: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          creator_id?: string | null
+          id?: never
+          name: string
+        }
+        Update: {
+          creator_id?: string | null
+          id?: never
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'interests_creator_id_fkey'
+            columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
@@ -431,6 +483,39 @@ export type Database = {
           },
         ]
       }
+      profile_causes: {
+        Row: {
+          id: number
+          option_id: number
+          profile_id: number
+        }
+        Insert: {
+          id?: never
+          option_id: number
+          profile_id: number
+        }
+        Update: {
+          id?: never
+          option_id?: number
+          profile_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_causes_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'causes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_causes_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profile_comments: {
         Row: {
           content: Json
@@ -481,6 +566,39 @@ export type Database = {
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      profile_interests: {
+        Row: {
+          id: number
+          option_id: number
+          profile_id: number
+        }
+        Insert: {
+          id?: never
+          option_id: number
+          profile_id: number
+        }
+        Update: {
+          id?: never
+          option_id?: number
+          profile_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_interests_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'interests'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_interests_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
         ]
@@ -582,6 +700,39 @@ export type Database = {
           },
         ]
       }
+      profile_work: {
+        Row: {
+          id: number
+          option_id: number
+          profile_id: number
+        }
+        Insert: {
+          id?: never
+          option_id: number
+          profile_id: number
+        }
+        Update: {
+          id?: never
+          option_id?: number
+          profile_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_work_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'work'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_work_profile_id_fkey'
+            columns: ['profile_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           age: number | null
@@ -607,6 +758,7 @@ export type Database = {
           has_kids: number | null
           height_in_inches: number | null
           id: number
+          image_descriptions: Json | null
           is_smoker: boolean | null
           languages: string[] | null
           last_modification_time: string
@@ -661,6 +813,7 @@ export type Database = {
           has_kids?: number | null
           height_in_inches?: number | null
           id?: number
+          image_descriptions?: Json | null
           is_smoker?: boolean | null
           languages?: string[] | null
           last_modification_time?: string
@@ -715,6 +868,7 @@ export type Database = {
           has_kids?: number | null
           height_in_inches?: number | null
           id?: number
+          image_descriptions?: Json | null
           is_smoker?: boolean | null
           languages?: string[] | null
           last_modification_time?: string
@@ -1070,6 +1224,32 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'votes_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      work: {
+        Row: {
+          creator_id: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          creator_id?: string | null
+          id?: never
+          name: string
+        }
+        Update: {
+          creator_id?: string | null
+          id?: never
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'work_creator_id_fkey'
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'

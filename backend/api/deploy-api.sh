@@ -25,6 +25,19 @@ PROJECT="compass-130ba"
 SERVICE_NAME="api"
 
 GIT_REVISION=$(git rev-parse --short HEAD)
+GIT_COMMIT_DATE=$(git log -1 --format=%ci)
+GIT_COMMIT_AUTHOR=$(git log -1 --format='%an')
+
+cat > metadata.json << EOF
+{
+  "git": {
+    "revision": "${GIT_REVISION}",
+    "commitDate": "${GIT_COMMIT_DATE}",
+    "author": "${GIT_COMMIT_AUTHOR}"
+  }
+}
+EOF
+
 TIMESTAMP=$(date +"%s")
 IMAGE_TAG="${TIMESTAMP}-${GIT_REVISION}"
 IMAGE_URL="${REGION}-docker.pkg.dev/${PROJECT}/builds/${SERVICE_NAME}:${IMAGE_TAG}"
@@ -41,16 +54,16 @@ export TF_VAR_image_url=$IMAGE_URL
 export TF_VAR_env=$ENV
 tofu apply -auto-approve
 
-INSTANCE_NAME=$(gcloud compute instances list \
-  --filter="zone:(us-west1-c)" \
-  --sort-by="~creationTimestamp" \
-  --format="value(name)" \
-  --limit=1)
-SERVICE_ACCOUNT_EMAIL=$(gcloud compute instances describe ${INSTANCE_NAME} \
-  --zone us-west1-c \
-  --format="value(serviceAccounts.email)")
-gcloud projects add-iam-policy-binding ${PROJECT} \
-  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
-  --role="roles/artifactregistry.reader"
+#INSTANCE_NAME=$(gcloud compute instances list \
+#  --filter="zone:(us-west1-c)" \
+#  --sort-by="~creationTimestamp" \
+#  --format="value(name)" \
+#  --limit=1)
+#SERVICE_ACCOUNT_EMAIL=$(gcloud compute instances describe ${INSTANCE_NAME} \
+#  --zone us-west1-c \
+#  --format="value(serviceAccounts.email)")
+#gcloud projects add-iam-policy-binding ${PROJECT} \
+#  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+#  --role="roles/artifactregistry.reader"
 
 echo "✅ Deployment complete! Image: ${IMAGE_URL}"

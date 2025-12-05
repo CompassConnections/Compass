@@ -30,7 +30,7 @@
     "playwright:debug": "playwright test --debug",
     "playwright:report": "npx playwright show-report tests/reports/playwright-report",
     "postinstall": "./scripts/post_install.sh",
-    "emulate": "firebase emulators:start --only auth"
+    "emulate": "firebase emulators:start --only auth --project compass-57c3c"
   },
   "dependencies": {
     "@capacitor/app": "7.1.0",

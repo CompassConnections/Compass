@@ -10,5 +10,7 @@ async function createAuth() {
     returnSecureToken: true
   });
 
+  console.log('Auth created', config.USERS.DEV_1.EMAIL)
+
 }
 createAuth();

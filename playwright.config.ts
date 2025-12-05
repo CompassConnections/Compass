@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -27,5 +26,6 @@ export default defineConfig({
     //   use: { ...devices['Desktop Safari'] },
     // },
   ],
+  timeout: 60000,
 
 });

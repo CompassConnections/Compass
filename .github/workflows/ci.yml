@@ -45,37 +45,18 @@ jobs:
 #          "common/coverage/lcov.info" \
 #          "web/coverage/lcov.info" \
 #          > coverage/lcov.info
-  
-  
-
-  #      - name: Build app
-#        env:
-#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-#        run: npm run build
 
       # Optional: Playwright E2E tests
       - name: Install Playwright deps
         run: |
-          npx playwright install --with-deps
+          npx playwright install chromium
+#          npx playwright install --with-deps
 #          npm install @playwright/test
 
       - name: Run E2E tests
-        env:
-          NEXT_PUBLIC_API_URL: localhost:8088
-          NEXT_PUBLIC_FIREBASE_ENV: DEV
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: |
-          npx nyc --reporter=lcov yarn --cwd=web serve &
-          npx nyc --reporter=lcov yarn --cwd=backend/api dev &
-          npx wait-on http://localhost:3000
-          npx playwright test tests/e2e
-          SERVER_PID=$(fuser -k 3000/tcp)
-          echo $SERVER_PID
-          kill $SERVER_PID
-          SERVER_PID=$(fuser -k 8088/tcp)
-          echo $SERVER_PID
-          kill $SERVER_PID
+          chmod +x scripts/e2e.sh
+          ./scripts/e2e.sh
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

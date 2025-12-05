@@ -41,6 +41,9 @@ console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 //   throw new MissingKeyError('firebaseConfig.apiKey')
 // }
 
+export const IS_FIREBASE_EMULATOR = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === "true"
+if (IS_FIREBASE_EMULATOR) console.log("Using Firebase emulator.")
+
 export const LOCAL_WEB_DOMAIN = `localhost:3000`
 export const LOCAL_BACKEND_DOMAIN = `${IS_WEBVIEW_DEV_PHONE ? '192.168.1.3' : IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`
 

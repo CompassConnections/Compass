@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {convertRace, convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {ReactNode} from 'react'
+import React, {ReactNode} from 'react'
 import {
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
@@ -10,7 +10,8 @@ import {
   INVERTED_POLITICAL_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
-  INVERTED_ROMANTIC_CHOICES
+  INVERTED_ROMANTIC_CHOICES,
+  RELATIONSHIP_ICONS
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
@@ -30,7 +31,7 @@ import {UserActivity} from "common/user";
 import {ClockIcon} from "@heroicons/react/solid";
 import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
-import {FaBriefcase, FaHandsHelping, FaStar} from "react-icons/fa";
+import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -79,10 +80,7 @@ export default function ProfileAbout(props: {
     >
       <Seeking profile={profile}/>
       <RelationshipType profile={profile}/>
-      <AboutRow
-        icon={<BsPersonHeart className="h-5 w-5"/>}
-        text={profile.relationship_status?.map(v => INVERTED_RELATIONSHIP_STATUS_CHOICES[v])}
-      />
+      <RelationshipStatus profile={profile}/>
       <Education profile={profile}/>
       <Occupation profile={profile}/>
       <AboutRow
@@ -203,6 +201,20 @@ function RelationshipType(props: { profile: Profile }) {
     <AboutRow
       icon={<BsPersonHeart className="h-5 w-5"/>}
       text={seekingGenderText}
+    />
+  )
+}
+
+function RelationshipStatus(props: { profile: Profile }) {
+  const {profile} = props
+  const relationship_status = profile.relationship_status ?? []
+  if (relationship_status.length === 0) return
+  const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
+  const icon = RELATIONSHIP_ICONS[key] ?? FaHeart
+  return (
+    <AboutRow
+      icon={icon ? React.createElement(icon, {className: 'h-5 w-5'}) : null}
+      text={relationship_status?.map(v => INVERTED_RELATIONSHIP_STATUS_CHOICES[v])}
     />
   )
 }

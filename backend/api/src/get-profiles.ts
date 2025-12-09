@@ -111,7 +111,7 @@ export const loadProfiles = async (props: profileQueryType) => {
         FROM profile_${label}
         JOIN ${label} ON ${label}.id = profile_${label}.option_id
         GROUP BY profile_${label}.profile_id
-    ) i ON i.profile_id = profiles.id`
+    ) profile_${label} ON profile_${label}.profile_id = profiles.id`
   }
   const interestsJoin = getManyToManyJoin('interests')
   const causesJoin = getManyToManyJoin('causes')
@@ -143,10 +143,10 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   function getManyToManyClause(label: OptionTableKey) {
     return `EXISTS (
-      SELECT 1 FROM profile_${label} pi2
-      JOIN ${label} ii2 ON ii2.id = pi2.option_id
-      WHERE pi2.profile_id = profiles.id
-        AND ii2.name = ANY (ARRAY[$(values)])
+      SELECT 1 FROM profile_${label}
+      JOIN ${label} ON ${label}.id = profile_${label}.option_id
+      WHERE profile_${label}.profile_id = profiles.id
+        AND ${label}.name = ANY (ARRAY[$(values)])
       )`
   }
 
@@ -278,9 +278,9 @@ export const loadProfiles = async (props: profileQueryType) => {
   } else if (orderByParam === 'last_online_time') {
     selectCols += ', user_activity.last_online_time'
   }
-  if (interests) selectCols += `, COALESCE(i.interests, '{}') AS interests`
-  if (causes) selectCols += `, COALESCE(i.causes, '{}') AS causes`
-  if (work) selectCols += `, COALESCE(i.work, '{}') AS work`
+  if (interests) selectCols += `, COALESCE(profile_interests.interests, '{}') AS interests`
+  if (causes) selectCols += `, COALESCE(profile_causes.causes, '{}') AS causes`
+  if (work) selectCols += `, COALESCE(profile_work.work, '{}') AS work`
 
   const query = renderSql(
     select(selectCols),
@@ -291,7 +291,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     limitParam && limit(limitParam),
   )
 
-  console.debug('query:', query)
+  // console.debug('query:', query)
 
   const profiles = await pg.map(query, [], convertRow)
 

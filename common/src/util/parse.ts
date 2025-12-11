@@ -108,18 +108,18 @@ function _cleanDoc(doc: JSONContent) {
   }
 
   // Trim leading/trailing hardBreaks within first and last paragraphs
-  const trimHardBreaks = (paragraph: JSONContent) => {
+  const trimHardBreaks = (paragraph: JSONContent, start: boolean, end: boolean) => {
     if (!paragraph.content) return paragraph;
 
     let nodes = [...paragraph.content];
 
     // Remove hardBreaks at the start
-    while (nodes.length > 0 && nodes[0].type === "hardBreak") {
+    while (start && nodes.length > 0 && nodes[0].type === "hardBreak") {
       nodes.shift();
     }
 
     // Remove hardBreaks at the end
-    while (nodes.length > 0 && nodes[nodes.length - 1].type === "hardBreak") {
+    while (end && nodes.length > 0 && nodes[nodes.length - 1].type === "hardBreak") {
       nodes.pop();
     }
 
@@ -127,9 +127,9 @@ function _cleanDoc(doc: JSONContent) {
   };
 
   if (content.length > 0) {
-    content[0] = trimHardBreaks(content[0]);
+    content[0] = trimHardBreaks(content[0], true, false);
     if (content.length > 1) {
-      content[content.length - 1] = trimHardBreaks(content[content.length - 1]);
+      content[content.length - 1] = trimHardBreaks(content[content.length - 1], false, true);
     }
   }
 

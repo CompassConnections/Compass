@@ -38,7 +38,7 @@ describe('createProfile', () => {
     });
 
     describe('should', () => {
-        it.skip('sucessfully create a profile', async () => {
+        it('successfully create a profile', async () => {
             const mockBody = {
                 city: "mockCity",
                 gender: "mockGender",
@@ -72,8 +72,8 @@ describe('createProfile', () => {
             (sendDiscordMessage as jest.Mock).mockResolvedValueOnce(null);
             (mockPg.one as jest.Mock).mockReturnValue(10);
 
-            const results = await createProfile(mockBody, mockAuth, mockReq);
-            expect(results).toEqual(mockData)
+            const results: any = await createProfile(mockBody, mockAuth, mockReq);
+            expect(results.result).toEqual(mockData)
         });
 
         it('throws an error if the profile already exists', async () => {

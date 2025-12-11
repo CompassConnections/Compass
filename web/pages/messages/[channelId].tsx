@@ -185,7 +185,7 @@ export const PrivateChat = (props: {
 
     try {
       const content = cleanDoc(editor.getJSON())
-      // console.log('submitting message', JSON.stringify(content))
+      // console.log('submitting message\n', JSON.stringify(editor.getJSON()), JSON.stringify(content))
       if (editingMessage) {
         // console.log('editingMessage edit-message', editingMessage)
         setMessages((prevMessages) =>

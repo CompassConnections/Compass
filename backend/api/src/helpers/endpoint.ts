@@ -76,6 +76,8 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
       try {
         return {kind: 'jwt', data: await auth.verifyIdToken(payload)}
       } catch (err) {
+        const raw = payload.split(".")[0];
+        console.log("JWT header:", JSON.parse(Buffer.from(raw, "base64").toString()));
         // This is somewhat suspicious, so get it into the firebase console
         console.error('Error verifying Firebase JWT: ', err, scheme, payload)
         throw new APIError(500, 'Error validating token.')

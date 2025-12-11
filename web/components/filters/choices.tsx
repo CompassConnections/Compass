@@ -1,4 +1,7 @@
 import {invert} from "lodash";
+import {FaHeart, FaUsers} from "react-icons/fa";
+import {FiUser} from "react-icons/fi";
+import {GiRing} from "react-icons/gi";
 
 export const RELATIONSHIP_CHOICES = {
   // Other: 'other',
@@ -8,12 +11,20 @@ export const RELATIONSHIP_CHOICES = {
 };
 
 export const RELATIONSHIP_STATUS_CHOICES = {
-  Single: 'single',
-  Married: 'married',
-  'Casual': 'casual',
-  'Long-term': 'long_term',
-  'Open': 'open',
+  'Single': 'single',
+  'Married': 'married',
+  'In casual relationship': 'casual',
+  'In long-term relationship': 'long_term',
+  'In open relationship': 'open',
 };
+
+export const RELATIONSHIP_ICONS = {
+  single: FiUser,
+  married: GiRing,
+  casual: FaHeart,
+  long_term: FaHeart,
+  open: FaUsers,
+} as const;
 
 export const ROMANTIC_CHOICES = {
   Monogamous: 'mono',
@@ -74,7 +85,7 @@ export const RELIGION_CHOICES = {
   'Other': 'other',
 }
 
-export const LANGUAGE_CHOICES  = {
+export const LANGUAGE_CHOICES = {
   'Akan': 'akan',
   'Amharic': 'amharic',
   'Arabic': 'arabic',

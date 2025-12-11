@@ -1,15 +1,22 @@
 import * as admin from 'firebase-admin'
-
-
 import {getServiceAccountCredentials} from "shared/firebase-utils";
 import {IS_LOCAL} from "common/hosting/constants";
+import {IS_FIREBASE_EMULATOR} from "common/envs/constants";
 
-// Locally initialize Firebase Admin.
 export const initAdmin = () => {
+
+  if (IS_LOCAL && IS_FIREBASE_EMULATOR) {
+    console.log("Using Firebase Emulator Suite.")
+    return admin.initializeApp({
+      projectId: "compass-57c3c",
+      storageBucket: "compass-130ba-public",
+    })
+  }
+
   if (IS_LOCAL) {
     try {
       const serviceAccount = getServiceAccountCredentials()
-      // console.debug(serviceAccount)
+
       if (!serviceAccount.project_id) {
         console.debug(`GOOGLE_APPLICATION_CREDENTIALS not set, skipping admin firebase init.`)
         return

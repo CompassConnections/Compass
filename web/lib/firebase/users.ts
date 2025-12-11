@@ -1,7 +1,7 @@
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup} from 'firebase/auth'
+import {getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup, connectAuthEmulator} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
@@ -9,12 +9,19 @@ import {GOOGLE_CLIENT_ID} from "common/constants"
 import {isAndroidWebView} from "web/lib/util/webview"
 import {SocialLogin} from "@capgo/capacitor-social-login"
 import {Capacitor} from "@capacitor/core"
+import {IS_FIREBASE_EMULATOR} from "common/envs/constants"
 
 dayjs.extend(utc)
 
 export type {User}
 
 export const auth = getAuth(app)
+
+if (IS_FIREBASE_EMULATOR) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+}
+
+// console.log('auth:', auth)
 
 export const CACHED_REFERRAL_USERNAME_KEY = 'CACHED_REFERRAL_KEY'
 

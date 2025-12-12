@@ -15,10 +15,23 @@
     "lib": ["esnext"],
     "skipLibCheck": true,
     "paths": {
-      "common/*": ["../../common/src/*", "../../../common/lib/*"],
-      "shared/*": ["./src/*"]
+      "common/*": ["../../common/src/*",
+      "../../../common/lib/*"
+      ],
+      "shared/*": [
+        "./src/*"
+      ],
     }
   },
-  "references": [{ "path": "../../common" }],
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
+  "references": [
+    {
+      "path": "../../common"
+    },
+  ],
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

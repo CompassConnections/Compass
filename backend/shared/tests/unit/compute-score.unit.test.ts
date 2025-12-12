@@ -1,4 +1,4 @@
-import {recomputeCompatibilityScoresForUser} from "api/compatibility/compute-scores";
+import {recomputeCompatibilityScoresForUser} from "shared/compatibility/compute-scores";
 import * as supabaseInit from "shared/supabase/init";
 import * as profilesSupabaseModules from "shared/profiles/supabase";
 import * as compatibilityScoreModules from "common/profiles/compatibility-score";

@@ -13,5 +13,10 @@
       "email/*": ["../email/emails/*"]
     }
   },
-  "include": ["tests/**/*.ts", "src/**/*.ts"]
+  "include": [
+    "tests/**/*.ts",
+    "src/**/*.ts",
+    "../shared/src/**/*.ts",
+    "../../common/src/**/*.ts"
+  ]
 }

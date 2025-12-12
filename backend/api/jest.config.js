@@ -15,7 +15,7 @@ module.exports = {
         "^email/(.*)$": "<rootDir>/../email/emails/$1"
     },
 
-    moduleFileExtensions: ["ts", "js", "json"],
+    moduleFileExtensions: ["tsx","ts", "js", "json"],
     clearMocks: true,
 
     globals: {

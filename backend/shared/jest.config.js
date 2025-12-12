@@ -9,8 +9,8 @@ module.exports = {
     ],
 
     moduleNameMapper: {
-        "^api/(.*)$": "<rootDir>/src/$1",
-        "^shared/(.*)$": "<rootDir>/../shared/src/$1",
+        "^api/(.*)$": "<rootDir>/../api/src/$1",
+        "^shared/(.*)$": "<rootDir>/src/$1",
         "^common/(.*)$": "<rootDir>/../../common/src/$1",
         "^email/(.*)$": "<rootDir>/../email/emails/$1"
     },

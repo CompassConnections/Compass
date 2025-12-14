@@ -9,4 +9,7 @@ yarn build-web-view
 npx @capawesome/cli apps:bundles:create \
   --app-id 969bc540-8077-492f-8403-b554bee5de50 \
   --channel default \
+  --commitMessage $commitMessage \
+  --commitRef $commitRef \
+  --commitSha $commitSha \
   --path web/out

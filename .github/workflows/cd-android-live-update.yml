@@ -58,7 +58,7 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: yarn install
 
-      - name: Build
+      - name: Deploy Live Update
         if: steps.check.outputs.changed == 'true'
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}

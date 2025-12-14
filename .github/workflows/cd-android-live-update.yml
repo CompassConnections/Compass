@@ -65,7 +65,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
           CAPAWESOME_TOKEN: ${{ secrets.CAPAWESOME_TOKEN }}
-          commitMessage: $(git log -1 --pretty=format:"%s")
           commitRef: ${{ github.head_ref || github.ref_name }}
           commitSha: ${{ github.sha }}
         run: yarn android-live-update

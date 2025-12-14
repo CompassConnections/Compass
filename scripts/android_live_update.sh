@@ -9,7 +9,7 @@ yarn build-web-view
 echo npx @capawesome/cli apps:bundles:create \
        --app-id 969bc540-8077-492f-8403-b554bee5de50 \
        --channel default \
-       --commitMessage $commitMessage \
+       --commitMessage $(git log -1 --pretty=format:"%s") \
        --commitRef $commitRef \
        --commitSha $commitSha \
        --path web/out
@@ -17,7 +17,7 @@ echo npx @capawesome/cli apps:bundles:create \
 npx @capawesome/cli apps:bundles:create \
   --app-id 969bc540-8077-492f-8403-b554bee5de50 \
   --channel default \
-  --commitMessage $commitMessage \
+  --commitMessage $(git log -1 --pretty=format:"%s") \
   --commitRef $commitRef \
   --commitSha $commitSha \
   --path web/out

@@ -58,10 +58,22 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: yarn install
 
-      - name: Deploy live update
+      - name: Build
         if: steps.check.outputs.changed == 'true'
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
-        run: yarn android-live-update
+        run: yarn build-web-view
+
+      - name: Deploy Live Update
+        uses: capawesome-team/cloud-live-update-action@v0.0.5
+        id: upload-action
+        with:
+          appId: '969bc540-8077-492f-8403-b554bee5de50'
+          channel: 'default'
+          commitMessage: $(git log -1 --pretty=format:"%s")
+          commitRef: ${{ github.head_ref || github.ref_name }}
+          commitSha: ${{ github.sha }}
+          path: 'web/out'
+          token: ${{ secrets.CAPAWESOME_TOKEN }}

@@ -1,4 +1,4 @@
-name: CD API
+name: CD Android Live Update
 on:
   push:
     branches: [ main, master ]
@@ -54,6 +54,10 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Perform live update
+      - name: Deploy live update
         if: steps.check.outputs.changed == 'true'
+        with:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.SUPABASE_INSTANCE_ID }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: yarn android-live-update

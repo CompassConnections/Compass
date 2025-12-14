@@ -17,7 +17,13 @@ if [ -f "$WEB_ENV" ]; then
 fi
 
 # Filter NEXT_PUBLIC_* lines
-grep '^NEXT_PUBLIC_' "$ROOT_ENV" > "$WEB_ENV"
+if [ -f "$ROOT_ENV" ]; then
+  set -a
+  source "$ROOT_ENV"
+  set +a
+  echo "Sourced variables from $ROOT_ENV"
+fi
+env | grep '^NEXT_PUBLIC_' > "$WEB_ENV" || true
 
 echo "Copied NEXT_PUBLIC_ variables to $WEB_ENV:"
 

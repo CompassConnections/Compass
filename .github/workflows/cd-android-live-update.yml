@@ -54,10 +54,14 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
+        run: yarn install
+
       - name: Deploy live update
         if: steps.check.outputs.changed == 'true'
         env:
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.SUPABASE_INSTANCE_ID }}
-          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
         run: yarn android-live-update

@@ -1,0 +1,59 @@
+name: CD API
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - "android/capawesome.json"
+      - ".github/workflows/cd-android-live-update.yml"
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # we need full history for git log
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Read current version
+        id: current
+        run: |
+          current=$(jq -r '.version' android/capawesome.json)
+          echo "version=$current" >> $GITHUB_OUTPUT
+
+      - name: Read previous version
+        id: previous
+        run: |
+          # Get previous commit’s package.json (if it existed)
+          if git show HEAD^:android/capawesome.json >/dev/null 2>&1; then
+            previous=$(git show HEAD^:android/capawesome.json | jq -r '.version')
+          else
+            previous="none"
+          fi
+          echo "version=$previous" >> $GITHUB_OUTPUT
+
+      - name: Check version change
+        id: check
+        run: |
+          echo "current=${{ steps.current.outputs.version }}"
+          echo "previous=${{ steps.previous.outputs.version }}"
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.previous.outputs.version }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Perform live update
+        if: steps.check.outputs.changed == 'true'
+        run: yarn android-live-update

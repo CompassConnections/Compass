@@ -31,6 +31,13 @@ if (Capacitor.isNativePlatform()) {
   })
 
   App.addListener("resume", async () => {
+    const newChannelName = 'default'
+    try {
+      await LiveUpdate.setChannel({channel: newChannelName})
+      console.log(`Device channel set to: ${newChannelName}`)
+    } catch (error) {
+      console.error('Failed to set channel', error)
+    }
     const {nextBundleId} = await LiveUpdate.sync()
     if (nextBundleId) {
       // Ask the user if they want to apply the update immediately

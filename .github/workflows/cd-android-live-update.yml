@@ -56,7 +56,7 @@ jobs:
 
       - name: Deploy live update
         if: steps.check.outputs.changed == 'true'
-        with:
+        env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.SUPABASE_INSTANCE_ID }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}

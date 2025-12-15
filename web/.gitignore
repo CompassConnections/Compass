@@ -9,3 +9,4 @@ testing
 
 .env
 .env.local
+/public/live-update.json

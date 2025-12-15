@@ -10,6 +10,7 @@ import {api} from "web/lib/api"
 import {githubRepo} from "common/constants"
 import {CustomLink} from "web/components/links"
 import {Button} from "web/components/buttons/button"
+import {getLiveUpdateInfo} from "web/lib/live-update";
 
 export type WebBuild = {
   gitSha?: string
@@ -22,6 +23,7 @@ export type LiveUpdateInfo = {
   bundleId?: string | null
   commitSha?: string
   commitMessage?: string
+  commitDate?: string
 }
 
 export type Android = {
@@ -75,13 +77,15 @@ function useDiagnostics() {
       if (Capacitor.isNativePlatform()) {
         const appInfo = await App.getInfo()
         const bundle = await LiveUpdate.getCurrentBundle().catch(() => {return {bundleId: null}})
+        const buildInfo = await getLiveUpdateInfo().catch(() => null)
         diagnostics.android = {
           appVersion: appInfo.version,
           buildNumber: appInfo.build,
           liveUpdate: {
-            bundleId: bundle.bundleId,
-            commitSha: process.env.CAPAWESOME_BUILD_GIT_COMMIT_SHA || 'N/A',
-            commitMessage: process.env.CAPAWESOME_BUILD_GIT_COMMIT_MESSAGE || 'N/A',
+            bundleId: bundle?.bundleId,
+            commitSha: buildInfo?.commitSha,
+            commitMessage: buildInfo?.commitMessage,
+            commitDate: buildInfo?.commitDate
           }
         }
       }

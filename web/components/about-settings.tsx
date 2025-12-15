@@ -140,6 +140,9 @@ const LoadedAboutSettings = (props: {
     if (!diagnostics) return
     await navigator.clipboard.writeText(diagnosticsToText(diagnostics))
     setCopyFeedback('Copied!')
+    setTimeout(() => {
+      setCopyFeedback('')
+    }, 2000)
   }
 
   return <Col className={''}>

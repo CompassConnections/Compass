@@ -518,6 +518,12 @@ app.get(
   swaggerUi.setup(swaggerDocument, {
     customSiteTitle: 'Compass API Docs',
     customCssUrl: '/swagger.css',
+    customJs: `
+      const meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, initial-scale=1';
+      document.head.appendChild(meta);
+    `,
   }),
 )
 app.use(rootPath, swaggerUi.serve)

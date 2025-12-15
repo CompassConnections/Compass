@@ -12,7 +12,6 @@ body:
 - type: textarea
   attributes:
     label: Info
-    example: Kll
   validations:
     required: false
 - type: markdown

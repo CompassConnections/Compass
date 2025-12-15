@@ -113,7 +113,7 @@ function diagnosticsToText(d: Diagnostics): string {
   }
 
   return JSON.stringify(d, replacer, 2)
-    .replace(/  "/g, '')
+    .replace(/ {2}"/g, '')
     .replace(/["{}\[\]]/g, '')
     .replace(/^[ \t]*\n/gm, '')
     .replace(/,\n/g, '\n')
@@ -145,9 +145,6 @@ const LoadedAboutSettings = (props: {
       setCopyFeedback('')
     }, 2000)
   }
-
-  console.log(JSON.stringify(diagnostics, null, 2))
-  console.log(diagnosticsToText(diagnostics))
 
   return <Col className={''}>
     <RuntimeInfo info={diagnostics.runtime}/>

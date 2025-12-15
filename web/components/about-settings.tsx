@@ -87,11 +87,13 @@ const BackendInfo = () => {
   const gitInfo = info.git || {}
   const sha = gitInfo.revision
   const commitDate = gitInfo.commitDate
+  const commitMessage = gitInfo.message
   const url = `${githubRepo}/commit/${sha}`
   return <Col>
     <h3>Backend</h3>
     <p>API version: {info.version}</p>
     {sha && <p>API commit SHA: <CustomLink href={url}>{sha}</CustomLink></p>}
+    {commitMessage && <p>API commit message: {commitMessage}</p>}
     {commitDate && <p>API commit date: {commitDate}</p>}
   </Col>
 }

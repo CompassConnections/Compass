@@ -22,7 +22,7 @@ EOF
 
 cat web/public/live-update.json
 
-#yarn build-web-view
+yarn build-web-view
 
 echo npx @capawesome/cli apps:bundles:create \
        --app-id 969bc540-8077-492f-8403-b554bee5de50 \

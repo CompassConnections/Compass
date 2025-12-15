@@ -4,7 +4,7 @@ body:
   - type: textarea
     attributes:
       label: Bug description
-      description: >
+      description: |
         A clear and concise description of what the bug is.
       validations:
         required: true
@@ -12,7 +12,7 @@ body:
   - type: textarea
     attributes:
       label: Steps to reproduce
-      description: >
+      description: |
         Steps to reproduce the behavior:
         1. Go to '...'
         2. Click on '...'
@@ -24,7 +24,7 @@ body:
   - type: textarea
     attributes:
       label: Expected behavior
-      description: >
+      description: |
         A clear and concise description of what you expected to happen.
       validations:
         required: true
@@ -32,7 +32,7 @@ body:
   - type: textarea
     attributes:
       label: Screenshots
-      description: >
+      description: |
         If applicable, add screenshots to help explain your problem.
       validations:
         required: false
@@ -40,22 +40,24 @@ body:
   - type: textarea
     attributes:
       label: Info
-      description: >
-        - Browser [e.g. chrome, safari]
+      description: |
+        - Browser: [e.g. chrome, safari]
         - Device (if mobile): [e.g. iPhone6]
-        - Build info from `Settings` -> `About`
+        - Build info
+      placeholder: |
+        Build info from `Settings` -> `About`
       validations:
         required: true
 
   - type: textarea
     attributes:
       label: Additional context
-      description: >
+      description: |
         Add any other context about the problem here.
       validations:
         required: false
 
   - type: markdown
     attributes:
-      value: >
+      value: |
         Thanks for contributing!

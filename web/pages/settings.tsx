@@ -18,6 +18,7 @@ import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
 import {WithPrivateUser} from "web/components/user/with-user";
 import {sendPasswordReset} from "web/lib/firebase/password";
+import {AboutSettings} from "web/components/about-settings";
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
@@ -30,6 +31,7 @@ export default function NotificationsPage() {
         tabs={[
           {title: 'General', content: <GeneralSettings/>},
           {title: 'Notifications', content: <NotificationSettings/>},
+          {title: 'About', content: <AboutSettings/>},
         ]}
         trackingName={'settings page'}
       />

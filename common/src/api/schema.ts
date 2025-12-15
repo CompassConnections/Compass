@@ -45,7 +45,12 @@ export const API = (_apiTypeCheck = {
     authed: false,
     rateLimited: false,
     props: z.object({}),
-    returns: {} as { message: 'Server is working.'; uid?: string },
+    returns: {} as {
+      message: 'Server is working.'
+      uid?: string
+      version?: string
+      git?: { revision?: string; commitDate?: string; author?: string }
+    },
     summary: 'Check whether the API server is running',
     tag: 'General',
   },

@@ -19,6 +19,7 @@ import {App} from '@capacitor/app'
 import {useRouter} from "next/navigation"
 import {Keyboard} from "@capacitor/keyboard"
 import {LiveUpdate} from "@capawesome/capacitor-live-update"
+import {IS_VERCEL} from "common/hosting/constants"
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -70,8 +71,7 @@ const logoFont = Major_Mono_Display({
 // })
 
 function printBuildInfo() {
-  // These are undefined if e.g. dev server
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+  if (IS_VERCEL) {
     const env = process.env.NEXT_PUBLIC_VERCEL_ENV
     const msg = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE
     const owner = process.env.NEXT_PUBLIC_VERCEL_GIT_REPO_OWNER

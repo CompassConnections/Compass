@@ -23,6 +23,9 @@ module.exports = {
     experimental: {
         scrollRestoration: true,
     },
+    env: {
+        NEXT_PUBLIC_VERCEL_DEPLOYMENT_ID: process.env.VERCEL_DEPLOYMENT_ID,
+    },
     // Remove once confirmed that posthog.init works without it
     // rewrites: async () => {
     //     if (isAppBuild) {

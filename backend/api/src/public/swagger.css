@@ -2,6 +2,7 @@
     body {
         background-color: #1e1e1e !important;
         color: #ffffff !important;
+        
     }
     .swagger-ui p,
     h1,
@@ -61,4 +62,40 @@
     a {
         color: #1e90ff !important;
     }
+}
+
+/* Increase font sizes on mobile for better readability */
+@media (max-width: 640px) {
+    body,
+    .swagger-ui {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* Common text elements */
+    .swagger-ui p,
+    .swagger-ui label,
+    .swagger-ui .btn,
+    .swagger-ui .parameter__name,
+    .swagger-ui .parameter__type,
+    .swagger-ui .parameter__in,
+    .swagger-ui .response-control-media-type__title,
+    .swagger-ui table thead tr td,
+    .swagger-ui table thead tr th,
+    .swagger-ui table tbody tr td,
+    .swagger-ui .tab li,
+    .swagger-ui .response-col_links,
+    .swagger-ui .opblock-summary-description {
+        font-size: 16px !important;
+    }
+    .swagger-ui .opblock-summary-path {
+        font-size: 20px !important;
+    }
+
+    /* Headings scale */
+    .swagger-ui h1 { font-size: 1.75rem !important; }
+    .swagger-ui h2 { font-size: 1.5rem !important; }
+    .swagger-ui h3 { font-size: 1.25rem !important; }
+    .swagger-ui h4 { font-size: 1.125rem !important; }
+    .swagger-ui h5, .swagger-ui h6 { font-size: 1rem !important; }
 }

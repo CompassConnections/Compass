@@ -184,12 +184,16 @@ const WebBuildInfo = (props: {info?: WebBuild}) => {
 const AndroidInfo = (props: {info?: Android}) => {
   const {info} = props
   if (!info) return
+  const sha = info.liveUpdate?.commitSha
+  const url = `${githubRepo}/commit/${sha}`
   return <Col className={'custom-link'}>
     <h3>Android (Capacitor / Capawesome)</h3>
     <p>App version (Android): {info.appVersion}</p>
     <p>Native build number (Android): {info.buildNumber}</p>
     <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
-    <p>Live update commit (Capawesome): {JSON.stringify(info.liveUpdate)}</p>
+    <p>Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink></p>
+    <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
+    <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
   </Col>
 }
 

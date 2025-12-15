@@ -1,5 +1,5 @@
 name: Other
-description: Any other question or issue
+description: Use this only if no other issue type fits.
 
 body:
 - type: textarea
@@ -12,12 +12,9 @@ body:
 - type: textarea
   attributes:
     label: Info
-    example: >
-     - Browser: [e.g. chrome, safari]
-     - Device (if mobile): [e.g. iPhone6]
-     - Build info from `Settings` -> `About`:
+    example: Kll
   validations:
-    required: true
+    required: false
 - type: markdown
   attributes:
     value: >

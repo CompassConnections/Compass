@@ -12,10 +12,10 @@ body:
 - type: textarea
   attributes:
     label: Info
-    description: >
-     - Browser [e.g. chrome, safari]
+    example: >
+     - Browser: [e.g. chrome, safari]
      - Device (if mobile): [e.g. iPhone6]
-     - Build info from `Settings` -> `About`
+     - Build info from `Settings` -> `About`:
   validations:
     required: true
 - type: markdown

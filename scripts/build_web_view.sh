@@ -4,8 +4,6 @@ set -e
 
 cd "$(dirname "$0")"/..
 
-export NEXT_PUBLIC_WEBVIEW=1
-
 # Paths
 ROOT_ENV=".env"           # your root .env
 WEB_ENV="web/.env"        # target for frontend
@@ -32,6 +30,8 @@ echo "NEXT_PUBLIC_FIREBASE_ENV=prod" >> "$WEB_ENV"
 cat "$WEB_ENV"
 
 cd web
+
+export NEXT_PUBLIC_WEBVIEW=1
 
 rm -rf .next
 

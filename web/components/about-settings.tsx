@@ -22,15 +22,14 @@ const LoadedAboutSettings = (props: {
   const {} = props
 
   return <Col className={'custom-link'}>
-    <WebBuildInfo/>
-    <AndroidInfo/>
+    {IS_VERCEL && <WebBuildInfo/>}
+    {Capacitor.isNativePlatform() && <AndroidInfo/>}
     <BackendInfo/>
     <RuntimeInfo/>
   </Col>
 }
 
 const WebBuildInfo = () => {
-  if (!IS_VERCEL) return
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV
   const msg = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE
   const sha = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
@@ -46,7 +45,6 @@ const WebBuildInfo = () => {
 }
 
 const AndroidInfo = () => {
-  if (!Capacitor.isNativePlatform()) return
   const liveUpdateInfo = {
     commitSha: process.env.CAPAWESOME_BUILD_GIT_COMMIT_SHA || 'N/A',
     commitMessage: process.env.CAPAWESOME_BUILD_GIT_COMMIT_MESSAGE || 'N/A',

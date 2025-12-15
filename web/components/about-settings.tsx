@@ -113,6 +113,7 @@ function diagnosticsToText(d: Diagnostics): string {
   }
 
   return JSON.stringify(d, replacer, 2)
+    .replace(/  "/g, '')
     .replace(/["{}\[\]]/g, '')
     .replace(/^[ \t]*\n/gm, '')
     .replace(/,\n/g, '\n')
@@ -145,11 +146,14 @@ const LoadedAboutSettings = (props: {
     }, 2000)
   }
 
+  console.log(JSON.stringify(diagnostics, null, 2))
+  console.log(diagnosticsToText(diagnostics))
+
   return <Col className={''}>
+    <RuntimeInfo info={diagnostics.runtime}/>
     <WebBuildInfo info={diagnostics.web}/>
     <AndroidInfo info={diagnostics.android}/>
     <BackendInfo info={diagnostics.backend}/>
-    <RuntimeInfo info={diagnostics.runtime}/>
     <Button
       onClick={handleCopy}
       className="w-fit mt-4"
@@ -210,6 +214,5 @@ const RuntimeInfo = (props: {info?: Runtime}) => {
   return <Col className={'custom-link'}>
     <h3>Runtime</h3>
     <p>Platform: {info.platform}</p>
-    <p>Env: {JSON.stringify(Object.fromEntries(Object.entries(process.env).sort()), null, 2)}</p>
   </Col>
 }

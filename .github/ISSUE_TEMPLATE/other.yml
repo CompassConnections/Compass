@@ -9,6 +9,15 @@ body:
       A clear and concise description of the question or issue
   validations:
     required: true
+- type: textarea
+  attributes:
+    label: Info
+    description: >
+     - Browser [e.g. chrome, safari]
+     - Device (if mobile): [e.g. iPhone6]
+     - Build info from `Settings` -> `About`
+  validations:
+    required: true
 - type: markdown
   attributes:
     value: >

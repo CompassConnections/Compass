@@ -1,26 +1,25 @@
 name: Other
 description: Use this only if no other issue type fits.
-
 body:
-- type: textarea
-  attributes:
-    label: Issue
-    description: >
-      A clear and concise description of the question or issue
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Info
-    description: |
-     - Browser: [e.g. chrome, safari]
-     - Device (if mobile): [e.g. iPhone6]
-     - Build info
-    placeholder: |
-      Build info from `Settings` -> `About`
-  validations:
-    required: false
-- type: markdown
-  attributes:
-    value: >
-      Thanks for contributing!
+  - type: textarea
+    attributes:
+      label: Issue
+      description: >
+        A clear and concise description of the question or issue
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Info
+      description: |
+       - Browser: [e.g. chrome, safari]
+       - Device (if mobile): [e.g. iPhone6]
+       - Build info
+      placeholder: |
+        Build info from `Settings` -> `About`
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for contributing!

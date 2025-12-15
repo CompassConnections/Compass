@@ -49,7 +49,7 @@ export const API = (_apiTypeCheck = {
       message: 'Server is working.'
       uid?: string
       version?: string
-      git?: { revision?: string; commitDate?: string; author?: string }
+      git?: { revision?: string; commitDate?: string; author?: string, message?: string }
     },
     summary: 'Check whether the API server is running',
     tag: 'General',

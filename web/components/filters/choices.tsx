@@ -167,6 +167,7 @@ export const LANGUAGE_CHOICES = {
   'Spanish': 'spanish',
   'Sundanese': 'sundanese',
   'Swedish': 'swedish',
+  'Swahili': 'swahili',
   'Sylheti': 'sylheti',
   'Tagalog': 'tagalog',
   'Tamil': 'tamil',

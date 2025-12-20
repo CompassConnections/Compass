@@ -12,6 +12,8 @@ import {Button, ColorType, SizeType} from 'web/components/buttons/button'
 import {signupRedirect} from 'web/lib/util/signup'
 import {useProfile} from 'web/hooks/use-profile'
 import Image from 'next/image'
+import {ANDROID_APP_URL} from "common/constants";
+import {isAndroidApp} from "web/lib/util/webview";
 
 export default function Sidebar(props: {
   className?: string
@@ -28,6 +30,8 @@ export default function Sidebar(props: {
   const navOptions = props.navigationOptions
 
   const bottomNavOptions = bottomNav(!!user)
+
+  const isAndroid = isAndroidApp()
 
   return (
     <nav
@@ -47,14 +51,14 @@ export default function Sidebar(props: {
         {navOptions.map((item) => (
           <SidebarItem key={item.name} item={item} currentPage={currentPage}/>
         ))}
-        <Image
+        {!isAndroid && <Image
           src="https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2FGoogle_Play_Store_badge_EN.svg.png?alt=media&token=3e0e8605-800a-422b-84d1-8ecec8af3e80"
           alt="divider"
           width={160}
           height={80}
           className="mx-auto pt-4 hover:opacity-70 cursor-pointer invert dark:invert-0"
-          onClick={() => router.push('/contact')}
-        />
+          onClick={() => router.push(ANDROID_APP_URL)}
+        />}
 
         {user === null && <SignUpButton className="mt-4" text="Sign up"/>}
         {/*{user === null && <SignUpAsMatchmaker className="mt-2" />}*/}

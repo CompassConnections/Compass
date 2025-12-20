@@ -1,7 +1,7 @@
 import {Capacitor} from "@capacitor/core";
 import {IS_WEBVIEW} from "common/hosting/constants";
 
-export function isAndroidWebView() {
+export function isAndroidApp() {
   try {
     // Detect if Android bridge exists
     // return typeof (window as any).AndroidBridge?.isNativeApp === 'function';
@@ -11,4 +11,4 @@ export function isAndroidWebView() {
   }
 }
 
-export function isNativeMobile() { return isAndroidWebView() }
+export function isNativeMobile() { return isAndroidApp() }

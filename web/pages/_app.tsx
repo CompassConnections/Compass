@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push"
 import AndroidPush from "web/lib/service/android-push"
-import {isAndroidWebView} from "web/lib/util/webview"
+import {isAndroidApp} from "web/lib/util/webview"
 import {Capacitor} from '@capacitor/core'
 import {StatusBar} from '@capacitor/status-bar'
 import {App} from '@capacitor/app'
@@ -91,7 +91,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
   const router = useRouter()
 
   useEffect(() => {
-    console.log('isAndroidWebView app:', isAndroidWebView())
+    console.log('isAndroidWebView app:', isAndroidApp())
     if (!Capacitor.isNativePlatform()) return
     const onShow = () => document.body.classList.add('keyboard-open')
     const onHide = () => document.body.classList.remove('keyboard-open')

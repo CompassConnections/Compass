@@ -5,12 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-        "name": "Debug Jest Tests",
+        "name": "Debug Current Test",
         "type": "node",
         "request": "launch",
         "runtimeArgs": [
             "--inspect-brk",
             "${workspaceRoot}/node_modules/.bin/jest",
+            "${fileBasename}",
             "--runInBand"
         ],
         "console": "integratedTerminal",

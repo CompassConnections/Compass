@@ -1,9 +1,263 @@
+jest.mock('shared/supabase/init');
+jest.mock('shared/supabase/utils');
+jest.mock('common/supabase/users');
+jest.mock('email/functions/helpers');
+jest.mock('api/set-last-online-time');
+jest.mock('firebase-admin', () => ({
+    auth: jest.fn()
+}));
+jest.mock('shared/utils');
+jest.mock('shared/analytics');
+jest.mock('shared/firebase-utils');
+jest.mock('shared/helpers/generate-and-update-avatar-urls');
+jest.mock('common/util/object');
+jest.mock('common/user-notification-preferences');
+jest.mock('common/util/clean-username');
+jest.mock('shared/monitoring/log');
 
 import { createUser } from "api/create-user";
+import * as supabaseInit from "shared/supabase/init";
+import * as supabaseUtils from "shared/supabase/utils";
+import * as supabaseUsers from "common/supabase/users";
+import * as emailHelpers from "email/functions/helpers";
+import * as apiSetLastTimeOnline from "api/set-last-online-time";
+import * as firebaseAdmin from "firebase-admin";
+import * as sharedUtils from "shared/utils";
+import * as sharedAnalytics from "shared/analytics";
+import * as firebaseUtils from "shared/firebase-utils";
+import { generateAvatarUrl } from "shared/helpers/generate-and-update-avatar-urls";
+import * as objectUtils from "common/util/object";
+import * as userNotificationPref from "common/user-notification-preferences";
+import * as usernameUtils from "common/util/clean-username";
+import * as monitoringLog from "shared/monitoring/log";
+import { AuthedUser } from "api/helpers/endpoint";
+
 
 describe('createUser', () => {
+    let mockPg = {} as any;
+    beforeEach(() => {
+        jest.resetAllMocks();
+        mockPg = {
+            one: jest.fn(),
+            tx: jest.fn(async (cb) => {
+                const mockTx = {} as any;
+                return cb(mockTx)
+            })
+        };
+        (supabaseInit.createSupabaseDirectClient as jest.Mock)
+            .mockReturnValue(mockPg);
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     describe('should', () => {
-        it('', async () => {
+        it('successfully create a user', async () => {
+            const mockProps = {
+                deviceToken: "mockDeviceToken",
+                adminToken: "mockAdminToken"
+            };
+            const mockAuth = { uid: '321' } as AuthedUser;
+            const mockReferer = {
+                headers: {
+                    'referer': 'mockReferer'
+                }
+            };
+            const mockReq = { get: jest.fn().mockReturnValue(mockReferer)} as any;
+            const mockFirebaseUser = {
+                providerData: [
+                    {
+                        providerId: 'passwords'
+                    }
+                ],
+            };
+            const mockFbUser = {
+                email: "mockEmail@mockServer.com",
+                displayName: "mockDisplayName",
+                photoURL: "mockPhotoUrl"
+            };
+            const mockIp = "mockIP";
+            const mockBucket = {} as any;
+            const mockNewUserRow = {
+                created_time: "mockCreatedTime",
+                data: {"mockNewUserJson": "mockNewUserJsonData"},
+                id: "mockNewUserId",
+                name: "mockName",
+                name_username_vector: "mockNameUsernameVector",
+                username: "mockUsername"
+            };
+            const mockPrivateUserRow = {
+                data: {"mockPrivateUserJson" : "mockPrivateUserJsonData"},
+                id: "mockPrivateUserId"
+            };
+
+            const mockGetUser = jest.fn()
+                .mockResolvedValueOnce(mockFirebaseUser)
+                .mockResolvedValueOnce(mockFbUser);
+
+            (firebaseAdmin.auth as jest.Mock).mockReturnValue({
+                getUser: mockGetUser
+            });
+            (sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp);
+            (firebaseAdmin.auth as jest.Mock).mockReturnValue({
+                getUser: mockGetUser
+            });
+            (usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue(mockFbUser.displayName);
+            (firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket);
+            (usernameUtils.cleanUsername as jest.Mock).mockReturnValue(mockFbUser.displayName);
+            (mockPg.one as jest.Mock).mockResolvedValue(0);
+            (sharedUtils.getUser as jest.Mock).mockResolvedValue(false);
+            (sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false);
+            (userNotificationPref.getDefaultNotificationPreferences as jest.Mock).mockReturnValue(null);
+            (supabaseUtils.insert as jest.Mock)
+                .mockResolvedValueOnce(null)
+                .mockResolvedValueOnce(null);
+            (supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow);
+            (supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow);
+            
+            const results: any = await createUser(mockProps, mockAuth, mockReq);
+
+            expect(results.result.user).toEqual(mockNewUserRow);
+            expect(results.result.privateUser).toEqual(mockPrivateUserRow);
+            expect(mockGetUser).toBeCalledTimes(2);
+            expect(mockGetUser).toHaveBeenNthCalledWith(1, mockAuth.uid);
+            expect(mockReq.get).toBeCalledTimes(1);
+            expect(mockReq.get).toBeCalledWith(Object.keys(mockReferer.headers)[0]);
+            expect(sharedAnalytics.getIp).toBeCalledTimes(1);
+            expect(sharedAnalytics.getIp).toBeCalledWith(mockReq);
+            expect(mockGetUser).toHaveBeenNthCalledWith(2, mockAuth.uid);
+            expect(usernameUtils.cleanDisplayName).toBeCalledTimes(1);
+            expect(usernameUtils.cleanDisplayName).toHaveBeenCalledWith(mockFbUser.displayName);
+            expect(usernameUtils.cleanUsername).toBeCalledTimes(1);
+            expect(usernameUtils.cleanUsername).toBeCalledWith(mockFbUser.displayName);
+            expect(mockPg.one).toBeCalledTimes(1);
+            expect(mockPg.tx).toBeCalledTimes(1);
+            expect(sharedUtils.getUser).toBeCalledTimes(1);
+            expect(sharedUtils.getUser).toHaveBeenCalledWith(
+                mockAuth.uid,
+                expect.any(Object)
+            );
+            expect(userNotificationPref.getDefaultNotificationPreferences).toBeCalledTimes(1);
+            expect(supabaseUtils.insert).toBeCalledTimes(2);
+            expect(supabaseUtils.insert).toHaveBeenNthCalledWith(
+                1,
+                expect.any(Object),
+                'users',
+                expect.objectContaining(
+                    {
+                        id: mockAuth.uid,
+                        name: mockFbUser.displayName,
+                        username: mockFbUser.displayName,
+                    }
+                )
+            );
+            expect(supabaseUtils.insert).toHaveBeenNthCalledWith(
+                2,
+                expect.any(Object),
+                'private_users',
+                expect.objectContaining(
+                    {
+                        id: mockAuth.uid,
+                    }
+                )
+            );
+            (sharedAnalytics.track as jest.Mock).mockResolvedValue(null);
+            (emailHelpers.sendWelcomeEmail as jest.Mock).mockResolvedValue(null);
+            (apiSetLastTimeOnline.setLastOnlineTimeUser as jest.Mock).mockResolvedValue(null);
+
+            await results.continue();
+
+            expect(sharedAnalytics.track).toBeCalledTimes(1);
+            expect(sharedAnalytics.track).toBeCalledWith(
+                mockAuth.uid,
+                'create profile',
+                {username: mockNewUserRow.username}
+            );
+            // expect(emailHelpers.sendWelcomeEmail).toBeCalledTimes(1);
+            // expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow);
+            expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledTimes(1);
+            expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledWith(mockAuth.uid);
+        });
+
+        it('successfully generates a device token when creating a user', async () => {
+            const mockProps = {
+                deviceToken: "mockDeviceToken",
+                adminToken: "mockAdminToken"
+            };
+            const mockAuth = { uid: '321' } as AuthedUser;
+            const mockReferer = {
+                headers: {
+                    'referer': 'mockReferer'
+                }
+            };
+            const mockReq = { get: jest.fn().mockReturnValue(mockReferer)} as any;
+            const mockFirebaseUser = {
+                providerData: [
+                    {
+                        providerId: 'password'
+                    }
+                ],
+            };
+            const mockFbUser = {
+                email: "mockEmail@mockServer.com",
+                displayName: "mockDisplayName",
+                photoURL: "mockPhotoUrl"
+            };
+            const mockIp = "mockIP";
+            const mockBucket = {} as any;
+            const mockNewUserRow = {
+                created_time: "mockCreatedTime",
+                data: {"mockNewUserJson": "mockNewUserJsonData"},
+                id: "mockNewUserId",
+                name: "mockName",
+                name_username_vector: "mockNameUsernameVector",
+                username: "mockUsername"
+            };
+            const mockPrivateUserRow = {
+                data: {"mockPrivateUserJson" : "mockPrivateUserJsonData"},
+                id: "mockPrivateUserId"
+            };
+
+            const mockGetUser = jest.fn()
+                .mockResolvedValueOnce(mockFirebaseUser)
+                .mockResolvedValueOnce(mockFbUser);
+
+            (firebaseAdmin.auth as jest.Mock).mockReturnValue({
+                getUser: mockGetUser
+            });
+            (sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp);
+            (firebaseAdmin.auth as jest.Mock).mockReturnValue({
+                getUser: mockGetUser
+            });
+            (usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue(mockFbUser.displayName);
+            (firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket);
+            (usernameUtils.cleanUsername as jest.Mock).mockReturnValue(mockFbUser.displayName);
+            (mockPg.one as jest.Mock).mockResolvedValue(0);
+            (sharedUtils.getUser as jest.Mock).mockResolvedValue(false);
+            (sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false);
+            (userNotificationPref.getDefaultNotificationPreferences as jest.Mock).mockReturnValue(null);
+            (supabaseUtils.insert as jest.Mock)
+                .mockResolvedValueOnce(null)
+                .mockResolvedValueOnce(null);
+            (supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow);
+            (supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow);
+            
+            const results: any = await createUser(mockProps, mockAuth, mockReq);
+
+            expect(supabaseUtils.insert).not.toHaveBeenNthCalledWith(
+                2,
+                expect.any(Object),
+                'private_users',
+                {
+                    id: expect.any(String),
+                    data: expect.objectContaining(
+                        {
+                            initialDeviceToken: mockProps.deviceToken
+                        }
+                    )
+                }
+            );
             
         });
     });

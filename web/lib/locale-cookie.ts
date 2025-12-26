@@ -3,14 +3,16 @@ import {defaultLocale, supportedLocales, Locale} from "common/constants"
 
 let cachedLocale: string | null | undefined = null
 
-export function getLocale(req?: IncomingMessage): string {
+export function getLocale(
+  // req?: IncomingMessage
+): string {
   // if (cachedLocale) return cachedLocale
   console.log('cachedLocale', cachedLocale)
   let cookie = null
   // Server
-  if (req?.headers?.cookie) {
-    cookie = req.headers.cookie
-  }
+  // if (req?.headers?.cookie) {
+  //   cookie = req.headers.cookie
+  // }
 
   // Client
   if (typeof document !== 'undefined') {
@@ -24,6 +26,7 @@ export function getLocale(req?: IncomingMessage): string {
       .find(c => c.startsWith('lang='))
       ?.split('=')[1]
       ?.split(' ')[0]
+      ?.replace(";", "")
     console.log('Locale cookie', cachedLocale)
   }
 

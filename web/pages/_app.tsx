@@ -87,13 +87,13 @@ function printBuildInfo() {
 // specially treated props that may be present in the server/static props
 type PageProps = { auth?: AuthUser }
 
-function MyApp(props: AppProps<PageProps> & { locale: string }) {
+function MyApp(props: AppProps<PageProps>) {
   const {Component, pageProps} = props
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
 
-  const [locale, setLocaleState] = useState(props.locale);
+  const [locale, setLocaleState] = useState(getLocale());
   const setLocale = (newLocale: string) => {
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`;
     setLocaleState(newLocale);
@@ -207,15 +207,5 @@ function MyApp(props: AppProps<PageProps> & { locale: string }) {
     </>
   )
 }
-
-MyApp.getInitialProps = async (appContext: AppContext) => {
-  const appProps = await import('next/app').then(m => m.default.getInitialProps(appContext))
-  const locale = getLocale(appContext.ctx.req)
-
-  return {
-    ...appProps,
-    locale
-  };
-};
 
 export default MyApp

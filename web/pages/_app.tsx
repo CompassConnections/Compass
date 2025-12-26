@@ -1,4 +1,4 @@
-import type {AppContext, AppProps} from 'next/app'
+import type {AppProps} from 'next/app'
 import Head from 'next/head'
 import {useEffect, useState} from 'react'
 import {Router} from 'next/router'
@@ -194,7 +194,7 @@ function MyApp(props: AppProps<PageProps>) {
           <AuthProvider serverUser={pageProps.auth}>
             <WebPush/>
             <AndroidPush/>
-            <I18nContext.Provider value={{ locale, setLocale }}>
+            <I18nContext.Provider value={{locale, setLocale}}>
               <Component {...pageProps} />
             </I18nContext.Provider>
           </AuthProvider>

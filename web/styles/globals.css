@@ -8,6 +8,7 @@
     --bnh: env(safe-area-inset-bottom); /* native bottom nav height */
     --tnh: env(safe-area-inset-top); /* native top nav height */
     --hloss: calc(var(--bnh) + var(--tnh)); /* mobile height loss due to native top and bottom bars */
+    touch-action: pan-y;
 }
 
 .safe-top {
@@ -64,6 +65,7 @@
 @layer base {
     body {
         font-family: var(--font-main), serif;
+        touch-action: pan-y;
     }
 
     button, input, label {
@@ -75,6 +77,7 @@
     }
 
     :root {
+        touch-action: pan-y;
         /* Text / Ink Grey Scale */
         /* High Contrast */
         --color-ink-0: 255 255 255; /* white */
@@ -312,6 +315,7 @@
         --color-red-900: 127 29 29;
         --color-red-950: 69 10 10; /* darkest red */
 
+        touch-action: pan-y;
     }
 }
 

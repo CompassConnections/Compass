@@ -225,12 +225,14 @@ export function MobileSidebar(props: {
         // console.log("checking opening")
         // Open gesture: swipe right starting from the very left edge
         if (deltaX > HORIZONTAL_THRESHOLD) {
+          e.preventDefault()
           gestureHandled.current = true
           setSidebarOpen(true)
         }
       } else {
         // Close gesture: swipe left anywhere
         if (deltaX < -HORIZONTAL_THRESHOLD) {
+          e.preventDefault()
           gestureHandled.current = true
           setSidebarOpen(false)
         }
@@ -244,14 +246,16 @@ export function MobileSidebar(props: {
       gestureHandled.current = false
     }
 
-    window.addEventListener('pointerdown', onPointerDown, {passive: true})
-    window.addEventListener('pointermove', onPointerMove, {passive: true})
-    window.addEventListener('pointerup', onPointerUp, {passive: true})
+    const target = document.body
+    target.addEventListener('pointerdown', onPointerDown, { passive: false })
+    target.addEventListener('pointermove', onPointerMove, { passive: false })
+    target.addEventListener('pointerup', onPointerUp, { passive: false })
+
 
     return () => {
-      window.removeEventListener('pointerdown', onPointerDown)
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('pointerup', onPointerUp)
+      target.removeEventListener('pointerdown', onPointerDown)
+      target.removeEventListener('pointermove', onPointerMove)
+      target.removeEventListener('pointerup', onPointerUp)
     }
   }, [isMobile, sidebarOpen])
 

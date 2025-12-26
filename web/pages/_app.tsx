@@ -151,7 +151,6 @@ function MyApp(props: AppProps<PageProps> & { locale: string }) {
       <Head>
         <title>{title}</title>
 
-        <html lang={locale} />
         <meta
           property="og:title"
           name="twitter:title"

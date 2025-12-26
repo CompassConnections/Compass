@@ -14,6 +14,7 @@ import {User} from 'common/user'
 import {Col} from 'web/components/layout/col'
 import {useProfile} from 'web/hooks/use-profile'
 import {useIsMobile} from "web/hooks/use-is-mobile"
+import {useT} from "web/lib/locale";
 
 const itemClass =
   'sm:hover:bg-ink-200 block w-full py-1 px-3 text-center sm:hover:text-primary-700 transition-colors'
@@ -32,6 +33,7 @@ export function BottomNavBar(props: {
   const currentPage = router.pathname
 
   const user = useUser()
+  const t = useT()
 
   const isIframe = useIsIframe()
   if (isIframe) {
@@ -62,7 +64,7 @@ export function BottomNavBar(props: {
           onClick={() => setSidebarOpen(true)}
         >
           <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true"/>
-          More
+          {t('nav.more', 'More')}
         </div>
         <MobileSidebar
           sidebarOpen={sidebarOpen}

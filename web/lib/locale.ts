@@ -37,8 +37,8 @@ export function useT() {
       .catch(() => setMessages({}))
   }, [locale])
 
-  return (key: string, english: string) => {
-    if (locale === defaultLocale) return english
-    return messages[key] ?? english
+  return (key: string, fallback: string) => {
+    if (locale === defaultLocale) return fallback
+    return messages[key] ?? fallback
   }
 }

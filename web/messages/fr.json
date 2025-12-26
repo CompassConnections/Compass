@@ -30,5 +30,16 @@
   "settings.email.must_sign_in": "Vous devez être connecté pour envoyer un courriel de vérification.",
   "settings.email.sending": "Envoi du courriel de vérification...",
   "settings.email.verification_sent": "Courriel de vérification envoyé — vérifiez votre boîte de réception et les spams.",
-  "settings.email.verification_failed": "Échec de l'envoi du courriel de vérification."
+  "settings.email.verification_failed": "Échec de l'envoi du courriel de vérification.",
+  "home.title": "Fini les swipes.",
+  "home.typewriter": "Chercher.",
+  "home.sign_up": "S'inscrire",
+  "home.subtitle": "Trouvez des personnes qui partagent vos valeurs, idées et intentions — pas seulement vos photos.",
+  "home.feature1.title": "Transparence radicale",
+  "home.feature1.text": "Pas d’algorithmes. Chaque profil est consultable. Vous décidez qui découvrir.",
+  "home.feature2.title": "Conçu pour la profondeur",
+  "home.feature2.text": "Recherchez et filtrez par valeurs, centres d’intérêt, objectifs et mots-clés — de « stoïcisme » à « vie durable ». Faites émerger les connexions qui comptent vraiment.",
+  "home.feature3.title": "Communautaire & Open Source",
+  "home.feature3.text": "Gratuit pour toujours. Pas de pubs, pas d’abonnements. Construit par et pour la communauté.",
+  "home.bottom": "Compass est aux relations humaines ce que Linux est au logiciel, Wikipédia est au savoir, et Firefox est à la navigation — un bien numérique public conçu pour servir les gens, pas le profit."
 }

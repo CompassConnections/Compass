@@ -23,8 +23,10 @@ export function LoggedOutHome() {
   const user = useUser()
   const t = useT()
 
+  const typewriterText = t('home.typewriter', 'Search.')
+
   useEffect(() => {
-    const text = "Search.";
+    const text = typewriterText;
     const el = document.getElementById("typewriter");
     if (!el) return;
 
@@ -47,7 +49,7 @@ export function LoggedOutHome() {
       clearTimeout(startId);
       if (el) el.textContent = text;
     };
-  }, []);
+  }, [typewriterText]);
 
   return (
     <>
@@ -55,30 +57,30 @@ export function LoggedOutHome() {
           <SignUpButton
               className="mt-4 flex-1 fixed bottom-[calc(55px+env(safe-area-inset-bottom))] w-full left-0 right-0 z-10 mx-auto px-4"
               size="xl"
-              text="Sign up"
+              text={t('home.sign_up','Sign up')}
           />
         {/*<SignUpAsMatchmaker className="flex-1"/>*/}
       </Col>}
       <h1
         className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">
-        Don't Swipe.<br/>
+        {t('home.title', "Don't Swipe.")}<br/>
         <span id="typewriter"></span>
         <span id="cursor" className="animate-pulse">|</span>
       </h1>
       <div className="py-8"></div>
       <h3
         className="text-2xl font-bold text-center">
-        Find people who share your values, ideas, and intentions — not just your photos.
+        {t('home.subtitle', 'Find people who share your values, ideas, and intentions — not just your photos.')}
       </h3>
       <div className="w-full py-8 mt-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
-            <AboutBox title="Radically Transparent"
-                      text="No algorithms. Every profile searchable. You decide who to discover."/>
-            <AboutBox title="Built for Depth"
-                      text="Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter."/>
-            <AboutBox title="Community Owned & Open Source"
-                      text="Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone."/>
+            <AboutBox title={t('home.feature1.title','Radically Transparent')}
+                      text={t('home.feature1.text','No algorithms. Every profile searchable. You decide who to discover.')}/>
+            <AboutBox title={t('home.feature2.title','Built for Depth')}
+                      text={t('home.feature2.text','Search and filter by values, interests, goals, and keywords — from “stoicism” to “sustainable living.” Surface the connections that truly matter.')}/>
+            <AboutBox title={t('home.feature3.title','Community Owned & Open Source')}
+                      text={t('home.feature3.text','Free forever. No ads, no subscriptions. Built by the people who use it, for the benefit of everyone.')}/>
           </div>
           <div className="mt-10 max-w-xl mx-auto">
             <p className="text-center">
@@ -91,4 +93,3 @@ export function LoggedOutHome() {
     </>
   );
 }
-

@@ -19,7 +19,7 @@ export const xLink = "https://x.com/compassmeet"
 export const formLink = "https://forms.gle/tKnXUMAbEreMK6FC6"
 export const ANDROID_APP_URL = 'https://play.google.com/store/apps/details?id=com.compassconnections.app'
 
-export const IS_MAINTENANCE = false // set to true to enable the maintenance mode banner
+export const IS_MAINTENANCE = true // set to true to enable the maintenance mode banner
 
 export const MIN_BIO_LENGTH = 250
 

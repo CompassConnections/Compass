@@ -27,3 +27,11 @@ export const WEB_GOOGLE_CLIENT_ID = '253367029065-khkj31qt22l0vc3v754h09vhpg6t33
 // export const ANDROID_GOOGLE_CLIENT_ID = '253367029065-s9sr5vqgkhc8f7p5s6ti6a4chqsrqgc4.apps.googleusercontent.com'
 export const GOOGLE_CLIENT_ID = WEB_GOOGLE_CLIENT_ID
 
+export const defaultLocale = 'en'
+export const LOCALES = {
+  en: "English",
+  fr: "Français",
+  // es: "Español",
+}
+export const supportedLocales = Object.keys(LOCALES)
+export type Locale = typeof supportedLocales[number]

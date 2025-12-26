@@ -1,6 +1,6 @@
-import type {AppProps} from 'next/app'
+import type {AppContext, AppProps} from 'next/app'
 import Head from 'next/head'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {Router} from 'next/router'
 import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
@@ -20,6 +20,8 @@ import {useRouter} from "next/navigation"
 import {Keyboard} from "@capacitor/keyboard"
 import {LiveUpdate} from "@capawesome/capacitor-live-update"
 import {IS_VERCEL} from "common/hosting/constants"
+import {getLocale} from "web/lib/locale-cookie";
+import {I18nContext} from "web/lib/locale"
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -85,10 +87,17 @@ function printBuildInfo() {
 // specially treated props that may be present in the server/static props
 type PageProps = { auth?: AuthUser }
 
-function MyApp({Component, pageProps}: AppProps<PageProps>) {
+function MyApp(props: AppProps<PageProps> & { locale: string }) {
+  const {Component, pageProps} = props
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
+
+  const [locale, setLocaleState] = useState(props.locale);
+  const setLocale = (newLocale: string) => {
+    document.cookie = `lang=${newLocale}; path=/; max-age=31536000`;
+    setLocaleState(newLocale);
+  };
 
   useEffect(() => {
     console.log('isAndroidWebView app:', isAndroidApp())
@@ -142,6 +151,7 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
       <Head>
         <title>{title}</title>
 
+        <html lang={locale} />
         <meta
           property="og:title"
           name="twitter:title"
@@ -185,7 +195,9 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
           <AuthProvider serverUser={pageProps.auth}>
             <WebPush/>
             <AndroidPush/>
-            <Component {...pageProps} />
+            <I18nContext.Provider value={{ locale, setLocale }}>
+              <Component {...pageProps} />
+            </I18nContext.Provider>
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">
@@ -193,10 +205,18 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
           </div>
         </div>
       </PostHogProvider>
-      {/* TODO: Re-enable one tap setup */}
-      {/* <GoogleOneTapSetup /> */}
     </>
   )
 }
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+  const appProps = await import('next/app').then(m => m.default.getInitialProps(appContext))
+  const locale = getLocale(appContext.ctx.req)
+
+  return {
+    ...appProps,
+    locale
+  };
+};
 
 export default MyApp

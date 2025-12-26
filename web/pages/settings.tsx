@@ -19,19 +19,22 @@ import ThemeIcon from "web/components/theme-icon";
 import {WithPrivateUser} from "web/components/user/with-user";
 import {sendPasswordReset} from "web/lib/firebase/password";
 import {AboutSettings} from "web/components/about-settings";
+import {LanguagePicker} from "web/components/language/language-picker";
+import {useT} from "web/lib/locale";
 
 export default function NotificationsPage() {
+  const t = useT()
   useRedirectIfSignedOut()
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4'}>
       <NoSEO/>
-      <Title>Settings</Title>
+      <Title>{t('settings.title','Settings')}</Title>
       <UncontrolledTabs
         name={'settings-page'}
         tabs={[
-          {title: 'General', content: <GeneralSettings/>},
-          {title: 'Notifications', content: <NotificationSettings/>},
-          {title: 'About', content: <AboutSettings/>},
+          {title: t('settings.tabs.general','General'), content: <GeneralSettings/>},
+          {title: t('settings.tabs.notifications', 'Notifications'), content: <NotificationSettings/>},
+          {title: t('settings.tabs.about', 'About'), content: <AboutSettings/>},
         ]}
         trackingName={'settings page'}
       />
@@ -52,24 +55,23 @@ const LoadedGeneralSettings = (props: {
 
   const [isChangingEmail, setIsChangingEmail] = useState(false)
   const {register, handleSubmit, formState: {errors}, reset} = useForm<{ newEmail: string }>()
+  const t = useT()
 
   const user = auth.currentUser
   if (!user) return null
 
   const handleDeleteAccount = async () => {
-    const confirmed = confirm(
-      'Are you sure you want to delete your profile? This cannot be undone.'
-    )
+    const confirmed = confirm(t('settings.delete_confirm', "Are you sure you want to delete your profile? This cannot be undone."))
     if (confirmed) {
       toast
         .promise(deleteAccount(), {
-          loading: 'Deleting account...',
+          loading: t('settings.delete.loading', 'Deleting account...'),
           success: () => {
             router.push('/')
-            return 'Your account has been deleted.'
+            return t('settings.delete.success', 'Your account has been deleted.')
           },
           error: () => {
-            return 'Failed to delete account.'
+            return t('settings.delete.error', 'Failed to delete account.')
           },
         })
         .catch(() => {
@@ -83,21 +85,21 @@ const LoadedGeneralSettings = (props: {
 
     try {
       await updateEmail(user, newEmail)
-      toast.success('Email updated successfully')
+      toast.success(t('settings.email.updated_success', 'Email updated successfully'))
       setIsChangingEmail(false)
       reset()
       // Force a reload to update the UI with the new email
       // window.location.reload()
     } catch (error: any) {
       console.error('Error updating email:', error)
-      toast.error(error.message || 'Failed to update email')
+      toast.error(error.message || t('settings.email.update_failed', 'Failed to update email'))
     }
   }
 
   const onSubmitEmailChange = (data: { newEmail: string }) => {
     if (!user) return
     if (data.newEmail === user.email) {
-      toast.error('New email is the same as current email')
+      toast.error(t('settings.email.same_as_current', 'New email is the same as current email'))
       return
     }
     changeUserEmail(data.newEmail)
@@ -106,18 +108,18 @@ const LoadedGeneralSettings = (props: {
 
   const sendVerificationEmail = async () => {
     if (!privateUser?.email) {
-      toast.error('No email found on your account.')
+      toast.error(t('settings.email.no_email', 'No email found on your account.'))
       return
     }
     if (!user) {
-      toast.error('You must be signed in to send a verification email.')
+      toast.error(t('settings.email.must_sign_in', 'You must be signed in to send a verification email.'))
       return
     }
     toast
       .promise(sendEmailVerification(user), {
-        loading: 'Sending verification email...',
-        success: 'Verification email sent — check your inbox and spam.',
-        error: 'Failed to send verification email.',
+        loading: t('settings.email.sending', 'Sending verification email...'),
+        success: t('settings.email.verification_sent', 'Verification email sent — check your inbox and spam.'),
+        error: t('settings.email.verification_failed', 'Failed to send verification email.'),
       })
       .catch(() => {
         console.log("Failed to send verification email")
@@ -128,41 +130,47 @@ const LoadedGeneralSettings = (props: {
 
   return <>
     <div className="flex flex-col gap-2 max-w-fit">
-      <h3>Theme</h3>
+      <h3>{t('settings.general.theme','Theme')}</h3>
       <ThemeIcon className="h-6 w-6"/>
-      <h3>Account</h3>
-      <h5>Email</h5>
+      <h3>{t('settings.general.language','Language')}</h3>
+      <LanguagePicker/>
+      <h3>{t('settings.general.account','Account')}</h3>
+      <h5>{t('settings.general.email','Email')}</h5>
 
       <Button onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
-        {isEmailVerified ? 'Email Verified ✔️' : 'Send verification email'}
+        {isEmailVerified ? t('settings.email.verified','Email Verified ✔️') : t('settings.email.send_verification','Send verification email')}
       </Button>
 
       {!isChangingEmail ? (
         <Button onClick={() => setIsChangingEmail(true)}>
-          Change email address
+          {t('settings.email.change','Change email address')}
         </Button>
       ) : (
         <form onSubmit={handleSubmit(onSubmitEmailChange)} className="flex flex-col gap-2">
           <Col>
             <Input
               type="email"
-              placeholder="New email address"
+              placeholder={t('settings.email.new_placeholder','New email address')}
               {...register('newEmail', {
                 required: 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
+                  message: t('settings.email.invalid','Invalid email address'),
                 },
               })}
               disabled={!user}
             />
             {errors.newEmail && (
-              <span className="text-red-500 text-sm">{errors.newEmail.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.newEmail.message === 'Email is required'
+                  ? t('settings.email.required','Email is required')
+                  : errors.newEmail.message}
+              </span>
             )}
           </Col>
           <div className="flex gap-2">
             <Button type="submit" color="green">
-              Save
+              {t('settings.action.save','Save')}
             </Button>
             <Button
               type="button"
@@ -172,25 +180,24 @@ const LoadedGeneralSettings = (props: {
                 reset()
               }}
             >
-              Cancel
+              {t('settings.action.cancel','Cancel')}
             </Button>
           </div>
         </form>
       )}
 
-      <h5>Password</h5>
+      <h5>{t('settings.general.password','Password')}</h5>
       <Button
         onClick={() => sendPasswordReset(privateUser?.email)}
         className="mb-2"
       >
-        Send password reset email
+        {t('settings.password.send_reset','Send password reset email')}
       </Button>
 
-      <h5>Danger Zone</h5>
+      <h5>{t('settings.danger_zone','Danger Zone')}</h5>
       <Button color="red" onClick={handleDeleteAccount}>
-        Delete Account
+        {t('settings.delete_account','Delete Account')}
       </Button>
     </div>
   </>
 }
-

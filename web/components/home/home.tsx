@@ -2,6 +2,7 @@ import {useEffect} from "react";
 import {Col} from "web/components/layout/col";
 import {SignUpButton} from "web/components/nav/sidebar";
 import {useUser} from "web/hooks/use-user";
+import {useT} from "web/lib/locale";
 
 export function AboutBox(props: {
   title: string
@@ -20,6 +21,7 @@ export function AboutBox(props: {
 
 export function LoggedOutHome() {
   const user = useUser()
+  const t = useT()
 
   useEffect(() => {
     const text = "Search.";
@@ -80,8 +82,7 @@ export function LoggedOutHome() {
           </div>
           <div className="mt-10 max-w-xl mx-auto">
             <p className="text-center">
-              Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to
-              browsing — a public digital good designed to serve people, not profit.
+              {t('home.bottom', 'Compass is to human connection what Linux is to software, Wikipedia is to knowledge, and Firefox is to browsing — a public digital good designed to serve people, not profit.')}
             </p>
           </div>
         </div>

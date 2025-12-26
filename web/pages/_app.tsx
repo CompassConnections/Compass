@@ -20,7 +20,7 @@ import {useRouter} from "next/navigation"
 import {Keyboard} from "@capacitor/keyboard"
 import {LiveUpdate} from "@capawesome/capacitor-live-update"
 import {IS_VERCEL} from "common/hosting/constants"
-import {getLocale} from "web/lib/locale-cookie";
+import {getLocale, resetCachedLocale} from "web/lib/locale-cookie";
 import {I18nContext} from "web/lib/locale"
 
 if (Capacitor.isNativePlatform()) {
@@ -95,9 +95,10 @@ function MyApp(props: AppProps<PageProps>) {
 
   const [locale, setLocaleState] = useState(getLocale());
   const setLocale = (newLocale: string) => {
-    document.cookie = `lang=${newLocale}; path=/; max-age=31536000`;
-    setLocaleState(newLocale);
-  };
+    document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
+    setLocaleState(newLocale)
+    resetCachedLocale()
+  }
 
   useEffect(() => {
     console.log('isAndroidWebView app:', isAndroidApp())

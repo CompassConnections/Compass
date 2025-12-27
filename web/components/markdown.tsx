@@ -5,9 +5,18 @@ import {SEO} from "web/components/SEO";
 import {capitalize} from "lodash";
 import {CustomLink} from "web/components/links";
 
+export const MD_PATHS = [
+  'constitution',
+  'faq',
+  'financials',
+  'members',
+  'support',
+  'tips-bio',
+] as const
+
 type Props = {
   content: string;
-  filename: string;
+  filename: typeof MD_PATHS[number];
 };
 
 export const CustomMarkdown = ({children}: { children: string }) => {

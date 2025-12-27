@@ -24,21 +24,28 @@ export function useLocale() {
 //   return messages[locale]?.[key] ?? english
 // }
 
+const messageCache: Record<string, Record<string, string>> = {}
+
 export function useT() {
   const {locale} = useLocale()
-  console.log({locale})
-  const [messages, setMessages] = useState<Record<string, string>>({})
+  const [messages, setMessages] = useState<Record<string, string>>(
+    messageCache[locale] ?? {}
+  )
 
   useEffect(() => {
     if (locale === defaultLocale) return
+    if (messageCache[locale]) {
+      setMessages(messageCache[locale])
+      return
+    }
 
     import(`web/messages/${locale}.json`)
-      .then((mod) => setMessages(mod.default))
+      .then(mod => {
+        messageCache[locale] = mod.default
+        setMessages(mod.default)
+      })
       .catch(() => setMessages({}))
   }, [locale])
 
-  return (key: string, fallback: string) => {
-    if (locale === defaultLocale) return fallback
-    return messages[key] ?? fallback
-  }
+  return (key: string, fallback: string) => locale === defaultLocale ? fallback : messages[key] ?? fallback
 }

@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
 import {useOnline} from 'web/hooks/use-online'
-import {ReactNode, useEffect, useState} from 'react'
+import {ReactNode, useState} from 'react'
 import {Toaster} from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
@@ -28,7 +28,6 @@ import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
 import {IS_MAINTENANCE} from "common/constants"
 import {MdThumbUp} from "react-icons/md"
 import {FaEnvelope} from "react-icons/fa"
-import {useLocale, useT} from 'web/lib/locale'
 
 export function PageBase(props: {
   trackPageView: string | false
@@ -50,9 +49,6 @@ export function PageBase(props: {
   const isMobile = useIsMobile()
   const profile = useProfile()
 
-  const t = useT()
-  const {locale} = useLocale()
-
   const bottomNavOptions = user
     ? getBottomNavigation(user, profile)
     : getBottomSignedOutNavigation()
@@ -60,22 +56,6 @@ export function PageBase(props: {
   const desktopSidebarOptions = getDesktopNavigation(user)
 
   const mobileSidebarOptions = getMobileSidebar(user, () => setIsAddFundsModalOpen(true))
-
-  useEffect(() => {
-    // Add this helper function to translate navigation options
-    const translateNavOptions = (options: any[]) => {
-      options.forEach(option => {
-        const key = `nav.${option.key}`;
-        option.name = t(key, option.name)
-        console.log(key)
-      })
-    }
-
-    translateNavOptions(bottomNavOptions)
-    translateNavOptions(desktopSidebarOptions)
-    translateNavOptions(mobileSidebarOptions)
-
-  }, [locale, bottomNavOptions, desktopSidebarOptions, mobileSidebarOptions, t]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   trackPageView && useTracking(`view ${trackPageView}`, trackPageProps)
@@ -128,20 +108,20 @@ export function PageBase(props: {
   )
 }
 
-const Profiles = {key: 'people', name: 'People', href: '/', icon: UsersIcon}
-const Home = {key: 'home', name: 'Home', href: '/', icon: HomeIcon}
-const faq = {key: 'faq', name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
-const About = {key: 'about', name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
-const Signin = {key: 'signin', name: 'Sign in', href: '/signin', icon: UserCircleIcon}
-const Notifs = {key: 'notifs', name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
-const NotifsSolid = {key: 'notifs', name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon}
-const Messages = {key: 'messages', name: 'Messages', href: '/messages', icon: PrivateMessagesIcon}
-const Social = {key: 'social', name: 'Social', href: '/social', icon: LinkIcon}
-const Organization = {key: 'organization', name: 'Organization', href: '/organization', icon: GlobeAltIcon}
-const Vote = {key: 'vote', name: 'Vote', href: '/vote', icon: MdThumbUp}
-const Contact = {key: 'contact', name: 'Contact', href: '/contact', icon: FaEnvelope}
-const News = {key: 'news', name: "What's new", href: '/news', icon: NewspaperIcon}
-const Settings = {key: 'settings', name: "Settings", href: '/settings', icon: CogIcon}
+const Profiles = {key: 'nav.people', name: 'People', href: '/', icon: UsersIcon}
+const Home = {key: 'nav.home', name: 'Home', href: '/', icon: HomeIcon}
+const faq = {key: 'nav.faq', name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
+const About = {key: 'nav.about', name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
+const Signin = {key: 'nav.sign_in', name: 'Sign in', href: '/signin', icon: UserCircleIcon}
+const Notifs = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
+const NotifsSolid = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon}
+const Messages = {key: 'nav.messages', name: 'Messages', href: '/messages', icon: PrivateMessagesIcon}
+const Social = {key: 'nav.social', name: 'Social', href: '/social', icon: LinkIcon}
+const Organization = {key: 'nav.organization', name: 'Organization', href: '/organization', icon: GlobeAltIcon}
+const Vote = {key: 'nav.vote', name: 'Vote', href: '/vote', icon: MdThumbUp}
+const Contact = {key: 'nav.contact', name: 'Contact', href: '/contact', icon: FaEnvelope}
+const News = {key: 'nav.news', name: "What's new", href: '/news', icon: NewspaperIcon}
+const Settings = {key: 'nav.settings', name: "Settings", href: '/settings', icon: CogIcon}
 
 const base = [
   About,
@@ -158,13 +138,13 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
     Profiles,
     NotifsSolid,
     {
-      key: 'profile',
+      key: 'nav.profile',
       name: 'Profile',
       href: profile === null ? '/signup' : `/${user.username}`,
       icon: SolidHomeIcon,
     },
     {
-      key: 'messages',
+      key: 'nav.messages',
       name: 'Messages',
       href: '/messages',
       icon: (props) => (

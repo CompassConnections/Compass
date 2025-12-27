@@ -2,7 +2,7 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import {MenuAlt3Icon} from '@heroicons/react/solid'
 import {Dialog, Transition} from '@headlessui/react'
-import {Fragment, useState, useRef, useEffect} from 'react'
+import {Fragment, useEffect, useRef, useState} from 'react'
 import {useRouter} from 'next/router'
 import Sidebar from './sidebar'
 import {Item} from './sidebar-item'
@@ -49,7 +49,7 @@ export function BottomNavBar(props: {
       >
         {navigationOptions.map((item) => (
           <NavBarItem
-            key={item.name}
+            key={item.key} // Remove, as no key prop?
             item={item}
             currentPage={currentPage}
             user={user}
@@ -128,6 +128,7 @@ function NavBarItem(props: {
   className?: string
 }) {
   const {item, currentPage, children, user} = props
+  const t = useT()
   const track = trackCallback(`navbar: ${item.trackingEventName ?? item.name}`)
   const [touched, setTouched] = useState(false)
   if (item.name === 'Profile' && user) {
@@ -143,6 +144,12 @@ function NavBarItem(props: {
     )
   }
 
+  const element = <>
+    {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
+    {children}
+    {t(item.key, item.name)}
+  </>
+
   if (!item.href) {
     return (
       <button
@@ -154,9 +161,7 @@ function NavBarItem(props: {
         onTouchStart={() => setTouched(true)}
         onTouchEnd={() => setTouched(false)}
       >
-        {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
-        {children}
-        {item.name}
+        {element}
       </button>
     )
   }
@@ -176,9 +181,7 @@ function NavBarItem(props: {
       onTouchStart={() => setTouched(true)}
       onTouchEnd={() => setTouched(false)}
     >
-      {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
-      {children}
-      {item.name}
+      {element}
     </Link>
   )
 }
@@ -249,9 +252,9 @@ export function MobileSidebar(props: {
     }
 
     const target = document.body
-    target.addEventListener('pointerdown', onPointerDown, { passive: false })
-    target.addEventListener('pointermove', onPointerMove, { passive: false })
-    target.addEventListener('pointerup', onPointerUp, { passive: false })
+    target.addEventListener('pointerdown', onPointerDown, {passive: false})
+    target.addEventListener('pointermove', onPointerMove, {passive: false})
+    target.addEventListener('pointerup', onPointerUp, {passive: false})
 
 
     return () => {

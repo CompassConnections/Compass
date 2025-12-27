@@ -15,6 +15,7 @@ import Image from 'next/image'
 import {ANDROID_APP_URL} from "common/constants";
 import {isAndroidApp} from "web/lib/util/webview";
 import {useT} from 'web/lib/locale'
+import {LanguagePicker} from "web/components/language/language-picker";
 
 export default function Sidebar(props: {
   className?: string
@@ -72,6 +73,7 @@ export default function Sidebar(props: {
         )}
       </div>
       <div className="mb-[calc(24px+env(safe-area-inset-bottom))] mt-auto flex flex-col gap-1">
+        {user === null && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'}/>}
         {bottomNavOptions.map((item) => (
           <SidebarItem key={item.name} item={item} currentPage={currentPage}/>
         ))}

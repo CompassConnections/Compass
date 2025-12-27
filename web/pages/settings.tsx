@@ -21,6 +21,8 @@ import {sendPasswordReset} from "web/lib/firebase/password";
 import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
+import {NewBadge} from "web/components/new-badge";
+import {Row} from "web/components/layout/row"
 
 export default function NotificationsPage() {
   const t = useT()
@@ -28,11 +30,11 @@ export default function NotificationsPage() {
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4'}>
       <NoSEO/>
-      <Title>{t('settings.title','Settings')}</Title>
+      <Title>{t('settings.title', 'Settings')}</Title>
       <UncontrolledTabs
         name={'settings-page'}
         tabs={[
-          {title: t('settings.tabs.general','General'), content: <GeneralSettings/>},
+          {title: t('settings.tabs.general', 'General'), content: <GeneralSettings/>},
           {title: t('settings.tabs.notifications', 'Notifications'), content: <NotificationSettings/>},
           {title: t('settings.tabs.about', 'About'), content: <AboutSettings/>},
         ]}
@@ -130,32 +132,39 @@ const LoadedGeneralSettings = (props: {
 
   return <>
     <div className="flex flex-col gap-2 max-w-fit">
-      <h3>{t('settings.general.theme','Theme')}</h3>
+      <h3>{t('settings.general.theme', 'Theme')}</h3>
       <ThemeIcon className="h-6 w-6"/>
-      <h3>{t('settings.general.language','Language')}</h3>
-      <LanguagePicker/>
-      <h3>{t('settings.general.account','Account')}</h3>
-      <h5>{t('settings.general.email','Email')}</h5>
+      <h3>{t('settings.general.language', 'Language')}</h3>
+      <Row className="flex flex-col sm:flex-row items-center gap-10">
+        <div className="flex-none">
+          <NewBadge classes={'mr-2'} created={"2025-12-27"}/>
+        </div>
+        <div className="flex-auto">
+          <LanguagePicker/>
+        </div>
+      </Row>
+      <h3>{t('settings.general.account', 'Account')}</h3>
+      <h5>{t('settings.general.email', 'Email')}</h5>
 
       <Button onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
-        {isEmailVerified ? t('settings.email.verified','Email Verified ✔️') : t('settings.email.send_verification','Send verification email')}
+        {isEmailVerified ? t('settings.email.verified', 'Email Verified ✔️') : t('settings.email.send_verification', 'Send verification email')}
       </Button>
 
       {!isChangingEmail ? (
         <Button onClick={() => setIsChangingEmail(true)}>
-          {t('settings.email.change','Change email address')}
+          {t('settings.email.change', 'Change email address')}
         </Button>
       ) : (
         <form onSubmit={handleSubmit(onSubmitEmailChange)} className="flex flex-col gap-2">
           <Col>
             <Input
               type="email"
-              placeholder={t('settings.email.new_placeholder','New email address')}
+              placeholder={t('settings.email.new_placeholder', 'New email address')}
               {...register('newEmail', {
                 required: 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: t('settings.email.invalid','Invalid email address'),
+                  message: t('settings.email.invalid', 'Invalid email address'),
                 },
               })}
               disabled={!user}
@@ -163,14 +172,14 @@ const LoadedGeneralSettings = (props: {
             {errors.newEmail && (
               <span className="text-red-500 text-sm">
                 {errors.newEmail.message === 'Email is required'
-                  ? t('settings.email.required','Email is required')
+                  ? t('settings.email.required', 'Email is required')
                   : errors.newEmail.message}
               </span>
             )}
           </Col>
           <div className="flex gap-2">
             <Button type="submit" color="green">
-              {t('settings.action.save','Save')}
+              {t('settings.action.save', 'Save')}
             </Button>
             <Button
               type="button"
@@ -180,23 +189,23 @@ const LoadedGeneralSettings = (props: {
                 reset()
               }}
             >
-              {t('settings.action.cancel','Cancel')}
+              {t('settings.action.cancel', 'Cancel')}
             </Button>
           </div>
         </form>
       )}
 
-      <h5>{t('settings.general.password','Password')}</h5>
+      <h5>{t('settings.general.password', 'Password')}</h5>
       <Button
         onClick={() => sendPasswordReset(privateUser?.email)}
         className="mb-2"
       >
-        {t('settings.password.send_reset','Send password reset email')}
+        {t('settings.password.send_reset', 'Send password reset email')}
       </Button>
 
-      <h5>{t('settings.danger_zone','Danger Zone')}</h5>
+      <h5>{t('settings.danger_zone', 'Danger Zone')}</h5>
       <Button color="red" onClick={handleDeleteAccount}>
-        {t('settings.delete_account','Delete Account')}
+        {t('settings.delete_account', 'Delete Account')}
       </Button>
     </div>
   </>

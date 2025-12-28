@@ -10,24 +10,29 @@ import {Title} from "web/components/widgets/title";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import {formLink} from "common/constants";
+import {useT} from 'web/lib/locale' // added
 
 export function ContactComponent() {
   const user = useUser()
+  const t = useT() // use translations
 
   const editor = useTextEditor({
     max: MAX_DESCRIPTION_LENGTH,
     defaultValue: '',
-    placeholder: 'Contact us here...',
+    placeholder: t('contact.editor.placeholder', 'Contact us here...'), // localized placeholder
   })
 
   const showButton = !!editor?.getText().length
 
   return (
     <Col className="mx-2">
-      <Title className="!mb-2 text-3xl">Contact</Title>
+      <Title className="!mb-2 text-3xl">{t('contact.title', 'Contact')}</Title>
       <p className={'custom-link mb-4'}>
-        You can also contact us through this <Link href={formLink}>feedback form</Link> or any of our <Link
-        href={'/social'}>socials</Link>. Feel free to give your contact information if you'd like us to get back to you.
+        {t('contact.intro_prefix', "You can also contact us through this ")}
+        <Link href={formLink}>{t('contact.form_link', 'feedback form')}</Link>
+        {t('contact.intro_middle', ' or any of our ')}
+        <Link href={'/social'}>{t('contact.socials', 'socials')}</Link>
+        {t('contact.intro_suffix', ". Feel free to give your contact information if you'd like us to get back to you.")}
       </p>
       <Col>
         <div className={'mb-2'}>
@@ -46,14 +51,14 @@ export function ContactComponent() {
                   userId: user?.id,
                 };
                 const result = await api('contact', data).catch(() => {
-                  toast.error('Failed to contact — try again or contact us...')
+                  toast.error(t('contact.toast.failed', 'Failed to contact — try again or contact us...'))
                 })
                 if (!result) return
                 editor.commands.clearContent()
-                toast.success('Thank you for your message!')
+                toast.success(t('contact.toast.success', 'Thank you for your message!'))
               }}
             >
-              Submit
+              {t('contact.submit', 'Submit')}
             </Button>
           </Row>
         )}

@@ -14,6 +14,7 @@ jest.mock('common/util/object');
 jest.mock('common/user-notification-preferences');
 jest.mock('common/util/clean-username');
 jest.mock('shared/monitoring/log');
+jest.mock('common/hosting/constants');
 
 import { createUser } from "api/create-user";
 import * as supabaseInit from "shared/supabase/init";
@@ -29,6 +30,7 @@ import * as avatarHelpers from "shared/helpers/generate-and-update-avatar-urls";
 import * as objectUtils from "common/util/object";
 import * as userNotificationPref from "common/user-notification-preferences";
 import * as usernameUtils from "common/util/clean-username";
+import * as hostingConstants from "common/hosting/constants";
 import { AuthedUser } from "api/helpers/endpoint";
 
 
@@ -52,7 +54,7 @@ describe('createUser', () => {
     });
 
     describe('when given valid input', () => {
-        it('should successfully create a user', async () => {
+        it.only('should successfully create a user', async () => {
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"

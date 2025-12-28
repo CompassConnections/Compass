@@ -4,6 +4,7 @@ import React, {Suspense, useEffect, useState} from "react"
 import Link from "next/link"
 import {useSearchParams} from "next/navigation"
 import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup"
+import {useT} from 'web/lib/locale'
 
 import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth} from "web/lib/firebase/users"
@@ -29,6 +30,7 @@ export default function RegisterPage() {
 // const href = '/signup'
 
 function RegisterComponent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(searchParams.get('error'))
   const [isLoading, setIsLoading] = useState(false)
@@ -64,11 +66,11 @@ function RegisterComponent() {
       console.debug("User signed up:", creds.user)
     } catch (error: any) {
       console.error("Error signing up:", error)
-      toast.error("Failed to sign up: " + error.message)
-      setError(error.message)
+      toast.error(t('register.toast.signup_failed','Failed to sign up: ') + (error?.message ?? ''))
+      setError(error?.message ?? t('register.error.unknown','Registration failed'))
       setIsLoading(false)
       if (error instanceof Error && error.message.includes("email-already-in-use")) {
-        throw new Error("This email is already registered")
+        throw new Error(t('register.error.email_in_use','This email is already registered'))
       }
     }
   }
@@ -76,7 +78,7 @@ function RegisterComponent() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     function handleError(error: unknown) {
       console.error("Registration error:", error)
-      setError(error instanceof Error ? error.message : "Registration failed")
+      setError(error instanceof Error ? error.message : String(error ?? t('register.error.unknown','Registration failed')))
     }
 
     try {
@@ -90,7 +92,9 @@ function RegisterComponent() {
 
       // Basic validation
       if (!email || !password) {
-        handleError("All fields are required")
+        handleError(t('register.error.all_fields_required','All fields are required'))
+        setIsLoading(false)
+        return
       }
 
       await handleEmailPasswordSignUp(email, password)
@@ -117,8 +121,8 @@ function RegisterComponent() {
   return (
     <PageBase trackPageView={'register'}>
       <SEO
-        title={'Register'}
-        description={'Register for a new account'}
+        title={t('register.seo.title','Register')}
+        description={t('register.seo.description','Register for a new account')}
         url={`/register`}
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -141,29 +145,30 @@ function RegisterComponent() {
                 </svg>
               </div>
               <h2 className="mt-6 text-3xl font-extrabold ">
-                Check your email
+                {t('register.check_email.title','Check your email')}
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                We have sent a verification link to <span className="font-medium">{registeredEmail}</span>.
-                Please click the link in the email to verify your account.
+                {t('register.check_email.sent_prefix','We have sent a verification link to ')}
+                <span className="font-medium">{registeredEmail}</span>
+                {t('register.check_email.sent_suffix','.')}
               </p>
               <p className="mt-4 text-sm text-gray-500">
-                Did not receive the email? Check your spam folder or{' '}
+                {t('register.check_email.help_prefix','Did not receive the email? Check your spam folder or ')}
                 <button
                   type="button"
                   className="font-medium text-blue-600 hover:text-blue-500"
                   onClick={() => setRegistrationSuccess(false)}
                 >
-                  try again
+                  {t('register.check_email.try_again','try again')}
                 </button>
-                .
+                {t('register.check_email.help_suffix','.')}
               </p>
               <div className="mt-6">
                 <Link
                   href="/signin"
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Back to Login
+                  {t('register.back_to_login','Back to Login')}
                 </Link>
               </div>
             </div>
@@ -177,14 +182,14 @@ function RegisterComponent() {
                   <FavIcon className="dark:invert"/>
                 </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold ">
-                  Get Started
+                  {t('register.get_started','Get Started')}
                 </h2>
               </div>
               <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 <div className="rounded-md shadow-sm -space-y-px">
                   <div>
                     <label htmlFor="email" className="sr-only">
-                      Email
+                      {t('register.email_label','Email')}
                     </label>
                     <input
                       id="email"
@@ -192,12 +197,12 @@ function RegisterComponent() {
                       type="email"
                       required
                       className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder="Email"
+                      placeholder={t('register.email_placeholder','Email')}
                     />
                   </div>
                   <div>
                     <label htmlFor="password" className="sr-only">
-                      Password
+                      {t('register.password_label','Password')}
                     </label>
                     <input
                       id="password"
@@ -205,21 +210,22 @@ function RegisterComponent() {
                       type="password"
                       required
                       className="bg-canvas-50 bg-input appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder="Password"
+                      placeholder={t('register.password_placeholder','Password')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <p className="text-sm mt-2 text-center custom-link">
-                    By signing up, I agree to the{" "}
+                    {t('register.agreement.prefix','By signing up, I agree to the ')}
                     <Link href="/terms">
-                      Terms and Conditions
-                    </Link>{" "}
-                    and{" "}
+                      {t('register.terms','Terms and Conditions')}
+                    </Link>
+                    {t('register.agreement.and',' and ')}
                     <Link href="/privacy">
-                      Privacy Policy
-                    </Link>.
+                      {t('register.privacy','Privacy Policy')}
+                    </Link>
+                    {t('register.agreement.suffix','.')}
                   </p>
                 </div>
 
@@ -233,7 +239,7 @@ function RegisterComponent() {
                     disabled={isLoading}
                     className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    {isLoading ? 'Creating account...' : 'Sign up with Email'}
+                    {isLoading ? t('register.button.creating','Creating account...') : t('register.button.email','Sign up with Email')}
                   </button>
 
                   <div className="relative">
@@ -241,7 +247,7 @@ function RegisterComponent() {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 body-bg text-gray-500">Or sign up with</span>
+                      <span className="px-2 body-bg text-gray-500">{t('register.or_sign_up_with','Or sign up with')}</span>
                     </div>
                   </div>
                   <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading}/>
@@ -250,9 +256,9 @@ function RegisterComponent() {
               <div className="my-8"/>
               <div className="text-center custom-link">
                 <p className="">
-                  Already have an account?{' '}
+                  {t('register.already_account','Already have an account?')}{' '}
                   <Link href="/signin">
-                    Sign in
+                    {t('register.link_signin','Sign in')}
                   </Link>
                 </p>
               </div>

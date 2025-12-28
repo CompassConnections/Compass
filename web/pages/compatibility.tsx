@@ -12,6 +12,7 @@ import {User} from "common/user";
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import {useIsMobile} from "web/hooks/use-is-mobile";
 import {LoadMoreUntilNotVisible} from "web/components/widgets/visibility-observer";
+import {useT} from 'web/lib/locale'
 
 type QuestionWithAnswer = Question & {
   answer?: Row<'compatibility_answers'>
@@ -26,6 +27,7 @@ export default function CompatibilityPage() {
   const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
   const {compatibilityQuestions, refreshCompatibilityQuestions} = useCompatibilityQuestionsWithAnswerCount()
   const [isLoading, setIsLoading] = useState(true)
+  const t = useT()
 
   const questionsWithAnswers = useMemo(() => {
     if (!compatibilityQuestions) return []
@@ -80,13 +82,13 @@ export default function CompatibilityPage() {
     <PageBase trackPageView={'compatibility'}>
       {user ?
         <Col className="w-full p-4">
-          <Title className="mb-4">Your Compatibility Questions</Title>
+          <Title className="mb-4">{t('compatibility.title','Your Compatibility Questions')}</Title>
           <UncontrolledTabs
             trackingName={'compatibility page'}
             name={'compatibility-page'}
             tabs={[
               {
-                title: `Answered ${sep}(${answered.length})`,
+                title: `${t('compatibility.tabs.answered','Answered')} ${sep}(${answered.length})`,
                 content: (
                   <QuestionList
                     questions={answered}
@@ -98,7 +100,7 @@ export default function CompatibilityPage() {
                 ),
               },
               {
-                title: `To Answer ${sep}(${notAnswered.length})`,
+                title: `${t('compatibility.tabs.to_answer','To Answer')} ${sep}(${notAnswered.length})`,
                 content: (
                   <QuestionList
                     questions={notAnswered}
@@ -110,7 +112,7 @@ export default function CompatibilityPage() {
                 ),
               },
               {
-                title: `Skipped ${sep}(${skipped.length})`,
+                title: `${t('compatibility.tabs.skipped','Skipped')} ${sep}(${skipped.length})`,
                 content: (
                   <QuestionList
                     questions={skipped}
@@ -126,7 +128,7 @@ export default function CompatibilityPage() {
         </Col>
         :
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="text-xl">Please sign in to view your compatibility questions</div>
+          <div className="text-xl">{t('compatibility.sign_in_prompt','Please sign in to view your compatibility questions')}</div>
         </div>
       }
     </PageBase>
@@ -146,6 +148,7 @@ function QuestionList({
   user: User
   refreshCompatibilityAll: () => void
 }) {
+  const t = useT()
   const BATCH_SIZE = 100
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE)
 
@@ -171,9 +174,9 @@ function QuestionList({
   if (questions.length === 0) {
     return (
       <div className="text-ink-500 p-4">
-        {status === 'answered' && 'You haven\'t answered any questions yet.'}
-        {status === 'not-answered' && 'All questions have been answered!'}
-        {status === 'skipped' && 'You haven\'t skipped any questions.'}
+        {status === 'answered' && t('compatibility.empty.answered',"You haven't answered any questions yet.")}
+        {status === 'not-answered' && t('compatibility.empty.not_answered',"All questions have been answered!")}
+        {status === 'skipped' && t('compatibility.empty.skipped',"You haven't skipped any questions.")}
       </div>
     )
   }

@@ -16,6 +16,7 @@ import {GoogleButton} from "web/components/buttons/sign-up-button"
 import {SEO} from "web/components/SEO"
 import {logger} from "common/logging";
 import FavIcon from "web/components/FavIcon";
+import {useT} from 'web/lib/locale'
 
 export default function LoginPage() {
   return (
@@ -26,6 +27,7 @@ export default function LoginPage() {
 }
 
 function RegisterComponent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -123,8 +125,8 @@ function RegisterComponent() {
   return (
     <PageBase trackPageView={'signin'}>
       <SEO
-        title={'Sign In'}
-        description={'Sign in to your account'}
+        title={t('signin.seo.title','Sign in')}
+        description={t('signin.seo.description','Sign in to your account')}
         url={`/signin`}
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -133,36 +135,30 @@ function RegisterComponent() {
             <div className="flex justify-center mb-6">
               <FavIcon className="dark:invert"/>
             </div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold ">
-              Sign in to your account
-            </h2>
+            <h1 className="text-2xl font-bold">{t('signin.title','Sign in')}</h1>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="email" className="sr-only">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700">{t('signin.email','Email')}</label>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   required
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Email"
+                  placeholder={'you@example.com'}
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
+                <label className="mt-4 block text-sm font-medium text-gray-700">{t('signin.password','Password')}</label>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   required
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
+                  placeholder={t('signin.password_placeholder','Your password')}
                 />
                 <div className="text-right mt-1 custom-link">
                   <button
@@ -182,7 +178,7 @@ function RegisterComponent() {
                     }}
                     className="text-sm focus:outline-none"
                   >
-                    Forgot password?
+                    {t('signin.forgot_password','Forgot password?')}
                   </button>
                 </div>
               </div>
@@ -198,7 +194,7 @@ function RegisterComponent() {
                 disabled={isLoading}
                 className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Signing in...' : 'Sign in with Email'}
+                {isLoading ? 'Signing in...' : t('signin.submit','Sign in')}
               </button>
 
               <div className="relative">
@@ -213,10 +209,10 @@ function RegisterComponent() {
             </div>
           </form>
           <div className="text-center custom-link">
-            <p className="">
-              No account?{' '}
+            <p className="mt-4 text-sm">
+              {t('signin.no_account',"Don't have an account?")}{' '}
               <Link href="/register">
-                Register
+                {t('signin.link_sign_up','Register')}
               </Link>
             </p>
           </div>

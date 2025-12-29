@@ -147,7 +147,7 @@ function RegisterComponent() {
                   type="email"
                   required
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder={'you@example.com'}
+                  placeholder="Email"
                 />
               </div>
               <div>

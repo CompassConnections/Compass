@@ -89,7 +89,7 @@ function RegisterComponent() {
       logger.debug(creds)
     } catch (error) {
       console.error("Error signing in:", error)
-      const message = 'Failed to sign in with your email and password'
+      const message = t('signin.failed_credentials','Failed to sign in with your email and password')
       setError(message)
       setIsLoading(false)
       setIsLoadingGoogle(false)
@@ -135,12 +135,13 @@ function RegisterComponent() {
             <div className="flex justify-center mb-6">
               <FavIcon className="dark:invert"/>
             </div>
-            <h1 className="text-2xl font-bold">{t('signin.title','Sign in')}</h1>
+            <h2 className="mt-6 text-center text-3xl font-extrabold ">
+              {t('signin.title','Sign in')}
+            </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('signin.email','Email')}</label>
                 <input
                   id="email"
                   name="email"
@@ -151,7 +152,6 @@ function RegisterComponent() {
                 />
               </div>
               <div>
-                <label className="mt-4 block text-sm font-medium text-gray-700">{t('signin.password','Password')}</label>
                 <input
                   id="password"
                   name="password"
@@ -172,7 +172,7 @@ function RegisterComponent() {
                           sendPasswordReset(emailInput.value);
                         } else {
                           // If no email is entered, show an error
-                          setError('Please enter your email first');
+                          setError(t('signin.enter_email','Please enter your email first'));
                         }
                       }
                     }}
@@ -202,7 +202,7 @@ function RegisterComponent() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 body-bg text-gray-500">Or continue with</span>
+                  <span className="px-2 body-bg text-gray-500">{t('signin.continue',"Or continue with")}</span>
                 </div>
               </div>
               <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading}/>

@@ -575,6 +575,8 @@ function CompatibilityDisplay(props: {
     currentUser,
   } = props
 
+  const t = useT()
+
   const [answer2, setAnswer2] = useState<
     rowFor<'compatibility_answers'> | null | undefined
   >(undefined)

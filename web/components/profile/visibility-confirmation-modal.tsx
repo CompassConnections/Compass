@@ -3,6 +3,7 @@ import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { Button } from 'web/components/buttons/button'
 import { EyeIcon, LockClosedIcon } from '@heroicons/react/outline'
+import { useT } from 'web/lib/locale'
 
 export function VisibilityConfirmationModal(props: {
   open: boolean
@@ -12,6 +13,7 @@ export function VisibilityConfirmationModal(props: {
 }) {
   const { open, setOpen, currentVisibility, onConfirm } = props
   const isMakingPublic = currentVisibility === 'member'
+  const t = useT()
 
   return (
     <Modal open={open} setOpen={setOpen}>
@@ -24,20 +26,32 @@ export function VisibilityConfirmationModal(props: {
           )}
           <span>
             {isMakingPublic
-              ? 'Make profile visible publicly?'
-              : 'Limit profile to members only?'}
+              ? t(
+                  'profile.visibility.question.public',
+                  'Make profile visible publicly?'
+                )
+              : t(
+                  'profile.visibility.question.member',
+                  'Limit profile to members only?'
+                )}
           </span>
         </Row>
 
         <div className="text-ink-600">
           {isMakingPublic
-            ? 'Your profile will be visible to any visitor without logging in.'
-            : 'Your profile will only be visible to members. Visitors will have to log in to view your profile.'}
+            ? t(
+                'profile.visibility.desc.public',
+                'Your profile will be visible to any visitor without logging in.'
+              )
+            : t(
+                'profile.visibility.desc.member',
+                'Your profile will only be visible to members. Visitors will have to log in to view your profile.'
+              )}
         </div>
 
         <Row className="w-full justify-end gap-4">
           <Button color="gray-white" onClick={() => setOpen(false)}>
-            Cancel
+            {t('settings.action.cancel', 'Cancel')}
           </Button>
           <Button
             color={isMakingPublic ? 'blue' : 'gray'}
@@ -46,7 +60,9 @@ export function VisibilityConfirmationModal(props: {
               setOpen(false)
             }}
           >
-            {isMakingPublic ? 'Make Public' : 'Limit to Members'}
+            {isMakingPublic
+              ? t('profile.visibility.make_public', 'Make Public')
+              : t('profile.visibility.limit_to_members', 'Limit to Members')}
           </Button>
         </Row>
       </Col>

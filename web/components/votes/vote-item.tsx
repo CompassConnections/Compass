@@ -62,7 +62,7 @@ export function VoteItem(props: {
         />
         {vote.status && (
           <p className="text-ink-500">
-            {STATUS_CHOICES[vote.status]}
+            {t(`vote.status.${vote.status}`, STATUS_CHOICES[vote.status])}
           </p>
         )}
       </Row>

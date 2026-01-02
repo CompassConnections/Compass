@@ -87,25 +87,25 @@ export default function ProfileAbout(props: {
       <Occupation profile={profile}/>
       <AboutRow
         icon={<FaBriefcase className="h-5 w-5"/>}
-        text={profile.work}
+        text={profile.work?.map(work => t(`profile.work.${toKey(work)}`, work))}
       />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
-        text={profile.political_beliefs?.map(belief => t(`profile.about.political_beliefs.${belief}`, INVERTED_POLITICAL_CHOICES[belief]))}
+        text={profile.political_beliefs?.map(belief => t(`profile.political.${belief}`, INVERTED_POLITICAL_CHOICES[belief]))}
         suffix={profile.political_details}
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
-        text={profile.religion?.map(belief => t(`profile.about.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]))}
+        text={profile.religion?.map(belief => t(`profile.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]))}
         suffix={profile.religious_beliefs}
       />
       <AboutRow
         icon={<FaStar className="h-5 w-5"/>}
-        text={profile.interests?.map(interest => t(`profile.about.interests.${interest}`, interest))}
+        text={profile.interests?.map(interest => t(`profile.interests.${toKey(interest)}`, interest))}
       />
       <AboutRow
         icon={<FaHandsHelping className="h-5 w-5"/>}
-        text={profile.causes?.map(cause => t(`profile.about.causes.${cause}`, cause))}
+        text={profile.causes?.map(cause => t(`profile.causes.${toKey(cause)}`, cause))}
       />
       <AboutRow
         icon={<BsPersonVcard className="h-5 w-5"/>}
@@ -115,17 +115,17 @@ export default function ProfileAbout(props: {
         icon={<HiOutlineGlobe className="h-5 w-5"/>}
         text={profile.ethnicity
           ?.filter((r) => r !== 'other')
-          ?.map((r: any) => t(`profile.about.race.${r}`, convertRace(r)))}
+          ?.map((r: any) => t(`profile.race.${r}`, convertRace(r)))}
       />
       <Smoker profile={profile}/>
       <Drinks profile={profile}/>
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
-        text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
+        text={profile.diet?.map(e => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))}
       />
       <AboutRow
         icon={<MdLanguage className="h-5 w-5"/>}
-        text={profile.languages?.map(v => INVERTED_LANGUAGE_CHOICES[v])}
+        text={profile.languages?.map(v => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>
@@ -146,7 +146,7 @@ function Seeking(props: { profile: Profile }) {
       prefGender?.length == 5
         ? ['people']
         : prefGender?.map((gender) => convertGenderPlural(gender as Gender)),
-    preText: t('profile.about.interested_in', 'Interested in'),
+    preText: t('profile.interested_in', 'Interested in'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
@@ -156,14 +156,14 @@ function Seeking(props: { profile: Profile }) {
 
   const ageRangeText =
     noMin && noMax
-      ? t('profile.about.age_any', 'of any age')
+      ? t('profile.age_any', 'of any age')
       : min == max
-        ? t('profile.about.age_exact', 'exactly {min} years old', {min})
+        ? t('profile.age_exact', 'exactly {min} years old', {min})
         : noMax
-          ? t('profile.about.age_older_than', 'older than {min}', {min})
+          ? t('profile.age_older_than', 'older than {min}', {min})
           : noMin
-            ? t('profile.about.age_younger_than', 'younger than {max}', {max})
-            : t('profile.about.age_between', 'between {min} - {max} years old', {min, max})
+            ? t('profile.age_younger_than', 'younger than {max}', {max})
+            : t('profile.age_between', 'between {min} - {max} years old', {min, max})
 
   if (!prefGender || prefGender.length < 1) {
     return <></>
@@ -182,15 +182,15 @@ function RelationshipType(props: { profile: Profile }) {
   const relationshipTypes = profile.pref_relation_styles
   let seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes?.map((rel) =>
-      convertRelationshipType(rel as RelationshipType).toLowerCase()
+      t(`profile.relationship.${rel}`, convertRelationshipType(rel as RelationshipType))
     ).sort(),
-    preText: t('profile.about.seeking', 'Seeking'),
+    preText: t('profile.seeking', 'Seeking'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
   if (relationshipTypes?.includes('relationship')) {
     const romanticStyles = profile.pref_romantic_styles
-      ?.map((style) => INVERTED_ROMANTIC_CHOICES[style].toLowerCase())
+      ?.map((style) => t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]).toLowerCase())
       .filter(Boolean)
     if (romanticStyles && romanticStyles.length > 0) {
       seekingGenderText += ` (${romanticStyles.join(', ')})`
@@ -215,7 +215,7 @@ function RelationshipStatus(props: { profile: Profile }) {
   return (
     <AboutRow
       icon={icon ? React.createElement(icon, {className: 'h-5 w-5'}) : null}
-      text={relationship_status?.map(v => t(`profile.about.relationship_status.${v}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[v]))}
+      text={relationship_status?.map(v => t(`profile.relationship_status.${v}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[v]))}
     />
   )
 }
@@ -229,10 +229,10 @@ function Education(props: { profile: Profile }) {
   let text = ''
 
   if (educationLevel) {
-    text += capitalizeAndRemoveUnderscores(t(`profile.about.education.${educationLevel}`, INVERTED_EDUCATION_CHOICES[educationLevel]))
+    text += capitalizeAndRemoveUnderscores(t(`profile.education.${educationLevel}`, INVERTED_EDUCATION_CHOICES[educationLevel]))
   }
   if (university) {
-    if (educationLevel) text += ` ${t('profile.about.at', 'at')} `
+    if (educationLevel) text += ` ${t('profile.at', 'at')} `
     text += capitalizeAndRemoveUnderscores(university)
   }
   if (text.length === 0) {
@@ -257,7 +257,7 @@ function Occupation(props: { profile: Profile }) {
   }
   const occupationText = `${
     occupation_title ? capitalizeAndRemoveUnderscores(occupation_title) : ''
-  }${occupation_title && company ? ` ${t('profile.about.at', 'at')} ` : ''}${
+  }${occupation_title && company ? ` ${t('profile.at', 'at')} ` : ''}${
     company ? capitalizeAndRemoveUnderscores(company) : ''
   }`
   return (
@@ -275,13 +275,13 @@ function Smoker(props: { profile: Profile }) {
   if (isSmoker == null) return null
   if (isSmoker) {
     return (
-      <AboutRow icon={<LuCigarette className="h-5 w-5"/>} text={t('profile.about.smokes', 'Smokes')}/>
+      <AboutRow icon={<LuCigarette className="h-5 w-5"/>} text={t('profile.smokes', 'Smokes')}/>
     )
   }
   return (
     <AboutRow
       icon={<LuCigaretteOff className="h-5 w-5"/>}
-      text={t('profile.about.doesnt_smoke', "Doesn't smoke")}
+      text={t('profile.doesnt_smoke', "Doesn't smoke")}
     />
   )
 }
@@ -295,7 +295,7 @@ function Drinks(props: { profile: Profile }) {
     return (
       <AboutRow
         icon={<MdNoDrinks className="h-5 w-5"/>}
-        text={t('profile.about.doesnt_drink', "Doesn't drink")}
+        text={t('profile.doesnt_drink', "Doesn't drink")}
       />
     )
   }
@@ -304,8 +304,8 @@ function Drinks(props: { profile: Profile }) {
       icon={<BiSolidDrink className="h-5 w-5"/>}
       text={
         drinksPerMonth === 1
-          ? t('profile.about.drinks_one', '1 drink per month')
-          : t('profile.about.drinks_many', '{count} drinks per month', {count: drinksPerMonth})
+          ? t('profile.drinks_one', '1 drink per month')
+          : t('profile.drinks_many', '{count} drinks per month', {count: drinksPerMonth})
       }
     />
   )
@@ -318,14 +318,14 @@ function WantsKids(props: { profile: Profile }) {
   if (wantsKidsStrength == null || wantsKidsStrength < 0) return null
   const wantsKidsText =
     wantsKidsStrength == 0
-      ? t('profile.about.wants_kids_0', "Does not want children")
+      ? t('profile.wants_kids_0', "Does not want children")
       : wantsKidsStrength == 1
-        ? t('profile.about.wants_kids_1', "Prefers not to have children")
+        ? t('profile.wants_kids_1', "Prefers not to have children")
         : wantsKidsStrength == 2
-          ? t('profile.about.wants_kids_2', "Neutral or open to having children")
+          ? t('profile.wants_kids_2', "Neutral or open to having children")
           : wantsKidsStrength == 3
-            ? t('profile.about.wants_kids_3', "Leaning towards wanting children")
-            : t('profile.about.wants_kids_4', "Wants children")
+            ? t('profile.wants_kids_3', "Leaning towards wanting children")
+            : t('profile.wants_kids_4', "Wants children")
 
   return (
     <AboutRow
@@ -342,7 +342,7 @@ function LastOnline(props: { lastOnlineTime?: string }) {
   return (
     <AboutRow
       icon={<ClockIcon className="h-5 w-5"/>}
-      text={t('profile.about.last_online', 'Last online {time}', {time: fromNow(lastOnlineTime, true)})}
+      text={t('profile.last_online', 'Last online {time}', {time: fromNow(lastOnlineTime, true)})}
     />
   )
 }
@@ -353,8 +353,8 @@ function HasKids(props: { profile: Profile }) {
   const hasKidsText =
     profile.has_kids && profile.has_kids > 0
       ? profile.has_kids > 1
-        ? t('profile.about.has_kids_many', 'Has {count} kids', {count: profile.has_kids})
-        : t('profile.about.has_kids_one', 'Has {count} kid', {count: profile.has_kids})
+        ? t('profile.has_kids_many', 'Has {count} kids', {count: profile.has_kids})
+        : t('profile.has_kids_one', 'Has {count} kid', {count: profile.has_kids})
       : null
   return <AboutRow icon={<FaChild className="h-5 w-5"/>} text={hasKidsText}/>
 }
@@ -395,4 +395,8 @@ const renderAgreementScale = (value: number) => {
 const capitalizeAndRemoveUnderscores = (str: string) => {
   const withSpaces = str.replace(/_/g, ' ')
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1)
+}
+
+const toKey = (str: string) => {
+  return str.replace(/ /g, '_').toLowerCase()
 }

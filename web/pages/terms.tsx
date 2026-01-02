@@ -77,13 +77,13 @@ export default function TermsPage() {
         </p>
         <p>
           {t('terms.safety.f','f. User Safety Controls. Compass includes built-in features that allow users to:')}
-          <ul className="list-disc list-inside mt-2">
-            <li>{t('terms.safety.f1','Block other users or specific user-generated content.')}</li>
-            <li>{t('terms.safety.f2','Report users or content that violates community standards.')}</li>
-            <li>{t('terms.safety.f3','Benefit from active chat moderation to ensure a safe and respectful environment.')}</li>
-            <li>{t('terms.safety.f4','Limit interactions to invited friends only, where supported by the app’s features.')}</li>
-          </ul>
         </p>
+        <ul className="list-disc list-inside">
+          <li>{t('terms.safety.f1','Block other users or specific user-generated content.')}</li>
+          <li>{t('terms.safety.f2','Report users or content that violates community standards.')}</li>
+          <li>{t('terms.safety.f3','Benefit from active chat moderation to ensure a safe and respectful environment.')}</li>
+          <li>{t('terms.safety.f4','Limit interactions to invited friends only, where supported by the app’s features.')}</li>
+        </ul>
 
         <h2 className="text-xl font-semibold">{t('terms.liability.title','5. Liability')}</h2>
         <p>

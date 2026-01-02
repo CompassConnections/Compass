@@ -8,9 +8,11 @@ import GenderIcon from '../gender-icon'
 import { Gender, convertGender } from 'common/gender'
 import { formatProfileValue } from '../profile-about'
 import { Profile } from 'common/profiles/profile'
+import { useT } from 'web/lib/locale'
 
 export default function ProfilePrimaryInfo(props: { profile: Profile }) {
   const { profile } = props
+  const t = useT()
   const stateOrCountry =
     profile.country === 'United States of America'
       ? profile.region_code
@@ -22,7 +24,7 @@ export default function ProfilePrimaryInfo(props: { profile: Profile }) {
         icon={<IoLocationOutline className="h-4 w-4" />}
       />}
       {profile.gender && <IconWithInfo
-        text={capitalize(convertGender(profile.gender as Gender))}
+        text={capitalize(t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender)))}
         icon={
           <GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />
         }

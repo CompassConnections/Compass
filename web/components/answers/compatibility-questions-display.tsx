@@ -704,9 +704,10 @@ function CompatibilityDisplay(props: {
 
 function ImportanceDisplay(props: { importance: number }) {
   const {importance} = props
+  const t = useT()
   return (
     <span className={clsx('w-fit')}>
-      {getStringKeyFromNumValue(importance, IMPORTANCE_CHOICES)}
+      {t(`answers.importance.${importance}`, getStringKeyFromNumValue(importance, IMPORTANCE_CHOICES) as string)}
     </span>
   )
 }

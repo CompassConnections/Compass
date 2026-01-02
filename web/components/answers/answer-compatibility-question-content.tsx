@@ -194,7 +194,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         )}
       >
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">{t('answers.content.your_answer', 'Your answer')}</span>
+          <span className="text-ink-500 text-sm">{t('answers.preferred.your_answer', 'Your answer')}</span>
           <SelectAnswer
             value={answer.multiple_choice}
             setValue={(choice) =>
@@ -217,7 +217,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           <span className="text-ink-500 text-sm">{t('answers.content.importance', 'Importance')}</span>
           <RadioToggleGroup
             currentChoice={answer.importance ?? -1}
-            choicesMap={IMPORTANCE_CHOICES}
+            choicesMap={Object.fromEntries(Object.entries(IMPORTANCE_CHOICES).map(([k, v]) => [t(`answers.importance.${v}`, k), v]))}
             setChoice={(choice: number) =>
               setAnswer({...answer, importance: choice})
             }
@@ -263,7 +263,7 @@ export function AnswerCompatibilityQuestionContent(props: {
               skipLoading && 'animate-pulse'
             )}
           >
-            {t('answers.content.skip', 'Skip')}
+            {t('answers.menu.skip', 'Skip')}
           </button>
         )}
         <Button
@@ -288,7 +288,7 @@ export function AnswerCompatibilityQuestionContent(props: {
               .finally(() => setLoading(false))
           }}
         >
-          {isLastQuestion ? t('answers.content.finish', 'Finish') : t('answers.content.next', 'Next')}
+          {isLastQuestion ? t('answers.finish', 'Finish') : t('answers.next', 'Next')}
         </Button>
       </Row>
     </Col>

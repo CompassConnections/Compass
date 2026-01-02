@@ -1,19 +1,16 @@
-import { Col } from 'web/components/layout/col'
-import { groupBy, orderBy } from 'lodash'
-import { useLiveCommentsOnProfile } from 'web/hooks/use-comments-on-profile'
-import {
-  ProfileCommentInput,
-  ProfileProfileCommentThread,
-} from 'web/components/profile-comments'
-import { User } from 'common/user'
-import { Row } from 'web/components/layout/row'
+import {Col} from 'web/components/layout/col'
+import {groupBy, orderBy} from 'lodash'
+import {useLiveCommentsOnProfile} from 'web/hooks/use-comments-on-profile'
+import {ProfileCommentInput, ProfileProfileCommentThread,} from 'web/components/profile-comments'
+import {User} from 'common/user'
+import {Row} from 'web/components/layout/row'
 import ShortToggle from 'web/components/widgets/short-toggle'
-import { useState } from 'react'
-import { updateProfile } from 'web/lib/api'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { toast } from 'react-hot-toast'
-import { Subtitle } from './widgets/profile-subtitle'
-import { Profile } from 'common/profiles/profile'
+import {useState} from 'react'
+import {updateProfile} from 'web/lib/api'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {toast} from 'react-hot-toast'
+import {Subtitle} from './widgets/profile-subtitle'
+import {Profile} from 'common/profiles/profile'
 import {useT} from "web/lib/locale";
 
 export const ProfileCommentSection = (props: {
@@ -22,7 +19,7 @@ export const ProfileCommentSection = (props: {
   currentUser: User | null | undefined
   simpleView?: boolean
 }) => {
-  const { onUser, currentUser, simpleView } = props
+  const {onUser, currentUser, simpleView} = props
   const t = useT()
   const comments = useLiveCommentsOnProfile(onUser.id).filter((c) => !c.hidden)
   const parentComments = comments.filter((c) => !c.replyToCommentId)
@@ -47,8 +44,8 @@ export const ProfileCommentSection = (props: {
             <ShortToggle
               on={profile.comments_enabled}
               setOn={(on) => {
-                const update = { comments_enabled: on }
-                setProfile((l) => ({ ...l, ...update }))
+                const update = {comments_enabled: on}
+                setProfile((l) => ({...l, ...update}))
                 toast.promise(updateProfile(update), {
                   loading: on
                     ? t('profile.comments.enabling', 'Enabling endorsements from others')
@@ -86,11 +83,11 @@ export const ProfileCommentSection = (props: {
           {!profile.comments_enabled &&
             (isCurrentUser ? (
               <span className={'text-ink-500 text-sm'}>
-                {t('profile.comments.feature_disabled_other', 'This feature is disabled')}
+                {t('profile.comments.feature_disabled_self', 'This feature is disabled')}
               </span>
             ) : (
               <span className={'text-ink-500 text-sm'}>
-                {t('profile.comments.feature_disabled_other', '{name} has disabled endorsements from others.', { name: onUser.name })}
+                {t('profile.comments.feature_disabled_other', '{name} has disabled endorsements from others.', {name: onUser.name})}
               </span>
             ))}
         </>

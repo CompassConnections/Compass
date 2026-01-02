@@ -145,7 +145,7 @@ function Seeking(props: { profile: Profile }) {
     text:
       prefGender?.length == 5
         ? ['people']
-        : prefGender?.map((gender) => convertGenderPlural(gender as Gender)),
+        : prefGender?.map((gender) => t(`profile.gender.plural.${gender}`, convertGenderPlural(gender as Gender)).toLowerCase()),
     preText: t('profile.interested_in', 'Interested in'),
     asSentence: true,
     capitalizeFirstLetterOption: false,

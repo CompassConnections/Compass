@@ -11,6 +11,7 @@ import {githubRepo} from "common/constants"
 import {CustomLink} from "web/components/links"
 import {Button} from "web/components/buttons/button"
 import {getLiveUpdateInfo} from "web/lib/live-update";
+import {useT} from 'web/lib/locale'
 
 export type WebBuild = {
   gitSha?: string
@@ -137,6 +138,7 @@ const LoadedAboutSettings = (props: {
   const {} = props
 
   const [copyFeedback, setCopyFeedback] = useState('')
+  const t = useT()
 
   const diagnostics = useDiagnostics()
   if (!diagnostics) return null
@@ -144,7 +146,7 @@ const LoadedAboutSettings = (props: {
   const handleCopy = async () => {
     if (!diagnostics) return
     await navigator.clipboard.writeText(diagnosticsToText(diagnostics))
-    setCopyFeedback('Copied!')
+    setCopyFeedback(t('aboutsettings.copied', 'Copied!'))
     setTimeout(() => {
       setCopyFeedback('')
     }, 2000)
@@ -159,7 +161,7 @@ const LoadedAboutSettings = (props: {
       onClick={handleCopy}
       className="w-fit mt-4"
     >
-      {copyFeedback || 'Copy Info'}
+      {copyFeedback || t('aboutsettings.copy_info', 'Copy Info')}
     </Button>
   </Col>
 }

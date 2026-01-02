@@ -17,6 +17,7 @@ import {AnswerCompatibilityQuestionContent} from './answer-compatibility-questio
 import {uniq} from 'lodash'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
+import {useT} from 'web/lib/locale'
 
 export function AddCompatibilityQuestionButton(props: {
   refreshCompatibilityAll: () => void
@@ -25,6 +26,7 @@ export function AddCompatibilityQuestionButton(props: {
   const [open, setOpen] = useState(false)
   const user = useUser()
   if (!user) return null
+  const t = useT()
   return (
     <>
       <button
@@ -32,7 +34,7 @@ export function AddCompatibilityQuestionButton(props: {
         onClick={() => setOpen(true)}
         className="text-sm"
       >
-        submit your own!
+        {t('answers.add.submit_own', 'submit your own!')}
       </button>
       <AddCompatibilityQuestionModal
         open={open}
@@ -94,6 +96,7 @@ function CreateCompatibilityModalContent(props: {
   setOpen: (open: boolean) => void
 }) {
   const { afterAddQuestion, setOpen } = props
+  const t = useT()
   const [question, setQuestion] = useState('')
   const [options, setOptions] = useState<string[]>(['', ''])
   const [loading, setLoading] = useState(false)
@@ -144,7 +147,7 @@ function CreateCompatibilityModalContent(props: {
       }
       track('create compatibility question')
     } catch (e) {
-      toast.error('Error creating compatibility question. Try again?')
+      toast.error(t('answers.add.error_create', 'Error creating compatibility question. Try again?'))
     }
   })
 
@@ -152,7 +155,8 @@ function CreateCompatibilityModalContent(props: {
     <Col className="w-full gap-4 main-font">
       <Col className="gap-1">
         <label>
-          Question<span className={'text-scarlet-500'}>*</span>
+          {t('answers.add.question_label', 'Question')}
+          <span className={'text-scarlet-500'}>*</span>
         </label>
         <ExpandingInput
           maxLength={MAX_COMPATIBILITY_QUESTION_LENGTH}
@@ -162,7 +166,8 @@ function CreateCompatibilityModalContent(props: {
       </Col>
       <Col className="gap-1">
         <label>
-          Options<span className={'text-scarlet-500'}>*</span>
+          {t('answers.add.options_label', 'Options')}
+          <span className={'text-scarlet-500'}>*</span>
         </label>
         <Col className="w-full gap-1">
           {options.map((o, index) => (
@@ -171,7 +176,7 @@ function CreateCompatibilityModalContent(props: {
                 value={options[index]}
                 onChange={(e) => onOptionChange(index, e.target.value)}
                 className="w-full"
-                placeholder={`Option ${index + 1}`}
+                placeholder={t('answers.add.option_placeholder', 'Option {n}', { n: String(index + 1) })}
                 rows={1}
                 maxLength={MAX_ANSWER_LENGTH}
               />
@@ -188,7 +193,7 @@ function CreateCompatibilityModalContent(props: {
           <Button onClick={addOption} color="gray-outline">
             <Row className="items-center gap-1">
               <PlusIcon className="h-4 w-4" />
-              Add Option
+              {t('answers.add.add_option', 'Add Option')}
             </Row>
           </Button>
         </Col>
@@ -201,7 +206,7 @@ function CreateCompatibilityModalContent(props: {
             setOpen(false)
           }}
         >
-          Cancel
+          {t('settings.action.cancel', 'Cancel')}
         </Button>
         <Button
           loading={loading}
@@ -211,7 +216,7 @@ function CreateCompatibilityModalContent(props: {
           }}
           disabled={!optionsAreValid || !questionIsValid || !noRepeatOptions}
         >
-          Submit & Answer
+          {t('answers.add.submit_and_answer', 'Submit & Answer')}
         </Button>
       </Row>
     </Col>

@@ -9,7 +9,8 @@ export type I18nContextType = {
 
 export const I18nContext = createContext<I18nContextType>({
   locale: defaultLocale,
-  setLocale: () => {}
+  setLocale: () => {
+  }
 })
 
 export function useLocale() {
@@ -47,5 +48,17 @@ export function useT() {
       .catch(() => setMessages({}))
   }, [locale])
 
-  return (key: string, fallback: string) => locale === defaultLocale ? fallback : messages[key] ?? fallback
+  return (key: string, fallback: string, formatter?: any) => {
+    const result = locale === defaultLocale ? fallback : messages[key] ?? fallback
+    if (!formatter) return result
+    if (typeof formatter === 'function') return formatter(result)
+    if (typeof formatter === 'object') {
+      let text = String(result)
+      for (const [k, v] of Object.entries(formatter)) {
+        text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+      }
+      return text
+    }
+    return result
+  }
 }

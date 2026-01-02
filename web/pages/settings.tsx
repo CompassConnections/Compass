@@ -21,8 +21,6 @@ import {sendPasswordReset} from "web/lib/firebase/password";
 import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
-import {NewBadge} from "web/components/new-badge";
-import {Row} from "web/components/layout/row"
 
 export default function NotificationsPage() {
   const t = useT()
@@ -134,15 +132,10 @@ const LoadedGeneralSettings = (props: {
     <div className="flex flex-col gap-2 max-w-fit">
       <h3>{t('settings.general.theme', 'Theme')}</h3>
       <ThemeIcon className="h-6 w-6"/>
+
       <h3>{t('settings.general.language', 'Language')}</h3>
-      <Row className="flex flex-col sm:flex-row items-center gap-10">
-        <div className="flex-none">
-          <NewBadge classes={'mr-2'} created={"2025-12-27"}/>
-        </div>
-        <div className="flex-auto">
-          <LanguagePicker/>
-        </div>
-      </Row>
+      <LanguagePicker className={'w-fit min-w-[120px]'}/>
+
       <h3>{t('settings.general.account', 'Account')}</h3>
       <h5>{t('settings.general.email', 'Email')}</h5>
 

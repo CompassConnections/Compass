@@ -20,26 +20,29 @@ import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {SEO} from "web/components/SEO";
+import {useT} from 'web/lib/locale'
 
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()
 
   const currentUser = useUser()
+  const t = useT()
   return (
     <PageBase trackPageView={'messages page'} className={'p-2'}>
       <SEO
-        title={'Messages'}
-        description={'Your Messages'}
+        title={t('messages.title', 'Messages')}
+        description={t('messages.seo.description', 'Your Messages')}
         url={`/messages`}
       />
-      {currentUser && <MessagesContent currentUser={currentUser}/>}
+      {currentUser && <MessagesContent currentUser={currentUser}/>}        
     </PageBase>
   )
 }
 
 export function MessagesContent(props: { currentUser: User }) {
   const {currentUser} = props
+  const t = useT()
   const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(
     currentUser.id
   )
@@ -51,13 +54,13 @@ export function MessagesContent(props: { currentUser: User }) {
   return (
     <>
       <Row className="justify-between">
-        <Title>Messages</Title>
+        <Title>{t('messages.title', 'Messages')}</Title>
         <NewMessageButton/>
       </Row>
       <Col className={'w-full overflow-hidden'}>
         {channels && channels.length === 0 && (
           <div className={'text-ink-500 dark:text-ink-600 mt-4 text-center'}>
-            You have no messages, yet.
+            {t('messages.empty', 'You have no messages, yet.')}
           </div>
         )}
         {channels?.map((channel) => {
@@ -93,6 +96,7 @@ export const MessageChannelRow = (props: {
   const unseen = (messages?.[0]?.createdTimeTs ?? '0') > lastSeenTime
   const chat = messages?.[0]
   const numOthers = otherUsers?.length ?? 0
+  const t = useT()
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
@@ -118,7 +122,12 @@ export const MessageChannelRow = (props: {
                     .map((user) => user.name.split(' ')[0].trim())
                     .slice(0, 2)
                     .join(', ')}
-                  {otherUsers.length > 2 && ` & ${otherUsers.length - 2} more`}
+                  {otherUsers.length > 2 && (
+                    <>
+                      {` & ${otherUsers.length - 2}`}
+                      {t('messages.more', ' more')}
+                    </>
+                  )}
                 </span>
               )}
               {isBanned && <BannedBadge/>}
@@ -136,7 +145,7 @@ export const MessageChannelRow = (props: {
             >
               {chat && (
                 <>
-                  {chat.userId == currentUser.id && 'You: '}
+                  {chat.userId == currentUser.id && t('messages.you_prefix', 'You: ')}
                   {parseJsonContentToText(chat.content)}
                 </>
               )}

@@ -50,7 +50,7 @@ export function VoteComponent() {
           >
             {ORDER_BY.map((key) => (
               <option key={key} value={key}>
-                {ORDER_BY_CHOICES[key]}
+                {t(`vote.sort.${key}`, ORDER_BY_CHOICES[key])}
               </option>
             ))}
           </select>

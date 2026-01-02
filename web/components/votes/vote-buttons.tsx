@@ -127,6 +127,7 @@ export function VoteButtons(props: {
             'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
             'dark:bg-ink-900'
           )}>
+            <div className="px-3 py-2 text-sm font-semibold bg-canvas-25">{t("vote.priority", "Priority")}</div>
             {priorities.map((p) => (
               <button
                 key={p.value}

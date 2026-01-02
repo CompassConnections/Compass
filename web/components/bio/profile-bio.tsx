@@ -7,9 +7,11 @@ import {MAX_INT, MIN_BIO_LENGTH} from "common/constants";
 import {useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core"
 import {flip, offset, shift, useFloating} from "@floating-ui/react-dom";
+import {useT} from "web/lib/locale";
 
 export default function TooShortBio() {
   const [open, setOpen] = useState(false);
+  const t = useT();
   const {y, refs, strategy} = useFloating({
     placement: "bottom", // place below the trigger
     middleware: [
@@ -21,7 +23,7 @@ export default function TooShortBio() {
 
   return (
     <p className="text-red-600">
-      Bio too short. Profile may be filtered from search results.{" "}
+      {t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}{" "}
       <span
         className="inline-flex align-middle"
         onMouseEnter={() => setOpen(true)}
@@ -46,9 +48,7 @@ export default function TooShortBio() {
           className="p-3 bg-canvas-50 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 transition-opacity w-72 max-w-[calc(100vw-1rem)] whitespace-normal break-words"
         >
           <p className="text-sm text-gray-800 dark:text-gray-100">
-            Since your bio is too short, Compass' algorithm filters out your
-            profile from search results (unless "Include short bios" is
-            selected). This ensures searches show meaningful profiles.
+            {t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include short bios\" is selected). This ensures searches show meaningful profiles.")}
           </p>
         </div>
       )}
@@ -67,6 +67,7 @@ export function ProfileBio(props: {
   const [edit, setEdit] = useState(false)
   const editor = useTextEditor({defaultValue: ''})
   const [textLength, setTextLength] = useState(MAX_INT)
+  const t = useT();
 
   useEffect(() => {
     if (!editor) return
@@ -80,7 +81,7 @@ export function ProfileBio(props: {
   return (
     <Col>
       {textLength < MIN_BIO_LENGTH && !edit && isCurrentUser && <TooShortBio/>}
-      <Subtitle className="mb-4">About Me</Subtitle>
+      <Subtitle className="mb-4">{t('profile.bio.about_me', 'About Me')}</Subtitle>
       <BioBlock
         isCurrentUser={isCurrentUser}
         profile={profile}

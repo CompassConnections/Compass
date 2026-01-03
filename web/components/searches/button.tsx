@@ -10,6 +10,7 @@ import {FilterFields} from "common/filters";
 import {api} from "web/lib/api";
 import {DisplayUser} from "common/api/user-types";
 import {useState} from "react";
+import {useT} from "web/lib/locale";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -27,11 +28,12 @@ export function BookmarkSearchButton(props: {
   } = props
   const user = useUser()
 
+  const t = useT()
   if (!user) return null
   return (
     <>
       <Button onClick={() => setOpen(true)} color="gray-outline" size={'xs'}>
-        Saved Searches
+        {t('saved_searches.button', 'Saved Searches')}
       </Button>
       <ButtonModal
         open={open}
@@ -53,6 +55,7 @@ function ButtonModal(props: {
   refreshBookmarkedSearches: () => void
 }) {
   const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches} = props
+  const t = useT()
   return (
     <Modal
       open={open}
@@ -62,9 +65,9 @@ function ButtonModal(props: {
       }}
     >
       <Col className={MODAL_CLASS}>
-        <h3>Saved Searches</h3>
+        <h3>{t('saved_searches.title', 'Saved Searches')}</h3>
         {bookmarkedSearches?.length ? (<>
-              <p>We'll notify you daily when new people match your searches below.</p>
+              <p>{t('saved_searches.notification_note', "We'll notify you daily when new people match your searches below.")}</p>
               <Col
                 className={
                   'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
@@ -91,8 +94,7 @@ function ButtonModal(props: {
               </Col>
             </>
           ) :
-          <p>You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people
-            match it.</p>}
+          <p>{t('saved_searches.empty_state', "You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people match it.")}</p>}
         {/*<BookmarkSearchContent*/}
         {/*  total={bookmarkedSearches.length}*/}
         {/*  compatibilityQuestion={bookmarkedSearches[questionIndex]}*/}
@@ -128,11 +130,12 @@ export function BookmarkStarButton(props: {
   } = props
   const user = useUser()
 
+  const t = useT()
   if (!user) return null
   return (
     <>
       <Button onClick={() => setOpen(true)} color="gray-outline" size={'xs'}>
-        Saved People
+        {t('saved_people.button', 'Saved People')}
       </Button>
       <StarModal
         open={open}
@@ -157,6 +160,7 @@ function StarModal(props: {
   // Track items being optimistically removed so we can hide them immediately
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
 
+  const t = useT()
   const visibleUsers = (starredUsers || []).filter((u) => !removingIds.has(u.id))
 
   return (
@@ -168,9 +172,9 @@ function StarModal(props: {
       // }}
     >
       <Col className={MODAL_CLASS}>
-        <h3>Saved People</h3>
+        <h3>{t('saved_people.title', 'Saved People')}</h3>
         {visibleUsers?.length ? (<>
-            <p>Here are the people you saved:</p>
+            <p>{t('saved_people.list_header', 'Here are the people you saved:')}</p>
             <Col
               className={
                 'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'

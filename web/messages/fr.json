@@ -860,6 +860,8 @@
   "common.or": "Ou",
   "common.yes": "Oui",
   "common.no": "Non",
+  "profile_grid.no_profiles": "Aucun profil trouvé.",
+  "profile_grid.notification_cta": "N'hésitez pas à cliquer sur \"Être notifié\" et nous vous préviendrons quand de nouveaux utilisateurs correspondront à votre recherche !",
   "add_photos.add_description": "Ajouter une description",
   "add_photos.profile_picture_hint": "L'image mise en surbrillance est votre photo de profil"
 }

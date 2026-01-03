@@ -35,7 +35,9 @@ import { AuthedUser } from "api/helpers/endpoint";
 
 
 describe('createUser', () => {
+    const originalIsLocal = (hostingConstants as any).IS_LOCAL;
     let mockPg = {} as any;
+
     beforeEach(() => {
         jest.resetAllMocks();
         mockPg = {
@@ -51,10 +53,18 @@ describe('createUser', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
+        Object.defineProperty(hostingConstants, 'IS_LOCAL', {
+            value: originalIsLocal,
+            writable: true,
+        });
     });
 
     describe('when given valid input', () => {
-        it.only('should successfully create a user', async () => {
+        it('should successfully create a user', async () => {
+            Object.defineProperty(hostingConstants, 'IS_LOCAL', {
+                value: false,
+                writable: true
+            });
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"
@@ -92,11 +102,10 @@ describe('createUser', () => {
                 data: {"mockPrivateUserJson" : "mockPrivateUserJsonData"},
                 id: "mockPrivateUserId"
             };
-
+            
             const mockGetUser = jest.fn()
                 .mockResolvedValueOnce(mockFirebaseUser)
                 .mockResolvedValueOnce(mockFbUser);
-
             (firebaseAdmin.auth as jest.Mock).mockReturnValue({
                 getUser: mockGetUser
             });
@@ -175,8 +184,8 @@ describe('createUser', () => {
                 'create profile',
                 {username: mockNewUserRow.username}
             );
-            // expect(emailHelpers.sendWelcomeEmail).toBeCalledTimes(1);
-            // expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow);
+            expect(emailHelpers.sendWelcomeEmail).toBeCalledTimes(1);
+            expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow);
             expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledTimes(1);
             expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledWith(mockAuth.uid);
         });
@@ -670,7 +679,11 @@ describe('createUser', () => {
             expect(errorSpy).toHaveBeenCalledWith('Failed to track create profile', expect.any(Error));
         });
 
-        it.skip('should throw an error if failed to send a welcome email', async () => {
+        it('should throw an error if failed to send a welcome email', async () => {
+            Object.defineProperty(hostingConstants, 'IS_LOCAL', {
+                value: false,
+                writable: true
+            });
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"
@@ -736,21 +749,12 @@ describe('createUser', () => {
             const results: any = await createUser(mockProps, mockAuth, mockReq);
 
             (sharedAnalytics.track as jest.Mock).mockResolvedValue(null);
-            (emailHelpers.sendWelcomeEmail as jest.Mock).mockResolvedValue(null);
-            (apiSetLastTimeOnline.setLastOnlineTimeUser as jest.Mock).mockResolvedValue(null);
+            (emailHelpers.sendWelcomeEmail as jest.Mock).mockRejectedValue(new Error('Welcome email failed'));
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
             await results.continue();
-
-            expect(sharedAnalytics.track).toBeCalledTimes(1);
-            expect(sharedAnalytics.track).toBeCalledWith(
-                mockAuth.uid,
-                'create profile',
-                {username: mockNewUserRow.username}
-            );
-            // expect(emailHelpers.sendWelcomeEmail).toBeCalledTimes(1);
-            // expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow);
-            expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledTimes(1);
-            expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledWith(mockAuth.uid);
+            
+            expect(errorSpy).toBeCalledWith('Failed to sendWelcomeEmail', expect.any(Error));
         });
 
         it('should throw an error if failed to set last time online', async () => {
@@ -824,7 +828,7 @@ describe('createUser', () => {
             const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
             await results.continue();
-
+            
             expect(errorSpy).toHaveBeenCalledWith('Failed to set last online time', expect.any(Error));
         });
     });

@@ -72,6 +72,7 @@ Everything is open to anyone for collaboration, but the following ones are parti
 - [x] Add profile fields (intellectual interests, cause areas, personality type, etc.)
 - [ ] Add profile fields: conflict style
 - [ ] Add profile fields: timezone
+- [ ] Add translations: Italian, Dutch, Hindi, Chinese, etc.
 - [x] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
 - [ ] Make the app more user-friendly and appealing (UI/UX)
 - [ ] Clean up terms and conditions (convert to Markdown)
@@ -156,7 +157,7 @@ If you are new to Typescript or the open-source space, you could start with smal
 There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
 - [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
-- [development.md](docs/development.md) for additional instructions, such as adding new profile fields.
+- [development.md](docs/development.md) for additional instructions, such as adding new profile fields or languages.
 - [web](web) for the web.
 - [backend/api](backend/api) for the backend API.
 - [android](android) for the Android app.

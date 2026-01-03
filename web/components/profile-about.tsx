@@ -33,6 +33,7 @@ import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 import {useT} from "web/lib/locale";
+import {toKey} from "common/parsing";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -395,8 +396,4 @@ const renderAgreementScale = (value: number) => {
 const capitalizeAndRemoveUnderscores = (str: string) => {
   const withSpaces = str.replace(/_/g, ' ')
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1)
-}
-
-const toKey = (str: string) => {
-  return str.replace(/ /g, '_').toLowerCase()
 }

@@ -4,6 +4,8 @@ import { Input } from 'web/components/widgets/input'
 import { Button } from 'web/components/buttons/button'
 import clsx from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
+import {useT} from "web/lib/locale";
+import {toKey} from "common/parsing";
  
 export const MultiCheckbox = (props: {
   // Map of label -> value
@@ -19,8 +21,9 @@ export const MultiCheckbox = (props: {
   //  - null/undefined to indicate failure/cancellation
   addOption?: (label: string) => string | { key: string; value: string } | null | undefined
   addPlaceholder?: string
+  translationPrefix?: string
 }) => {
-  const { choices, selected, onChange, className, addOption, addPlaceholder } = props
+  const { choices, selected, onChange, className, addOption, addPlaceholder, translationPrefix } = props
 
   // Keep a local merged copy to allow optimistic adds while remaining in sync with props
   const [localChoices, setLocalChoices] = useState<{ [key: string]: string }>(choices)
@@ -38,6 +41,8 @@ export const MultiCheckbox = (props: {
   const [newLabel, setNewLabel] = useState('')
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const t = useT()
 
   // Filter visible options while typing a new option (case-insensitive label match)
   const filteredEntries = useMemo(() => {
@@ -90,7 +95,7 @@ export const MultiCheckbox = (props: {
         <Row className="items-center gap-2">
           <Input
             value={newLabel}
-            placeholder={addPlaceholder ?? 'Search or add'}
+            placeholder={addPlaceholder ?? t('multi-checkbox.search_or_add', 'Search or add')}
             onChange={(e) => {
               setNewLabel(e.target.value)
               setError(null)
@@ -104,7 +109,7 @@ export const MultiCheckbox = (props: {
             className="h-10"
           />
           <Button size="sm" onClick={submitAdd} loading={adding} disabled={adding}>
-            Add
+            {t('common.add', 'Add')}
           </Button>
           {error && <span className="text-sm text-error">{error}</span>}
         </Row>
@@ -114,7 +119,7 @@ export const MultiCheckbox = (props: {
         {filteredEntries.map(([key, value]) => (
           <Checkbox
             key={key}
-            label={key}
+            label={t(`${translationPrefix}.${toKey(value)}`, key)}
             checked={selected.includes(value)}
             toggle={(checked: boolean) => {
               if (checked) {

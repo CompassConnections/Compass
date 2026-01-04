@@ -16,7 +16,7 @@ import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
 import {PrefGenderFilter, PrefGenderFilterText} from "web/components/filters/pref-gender-filter";
 import DropdownMenu from "web/components/comments/dropdown-menu";
-import {KidsLabel, wantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
+import {KidsLabel, useWantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
 import {hasKidsLabels} from "common/has-kids";
 import {HasKidsLabel} from "web/components/filters/has-kids-filter";
 import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
@@ -27,7 +27,7 @@ import {GiFruitBowl} from "react-icons/gi";
 import {RiScales3Line} from "react-icons/ri";
 import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
 import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
-import {BsPersonVcard} from "react-icons/bs";
+import {BsPersonHeart, BsPersonVcard} from "react-icons/bs";
 import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
 import {MdLanguage, MdLocalBar} from 'react-icons/md'
@@ -39,9 +39,9 @@ import {
   RelationshipStatusFilter,
   RelationshipStatusFilterText
 } from "web/components/filters/relationship-status-filter";
-import {BsPersonHeart} from "react-icons/bs";
 import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
 import {OptionTableKey} from "common/profiles/constants";
+import {useT} from "web/lib/locale";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -65,6 +65,9 @@ export function DesktopFilters(props: {
     includeRelationshipFilters,
     choices,
   } = props
+
+  const t = useT()
+  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
     <>
@@ -116,7 +119,7 @@ export function DesktopFilters(props: {
                       | string[]
                       | undefined
                   }
-                  defaultLabel={'Any relationship status'}
+                  defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
@@ -439,7 +442,7 @@ export function DesktopFilters(props: {
                       | undefined
                   }
                   highlightedClass={open ? 'text-primary-500' : undefined}
-                  label={'interest'}
+                  label={'interests'}
                 />
               </Row>
             }
@@ -474,7 +477,7 @@ export function DesktopFilters(props: {
                       | undefined
                   }
                   highlightedClass={open ? 'text-primary-500' : undefined}
-                  label={'cause'}
+                  label={'causes'}
                 />
               </Row>
             }
@@ -596,7 +599,7 @@ export function DesktopFilters(props: {
                 <MbtiFilterText
                   options={filters.mbti as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
-                  defaultLabel={'Any MBTI'}
+                  defaultLabel={t('filter.any_mbti', 'Any MBTI')}
                 />
               </Row>
             }
@@ -656,6 +659,7 @@ export function DesktopFilters(props: {
           </Col>
         }
         popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
       />
 
       {/* Short Bios */}
@@ -669,7 +673,7 @@ export function DesktopFilters(props: {
         className="text-ink-900 hover:text-primary-500 underline"
         onClick={clearFilters}
       >
-        Reset filters
+        {t('filter.reset', 'Reset filters')}
       </button>
     </>
   )

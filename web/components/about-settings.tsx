@@ -146,7 +146,7 @@ const LoadedAboutSettings = (props: {
   const handleCopy = async () => {
     if (!diagnostics) return
     await navigator.clipboard.writeText(diagnosticsToText(diagnostics))
-    setCopyFeedback(t('aboutsettings.copied', 'Copied!'))
+    setCopyFeedback(t('about.settings.copied', 'Copied!'))
     setTimeout(() => {
       setCopyFeedback('')
     }, 2000)
@@ -161,7 +161,7 @@ const LoadedAboutSettings = (props: {
       onClick={handleCopy}
       className="w-fit mt-4"
     >
-      {copyFeedback || t('aboutsettings.copy_info', 'Copy Info')}
+      {copyFeedback || t('about.settings.copy_info', 'Copy Info')}
     </Button>
   </Col>
 }

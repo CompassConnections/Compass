@@ -34,6 +34,7 @@ import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
 import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
 import {OptionTableKey} from "common/profiles/constants";
 import {NewBadge} from "web/components/new-badge";
+import {useT} from "web/lib/locale";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -46,6 +47,7 @@ function MobileFilters(props: {
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string[]>>
 }) {
+  const t = useT()
   const {
     filters,
     youProfile,
@@ -88,16 +90,16 @@ function MobileFilters(props: {
           />
         </Col>
         <button
-          className="text-ink-500 hover:text-primary-500 underline mt-4 mb-8 right absolute right-4"
+          className="text-ink-900 hover:text-primary-500 underline"
           onClick={clearFilters}
         >
-          Reset filters
+          {t('filter.reset', 'Reset filters')}
         </button>
       </Row>
 
       {/* RELATIONSHIP STYLE */}
       <MobileFilterSection
-        title="Seeking"
+        title={t('profile.seeking', "Seeking")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.pref_relation_styles)}
@@ -117,7 +119,7 @@ function MobileFilters(props: {
 
       {/* Relationship Status */}
       <MobileFilterSection
-        title="Relationship Status"
+        title={t('profile.optional.relationship_status', 'Relationship status')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.relationship_status || undefined)}
@@ -137,7 +139,7 @@ function MobileFilters(props: {
 
       {/* LOCATION */}
       <MobileFilterSection
-        title="Location"
+        title={t("profile.optional.location", "Location")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={!!locationFilterProps.location}
@@ -162,7 +164,7 @@ function MobileFilters(props: {
 
       {/* AGE RANGE */}
       <MobileFilterSection
-        title="Age"
+        title={t("profile.optional.age", "Age")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         childrenClassName={'pb-6'}
@@ -182,7 +184,7 @@ function MobileFilters(props: {
 
       {/* GENDER */}
       <MobileFilterSection
-        title="Gender"
+        title={t("profile.optional.gender", "Gender")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.genders)}
@@ -200,7 +202,7 @@ function MobileFilters(props: {
 
       {/* PREFERRED GENDER */}
       <MobileFilterSection
-        title="Gender they seek"
+        title={t('filter.gender.they_seek', 'Gender they seek')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.pref_gender)}
@@ -220,7 +222,7 @@ function MobileFilters(props: {
 
         {/* ROMANTIC STYLE */}
           <MobileFilterSection
-              title="Style"
+              title={t("profile.romantic.style", "Style")}
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={hasAny(filters.pref_romantic_styles || undefined)}
@@ -240,7 +242,7 @@ function MobileFilters(props: {
 
         {/* WANTS KIDS */}
           <MobileFilterSection
-              title="Wants kids"
+              title={t('filter.wants_kids.wants_kids', 'Wants kids')}
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={
@@ -266,7 +268,7 @@ function MobileFilters(props: {
 
         {/* HAS KIDS */}
           <MobileFilterSection
-              title="Has kids"
+              title={t("profile.has_kids", "Has kids")}
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={filters.has_kids != null && filters.has_kids !== -1}
@@ -290,7 +292,7 @@ function MobileFilters(props: {
 
       {/* DIET */}
       <MobileFilterSection
-        title="Diet"
+        title={t("profile.optional.diet", "Diet")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.diet || undefined)}
@@ -310,7 +312,7 @@ function MobileFilters(props: {
 
       {/* DRINKS PER MONTH */}
       <MobileFilterSection
-        title="Drinks"
+        title={t("profile.drinks", "Drinks")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={(() => {
@@ -333,7 +335,7 @@ function MobileFilters(props: {
 
       {/* SMOKER */}
       <MobileFilterSection
-        title="Smoker"
+        title={t("profile.smokes", "Smoker")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={filters.is_smoker != null}
@@ -350,7 +352,7 @@ function MobileFilters(props: {
 
       {/* LANGUAGES */}
       <MobileFilterSection
-        title="Languages"
+        title={t("profile.optional.languages", "Languages")}
         // className="col-span-full max-h-80 overflow-y-auto"
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -373,7 +375,7 @@ function MobileFilters(props: {
       <MobileFilterSection
         showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
-        title="Interests"
+        title={t("profile.optional.interests", "Interests")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.interests || undefined)}
@@ -401,7 +403,7 @@ function MobileFilters(props: {
       <MobileFilterSection
         showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
-        title="Causes"
+        title={t("profile.optional.causes", "Causes")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.causes || undefined)}
@@ -429,7 +431,7 @@ function MobileFilters(props: {
       <MobileFilterSection
         showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
-        title="Work"
+        title={t("profile.optional.work", "Work")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.work || undefined)}
@@ -455,7 +457,7 @@ function MobileFilters(props: {
 
       {/* POLITICS */}
       <MobileFilterSection
-        title="Politics"
+        title={t("profile.optional.political_beliefs", "Politics")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.political_beliefs || undefined)}
@@ -475,7 +477,7 @@ function MobileFilters(props: {
 
       {/* RELIGION */}
       <MobileFilterSection
-        title="Religion"
+        title={t("profile.optional.religious_beliefs", "Religion")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.religion || undefined)}
@@ -511,7 +513,7 @@ function MobileFilters(props: {
 
       {/* EDUCATION */}
       <MobileFilterSection
-        title="Education"
+        title={t("profile.education.short_name", "Education")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.education_levels)}

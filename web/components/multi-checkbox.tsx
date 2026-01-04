@@ -1,12 +1,12 @@
-import { Row } from 'web/components/layout/row'
-import { Checkbox } from 'web/components/widgets/checkbox'
-import { Input } from 'web/components/widgets/input'
-import { Button } from 'web/components/buttons/button'
+import {Row} from 'web/components/layout/row'
+import {Checkbox} from 'web/components/widgets/checkbox'
+import {Input} from 'web/components/widgets/input'
+import {Button} from 'web/components/buttons/button'
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useT} from "web/lib/locale";
 import {toKey} from "common/parsing";
- 
+
 export const MultiCheckbox = (props: {
   // Map of label -> value
   choices: { [key: string]: string }
@@ -119,7 +119,7 @@ export const MultiCheckbox = (props: {
         {filteredEntries.map(([key, value]) => (
           <Checkbox
             key={key}
-            label={t(`${translationPrefix}.${toKey(value)}`, key)}
+            label={translationPrefix ? t(`${translationPrefix}.${toKey(value)}`, key) : key}
             checked={selected.includes(value)}
             toggle={(checked: boolean) => {
               if (checked) {

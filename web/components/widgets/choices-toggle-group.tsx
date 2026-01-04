@@ -1,5 +1,7 @@
-import { RadioGroup } from '@headlessui/react'
+import {RadioGroup} from '@headlessui/react'
 import clsx from 'clsx'
+import {toKey} from "common/parsing";
+import {useT} from "web/lib/locale";
 
 const colorClasses = {
   'indigo-dark':
@@ -15,16 +17,17 @@ export type ColorType = keyof typeof colorClasses
 
 export function ChoicesToggleGroup<T extends Record<string, string | number | boolean>>(
   props: {
-  currentChoice: T[keyof T] | undefined | null
-  choicesMap: T
-  disabled?: boolean
-  disabledOptions?: Array<T[keyof T]>
-  setChoice: (val: T[keyof T]) => void
-  color?: ColorType
-  className?: string
-  toggleClassName?: string
-  children?: React.ReactNode
-}) {
+    currentChoice: T[keyof T] | undefined | null
+    choicesMap: T
+    disabled?: boolean
+    disabledOptions?: Array<T[keyof T]>
+    setChoice: (val: T[keyof T]) => void
+    color?: ColorType
+    className?: string
+    toggleClassName?: string
+    children?: React.ReactNode
+    translationPrefix?: string
+  }) {
   const {
     currentChoice,
     setChoice,
@@ -35,7 +38,12 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
     className,
     children,
     toggleClassName,
+    translationPrefix
   } = props
+  const t = useT()
+  // Object.entries(choicesMap).map(([choiceKey, choice]) => (
+  //   console.log(`${translationPrefix}.${toKey(String(choice))}`)
+  // ))
   return (
     <RadioGroup
       className={clsx(
@@ -52,7 +60,7 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
           key={choiceKey}
           value={choice}
           disabled={disabledOptions?.includes(choice as any)}
-          className={({ disabled }) =>
+          className={({disabled}) =>
             clsx(
               disabled
                 ? 'text-ink-300 aria-checked:bg-ink-300 aria-checked:text-ink-0 cursor-not-allowed'
@@ -62,7 +70,8 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
             )
           }
         >
-          <RadioGroup.Label as="span">{choiceKey}</RadioGroup.Label>
+          <RadioGroup.Label
+            as="span">{translationPrefix ? t(`${translationPrefix}.${toKey(String(choice))}`, choiceKey) : choiceKey}</RadioGroup.Label>
         </RadioGroup.Option>
       ))}
       {children}

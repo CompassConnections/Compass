@@ -12,18 +12,18 @@ import {useT} from 'web/lib/locale'
 export function DeleteYourselfButton() {
   const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState('')
   const t = useT()
-  const confirmPhrase = t('deleteyourself.confirm_phrase', 'delete my account')
+  const confirmPhrase = t('delete_yourself.confirm_phrase', 'delete my account')
 
   return (
     <ConfirmationButton
       openModalBtn={{
         className: 'p-2',
-        label: t('deleteyourself.open_label', 'Permanently delete this account'),
+        label: t('delete_yourself.open_label', 'Permanently delete this account'),
         icon: <TrashIcon className="mr-1 h-5 w-5"/>,
         color: 'red',
       }}
       submitBtn={{
-        label: t('deleteyourself.submit', 'Delete account'),
+        label: t('delete_yourself.submit', 'Delete account'),
         color:
           deleteAccountConfirmation == confirmPhrase ? 'red' : 'gray',
       }}
@@ -31,13 +31,13 @@ export function DeleteYourselfButton() {
         if (deleteAccountConfirmation == confirmPhrase) {
           toast
             .promise(deleteAccount(), {
-              loading: t('deleteyourself.toast.loading', 'Deleting account...'),
+              loading: t('delete_yourself.toast.loading', 'Deleting account...'),
               success: () => {
                 router.push('/')
-                return t('deleteyourself.toast.success', 'Your account has been deleted.')
+                return t('delete_yourself.toast.success', 'Your account has been deleted.')
               },
               error: () => {
-                return t('deleteyourself.toast.error', 'Failed to delete account.')
+                return t('delete_yourself.toast.error', 'Failed to delete account.')
               },
             })
             .then(() => {
@@ -51,16 +51,16 @@ export function DeleteYourselfButton() {
       }}
     >
       <Col>
-        <Title>{t('deleteyourself.title', 'Are you sure?')}</Title>
+        <Title>{t('delete_yourself.title', 'Are you sure?')}</Title>
         <div>
           {t(
-            'deleteyourself.description',
+            'delete_yourself.description',
             'Deleting your account means you will no longer be able to use your account. You will lose access to all of your data.'
           )}
         </div>
         <Input
           type="text"
-          placeholder={t('deleteyourself.input_placeholder', "Type 'delete my account' to confirm")}
+          placeholder={t('delete_yourself.input_placeholder', "Type 'delete my account' to confirm")}
           className="w-full"
           value={deleteAccountConfirmation}
           onChange={(e) => setDeleteAccountConfirmation(e.target.value)}

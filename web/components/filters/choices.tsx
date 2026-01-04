@@ -225,6 +225,12 @@ export const GENDERS = {
   Other: 'other',
 }
 
+export const GENDERS_PLURAL = {
+  Women: 'female',
+  Men: 'male',
+  Other: 'other',
+}
+
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)

@@ -1,11 +1,13 @@
 import clsx from 'clsx'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {FilterFields} from "common/filters";
-import {RELIGION_CHOICES} from "web/components/filters/choices";
-import {convertReligionTypes} from "web/lib/util/convert-types";
-import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
-import {getSortedOptions} from "common/util/sorting";
+import {FilterFields} from 'common/filters'
+import {RELIGION_CHOICES} from 'web/components/filters/choices'
+import {convertReligionTypes} from 'web/lib/util/convert-types'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
+import {getSortedOptions} from 'common/util/sorting'
+import {useT} from 'web/lib/locale'
+import {toKey} from 'common/parsing'
 
 
 export function ReligionFilterText(props: {
@@ -15,9 +17,13 @@ export function ReligionFilterText(props: {
   const {options, highlightedClass} = props
   const length = (options ?? []).length
 
+  const t = useT()
+
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any religion</span>
+      <span className={clsx('text-semibold', highlightedClass)}>
+        {t('filter.any_religion', 'Any religion')}
+      </span>
     )
   }
 
@@ -25,14 +31,16 @@ export function ReligionFilterText(props: {
     return (
       <span>
         <span className={clsx('font-semibold', highlightedClass)}>
-          Multiple
+          {t('filter.multiple', 'Multiple')}
         </span>
       </span>
     )
   }
 
   const sortedOptions = getSortedOptions(options, RELIGION_CHOICES)
-  const convertedTypes = sortedOptions.map((r) => convertReligionTypes(r as any))
+  const convertedTypes = sortedOptions.map((r) =>
+    t(`profile.religion.${toKey(r)}`, convertReligionTypes(r as any))
+  )
 
   return (
     <div>
@@ -57,6 +65,7 @@ export function ReligionFilter(props: {
       <MultiCheckbox
         selected={filters.religion ?? []}
         choices={RELIGION_CHOICES}
+        translationPrefix={'profile.religion'}
         onChange={(c) => {
           updateFilter({religion: c})
         }}

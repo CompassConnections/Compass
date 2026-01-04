@@ -1,4 +1,4 @@
-# FAQ – Compass
+# Fragen und Antworten – Compass
 
 Compass ist ein **Geschenk der Community** — aufgebaut von seinen Mitgliedern wie dir, denen tiefe und bedeutungsvolle
 Verbindungen wichtig sind. Deine Teilnahme, dein Feedback und deine Beiträge helfen dabei, Compass für alle frei,

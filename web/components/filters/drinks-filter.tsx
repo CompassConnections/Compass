@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import {RangeSlider} from 'web/components/widgets/slider'
 import {FilterFields} from 'common/filters'
+import {useT} from 'web/lib/locale'
 
 export const DRINKS_MIN = 0
 export const DRINKS_MAX = 20
@@ -22,12 +23,13 @@ export function DrinksFilterText(props: {
 }) {
   const {drinks_min, drinks_max, highlightedClass} = props
   const [noMin, noMax] = getNoMinMaxDrinks(drinks_min, drinks_max)
+  const t = useT()
 
 
   if (drinks_max === DRINKS_MIN) {
     return (
       <span className="font-semibold">
-        <span className={clsx(highlightedClass)}>{drinks_max}</span> / mo
+        <span className={clsx(highlightedClass)}>{drinks_max}</span> {t('common.per_month', '/ mo')}
       </span>
     )
   }
@@ -35,8 +37,7 @@ export function DrinksFilterText(props: {
   if (noMin && noMax) {
     return (
       <span>
-        <span className={clsx('text-semibold', highlightedClass)}>Any</span>{' '}
-        <span className="hidden sm:inline">drinks</span>
+        <span className="">{t('filter.any_drinks', 'Any drinks')}</span>
       </span>
     )
   }
@@ -47,7 +48,7 @@ export function DrinksFilterText(props: {
           {' < '}
           {drinks_max}
         </span>{' '}
-        / mo
+        {t('common.per_month', '/ mo')}
       </span>
     )
   }
@@ -58,14 +59,14 @@ export function DrinksFilterText(props: {
           {' > '}
           {drinks_min}
         </span>{' '}
-        / mo
+        {t('common.per_month', '/ mo')}
       </span>
     )
   }
   if (drinks_min === drinks_max) {
     return (
       <span className="font-semibold">
-        <span className={clsx(highlightedClass)}>{drinks_min}</span> / mo
+        <span className={clsx(highlightedClass)}>{drinks_min}</span> {t('common.per_month', '/ mo')}
       </span>
     )
   }
@@ -76,7 +77,7 @@ export function DrinksFilterText(props: {
         {' - '}
         {drinks_max}
       </span>{' '}
-      /mo
+      {t('common.per_month', '/ mo')}
     </span>
   )
 }

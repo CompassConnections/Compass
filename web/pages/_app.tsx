@@ -1,6 +1,6 @@
 import type {AppProps} from 'next/app'
 import Head from 'next/head'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {Router} from 'next/router'
 import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
@@ -12,13 +12,16 @@ import clsx from 'clsx'
 import {initTracking} from 'web/lib/service/analytics'
 import WebPush from "web/lib/service/web-push"
 import AndroidPush from "web/lib/service/android-push"
-import {isAndroidWebView} from "web/lib/util/webview"
+import {isAndroidApp} from "web/lib/util/webview"
 import {Capacitor} from '@capacitor/core'
 import {StatusBar} from '@capacitor/status-bar'
 import {App} from '@capacitor/app'
 import {useRouter} from "next/navigation"
 import {Keyboard} from "@capacitor/keyboard"
 import {LiveUpdate} from "@capawesome/capacitor-live-update"
+import {IS_VERCEL} from "common/hosting/constants"
+import {getLocale, resetCachedLocale} from "web/lib/locale-cookie";
+import {I18nContext} from "web/lib/locale"
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -31,6 +34,13 @@ if (Capacitor.isNativePlatform()) {
   })
 
   App.addListener("resume", async () => {
+    const newChannelName = 'default'
+    try {
+      await LiveUpdate.setChannel({channel: newChannelName})
+      console.log(`Device channel set to: ${newChannelName}`)
+    } catch (error) {
+      console.error('Failed to set channel', error)
+    }
     const {nextBundleId} = await LiveUpdate.sync()
     if (nextBundleId) {
       // Ask the user if they want to apply the update immediately
@@ -63,8 +73,7 @@ const logoFont = Major_Mono_Display({
 // })
 
 function printBuildInfo() {
-  // These are undefined if e.g. dev server
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+  if (IS_VERCEL) {
     const env = process.env.NEXT_PUBLIC_VERCEL_ENV
     const msg = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE
     const owner = process.env.NEXT_PUBLIC_VERCEL_GIT_REPO_OWNER
@@ -78,13 +87,21 @@ function printBuildInfo() {
 // specially treated props that may be present in the server/static props
 type PageProps = { auth?: AuthUser }
 
-function MyApp({Component, pageProps}: AppProps<PageProps>) {
+function MyApp(props: AppProps<PageProps>) {
+  const {Component, pageProps} = props
   useEffect(printBuildInfo, [])
   useHasLoaded()
   const router = useRouter()
 
+  const [locale, setLocaleState] = useState(getLocale());
+  const setLocale = (newLocale: string) => {
+    document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
+    setLocaleState(newLocale)
+    resetCachedLocale()
+  }
+
   useEffect(() => {
-    console.log('isAndroidWebView app:', isAndroidWebView())
+    console.log('isAndroidWebView app:', isAndroidApp())
     if (!Capacitor.isNativePlatform()) return
     const onShow = () => document.body.classList.add('keyboard-open')
     const onHide = () => document.body.classList.remove('keyboard-open')
@@ -178,7 +195,9 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
           <AuthProvider serverUser={pageProps.auth}>
             <WebPush/>
             <AndroidPush/>
-            <Component {...pageProps} />
+            <I18nContext.Provider value={{locale, setLocale}}>
+              <Component {...pageProps} />
+            </I18nContext.Provider>
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">
@@ -186,8 +205,6 @@ function MyApp({Component, pageProps}: AppProps<PageProps>) {
           </div>
         </div>
       </PostHogProvider>
-      {/* TODO: Re-enable one tap setup */}
-      {/* <GoogleOneTapSetup /> */}
     </>
   )
 }

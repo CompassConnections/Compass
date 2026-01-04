@@ -9,6 +9,7 @@ import {isNativeMobile} from "web/lib/util/webview";
 import {useEffect, useState} from "react";
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import {getPageData} from "web/lib/util/page-data";
+import {useT} from "web/lib/locale";
 
 async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)
@@ -47,6 +48,7 @@ export default function WhatsNew(props: { releases?: Release[] }) {
   const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
   const releases = fetchedProps.releases || []
+  const t = useT()
 
   useEffect(() => {
     if (nativeMobile) {
@@ -73,17 +75,17 @@ export default function WhatsNew(props: { releases?: Release[] }) {
   return (
     <PageBase trackPageView={'news'} className={'mx-4'}>
       <SEO
-        title={"What's new"}
+        title={t("news.title", "What's New")}
         description={
           releases.length
-            ? `See the latest updates and features: ${releases[0].name}`
-            : 'All news and code updates for Compass'
+            ? `${t("news.seo.description", "See the latest updates and features")}: ${releases[0].name}`
+            : t("news.seo.description_general", 'All news and code updates for Compass')
         }
         url={`/news`}
       />
-      <Title className="text-3xl">What's New</Title>
+      <Title className="text-3xl">{t("news.title", "What's New")}</Title>
       {loading && <CompassLoadingIndicator/>}
-      {!loading && !releases.length ? <p>Failed to fetch releases.</p> :
+      {!loading && !releases.length ? <p>{t("news.failed", "Failed to fetch releases.")}</p> :
         <Col className="max-w-3xl mx-auto py-10 px-4 custom-link">
           {releases.map((release: Release) => (
             <div key={release.id} className="mb-10 border-b pb-6">
@@ -95,10 +97,10 @@ export default function WhatsNew(props: { releases?: Release[] }) {
               </div>
               <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
                 <CustomMarkdown>
-                  {formatPullLinks(release.body || "_No release notes provided._")}
+                  {formatPullLinks(release.body || t("news.no_release_notes", "_No release notes provided._"))}
                 </CustomMarkdown>
               </div>
-              <CustomLink href={release.html_url}>View on GitHub</CustomLink>
+              <CustomLink href={release.html_url}>{t("news.view_on_github", "View on GitHub")}</CustomLink>
             </div>
           ))}
         </Col>

@@ -7,6 +7,7 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
 import router from "next/router";
 import Link from "next/link";
+import {useT} from 'web/lib/locale'
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
@@ -23,6 +24,7 @@ export function AnswerCompatibilityQuestionButton(props: {
     size = 'md',
   } = props
   const [open, setOpen] = useState(fromSignup ?? false)
+  const t = useT()
   if (!user) return null
   if (otherQuestions.length === 0) return null
   const isCore = otherQuestions.some((q) => q.importance_score === 0)
@@ -31,7 +33,7 @@ export function AnswerCompatibilityQuestionButton(props: {
     <>
       {size === 'md' ? (
         <Button onClick={() => setOpen(true)} color="none" className={'px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 hover:text-ink-900'}>
-          Answer{isCore && ' Core'} Questions{' '}
+          {t('answers.answer.cta', 'Answer{core} Questions', { core: isCore ? ' Core' : '' })}{' '}
           <span className="text-primary-600 ml-2">
             +{questionsToAnswer.length}
           </span>
@@ -41,7 +43,7 @@ export function AnswerCompatibilityQuestionButton(props: {
           onClick={() => setOpen(true)}
           className="bg-ink-100 dark:bg-ink-300 text-ink-1000 hover:bg-ink-200 hover:dark:bg-ink-400 w-28 rounded-full px-2 py-0.5 text-xs transition-colors"
         >
-          Answer yourself
+          {t('answers.answer.answer_yourself', 'Answer yourself')}
         </button>
       )}
       <AnswerCompatibilityQuestionModal
@@ -59,11 +61,12 @@ export function AnswerCompatibilityQuestionButton(props: {
 }
 
 export function CompatibilityPageButton() {
+  const t = useT()
   return (
     <Link
       href="/compatibility"
       className="px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 flex items-center justify-center text-center"
-    >View List of Questions</Link>
+    >{t('answers.answer.view_list', 'View List of Questions')}</Link>
   )
 }
 
@@ -74,6 +77,7 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
 }) {
   const {user, skippedQuestions, refreshCompatibilityAll} = props
   const [open, setOpen] = useState(false)
+  const t = useT()
   if (!user) return null
   return (
     <>
@@ -81,7 +85,7 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
         onClick={() => setOpen(true)}
         className="text-ink-500 text-sm hover:underline"
       >
-        Answer {skippedQuestions.length} skipped questions{' '}
+        {t('answers.answer.answer_skipped', 'Answer {n} skipped questions', { n: String(skippedQuestions.length) })}{' '}
       </button>
       <AnswerCompatibilityQuestionModal
         open={open}

@@ -267,9 +267,9 @@ yarn build-sync-android
 
 ## Live Updates
 
-To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in Capawesome Cloud (an alternative to Ionic). 
+To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in Capawesome Cloud (an alternative to Ionic). To add a new update, increment the version number in [capawesome.json](capawesome.json) and push to main (or make a PR to main). A GitHub Action will automatically build the new bundle and push it to Capawesome.
 
-First, you need to do this one-time setup:
+You can also do so locally if you have admin access. First, you need to do this one-time setup:
 ```
 npm install -g @capawesome/cli@latest
 npx @capawesome/cli login
@@ -277,12 +277,10 @@ npx @capawesome/cli login
 
 Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
 ```
-yarn build-web-view
-npx @capawesome/cli apps:bundles:create --path web/out
+yarn android:live-update
 ```
 
 That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially updates the web app) to update the mobile app as well.
-Maybe we should add it to our CD. For example we set a file with `{liveUpdateVersion: 1}` and run the live update each time a push to main increments that counter.
 There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we scale. Next plan is $9 / month and allows 1000 MAUs.
 
 - ∞ Live Updates

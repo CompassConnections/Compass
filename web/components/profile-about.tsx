@@ -32,6 +32,8 @@ import {ClockIcon} from "@heroicons/react/solid";
 import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
+import {useT} from "web/lib/locale";
+import {toKey} from "common/parsing";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -74,6 +76,7 @@ export default function ProfileAbout(props: {
   isCurrentUser: boolean,
 }) {
   const {profile, userActivity, isCurrentUser} = props
+  const t = useT()
   return (
     <Col
       className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded p-4')}
@@ -85,25 +88,25 @@ export default function ProfileAbout(props: {
       <Occupation profile={profile}/>
       <AboutRow
         icon={<FaBriefcase className="h-5 w-5"/>}
-        text={profile.work}
+        text={profile.work?.map(work => t(`profile.work.${toKey(work)}`, work))}
       />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
-        text={profile.political_beliefs?.map(belief => INVERTED_POLITICAL_CHOICES[belief])}
+        text={profile.political_beliefs?.map(belief => t(`profile.political.${belief}`, INVERTED_POLITICAL_CHOICES[belief]))}
         suffix={profile.political_details}
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5"/>}
-        text={profile.religion?.map(belief => INVERTED_RELIGION_CHOICES[belief])}
+        text={profile.religion?.map(belief => t(`profile.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]))}
         suffix={profile.religious_beliefs}
       />
       <AboutRow
         icon={<FaStar className="h-5 w-5"/>}
-        text={profile.interests}
+        text={profile.interests?.map(interest => t(`profile.interests.${toKey(interest)}`, interest))}
       />
       <AboutRow
         icon={<FaHandsHelping className="h-5 w-5"/>}
-        text={profile.causes}
+        text={profile.causes?.map(cause => t(`profile.causes.${toKey(cause)}`, cause))}
       />
       <AboutRow
         icon={<BsPersonVcard className="h-5 w-5"/>}
@@ -113,17 +116,17 @@ export default function ProfileAbout(props: {
         icon={<HiOutlineGlobe className="h-5 w-5"/>}
         text={profile.ethnicity
           ?.filter((r) => r !== 'other')
-          ?.map((r: any) => convertRace(r))}
+          ?.map((r: any) => t(`profile.race.${r}`, convertRace(r)))}
       />
       <Smoker profile={profile}/>
       <Drinks profile={profile}/>
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5"/>}
-        text={profile.diet?.map(e => INVERTED_DIET_CHOICES[e])}
+        text={profile.diet?.map(e => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))}
       />
       <AboutRow
         icon={<MdLanguage className="h-5 w-5"/>}
-        text={profile.languages?.map(v => INVERTED_LANGUAGE_CHOICES[v])}
+        text={profile.languages?.map(v => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))}
       />
       <HasKids profile={profile}/>
       <WantsKids profile={profile}/>
@@ -134,6 +137,7 @@ export default function ProfileAbout(props: {
 }
 
 function Seeking(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const prefGender = profile.pref_gender
   const min = profile.pref_age_min
@@ -142,8 +146,8 @@ function Seeking(props: { profile: Profile }) {
     text:
       prefGender?.length == 5
         ? ['people']
-        : prefGender?.map((gender) => convertGenderPlural(gender as Gender)),
-    preText: 'Interested in',
+        : prefGender?.map((gender) => t(`profile.gender.plural.${gender}`, convertGenderPlural(gender as Gender)).toLowerCase()),
+    preText: t('profile.interested_in', 'Interested in'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
@@ -153,14 +157,14 @@ function Seeking(props: { profile: Profile }) {
 
   const ageRangeText =
     noMin && noMax
-      ? 'of any age'
+      ? t('profile.age_any', 'of any age')
       : min == max
-        ? `exactly ${min} years old`
+        ? t('profile.age_exact', 'exactly {min} years old', {min})
         : noMax
-          ? `older than ${min}`
+          ? t('profile.age_older_than', 'older than {min}', {min})
           : noMin
-            ? `younger than ${max}`
-            : `between ${min} - ${max} years old`
+            ? t('profile.age_younger_than', 'younger than {max}', {max})
+            : t('profile.age_between', 'between {min} - {max} years old', {min, max})
 
   if (!prefGender || prefGender.length < 1) {
     return <></>
@@ -174,23 +178,20 @@ function Seeking(props: { profile: Profile }) {
 }
 
 function RelationshipType(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const relationshipTypes = profile.pref_relation_styles
   let seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes?.map((rel) =>
-      convertRelationshipType(rel as RelationshipType).toLowerCase()
+      t(`profile.relationship.${rel}`, convertRelationshipType(rel as RelationshipType))
     ).sort(),
-    preText: 'Seeking',
-    // postText:
-    //   relationshipTypes.length == 1 && relationshipTypes[0] == 'mono'
-    //     ? 'relationship'
-    //     : 'relationships',
+    preText: t('profile.seeking', 'Seeking'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
   })
   if (relationshipTypes?.includes('relationship')) {
     const romanticStyles = profile.pref_romantic_styles
-      ?.map((style) => INVERTED_ROMANTIC_CHOICES[style].toLowerCase())
+      ?.map((style) => t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]).toLowerCase())
       .filter(Boolean)
     if (romanticStyles && romanticStyles.length > 0) {
       seekingGenderText += ` (${romanticStyles.join(', ')})`
@@ -207,6 +208,7 @@ function RelationshipType(props: { profile: Profile }) {
 
 function RelationshipStatus(props: { profile: Profile }) {
   const {profile} = props
+  const t = useT()
   const relationship_status = profile.relationship_status ?? []
   if (relationship_status.length === 0) return
   const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
@@ -214,12 +216,13 @@ function RelationshipStatus(props: { profile: Profile }) {
   return (
     <AboutRow
       icon={icon ? React.createElement(icon, {className: 'h-5 w-5'}) : null}
-      text={relationship_status?.map(v => INVERTED_RELATIONSHIP_STATUS_CHOICES[v])}
+      text={relationship_status?.map(v => t(`profile.relationship_status.${v}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[v]))}
     />
   )
 }
 
 function Education(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const educationLevel = profile.education_level
   const university = profile.university
@@ -227,10 +230,10 @@ function Education(props: { profile: Profile }) {
   let text = ''
 
   if (educationLevel) {
-    text += capitalizeAndRemoveUnderscores(INVERTED_EDUCATION_CHOICES[educationLevel])
+    text += capitalizeAndRemoveUnderscores(t(`profile.education.${educationLevel}`, INVERTED_EDUCATION_CHOICES[educationLevel]))
   }
   if (university) {
-    if (educationLevel) text += ' at '
+    if (educationLevel) text += ` ${t('profile.at', 'at')} `
     text += capitalizeAndRemoveUnderscores(university)
   }
   if (text.length === 0) {
@@ -245,6 +248,7 @@ function Education(props: { profile: Profile }) {
 }
 
 function Occupation(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const occupation_title = profile.occupation_title
   const company = profile.company
@@ -254,7 +258,7 @@ function Occupation(props: { profile: Profile }) {
   }
   const occupationText = `${
     occupation_title ? capitalizeAndRemoveUnderscores(occupation_title) : ''
-  }${occupation_title && company ? ' at ' : ''}${
+  }${occupation_title && company ? ` ${t('profile.at', 'at')} ` : ''}${
     company ? capitalizeAndRemoveUnderscores(company) : ''
   }`
   return (
@@ -266,23 +270,25 @@ function Occupation(props: { profile: Profile }) {
 }
 
 function Smoker(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const isSmoker = profile.is_smoker
   if (isSmoker == null) return null
   if (isSmoker) {
     return (
-      <AboutRow icon={<LuCigarette className="h-5 w-5"/>} text={'Smokes'}/>
+      <AboutRow icon={<LuCigarette className="h-5 w-5"/>} text={t('profile.smokes', 'Smokes')}/>
     )
   }
   return (
     <AboutRow
       icon={<LuCigaretteOff className="h-5 w-5"/>}
-      text={`Doesn't smoke`}
+      text={t('profile.doesnt_smoke', "Doesn't smoke")}
     />
   )
 }
 
 function Drinks(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const drinksPerMonth = profile.drinks_per_month
   if (drinksPerMonth == null) return null
@@ -290,34 +296,37 @@ function Drinks(props: { profile: Profile }) {
     return (
       <AboutRow
         icon={<MdNoDrinks className="h-5 w-5"/>}
-        text={`Doesn't drink`}
+        text={t('profile.doesnt_drink', "Doesn't drink")}
       />
     )
   }
   return (
     <AboutRow
       icon={<BiSolidDrink className="h-5 w-5"/>}
-      text={`${drinksPerMonth} ${
-        drinksPerMonth == 1 ? 'drink' : 'drinks'
-      } per month`}
+      text={
+        drinksPerMonth === 1
+          ? t('profile.drinks_one', '1 drink per month')
+          : t('profile.drinks_many', '{count} drinks per month', {count: drinksPerMonth})
+      }
     />
   )
 }
 
 function WantsKids(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const wantsKidsStrength = profile.wants_kids_strength
   if (wantsKidsStrength == null || wantsKidsStrength < 0) return null
   const wantsKidsText =
     wantsKidsStrength == 0
-      ? 'Does not want children'
+      ? t('profile.wants_kids_0', "Does not want children")
       : wantsKidsStrength == 1
-        ? 'Prefers not to have children'
+        ? t('profile.wants_kids_1', "Prefers not to have children")
         : wantsKidsStrength == 2
-          ? 'Neutral or open to having children'
+          ? t('profile.wants_kids_2', "Neutral or open to having children")
           : wantsKidsStrength == 3
-            ? 'Leaning towards wanting children'
-            : 'Wants children'
+            ? t('profile.wants_kids_3', "Leaning towards wanting children")
+            : t('profile.wants_kids_4', "Wants children")
 
   return (
     <AboutRow
@@ -328,21 +337,25 @@ function WantsKids(props: { profile: Profile }) {
 }
 
 function LastOnline(props: { lastOnlineTime?: string }) {
+  const t = useT()
   const {lastOnlineTime} = props
   if (!lastOnlineTime) return null
   return (
     <AboutRow
       icon={<ClockIcon className="h-5 w-5"/>}
-      text={'Last online ' + fromNow(lastOnlineTime, true)}
+      text={t('profile.last_online', 'Last online {time}', {time: fromNow(lastOnlineTime, true)})}
     />
   )
 }
 
 function HasKids(props: { profile: Profile }) {
+  const t = useT()
   const {profile} = props
   const hasKidsText =
     profile.has_kids && profile.has_kids > 0
-      ? `Has ${profile.has_kids} ${profile.has_kids > 1 ? 'kids' : 'kid'}`
+      ? profile.has_kids > 1
+        ? t('profile.has_kids_many', 'Has {count} kids', {count: profile.has_kids})
+        : t('profile.has_kids_one', 'Has {count} kid', {count: profile.has_kids})
       : null
   return <AboutRow icon={<FaChild className="h-5 w-5"/>} text={hasKidsText}/>
 }

@@ -5,7 +5,9 @@ import {FilterFields} from "common/filters";
 import {EDUCATION_CHOICES} from "web/components/filters/choices";
 import {convertEducationTypes} from "web/lib/util/convert-types";
 import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
-import {getSortedOptions} from "common/util/sorting";
+import {getSortedOptions} from 'common/util/sorting'
+import {useT} from 'web/lib/locale'
+import {toKey} from 'common/parsing'
 
 export function EducationFilterText(props: {
   options: string[] | undefined
@@ -14,14 +16,20 @@ export function EducationFilterText(props: {
   const {options, highlightedClass} = props
   const length = (options ?? []).length
 
+  const t = useT()
+
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any education</span>
+      <span className={clsx('text-semibold', highlightedClass)}>
+        {t('filter.any_education', 'Any education')}
+      </span>
     )
   }
 
   const sortedOptions = getSortedOptions(options, EDUCATION_CHOICES)
-  const convertedTypes = sortedOptions.map((r) => convertEducationTypes(r as any))
+  const convertedTypes = sortedOptions.map((r) =>
+    t(`profile.education.${toKey(r)}`, convertEducationTypes(r as any))
+  )
 
   return (
     <div>
@@ -45,6 +53,7 @@ export function EducationFilter(props: {
       <MultiCheckbox
         selected={filters.education_levels ?? []}
         choices={EDUCATION_CHOICES}
+        translationPrefix={'profile.education'}
         onChange={(c) => {
           updateFilter({education_levels: c})
         }}

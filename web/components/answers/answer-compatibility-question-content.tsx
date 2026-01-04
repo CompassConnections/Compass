@@ -18,6 +18,7 @@ import {track} from 'web/lib/service/analytics'
 import {api} from 'web/lib/api'
 import {filterKeys} from '../questions-form'
 import toast from "react-hot-toast"
+import {useT} from 'web/lib/locale'
 
 export type CompatibilityAnswerSubmitType = Omit<
   rowFor<'compatibility_answers'>,
@@ -72,6 +73,7 @@ export const submitCompatibilityAnswer = async (
     })
   } catch (error) {
     console.error('Failed to set compatibility answer:', error)
+    // Note: toast not localized here due to lack of hook; callers may handle UI feedback
     toast.error('Error submitting. Try again?')
   }
 }
@@ -86,6 +88,7 @@ export const deleteCompatibilityAnswer = async (
     await track('delete compatibility question', {id})
   } catch (error) {
     console.error('Failed to delete prompt answer:', error)
+    // Note: toast not localized here due to lack of hook; callers may handle UI feedback
     toast.error('Error deleting. Try again?')
   }
 }
@@ -122,6 +125,7 @@ export function AnswerCompatibilityQuestionContent(props: {
     index,
     total,
   } = props
+  const t = useT()
   const [answer, setAnswer] = useState<CompatibilityAnswerSubmitType>(
     (props.answer as CompatibilityAnswerSubmitType) ??
     getEmptyAnswer(user.id, compatibilityQuestion.id)
@@ -175,7 +179,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         {shortenedPopularity && (
           <Row className="text-ink-500 select-none items-center text-sm">
             <Tooltip
-              text={`${shortenedPopularity} people have answered this question`}
+              text={t('answers.content.people_answered', '{count} people have answered this question', { count: String(shortenedPopularity) })}
             >
               {shortenedPopularity}
             </Tooltip>
@@ -190,7 +194,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         )}
       >
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">Your answer</span>
+          <span className="text-ink-500 text-sm">{t('answers.preferred.your_answer', 'Your answer')}</span>
           <SelectAnswer
             value={answer.multiple_choice}
             setValue={(choice) =>
@@ -200,7 +204,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           />
         </Col>
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">Answers you'll accept</span>
+          <span className="text-ink-500 text-sm">{t('answers.content.answers_you_accept', "Answers you'll accept")}</span>
           <MultiSelectAnswers
             values={answer.pref_choices ?? []}
             setValue={(choice) =>
@@ -210,10 +214,10 @@ export function AnswerCompatibilityQuestionContent(props: {
           />
         </Col>
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">Importance</span>
+          <span className="text-ink-500 text-sm">{t('answers.content.importance', 'Importance')}</span>
           <RadioToggleGroup
             currentChoice={answer.importance ?? -1}
-            choicesMap={IMPORTANCE_CHOICES}
+            choicesMap={Object.fromEntries(Object.entries(IMPORTANCE_CHOICES).map(([k, v]) => [t(`answers.importance.${v}`, k), v]))}
             setChoice={(choice: number) =>
               setAnswer({...answer, importance: choice})
             }
@@ -222,7 +226,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         </Col>
         <Col className="-mt-6 gap-2">
           <span className="text-ink-500 text-sm">
-            Your thoughts (optional, but recommended)
+            {t('answers.content.your_thoughts', 'Your thoughts (optional, but recommended)')}
           </span>
           <ExpandingInput
             className={'w-full'}
@@ -259,7 +263,7 @@ export function AnswerCompatibilityQuestionContent(props: {
               skipLoading && 'animate-pulse'
             )}
           >
-            Skip
+            {t('answers.menu.skip', 'Skip')}
           </button>
         )}
         <Button
@@ -284,7 +288,7 @@ export function AnswerCompatibilityQuestionContent(props: {
               .finally(() => setLoading(false))
           }}
         >
-          {isLastQuestion ? 'Finish' : 'Next'}
+          {isLastQuestion ? t('answers.finish', 'Finish') : t('answers.next', 'Next')}
         </Button>
       </Row>
     </Col>

@@ -1,6 +1,6 @@
 {
   "name": "compass",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "private": true,
   "workspaces": [
     "common",
@@ -18,6 +18,7 @@
     "clean-install": "./scripts/install.sh",
     "build-web-view": "./scripts/build_web_view.sh",
     "build-sync-android": "./scripts/build_sync_android.sh",
+    "android-live-update": "./scripts/android_live_update.sh",
     "sync-android": "./scripts/sync_android.sh",
     "migrate": "./scripts/migrate.sh",
     "test": "yarn workspaces run test",

@@ -3,6 +3,25 @@ import {Notification} from 'common/notifications'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {tryCatch} from "common/util/try-catch";
 import {Row} from "common/supabase/utils";
+import {ANDROID_APP_URL} from "common/constants";
+
+export const createAndroidReleaseNotifications = async () => {
+  const createdTime = Date.now();
+  const id = `android-release-${createdTime}`
+  const notification: Notification = {
+    id,
+    userId: 'todo',
+    createdTime: createdTime,
+    isSeen: false,
+    sourceType: 'info',
+    sourceUpdateType: 'created',
+    sourceSlug: ANDROID_APP_URL,
+    sourceUserAvatarUrl: 'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
+    title: 'Android App Released on Google Play',
+    sourceText: 'The Compass Android app is now publicly available on Google Play! Download it today to stay connected on the go.',
+  }
+  return await createNotifications(notification)
+}
 
 export const createAndroidTestNotifications = async () => {
   const createdTime = Date.now();

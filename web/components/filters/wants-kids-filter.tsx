@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import {FilterFields} from "common/filters";
 
 import {generateChoicesMap, KidLabel, wantsKidsLabels} from "common/wants-kids"
+import {useT} from "web/lib/locale";
 
 interface KidLabelWithIcon extends KidLabel {
   icon: ReactNode
@@ -15,25 +16,35 @@ interface KidsLabelsMapWithIcon {
   [key: string]: KidLabelWithIcon
 }
 
-export const wantsKidsLabelsWithIcon: KidsLabelsMapWithIcon = {
-  ...wantsKidsLabels,
-  no_preference: {
-    ...wantsKidsLabels.no_preference,
-    icon: <MdOutlineStroller className="h-4 w-4"/>,
-  },
-  wants_kids: {
-    ...wantsKidsLabels.wants_kids,
-    icon: <MdStroller className="h-4 w-4"/>,
-  },
-  doesnt_want_kids: {
-    ...wantsKidsLabels.doesnt_want_kids,
-    icon: <MdNoStroller className="h-4 w-4"/>,
-  },
+export const useWantsKidsLabelsWithIcon = () => {
+  const t = useT()
+  return {
+    no_preference: {
+      ...wantsKidsLabels.no_preference,
+      name: t('filter.wants_kids.any_preference', 'Any preference'),
+      shortName: t('filter.wants_kids.either', 'Either'),
+      icon: <MdOutlineStroller className="h-4 w-4"/>,
+    },
+    wants_kids: {
+      ...wantsKidsLabels.wants_kids,
+      name: t('filter.wants_kids.wants_kids', 'Wants kids'),
+      shortName: t('common.yes', 'Yes'),
+      icon: <MdStroller className="h-4 w-4"/>,
+    },
+    doesnt_want_kids: {
+      ...wantsKidsLabels.doesnt_want_kids,
+      name: t('filter.wants_kids.doesnt_want_kids', "Doesn't want kids"),
+      shortName: t('common.no', 'No'),
+      icon: <MdNoStroller className="h-4 w-4"/>,
+    },
+  } as KidsLabelsMapWithIcon
 }
 
 
 export function WantsKidsIcon(props: { strength: number; className?: string }) {
   const {strength, className} = props
+  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
+  
   return (
     <span className={className}>
       {strength == wantsKidsLabelsWithIcon.no_preference.strength
@@ -51,6 +62,7 @@ export function KidsLabel(props: {
   mobile?: boolean
 }) {
   const {strength, highlightedClass, mobile} = props
+  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
     <Row className="items-center gap-0.5">
@@ -82,6 +94,7 @@ export function WantsKidsFilter(props: {
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
   const {filters, updateFilter} = props
+  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
     <ChoicesToggleGroup

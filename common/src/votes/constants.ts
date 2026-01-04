@@ -20,7 +20,3 @@ export const STATUS_CHOICES: Record<string, string> = {
   expired: "Expired ⌛",
   archived: "Archived",
 }
-
-export const REVERSED_STATUS_CHOICES: Record<string, string> = Object.fromEntries(
-  Object.entries(STATUS_CHOICES).map(([key, value]) => [value, key])
-)

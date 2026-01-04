@@ -16,6 +16,7 @@ import {GoogleButton} from "web/components/buttons/sign-up-button"
 import {SEO} from "web/components/SEO"
 import {logger} from "common/logging";
 import FavIcon from "web/components/FavIcon";
+import {useT} from 'web/lib/locale'
 
 export default function LoginPage() {
   return (
@@ -26,6 +27,7 @@ export default function LoginPage() {
 }
 
 function RegisterComponent() {
+  const t = useT()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -87,7 +89,7 @@ function RegisterComponent() {
       logger.debug(creds)
     } catch (error) {
       console.error("Error signing in:", error)
-      const message = 'Failed to sign in with your email and password'
+      const message = t('signin.failed_credentials','Failed to sign in with your email and password')
       setError(message)
       setIsLoading(false)
       setIsLoadingGoogle(false)
@@ -123,8 +125,8 @@ function RegisterComponent() {
   return (
     <PageBase trackPageView={'signin'}>
       <SEO
-        title={'Sign In'}
-        description={'Sign in to your account'}
+        title={t('signin.seo.title','Sign in')}
+        description={t('signin.seo.description','Sign in to your account')}
         url={`/signin`}
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -134,15 +136,13 @@ function RegisterComponent() {
               <FavIcon className="dark:invert"/>
             </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold ">
-              Sign in to your account
+              {t('signin.title','Sign in')}
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="email" className="sr-only">
-                  Email
-                </label>
+                <label htmlFor="email" className="sr-only">Email</label>
                 <input
                   id="email"
                   name="email"
@@ -153,16 +153,14 @@ function RegisterComponent() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
+                <label htmlFor="password" className="sr-only">Password</label>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   required
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
+                  placeholder={t('signin.password_placeholder','Your password')}
                 />
                 <div className="text-right mt-1 custom-link">
                   <button
@@ -176,13 +174,13 @@ function RegisterComponent() {
                           sendPasswordReset(emailInput.value);
                         } else {
                           // If no email is entered, show an error
-                          setError('Please enter your email first');
+                          setError(t('signin.enter_email','Please enter your email first'));
                         }
                       }
                     }}
                     className="text-sm focus:outline-none"
                   >
-                    Forgot password?
+                    {t('signin.forgot_password','Forgot password?')}
                   </button>
                 </div>
               </div>
@@ -198,7 +196,7 @@ function RegisterComponent() {
                 disabled={isLoading}
                 className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Signing in...' : 'Sign in with Email'}
+                {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
               </button>
 
               <div className="relative">
@@ -206,17 +204,17 @@ function RegisterComponent() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 body-bg text-gray-500">Or continue with</span>
+                  <span className="px-2 body-bg text-gray-500">{t('signin.continue',"Or continue with")}</span>
                 </div>
               </div>
               <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading}/>
             </div>
           </form>
           <div className="text-center custom-link">
-            <p className="">
-              No account?{' '}
+            <p className="mt-4 text-sm">
+              {t('signin.no_account',"Don't have an account?")}{' '}
               <Link href="/register">
-                Register
+                {t('signin.link_sign_up','Register')}
               </Link>
             </p>
           </div>

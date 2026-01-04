@@ -1,10 +1,11 @@
 import clsx from 'clsx'
 import GenderIcon from '../gender-icon'
-import { Gender } from 'common/gender'
-import { Row } from 'web/components/layout/row'
-import { MultiCheckbox } from 'web/components/multi-checkbox'
-
+import {Gender} from 'common/gender'
+import {Row} from 'web/components/layout/row'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {useT} from 'web/lib/locale'
 import {FilterFields} from "common/filters";
+import {GENDERS_PLURAL} from "web/components/filters/choices";
 
 export function GenderFilterText(props: {
   gender: Gender[] | undefined
@@ -12,11 +13,12 @@ export function GenderFilterText(props: {
 }) {
   const { gender, highlightedClass } = props
 
+  const t = useT()
   if (!gender || gender.length < 1) {
     return (
       <span>
-        <span className={clsx('text-semibold', highlightedClass)}>Any</span>{' '}
-        <span className="hidden sm:inline">gender</span>
+        <span className={clsx('text-semibold', highlightedClass)}>{t('filter.gender.any', 'Any')}</span>{' '}
+        <span className="hidden sm:inline">{t('filter.gender.gender', 'gender')}</span>
       </span>
     )
   }
@@ -28,7 +30,7 @@ export function GenderFilterText(props: {
         )
       })}{' '}
       <span className="hidden sm:inline">
-        gender{gender.length > 1 ? 's' : ''}
+        {gender.length > 1 ? t('filter.gender.genders', 'genders') : t('filter.gender.gender', 'gender')}
       </span>
     </Row>
   )
@@ -43,11 +45,8 @@ export function GenderFilter(props: {
     <>
       <MultiCheckbox
         selected={filters.genders ?? []}
-        choices={{
-          Women: 'female',
-          Men: 'male',
-          'Other': 'other',
-        }}
+        choices={GENDERS_PLURAL}
+        translationPrefix={'profile.gender.plural'}
         onChange={(c) => {
           updateFilter({ genders: c })
         }}

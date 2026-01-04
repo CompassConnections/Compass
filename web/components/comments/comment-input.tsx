@@ -17,6 +17,7 @@ import { Tooltip } from 'web/components/widgets/tooltip'
 import { track } from 'web/lib/service/analytics'
 import { firebaseLogin } from 'web/lib/firebase/users'
 import { useEvent } from 'web/hooks/use-event'
+import {useT} from "web/lib/locale";
 
 export function CommentInput(props: {
   replyToUserInfo?: ReplyToUserInfo
@@ -144,6 +145,8 @@ export function CommentInputTextArea(props: {
     commentTypes = ['comment'],
     cancelEditing,
   } = props
+  const t = useT()
+
   useEffect(() => {
     editor?.setEditable(!isSubmitting)
   }, [isSubmitting, editor])
@@ -216,7 +219,7 @@ export function CommentInputTextArea(props: {
               className="text-primary-600 hover:underline"
               onClick={cancelEditing}
             >
-              Cancel
+              {t("comment.cancel", "Cancel")}
             </button>
           </Row>
         )}

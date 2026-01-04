@@ -2,7 +2,7 @@
 
 (
 # Set PGPASSWORD
-source ../../.env
+source .env.df
 
 # Target database connection info - replace with your target DB
 

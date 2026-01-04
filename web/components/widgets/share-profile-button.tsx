@@ -1,6 +1,7 @@
 import { ENV_CONFIG } from 'common/envs/constants'
 import { CopyLinkOrShareButton } from 'web/components/buttons/copy-link-button'
 import { useUser } from 'web/hooks/use-user'
+import {useT} from "web/lib/locale";
 
 export const ShareProfileButton = (props: {
   username: string
@@ -8,6 +9,7 @@ export const ShareProfileButton = (props: {
 }) => {
   const { username, className } = props
   const currentUser = useUser()
+  const t = useT()
   const shareUrl = currentUser
     ? `https://${ENV_CONFIG.domain}/${username}?referrer=${currentUser.username}`
     : `https://${ENV_CONFIG.domain}/${username}`
@@ -18,7 +20,7 @@ export const ShareProfileButton = (props: {
       url={shareUrl}
       eventTrackingName="shareprofile"
     >
-      <div className="ml-2 text-sm">Share</div>
+      <div className="ml-2 text-sm">{t("button.share.label", "Share")}</div>
     </CopyLinkOrShareButton>
   )
 }

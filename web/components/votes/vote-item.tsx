@@ -7,6 +7,7 @@ import {VoteButtons} from 'web/components/votes/vote-buttons'
 import Link from "next/link";
 import {STATUS_CHOICES} from "common/votes/constants";
 import {useUserInStore} from "web/hooks/use-user-supabase";
+import {useT} from 'web/lib/locale'
 
 export type Vote = rowFor<'votes'> & {
   votes_for: number
@@ -32,6 +33,7 @@ export function VoteItem(props: {
   onVoted?: () => void | Promise<void>
 }) {
   const {vote, onVoted} = props
+  const t = useT()
   // console.debug('creator', creator, vote)
   return (
     <Col className={'mb-4 rounded-lg border border-canvas-200 p-4'}>
@@ -42,7 +44,7 @@ export function VoteItem(props: {
             <Content className="w-full" content={vote.description as JSONContent}/>
           </Col>
           <Row className={'gap-2 mt-2 items-center justify-between w-full custom-link flex-wrap'}>
-            {!!vote.priority ? <div>Priority: {vote.priority.toFixed(0)}%</div> : <p></p>}
+            {!!vote.priority ? <div>{t('vote.priority', 'Priority')}: {vote.priority.toFixed(0)}%</div> : <p></p>}
             {!vote.is_anonymous && <Username creatorId={vote.creator_id}/>}
           </Row>
         </Col>
@@ -60,7 +62,7 @@ export function VoteItem(props: {
         />
         {vote.status && (
           <p className="text-ink-500">
-            {STATUS_CHOICES[vote.status]}
+            {t(`vote.status.${vote.status}`, STATUS_CHOICES[vote.status])}
           </p>
         )}
       </Row>

@@ -12,6 +12,7 @@ import {useClickOutside} from "web/hooks/use-click-outside"
 import {PrivateChatMessage} from "common/chat-message";
 import {updateReactionUI} from "web/lib/supabase/chat-messages";
 import {useIsMobile} from "web/hooks/use-is-mobile";
+import {useT} from 'web/lib/locale'
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '👎']
 
@@ -37,6 +38,7 @@ export function MessageActions(props: {
   const user = useUser()
   const isOwner = user?.id === message.userId
   const isMobile = useIsMobile()
+  const t = useT()
 
   useClickOutside(emojiPickerRef, () => {
     setShowEmojiPicker(false)
@@ -50,17 +52,17 @@ export function MessageActions(props: {
   }, [openEmojiPickerKey])
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this message?')) return
+    if (!confirm(t('messages.delete_confirm', 'Are you sure you want to delete this message?'))) return
     const messageId = message.id
     try {
       await api('delete-message', {messageId})
-      toast.success('Message deleted')
+      toast.success(t('messages.deleted', 'Message deleted'))
       setMessages?.((prevMessages) => {
         if (!prevMessages) return prevMessages
         return prevMessages.filter((m) => m.id !== messageId)
       })
     } catch (error) {
-      toast.error('Failed to delete message')
+      toast.error(t('messages.delete_failed', 'Failed to delete message'))
       console.error(error)
     }
   }
@@ -97,17 +99,17 @@ export function MessageActions(props: {
         <DropdownMenu
           items={[
             isOwner && {
-              name: 'Edit',
+              name: t('messages.action.edit', 'Edit'),
               icon: <PencilIcon className="h-4 w-4"/>,
               onClick: onRequestEdit,
             },
             isOwner && {
-              name: 'Delete',
+              name: t('messages.action.delete', 'Delete'),
               icon: <TrashIcon className="h-4 w-4"/>,
               onClick: handleDelete,
             },
             {
-              name: 'Add Reaction',
+              name: t('messages.action.add_reaction', 'Add Reaction'),
               icon: <EmojiHappyIcon className="h-4 w-4"/>,
               onClick: () => {
                 setShowEmojiPicker(!showEmojiPicker)
@@ -121,7 +123,7 @@ export function MessageActions(props: {
         />
       )}
       {/*{message.isEdited && (*/}
-      {/*  <span className="text-xs text-gray-400">edited</span>*/}
+      {/*  <span className="text-xs text-gray-400">{t('messages.edited', 'edited')}</span>*/}
       {/*)}*/}
     </div>
   )

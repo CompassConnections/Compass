@@ -11,14 +11,16 @@ import { SelectUsers } from 'web/components/select-users'
 import { DisplayUser } from 'common/api/user-types'
 import { usePrivateUser } from 'web/hooks/use-user'
 import { buildArray } from 'common/util/array'
+import { useT } from 'web/lib/locale'
 
 export default function NewMessageButton() {
   const [open, setOpen] = useState(false)
+  const t = useT()
   return (
     <>
       <Button className="h-fit gap-1" onClick={() => setOpen(true)}>
         <PlusIcon className="h-5 w-5" aria-hidden="true" />
-        New Message
+        {t('messages.new_message', 'New Message')}
       </Button>
       <MessageModal open={open} setOpen={setOpen} />
     </>
@@ -32,6 +34,7 @@ function MessageModal(props: {
   const { open, setOpen } = props
   const privateUser = usePrivateUser()
   const router = useRouter()
+  const t = useT()
 
   const [users, setUsers] = useState<DisplayUser[]>([])
   const createChannel = async () => {
@@ -62,7 +65,7 @@ function MessageModal(props: {
       </Col>
       <Row className={'bg-canvas-0 justify-end rounded-b-md p-2'}>
         <Button disabled={users.length === 0} onClick={createChannel}>
-          Create
+          {t('messages.create', 'Create')}
         </Button>
       </Row>
     </Modal>

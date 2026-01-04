@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import {FilterFields} from "common/filters";
 import {DisplayUser} from "common/api/user-types";
 import {useChoices} from "web/hooks/use-choices";
+import {useT} from "web/lib/locale";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -134,6 +135,7 @@ export const Search = (props: {
   const [isHolding, setIsHolding] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
+  const t = useT()
   const [openBookmarks, setOpenBookmarks] = useState(false);
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
@@ -200,11 +202,11 @@ export const Search = (props: {
             value={filters.orderBy || 'created_time'}
             className={'w-18 border-ink-300 rounded-md'}
           >
-            <option value="created_time">New</option>
+            <option value="created_time">{t('common.new', 'New')}</option>
             {youProfile && (
-              <option value="compatibility_score">Compatible</option>
+              <option value="compatibility_score">{t('common.compatible', 'Compatible')}</option>
             )}
-            <option value="last_online_time">Active</option>
+            <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
           <Button
             color="none"
@@ -274,7 +276,7 @@ export const Search = (props: {
             color={'none'}
             className={'bg-canvas-100 hover:bg-canvas-200'}
           >
-            {bookmarked ? 'Saved!' : loadingBookmark ? '' : 'Get Notified'}
+            {bookmarked ? t('common.saved', 'Saved!') : loadingBookmark ? '' : t('common.notified', 'Get Notified')}
           </Button>
 
           <BookmarkSearchButton
@@ -296,7 +298,7 @@ export const Search = (props: {
         </Row>
         {(profileCount ?? 0) > 0 && (
           <Col className="text-sm text-ink-500">
-            <p>{profileCount} {(profileCount ?? 0) > 1 ? 'people' : 'person'}</p>
+            <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
           </Col>
         )}
       </Row>

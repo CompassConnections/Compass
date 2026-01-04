@@ -2,12 +2,12 @@ import {PushNotifications} from '@capacitor/push-notifications'
 import {useEffect} from "react"
 import {api} from "web/lib/api"
 import {useUser} from "web/hooks/use-user"
-import {isAndroidWebView} from "web/lib/util/webview";
+import {isAndroidApp} from "web/lib/util/webview";
 import {useRouter} from "next/router";
 
 export default function AndroidPush() {
   const user = useUser() // authenticated user
-  const isAndroid = isAndroidWebView()
+  const isAndroid = isAndroidApp()
   const router = useRouter()
   useEffect(() => {
     if (!user?.id || !isAndroid) return

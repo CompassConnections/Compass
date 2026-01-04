@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import {api} from 'web/lib/api'
 import {useState, useEffect, useRef} from 'react'
 import {useUser} from "web/hooks/use-user";
+import {useT} from "web/lib/locale";
 
 export type VoteChoice = 'for' | 'abstain' | 'against'
 
@@ -31,10 +32,10 @@ function VoteButton(props: {
 }
 
 const priorities = [
-  {label: 'Urgent', value: 3},
-  {label: 'High', value: 2},
-  {label: 'Medium', value: 1},
-  {label: 'Low', value: 0},
+  {key: "vote.urgent", label: 'Urgent', value: 3},
+  {key: "vote.high", label: 'High', value: 2},
+  {key: "vote.medium", label: 'Medium', value: 1},
+  {key: "vote.low", label: 'Low', value: 0},
 ] as const
 
 export function VoteButtons(props: {
@@ -50,6 +51,7 @@ export function VoteButtons(props: {
   const [showPriority, setShowPriority] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const disabled = disabledProp || loading !== null
+  const t = useT()
 
   // Close the dropdown when clicking outside or pressing Escape
   useEffect(() => {
@@ -78,15 +80,23 @@ export function VoteButtons(props: {
     try {
       setLoading(choice)
       if (!user) {
-        toast.error('Please sign in to vote')
+        toast.error(t('vote.sign_in_required', 'Please sign in to vote'))
         return
       }
       await api('vote', {voteId, choice, priority})
-      toast.success(`Voted ${choice}${choice === 'for' ? ` with priority ${priority}` : ''}`)
+      const choiceLabel = t(
+        `vote.${choice}`,
+        choice === 'for' ? 'For' : choice === 'abstain' ? 'Abstain' : 'Against'
+      )
+      let votedMsg = `${t('vote.voted', 'Voted')} ${choiceLabel}`
+      if (choice === 'for') {
+        votedMsg += ` ${t('vote.with_priority', 'with priority')} ${priority}`
+      }
+      toast.success(votedMsg)
       await onVoted?.()
     } catch (e) {
       console.error(e)
-      toast.error('Failed to vote — please try again')
+      toast.error(t('vote.failed', 'Failed to vote — please try again'))
     } finally {
       setLoading(null)
     }
@@ -108,7 +118,7 @@ export function VoteButtons(props: {
         <VoteButton
           color={clsx('bg-green-700 text-white hover:bg-green-500')}
           count={counts.for}
-          title={'For'}
+          title={t('vote.for', 'For')}
           disabled={disabled}
           onClick={() => handleVote('for')}
         />
@@ -117,6 +127,7 @@ export function VoteButtons(props: {
             'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
             'dark:bg-ink-900'
           )}>
+            <div className="px-3 py-2 text-sm font-semibold bg-canvas-25">{t("vote.priority", "Priority")}</div>
             {priorities.map((p) => (
               <button
                 key={p.value}
@@ -129,7 +140,7 @@ export function VoteButtons(props: {
                   await sendVote('for', p.value)
                 }}
               >
-                {p.label} priority
+                {t(p.key, p.label)}
               </button>
             ))}
           </div>
@@ -138,14 +149,14 @@ export function VoteButtons(props: {
       <VoteButton
         color={clsx('bg-yellow-700 text-white hover:bg-yellow-500')}
         count={counts.abstain}
-        title={'Abstain'}
+        title={t('vote.abstain', 'Abstain')}
         disabled={disabled}
         onClick={() => handleVote('abstain')}
       />
       <VoteButton
         color={clsx('bg-red-700 text-white hover:bg-red-500')}
         count={counts.against}
-        title={'Against'}
+        title={t('vote.against', 'Against')}
         disabled={disabled}
         onClick={() => handleVote('against')}
       />

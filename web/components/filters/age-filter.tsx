@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import { RangeSlider } from 'web/components/widgets/slider'
-import {FilterFields} from "common/filters";
+import {RangeSlider} from 'web/components/widgets/slider'
+import {FilterFields} from "common/filters"
+import {useT} from 'web/lib/locale'
 
 export const PREF_AGE_MIN = 18
 export const PREF_AGE_MAX = 100
@@ -22,11 +23,12 @@ export function AgeFilterText(props: {
   const { pref_age_min, pref_age_max, highlightedClass } = props
   const [noMinAge, noMaxAge] = getNoMinMaxAge(pref_age_min, pref_age_max)
 
+  const t = useT()
   if (noMinAge && noMaxAge) {
     return (
       <span>
-        <span className={clsx('text-semibold', highlightedClass)}>Any</span>{' '}
-        <span className="hidden sm:inline">age</span>
+        <span className={clsx('text-semibold', highlightedClass)}>{t('filter.age.any', 'Any')}</span>{' '}
+        <span className="hidden sm:inline">{t('filter.age.age', 'age')}</span>
       </span>
     )
   }
@@ -37,7 +39,7 @@ export function AgeFilterText(props: {
           {'<'}
           {pref_age_max}
         </span>{' '}
-        years
+        {t('filter.age.years', 'years')}
       </span>
     )
   }
@@ -48,7 +50,7 @@ export function AgeFilterText(props: {
           {'>'}
           {pref_age_min}
         </span>{' '}
-        years
+        {t('filter.age.years', 'years')}
       </span>
     )
   }
@@ -59,7 +61,7 @@ export function AgeFilterText(props: {
         {' - '}
         {pref_age_max}
       </span>{' '}
-      years
+      {t('filter.age.years', 'years')}
     </span>
   )
 }

@@ -4,6 +4,7 @@ import {FilterFields} from 'common/filters'
 import {getSortedOptions} from 'common/util/sorting'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
+import {useT} from 'web/lib/locale'
 
 export function MbtiFilterText(props: {
   options: string[] | undefined
@@ -11,9 +12,10 @@ export function MbtiFilterText(props: {
   defaultLabel?: string
 }) {
   const {options, highlightedClass, defaultLabel} = props
+  const t = useT()
   const length = (options ?? []).length
 
-  const label = defaultLabel || 'Any'
+  const label = defaultLabel || t('filter.any', 'Any')
 
   if (!options || length < 1) {
     return (
@@ -25,7 +27,7 @@ export function MbtiFilterText(props: {
     return (
       <span>
         <span className={clsx('font-semibold', highlightedClass)}>
-          Multiple
+          {t('filter.multiple', 'Multiple')}
         </span>
       </span>
     )
@@ -57,6 +59,7 @@ export function MbtiFilter(props: {
       className={'grid grid-cols-2 xs:grid-cols-4'}
       selected={filters.mbti ?? []}
       choices={MBTI_CHOICES as any}
+      translationPrefix={'profile.mbti'}
       onChange={(c) => {
         updateFilter({mbti: c})
       }}

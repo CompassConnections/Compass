@@ -10,6 +10,7 @@ import { Content } from 'web/components/widgets/editor'
 import { updateProfile } from 'web/lib/api'
 import { EditableBio } from './editable-bio'
 import { tryCatch } from 'common/util/try-catch'
+import { useT } from 'web/lib/locale'
 
 export function BioBlock(props: {
   isCurrentUser: boolean
@@ -19,6 +20,7 @@ export function BioBlock(props: {
   setEdit: (edit: boolean) => void
 }) {
   const { isCurrentUser, refreshProfile, profile, edit, setEdit } = props
+  const t = useT()
 
   return (
     <Col
@@ -47,12 +49,12 @@ export function BioBlock(props: {
           <DropdownMenu
             items={[
               {
-                name: 'Edit',
+                name: t('profile.bio.edit', 'Edit'),
                 icon: <PencilIcon className="h-5 w-5" />,
                 onClick: () => setEdit(true),
               },
               {
-                name: 'Delete',
+                name: t('profile.bio.delete', 'Delete'),
                 icon: <XIcon className="h-5 w-5" />,
                 onClick: async () => {
                   const { error } = await tryCatch(updateProfile({ bio: null }))

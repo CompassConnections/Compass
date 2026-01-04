@@ -196,7 +196,7 @@ function RegisterComponent() {
                 disabled={isLoading}
                 className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Signing in...' : t('signin.submit','Sign in')}
+                {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
               </button>
 
               <div className="relative">

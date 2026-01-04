@@ -4,7 +4,6 @@ import {Col} from "web/components/layout/col";
 import clsx from "clsx";
 import {colClassName, labelClassName} from "web/pages/signup";
 import {MultiCheckbox} from "web/components/multi-checkbox";
-import {capitalize} from "lodash";
 
 export function AddOptionEntry(props: {
   title: string

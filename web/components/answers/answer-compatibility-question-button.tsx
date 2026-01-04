@@ -24,11 +24,11 @@ export function AnswerCompatibilityQuestionButton(props: {
     size = 'md',
   } = props
   const [open, setOpen] = useState(fromSignup ?? false)
+  const t = useT()
   if (!user) return null
   if (otherQuestions.length === 0) return null
   const isCore = otherQuestions.some((q) => q.importance_score === 0)
   const questionsToAnswer = isCore ? otherQuestions.filter((q) => q.importance_score === 0) : otherQuestions
-  const t = useT()
   return (
     <>
       {size === 'md' ? (
@@ -77,8 +77,8 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
 }) {
   const {user, skippedQuestions, refreshCompatibilityAll} = props
   const [open, setOpen] = useState(false)
-  if (!user) return null
   const t = useT()
+  if (!user) return null
   return (
     <>
       <button

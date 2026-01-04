@@ -9,11 +9,11 @@ export function ShortBioToggle(props: {
   hidden: boolean
 }) {
   const {filters, updateFilter, hidden} = props
+  const t = useT()
   if (hidden) {
     return <></>
   }
 
-  const t = useT()
   const label = t('filter.short_bio_toggle', 'Include Short Bios')
 
   const on = filters.shortBio || false

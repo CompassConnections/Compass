@@ -44,7 +44,6 @@ import toast from "react-hot-toast";
 import {db} from "web/lib/supabase/db";
 import {fetchChoices} from "web/hooks/use-choices";
 import {AddOptionEntry} from "web/components/add-option-entry";
-import {convertGenderPlural, Gender} from "common/gender";
 
 
 export const OptionalProfileUserForm = (props: {

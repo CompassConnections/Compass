@@ -24,9 +24,9 @@ export function AddCompatibilityQuestionButton(props: {
 }) {
   const { refreshCompatibilityAll } = props
   const [open, setOpen] = useState(false)
+  const t = useT()
   const user = useUser()
   if (!user) return null
-  const t = useT()
   return (
     <>
       <button

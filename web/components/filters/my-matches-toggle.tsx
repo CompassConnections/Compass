@@ -9,12 +9,12 @@ export function MyMatchesToggle(props: {
   on: boolean
   hidden: boolean
 }) {
-  const { setYourFilters, on, hidden } = props
+  const {setYourFilters, on, hidden} = props
+  const t = useT()
   if (hidden) {
     return <></>
   }
 
-  const t = useT()
   const label = t('filter.mine_toggle', 'Your filters')
 
   return (

@@ -307,19 +307,19 @@ export function DesktopFilters(props: {
           <DropdownMenu
               items={[
                 {
-                  name: hasKidsLabels.no_preference.name,
+                  name: t("profile.has_kids.no_preference", hasKidsLabels.no_preference.name),
                   onClick: () => {
                     updateFilter({has_kids: hasKidsLabels.no_preference.value})
                   },
                 },
                 {
-                  name: hasKidsLabels.doesnt_have_kids.name,
+                  name: t("profile.has_kids.doesnt_have_kids", hasKidsLabels.doesnt_have_kids.name),
                   onClick: () => {
                     updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
                   },
                 },
                 {
-                  name: hasKidsLabels.has_kids.name,
+                  name: t("profile.has_kids.has_kids", hasKidsLabels.has_kids.name),
                   onClick: () => {
                     updateFilter({has_kids: hasKidsLabels.has_kids.value})
                   },

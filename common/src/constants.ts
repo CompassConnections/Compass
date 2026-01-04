@@ -31,6 +31,7 @@ export const defaultLocale = 'en'
 export const LOCALES = {
   en: "English",
   fr: "Français",
+  de: "Deutsch",
   // es: "Español",
 }
 export const supportedLocales = Object.keys(LOCALES)

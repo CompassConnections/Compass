@@ -14,18 +14,20 @@ import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 import {NotificationSettings} from "web/components/notifications";
+import {useT} from 'web/lib/locale'
 
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
+  const t = useT()
   return (
     <PageBase trackPageView={'notifications page'} className={'mx-4'}>
       <NoSEO/>
-      <Title>Updates</Title>
+      <Title>{t('notifications.title','Updates')}</Title>
       <UncontrolledTabs
         name={'notifications-page'}
         tabs={[
-          {title: 'Notifications', content: <NotificationsContent/>},
-          {title: 'Settings', content: <NotificationSettings/>},
+          {title: t('notifications.tabs.notifications','Notifications'), content: <NotificationsContent/>},
+          {title: t('notifications.tabs.settings','Settings'), content: <NotificationSettings/>},
         ]}
         trackingName={'notifications page'}
       />
@@ -41,6 +43,7 @@ const NotificationsContent = () => {
 
 function LoadedNotificationsContent(props: { user: User }) {
   const {user} = props
+  const t = useT()
   const privateUser = usePrivateUser()
 
   const {groupedNotifications, mostRecentNotification} = useGroupedNotifications(
@@ -75,7 +78,7 @@ function LoadedNotificationsContent(props: { user: User }) {
         paginatedGroupedNotifications === undefined ? (
           <CompassLoadingIndicator/>
         ) : paginatedGroupedNotifications.length === 0 ? (
-          <div className={'mt-2'}>You don't have any notifications, yet.</div>
+          <div className={'mt-2'}>{t('notifications.empty',"You don't have any notifications, yet.")}</div>
         ) : (
           <RenderNotificationGroups
             notificationGroups={paginatedGroupedNotifications}

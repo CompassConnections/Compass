@@ -4,8 +4,6 @@ set -e
 
 cd "$(dirname "$0")"/..
 
-export NEXT_PUBLIC_WEBVIEW=1
-
 # Paths
 ROOT_ENV=".env"           # your root .env
 WEB_ENV="web/.env"        # target for frontend
@@ -17,7 +15,13 @@ if [ -f "$WEB_ENV" ]; then
 fi
 
 # Filter NEXT_PUBLIC_* lines
-grep '^NEXT_PUBLIC_' "$ROOT_ENV" > "$WEB_ENV"
+if [ -f "$ROOT_ENV" ]; then
+  set -a
+  source "$ROOT_ENV"
+  set +a
+  echo "Sourced variables from $ROOT_ENV"
+fi
+env | grep '^NEXT_PUBLIC_' > "$WEB_ENV" || true
 
 echo "Copied NEXT_PUBLIC_ variables to $WEB_ENV:"
 
@@ -26,6 +30,8 @@ echo "NEXT_PUBLIC_FIREBASE_ENV=prod" >> "$WEB_ENV"
 cat "$WEB_ENV"
 
 cd web
+
+export NEXT_PUBLIC_WEBVIEW=1
 
 rm -rf .next
 

@@ -46,8 +46,8 @@ export default function Document() {
         "body-bg text-ink-1000",
         'safe-top',
       )}>
-      <Main/>
-      <NextScript/>
+        <Main/>
+        <NextScript/>
       </body>
     </Html>
   )

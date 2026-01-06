@@ -17,8 +17,10 @@ import Link from "next/link";
 import {formLink} from "common/constants";
 import { ShowMore } from "../widgets/show-more";
 import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from "common/votes/constants";
+import {useT} from 'web/lib/locale'
 
 export function VoteComponent() {
+  const t = useT()
   const user = useUser()
   const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
@@ -37,9 +39,9 @@ export function VoteComponent() {
   return (
     <Col className="mx-2">
       <Row className="items-center justify-between flex-col xxs:flex-row mb-4 xxs:mb-0 gap-2">
-        <Title className="text-3xl">Proposals</Title>
+        <Title className="text-3xl">{t('vote.title','Proposals')}</Title>
         <div className="flex items-center gap-2 text-sm justify-end">
-          <label htmlFor="orderBy" className="text-ink-700">Order by:</label>
+          <label htmlFor="orderBy" className="text-ink-700">{t('vote.order.label','Order by:')}</label>
           <select
             id="orderBy"
             value={orderBy}
@@ -48,21 +50,27 @@ export function VoteComponent() {
           >
             {ORDER_BY.map((key) => (
               <option key={key} value={key}>
-                {ORDER_BY_CHOICES[key]}
+                {t(`vote.sort.${key}`, ORDER_BY_CHOICES[key])}
               </option>
             ))}
           </select>
         </div>
       </Row>
       <p className={'custom-link'}>
-        You can discuss any of those proposals through the <Link href={'/contact'}>contact form</Link>, the <Link href={formLink}>feedback form</Link>, or any of our <Link href={'/social'}>socials</Link>.
+        {t('vote.discuss.prefix','You can discuss any of those proposals through the ')}
+        <Link href={'/contact'}>{t('vote.discuss.link_contact','contact form')}</Link>
+        {t('vote.discuss.middle',', the ')}
+        <Link href={formLink}>{t('vote.discuss.link_feedback','feedback form')}</Link>
+        {t('vote.discuss.and',', or any of our ')}
+        <Link href={'/social'}>{t('vote.discuss.link_socials','socials')}</Link>
+        {t('vote.discuss.suffix','.')}
       </p>
 
       {user && <Col>
-        <ShowMore labelClosed="Add a new proposal" labelOpen="Hide">
+        <ShowMore labelClosed={t('vote.showmore.closed','Add a new proposal')} labelOpen={t('vote.showmore.open','Hide')}>
           <Input
               value={title}
-              placeholder={'Title'}
+              placeholder={t('vote.form.title_placeholder','Title')}
               className={'w-full mb-2'}
               onChange={(e) => {
                 setTitle(e.target.value)
@@ -79,7 +87,7 @@ export function VoteComponent() {
                   onChange={(e) => setIsAnonymous(e.target.checked)}
                   className="h-4 w-4 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="anonymous">Anonymous?</label>
+              <label htmlFor="anonymous">{t('vote.form.anonymous','Anonymous?')}</label>
           </Row>
         {!hideButton && (
           <Row className="right-1 justify-between gap-2">
@@ -92,17 +100,17 @@ export function VoteComponent() {
                   isAnonymous: isAnonymous,
                 };
                 const newVote = await api('create-vote', data).catch(() => {
-                  toast.error('Failed to create vote — try again or contact us...')
+                  toast.error(t('vote.toast.create_failed','Failed to create vote — try again or contact us...'))
                 })
                 if (!newVote) return
                 setTitle('')
                 editor.commands.clearContent()
-                toast.success('Vote created')
+                toast.success(t('vote.toast.created','Vote created'))
                 console.debug('Vote created', newVote)
                 refreshVotes()
               }}
             >
-              Submit
+              {t('vote.form.submit','Submit')}
             </Button>
           </Row>
         )}
@@ -129,11 +137,12 @@ interface VoteCreatorProps {
 }
 
 export function VoteCreator({defaultValue, onBlur, onEditor}: VoteCreatorProps) {
+  const t = useT()
   const editor = useTextEditor({
     // extensions: [StarterKit],
     max: MAX_DESCRIPTION_LENGTH,
     defaultValue: defaultValue,
-    placeholder: 'Please describe your proposal here',
+    placeholder: t('vote.creator.placeholder','Please describe your proposal here'),
   })
 
   useEffect(() => {

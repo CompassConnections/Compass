@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { User } from 'common/user'
 import { shortenName } from 'web/components/widgets/user-link'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline'
+import {useT} from 'web/lib/locale'
 
 export function PreferredList(props: {
   question: QuestionWithCountType
@@ -16,6 +17,7 @@ export function PreferredList(props: {
 }) {
   const { question, answer, comparedAnswer, comparedUser, isComparedUser } =
     props
+  const t = useT()
   const { multiple_choice_options } = question
   if (!multiple_choice_options) return null
   const sortedEntries = Object.entries(multiple_choice_options).sort(
@@ -54,8 +56,9 @@ export function PreferredList(props: {
               ) : (
                 <XCircleIcon className="h-4 w-4" />
               )}
-              {isComparedUser ? 'Your' : shortenName(comparedUser.name) + "'s"}{' '}
-              answer
+              {isComparedUser
+                ? t('answers.preferred.your_answer', 'Your answer')
+                : t('answers.preferred.user_answer', "{name}'s answer", { name: shortenName(comparedUser.name) })}
             </Row>
           )}
         </Row>

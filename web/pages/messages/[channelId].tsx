@@ -34,9 +34,11 @@ import {ChatMessage} from 'common/chat-message'
 import {BackButton} from 'web/components/back-button'
 import {SEO} from "web/components/SEO"
 import {cleanDoc} from "common/util/parse";
+import {useT} from 'web/lib/locale'
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
+  const t = useT()
   const {channelId: channelIdString} = router.query as { channelId: string }
   const channelId = router.isReady ? parseInt(channelIdString) : undefined
   const user = useUser()
@@ -47,8 +49,8 @@ export default function PrivateMessagesPage() {
   return (
     <PageBase trackPageView={'private messages page'}>
       <SEO
-        title={'Messages'}
-        description={'Messages'}
+        title={t('messages.title', 'Messages')}
+        description={t('messages.seo.description', 'Messages')}
         url={`/messages/${channelIdString}`}
       />
       {router.isReady && channelId && user ? (
@@ -96,6 +98,7 @@ export const PrivateChat = (props: {
   memberIds: string[]
 }) => {
   const {user, channel, memberIds} = props
+  const t = useT()
   const channelId = channel.channel_id
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
@@ -147,7 +150,7 @@ export const PrivateChat = (props: {
   const editor = useTextEditor({
     key: `private-message-${channelId}-${user.id}`,
     size: 'sm',
-    placeholder: 'Send a message',
+    placeholder: t('messages.input_placeholder', 'Send a message'),
   })
 
   useEffect(() => {
@@ -211,8 +214,8 @@ export const PrivateChat = (props: {
     } catch (e) {
       toast.error(
         editingMessage
-          ? "Couldn't edit message."
-          : "Couldn't send message. Please try again later or contact support if the problem persists."
+          ? t('messages.toast.edit_failed', "Couldn't edit message.")
+          : t('messages.toast.send_failed', "Couldn't send message. Please try again later or contact support if the problem persists.")
       )
       console.error(e)
     } finally {
@@ -277,14 +280,14 @@ export const PrivateChat = (props: {
           items={buildArray(
             {
               icon: <FaUserFriends className={'h-5 w-5'}/>,
-              name: 'See members',
+              name: t('messages.menu.see_members', 'See members'),
               onClick: () => {
                 setShowUsers(true)
               },
             },
             {
               icon: <GiSpeakerOff className="h-5 w-5"/>,
-              name: 'Mute 1 day',
+              name: t('messages.menu.mute_1_day', 'Mute 1 day'),
               onClick: async () => {
                 await toast.promise(
                   api('update-private-user-message-channel', {
@@ -292,16 +295,16 @@ export const PrivateChat = (props: {
                     notifyAfterTime: Date.now() + DAY_MS,
                   }),
                   {
-                    loading: 'Muting for 1 day...',
-                    success: 'Muted for 1 day',
-                    error: 'Failed to mute',
+                    loading: t('messages.toast.muting_1_day.loading', 'Muting for 1 day...'),
+                    success: t('messages.toast.muting_1_day.success', 'Muted for 1 day'),
+                    error: t('messages.toast.muting_1_day.error', 'Failed to mute'),
                   }
                 )
               },
             },
             {
               icon: <GiSpeakerOff className="h-5 w-5"/>,
-              name: 'Mute forever',
+              name: t('messages.menu.mute_forever', 'Mute forever'),
               onClick: async () => {
                 await toast.promise(
                   api('update-private-user-message-channel', {
@@ -309,16 +312,16 @@ export const PrivateChat = (props: {
                     notifyAfterTime: Date.now() + 100 * YEAR_MS,
                   }),
                   {
-                    loading: 'Muting forever...',
-                    success: 'Muted forever',
-                    error: 'Failed to mute',
+                    loading: t('messages.toast.muting_forever.loading', 'Muting forever...'),
+                    success: t('messages.toast.muting_forever.success', 'Muted forever'),
+                    error: t('messages.toast.muting_forever.error', 'Failed to mute'),
                   }
                 )
               },
             },
             {
               icon: <FaUserMinus className="h-5 w-5"/>,
-              name: 'Leave chat',
+              name: t('messages.menu.leave_chat', 'Leave chat'),
               onClick: async () => {
                 await api('leave-private-user-message-channel', {
                   channelId: channelId,
@@ -410,7 +413,7 @@ export const PrivateChat = (props: {
             )}
             {realtimeMessages && messages.length === 0 && (
               <div className="text-ink-500 dark:text-ink-600 p-2">
-                No messages yet.
+                {t('messages.empty', 'No messages yet.')}
               </div>
             )}
           </div>

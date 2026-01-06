@@ -1,6 +1,7 @@
-import { Row } from 'web/components/layout/row'
+import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
-import { Profile } from 'common/profiles/profile'
+import {Profile} from 'common/profiles/profile'
+import {useT} from "web/lib/locale";
 
 export function MyMatchesToggle(props: {
   setYourFilters: (checked: boolean) => void
@@ -8,12 +9,13 @@ export function MyMatchesToggle(props: {
   on: boolean
   hidden: boolean
 }) {
-  const { setYourFilters, on, hidden } = props
+  const {setYourFilters, on, hidden} = props
+  const t = useT()
   if (hidden) {
     return <></>
   }
 
-  const label = 'Your filters'
+  const label = t('filter.mine_toggle', 'Your filters')
 
   return (
     <Row className={clsx('mr-2 items-center', on && 'font-semibold')}>

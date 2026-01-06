@@ -13,24 +13,28 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link"
 import {MIN_BIO_LENGTH} from "common/constants";
 import {ShowMore} from 'web/components/widgets/show-more'
+import {useT} from 'web/lib/locale'
 
-const placeHolder = "Tell us about yourself — and what you're looking for!";
-
-const tips = `
+export function BioTips() {
+  const t = useT();
+  const tips = t('profile.bio.tips_list', `
 - Your core values, interests, and activities
 - Personality traits, what makes you unique and what you care about
 - Connection goals (collaborative, friendship, romantic)
 - Expectations and boundaries
 - Availability, how to contact you or start a conversation (email, social media, etc.)
 - Optional: romantic preferences, lifestyle habits, and conversation starters
-`
-
-export function BioTips() {
+`);
+  
   return (
-    <ShowMore labelClosed="Tips" labelOpen="Hide info" className={'custom-link text-sm'}>
-      <p>Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:</p>
+    <ShowMore 
+      labelClosed={t('profile.bio.tips', 'Tips')} 
+      labelOpen={t('profile.bio.hide_info', 'Hide info')} 
+      className={'custom-link text-sm'}
+    >
+      <p>{t('profile.bio.tips_intro', "Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:")}</p>
       <ReactMarkdown>{tips}</ReactMarkdown>
-      <Link href="/tips-bio" target="_blank">Read full tips for writing a high-quality bio</Link>
+      <Link href="/tips-bio" target="_blank">{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</Link>
     </ShowMore>
   )
 }
@@ -43,6 +47,7 @@ export function EditableBio(props: {
   const {profile, onCancel, onSave} = props
   const [editor, setEditor] = useState<any>(null)
   const [textLength, setTextLength] = useState(0);
+  const t = useT();
 
   const hideButtons = (textLength === 0) && !profile.bio
 
@@ -74,7 +79,7 @@ export function EditableBio(props: {
         <Row className="absolute bottom-1 right-1 justify-between gap-2">
           {onCancel && (
             <Button size="xs" color="gray-outline" onClick={onCancel}>
-              Cancel
+              {t('profile.bio.cancel', 'Cancel')}
             </Button>
           )}
           <Button
@@ -84,7 +89,7 @@ export function EditableBio(props: {
               onSave()
             }}
           >
-            Save
+            {t('profile.bio.save', 'Save')}
           </Button>
         </Row>
       )}
@@ -115,13 +120,15 @@ interface BaseBioProps {
 }
 
 export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
+  const t = useT();
   const editor = useTextEditor({
     // extensions: [StarterKit],
     max: MAX_DESCRIPTION_LENGTH,
     defaultValue: defaultValue,
-    placeholder: placeHolder,
+    placeholder: t('profile.bio.placeholder', "Tell us about yourself — and what you're looking for!"),
   })
   const textLength = editor?.getText().length ?? 0
+  const remainingChars = MIN_BIO_LENGTH - textLength
 
   useEffect(() => {
     onEditor?.(editor)
@@ -131,8 +138,10 @@ export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
     <div>
       {textLength < MIN_BIO_LENGTH &&
           <p>
-              Add {MIN_BIO_LENGTH - textLength} more {MIN_BIO_LENGTH - textLength === 1 ? 'character' : 'characters'} so
-              you can appear in search results—or take your time and start by exploring others.
+              {remainingChars === 1 
+                ? t('profile.bio.add_characters_one', 'Add {count} more character so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
+                : t('profile.bio.add_characters_many', 'Add {count} more characters so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
+              }
           </p>
       }
       <BioTips/>

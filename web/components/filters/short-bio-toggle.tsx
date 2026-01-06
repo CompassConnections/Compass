@@ -1,6 +1,7 @@
 import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
 import {FilterFields} from "common/filters";
+import {useT} from "web/lib/locale";
 
 export function ShortBioToggle(props: {
   filters: Partial<FilterFields>
@@ -8,11 +9,12 @@ export function ShortBioToggle(props: {
   hidden: boolean
 }) {
   const {filters, updateFilter, hidden} = props
+  const t = useT()
   if (hidden) {
     return <></>
   }
 
-  const label = 'Include Short Bios'
+  const label = t('filter.short_bio_toggle', 'Include Short Bios')
 
   const on = filters.shortBio || false
 

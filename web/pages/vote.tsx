@@ -4,9 +4,11 @@ import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
 import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 import {VoteComponent} from "web/components/votes/vote-info";
+import {useT} from 'web/lib/locale'
 
 
 export default function VotePage() {
+  const t = useT()
   const user = useUser()
 
   // console.log('user:', user)
@@ -17,8 +19,8 @@ export default function VotePage() {
       className={'relative p-2 sm:pt-0'}
     >
       <SEO
-        title={`Proposals`}
-        description={'A place to vote on decisions'}
+        title={t('vote.seo.title','Proposals')}
+        description={t('vote.seo.description','A place to vote on decisions')}
         url={`/vote`}
       />
       {user === undefined ? (

@@ -10,6 +10,7 @@ import {api} from "web/lib/api";
 import {MultiSelectAnswers} from "web/components/answers/answer-compatibility-question-content";
 import {PrivateUser} from "common/user";
 import {WithPrivateUser} from "web/components/user/with-user";
+import {useT} from 'web/lib/locale'
 
 export const NotificationSettings = () => (
   <WithPrivateUser>
@@ -27,6 +28,8 @@ function LoadedNotificationSettings(props: {
       'notification-preferences'
     )
 
+  const t = useT()
+
   const notificationTypes: {
     type: notification_preference
     question: string
@@ -34,11 +37,11 @@ function LoadedNotificationSettings(props: {
     {
       type: 'new_match',
       question:
-        '... matches with you?',
+        t('notifications.question.new_match', '... matches with you?'),
     },
     {
       type: 'new_message',
-      question: '... sends you a new message?',
+      question: t('notifications.question.new_message', '... sends you a new message?'),
     },
     // {
     //   type: 'new_profile_like',
@@ -46,7 +49,7 @@ function LoadedNotificationSettings(props: {
     // },
     {
       type: 'new_endorsement',
-      question: '... endorses you?',
+      question: t('notifications.question.new_endorsement', '... endorses you?'),
     },
     // {
     //   type: 'new_profile_ship',
@@ -54,7 +57,7 @@ function LoadedNotificationSettings(props: {
     // },
     {
       type: 'tagged_user',
-      question: '... mentions you?',
+      question: t('notifications.question.tagged_user', '... mentions you?'),
     },
     // {
     //   type: 'on_new_follow',
@@ -62,19 +65,19 @@ function LoadedNotificationSettings(props: {
     // },
     {
       type: 'new_search_alerts',
-      question: 'Alerts from bookmarked searches?',
+      question: t('notifications.question.new_search_alerts', 'Alerts from bookmarked searches?'),
     },
     {
       type: 'opt_out_all',
       question:
-        'Opt out of all notifications? (You can always change this later)',
+        t('notifications.question.opt_out_all', 'Opt out of all notifications? (You can always change this later)'),
     },
   ]
 
   return (
     <div className="mx-auto max-w-2xl">
       <div className="flex flex-col gap-8 p-4">
-        <p className="text-ink-700 font-medium">Where do you want to be notified when someone</p>
+        <p className="text-ink-700 font-medium">{t('notifications.heading', 'Where do you want to be notified when someone')}</p>
         {notificationTypes.map(({type, question}) => (
           <NotificationOption
             key={type}
@@ -98,6 +101,7 @@ const NotificationOption = (props: {
   onUpdate: (selected: notification_destination_types[]) => void
 }) => {
   const {type, question, selected, onUpdate} = props
+  const t = useT()
 
   const getSelectedValues = (destinations: string[]) => {
     const values: number[] = []
@@ -144,7 +148,10 @@ const NotificationOption = (props: {
     <div className="flex flex-col gap-2">
       <div className="text-ink-700 font-medium">{question}</div>
       <MultiSelectAnswers
-        options={['By email', 'On notifications page']}
+        options={[
+          t('notifications.options.email', 'By email'),
+          t('notifications.options.page', 'On notifications page'),
+        ]}
         values={getSelectedValues(selected)}
         setValue={setValue}
       />

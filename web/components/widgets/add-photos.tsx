@@ -3,6 +3,7 @@ import {PlusIcon, XIcon} from '@heroicons/react/solid'
 import Image from 'next/image'
 import {uniq} from 'lodash'
 import {useState} from 'react'
+import {useT} from 'web/lib/locale'
 import clsx from 'clsx'
 
 import {Col} from 'web/components/layout/col'
@@ -22,6 +23,7 @@ export const AddPhotosWidget = (props: {
   setDescription: (url: string, description: string) => void
 }) => {
   const {user, photo_urls, pinned_url, setPhotoUrls, setPinnedUrl, setDescription, image_descriptions} = props
+  const t = useT()
 
   const [uploadingImages, setUploadingImages] = useState(false)
 
@@ -116,7 +118,7 @@ export const AddPhotosWidget = (props: {
                 // stop click bubbling so clicking/focusing the input doesn't pin the image
                 onClick={(e) => e.stopPropagation()}
                 aria-label={`description for image ${index}`}
-                placeholder="Add description"
+                placeholder={t('add_photos.add_description', 'Add description')}
                 value={image_descriptions?.[url] ?? ''}
                 onChange={(e) => {
                   e.stopPropagation()
@@ -132,7 +134,7 @@ export const AddPhotosWidget = (props: {
       </Row>
       {photo_urls?.length ? (
         <span className={'text-ink-500 text-xs italic'}>
-          The highlighted image is your profile picture
+          {t('add_photos.profile_picture_hint', 'The highlighted image is your profile picture')}
         </span>
       ) : null}
     </Col>

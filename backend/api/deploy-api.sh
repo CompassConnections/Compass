@@ -27,13 +27,16 @@ SERVICE_NAME="api"
 GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_COMMIT_DATE=$(git log -1 --format=%ci)
 GIT_COMMIT_AUTHOR=$(git log -1 --format='%an')
+GIT_COMMIT_MESSAGE=$(git log -1 --format='%s')
+echo "Git commit message: ${GIT_COMMIT_MESSAGE}"
 
 cat > metadata.json << EOF
 {
   "git": {
     "revision": "${GIT_REVISION}",
     "commitDate": "${GIT_COMMIT_DATE}",
-    "author": "${GIT_COMMIT_AUTHOR}"
+    "author": "${GIT_COMMIT_AUTHOR}",
+    "message": "${GIT_COMMIT_MESSAGE}"
   }
 }
 EOF

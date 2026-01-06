@@ -6,6 +6,7 @@ import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {RELATIONSHIP_STATUS_CHOICES} from "web/components/filters/choices"
 import {FilterFields} from "common/filters"
 import {getSortedOptions} from "common/util/sorting"
+import {useT} from 'web/lib/locale'
 
 export function RelationshipStatusFilterText(props: {
   options: string[] | undefined
@@ -13,9 +14,10 @@ export function RelationshipStatusFilterText(props: {
   defaultLabel?: string
 }) {
   const {options, highlightedClass, defaultLabel} = props
+  const t = useT()
   const length = (options ?? []).length
 
-  const label = defaultLabel || 'Any'
+  const label = defaultLabel || t('filter.any', 'Any')
 
   if (!options || length < 1) {
     return (
@@ -27,14 +29,16 @@ export function RelationshipStatusFilterText(props: {
     return (
       <span>
         <span className={clsx('font-semibold', highlightedClass)}>
-          Multiple
+          {t('filter.multiple', 'Multiple')}
         </span>
       </span>
     )
   }
 
   const sortedOptions = getSortedOptions(options, RELATIONSHIP_STATUS_CHOICES)
-  const convertedTypes = sortedOptions.map((r) => convertRelationshipStatusTypes(r as any))
+  const convertedTypes = sortedOptions.map((r) =>
+    t(`profile.relationship_status.${r}`, convertRelationshipStatusTypes(r))
+  )
 
   return (
     <div>
@@ -57,6 +61,7 @@ export function RelationshipStatusFilter(props: {
     <MultiCheckbox
       selected={filters.relationship_status ?? []}
       choices={RELATIONSHIP_STATUS_CHOICES as any}
+      translationPrefix={'profile.relationship_status'}
       onChange={(c) => {
         updateFilter({relationship_status: c})
       }}

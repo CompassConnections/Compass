@@ -5,6 +5,7 @@ import { withTracking } from 'web/lib/service/analytics'
 import { toast } from 'react-hot-toast'
 import { PrivateUser, User } from 'common/user'
 import { api } from 'web/lib/api'
+import { useT } from 'web/lib/locale'
 
 export const BlockUser = (props: {
   user: User
@@ -13,6 +14,7 @@ export const BlockUser = (props: {
 }) => {
   const { user, currentUser, closeModal } = props
   const { id: userId } = user
+  const t = useT()
 
   const isBlocked = currentUser.blockedUserIds?.includes(userId)
 
@@ -20,16 +22,19 @@ export const BlockUser = (props: {
 
   const onBlock = async () => {
     await toast.promise(api('user/by-id/:id/block', { id: user.id }), {
-      loading: 'Blocking...',
-      success: `You'll no longer see content from this user`,
-      error: 'Error blocking user',
+      loading: t('block_user.toast.loading', 'Blocking...'),
+      success: t(
+        'block_user.toast.success',
+        "You'll no longer see content from this user"
+      ),
+      error: t('block_user.toast.error', 'Error blocking user'),
     })
   }
   return (
     <Col>
       <Row className={'justify-between'}>
         <Button onClick={closeModal} color={'gray-white'}>
-          Cancel
+          {t('settings.action.cancel', 'Cancel')}
         </Button>
         <Row className={'gap-4'}>
           {isBlocked ? (
@@ -39,7 +44,7 @@ export const BlockUser = (props: {
               className="my-auto"
               onClick={withTracking(onUnblock, 'unblock')}
             >
-              Unblock {user.name}
+              {t('block_user.unblock', 'Unblock')} {user.name}
             </Button>
           ) : (
             <Button
@@ -48,7 +53,7 @@ export const BlockUser = (props: {
               className="my-auto"
               onClick={withTracking(onBlock, 'block')}
             >
-              Block {user.name}
+              {t('block_user.block', 'Block')} {user.name}
             </Button>
           )}
         </Row>

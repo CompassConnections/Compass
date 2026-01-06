@@ -21,6 +21,7 @@ import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 import toast from "react-hot-toast";
 import {StarButton} from "web/components/widgets/star-button";
 import {disableProfile} from "web/lib/util/disable";
+import {useT} from 'web/lib/locale'
 
 export default function ProfileHeader(props: {
   user: User
@@ -46,6 +47,7 @@ export default function ProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const [showVisibilityModal, setShowVisibilityModal] = useState(false)
   const disabled = profile.disabled
+  const t = useT()
 
   console.debug('ProfileProfileHeader', {user, profile, userActivity, currentUser})
 
@@ -55,7 +57,7 @@ export default function ProfileHeader(props: {
         <Row className="items-center gap-1">
           <Col className="gap-1">
             {currentUser && isCurrentUser && disabled &&
-                <div className="text-red-500">You disabled your profile, so no one else can access it.</div>}
+                <div className="text-red-500">{t('profile.header.disabled_notice', 'You disabled your profile, so no one else can access it.')}</div>}
             <Row className="items-center gap-1 text-xl">
               {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
               <span>
@@ -98,8 +100,8 @@ export default function ProfileHeader(props: {
                 {
                   name:
                     profile.visibility === 'member'
-                      ? 'List Profile Publicly'
-                      : 'Limit to Members Only',
+                      ? t('profile.header.menu.list_public', 'List Profile Publicly')
+                      : t('profile.header.menu.limit_members', 'Limit to Members Only'),
                   icon:
                     profile.visibility === 'member' ? (
                       <EyeIcon className="h-4 w-4"/>
@@ -109,7 +111,7 @@ export default function ProfileHeader(props: {
                   onClick: () => setShowVisibilityModal(true),
                 },
                 {
-                  name: disabled ? 'Enable profile' : 'Disable profile',
+                  name: disabled ? t('profile.header.menu.enable_profile', 'Enable profile') : t('profile.header.menu.disable_profile', 'Disable profile'),
                   icon: null,
                   onClick: async () => {
                     const confirmed = true // confirm(
@@ -118,12 +120,18 @@ export default function ProfileHeader(props: {
                     if (confirmed) {
                       toast
                         .promise(disableProfile(!disabled), {
-                          loading: disabled ? 'Enabling profile...' : 'Disabling profile...',
+                          loading: disabled
+                            ? t('profile.header.toast.enabling', 'Enabling profile...')
+                            : t('profile.header.toast.disabling', 'Disabling profile...'),
                           success: () => {
-                            return `Profile ${disabled ? 'enabled' : 'disabled'}`
+                            return disabled
+                              ? t('profile.header.toast.enabled', 'Profile enabled')
+                              : t('profile.header.toast.disabled', 'Profile disabled')
                           },
                           error: () => {
-                            return `Failed to ${disabled ? 'enable' : 'disable'} profile`
+                            return disabled
+                              ? t('profile.header.toast.failed_enable', 'Failed to enable profile')
+                              : t('profile.header.toast.failed_disable', 'Failed to disable profile')
                           },
                         })
                         .then(() => {

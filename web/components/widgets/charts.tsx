@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {getProfilesCreations, getProfilesWithBioCreations} from "web/lib/supabase/users";
+import {useT} from "web/lib/locale";
 
 // Helper to convert rows into date -> count map
 function buildCounts(rows: any[]) {
@@ -29,6 +30,7 @@ export default function ChartMembers() {
   const [data, setData] = useState<any[]>([])
 
   const [chartHeight, setChartHeight] = useState<number>(400)
+  const t = useT()
 
   useEffect(() => {
     // Set responsive chart height: 300px on small widths, 400px otherwise
@@ -122,7 +124,7 @@ export default function ChartMembers() {
               fill: "rgb(var(--color-primary-900))",
             }}
           >
-            Number of Members
+            {t("stats.number_members", "Number of Members")}
           </text>
           {/*<CartesianGrid strokeDasharray="3 3"/>*/}
           <XAxis
@@ -131,7 +133,7 @@ export default function ChartMembers() {
             scale="time"
             domain={["dataMin", "dataMax"]}
             tickFormatter={(ts) => new Date(ts).toISOString().split("T")[0]}
-            label={{value: "Date", position: "insideBottomRight", offset: -5}}
+            label={{value: t('charts.date', 'Date'), position: 'insideBottomRight', offset: -5}}
           />
           <YAxis/>
           <Tooltip
@@ -150,7 +152,7 @@ export default function ChartMembers() {
           <Line
             type="monotone"
             dataKey="profilesCreations"
-            name="Total"
+            name={t('stats.total', 'Total')}
             stroke="rgb(var(--color-primary-900))"
             strokeWidth={2}
             dot={false}
@@ -158,7 +160,7 @@ export default function ChartMembers() {
           <Line
             type="monotone"
             dataKey="profilesWithBioCreations"
-            name="With Bio"
+            name={t('stats.with_bio', 'With Bio')}
             stroke="#9ca3af"
             strokeDasharray="4 2"
             strokeWidth={2}

@@ -167,6 +167,7 @@ export const LANGUAGE_CHOICES = {
   'Spanish': 'spanish',
   'Sundanese': 'sundanese',
   'Swedish': 'swedish',
+  'Swahili': 'swahili',
   'Sylheti': 'sylheti',
   'Tagalog': 'tagalog',
   'Tamil': 'tamil',
@@ -218,6 +219,18 @@ export const MBTI_CHOICES = {
   'ESFP': 'esfp',
 }
 
+export const GENDERS = {
+  Woman: 'female',
+  Man: 'male',
+  Other: 'other',
+}
+
+export const GENDERS_PLURAL = {
+  Women: 'female',
+  Men: 'male',
+  Other: 'other',
+}
+
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
@@ -228,3 +241,4 @@ export const INVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
 export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
 export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
 export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)
+export const INVERTED_GENDERS = invert(GENDERS)

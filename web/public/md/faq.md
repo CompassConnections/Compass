@@ -146,7 +146,7 @@ Our goal is for Compass to become what Linux is for software, Wikipedia is for k
 
 Our focus is now toward **gathering feedback**, **growing the community** and **securing donations** to sustain and expand the platform.
 
-Every action, whether sharing, donating, or contributing, directly helps Compass remain **ad-free, subscription-free, and community-owned**.
+Every action, whether sharing, donating, or contributing, directly helps Compass remain ad-free, subscription-free, and community-owned.
 
 ### How can I help?
 

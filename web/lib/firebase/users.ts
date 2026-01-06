@@ -6,7 +6,7 @@ import {getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup, conn
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
 import {GOOGLE_CLIENT_ID} from "common/constants"
-import {isAndroidWebView} from "web/lib/util/webview"
+import {isAndroidApp} from "web/lib/util/webview"
 import {SocialLogin} from "@capgo/capacitor-social-login"
 import {Capacitor} from "@capacitor/core"
 import {IS_FIREBASE_EMULATOR} from "common/envs/constants"
@@ -113,7 +113,7 @@ export async function googleNativeLogin() {
 }
 
 export async function firebaseLogin() {
-  if (isAndroidWebView()) {
+  if (isAndroidApp()) {
     console.log('Running in APK')
     return await googleNativeLogin()
   }

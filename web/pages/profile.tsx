@@ -10,6 +10,7 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {PageBase} from "web/components/page-base";
 import {SEO} from "web/components/SEO";
+import {useT} from 'web/lib/locale'
 
 export default function ProfilePage() {
   const user = useUser()
@@ -26,6 +27,7 @@ export default function ProfilePage() {
 
 function ProfilePageInner(props: { user: User; profile: Profile }) {
   const {user} = props
+  const t = useT()
 
   const [profile, setProfile] = useState<Profile>({
     ...props.profile,
@@ -42,8 +44,8 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
   return (
     <PageBase trackPageView={'profile'}>
       <SEO
-        title={'Profile'}
-        description={'Your Profile'}
+        title={t('profile.seo.title','Profile')}
+        description={t('profile.seo.description','Your Profile')}
         url={`/profile`}
       />
       <Col className="items-center">
@@ -62,7 +64,7 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
             profile={profile}
             user={user}
             setProfile={setProfileState}
-            buttonLabel={'Save'}
+            buttonLabel={t('profile.save','Save')}
             onSubmit={async () => {
               api('me/update', {
                 name: displayName === user.name ? undefined : displayName,

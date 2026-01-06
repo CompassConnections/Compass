@@ -27,6 +27,7 @@ import { partition } from 'lodash'
 import { shortenName } from 'web/components/widgets/user-link'
 import { AddQuestionButton } from './free-response-add-question'
 import { Profile } from 'common/profiles/profile'
+import {useT} from 'web/lib/locale'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean
@@ -34,6 +35,7 @@ export function FreeResponseDisplay(props: {
   fromProfilePage: Profile | undefined
 }) {
   const { isCurrentUser, user, fromProfilePage } = props
+  const t = useT()
 
   const { refreshAnswers, answers: allAnswers } = useUserAnswers(user?.id)
 
@@ -59,9 +61,11 @@ export function FreeResponseDisplay(props: {
   return (
     <Col className="gap-2">
       <Row className={'w-full items-center justify-between gap-2'}>
-        <Subtitle>{`${
-          isCurrentUser ? 'Your' : shortenName(user.name) + `'s`
-        } Free Response`}</Subtitle>
+        <Subtitle>
+          {isCurrentUser
+            ? t('answers.free.your_title', 'Your Free Response')
+            : t('answers.free.user_title', "{name}'s Free Response", { name: shortenName(user.name) })}
+        </Subtitle>
       </Row>
 
       <Col className="gap-2">
@@ -101,6 +105,7 @@ function AnswerBlock(props: {
   const { answer, questions, isCurrentUser, user, refreshAnswers } = props
   const question = questions.find((q) => q.id === answer.question_id)
   const [edit, setEdit] = useState(false)
+  const t = useT()
 
   const [otherAnswerModal, setOtherAnswerModal] = useState<boolean>(false)
 
@@ -119,18 +124,18 @@ function AnswerBlock(props: {
           <DropdownMenu
             items={[
               {
-                name: 'Edit',
+                name: t('answers.menu.edit', 'Edit'),
                 icon: <PencilIcon className="h-5 w-5" />,
                 onClick: () => setEdit(true),
               },
               {
-                name: 'Delete',
+                name: t('answers.menu.delete', 'Delete'),
                 icon: <XIcon className="h-5 w-5" />,
                 onClick: () =>
                   deleteAnswer(answer, user.id).then(() => refreshAnswers()),
               },
               {
-                name: `See ${question.answer_count} other answers`,
+                name: t('answers.free.see_others', 'See {count} other answers', { count: String(question.answer_count) }),
                 icon: <TbMessage className="h-5 w-5" />,
                 onClick: () => setOtherAnswerModal(true),
               },

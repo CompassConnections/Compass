@@ -1,10 +1,12 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import { track } from 'web/lib/service/analytics'
+import {track} from 'web/lib/service/analytics'
+import {useT} from "web/lib/locale";
 
 export type Item = {
   name: string
+  key: string
   children?: React.ReactNode
   trackingEventName?: string
   href?: string
@@ -13,7 +15,9 @@ export type Item = {
 }
 
 export function SidebarItem(props: { item: Item; currentPage?: string }) {
-  const { item, currentPage } = props
+  const {item, currentPage} = props
+
+  const t = useT()
 
   const currentBasePath = '/' + (currentPage?.split('/')[1] ?? '')
   const isCurrentPage =
@@ -45,7 +49,7 @@ export function SidebarItem(props: { item: Item; currentPage?: string }) {
           aria-hidden="true"
         />
       )}
-      <span className="truncate">{item.children ?? item.name}</span>
+      <span className="truncate">{item.children ?? t(item.key, item.name)}</span>
     </>
   )
 

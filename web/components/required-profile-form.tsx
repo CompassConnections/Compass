@@ -10,8 +10,9 @@ import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
-import {SignupBio} from "web/components/bio/editable-bio";
-import {Editor} from "@tiptap/core";
+import {SignupBio} from "web/components/bio/editable-bio"
+import {Editor} from "@tiptap/core"
+import {useT} from 'web/lib/locale'
 
 export const initialRequiredState = {
   age: undefined,
@@ -50,6 +51,7 @@ export const RequiredProfileUserForm = (props: {
   const {updateUsername, updateDisplayName, userInfo, updateUserState} = useEditableUserInfo(user)
 
   const [step, setStep] = useState<number>(0)
+  const t = useT()
 
   const {
     name,
@@ -84,12 +86,16 @@ export const RequiredProfileUserForm = (props: {
 
   return (
     <>
-      <Title>The Basics</Title>
+      <Title>{t('profile.basics.title', 'The Basics')}</Title>
       {step === 1 && !profileCreatedAlready &&
-          <div className="text-ink-500 mb-6 text-lg">No endless forms—write your own bio, your own way.</div>}
+          <div className="text-ink-500 mb-6 text-lg">
+            {t('profile.basics.subtitle', 'No endless forms—write your own bio, your own way.')}
+          </div>}
       <Col className={'gap-8 pb-[env(safe-area-inset-bottom)]'}>
         {step === 0 && <Col>
-            <label className={clsx(labelClassName)}>Display name</label>
+            <label className={clsx(labelClassName)}>
+              {t('profile.basics.display_name', 'Display name')}
+            </label>
             <Row className={'items-center gap-2'}>
                 <Input
                     disabled={loadingName}
@@ -108,7 +114,9 @@ export const RequiredProfileUserForm = (props: {
 
         {!profileCreatedAlready && <>
           {step === 0 && <Col>
-              <label className={clsx(labelClassName)}>Username</label>
+              <label className={clsx(labelClassName)}>
+                {t('profile.basics.username', 'Username')}
+              </label>
               <Row className={'items-center gap-2'}>
                   <Input
                       disabled={loadingUsername}
@@ -128,7 +136,9 @@ export const RequiredProfileUserForm = (props: {
           </Col>}
 
           {step === 1 && <Col>
-              <label className={clsx(labelClassName)}>Bio</label>
+              <label className={clsx(labelClassName)}>
+                {t('profile.basics.bio', 'Bio')}
+              </label>
               <SignupBio
                   onChange={(e: Editor) => {
                     console.debug('bio changed', e, profile.bio)
@@ -153,7 +163,7 @@ export const RequiredProfileUserForm = (props: {
                 }
               }}
             >
-              Next
+              {t('common.next', 'Next')}
             </Button>
           </Row>
         )}

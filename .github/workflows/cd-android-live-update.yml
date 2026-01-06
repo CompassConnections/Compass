@@ -1,0 +1,70 @@
+name: CD Android Live Update
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - "android/capawesome.json"
+      - ".github/workflows/cd-android-live-update.yml"
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # we need full history for git log
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Read current version
+        id: current
+        run: |
+          current=$(jq -r '.version' android/capawesome.json)
+          echo "version=$current" >> $GITHUB_OUTPUT
+
+      - name: Read previous version
+        id: previous
+        run: |
+          # Get previous commit’s package.json (if it existed)
+          if git show HEAD^:android/capawesome.json >/dev/null 2>&1; then
+            previous=$(git show HEAD^:android/capawesome.json | jq -r '.version')
+          else
+            previous="none"
+          fi
+          echo "version=$previous" >> $GITHUB_OUTPUT
+
+      - name: Check version change
+        id: check
+        run: |
+          echo "current=${{ steps.current.outputs.version }}"
+          echo "previous=${{ steps.previous.outputs.version }}"
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.previous.outputs.version }}" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
+        run: yarn install
+
+      - name: Deploy Live Update
+        if: steps.check.outputs.changed == 'true'
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
+          CAPAWESOME_TOKEN: ${{ secrets.CAPAWESOME_TOKEN }}
+          commitRef: ${{ github.head_ref || github.ref_name }}
+          commitSha: ${{ github.sha }}
+        run: yarn android-live-update

@@ -12,12 +12,13 @@ import {useGetter} from 'web/hooks/use-getter'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches";
-import {useFilters} from "web/components/filters/use-filters";
+import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches"
+import {useFilters} from "web/components/filters/use-filters"
+import {useT} from "web/lib/locale";
 
 export function ProfilesHome() {
-  const user = useUser();
-  const you = useProfile();
+  const user = useUser()
+  const you = useProfile()
 
   const {
     filters,
@@ -26,37 +27,38 @@ export function ProfilesHome() {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
-  } = useFilters(you ?? undefined);
+  } = useFilters(you ?? undefined)
 
-  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profiles');
-  const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(undefined, 'profile-count');
+  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profiles')
+  const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(undefined, 'profile-count')
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isReloading, setIsReloading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [isReloading, setIsReloading] = useState(false)
+  const t = useT()
 
   // const [debouncedAgeRange, setRawAgeRange] = useState({
   //   min: filters.pref_age_min ?? PREF_AGE_MIN,
   //   max: filters.pref_age_max ?? PREF_AGE_MAX,
-  // });
+  // })
   //
-  // const debouncedSetAge = useCallback(debounce((state) => setRawAgeRange(state), 50), []);
+  // const debouncedSetAge = useCallback(debounce((state) => setRawAgeRange(state), 50), [])
   //
   // useEffect(() => {
-  //   if (!user) return;
-  //   debouncedSetAge({min: filters.pref_age_min ?? PREF_AGE_MIN, max: filters.pref_age_max ?? PREF_AGE_MAX});
-  // }, [filters.pref_age_min, filters.pref_age_max]);
+  //   if (!user) return
+  //   debouncedSetAge({min: filters.pref_age_min ?? PREF_AGE_MIN, max: filters.pref_age_max ?? PREF_AGE_MAX})
+  // }, [filters.pref_age_min, filters.pref_age_max])
 
-  const id = useRef(0);
+  const id = useRef(0)
   useEffect(() => {
-    if (!user) return;
-    setIsReloading(true);
-    const current = ++id.current;
+    if (!user) return
+    setIsReloading(true)
+    const current = ++id.current
     const args = removeNullOrUndefinedProps({
       limit: 20,
       compatibleWithUserId: user?.id,
       ...filters
-    });
-    console.debug('Refreshing profiles, filters:', args);
+    })
+    console.debug('Refreshing profiles, filters:', args)
     api('get-profiles', args as any)
       .then(({profiles, count}) => {
         if (current === id.current) {
@@ -65,43 +67,43 @@ export function ProfilesHome() {
         }
       })
       .finally(() => {
-        if (current === id.current) setIsReloading(false);
-      });
-  }, [filters]);
+        if (current === id.current) setIsReloading(false)
+      })
+  }, [filters])
 
   const {data: starredUsers, refresh: refreshStars} = useGetter('star', user?.id, getStars)
   const starredUserIds = starredUsers?.map((u) => u.id)
 
   const compatibleProfiles = useCompatibleProfiles(user?.id)
-  // const displayProfiles = profiles && orderProfiles(profiles, starredUserIds);
+  // const displayProfiles = profiles && orderProfiles(profiles, starredUserIds)
   const displayProfiles = profiles
 
   const loadMore = useCallback(async () => {
-    if (!profiles || isLoadingMore) return false;
+    if (!profiles || isLoadingMore) return false
     try {
-      setIsLoadingMore(true);
-      const lastProfile = profiles[profiles.length - 1];
+      setIsLoadingMore(true)
+      const lastProfile = profiles[profiles.length - 1]
       const result = await api('get-profiles', removeNullOrUndefinedProps({
         limit: 20,
         compatibleWithUserId: user?.id,
         after: lastProfile?.id.toString(),
         ...filters
-      }) as any);
-      if (result.profiles.length === 0) return false;
-      setProfiles((prev) => (prev ? [...prev, ...result.profiles] : result.profiles));
-      return true;
+      }) as any)
+      if (result.profiles.length === 0) return false
+      setProfiles((prev) => (prev ? [...prev, ...result.profiles] : result.profiles))
+      return true
     } catch (err) {
-      console.error('Failed to load more profiles', err);
-      return false;
+      console.error('Failed to load more profiles', err)
+      return false
     } finally {
-      setIsLoadingMore(false);
+      setIsLoadingMore(false)
     }
-  }, [profiles, filters, isLoadingMore, setProfiles]);
+  }, [profiles, filters, isLoadingMore, setProfiles])
 
   return (
     <>
       {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
-      <Title className="!mb-2 text-3xl">People</Title>
+      <Title className="!mb-2 text-3xl">{t("profiles.title", "People")}</Title>
       <Search
         youProfile={you}
         starredUsers={starredUsers ?? []}
@@ -130,5 +132,5 @@ export function ProfilesHome() {
         />
       )}
     </>
-  );
+  )
 }

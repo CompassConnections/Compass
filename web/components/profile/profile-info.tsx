@@ -16,6 +16,7 @@ import {Content} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core";
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {UserActivity} from "common/user";
+import {useT} from 'web/lib/locale'
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -28,6 +29,7 @@ export function ProfileInfo(props: {
   console.debug('Rendering Profile for', user.username, user.name, props)
 
   const currentUser = useUser()
+  const t = useT()
   // const currentProfile = useProfile()
   // const isCurrentUser = currentUser?.id === user.id
 
@@ -103,7 +105,7 @@ export function ProfileInfo(props: {
             <div className="from-canvas-0 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent"/>
           </Col>
           <Row className="gap-2">
-            <SignUpButton text="Sign up to see profile"/>
+            <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')}/>
           </Row>
         </Col>
       )}

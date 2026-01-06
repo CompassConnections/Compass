@@ -11,6 +11,7 @@ import Link from "next/link";
 import {Row} from "web/components/layout/row";
 import {CompatibleBadge} from "web/components/widgets/compatible-badge";
 import {useUser} from "web/hooks/use-user";
+import {useT} from "web/lib/locale";
 
 export const ProfileGrid = (props: {
   profiles: Profile[]
@@ -32,6 +33,7 @@ export const ProfileGrid = (props: {
   } = props
 
   const user = useUser()
+  const t = useT()
 
   const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id);
 
@@ -65,8 +67,8 @@ export const ProfileGrid = (props: {
 
       {!isLoadingMore && !isReloading && other_profiles.length === 0 && (
         <div className="py-8 text-center">
-          <p>No profiles found.</p>
-          <p>Feel free to click on Get Notified and we'll notify you when new users match your search!</p>
+          <p>{t('profile_grid.no_profiles', 'No profiles found.')}</p>
+          <p>{t('profile_grid.notification_cta', 'Feel free to click on Get Notified and we\'ll notify you when new users match your search!')}</p>
         </div>
       )}
     </div>

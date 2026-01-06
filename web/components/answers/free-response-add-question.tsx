@@ -10,6 +10,7 @@ import {IndividualQuestionRow} from '../questions-form'
 import {TbMessage} from 'react-icons/tb'
 import {OtherProfileAnswers} from './other-profile-answers'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useT} from 'web/lib/locale'
 
 export function AddQuestionButton(props: {
   isFirstQuestion?: boolean
@@ -22,12 +23,13 @@ export function AddQuestionButton(props: {
     false,
     `add-question-${user.id}`
   )
+  const t = useT()
   return (
     <>
       <Button color={'gray-outline'} onClick={() => setOpenModal(true)}>
         <Row className="items-center gap-1">
           <PlusIcon className="h-4 w-4"/>
-          Add Free Response
+          {t('answers.free.add_free_response', 'Add Free Response')}
         </Row>
       </Button>
       <AddQuestionModal
@@ -63,6 +65,7 @@ function AddQuestionModal(props: {
       null,
       `selected-expanded-question-${user.id}}`
     )
+  const t = useT()
 
   return (
     <Modal open={open} setOpen={setOpen}>
@@ -91,7 +94,7 @@ function AddQuestionModal(props: {
         ) : selectedQuestion == null ? (
           <>
             <div className="text-primary-600  w-full font-semibold">
-              Choose a question to answer
+              {t('answers.free.choose_question', 'Choose a question to answer')}
             </div>
             <Col className={SCROLLABLE_MODAL_CLASS}>
               {addableQuestions.map((question) => {

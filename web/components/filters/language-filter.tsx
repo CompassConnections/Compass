@@ -3,9 +3,10 @@ import {convertLanguageTypes,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {LANGUAGE_CHOICES} from "web/components/filters/choices";
-import {FilterFields} from "common/filters";
-import {getSortedOptions} from "common/util/sorting";
+import {LANGUAGE_CHOICES} from 'web/components/filters/choices'
+import {FilterFields} from 'common/filters'
+import {getSortedOptions} from 'common/util/sorting'
+import {useT} from 'web/lib/locale'
 
 export function LanguageFilterText(props: {
   options: string[] | undefined
@@ -14,9 +15,13 @@ export function LanguageFilterText(props: {
   const {options, highlightedClass} = props
   const length = (options ?? []).length
 
+  const t = useT()
+
   if (!options || length < 1) {
     return (
-      <span className={clsx('text-semibold', highlightedClass)}>Any language</span>
+      <span className={clsx('text-semibold', highlightedClass)}>
+        {t('filter.any_language', 'Any language')}
+      </span>
     )
   }
 
@@ -24,14 +29,16 @@ export function LanguageFilterText(props: {
     return (
       <span>
         <span className={clsx('font-semibold', highlightedClass)}>
-          Multiple
+          {t('filter.multiple', 'Multiple')}
         </span>
       </span>
     )
   }
 
   const sortedOptions = getSortedOptions(options, LANGUAGE_CHOICES)
-  const convertedTypes = sortedOptions.map((r) => convertLanguageTypes(r as any))
+  const convertedTypes = sortedOptions.map((r) =>
+    t(`profile.language.${r}`, convertLanguageTypes(r as any))
+  )
 
   return (
     <div>
@@ -54,6 +61,7 @@ export function LanguageFilter(props: {
     <MultiCheckbox
       selected={filters.languages ?? []}
       choices={LANGUAGE_CHOICES as any}
+      translationPrefix={'profile.language'}
       onChange={(c) => {
         updateFilter({languages: c})
       }}

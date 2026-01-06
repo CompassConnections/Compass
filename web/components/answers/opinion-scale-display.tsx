@@ -10,6 +10,7 @@ import { Col } from 'web/components/layout/col'
 import { Row } from 'web/components/layout/row'
 import { Subtitle } from '../widgets/profile-subtitle'
 import { BiTachometer } from 'react-icons/bi'
+import {useT} from 'web/lib/locale'
 
 export function OpinionScale(props: {
   multiChoiceAnswers: rowFor<'compatibility_answers_free'>[]
@@ -17,6 +18,7 @@ export function OpinionScale(props: {
   isCurrentUser: boolean
 }) {
   const { multiChoiceAnswers, questions, isCurrentUser } = props
+  const t = useT()
 
   const answeredMultiChoice = multiChoiceAnswers.filter(
     (a) => a.multiple_choice != null && a.multiple_choice != -1
@@ -28,7 +30,7 @@ export function OpinionScale(props: {
         <Button color="indigo" onClick={() => Router.push('opinion-scale')}>
           <Row className="items-center gap-1">
             <BiTachometer className="h-5 w-5" />
-            Fill Opinion Scale
+            {t('answers.opinion.fill', 'Fill Opinion Scale')}
           </Row>
         </Button>
       )
@@ -39,7 +41,7 @@ export function OpinionScale(props: {
   return (
     <Col className="gap-2">
       <Row className={'w-full items-center justify-between gap-2'}>
-        <Subtitle>Opinion Scale</Subtitle>
+        <Subtitle>{t('answers.opinion.title', 'Opinion Scale')}</Subtitle>
 
         {isCurrentUser && (
           <Button
@@ -52,7 +54,7 @@ export function OpinionScale(props: {
             }}
           >
             <PencilIcon className="mr-2 h-4 w-4" />
-            Edit
+            {t('answers.opinion.edit', 'Edit')}
           </Button>
         )}
       </Row>

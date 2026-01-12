@@ -95,14 +95,19 @@ L’[implémentation complète](https://github.com/CompassConnections/Compass/bl
 
 ### Sur quelles plateformes Compass fonctionne-t-il ?
 
-Pour le moment, Compass est surtout **accessible via le web**. Bonne nouvelle : il est **entièrement responsive**, donc il fonctionne parfaitement sur un navigateur mobile — vous pouvez l’utiliser comme une application.
+Compass est principalement disponible à la fois sous forme de [site web](https://www.compassmeet.com/) et
+d’application [Android](https://play.google.com/store/apps/details?id=com.compassconnections.app).
 
-Pour recevoir les messages instantanément sur votre téléphone, installez Compass en tant que Progressive Web App (PWA) :
+Sur iPhone, vous pouvez installer Compass en tant qu’application web progressive (PWA). Ouvrez Compass dans Safari (et
+non Chrome), appuyez sur l’icône de partage, puis sélectionnez « Ajouter à l’écran d’accueil ». Une fois l’installation
+terminée, ouvrez l’application depuis votre écran d’accueil et acceptez l’autorisation des notifications. iOS ne prend
+en charge les notifications que pour les PWA Safari ajoutées à l’écran d’accueil ; si vous installez via Chrome, les
+notifications push ne fonctionneront pas.
 
-* Android : ouvrez Compass dans Chrome, tapez sur le menu (⋮) et sélectionnez « Ajouter à l’écran d’accueil ». Puis ouvrez l’app depuis l’écran d’accueil et autorisez les notifications.
-* iPhone : ouvrez Compass dans Safari (pas Chrome), tapez sur l’icône Partager, puis « Ajouter à l’écran d’accueil ». Après installation, ouvrez l’app et acceptez les notifications. iOS ne supporte les notifications que pour les PWA Safari ajoutées à l’écran d’accueil.
+Une application iOS native est prévue dans les mois à venir. Elle sera développée dès qu’un contributeur (ou l’équipe
+cœur) s’en chargera. Si vous souhaitez aider à accélérer ce développement, consultez le dépôt GitHub ou contactez la
+communauté sur Discord.
 
-Des applications natives iOS et Android sont prévues dans les mois à venir.
 
 ### Qu’est-ce que l’open source ?
 

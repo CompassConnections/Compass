@@ -95,13 +95,17 @@ The [full implementation](https://github.com/CompassConnections/Compass/blob/mai
 
 ### What platforms does Compass run on?
 
-Right now, Compass is mostly **web-only**. The good news is that it’s designed to be **fully responsive**, so it looks clean and works fluidly on a mobile browser — you can use it seamlessly on your phone just like an app.
+Compass is mostly available both as [website](https://www.compassmeet.com/)
+and [android](https://play.google.com/store/apps/details?id=com.compassconnections.app) application.
 
-When people send you a message, you can receive instant push notifications on your phone by installing Compass as a Progressive Web App (PWA). 
-- On Android, open Compass in Chrome, then tap the menu (⋮) and select “Add to Home screen.” Once installed, open the app from your home screen and allow notifications when prompted — you’ll then receive alerts even when the app is closed.
-- On iPhone, open Compass in Safari (not Chrome), tap the Share icon, then choose “Add to Home Screen.” After installing, open the app from your home screen and accept the notification permission. iOS only supports notifications for Safari PWAs added to the home screen, so if you install via Chrome, push notifications will not work.
+On iPhone, you can install Compass as a Progressive Web App (PWA). Open Compass in Safari (not Chrome), tap the Share
+icon, then choose “Add to Home Screen.” After installing, open the app from your home screen and accept the notification
+permission. iOS only supports notifications for Safari PWAs added to the home screen, so if you install via Chrome, push
+notifications will not work.
 
-Dedicated, native iOS and Android apps are planned for the coming months. They’ll be built as soon as one of our contributors (or the core team) tackles it. If you’re interested in helping speed that up, check out the GitHub or reach out in the Discord community.
+A dedicated, native iOS app is planned for the coming months. It’ll be built as soon as one of our contributors (or the
+core team) tackles it. If you’re interested in helping speed that up, check out the GitHub or reach out in the Discord
+community.
 
 ### What is open source?
 

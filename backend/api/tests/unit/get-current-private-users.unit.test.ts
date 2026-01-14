@@ -41,6 +41,7 @@ describe('getCurrentPrivateUser', () => {
             );
         });
     });
+    
     describe('when an error occurs', () => {
         it('should throw if unable to get users private data', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;

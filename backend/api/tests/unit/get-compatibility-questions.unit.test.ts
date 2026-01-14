@@ -16,6 +16,7 @@ describe('getCompatibilityQuestions', () => {
     afterEach(() => {
         jest.restoreAllMocks();
     });
+    
     describe('when given valid input', () => {
         it('should get compatibility questions', async () => {
             const mockProps = {} as any;

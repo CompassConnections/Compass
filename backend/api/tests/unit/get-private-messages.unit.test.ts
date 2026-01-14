@@ -186,6 +186,7 @@ describe('getChannelMessagesEndpoint', () => {
 
         });
     });
+    
     describe('when an error occurs', () => {
         it('should throw if unable to get messages', async () => {
             const mockProps = {

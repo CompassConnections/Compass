@@ -29,12 +29,11 @@ describe('leavePrivateUserMessageChannel', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockUser = { name: "mockName" };
+            const mockLeaveChatContent = "mockLeaveChatContentValue";
 
             (sharedUtils.getUser as jest.Mock).mockResolvedValue(mockUser);
             (mockPg.oneOrNone as jest.Mock).mockResolvedValue(true);
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-            (messageHelpers.leaveChatContent as jest.Mock).mockReturnValue(null);
-            (messageHelpers.insertPrivateMessage as jest.Mock).mockResolvedValue(null);
+            (messageHelpers.leaveChatContent as jest.Mock).mockReturnValue(mockLeaveChatContent);
 
             const results = await leavePrivateUserMessageChannel(mockProps, mockAuth, mockReq);
 
@@ -56,7 +55,7 @@ describe('leavePrivateUserMessageChannel', () => {
             expect(messageHelpers.leaveChatContent).toBeCalledWith(mockUser.name);
             expect(messageHelpers.insertPrivateMessage).toBeCalledTimes(1);
             expect(messageHelpers.insertPrivateMessage).toBeCalledWith(
-                null,
+                mockLeaveChatContent,
                 mockProps.channelId,
                 mockAuth.uid,
                 'system_status',
@@ -70,7 +69,7 @@ describe('leavePrivateUserMessageChannel', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
 
-            (sharedUtils.getUser as jest.Mock).mockResolvedValue(null);
+            (sharedUtils.getUser as jest.Mock).mockResolvedValue(false);
 
             expect(leavePrivateUserMessageChannel(mockProps, mockAuth, mockReq))
                 .rejects

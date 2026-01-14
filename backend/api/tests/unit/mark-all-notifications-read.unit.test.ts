@@ -25,8 +25,6 @@ describe('markAllNotifsRead', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
 
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-
             await markAllNotifsRead(mockProps, mockAuth, mockReq);
             
             expect(mockPg.none).toBeCalledTimes(1);

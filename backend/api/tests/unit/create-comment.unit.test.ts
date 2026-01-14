@@ -15,32 +15,26 @@ import * as supabaseNotifications from "shared/supabase/notifications";
 import * as emailHelpers from "email/functions/helpers";
 import * as websocketHelpers from "shared/websockets/helpers";
 import { convertComment } from "common/supabase/comment";
+import { richTextToString } from "common/util/parse";
 
 describe('createComment', () => {
     let mockPg: any;
     beforeEach(() => {
         jest.resetAllMocks();
-
         mockPg = {
             one: jest.fn()
         };
 
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
-        (supabaseNotifications.insertNotificationToSupabase as jest.Mock)
-            .mockResolvedValue(null);
-        (emailHelpers.sendNewEndorsementEmail as jest.Mock)
-            .mockResolvedValue(null);
-        (convertComment as jest.Mock)
-            .mockResolvedValue(null);
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
-        it('successfully create a comment with information provided', async () => {
+    describe('when given valid input', () => {
+        it('should successfully create a comment', async () => {
             const mockUserId = {
                 userId: '123',
                 blockedUserIds: ['111']
@@ -74,12 +68,17 @@ describe('createComment', () => {
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
             const mockComment = {id: 12};
-            const mockNotificationDestination = {} as any;
+            const mockNotificationDestination = {
+                sendToBrowser: true,
+                sendToMobile: false,
+                sendToEmail: true
+            };
             const mockProps = {
                 userId: mockUserId.userId,
                 content: mockContent.content,
                 replyToCommentId: mockReplyToCommentId
             };
+            const mockConvertCommentReturn = 'mockConverComment';
 
             (sharedUtils.getUser as jest.Mock)
                 .mockResolvedValueOnce(mockCreator)
@@ -90,24 +89,51 @@ describe('createComment', () => {
             (mockPg.one as jest.Mock).mockResolvedValue(mockComment);
             (notificationPrefs.getNotificationDestinationsForUser as jest.Mock)
                 .mockReturnValue(mockNotificationDestination);
+            (convertComment as jest.Mock).mockReturnValue(mockConvertCommentReturn);
 
             const results = await createComment(mockProps, mockAuth, mockReq);
             
             expect(results.status).toBe('success');
             expect(sharedUtils.getUser).toBeCalledTimes(2);
-            expect(sharedUtils.getUser).toBeCalledWith(mockUserId.userId);
-            expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid);
+            expect(sharedUtils.getUser).toHaveBeenNthCalledWith(1, mockAuth.uid);
+            expect(sharedUtils.getUser).toHaveBeenNthCalledWith(2, mockUserId.userId);
             expect(sharedUtils.getPrivateUser).toBeCalledTimes(2);
+            expect(sharedUtils.getPrivateUser).toHaveBeenNthCalledWith(1, mockProps.userId);
+            expect(sharedUtils.getPrivateUser).toHaveBeenNthCalledWith(2, mockOnUser.id);
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
                 expect.stringContaining('insert into profile_comments'),
-                expect.arrayContaining([mockCreator.id])
+                [
+                    mockCreator.id,
+                    mockCreator.name,
+                    mockCreator.username,
+                    mockCreator.avatarUrl,
+                    mockProps.userId,
+                    mockProps.content,
+                    mockProps.replyToCommentId
+                ]
             );
-            expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1)
-            
+            expect(notificationPrefs.getNotificationDestinationsForUser).toBeCalledTimes(1);
+            expect(notificationPrefs.getNotificationDestinationsForUser).toBeCalledWith(mockOnUser, 'new_endorsement');
+            expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledTimes(1);
+            expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledWith(
+                expect.any(Object),
+                expect.any(Object)
+            );
+            expect(emailHelpers.sendNewEndorsementEmail).toBeCalledTimes(1);
+            expect(emailHelpers.sendNewEndorsementEmail).toBeCalledWith(
+                mockOnUser,
+                mockCreator,
+                mockOnUser,
+                richTextToString(mockProps.content)
+            );
+            expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1);
+            expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(mockConvertCommentReturn);
         });
+    });
 
-        it('throw an error if there is no user matching the userId', async () => {
+    describe('when an error occurs', () => {
+        it('should throw if there is no user matching the userId', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -147,14 +173,16 @@ describe('createComment', () => {
 
             (sharedUtils.getUser as jest.Mock)
                 .mockResolvedValueOnce(mockCreator)
-                .mockResolvedValueOnce(null);
+                .mockResolvedValueOnce(false);
             (sharedUtils.getPrivateUser as jest.Mock)
                 .mockResolvedValue(mockUserId);
 
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('User not found');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('User not found');
         });
 
-        it('throw an error if there is no account associated with the authId', async () => {
+        it('throw if there is no account associated with the authId', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -188,10 +216,12 @@ describe('createComment', () => {
             (sharedUtils.getUser as jest.Mock)
                 .mockResolvedValueOnce(null);
 
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('Your account was not found');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('Your account was not found');
         });
 
-        it('throw an error if the account is banned from posting', async () => {
+        it('throw if the account is banned from posting', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -232,10 +262,12 @@ describe('createComment', () => {
             (sharedUtils.getUser as jest.Mock)
                 .mockResolvedValueOnce(mockCreator);
 
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('You are banned');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('You are banned');
         });
 
-        it('throw an error if the other user is not found', async () => {
+        it('throw if the other user is not found', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -278,10 +310,12 @@ describe('createComment', () => {
             (sharedUtils.getPrivateUser as jest.Mock)
                 .mockResolvedValue(null);
 
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('Other user not found');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('Other user not found');
         });
 
-        it('throw an error if the user has blocked you', async () => {
+        it('throw if the user has blocked you', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -324,10 +358,12 @@ describe('createComment', () => {
             (sharedUtils.getPrivateUser as jest.Mock)
                 .mockResolvedValue(mockUserId);
 
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('User has blocked you');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('User has blocked you');
         });
 
-        it('throw an error if the comment is too long', async () => {
+        it('throw if the comment is too long', async () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
             const mockReplyToCommentId = {} as any;
@@ -369,9 +405,10 @@ describe('createComment', () => {
                 .mockResolvedValueOnce(mockCreator);
             (sharedUtils.getPrivateUser as jest.Mock)
                 .mockResolvedValue(mockUserId);
-            console.log(JSON.stringify(mockContent.content).length);
             
-            expect(createComment( mockProps, mockAuth, mockReq )).rejects.toThrowError('Comment is too long');
+            expect(createComment( mockProps, mockAuth, mockReq ))
+                .rejects
+                .toThrowError('Comment is too long');
         });
     });
 });

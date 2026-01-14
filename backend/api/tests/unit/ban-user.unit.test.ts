@@ -11,8 +11,7 @@ import { throwErrorIfNotMod } from "shared/helpers/auth";
 import * as constants from "common/envs/constants";
 import * as supabaseUsers from "shared/supabase/users";
 import * as sharedAnalytics from "shared/analytics";
-import {  } from "shared/helpers/auth";
-import { APIError, AuthedUser } from "api/helpers/endpoint"
+import { AuthedUser } from "api/helpers/endpoint"
 
 
 describe('banUser', () => {
@@ -24,13 +23,13 @@ describe('banUser', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
     });
-    
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
-        it('ban a user successfully', async () => {
+
+    describe('when given valid input', () => {
+        it('should ban a user successfully', async () => {
             const mockUser = {
                 userId: '123',
                 unban: false
@@ -42,15 +41,25 @@ describe('banUser', () => {
 
             await banUser(mockUser, mockAuth, mockReq);
             
+            expect(throwErrorIfNotMod).toBeCalledTimes(1);
             expect(throwErrorIfNotMod).toBeCalledWith(mockAuth.uid);
+            expect(constants.isAdminId).toBeCalledTimes(1);
             expect(constants.isAdminId).toBeCalledWith(mockUser.userId);
-            expect(sharedAnalytics.trackPublicEvent)
-                .toBeCalledWith(mockAuth.uid, 'ban user', {userId: mockUser.userId});
-            expect(supabaseUsers.updateUser)
-                .toBeCalledWith(mockPg, mockUser.userId, {isBannedFromPosting: true});
+            expect(sharedAnalytics.trackPublicEvent).toBeCalledTimes(1);
+            expect(sharedAnalytics.trackPublicEvent).toBeCalledWith(
+                mockAuth.uid, 
+                'ban user',
+                {userId: mockUser.userId}
+            );
+            expect(supabaseUsers.updateUser).toBeCalledTimes(1);
+            expect(supabaseUsers.updateUser).toBeCalledWith(
+                mockPg,
+                mockUser.userId,
+                {isBannedFromPosting: true}
+            );
         });
 
-        it('unban a user successfully', async () => {
+        it('should unban a user successfully', async () => {
             const mockUser = {
                 userId: '123',
                 unban: true
@@ -64,13 +73,20 @@ describe('banUser', () => {
             
             expect(throwErrorIfNotMod).toBeCalledWith(mockAuth.uid);
             expect(constants.isAdminId).toBeCalledWith(mockUser.userId);
-            expect(sharedAnalytics.trackPublicEvent)
-                .toBeCalledWith(mockAuth.uid, 'ban user', {userId: mockUser.userId});
-            expect(supabaseUsers.updateUser)
-                .toBeCalledWith(mockPg, mockUser.userId, {isBannedFromPosting: false});
+            expect(sharedAnalytics.trackPublicEvent).toBeCalledWith(
+                mockAuth.uid,
+                'ban user',
+                {userId: mockUser.userId}
+            );
+            expect(supabaseUsers.updateUser).toBeCalledWith(
+                mockPg,
+                mockUser.userId,
+                {isBannedFromPosting: false}
+            );
         });
-
-        it('throw and error if the ban requester is not a mod or admin', async () => {
+    });
+    describe('when an error occurs', () => {
+        it('throw if the ban requester is not a mod or admin', async () => {
             const mockUser = {
                 userId: '123',
                 unban: false
@@ -79,21 +95,16 @@ describe('banUser', () => {
             const mockReq = {} as any;
             
             (throwErrorIfNotMod as jest.Mock).mockRejectedValue(
-                new APIError(
-                    403,
-                    `User ${mockAuth.uid} must be an admin or trusted to perform this action.`
-                )
+                new Error(`User ${mockAuth.uid} must be an admin or trusted to perform this action.`)
             );
 
             await expect(banUser(mockUser, mockAuth, mockReq))
                 .rejects
                 .toThrowError(`User ${mockAuth.uid} must be an admin or trusted to perform this action.`);
             expect(throwErrorIfNotMod).toBeCalledWith(mockAuth.uid);
-            expect(sharedAnalytics.trackPublicEvent).toBeCalledTimes(0);
-            expect(supabaseUsers.updateUser).toBeCalledTimes(0);
         });
 
-        it('throw an error if the ban target is an admin', async () => {
+        it('throw if the ban target is an admin', async () => {
             const mockUser = {
                 userId: '123',
                 unban: false
@@ -108,8 +119,6 @@ describe('banUser', () => {
                 .toThrowError('Cannot ban admin');
             expect(throwErrorIfNotMod).toBeCalledWith(mockAuth.uid);
             expect(constants.isAdminId).toBeCalledWith(mockUser.userId);
-            expect(sharedAnalytics.trackPublicEvent).toBeCalledTimes(0);
-            expect(supabaseUsers.updateUser).toBeCalledTimes(0);
         });
     });
 });

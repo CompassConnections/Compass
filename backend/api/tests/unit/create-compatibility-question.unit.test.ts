@@ -18,12 +18,12 @@ describe('createCompatibilityQuestion', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
-    describe('should', () => {
-        it('successfully create compatibility questions', async () => {
+
+    describe('when given valid input', () => {
+        it('should successfully create compatibility questions', async () => {
             const mockQuestion = {} as any;
             const mockOptions = {} as any;
             const mockProps = {options:mockOptions, question:mockQuestion};
@@ -41,31 +41,45 @@ describe('createCompatibilityQuestion', () => {
                 multiple_choice_options: {"first_choice":"first_answer"},
                 question: "mockQuestion"
             };
+
             (shareUtils.getUser as jest.Mock).mockResolvedValue(mockCreator);
-            (supabaseUtils.insert as jest.Mock).mockResolvedValue(mockData);
             (tryCatch as jest.Mock).mockResolvedValue({data:mockData, error: null});
 
             const results = await createCompatibilityQuestion(mockProps, mockAuth, mockReq);
             
             expect(results.question).toEqual(mockData);
-            
+            expect(shareUtils.getUser).toBeCalledTimes(1);
+            expect(shareUtils.getUser).toBeCalledWith(mockAuth.uid);
+            expect(supabaseUtils.insert).toBeCalledTimes(1);
+            expect(supabaseUtils.insert).toBeCalledWith(
+                expect.any(Object),
+                'compatibility_prompts',
+                {
+                    creator_id: mockCreator.id,
+                    question: mockQuestion,
+                    answer_type: 'compatibility_multiple_choice',
+                    multiple_choice_options: mockOptions
+                }
+            );
         });
-
-        it('throws an error if the account does not exist', async () => {
+    });
+    describe('when an error occurs', () => {
+        it('throws if the account does not exist', async () => {
             const mockQuestion = {} as any;
             const mockOptions = {} as any;
             const mockProps = {options:mockOptions, question:mockQuestion};
             const mockAuth = {uid: '321'} as AuthedUser;
             const mockReq = {} as any;
-            (shareUtils.getUser as jest.Mock).mockResolvedValue(null);
+
+            (shareUtils.getUser as jest.Mock).mockResolvedValue(false);
             
             expect(createCompatibilityQuestion(mockProps, mockAuth, mockReq))
                 .rejects
-                .toThrowError('Your account was not found')
+                .toThrowError('Your account was not found');
 
         });
 
-        it('throws an error if unable to create the question', async () => {
+        it('throws if unable to create the question', async () => {
             const mockQuestion = {} as any;
             const mockOptions = {} as any;
             const mockProps = {options:mockOptions, question:mockQuestion};
@@ -74,23 +88,13 @@ describe('createCompatibilityQuestion', () => {
             const mockCreator = {
                 id: '123',
             };
-            const mockData = {
-                answer_type: "mockAnswerType",
-                category: "mockCategory",
-                created_time: "mockCreatedTime",
-                id: 1,
-                importance_score: 1,
-                multiple_choice_options: {"first_choice":"first_answer"},
-                question: "mockQuestion"
-            };
+
             (shareUtils.getUser as jest.Mock).mockResolvedValue(mockCreator);
-            (supabaseUtils.insert as jest.Mock).mockResolvedValue(mockData);
             (tryCatch as jest.Mock).mockResolvedValue({data:null, error: Error});
             
             expect(createCompatibilityQuestion(mockProps, mockAuth, mockReq))
                 .rejects
-                .toThrowError('Error creating question')
-            
+                .toThrowError('Error creating question');
         });
     });
 });

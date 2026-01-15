@@ -248,7 +248,6 @@ function UserPageInner(props: ActiveUserPageProps) {
   const router = useRouter()
   const {query} = router
   const fromSignup = query.fromSignup === 'true'
-  const reloaded = query.reloaded === 'true'
 
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user?.id
@@ -263,15 +262,6 @@ function UserPageInner(props: ActiveUserPageProps) {
   // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
   // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
-
-  if (fromSignup && !reloaded) {
-    console.log('Reloading page after signup')
-    router.replace({
-      pathname: router.pathname,
-      query: {...query, reloaded: 'true'},
-    })
-    window.location.reload()
-  }
 
   if (!isCurrentUser && profile?.disabled) {
     return <PageBase

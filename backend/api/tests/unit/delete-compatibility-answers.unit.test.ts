@@ -54,7 +54,7 @@ describe('deleteCompatibilityAnswers', () => {
         });
     });
     describe('when an error occurs', () => {
-        it('should throw an error if the user is not the answers author', async () => {
+        it('should throw if the user is not the answers author', async () => {
             const mockProps = {
                 id: 123
             };

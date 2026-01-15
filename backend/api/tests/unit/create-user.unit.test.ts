@@ -507,7 +507,7 @@ describe('createUser', () => {
     });
 
     describe('when an error occurs', () => {
-        it('should throw an error if the user already exists', async () => {
+        it('should throw if the user already exists', async () => {
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"
@@ -556,7 +556,7 @@ describe('createUser', () => {
                 .toThrowError('User already exists');
         });
 
-        it('should throw an error if the username is already taken', async () => {
+        it('should throw if the username is already taken', async () => {
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"
@@ -606,7 +606,7 @@ describe('createUser', () => {
                 .toThrowError('Username already taken');
         });
 
-        it('should throw an error if failed to track create profile', async () => {
+        it('should throw if failed to track create profile', async () => {
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"
@@ -679,7 +679,7 @@ describe('createUser', () => {
             expect(errorSpy).toHaveBeenCalledWith('Failed to track create profile', expect.any(Error));
         });
 
-        it('should throw an error if failed to send a welcome email', async () => {
+        it('should throw if failed to send a welcome email', async () => {
             Object.defineProperty(hostingConstants, 'IS_LOCAL', {
                 value: false,
                 writable: true
@@ -757,7 +757,7 @@ describe('createUser', () => {
             expect(errorSpy).toBeCalledWith('Failed to sendWelcomeEmail', expect.any(Error));
         });
 
-        it('should throw an error if failed to set last time online', async () => {
+        it('should throw if failed to set last time online', async () => {
             const mockProps = {
                 deviceToken: "mockDeviceToken",
                 adminToken: "mockAdminToken"

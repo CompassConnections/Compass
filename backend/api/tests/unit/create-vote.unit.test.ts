@@ -22,7 +22,7 @@ describe('createVote', () => {
     });
 
     describe('when given valid input', () => {
-        it('successfully creates a vote', async () => {
+        it('should successfully creates a vote', async () => {
             const mockProps = {
                 title: 'mockTitle',
                 description: {'mockDescription': 'mockDescriptionValue'},
@@ -61,7 +61,7 @@ describe('createVote', () => {
         });
     });
     describe('when an error occurs', () => {
-        it('should throw an error if the account was not found', async () => {
+        it('should throw if the account was not found', async () => {
             const mockProps = {
                 title: 'mockTitle',
                 description: {'mockDescription': 'mockDescriptionValue'},
@@ -77,7 +77,7 @@ describe('createVote', () => {
                 .toThrow('Your account was not found');
         });
 
-        it('should throw an error if unable to create a question', async () => {
+        it('should throw if unable to create a question', async () => {
             const mockProps = {
                 title: 'mockTitle',
                 description: {'mockDescription': 'mockDescriptionValue'},

@@ -22,10 +22,10 @@ describe('deleteMe', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg)
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
+
     describe('when given valid input', () => {
         it('should delete the user account from supabase and firebase', async () => {
             const mockUser = {
@@ -72,13 +72,11 @@ describe('deleteMe', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockRef = {} as any;
 
-
             (sharedUtils.getUser as jest.Mock).mockResolvedValue(null);
 
             expect(deleteMe(mockRef, mockAuth, mockRef))
                 .rejects
                 .toThrow('Your account was not found');
-            
         });
 
         it('should throw an error if there is no userId', async () => {
@@ -88,14 +86,11 @@ describe('deleteMe', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockRef = {} as any;
 
-
             (sharedUtils.getUser as jest.Mock).mockResolvedValue(mockUser);
-
 
             expect(deleteMe(mockRef, mockAuth, mockRef))
                 .rejects
                 .toThrow('Invalid user ID');
-            
         });
 
         it('should throw if unable to remove user from firebase auth', async () => {

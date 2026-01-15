@@ -20,7 +20,7 @@ describe('deleteBookmarkedSearch', () => {
     });
 
     describe('when given valid input', () => {
-        it('successfully deletes a bookmarked search', async () => {
+        it('should successfully deletes a bookmarked search', async () => {
             const mockProps = {
                 id: 123
             };
@@ -28,6 +28,7 @@ describe('deleteBookmarkedSearch', () => {
             const mockReq = {} as any;
 
             const result = await deleteBookmarkedSearch(mockProps, mockAuth, mockReq);
+            
             expect(result).toStrictEqual({});
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(

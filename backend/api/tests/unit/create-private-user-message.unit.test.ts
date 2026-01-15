@@ -23,7 +23,7 @@ describe('createPrivateUserMessage', () => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
+    describe('when given valid input', () => {
         it('successfully create a private user message', async () => {
             const mockBody = {
                 content: {"": "x".repeat((MAX_COMMENT_JSON_LENGTH-8))},
@@ -36,10 +36,12 @@ describe('createPrivateUserMessage', () => {
             };
 
             (sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator);
-            (helpersPrivateMessagesModules.createPrivateUserMessageMain as jest.Mock)
-                .mockResolvedValue(null);
 
             await createPrivateUserMessage(mockBody, mockAuth, mockReq);
+
+            expect(sharedUtils.getUser).toBeCalledTimes(1);
+            expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid);
+            expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).toBeCalledTimes(1);
             expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).toBeCalledWith(
                 mockCreator,
                 mockBody.channelId,
@@ -48,8 +50,9 @@ describe('createPrivateUserMessage', () => {
                 'private'
             );
         });
-
-        it('throw an error if the content is too long', async () => {
+    });
+    describe('when an error occurs', () => {
+        it('should throw if the content is too long', async () => {
             const mockBody = {
                 content: {"": "x".repeat((MAX_COMMENT_JSON_LENGTH))},
                 channelId: 123
@@ -62,7 +65,7 @@ describe('createPrivateUserMessage', () => {
                 .toThrowError(`Message JSON should be less than ${MAX_COMMENT_JSON_LENGTH}`);
         });
 
-        it('throw an error if the user does not exist', async () => {
+        it('should throw if the user does not exist', async () => {
             const mockBody = {
                 content: {"mockJson": "mockJsonContent"},
                 channelId: 123
@@ -70,14 +73,14 @@ describe('createPrivateUserMessage', () => {
             const mockAuth = {uid: '321'} as AuthedUser;
             const mockReq = {} as any;
 
-            (sharedUtils.getUser as jest.Mock).mockResolvedValue(null);
+            (sharedUtils.getUser as jest.Mock).mockResolvedValue(false);
             
             expect(createPrivateUserMessage(mockBody, mockAuth, mockReq))
                 .rejects
                 .toThrowError(`Your account was not found`);
         });
 
-        it('throw an error if the user does not exist', async () => {
+        it('should throw if the user does not exist', async () => {
             const mockBody = {
                 content: {"mockJson": "mockJsonContent"},
                 channelId: 123

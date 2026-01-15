@@ -72,6 +72,7 @@ describe('editMessage', () => {
             );
         });
     });
+    
     describe('when an error occurs', () => {
         it('should throw if there is an issue with the message', async () => {
             const mockProps = {

@@ -8,25 +8,23 @@ import { tryCatch } from "common/util/try-catch";
 import * as supabaseNotifications from "shared/supabase/notifications";
 import { Notification } from "common/notifications";
 
-type MockNotificationUser = Pick<Notification, 'userId'>;
-
 describe('createNotifications', () => {
+    let mockPg = {} as any;
     beforeEach(() => {
         jest.resetAllMocks();
-        const mockPg = {
+        mockPg = {
             many: jest.fn().mockReturnValue(null)
-        } as any;
+        };
 
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
-        it('sucessfully create a notification', async () => {
+    describe('when given valid input', () => {
+        it('should sucessfully create a notification', async () => {
             const mockUsers = [
                 {
                     created_time: "mockCreatedTime",
@@ -39,60 +37,89 @@ describe('createNotifications', () => {
             ];
             const mockNotification = {
                 userId: "mockUserId"
-            } as MockNotificationUser;
+            } as Notification;
 
             (tryCatch as jest.Mock).mockResolvedValue({data: mockUsers, error:null});
-            (supabaseNotifications.insertNotificationToSupabase as jest.Mock)
-                .mockResolvedValue(null);
+            jest.spyOn(createNotificationModules, 'createNotification');
             
-            const results = await createNotificationModules.createNotifications(mockNotification as Notification);
+            const results = await createNotificationModules.createNotifications(mockNotification);
+            
             expect(results?.success).toBeTruthy;
+            expect(tryCatch).toBeCalledTimes(1);
+            expect(mockPg.many).toBeCalledTimes(1);
+            expect(mockPg.many).toBeCalledWith('select * from users');
+            expect(createNotificationModules.createNotification).toBeCalledTimes(1);
+            expect(createNotificationModules.createNotification).toBeCalledWith(
+                mockUsers[0],
+                mockNotification,
+                expect.any(Object)
+            );
+            expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledTimes(1);
+            expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledWith(
+                mockNotification,
+                expect.any(Object)
+            );
         });
+    });
 
-        it('throws an error if its unable to fetch users', async () => {
-            const mockUsers = [
-                {
-                    created_time: "mockCreatedTime",
-                    data: {"mockData": "mockDataJson"},
-                    id: "mockId",
-                    name: "mockName",
-                    name_user_vector: "mockNUV",
-                    username: "mockUsername"
-                },
-            ];
+    describe('when an error occurs', () => {
+        it('should throw if its unable to fetch users', async () => {
             const mockNotification = {
                 userId: "mockUserId"
-            } as MockNotificationUser;
+            } as Notification;
 
             const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-            (tryCatch as jest.Mock).mockResolvedValue({data: mockUsers, error:Error});
+            (tryCatch as jest.Mock).mockResolvedValue({data: null, error:Error});
             
-            await createNotificationModules.createNotifications(mockNotification as Notification)
-            expect(errorSpy).toHaveBeenCalledWith('Error fetching users', expect.objectContaining({name: 'Error'}))
+            await createNotificationModules.createNotifications(mockNotification);
+
+            expect(errorSpy).toBeCalledWith(
+                'Error fetching users',
+                expect.objectContaining({name: 'Error'})
+            );
         });
 
-        it('throws an error if there are no users', async () => {
-            const mockUsers = [
-                {
-                    created_time: "mockCreatedTime",
-                    data: {"mockData": "mockDataJson"},
-                    id: "mockId",
-                    name: "mockName",
-                    name_user_vector: "mockNUV",
-                    username: "mockUsername"
-                },
-            ];
+        it('should throw if there are no users', async () => {
             const mockNotification = {
                 userId: "mockUserId"
-            } as MockNotificationUser;
+            } as Notification;
 
             const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
             (tryCatch as jest.Mock).mockResolvedValue({data: null, error:null});
             
-            await createNotificationModules.createNotifications(mockNotification as Notification)
-            expect(errorSpy).toHaveBeenCalledWith('No users found')
+            await createNotificationModules.createNotifications(mockNotification);
+            expect(errorSpy).toBeCalledWith('No users found');
+        });
+
+        it('should throw if unable to create notification', async () => {
+            const mockUsers = [
+                {
+                    created_time: "mockCreatedTime",
+                    data: {"mockData": "mockDataJson"},
+                    id: "mockId",
+                    name: "mockName",
+                    name_user_vector: "mockNUV",
+                    username: "mockUsername"
+                },
+            ];
+            const mockNotification = {
+                userId: "mockUserId"
+            } as Notification;
+
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+            (tryCatch as jest.Mock).mockResolvedValue({data: mockUsers, error:null});
+            jest.spyOn(createNotificationModules, 'createNotification').mockRejectedValue(new Error('Creation failure'));
+            
+            await createNotificationModules.createNotifications(mockNotification);
+
+            expect(errorSpy).toBeCalledWith(
+                'Failed to create notification',
+                expect.objectContaining({name: 'Error'}),
+                mockUsers[0]
+            );
         });
     });
 });

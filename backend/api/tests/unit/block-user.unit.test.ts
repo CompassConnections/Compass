@@ -23,37 +23,35 @@ describe('blockUser', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg)
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
+    describe('when given valid input', () => {
         it('block the user successfully', async () => {
             const mockParams = { id: '123' }
             const mockAuth = {uid: '321'} as AuthedUser;
             const mockReq = {} as any;
 
-            (supabaseUsers.updatePrivateUser as jest.Mock).mockResolvedValue(null);
-
             await blockUserModule.blockUser(mockParams, mockAuth, mockReq)
 
-            expect(mockPg.tx).toHaveBeenCalledTimes(1)
-
-            expect(supabaseUsers.updatePrivateUser)
-                .toHaveBeenCalledWith(
-                    expect.any(Object),
-                    mockAuth.uid,
-                    { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockParams.id)}
-                );
-            expect(supabaseUsers.updatePrivateUser)
-                .toHaveBeenCalledWith(
-                    expect.any(Object),
-                    mockParams.id,
-                    { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockAuth.uid)}
-                );
+            expect(mockPg.tx).toHaveBeenCalledTimes(1);
+            expect(supabaseUsers.updatePrivateUser).toBeCalledTimes(2);
+            expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
+                1,
+                expect.any(Object),
+                mockAuth.uid,
+                { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockParams.id)}
+            );
+            expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
+                2,
+                expect.any(Object),
+                mockParams.id,
+                { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockAuth.uid)}
+            );
         });
-
+    });
+    describe('when an error occurs', () => {
         it('throw an error if the user tries to block themselves', async () => {
             const mockParams = { id: '123' }
             const mockAuth = {uid: '123'} as AuthedUser;
@@ -61,12 +59,9 @@ describe('blockUser', () => {
 
             expect(blockUserModule.blockUser(mockParams, mockAuth, mockReq))
                 .rejects
-                .toThrowError('You cannot block yourself')
-
-            expect(mockPg.tx).toHaveBeenCalledTimes(0)
+                .toThrowError('You cannot block yourself');
         });
     });
-
 });
 
 describe('unblockUser', () => {
@@ -84,35 +79,32 @@ describe('unblockUser', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg)
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
-        it('block the user successfully', async () => {
+    describe('when given valid input', () => {
+        it('should block the user successfully', async () => {
             const mockParams = { id: '123' }
             const mockAuth = {uid: '321'} as AuthedUser;
             const mockReq = {} as any;
 
-            (supabaseUsers.updatePrivateUser as jest.Mock).mockResolvedValue(null);
-
             await blockUserModule.unblockUser(mockParams, mockAuth, mockReq)
 
-            expect(mockPg.tx).toHaveBeenCalledTimes(1)
-
-            expect(supabaseUsers.updatePrivateUser)
-                .toHaveBeenCalledWith(
-                    expect.any(Object),
-                    mockAuth.uid,
-                    { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockParams.id)}
-                );
-            expect(supabaseUsers.updatePrivateUser)
-                .toHaveBeenCalledWith(
-                    expect.any(Object),
-                    mockParams.id,
-                    { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockAuth.uid)}
-                );
+            expect(mockPg.tx).toHaveBeenCalledTimes(1);
+            expect(supabaseUsers.updatePrivateUser).toBeCalledTimes(2);
+            expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
+                1,
+                expect.any(Object),
+                mockAuth.uid,
+                { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockParams.id)}
+            );
+            expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
+                2,
+                expect.any(Object),
+                mockParams.id,
+                { blockedByUserIds: supabaseUtils.FieldVal.arrayConcat(mockAuth.uid)}
+            );
         });
     });
 

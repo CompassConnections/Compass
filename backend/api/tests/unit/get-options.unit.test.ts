@@ -43,6 +43,7 @@ describe('getOptions', () => {
             expect(tryCatch).toBeCalledTimes(1);
         });
     });
+
     describe('when an error occurs', () => {
         it('should throw if the table is invalid', async () => {
             const mockTable = "causes";
@@ -60,9 +61,6 @@ describe('getOptions', () => {
             const mockTable = "causes";
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
-            const mockData = [
-                { name: "mockName" },
-            ];
 
             jest.spyOn(Array.prototype, 'includes').mockReturnValue(true);
             (mockPg.manyOrNone as jest.Mock).mockResolvedValue(null);

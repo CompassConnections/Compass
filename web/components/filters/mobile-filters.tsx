@@ -97,6 +97,15 @@ function MobileFilters(props: {
         </button>
       </Row>
 
+      {/* Short Bios */}
+      <Col className="p-4 pb-2">
+        <ShortBioToggle
+          updateFilter={updateFilter}
+          filters={filters}
+          hidden={false}
+        />
+      </Col>
+
       {/* RELATIONSHIP STYLE */}
       <MobileFilterSection
         title={t('profile.seeking', "Seeking")}
@@ -528,15 +537,6 @@ function MobileFilters(props: {
       >
         <EducationFilter filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
-
-      {/* Short Bios */}
-      <Col className="p-4 pb-2">
-        <ShortBioToggle
-          updateFilter={updateFilter}
-          filters={filters}
-          hidden={false}
-        />
-      </Col>
     </Col>
   )
 }

@@ -71,11 +71,26 @@ export function DesktopFilters(props: {
 
   return (
     <>
+
+      <button
+        className="text-ink-900 hover:text-primary-500 underline"
+        onClick={clearFilters}
+      >
+        {t('filter.reset', 'Reset filters')}
+      </button>
+
       <MyMatchesToggle
         setYourFilters={setYourFilters}
         youProfile={youProfile}
         on={isYourFilters}
         hidden={!youProfile}
+      />
+
+      {/* Short Bios */}
+      <ShortBioToggle
+        updateFilter={updateFilter}
+        filters={filters}
+        hidden={false}
       />
 
       {/* CONNECTION */}
@@ -661,20 +676,6 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
-
-      {/* Short Bios */}
-      <ShortBioToggle
-        updateFilter={updateFilter}
-        filters={filters}
-        hidden={false}
-      />
-
-      <button
-        className="text-ink-900 hover:text-primary-500 underline"
-        onClick={clearFilters}
-      >
-        {t('filter.reset', 'Reset filters')}
-      </button>
     </>
   )
 }

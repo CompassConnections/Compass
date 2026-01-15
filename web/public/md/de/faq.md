@@ -8,6 +8,10 @@ transparent und werbefrei zu halten.
 
 Bleib über die neuesten Releases, Funktionen und Verbesserungen [hier](/news) auf dem Laufenden.
 
+### Wird Compass in der Presse erwähnt?
+
+Ja. Berichterstattung, Media Kit, Markenrichtlinien und Pressekontakt findest du auf der [Presse-Seite](/press).
+
 ### Was ist Compass?
 
 Compass ist eine **kostenlose Open-Source-Plattform, die Menschen dabei hilft, tiefe, bedeutungsvolle und dauerhafte

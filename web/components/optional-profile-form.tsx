@@ -15,7 +15,7 @@ import {User} from 'common/user'
 import {track} from 'web/lib/service/analytics'
 import {Carousel} from 'web/components/widgets/carousel'
 import {tryCatch} from 'common/util/try-catch'
-import {ProfileWithoutUser} from 'common/profiles/profile'
+import {getProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {removeUndefinedProps} from 'common/util/object'
 import {isEqual, range} from 'lodash'
 import {PlatformSelect} from 'web/components/widgets/platform-select'
@@ -44,6 +44,7 @@ import toast from "react-hot-toast";
 import {db} from "web/lib/supabase/db";
 import {fetchChoices} from "web/hooks/use-choices";
 import {AddOptionEntry} from "web/components/add-option-entry";
+import {sleep} from "common/util/time"
 
 
 export const OptionalProfileUserForm = (props: {
@@ -130,11 +131,29 @@ export const OptionalProfileUserForm = (props: {
       }
     }
     onSubmit && (await onSubmit())
-    setIsSubmitting(false)
     track('submit optional profile')
-    if (user)
-      router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
-    else router.push('/')
+    if (user) {
+      let profile
+      let i = 1
+      const start = Date.now()
+      while (Date.now() - start < 10000) {
+        profile = await getProfileRow(user.id, db)
+        if (profile) {
+          console.log(`Found profile after ${Date.now() - start} ms, ${i} attempts`)
+          break
+        }
+        await sleep(500)
+        i++
+      }
+      if (profile) {
+        await sleep(1000)
+        router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
+      } else {
+        console.log("Profile not found after fetching, going back home...")
+        router.push('/')
+      }
+    } else router.push('/')
+    setIsSubmitting(false)
   }
 
   const updateUserLink = (platform: string, value: string | null) => {

@@ -26,7 +26,7 @@ export default function NotificationsPage() {
   const t = useT()
   useRedirectIfSignedOut()
   return (
-    <PageBase trackPageView={'settings page'} className={'mx-4'}>
+    <PageBase trackPageView={'settings page'} className={'mx-4 mb-4'}>
       <NoSEO/>
       <Title>{t('settings.title', 'Settings')}</Title>
       <UncontrolledTabs

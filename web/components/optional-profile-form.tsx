@@ -146,7 +146,7 @@ export const OptionalProfileUserForm = (props: {
         i++
       }
       if (profile) {
-        await sleep(1000)
+        await sleep(5000)
         router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
       } else {
         console.log("Profile not found after fetching, going back home...")

@@ -12,21 +12,13 @@ type PressItem = {
 };
 
 const pressItems: PressItem[] = [
-  // Add press items here in the format:
-  // {
-  //   title: 'Article Title',
-  //   source: 'Publication Name',
-  //   date: '2025-01-15',
-  //   url: 'https://example.com/article',
-  //   language: 'en',
-  // },
-  // {
-  //   title: 'Bonjour',
-  //   source: 'Matélé',
-  //   date: '2025-01-15',
-  //   url: 'https://example.com/article',
-  //   language: 'fr',
-  // },
+  {
+    title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
+    source: 'Matélé',
+    date: '2025-01-15',
+    url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
+    language: 'fr',
+  },
 ];
 
 const PressItem = ({item}: { item: PressItem, locales: Intl.LocalesArgument }) => (

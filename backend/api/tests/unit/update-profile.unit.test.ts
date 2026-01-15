@@ -1,86 +1,100 @@
 jest.mock("shared/supabase/init");
 jest.mock("shared/supabase/utils");
+jest.mock("common/util/try-catch");
+jest.mock("shared/profiles/parse-photos");
+jest.mock("shared/supabase/users");
 
-import { AuthedUser } from "api/helpers/endpoint";
 import { updateProfile } from "api/update-profile";
+import { AuthedUser } from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
 import * as supabaseUtils from "shared/supabase/utils";
+import * as supabaseUsers from "shared/supabase/users";
+import { tryCatch } from "common/util/try-catch";
+import { removePinnedUrlFromPhotoUrls } from "shared/profiles/parse-photos";
 
 describe('updateProfiles', () => {
     let mockPg: any;
-
     beforeEach(() => {
+        jest.resetAllMocks();
         mockPg = {
             oneOrNone: jest.fn(),
         };
 
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
-
-        jest.clearAllMocks();
     });
-    describe('should', () => {
-        it('update an existing profile when provided the user id', async () => {
-            const mockUserProfile = {
-                user_id: '234',
-                diet: 'Nothing',
-                gender: 'female',
-                is_smoker: true,
-            }
-            const mockUpdateMade = {
-                gender: 'male'
-            }
-            const mockUpdatedProfile = {
-                user_id: '234',
-                diet: 'Nothing',
-                gender: 'male',
-                is_smoker: true,
-            }
-            const mockParams = {} as any;
-            const mockAuth = {
-                uid: '234'
-            }
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
-            mockPg.oneOrNone.mockResolvedValue(mockUserProfile);
-            (supabaseUtils.update as jest.Mock).mockResolvedValue(mockUpdatedProfile);
+    describe('when given valid input', () => {
+        it('should update an existing profile when provided the user id', async () => {
+            const mockProps = {
+                avatar_url: "mockAvatarUrl"
+            };
+            const mockAuth = { uid: '321' } as AuthedUser;
+            const mockReq = {} as any;
+            const mockData = "success";
 
-            const result = await updateProfile(
-                mockUpdateMade,
-                mockAuth as AuthedUser,
-                mockParams
+            (tryCatch as jest.Mock)
+                .mockResolvedValueOnce({data: true})
+                .mockResolvedValueOnce({data: mockData, error: null});
+
+            const result = await updateProfile(mockProps, mockAuth, mockReq);
+
+            expect(result).toBe(mockData);
+            expect(mockPg.oneOrNone).toBeCalledTimes(1);
+            expect(mockPg.oneOrNone).toBeCalledWith(
+                expect.stringContaining('select * from profiles where user_id = $1'),
+                [mockAuth.uid]
             );
+            expect(removePinnedUrlFromPhotoUrls).toBeCalledTimes(1);
+            expect(removePinnedUrlFromPhotoUrls).toBeCalledWith(mockProps);
+            expect(supabaseUsers.updateUser).toBeCalledTimes(1);
+            expect(supabaseUsers.updateUser).toBeCalledWith(
+                expect.any(Object),
+                mockAuth.uid,
+                {avatarUrl: mockProps.avatar_url}
+            );
+            expect(supabaseUtils.update).toBeCalledTimes(1);
+            expect(supabaseUtils.update).toBeCalledWith(
+                expect.any(Object),
+                'profiles',
+                'user_id',
+                expect.any(Object)
+            );
+        });
+    });
 
-            expect(mockPg.oneOrNone.mock.calls.length).toBe(1);
-            expect(mockPg.oneOrNone.mock.calls[0][1]).toEqual([mockAuth.uid]);
-            expect(result).toEqual(mockUpdatedProfile);            
+    describe('when an error occurs', () => {
+        it('should throw if the profile does not exist', async () => {
+            const mockProps = {
+                avatar_url: "mockAvatarUrl"
+            };
+            const mockAuth = { uid: '321' } as AuthedUser;
+            const mockReq = {} as any;
+
+            (tryCatch as jest.Mock).mockResolvedValue({data: false});
+
+            expect(updateProfile(mockProps, mockAuth, mockReq))
+                .rejects
+                .toThrow('Profile not found');
         });
 
-        it('throw an error if a profile is not found', async () => {
-            mockPg.oneOrNone.mockResolvedValue(null);
-            expect(updateProfile({} as any, {} as any, {} as any,))
-                .rejects
-                .toThrowError('Profile not found');
-        });
+        it('should throw if unable to update the profile', async () => {
+            const mockProps = {
+                avatar_url: "mockAvatarUrl"
+            };
+            const mockAuth = { uid: '321' } as AuthedUser;
+            const mockReq = {} as any;
 
-        it('throw an error if unable to update the profile', async () => {
-            const mockUserProfile = {
-                user_id: '234',
-                diet: 'Nothing',
-                gender: 'female',
-                is_smoker: true,
-            }
-            const data = null;
-            const error = true;
-            const mockError = {
-                data,
-                error
-            }
-            mockPg.oneOrNone.mockResolvedValue(mockUserProfile);
-            (supabaseUtils.update as jest.Mock).mockRejectedValue(mockError);
-            expect(updateProfile({} as any, {} as any, {} as any,))
+            (tryCatch as jest.Mock)
+                .mockResolvedValueOnce({data: true})
+                .mockResolvedValueOnce({data: null, error: Error});
+
+            expect(updateProfile(mockProps, mockAuth, mockReq))
                 .rejects
-                .toThrowError('Error updating profile');
-            
+                .toThrow('Error updating profile');
         });
     });
 });

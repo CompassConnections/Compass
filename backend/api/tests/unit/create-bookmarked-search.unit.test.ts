@@ -8,7 +8,6 @@ describe('createBookmarkedSearch', () => {
     let mockPg: any;
     beforeEach(() => {
         jest.resetAllMocks();
-
         mockPg = {
             one: jest.fn(),
         };
@@ -16,13 +15,12 @@ describe('createBookmarkedSearch', () => {
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
             .mockReturnValue(mockPg);
     });
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    describe('should', () => {
-        it('insert a bookmarked search into the database', async () => {
+    describe('when given valid input', () => {
+        it('should insert a bookmarked search into the database', async () => {
             const mockProps = {
                 search_filters: 'mock_search_filters',
                 location: 'mock_location',
@@ -30,9 +28,14 @@ describe('createBookmarkedSearch', () => {
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
+            const mockInserted = "mockInsertedReturn";
 
-            await createBookmarkedSearch(mockProps, mockAuth, mockReq)
-            expect(mockPg.one).toBeCalledTimes(1)
+            (mockPg.one as jest.Mock).mockResolvedValue(mockInserted);
+
+            const result = await createBookmarkedSearch(mockProps, mockAuth, mockReq);
+
+            expect(result).toBe(mockInserted);
+            expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toHaveBeenCalledWith(
                 expect.stringContaining('INSERT INTO bookmarked_searches'),
                 [

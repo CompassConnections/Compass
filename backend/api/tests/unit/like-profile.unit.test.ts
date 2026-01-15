@@ -41,12 +41,10 @@ describe('likeProfile', () => {
                 target_id: "mockTargetId"
             };
 
-            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock)
                 .mockResolvedValueOnce({data: false})
                 .mockResolvedValueOnce({data: mockData, error: null});
             (likeModules.getHasFreeLike as jest.Mock).mockResolvedValue(true);
-            (mockPg.one as jest.Mock).mockResolvedValue(null);
 
             const result: any = await likeProfile(mockProps, mockAuth, mockReq);
 
@@ -79,7 +77,6 @@ describe('likeProfile', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
 
-            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock).mockResolvedValue({data: true});
 
             const result: any = await likeProfile(mockProps, mockAuth, mockReq);
@@ -101,7 +98,6 @@ describe('likeProfile', () => {
                 target_id: "mockTargetId"
             };
 
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock).mockResolvedValue({data: mockData, error: null});
 
             const result: any = await likeProfile(mockProps, mockAuth, mockReq);
@@ -130,7 +126,6 @@ describe('likeProfile', () => {
                 target_id: "mockTargetId"
             };
 
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock)
                 .mockResolvedValueOnce({data: mockData, error: Error});
 
@@ -153,7 +148,6 @@ describe('likeProfile', () => {
                 target_id: "mockTargetId"
             };
 
-            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock)
                 .mockResolvedValueOnce({data: false})
                 .mockResolvedValueOnce({data: mockData, error: null});
@@ -179,7 +173,6 @@ describe('likeProfile', () => {
                 target_id: "mockTargetId"
             };
 
-            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(null);
             (tryCatch as jest.Mock)
                 .mockResolvedValueOnce({data: false})
                 .mockResolvedValueOnce({data: mockData, error: Error});

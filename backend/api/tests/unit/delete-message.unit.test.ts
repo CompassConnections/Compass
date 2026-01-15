@@ -21,6 +21,7 @@ describe('deleteMessage', () => {
     afterEach(() => {
         jest.restoreAllMocks();
     });
+    
     describe('when given valid input', () => {
         it('should delete a message', async () => {
             const mockMessageId = {

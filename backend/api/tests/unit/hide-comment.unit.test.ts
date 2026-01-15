@@ -45,12 +45,11 @@ describe('hideComment', () => {
                 user_name: "mockUserName",
                 user_username: "mockUserUsername",
             };
+            const mockConvertedComment = "mockConvertedCommentValue";
 
             (mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment);
             jest.spyOn(envConsts, 'isAdminId').mockReturnValue(true);
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-            (convertComment as jest.Mock).mockReturnValue(null);
-            (websocketHelpers.broadcastUpdatedComment as jest.Mock).mockReturnValue(null);
+            (convertComment as jest.Mock).mockReturnValue(mockConvertedComment);
 
             await hideComment(mockProps, mockAuth, mockReq);
 
@@ -64,7 +63,7 @@ describe('hideComment', () => {
             expect(convertComment).toBeCalledTimes(1);
             expect(convertComment).toBeCalledWith(mockComment);
             expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1);
-            expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(null);
+            expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(mockConvertedComment);
         });
 
         it('should successfully hide the comment if the user is the one who made the comment', async () => {
@@ -89,9 +88,6 @@ describe('hideComment', () => {
 
             (mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment);
             jest.spyOn(envConsts, 'isAdminId').mockReturnValue(false);
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-            (convertComment as jest.Mock).mockReturnValue(null);
-            (websocketHelpers.broadcastUpdatedComment as jest.Mock).mockReturnValue(null);
 
             await hideComment(mockProps, mockAuth, mockReq);
         });
@@ -118,9 +114,6 @@ describe('hideComment', () => {
 
             (mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment);
             jest.spyOn(envConsts, 'isAdminId').mockReturnValue(false);
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-            (convertComment as jest.Mock).mockReturnValue(null);
-            (websocketHelpers.broadcastUpdatedComment as jest.Mock).mockReturnValue(null);
 
             await hideComment(mockProps, mockAuth, mockReq);
         });
@@ -134,7 +127,7 @@ describe('hideComment', () => {
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
 
-            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(null);
+            (mockPg.oneOrNone as jest.Mock).mockResolvedValue(false);
 
             expect(hideComment(mockProps, mockAuth, mockReq))
                 .rejects
@@ -163,9 +156,6 @@ describe('hideComment', () => {
 
             (mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment);
             jest.spyOn(envConsts, 'isAdminId').mockReturnValue(false);
-            (mockPg.none as jest.Mock).mockResolvedValue(null);
-            (convertComment as jest.Mock).mockReturnValue(null);
-            (websocketHelpers.broadcastUpdatedComment as jest.Mock).mockReturnValue(null);
 
             expect(hideComment(mockProps, mockAuth, mockReq))
                 .rejects

@@ -31,7 +31,7 @@ export function Custom404Content(props: { customText?: string }) {
         <Title>{t('404.title', "404: Oops!")}</Title>
         {customText ? <p>{customText}</p> : <p>{t('404.default_message', "I can't find that page.")}</p>}
         <p className="custom-link">
-          {t('404.help_text', "If you didn't expect this, get some ")}
+          {t('404.help_text', "If you didn't expect this, try to reload the page in a few seconds or get some ")}
           <Link href={'/help'}>{t("organization.help", "help").toLowerCase()}</Link>.
         </p>
 

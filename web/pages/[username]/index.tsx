@@ -35,7 +35,7 @@ async function getProfile(userId: string) {
     profile = await getProfileRow(userId, db)
     if (i > 0) await sleep(500)
     i++
-    if (i >= 8) {
+    if (i >= 40) {
       break
     }
   }

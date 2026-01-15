@@ -31,6 +31,7 @@ export default function Organization() {
         <GeneralButton url={'/terms'} content={t('organization.terms','Terms and Conditions')}/>
         <GeneralButton url={'/privacy'} content={t('organization.privacy','Privacy Policy')}/>
         <GeneralButton url={'/security'} content={t('organization.security','Security')}/>
+        <GeneralButton url={'/press'} content={t('press.title', 'Press')}/>
         <GeneralButton url={'/contact'} content={t('organization.contact','Contact')}/>
       </Col>
     </PageBase>

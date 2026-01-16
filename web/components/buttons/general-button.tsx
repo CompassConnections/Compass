@@ -16,8 +16,10 @@ export const GeneralButton = (props: {
         target={url.startsWith('http') ? '_blank' : undefined}
         rel={url.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
-        <div className="flex items-center justify-center w-full h-full">
-          {content}
+        <div className="flex items-center justify-center w-full h-full flex-col text-center">
+          <div className="flex items-center justify-center">
+            {content}
+          </div>
         </div>
       </Link>
     </div>

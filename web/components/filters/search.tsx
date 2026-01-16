@@ -15,10 +15,11 @@ import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
 import toast from "react-hot-toast";
-import {FilterFields} from "common/filters";
+import {FilterFields, initialFilters} from "common/filters";
 import {DisplayUser} from "common/api/user-types";
 import {useChoices} from "web/hooks/use-choices";
 import {useT} from "web/lib/locale";
+import {isEqual} from "lodash";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -140,6 +141,10 @@ export const Search = (props: {
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
+  const isClearedFilters = isEqual(
+    {...filters, orderBy: undefined},
+    {...initialFilters, orderBy: undefined}
+  )
   const {choices: interestChoices} = useChoices('interests')
   const {choices: causeChoices} = useChoices('causes')
   const {choices: workChoices} = useChoices('work')
@@ -276,7 +281,14 @@ export const Search = (props: {
             color={'none'}
             className={'bg-canvas-100 hover:bg-canvas-200'}
           >
-            {bookmarked ? t('common.saved', 'Saved!') : loadingBookmark ? '' : t('common.notified', 'Get Notified')}
+            {bookmarked
+              ? t('common.saved', 'Saved!')
+              : loadingBookmark
+                ? ''
+                : isClearedFilters
+                  ? t('common.notified_any', 'Get notified for any new profile')
+                  : t('common.notified', 'Get notified for selected filters')
+            }
           </Button>
 
           <BookmarkSearchButton

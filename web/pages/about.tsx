@@ -4,6 +4,7 @@ import Link from "next/link";
 import {discordLink, formLink, githubRepo} from "common/constants";
 import {SEO} from "web/components/SEO";
 import {useT} from "web/lib/locale";
+import {GeneralButton} from "web/components/buttons/general-button";
 
 
 export const AboutBlock = (props: {
@@ -87,13 +88,13 @@ export default function About() {
                   text={t('about.block.vision.text', 'Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.')}
                 />
 
-                <AboutBlock
-                  title={t('about.block.press.title', 'Press')}
-                  text={<span className="custom-link">
-                    {t('about.block.press.text', 'Explore the latest press stories ')}
-                    <Link href="/press">{t('about.block.press.link', 'here')}</Link>.
-                </span>}
-                />
+                {/*<AboutBlock*/}
+                {/*  title={t('about.block.press.title', 'Press')}*/}
+                {/*  text={<span className="custom-link">*/}
+                {/*    {t('about.block.press.text', 'Explore the latest press stories ')}*/}
+                {/*    <Link href="/press">{t('about.block.press.link', 'here')}</Link>.*/}
+                {/*</span>}*/}
+                {/*/>*/}
               </div>
             </div>
           </div>
@@ -106,38 +107,21 @@ export default function About() {
                       className="font-bold mb-4 text-xl text-center">{t('about.suggestions.title', 'Give Suggestions or Contribute')}</h5>
                   <p
                     className="mb-4 text-center">{t('about.suggestions.text', 'Give suggestions or let us know you want to help through this form!')}</p>
-                  <a
-                    href={formLink}
-                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                    target="_blank" rel="noopener noreferrer"
-                  >
-                    {t('about.suggestions.button', 'Suggest Here')}
-                  </a>
+                  <GeneralButton url={formLink} content={t('about.suggestions.button', 'Suggest Here')}/>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="share"
                       className="font-bold mb-4 text-xl text-center">{t('about.dev.title', 'Develop the App')}</h5>
                   <p
                     className="mb-4 text-center">{t('about.dev.text', 'The full source code and instructions are available on GitHub.')}</p>
-                  <a
-                    href={githubRepo}
-                    className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                    target="_blank" rel="noopener noreferrer">
-                    {t('about.dev.button', 'View Code')}
-                  </a>
+                  <GeneralButton url={githubRepo} content={t('about.dev.button', 'View Code')}/>
                 </div>
                 <div className="rounded-xl shadow p-6 flex flex-col items-center">
                   <h5 id="join-chats"
                       className="font-bold mb-4 text-xl text-center">{t('about.join.title', 'Join the Community')}</h5>
                   <p className="mb-4 text-center">{t('about.join.text', "Let's shape the platform together.")}</p>
                   <div className="flex flex-col gap-4 w-full items-center">
-                    <a
-                      href={discordLink}
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"
-                      target="_blank" rel="noopener noreferrer"
-                    >
-                      {t('about.join.button', 'Join the Discord')}
-                    </a>
+                    <GeneralButton url={discordLink} content={t('about.join.button', 'Join the Discord')}/>
                     {/*<a*/}
                     {/*  href={stoatLink}*/}
                     {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition"*/}
@@ -153,12 +137,7 @@ export default function About() {
                   <p
                     className="mb-4 text-center custom-link">{t('about.donate.text', 'Support our not-for-profit infrastructure.')}</p>
                   <div className="flex flex-col gap-4 w-full items-center">
-                    <Link
-                      href="/support"
-                      className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"
-                    >
-                      {t('about.donate.button', 'Donation Options')}
-                    </Link>
+                    <GeneralButton url={"/support"} content={t('about.donate.button', 'Donation Options')}/>
                     {/*<a*/}
                     {/*  href="https://patreon.com/CompassMeet"*/}
                     {/*  className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold text-lg shadow hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition text-center"*/}

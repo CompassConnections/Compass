@@ -15,7 +15,7 @@ const pressItems: PressItem[] = [
   {
     title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
     source: 'Matélé',
-    date: '2025-01-15',
+    date: '2026-01-15',
     url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
     language: 'fr',
   },

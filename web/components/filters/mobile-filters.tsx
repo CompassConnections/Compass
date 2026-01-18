@@ -13,7 +13,6 @@ import {Gender} from 'common/gender'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
-import {PrefGenderFilter, PrefGenderFilterText} from "./pref-gender-filter"
 import {KidsLabel, WantsKidsFilter} from "web/components/filters/wants-kids-filter";
 import {wantsKidsLabels} from "common/wants-kids";
 import {HasKidsFilter, HasKidsLabel} from "./has-kids-filter"
@@ -35,6 +34,14 @@ import {InterestFilter, InterestFilterText} from "web/components/filters/interes
 import {OptionTableKey} from "common/profiles/constants";
 import {NewBadge} from "web/components/new-badge";
 import {useT} from "web/lib/locale";
+import {FaUserGroup} from "react-icons/fa6";
+import {BsPersonHeart, BsPersonVcard} from "react-icons/bs";
+import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
+import {GiFruitBowl} from "react-icons/gi";
+import {MdLanguage, MdLocalBar} from "react-icons/md";
+import {LuCigarette, LuGraduationCap} from "react-icons/lu";
+import {RiScales3Line} from "react-icons/ri";
+import {PiHandsPrayingBold} from "react-icons/pi";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -106,12 +113,13 @@ function MobileFilters(props: {
         />
       </Col>
 
-      {/* RELATIONSHIP STYLE */}
+      {/* CONNECTION */}
       <MobileFilterSection
         title={t('profile.seeking', "Seeking")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.pref_relation_styles)}
+        icon={<FaUserGroup className="h-4 w-4"/>}
         selection={
           <RelationshipFilterText
             relationship={filters.pref_relation_styles as RelationshipType[]}
@@ -132,9 +140,11 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.relationship_status || undefined)}
+        icon={<BsPersonHeart className="h-4 w-4"/>}
         selection={
           <RelationshipStatusFilterText
             options={filters.relationship_status as string[]}
+            defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
             highlightedClass={
               hasAny(filters.relationship_status || undefined)
                 ? 'text-primary-600'
@@ -210,22 +220,22 @@ function MobileFilters(props: {
       </MobileFilterSection>
 
       {/* PREFERRED GENDER */}
-      <MobileFilterSection
-        title={t('filter.gender.they_seek', 'Gender they seek')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.pref_gender)}
-        selection={
-          <PrefGenderFilterText
-            pref_gender={filters.pref_gender as Gender[]}
-            highlightedClass={
-              hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
-      >
-        <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>
-      </MobileFilterSection>
+      {/*<MobileFilterSection*/}
+      {/*  title={t('filter.gender.they_seek', 'Gender they seek')}*/}
+      {/*  openFilter={openFilter}*/}
+      {/*  setOpenFilter={setOpenFilter}*/}
+      {/*  isActive={hasAny(filters.pref_gender)}*/}
+      {/*  selection={*/}
+      {/*    <PrefGenderFilterText*/}
+      {/*      pref_gender={filters.pref_gender as Gender[]}*/}
+      {/*      highlightedClass={*/}
+      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'*/}
+      {/*      }*/}
+      {/*    />*/}
+      {/*  }*/}
+      {/*>*/}
+      {/*  <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>*/}
+      {/*</MobileFilterSection>*/}
 
       {includeRelationshipFilters && <>
 
@@ -235,6 +245,7 @@ function MobileFilters(props: {
               openFilter={openFilter}
               setOpenFilter={setOpenFilter}
               isActive={hasAny(filters.pref_romantic_styles || undefined)}
+              icon={<FaHeart className="h-4 w-4"/>}
               selection={
                 <RomanticFilterText
                   relationship={filters.pref_romantic_styles as RomanticType[]}
@@ -305,6 +316,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.diet || undefined)}
+        icon={<GiFruitBowl className="h-4 w-4"/>}
         selection={
           <DietFilterText
             options={filters.diet as DietType[]}
@@ -328,6 +340,7 @@ function MobileFilters(props: {
           const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max);
           return !noMin || !noMax
         })()}
+        icon={<MdLocalBar className="h-4 w-4"/>}
         selection={
           <DrinksFilterText
             drinks_min={filters.drinks_min}
@@ -348,6 +361,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={filters.is_smoker != null}
+        icon={<LuCigarette className="h-4 w-4"/>}
         selection={
           <SmokerFilterText
             is_smoker={filters.is_smoker}
@@ -366,6 +380,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.languages || undefined)}
+        icon={<MdLanguage className="h-4 w-4"/>}
         selection={
           <LanguageFilterText
             options={filters.languages as string[]}
@@ -382,12 +397,12 @@ function MobileFilters(props: {
 
       {/* INTERESTS */}
       <MobileFilterSection
-        showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
         title={t("profile.optional.interests", "Interests")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.interests || undefined)}
+        icon={<FaStar className="h-4 w-4"/>}
         selection={
           <InterestFilterText
             options={filters.interests as string[]}
@@ -410,12 +425,12 @@ function MobileFilters(props: {
 
       {/* CAUSES */}
       <MobileFilterSection
-        showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
         title={t("profile.optional.causes", "Causes")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.causes || undefined)}
+        icon={<FaHandsHelping className="h-4 w-4"/>}
         selection={
           <InterestFilterText
             options={filters.causes as string[]}
@@ -438,12 +453,12 @@ function MobileFilters(props: {
 
       {/* WORK */}
       <MobileFilterSection
-        showNewBadge
         newBadgeClassName={"-top-0 -left-0"}
         title={t("profile.optional.work", "Work")}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.work || undefined)}
+        icon={<FaBriefcase className="h-4 w-4"/>}
         selection={
           <InterestFilterText
             options={filters.work as string[]}
@@ -470,6 +485,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.political_beliefs || undefined)}
+        icon={<RiScales3Line className="h-4 w-4"/>}
         selection={
           <PoliticalFilterText
             options={filters.political_beliefs as string[]}
@@ -490,6 +506,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.religion || undefined)}
+        icon={<PiHandsPrayingBold className="h-4 w-4"/>}
         selection={
           <ReligionFilterText
             options={filters.religion as string[]}
@@ -508,12 +525,14 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.mbti)}
+        icon={<BsPersonVcard className="h-4 w-4"/>}
         selection={
           <MbtiFilterText
             options={filters.mbti as string[]}
             highlightedClass={
               hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'
             }
+            defaultLabel={t('filter.any_mbti', 'Any MBTI')}
           />
         }
       >
@@ -526,6 +545,7 @@ function MobileFilters(props: {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.education_levels)}
+        icon={<LuGraduationCap className="h-4 w-4"/>}
         selection={
           <EducationFilterText
             options={filters.education_levels as string[]}
@@ -585,10 +605,11 @@ export function MobileFilterSection(props: {
       >
         {showNewBadge && <NewBadge classes={newBadgeClassName}/>}
         <Row
-          className={clsx('items-center gap-0.5', isActive && 'font-semibold')}
+          className={clsx('items-center gap-2', isActive && 'font-semibold')}
         >
           {icon}
-          {title}: {selection}
+          {selection}
+          {/*{title}: {selection}*/}
         </Row>
         <div className="text-ink-900">
           {isOpen ? (

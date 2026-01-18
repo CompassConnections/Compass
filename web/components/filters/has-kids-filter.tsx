@@ -28,7 +28,7 @@ export function HasKidsLabel(props: {
   }
   return (
     <Row className="items-center gap-0.5">
-      <FaChild className="hidden h-4 w-4 sm:inline"/>
+      <FaChild className="h-4 w-4"/>
       <span
         className={clsx(highlightedClass, has_kids !== -1 && 'font-semibold')}
       >

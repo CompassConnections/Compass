@@ -207,6 +207,7 @@
   "filter.gender.genders": "genres",
   "filter.gender.they_seek": "Genre qu'ils recherchent",
   "filter.location": "localisation",
+  "filter.near": "près de",
   "filter.location.any": "Toute",
   "filter.location.distance_miles": "Distance (miles)",
   "filter.location.search_city": "Rechercher une ville...",

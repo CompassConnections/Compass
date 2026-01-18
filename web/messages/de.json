@@ -207,6 +207,7 @@
   "filter.gender.genders": "Geschlechter",
   "filter.gender.they_seek": "Geschlecht, das sie suchen",
   "filter.location": "Standort",
+  "filter.near": "in der Nähe von",
   "filter.location.any": "Jeder",
   "filter.location.distance_miles": "Entfernung (Meilen)",
   "filter.location.search_city": "Stadt suchen...",

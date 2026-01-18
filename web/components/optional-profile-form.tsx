@@ -572,7 +572,7 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <AddOptionEntry
-          title={t('profile.optional.work', 'Work')}
+          title={t('profile.optional.work', 'Work Area')}
           choices={workChoices}
           setChoices={setWorkChoices}
           profile={profile}

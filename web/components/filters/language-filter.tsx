@@ -46,6 +46,7 @@ export function LanguageFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedTypes,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

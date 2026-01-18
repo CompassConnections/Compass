@@ -42,6 +42,7 @@ export function AboutRow(props: {
   suffix?: string | null
 }) {
   const {icon, text, preText, suffix} = props
+  const t = useT()
   if (!text?.length && !preText && !suffix) {
     return <></>
   }
@@ -55,6 +56,7 @@ export function AboutRow(props: {
       preText: preText,
       asSentence: false,
       capitalizeFirstLetterOption: true,
+      t: t,
     })
   }
   if (suffix) {
@@ -150,6 +152,7 @@ function Seeking(props: { profile: Profile }) {
     preText: t('profile.interested_in', 'Interested in'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
+    t: t,
   })
 
   const noMin = (min ?? MIN_INT) <= 18
@@ -188,6 +191,7 @@ function RelationshipType(props: { profile: Profile }) {
     preText: t('profile.seeking', 'Seeking'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
+    t: t,
   })
   if (relationshipTypes?.includes('relationship')) {
     const romanticStyles = profile.pref_romantic_styles

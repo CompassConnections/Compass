@@ -42,6 +42,7 @@ export function RelationshipFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedRelationships,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

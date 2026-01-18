@@ -43,6 +43,7 @@ export function DietFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedTypes,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

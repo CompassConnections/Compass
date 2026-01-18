@@ -1,5 +1,4 @@
 import {filterDefined} from 'common/util/array'
-import {useT} from "web/lib/locale";
 
 export default function stringOrStringArrayToText(fields: {
   text: string[] | string | null | undefined
@@ -7,6 +6,7 @@ export default function stringOrStringArrayToText(fields: {
   postText?: string
   asSentence?: boolean
   capitalizeFirstLetterOption?: boolean
+  t: any
 }): string | null {
   const {
     text,
@@ -14,8 +14,8 @@ export default function stringOrStringArrayToText(fields: {
     postText = '',
     asSentence,
     capitalizeFirstLetterOption,
+    t,
   } = fields
-  const t = useT()
 
   if (!text || text.length < 1) {
     return null

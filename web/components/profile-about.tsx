@@ -183,7 +183,7 @@ function RelationshipType(props: { profile: Profile }) {
   const relationshipTypes = profile.pref_relation_styles
   let seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes?.map((rel) =>
-      t(`profile.relationship.${rel}`, convertRelationshipType(rel as RelationshipType))
+      t(`profile.relationship.${rel}`, convertRelationshipType(rel as RelationshipType)).toLowerCase()
     ).sort(),
     preText: t('profile.seeking', 'Seeking'),
     asSentence: true,

@@ -14,9 +14,16 @@ type PressItem = {
 const pressItems: PressItem[] = [
   {
     title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
-    source: 'Matélé',
+    source: 'Matélé (Video Reportage)',
     date: '2026-01-15',
     url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
+    language: 'fr',
+  },
+  {
+    title: 'Martin Braquet, un jeune ingénieur havelangeois, sort son appli de rencontre éthique.',
+    source: 'Matélé (Facebook Reel)',
+    date: '2026-01-17',
+    url: 'https://www.facebook.com/reel/757129776892904',
     language: 'fr',
   },
 ];
@@ -31,7 +38,7 @@ const PressItem = ({item}: { item: PressItem, locales: Intl.LocalesArgument }) =
     <div className="flex flex-col sm:flex-row sm:justify-between text-sm mb-2">
       <span>{item.source}</span>
       {/*<span>{new Date(item.date).toLocaleDateString(locales, { year: 'numeric', month: 'long', day: 'numeric' })}</span>*/}
-      <span>{new Date(item.date).toLocaleDateString()}</span>
+      <span>{item.date}</span>
     </div>
     {/*<div className="mt-2">*/}
     {/*  <span className="inline-block px-2 py-1 text-xs rounded-full">*/}

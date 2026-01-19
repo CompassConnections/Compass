@@ -21,6 +21,7 @@ import {Keyboard} from "@capacitor/keyboard"
 import {IS_VERCEL} from "common/hosting/constants"
 import {getLocale, resetCachedLocale} from "web/lib/locale-cookie"
 import {I18nContext} from "web/lib/locale"
+import {updateStatusBar} from "web/hooks/use-theme";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -112,6 +113,10 @@ function MyApp(props: AppProps<PageProps>) {
     return () => {
       Keyboard.removeAllListeners()
     }
+  }, [])
+
+  useEffect(() => {
+    updateStatusBar()
   }, [])
 
   useEffect(() => {

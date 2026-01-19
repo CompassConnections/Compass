@@ -27,7 +27,6 @@ if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
   // Note sure it's doing anything, though. Need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
-  // StatusBar.setStyle({style: Style.Light}).catch(console.warn)
 
   App.addListener('backButton', () => {
     window.dispatchEvent(new CustomEvent('appBackButton'))

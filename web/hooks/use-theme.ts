@@ -67,11 +67,11 @@ export const updateStatusBar = async () => {
     if (isDark(theme)) {
       // Dark theme: light text on dark background
       await StatusBar.setStyle({style: Style.Dark});
-      // await StatusBar.setBackgroundColor({color: '#000000'}); // or your dark bg color
+      await StatusBar.setBackgroundColor({color: '#141414'}); // dark bg color (canvas-0)
     } else {
       // Light theme: dark text on light background
       await StatusBar.setStyle({style: Style.Light});
-      // await StatusBar.setBackgroundColor({color: '#ffffff'}); // or your light bg color
+      await StatusBar.setBackgroundColor({color: '#ffffff'}); // light bg color (canvas-0)
     }
   } catch (error) {
     console.error('Failed to update status bar:', error);

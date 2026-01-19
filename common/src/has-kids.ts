@@ -39,7 +39,7 @@ export const generateChoicesMap = (
 ): Record<string, number> => {
   return Object.values(labels).reduce(
     (acc: Record<string, number>, label: HasKidLabel) => {
-      acc[label.shortName] = label.value
+      acc[label.name] = label.value
       return acc
     },
     {}

@@ -12,7 +12,7 @@ export function HasKidsLabel(props: {
   highlightedClass?: string
   mobile?: boolean
 }) {
-  const {has_kids, highlightedClass, mobile} = props
+  const {has_kids, highlightedClass} = props
   const t = useT()
 
   // Get the appropriate label based on has_kids value
@@ -21,10 +21,10 @@ export function HasKidsLabel(props: {
 
   if (has_kids === hasKidsLabels.has_kids.value) {
     labelKey = 'has_kids'
-    labelValue = mobile ? hasKidsLabels.has_kids.shortName : hasKidsLabels.has_kids.name
+    labelValue = hasKidsLabels.has_kids.name
   } else if (has_kids === hasKidsLabels.doesnt_have_kids.value) {
     labelKey = 'doesnt_have_kids'
-    labelValue = mobile ? hasKidsLabels.doesnt_have_kids.shortName : hasKidsLabels.doesnt_have_kids.name
+    labelValue = hasKidsLabels.doesnt_have_kids.name
   }
   return (
     <Row className="items-center gap-0.5">

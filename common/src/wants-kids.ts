@@ -60,7 +60,7 @@ export function wantsKidsDatabaseToWantsKidsFilter(
 export const generateChoicesMap = (labels: KidsLabelsMap): Record<string, number> => {
   return Object.values(labels).reduce(
     (acc: Record<string, number>, label: KidLabel) => {
-      acc[label.shortName] = label.strength
+      acc[label.name] = label.strength
       return acc
     },
     {}

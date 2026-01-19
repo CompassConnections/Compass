@@ -61,7 +61,7 @@ export function KidsLabel(props: {
   highlightedClass?: string
   mobile?: boolean
 }) {
-  const {strength, highlightedClass, mobile} = props
+  const {strength, highlightedClass} = props
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
@@ -74,16 +74,10 @@ export function KidsLabel(props: {
         )}
       >
         {strength == wantsKidsLabelsWithIcon.no_preference.strength
-          ? mobile
-            ? wantsKidsLabelsWithIcon.no_preference.shortName
-            : wantsKidsLabelsWithIcon.no_preference.name
+          ? wantsKidsLabelsWithIcon.no_preference.name
           : strength == wantsKidsLabelsWithIcon.wants_kids.strength
-            ? mobile
-              ? wantsKidsLabelsWithIcon.wants_kids.shortName
-              : wantsKidsLabelsWithIcon.wants_kids.name
-            : mobile
-              ? wantsKidsLabelsWithIcon.doesnt_want_kids.shortName
-              : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
+            ? wantsKidsLabelsWithIcon.wants_kids.name
+            : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
       </span>
     </Row>
   )

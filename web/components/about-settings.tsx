@@ -189,7 +189,7 @@ const AndroidInfo = (props: { info?: Android }) => {
   const sha = info.liveUpdate?.commitSha
   const url = `${githubRepo}/commit/${sha}`
   return <Col className={'custom-link'}>
-    <h3>Android (Capacitor / Capawesome)</h3>
+    <h3>Android (Capacitor)</h3>
     <p>App version (Android): {info.appVersion}</p>
     <p>Native build number (Android): {info.buildNumber}</p>
     {info.liveUpdate &&

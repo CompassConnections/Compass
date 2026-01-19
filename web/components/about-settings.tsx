@@ -3,14 +3,12 @@ import {PrivateUser} from "common/user"
 import {Col} from "web/components/layout/col"
 import {HOSTING_ENV, IS_VERCEL} from "common/hosting/constants"
 import {Capacitor} from "@capacitor/core"
-import {LiveUpdate} from "@capawesome/capacitor-live-update"
 import {useEffect, useState} from "react"
 import {App} from "@capacitor/app"
 import {api} from "web/lib/api"
 import {githubRepo} from "common/constants"
 import {CustomLink} from "web/components/links"
 import {Button} from "web/components/buttons/button"
-import {getLiveUpdateInfo} from "web/lib/live-update";
 import {useT} from 'web/lib/locale'
 
 export type WebBuild = {
@@ -77,17 +75,19 @@ function useDiagnostics() {
 
       if (Capacitor.isNativePlatform()) {
         const appInfo = await App.getInfo()
-        const bundle = await LiveUpdate.getCurrentBundle().catch(() => {return {bundleId: null}})
-        const buildInfo = await getLiveUpdateInfo().catch(() => null)
+        // const bundle = await LiveUpdate.getCurrentBundle().catch(() => {
+        //   return {bundleId: null}
+        // })
+        // const buildInfo = await getLiveUpdateInfo().catch(() => null)
         diagnostics.android = {
           appVersion: appInfo.version,
           buildNumber: appInfo.build,
-          liveUpdate: {
-            bundleId: bundle?.bundleId,
-            commitSha: buildInfo?.commitSha,
-            commitMessage: buildInfo?.commitMessage,
-            commitDate: buildInfo?.commitDate
-          }
+          // liveUpdate: {
+          //   bundleId: bundle?.bundleId,
+          //   commitSha: buildInfo?.commitSha,
+          //   commitMessage: buildInfo?.commitMessage,
+          //   commitDate: buildInfo?.commitDate
+          // }
         }
       }
 
@@ -166,7 +166,7 @@ const LoadedAboutSettings = (props: {
   </Col>
 }
 
-const WebBuildInfo = (props: {info?: WebBuild}) => {
+const WebBuildInfo = (props: { info?: WebBuild }) => {
   const {info} = props
   if (!info) return
   const env = info.environment
@@ -183,7 +183,7 @@ const WebBuildInfo = (props: {info?: WebBuild}) => {
   </Col>
 }
 
-const AndroidInfo = (props: {info?: Android}) => {
+const AndroidInfo = (props: { info?: Android }) => {
   const {info} = props
   if (!info) return
   const sha = info.liveUpdate?.commitSha
@@ -192,14 +192,18 @@ const AndroidInfo = (props: {info?: Android}) => {
     <h3>Android (Capacitor / Capawesome)</h3>
     <p>App version (Android): {info.appVersion}</p>
     <p>Native build number (Android): {info.buildNumber}</p>
-    <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
-    <p>Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink></p>
-    <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
-    <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
+    {info.liveUpdate &&
+        <>
+            <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
+            <p>Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink></p>
+            <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
+            <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
+        </>
+    }
   </Col>
 }
 
-const BackendInfo = (props: {info?: Backend}) => {
+const BackendInfo = (props: { info?: Backend }) => {
   const {info} = props
   if (!info) return
   const sha = info.gitSha
@@ -215,7 +219,7 @@ const BackendInfo = (props: {info?: Backend}) => {
   </Col>
 }
 
-const RuntimeInfo = (props: {info?: Runtime}) => {
+const RuntimeInfo = (props: { info?: Runtime }) => {
   const {info} = props
   if (!info) return
   return <Col className={'custom-link'}>

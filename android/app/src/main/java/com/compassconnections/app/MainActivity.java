@@ -19,6 +19,12 @@ import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginHandle;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.appupdate.AppUpdateOptions;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,46 +32,6 @@ import org.json.JSONObject;
 import ee.forgr.capacitor.social.login.GoogleProvider;
 import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 import ee.forgr.capacitor.social.login.SocialLoginPlugin;
-
-
-//import android.app.NotificationChannel;
-//import android.app.NotificationManager;
-//import android.os.Build;
-//import com.google.firebase.messaging.RemoteMessage;
-//import com.capacitorjs.plugins.pushnotifications.MessagingService;
-
-//public class MyMessagingService extends MessagingService {
-//
-//    @Override
-//    public void onMessageReceived(RemoteMessage remoteMessage) {
-//        // TODO(developer): Handle FCM messages here.
-//        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-//        Log.d(TAG, "From: " + remoteMessage.getFrom());
-//
-//        // Check if message contains a data payload.
-//        if (remoteMessage.getData().size() > 0) {
-//            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-//
-//            if (/* Check if data needs to be processed by long running job */ true) {
-//                // For long-running tasks (10 seconds or more) use WorkManager.
-//                scheduleJob();
-//            } else {
-//                // Handle message within 10 seconds
-//                handleNow();
-//            }
-//
-//        }
-//
-//        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
-//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//        }
-//
-//        // Also if you intend on generating your own notifications as a result of a received FCM
-//        // message, here is where that should be initiated. See sendNotification method below.
-//    }
-//}
-
 
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
 
@@ -143,6 +109,9 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
 //       }});
 
         askNotificationPermission();
+
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        checkForUpdates();
     }
 
     @Override
@@ -168,6 +137,70 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
     // This function will never be called, leave it empty
     @Override
     public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {
+    }
+
+    private static final int UPDATE_REQUEST_CODE = 500;
+    private AppUpdateManager appUpdateManager;
+    private static final String TAG = "MainActivity";
+
+    private void checkForUpdates() {
+        appUpdateManager.getAppUpdateInfo()
+                .addOnSuccessListener(appUpdateInfo -> {
+                    if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                        if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                            startImmediateUpdate(appUpdateInfo);
+                        } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                            startFlexibleUpdate(appUpdateInfo);
+                        }
+                    }
+                })
+                .addOnFailureListener(exception -> {
+                    // Handle error - log it
+                    Log.e(TAG, "Failed to check For Updates", exception);
+                });
+    }
+
+    private void startImmediateUpdate(AppUpdateInfo appUpdateInfo) {
+        AppUpdateOptions options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build();
+
+        appUpdateManager.startUpdateFlow(appUpdateInfo, this, options)
+                .addOnSuccessListener(result -> {
+                    Log.i(TAG, "Immediate update started successfully");
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e(TAG, "Failed to start immediate update", exception);
+                });
+    }
+
+    private void startFlexibleUpdate(AppUpdateInfo appUpdateInfo) {
+        AppUpdateOptions options = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build();
+
+        appUpdateManager.startUpdateFlow(appUpdateInfo, this, options)
+                .addOnSuccessListener(result -> {
+                    Log.i(TAG, "Flexible update started successfully");
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e(TAG, "Failed to start flexible update", exception);
+                });
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Check if an immediate update was interrupted
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                startImmediateUpdate(appUpdateInfo);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        appUpdateManager = null;
     }
 }
 

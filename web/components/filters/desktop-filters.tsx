@@ -41,6 +41,7 @@ import {
 import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
 import {OptionTableKey} from "common/profiles/constants";
 import {useT} from "web/lib/locale";
+import {ResetFiltersButton} from "web/components/searches/button";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -71,12 +72,9 @@ export function DesktopFilters(props: {
   return (
     <>
 
-      <button
-        className="text-ink-900 hover:text-primary-500 underline"
-        onClick={clearFilters}
-      >
-        {t('filter.reset', 'Reset filters')}
-      </button>
+      <ResetFiltersButton
+        clearFilters={clearFilters}
+      />
 
       <MyMatchesToggle
         setYourFilters={setYourFilters}

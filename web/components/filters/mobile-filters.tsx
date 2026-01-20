@@ -42,6 +42,7 @@ import {MdLanguage, MdLocalBar} from "react-icons/md";
 import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {RiScales3Line} from "react-icons/ri";
 import {PiHandsPrayingBold} from "react-icons/pi";
+import {ResetFiltersButton} from "web/components/searches/button";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -87,8 +88,8 @@ function MobileFilters(props: {
       {/*    height: 'env(safe-area-inset-top)',*/}
       {/*  }}*/}
       {/*/>*/}
-      <Row>
-        <Col className="p-4 pb-2">
+      <Row className="justify-between px-4">
+        <Col className="py-2">
           <MyMatchesToggle
             setYourFilters={setYourFilters}
             youProfile={youProfile}
@@ -96,12 +97,9 @@ function MobileFilters(props: {
             hidden={!youProfile}
           />
         </Col>
-        <button
-          className="text-ink-900 hover:text-primary-500 underline"
-          onClick={clearFilters}
-        >
-          {t('filter.reset', 'Reset filters')}
-        </button>
+        <ResetFiltersButton
+          clearFilters={clearFilters}
+        />
       </Row>
 
       {/* Short Bios */}

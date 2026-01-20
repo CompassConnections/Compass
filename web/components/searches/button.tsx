@@ -46,6 +46,20 @@ export function BookmarkSearchButton(props: {
   )
 }
 
+export function ResetFiltersButton(props: {
+  clearFilters: () => void
+}) {
+  const {clearFilters} = props
+  const t = useT()
+  return (
+    <>
+      <Button onClick={clearFilters} color="gray-outline" size={'xs'}>
+        {t('filter.reset', 'Reset filters')}
+      </Button>
+    </>
+  )
+}
+
 
 function ButtonModal(props: {
   open: boolean

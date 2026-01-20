@@ -48,6 +48,7 @@ export function ReligionFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedTypes,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

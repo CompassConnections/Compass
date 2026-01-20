@@ -26,16 +26,16 @@ export function LocationFilterText(props: {
     return (
       <span>
         <span className={clsx('text-semibold', highlightedClass)}>{t('filter.location.any', 'Any')}</span>
-        <span className="hidden sm:inline"> {t('filter.location', 'location')}</span>
+        <span className=""> {t('filter.location', 'location')}</span>
       </span>
     )
   }
   return (
     <span className="font-semibold">
-      <span className="hidden sm:inline">
+      <span className="">
         <span className={clsx(highlightedClass)}>{radius}</span> miles
       </span>{' '}
-      <span className="capitalize sm:normal-case">near</span>{' '}
+      <span className="sm:normal-case">{t('filter.near', 'near')}</span>{' '}
       <span className={highlightedClass}>{location.name}</span>
     </span>
   )

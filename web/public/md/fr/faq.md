@@ -6,6 +6,11 @@ Compass est un **cadeau de la communauté** — construit par ses membres comme 
 
 Restez informé des dernières versions, fonctionnalités et améliorations [ici](/news).
 
+### Compass est-il mentionné dans la presse ?
+
+Oui. Vous trouverez la couverture médiatique, notre kit média, nos ressources de marque et les coordonnées presse sur
+la [page Presse](/press).
+
 ### Qu’est-ce que Compass ?
 
 Compass est une **plateforme gratuite et open-source pour aider les gens à créer des liens profonds, significatifs et durables** — qu’ils soient platoniques, romantiques ou collaboratifs. Cela est rendu possible grâce aux contributions de la communauté, incluant le code, les idées, les retours et les dons. Contrairement aux applications classiques, Compass privilégie **les valeurs, les centres d’intérêt et la personnalité plutôt que les swipes et la publicité**, vous donnant un contrôle total sur les personnes que vous découvrez et comment vous vous connectez.

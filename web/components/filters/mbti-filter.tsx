@@ -42,6 +42,7 @@ export function MbtiFilterText(props: {
         {stringOrStringArrayToText({
           text: displayTypes,
           capitalizeFirstLetterOption: false,
+          t: t,
         })}{' '}
       </span>
     </div>

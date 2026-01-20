@@ -28,7 +28,7 @@ export function AgeFilterText(props: {
     return (
       <span>
         <span className={clsx('text-semibold', highlightedClass)}>{t('filter.age.any', 'Any')}</span>{' '}
-        <span className="hidden sm:inline">{t('filter.age.age', 'age')}</span>
+        <span className="">{t('filter.age.age', 'age')}</span>
       </span>
     )
   }

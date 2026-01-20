@@ -14,7 +14,6 @@ import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/profiles/profile'
 import {FilterFields} from "common/filters";
 import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
-import {PrefGenderFilter, PrefGenderFilterText} from "web/components/filters/pref-gender-filter";
 import DropdownMenu from "web/components/comments/dropdown-menu";
 import {KidsLabel, useWantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
 import {hasKidsLabels} from "common/has-kids";
@@ -42,6 +41,7 @@ import {
 import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
 import {OptionTableKey} from "common/profiles/constants";
 import {useT} from "web/lib/locale";
+import {ResetFiltersButton} from "web/components/searches/button";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -71,11 +71,23 @@ export function DesktopFilters(props: {
 
   return (
     <>
+
+      <ResetFiltersButton
+        clearFilters={clearFilters}
+      />
+
       <MyMatchesToggle
         setYourFilters={setYourFilters}
         youProfile={youProfile}
         on={isYourFilters}
         hidden={!youProfile}
+      />
+
+      {/* Short Bios */}
+      <ShortBioToggle
+        updateFilter={updateFilter}
+        filters={filters}
+        hidden={false}
       />
 
       {/* CONNECTION */}
@@ -203,25 +215,25 @@ export function DesktopFilters(props: {
       />
 
       {/* GENDER THEY SEEK */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <PrefGenderFilterText
-                pref_gender={filters.pref_gender as Gender[]}
-                highlightedClass={open ? 'text-primary-500' : undefined}
-              />
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <Col>
-            <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-      />
+      {/*<CustomizeableDropdown*/}
+      {/*  buttonContent={(open: boolean) => (*/}
+      {/*    <DropdownButton*/}
+      {/*      content={*/}
+      {/*        <PrefGenderFilterText*/}
+      {/*          pref_gender={filters.pref_gender as Gender[]}*/}
+      {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
+      {/*        />*/}
+      {/*      }*/}
+      {/*      open={open}*/}
+      {/*    />*/}
+      {/*  )}*/}
+      {/*  dropdownMenuContent={*/}
+      {/*    <Col>*/}
+      {/*      <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>*/}
+      {/*    </Col>*/}
+      {/*  }*/}
+      {/*  popoverClassName="bg-canvas-50"*/}
+      {/*/>*/}
 
       {includeRelationshipFilters && <>
 
@@ -398,6 +410,31 @@ export function DesktopFilters(props: {
         menuWidth="w-80"
       />
 
+      {/* SMOKER */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <LuCigarette className="h-4 w-4"/>
+                <SmokerFilterText
+                  is_smoker={filters.is_smoker}
+                  highlightedClass={open ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <Col className="mx-2 mb-4">
+            <SmokerFilter filters={filters} updateFilter={updateFilter}/>
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
       {/* LANGUAGES */}
       <CustomizeableDropdown
         buttonContent={(open) => (
@@ -427,7 +464,6 @@ export function DesktopFilters(props: {
 
       {/* Interests */}
       <CustomizeableDropdown
-        showNewBadge
         newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
@@ -462,7 +498,6 @@ export function DesktopFilters(props: {
 
       {/* Causes */}
       <CustomizeableDropdown
-        showNewBadge
         newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
@@ -497,7 +532,6 @@ export function DesktopFilters(props: {
 
       {/* Work */}
       <CustomizeableDropdown
-        showNewBadge
         newBadgeClassName={"-top-3 -left-2"}
         buttonContent={(open) => (
           <DropdownButton
@@ -612,31 +646,6 @@ export function DesktopFilters(props: {
         menuWidth="w-[350px] grid-cols-2"
       />
 
-      {/* SMOKER */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <LuCigarette className="h-4 w-4"/>
-                <SmokerFilterText
-                  is_smoker={filters.is_smoker}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <SmokerFilter filters={filters} updateFilter={updateFilter}/>
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
       {/* EDUCATION */}
       <CustomizeableDropdown
         buttonContent={(open: boolean) => (
@@ -661,20 +670,6 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
-
-      {/* Short Bios */}
-      <ShortBioToggle
-        updateFilter={updateFilter}
-        filters={filters}
-        hidden={false}
-      />
-
-      <button
-        className="text-ink-900 hover:text-primary-500 underline"
-        onClick={clearFilters}
-      >
-        {t('filter.reset', 'Reset filters')}
-      </button>
     </>
   )
 }

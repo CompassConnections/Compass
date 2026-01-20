@@ -35,7 +35,7 @@ async function getProfile(userId: string) {
     profile = await getProfileRow(userId, db)
     if (i > 0) await sleep(500)
     i++
-    if (i >= 8) {
+    if (i >= 40) {
       break
     }
   }
@@ -85,7 +85,7 @@ export const getStaticProps = async (props: GetStaticPropsContext<{
         notFoundCustomText:
           'The profile you are looking for is not on this site... or perhaps you just mistyped?',
       },
-      revalidate: 15,
+      revalidate: 1,
     }
   }
 
@@ -118,7 +118,7 @@ export const getStaticProps = async (props: GetStaticPropsContext<{
       props: {
         notFoundCustomText: `${user.username} hasn't created a profile yet.`,
       },
-      revalidate: 15,
+      revalidate: 1,
     }
   }
   // console.debug('profile', profile)

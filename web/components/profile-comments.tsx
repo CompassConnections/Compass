@@ -1,37 +1,36 @@
 import clsx from 'clsx'
-import { memo, ReactNode, useEffect, useRef, useState } from 'react'
+import {memo, ReactNode, useEffect, useRef, useState} from 'react'
 
-import { FlagIcon } from '@heroicons/react/outline'
-import { DotsHorizontalIcon, ReplyIcon } from '@heroicons/react/solid'
-import { buildArray } from 'common/util/array'
-import { toast } from 'react-hot-toast'
-import { ReportModal } from 'web/components/buttons/report-button'
+import {EyeOffIcon, FlagIcon} from '@heroicons/react/outline'
+import {DotsHorizontalIcon, ReplyIcon} from '@heroicons/react/solid'
+import {buildArray} from 'common/util/array'
+import {toast} from 'react-hot-toast'
+import {ReportModal} from 'web/components/buttons/report-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Avatar } from 'web/components/widgets/avatar'
-import { UserLink } from 'web/components/widgets/user-link'
-import { useEvent } from 'web/hooks/use-event'
-import { useUser } from 'web/hooks/use-user'
-import { firebaseLogin, User } from 'web/lib/firebase/users'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Avatar} from 'web/components/widgets/avatar'
+import {UserLink} from 'web/components/widgets/user-link'
+import {useEvent} from 'web/hooks/use-event'
+import {useUser} from 'web/hooks/use-user'
+import {firebaseLogin, User} from 'web/lib/firebase/users'
 import TriangleDownFillIcon from 'web/lib/icons/triangle-down-fill-icon.svg'
 import TriangleFillIcon from 'web/lib/icons/triangle-fill-icon.svg'
-import { scrollIntoViewCentered } from 'web/lib/util/scroll'
-import { Button, IconButton } from 'web/components/buttons/button'
-import { ReplyToggle } from 'web/components/comments/reply-toggle'
-import { Content, useTextEditor } from 'web/components/widgets/editor'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { type Comment } from 'common/comment'
-import { CommentInputTextArea } from 'web/components/comments/comment-input'
-import { Editor } from '@tiptap/react'
-import { track } from 'web/lib/service/analytics'
-import { api } from 'web/lib/api'
-import { RelativeTimestamp } from 'web/components/relative-timestamp'
-import { useAdmin } from 'web/hooks/use-admin'
-import { EyeOffIcon } from '@heroicons/react/outline'
-import { useProfileByUserId } from 'web/hooks/use-profile'
-import { MAX_COMMENT_LENGTH, ReplyToUserInfo } from 'common/comment'
-import { safeLocalStorage } from 'web/lib/util/local'
+import {scrollIntoViewCentered} from 'web/lib/util/scroll'
+import {Button, IconButton} from 'web/components/buttons/button'
+import {ReplyToggle} from 'web/components/comments/reply-toggle'
+import {Content, useTextEditor} from 'web/components/widgets/editor'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {type Comment, MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
+import {CommentInputTextArea} from 'web/components/comments/comment-input'
+import {Editor} from '@tiptap/react'
+import {track} from 'web/lib/service/analytics'
+import {api} from 'web/lib/api'
+import {RelativeTimestamp} from 'web/components/relative-timestamp'
+import {useAdmin} from 'web/hooks/use-admin'
+import {useProfileByUserId} from 'web/hooks/use-profile'
+import {safeLocalStorage} from 'web/lib/util/local'
+import {useT} from "web/lib/locale";
 
 export function ProfileProfileCommentThread(props: {
   onUser: User
@@ -391,6 +390,7 @@ export function ProfileCommentInput(props: {
     clearReply,
     trackingLocation,
   } = props
+  const t = useT()
   const user = useUser()
   const onSubmitComment = useEvent(async (editor: Editor) => {
     if (!user) {
@@ -414,7 +414,7 @@ export function ProfileCommentInput(props: {
       onSubmitComment={onSubmitComment}
       replyToUserInfo={replyToUserInfo}
       parentCommentId={parentCommentId}
-      placeholder="Write your endorsement..."
+      placeholder={t('profile.comments.placeholder', 'Write your endorsement...')}
       className={className}
     />
   )

@@ -1,6 +1,6 @@
-import { forwardRef, MouseEventHandler, ReactNode, Ref } from 'react'
+import {forwardRef, MouseEventHandler, ReactNode, Ref} from 'react'
 import clsx from 'clsx'
-import { LoadingIndicator } from 'web/components/widgets/loading-indicator'
+import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export type SizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 export type ColorType =
@@ -37,7 +37,7 @@ export const baseButtonClasses =
 
 const solid = 'disabled:bg-ink-300 text-white'
 export const outline =
-  'ring-2 ring-current hover:ring-transparent disabled:ring-ink-300 disabled:text-ink-300 hover:text-ink-0 disabled:bg-inherit'
+  'ring-1 ring-current ring-ink-300 disabled:ring-ink-300 disabled:text-ink-300 disabled:bg-inherit'
 const gradient = [solid, 'bg-gradient-to-r hover:saturate-150 disabled:bg-none']
 
 export function buttonClass(size: SizeType, color: ColorType) {
@@ -65,7 +65,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
     ],
     color === 'gray' &&
       'bg-ink-300 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-ink-200 dark:enabled:hover:bg-ink-400 hover:text-ink-1000',
-    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-ink-500'],
+    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-200'],
     color === 'gradient' && [gradient, 'from-primary-500 to-blue-400'],
     color === 'gradient-pink' && [gradient, 'from-primary-500 to-fuchsia-500'],
     color === 'gray-white' &&

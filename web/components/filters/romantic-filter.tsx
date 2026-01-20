@@ -43,6 +43,7 @@ export function RomanticFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedTypes,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

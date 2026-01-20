@@ -1,4 +1,4 @@
-import { filterDefined } from 'common/util/array'
+import {filterDefined} from 'common/util/array'
 
 export default function stringOrStringArrayToText(fields: {
   text: string[] | string | null | undefined
@@ -6,6 +6,7 @@ export default function stringOrStringArrayToText(fields: {
   postText?: string
   asSentence?: boolean
   capitalizeFirstLetterOption?: boolean
+  t: any
 }): string | null {
   const {
     text,
@@ -13,6 +14,7 @@ export default function stringOrStringArrayToText(fields: {
     postText = '',
     asSentence,
     capitalizeFirstLetterOption,
+    t,
   } = fields
 
   if (!text || text.length < 1) {
@@ -29,7 +31,7 @@ export default function stringOrStringArrayToText(fields: {
     if (asSentence) {
       formattedText =
         text.slice(0, -1).map(formatText).join(', ') +
-        (text.length > 1 ? ' and ' : '') +
+        (text.length > 1 ? ` ${t("common.and", "and")} ` : '') +
         formatText(text[text.length - 1])
     } else {
       formattedText = filterDefined(text).map(formatText).join(' • ')

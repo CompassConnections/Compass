@@ -18,38 +18,38 @@ import {StatusBar} from '@capacitor/status-bar'
 import {App} from '@capacitor/app'
 import {useRouter} from "next/navigation"
 import {Keyboard} from "@capacitor/keyboard"
-import {LiveUpdate} from "@capawesome/capacitor-live-update"
 import {IS_VERCEL} from "common/hosting/constants"
-import {getLocale, resetCachedLocale} from "web/lib/locale-cookie";
+import {getLocale, resetCachedLocale} from "web/lib/locale-cookie"
 import {I18nContext} from "web/lib/locale"
+import {updateStatusBar} from "web/hooks/use-theme";
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
-  // Note sure it's doing anything, though, need to check
+  // Note sure it's doing anything, though. Need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
-  // StatusBar.setStyle({style: Style.Light}).catch(console.warn)
 
   App.addListener('backButton', () => {
     window.dispatchEvent(new CustomEvent('appBackButton'))
   })
 
-  App.addListener("resume", async () => {
-    const newChannelName = 'default'
-    try {
-      await LiveUpdate.setChannel({channel: newChannelName})
-      console.log(`Device channel set to: ${newChannelName}`)
-    } catch (error) {
-      console.error('Failed to set channel', error)
-    }
-    const {nextBundleId} = await LiveUpdate.sync()
-    if (nextBundleId) {
-      // Ask the user if they want to apply the update immediately
-      const shouldReload = confirm("A new update is available. Would you like to install it?")
-      if (shouldReload) {
-        await LiveUpdate.reload()
-      }
-    }
-  })
+  // Remove live update as the free plan is very limited (100 live updates per year). Do releases on Play Store instead.
+  // App.addListener("resume", async () => {
+  //   const newChannelName = 'default'
+  //   try {
+  //     await LiveUpdate.setChannel({channel: newChannelName})
+  //     console.log(`Device channel set to: ${newChannelName}`)
+  //   } catch (error) {
+  //     console.error('Failed to set channel', error)
+  //   }
+  //   const {nextBundleId} = await LiveUpdate.sync()
+  //   if (nextBundleId) {
+  //     // Ask the user if they want to apply the update immediately
+  //     const shouldReload = confirm("A new update is available. Would you like to install it?")
+  //     if (shouldReload) {
+  //       await LiveUpdate.reload()
+  //     }
+  //   }
+  // })
 }
 
 
@@ -93,7 +93,7 @@ function MyApp(props: AppProps<PageProps>) {
   useHasLoaded()
   const router = useRouter()
 
-  const [locale, setLocaleState] = useState(getLocale());
+  const [locale, setLocaleState] = useState(getLocale())
   const setLocale = (newLocale: string) => {
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
     setLocaleState(newLocale)
@@ -112,6 +112,10 @@ function MyApp(props: AppProps<PageProps>) {
     return () => {
       Keyboard.removeAllListeners()
     }
+  }, [])
+
+  useEffect(() => {
+    updateStatusBar()
   }, [])
 
   useEffect(() => {

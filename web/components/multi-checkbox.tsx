@@ -23,7 +23,7 @@ export const MultiCheckbox = (props: {
   addPlaceholder?: string
   translationPrefix?: string
 }) => {
-  const { choices, selected, onChange, className, addOption, addPlaceholder, translationPrefix } = props
+  const {choices, selected, onChange, className, addOption, addPlaceholder, translationPrefix} = props
 
   // Keep a local merged copy to allow optimistic adds while remaining in sync with props
   const [localChoices, setLocalChoices] = useState<{ [key: string]: string }>(choices)
@@ -31,7 +31,7 @@ export const MultiCheckbox = (props: {
     setLocalChoices((prev) => {
       // If incoming choices changed, merge them with any locally added that still don't collide
       // Props should be source of truth on conflicts
-      return { ...prev, ...choices }
+      return {...prev, ...choices}
     })
   }, [choices])
 
@@ -44,12 +44,18 @@ export const MultiCheckbox = (props: {
 
   const t = useT()
 
+  const translateOption = (key: string, value: string) => {
+    if (!translationPrefix) return key
+    return t(`${translationPrefix}.${toKey(value)}`, key)
+  }
+
   // Filter visible options while typing a new option (case-insensitive label match)
   const filteredEntries = useMemo(() => {
     if (!addOption) return entries
-    const q = newLabel.trim().toLowerCase()
+    let q = newLabel.trim()
+    q = translateOption(q, q).toLowerCase()
     if (!q) return entries
-    return entries.filter(([key]) => key.toLowerCase().includes(q))
+    return entries.filter(([key, value]) => translateOption(key, value).toLowerCase().includes(q))
   }, [addOption, entries, newLabel])
 
   const submitAdd = async () => {
@@ -57,33 +63,37 @@ export const MultiCheckbox = (props: {
     const label = newLabel.trim()
     setError(null)
     if (!label) {
-      setError('Please enter a value.')
+      setError(t('multi-checkbox.enter_value', 'Please enter a value.'))
       return
     }
     // prevent duplicate by label or by value already selected
-    const lowerCaseChoices = Object.keys(localChoices).map((k: string) => k.toLowerCase())
-    if (lowerCaseChoices.includes(label.toLowerCase())) {
-      setError('That option already exists.')
-      // const key = Object.keys(lowerCaseChoices).find((k) => k.toLowerCase() === label.toLowerCase())
-      // if (!key) return
-      // setProfile('interests', [...(profile['interests'] ?? []), key])
+    const existingEntry = Object.entries(localChoices).find(([key, value]) =>
+      translateOption(key, value).toLowerCase() === translateOption(label, label).toLowerCase()
+    )
+
+    if (existingEntry) {
+      const [_, existingValue] = existingEntry
+      if (!selected.includes(existingValue)) {
+        onChange([...selected, existingValue])
+      }
+      setNewLabel('')
       return
     }
     setAdding(true)
     try {
       const result = addOption(label)
       if (!result) {
-        setError('Could not add option.')
+        setError(t('multi-checkbox.could_not_add', 'Could not add option.'))
         setAdding(false)
         return
       }
-      const { key, value } = typeof result === 'string' ? { key: label, value: result } : result
-      setLocalChoices((prev) => ({ ...prev, [key]: value }))
+      const {key, value} = typeof result === 'string' ? {key: label, value: result} : result
+      setLocalChoices((prev) => ({...prev, [key]: value}))
       // auto-select newly added option if not already selected
       if (!selected.includes(value)) onChange([...selected, value])
       setNewLabel('')
     } catch (e) {
-      setError('Failed to add option.')
+      setError(t('multi-checkbox.add_failed', 'Failed to add option.'))
     } finally {
       setAdding(false)
     }
@@ -119,7 +129,7 @@ export const MultiCheckbox = (props: {
         {filteredEntries.map(([key, value]) => (
           <Checkbox
             key={key}
-            label={translationPrefix ? t(`${translationPrefix}.${toKey(value)}`, key) : key}
+            label={translateOption(key, value)}
             checked={selected.includes(value)}
             toggle={(checked: boolean) => {
               if (checked) {
@@ -132,7 +142,9 @@ export const MultiCheckbox = (props: {
         ))}
       </Row>
       {addOption && newLabel.trim() && filteredEntries.length === 0 && (
-        <div className="px-2 text-sm text-ink-500">No matching options, feel free to add it.</div>
+        <div className="px-2 text-sm text-ink-500">
+          {t('multi-checkbox.no_matching_options', 'No matching options, feel free to add it.')}
+        </div>
       )}
     </div>
   )

@@ -37,6 +37,7 @@ export function EducationFilterText(props: {
         {stringOrStringArrayToText({
           text: convertedTypes,
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

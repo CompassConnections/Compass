@@ -61,12 +61,12 @@ export function KidsLabel(props: {
   highlightedClass?: string
   mobile?: boolean
 }) {
-  const {strength, highlightedClass, mobile} = props
+  const {strength, highlightedClass} = props
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
     <Row className="items-center gap-0.5">
-      <WantsKidsIcon strength={strength} className={clsx('hidden sm:inline')}/>
+      <WantsKidsIcon strength={strength} className={clsx('')}/>
       <span
         className={clsx(
           strength != wantsKidsLabelsWithIcon.no_preference.strength && 'font-semibold',
@@ -74,16 +74,10 @@ export function KidsLabel(props: {
         )}
       >
         {strength == wantsKidsLabelsWithIcon.no_preference.strength
-          ? mobile
-            ? wantsKidsLabelsWithIcon.no_preference.shortName
-            : wantsKidsLabelsWithIcon.no_preference.name
+          ? wantsKidsLabelsWithIcon.no_preference.name
           : strength == wantsKidsLabelsWithIcon.wants_kids.strength
-            ? mobile
-              ? wantsKidsLabelsWithIcon.wants_kids.shortName
-              : wantsKidsLabelsWithIcon.wants_kids.name
-            : mobile
-              ? wantsKidsLabelsWithIcon.doesnt_want_kids.shortName
-              : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
+            ? wantsKidsLabelsWithIcon.wants_kids.name
+            : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
       </span>
     </Row>
   )

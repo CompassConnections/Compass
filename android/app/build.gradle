@@ -8,8 +8,8 @@ android {
         applicationId "com.compassconnections.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 18
-        versionName "1.1.6"
+        versionCode 23
+        versionName "1.1.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -52,6 +52,9 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:21.4.0'
     implementation 'com.google.firebase:firebase-auth:24.0.1'
+
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
 }
 
 apply from: 'capacitor.build.gradle'

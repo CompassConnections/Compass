@@ -15,7 +15,7 @@ import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {PageBase} from "web/components/page-base";
 import {SEO} from "web/components/SEO";
-import {useT} from 'web/lib/locale'
+import {useLocale, useT} from 'web/lib/locale'
 
 export default function SignupPage() {
   const t = useT()
@@ -55,9 +55,13 @@ export default function SignupPage() {
     }
   }, [user, holdLoading])
 
+  const {locale} = useLocale()
+  const language = {en: 'english', fr: 'french'}[locale]
+
   // Omit the id, created_time?
   const [profileForm, setProfileForm] = useState<ProfileWithoutUser>({
     ...initialRequiredState,
+    languages: language ? [language] : [],
   } as any)
   const setProfileState = (key: keyof ProfileWithoutUser, value: any) => {
     setProfileForm((prevState) => ({...prevState, [key]: value}))

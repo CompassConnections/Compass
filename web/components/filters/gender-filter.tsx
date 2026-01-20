@@ -18,7 +18,7 @@ export function GenderFilterText(props: {
     return (
       <span>
         <span className={clsx('text-semibold', highlightedClass)}>{t('filter.gender.any', 'Any')}</span>{' '}
-        <span className="hidden sm:inline">{t('filter.gender.gender', 'gender')}</span>
+        <span className="">{t('filter.gender.gender', 'gender')}</span>
       </span>
     )
   }

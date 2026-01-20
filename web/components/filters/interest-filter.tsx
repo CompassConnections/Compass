@@ -39,6 +39,7 @@ export function InterestFilterText(props: {
         {stringOrStringArrayToText({
           text: options.map((o) => t(`profile.${label}.${toKey(o)}`, o)),
           capitalizeFirstLetterOption: true,
+          t: t,
         })}{' '}
       </span>
     </div>

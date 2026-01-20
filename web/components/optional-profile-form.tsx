@@ -571,27 +571,6 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <AddOptionEntry
-          title={t('profile.optional.work', 'Work Area')}
-          choices={workChoices}
-          setChoices={setWorkChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'work'}
-        />
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.company', 'Company')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('company', e.target.value)}
-            className={'w-52'}
-            value={profile['company'] ?? undefined}
-          />
-        </Col>
-
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {profile['company']
@@ -605,6 +584,27 @@ export const OptionalProfileUserForm = (props: {
             value={profile['occupation_title'] ?? undefined}
           />
         </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.company', 'Company')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('company', e.target.value)}
+            className={'w-52'}
+            value={profile['company'] ?? undefined}
+          />
+        </Col>
+
+        <AddOptionEntry
+          title={t('profile.optional.work', 'Work Area')}
+          choices={workChoices}
+          setChoices={setWorkChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'work'}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>

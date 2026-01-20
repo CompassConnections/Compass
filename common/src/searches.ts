@@ -13,6 +13,7 @@ const filterLabels: Record<string, string> = {
   pref_age_min: "Min age",
   drinks_max: "Max drinks",
   drinks_min: "Min drinks",
+  relationship_status: "",
   has_kids: "",
   wants_kids_strength: "Kids",
   is_smoker: "",

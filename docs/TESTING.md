@@ -12,6 +12,21 @@ Best Practices
 * Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
 * Don't write end-to-end tests for features that change frequently unless absolutely necessary.
 
+#### Folder Structure
+
+```filetree
+backend/
+├── src/
+│   ├── controllers/
+│   │   └── index.ts
+│   └── index.ts
+└── test/
+    ├── unit/
+    │   └── example.unit.test.ts
+    └── integration/
+        └── example.integration.test.ts
+```
+
 ## Jest Unit Testing Guide
 
 ### Overview

@@ -263,7 +263,7 @@ describe('functionUnderTest', () => {
 
 When mocking modules it's important to verify what was returned if applicable, the amount of times said module was called and what it was called with.
 
-```text
+```tsx
 //functionFile.ts
 import { module as mockedDep } from "path/to/module"
 

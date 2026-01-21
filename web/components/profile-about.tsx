@@ -32,7 +32,7 @@ import {ClockIcon} from "@heroicons/react/solid";
 import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
-import {useT} from "web/lib/locale";
+import {useLocale, useT} from "web/lib/locale";
 import {toKey} from "common/parsing";
 
 export function AboutRow(props: {
@@ -342,12 +342,13 @@ function WantsKids(props: { profile: Profile }) {
 
 function LastOnline(props: { lastOnlineTime?: string }) {
   const t = useT()
+  const {locale} = useLocale()
   const {lastOnlineTime} = props
   if (!lastOnlineTime) return null
   return (
     <AboutRow
       icon={<ClockIcon className="h-5 w-5"/>}
-      text={t('profile.last_online', 'Last online {time}', {time: fromNow(lastOnlineTime, true)})}
+      text={t('profile.last_online', 'Last online {time}', {time: fromNow(lastOnlineTime, true, t, locale)})}
     />
   )
 }

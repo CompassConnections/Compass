@@ -21,7 +21,9 @@ import {Keyboard} from "@capacitor/keyboard"
 import {IS_VERCEL} from "common/hosting/constants"
 import {getLocale, resetCachedLocale} from "web/lib/locale-cookie"
 import {I18nContext} from "web/lib/locale"
-import {updateStatusBar} from "web/hooks/use-theme";
+import {updateStatusBar} from "web/hooks/use-theme"
+import {DAYJS_LOCALE_IMPORTS} from "web/lib/dayjs";
+import 'web/lib/dayjs'
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -98,6 +100,7 @@ function MyApp(props: AppProps<PageProps>) {
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
     setLocaleState(newLocale)
     resetCachedLocale()
+    DAYJS_LOCALE_IMPORTS[newLocale]?.()
   }
 
   useEffect(() => {

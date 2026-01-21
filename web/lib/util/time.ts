@@ -1,12 +1,13 @@
 import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import 'web/lib/dayjs'
 
-dayjs.extend(relativeTime)
 
-export function fromNow(time: number | string | Date, privacy: boolean = false) {
-  const date = dayjs(time);
+export function fromNow(time: number | string | Date, privacy: boolean = false, t: any = undefined, locale: string | null = null) {
+  let date = dayjs(time)
+  if (locale) date = date.locale(locale)
   if (privacy && dayjs().diff(date, 'hour') < 24) {
-    return 'in the past day';
+    const defaultPastDay = 'in the past day';
+    return t ? t('common.from-now.past_day', defaultPastDay) : defaultPastDay
   }
   return date.fromNow();
 }

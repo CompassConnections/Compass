@@ -270,7 +270,9 @@ import { module as mockedDep } from "path/to/module"
 export const functionUnderTest = async (param) => {
     return await mockedDep(param);
 };
-// ---
+```
+
+```tsx
 //testFile.unit.test.ts
 import { functionUnderTest } from "path/to/function";
 import { module as mockedDep } from "path/to/module";
@@ -407,8 +409,9 @@ const result = await functionName(param);
 if (!result) {
     throw new Error (403, 'Error text', error);
 };
+```
 
-// ---
+```tsx
 //testFile.unit.test.ts
 const mockParam = {} as any;
 
@@ -417,7 +420,6 @@ expect(functionName(mockParam))
     .rejects
     .toThrowError('Error text');
 
-// ---
 //This will check the complete error
 try {
     await functionName(mockParam);
@@ -429,8 +431,9 @@ try {
     expect(functionError.details).toBe(mockParam);
     expect(functionError.name).toBe('Error');
 }
+```
 
-// ---
+```tsx
 //For console.error types
 console.error('Error message', error);
 
@@ -451,8 +454,9 @@ expect(errorSpy).toHaveBeenCalledWith(
 const exampleArray = [ 1, 2, 3, 4, 5 ];
 
 const arrayResult = exampleArray.includes(2);
+```
 
-// ----
+```tsx
 //testFile.unit.test.ts
 
 //This will mock 'includes' for all arrays and force the return value to be true

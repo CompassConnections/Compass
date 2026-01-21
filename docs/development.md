@@ -8,6 +8,7 @@ See those other useful documents as well:
 - [README.md](../backend/api/README.md) for the backend API
 - [README.md](../backend/email/README.md) for the email routines and how to set up a local server for quick email rendering
 - [README.md](../web/README.md) for the frontend / web server
+- [TESTING.md](TESTING.md) for testing guidance and direction
 
 ### Adding a new profile field
 
@@ -41,16 +42,3 @@ Adding a new language is very easy, especially with translating tools like large
 - Duplicate the [fr](../web/public/md/fr) folder and rename it to the locale code (e.g., `de` for German). Translate all the markdown files in the new folder. To do so, you can copy-paste each file into an LLM and ask it to `translate the markdown above to <new language>`.
 
 That's all, no code needed!
-
-### Cover with tests
-
-Best Practices
-
-* Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very critical behavior.
-* Use msw to Mock APIs. Don't manually mock fetch—use msw to simulate realistic behavior, including network delays and errors.
-* Don’t Overuse Snapshots. Snapshots are fragile and often meaningless unless used sparingly (e.g., for JSON response schemas).
-* Prefer userEvent Over fireEvent. It simulates real user interactions more accurately.
-* Avoid Testing Next.js Internals . You don’t need to test getStaticProps, getServerSideProps themselves—test what they render.
-* Use jest.spyOn() for Internal Utilities . Avoid reaching into modules you don’t own.
-* Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
-* Don't write end-to-end tests for features that change frequently unless absolutely necessary.

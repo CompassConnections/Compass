@@ -1,37 +1,143 @@
-## Testing
+# Testing
 
-#### Cover with tests
+### Why we test
 
-Best Practices
+Testing exists to give us fast, reliable feedback about real behavior so we can ship with confidence.
 
-* Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very critical behavior.
-* Use msw to Mock APIs. Don't manually mock fetch—use msw to simulate realistic behavior, including network delays and errors.
-* Don’t Overuse Snapshots. Snapshots are fragile and often meaningless unless used sparingly (e.g., for JSON response schemas).
-* Prefer userEvent Over fireEvent. It simulates real user interactions more accurately.
-* Avoid Testing Next.js Internals . You don’t need to test getStaticProps, getServerSideProps themselves-test what they render.
-* Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
-* Don't write end-to-end tests for features that change frequently unless absolutely necessary.
+- Prevent regressions: Lock in correct behavior so future changes don’t silently break working features.
+- Enable safe refactoring: A trustworthy suite lets us improve design without fear.
+- Document intent: Tests act as living examples of how modules and components are expected to work.
+- Catch edge cases early: Exercise unhappy paths, timeouts, and integration boundaries before production.
+- Increase release confidence: Unit/integration tests plus a few critical E2E flows gate deployments.
 
-#### Folder Structure
+What testing is not
+
+- Not a replacement for monitoring, logging, or manual exploratory testing.
+- Not a quest for 100% coverage—optimize for meaningful scenarios over raw numbers.
+
+How we apply it here
+
+- Unit and integration tests live in each package and run with Jest (see `jest.config.js`).
+- Critical user journeys are covered by Playwright E2E tests under `tests/e2e` (see `playwright.config.ts`).
+
+### Test types at a glance
+
+This project uses three complementary test types. Use the right level for the job:
+
+- Unit tests
+    - Purpose: Verify a single function/module in isolation; fast, deterministic.
+    - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
+      etc.).
+    - Runner: Jest (configured via root `jest.config.js`).
+    - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
+    - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
+
+- Integration tests
+    - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
+      spinning up the full app.
+    - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
+    - Runner: Jest (configured via root `jest.config.js`).
+    - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
+    - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
+      component trees with providers.
+
+- End-to-End (E2E) tests
+    - Purpose: Validate real user flows across the full stack.
+    - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
+    - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
+    - Naming: `*.e2e.spec.ts`.
+    - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
+
+Quick commands
+
+```bash
+# Jest (unit + integration)
+yarn test
+
+# Playwright (E2E)
+yarn test:e2e
+```
+
+### Where to put test files
 
 ```filetree
+# Config
+jest.config.js (for unit and integration tests)
+playwright.config.ts (for e2e tests)
+
+# Top-level End-to-End (Playwright)
+tests/
+├── e2e/
+│   ├── web/
+│   │   ├── pages/
+│   │   └── specs/
+│   │       └── example.e2e.spec.ts
+│   └── backend/
+│       └── specs/
+│           └── api.e2e.spec.ts
+└── reports/
+    └── playwright-report/
+
+# Package-level Unit & Integration (Jest)
 backend/
-├── src/
-│   ├── controllers/
-│   │   └── index.ts
-│   └── index.ts
-└── test/
+├── api/
+│   ├── src/
+│   └── tests/
+│       ├── unit/
+│       │   └── example.unit.test.ts
+│       └── integration/
+│           └── example.integration.test.ts
+├── email/
+│   └── tests/
+│       ├── unit/
+│       └── integration/
+└── shared/
+    └── tests/
+        ├── unit/
+        └── integration/
+
+common/
+└── tests/
     ├── unit/
     │   └── example.unit.test.ts
     └── integration/
         └── example.integration.test.ts
+
+web/
+└── tests/
+    ├── unit/
+    │   └── example.unit.test.tsx
+    └── integration/
+        └── example.integration.test.tsx
 ```
 
-## Jest Unit Testing Guide
+- End-to-End tests live under `tests/e2e` and are executed by Playwright. The root `playwright.config.ts` sets `testDir`
+  to `./tests/e2e`.
+- Unit and integration tests live in each package’s `tests` folder and are executed by Jest via the root
+  `jest.config.js` projects array.
+- Naming:
+    - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
+    - Integration: `*.integration.test.ts`
+    - E2E (Playwright): `*.e2e.spec.ts`
 
-### Overview
+### Best Practices
 
-This guide provides guidlines and best practices for writing unit tests using Jest in this project. Following these standards ensures consistency, maintainability, and comprehensive test coverage.
+* Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very
+  critical behavior.
+* Use msw to Mock APIs. Don't manually mock fetch—use msw to simulate realistic behavior, including network delays and
+  errors.
+* Don’t Overuse Snapshots. Snapshots are fragile and often meaningless unless used sparingly (e.g., for JSON response
+  schemas).
+* Prefer userEvent Over fireEvent. It simulates real user interactions more accurately.
+* Avoid Testing Next.js Internals . You don’t need to test getStaticProps, getServerSideProps themselves-test what they
+  render.
+* Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
+* Don't write end-to-end tests for features that change frequently unless absolutely necessary.
+
+### Jest Unit Testing Guide
+
+This guide provides guidelines and best practices for writing unit tests using Jest in this project. Following these
+standards ensures consistency, maintainability, and comprehensive test coverage.
 
 #### Best Practices
 
@@ -51,59 +157,55 @@ yarn test path/to/test.unit.test.ts
 ```
 #### Test Standards
 - Test file names should convey what to expect
-    - Follow the pattern: "exact-filename.`type of test e.g. unit, integration ect...`.test.ts"
-        > function-under-test.unit.test.ts
-        > function-under-test.integration.test.ts
+    - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
+        - filename.unit.test.ts
+        - filename.integration.test.ts
 - Group related tests using describe blocks
 - Use descriptive test names that explain the expected behavior.
-    - Follow the pattern: "should `expected behavior` [relevant modifier]" 
-        > should `ban user` [with matching user id]
-        > should `ban user` [with matching user name]
+    - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
+        - should `ban user` [with matching user id]
+        - should `ban user` [with matching user name]
 
-#### Basic Test Structure
+#### Mocking
 
-Jest automatically hoists all `jest.mock()` calls to the top of the file before imports are evaluated. To maintain clarity and align with best practices, explicitly place `jest.mock()` calls at the very top of the file.
+Mocking means replacing a real dependency (like a module, function, API client, timer, or browser API) with a
+controllable test double so your test can run quickly and deterministically, without calling the real thing. In unit
+tests we use mocks to isolate the unit under test; in integration tests we selectively mock only the expensive or
+unstable edges (e.g., network, filesystem) while exercising real collaborations.
 
-Modules mocked this way automatically return `undefined`, which is useful for simplifying tests. If a module or function’s return value isn’t used, there’s no need to mock it further.
+What to mock vs not to mock
 
-```tsx
-//Function and module mocks
-jest.mock('path/to/module');
+- Mock: network/HTTP calls, databases/ORM clients, email/SMS providers, time and randomness (`Date`, timers,
+  `Math.random`), browser APIs that are hard to reproduce in Node (e.g., `localStorage`, `IntersectionObserver`).
+- Prefer real: pure functions, small utilities, reducers/selectors, simple components; let their real logic run so tests
+  actually verify behavior.
+- Don’t over-mock: If you mock everything, you only test your mocks. Keep integration tests that hit real boundaries
+  inside the process.
 
-//Function and module imports
-import { functionUnderTest } from "path/to/function"
-import { module } from "path/to/module"
+Common test doubles
 
-describe('functionUnderTest', () => {
-    //Setup
-    beforeEach(() => {
-        //Run before each test
-        jest.resetAllMocks(); // Resets any mocks from previous tests
-    });
-    afterEach(() => {
-        //Run after each test
-        jest.restoreAllMocks(); // Cleans up between tests
-    });
-    
-    describe('when given valid input', () => {
-        it('should describe what is being tested', async () => {
-            //Arrange: Setup test data
-            const mockData = 'test';
-            
-            //Act: Execute the function under test
-            const result = myFunction(mockData);
+- Stub: a function that returns a fixed value (no assertions on how it was used).
+- Spy: records how a function was called (calls count/args); may optionally change behavior.
+- Mock: a spy with expectations about how it must be called; in Jest, `jest.fn()` and `jest.spyOn()` produce mock
+  functions you can assert on.
+- Fake: a lightweight in-memory implementation (e.g., an in-memory repo) used instead of the real service.
 
-            //Assert: Verify the result
-            expect(result).toBe('expected');
-        });
-    });
-    
-    describe('when an error occurs', () => {
-        //Test cases for errors
-    });
-});
-```
-##### Mocking
+Jest quick reference
+
+- Module mock: `jest.mock('path/to/module')` to replace all exports with mock functions. Control behavior with
+  `(exportedFn as jest.Mock).mockReturnValue(...)` or `.mockResolvedValue(...)` for async.
+- Function mock: `const fn = jest.fn()`; set behavior with `.mockReturnValue`, `.mockImplementation`.
+- Spy on existing method: `const spy = jest.spyOn(obj, 'method')` and optionally `spy.mockImplementation(...)`.
+- Timers/time: `jest.useFakeTimers(); jest.setSystemTime(new Date('2024-01-01'));` and advance with
+  `jest.advanceTimersByTime(ms)`; finally `jest.useRealTimers()`.
+- Clearing: `jest.clearAllMocks()` (between tests) vs `jest.resetAllMocks()` (reset implementations) vs
+  `jest.restoreAllMocks()` (restore spied originals).
+
+When writing mocks, assert both outcome and interaction:
+
+- Outcome: what your function returned or what side-effect occurred.
+- Interaction: that dependencies were called the expected number of times and with the right arguments.
+
 Why mocking is important?
 - *Isolation* - Test your code independently of databases, APIs, and external systems. Tests only fail when your code breaks, not when a server is down.
 - *Speed* - Mocked tests run in milliseconds vs. seconds for real network/database calls. Run your suite constantly without waiting.
@@ -111,23 +213,68 @@ Why mocking is important?
 - *Reliability* - Eliminate unpredictable failures from network issues, rate limits, or changing external data. Same inputs = same results, every time.
 - *Focus* - Verify your function's logic and how it uses its dependencies, without requiring those dependencies to actually work yet.
 
+###### Use `jest.mock()`
+
+Jest automatically hoists all `jest.mock()` calls to the top of the file before imports are evaluated. To maintain
+clarity and align with best practices, explicitly place `jest.mock()` calls at the very top of the file.
+
+Modules mocked this way automatically return `undefined`, which is useful for simplifying tests. If a module or
+function’s return value isn’t used, there’s no need to mock it further.
+
+```tsx
+//Function and module mocks
+jest.mock('path/to/module');
+
+//Function and module imports
+import {functionUnderTest} from "path/to/function"
+import {module} from "path/to/module"
+
+describe('functionUnderTest', () => {
+  //Setup
+  beforeEach(() => {
+    //Run before each test
+    jest.resetAllMocks(); // Resets any mocks from previous tests
+  });
+  afterEach(() => {
+    //Run after each test
+    jest.restoreAllMocks(); // Cleans up between tests
+  });
+
+  describe('when given valid input', () => {
+    it('should describe what is being tested', async () => {
+      //Arrange: Setup test data
+      const mockData = 'test';
+
+      //Act: Execute the function under test
+      const result = myFunction(mockData);
+
+      //Assert: Verify the result
+      expect(result).toBe('expected');
+    });
+  });
+
+  describe('when an error occurs', () => {
+    //Test cases for errors
+  });
+});
+```
+
 ###### Modules
 
 When mocking modules it's important to verify what was returned if applicable, the amount of times said module was called and what it was called with.
 
-```tsx
+```text
 //functionFile.ts
-import { module } from "path/to/module"
+import { module as mockedDep } from "path/to/module"
 
 export const functionUnderTest = async (param) => {
-    return await module(param);
+    return await mockedDep(param);
 };
----
+// ---
 //testFile.unit.test.ts
+import { functionUnderTest } from "path/to/function";
+import { module as mockedDep } from "path/to/module";
 jest.mock('path/to/module');
-
-import { functionUnderTest } from "path/to/function"
-import { module } from "path/to/module"
 
 /**
  * Inside the test case
@@ -149,7 +296,8 @@ expect(result).toBe(mockReturnValue);
 expect(module).toBeCalledTimes(1);
 expect(module).toBeCalledWith(mockParam);
 ```
-Use namespace imports what you want to import everything a module exports under a single name.
+
+Use namespace imports when you want to import everything a module exports under a single name.
 
 ```tsx
 //moduleFile.ts
@@ -249,7 +397,8 @@ describe('functionUnderTest', () => {
     expect(mockDependency.module).toBeCalledWith(mockParam);
 });
 ```
-Error checking
+
+###### Error checking
 
 ```tsx
 //function.ts
@@ -259,7 +408,7 @@ if (!result) {
     throw new Error (403, 'Error text', error);
 };
 
----
+// ---
 //testFile.unit.test.ts
 const mockParam = {} as any;
 
@@ -268,7 +417,7 @@ expect(functionName(mockParam))
     .rejects
     .toThrowError('Error text');
 
----
+// ---
 //This will check the complete error
 try {
     await functionName(mockParam);
@@ -276,12 +425,12 @@ try {
 } catch (error) {
     const functionError = error as Error;
     expect(functionError.code).toBe(403);
-    expect(functionError.nessage).toBe('Error text');
+  expect(functionError.message).toBe('Error text');
     expect(functionError.details).toBe(mockParam);
     expect(functionError.name).toBe('Error');
 }
 
----
+// ---
 //For console.error types
 console.error('Error message', error);
 
@@ -294,7 +443,8 @@ expect(errorSpy).toHaveBeenCalledWith(
 );
 
 ```
-Mocking array return value
+
+###### Mocking array return value
 
 ```tsx
 //arrayFile.ts
@@ -302,13 +452,13 @@ const exampleArray = [ 1, 2, 3, 4, 5 ];
 
 const arrayResult = exampleArray.includes(2);
 
-----
+// ----
 //testFile.unit.test.ts
 
 //This will mock 'includes' for all arrays and force the return value to be true
 jest.spyOn(Array.prototype, 'includes').mockReturnValue(true);
 
----
+// ---
 //This will specify which 'includes' array to mock based on the args passed into the .includes()
 jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
   if (value === 2) {
@@ -317,3 +467,7 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
   return false;
 });
 ```
+
+### Playwright (E2E) Testing Guide
+
+TODO

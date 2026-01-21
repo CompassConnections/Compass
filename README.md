@@ -4,7 +4,7 @@
 [![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
 [![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
-[![Users](https://img.shields.io/badge/Users-400%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
+[![Users](https://img.shields.io/badge/Users-500%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 # Compass
 
@@ -158,6 +158,7 @@ There is a lof of documentation in the [docs](docs) folder and across the repo, 
 - [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
 - [development.md](docs/development.md) for additional instructions, such as adding new profile fields or languages.
+- [TESTING.md](docs/TESTING.md) for how to write tests.
 - [web](web) for the web.
 - [backend/api](backend/api) for the backend API.
 - [android](android) for the Android app.

@@ -6,7 +6,7 @@ import {colClassName, labelClassName} from "web/pages/signup";
 import {MultiCheckbox} from "web/components/multi-checkbox";
 
 export function AddOptionEntry(props: {
-  title: string
+  title?: string
   choices: { [key: string]: string }
   setChoices: (choices: any) => void
   profile: ProfileWithoutUser,
@@ -15,7 +15,7 @@ export function AddOptionEntry(props: {
 }) {
   const {profile, setProfile, label, choices, setChoices, title} = props
   return <Col className={clsx(colClassName)}>
-    <label className={clsx(labelClassName)}>{title}</label>
+    {title && <label className={clsx(labelClassName)}>{title}</label>}
     <MultiCheckbox
       choices={choices}
       selected={profile[label] ?? []}

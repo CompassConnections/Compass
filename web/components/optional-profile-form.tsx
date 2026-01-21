@@ -206,12 +206,11 @@ export const OptionalProfileUserForm = (props: {
       {/*  </Button>*/}
       {/*</Row>*/}
 
-      <Title>{t('profile.optional.title', 'More about me')}</Title>
-      <div className="text-ink-500 mb-6 text-lg">
-        {t('profile.optional.subtitle', 'Optional information')}
-      </div>
+      <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
+
+        <Category title={t('profile.optional.category.personal_info', 'Personal Information')} className={'mt-0'}/>
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -243,6 +242,19 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
+        <Row className={'items-center gap-2'}>
+          <Col className={'gap-1'}>
+            <label className={clsx(labelClassName)}>
+              {t('profile.optional.gender', 'Gender')}
+            </label>
+            <ChoicesToggleGroup
+              currentChoice={profile['gender']}
+              choicesMap={Object.fromEntries(Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]))}
+              setChoice={(c) => setProfile('gender', c)}
+            />
+          </Col>
+        </Row>
+
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {t('profile.optional.age', 'Age')}
@@ -257,18 +269,87 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Row className={'items-center gap-2'}>
-          <Col className={'gap-1'}>
-            <label className={clsx(labelClassName)}>
-              {t('profile.optional.gender', 'Gender')}
-            </label>
-            <ChoicesToggleGroup
-              currentChoice={profile['gender']}
-              choicesMap={Object.fromEntries(Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]))}
-              setChoice={(c) => setProfile('gender', c)}
-            />
-          </Col>
-        </Row>
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.height', 'Height')}
+          </label>
+          <Row className={'gap-2'}>
+            <Col>
+              <span>{t('profile.optional.feet', 'Feet')}</span>
+              <Input
+                type="number"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    setHeightFeet(undefined)
+                  } else {
+                    setHeightFeet(Number(e.target.value))
+                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
+                    setProfile('height_in_inches', heightInInches)
+                  }
+                }}
+                className={'w-16'}
+                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
+              />
+            </Col>
+            <Col>
+              <span>{t('profile.optional.inches', 'Inches')}</span>
+              <Input
+                type="number"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    setHeightInches(undefined)
+                  } else {
+                    setHeightInches(Number(e.target.value))
+                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
+                    setProfile('height_in_inches', heightInInches)
+                  }
+                }}
+                className={'w-16'}
+                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
+              />
+            </Col>
+            <div className="self-end mb-2 text-ink-700 mx-2">
+              {t('common.or', 'OR').toUpperCase()}
+            </div>
+            <Col>
+              <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
+              <Input
+                type="number"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    setHeightFeet(undefined)
+                    setHeightInches(undefined)
+                    setProfile('height_in_inches', null)
+                  } else {
+                    // Convert cm to inches
+                    const totalInches = Number(e.target.value) / 2.54
+                    setHeightFeet(Math.floor(totalInches / 12))
+                    setHeightInches(totalInches % 12)
+                    setProfile('height_in_inches', totalInches)
+                  }
+                }}
+                className={'w-20'}
+                value={heightFeet !== undefined
+                  ? Math.round((heightFeet * 12 + (heightInches ?? 0)) * 2.54)
+                  : ''}
+              />
+            </Col>
+          </Row>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.ethnicity', 'Ethnicity/origin')}
+          </label>
+          <MultiCheckbox
+            choices={RACE_CHOICES}
+            translationPrefix={'profile.race'}
+            selected={profile['ethnicity'] ?? []}
+            onChange={(selected) => setProfile('ethnicity', selected)}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")}/>
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -343,6 +424,8 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        <Category title={t('profile.optional.category.relationships', "Relationships")}/>
+
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {t('profile.optional.relationship_status', 'Relationship status')}
@@ -370,19 +453,7 @@ export const OptionalProfileUserForm = (props: {
                 />
             </Col>
 
-            <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>
-                  {t('profile.optional.want_kids', 'I would like to have kids')}
-                </label>
-                <RadioToggleGroup
-                    className={'w-44'}
-                    choicesMap={Object.fromEntries(Object.entries(MultipleChoiceOptions).map(([k, v]) => [t(`profile.wants_kids_${v}`, k), v]))}
-                    setChoice={(choice) => {
-                      setProfile('wants_kids_strength', choice)
-                    }}
-                    currentChoice={profile.wants_kids_strength ?? -1}
-                />
-            </Col>
+            <Category title={t('profile.optional.category.family', "Family")}/>
 
             <Col className={clsx(colClassName)}>
                 <label className={clsx(labelClassName)}>
@@ -400,12 +471,253 @@ export const OptionalProfileUserForm = (props: {
                     value={profile['has_kids'] ?? undefined}
                 />
             </Col>
+
+            <Col className={clsx(colClassName)}>
+                <label className={clsx(labelClassName)}>
+                  {t('profile.optional.want_kids', 'I would like to have kids')}
+                </label>
+                <RadioToggleGroup
+                    className={'w-44'}
+                    choicesMap={Object.fromEntries(Object.entries(MultipleChoiceOptions).map(([k, v]) => [t(`profile.wants_kids_${v}`, k), v]))}
+                    setChoice={(choice) => {
+                      setProfile('wants_kids_strength', choice)
+                    }}
+                    currentChoice={profile.wants_kids_strength ?? -1}
+                />
+            </Col>
         </>}
 
-        <Col className={clsx(colClassName, 'pb-4')}>
+        <Category title={t('profile.optional.languages', 'Languages')}/>
+
+        <Col className={clsx(colClassName)}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.languages', 'Languages')}*/}
+          {/*</label>*/}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="col-span-full max-h-60 overflow-y-auto w-full">
+                <MultiCheckbox
+                  choices={LANGUAGE_CHOICES}
+                  selected={profile.languages || []}
+                  translationPrefix={'profile.language'}
+                  onChange={(selected) => setProfile('languages', selected)}
+                />
+              </div>
+            </div>
+          </div>
+        </Col>
+
+        <Category title={t('profile.optional.political_beliefs', 'Political beliefs')}/>
+
+        <Col className={clsx(colClassName)}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.political_beliefs', 'Political beliefs')}*/}
+          {/*</label>*/}
+          <MultiCheckbox
+            choices={POLITICAL_CHOICES}
+            selected={profile['political_beliefs'] ?? []}
+            translationPrefix={'profile.political'}
+            onChange={(selected) => setProfile('political_beliefs', selected)}
+          />
+          <p>{t('profile.optional.details', 'Details')}</p>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('political_details', e.target.value)}
+            className={'w-full sm:w-96'}
+            value={profile['political_details'] ?? undefined}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.religious_beliefs', 'Religious beliefs')}/>
+
+        <Col className={clsx(colClassName)}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.religious_beliefs', 'Religious beliefs')}*/}
+          {/*</label>*/}
+          <MultiCheckbox
+            choices={RELIGION_CHOICES}
+            selected={profile['religion'] ?? []}
+            translationPrefix={'profile.religion'}
+            onChange={(selected) => setProfile('religion', selected)}
+          />
+          <p>{t('profile.optional.details', 'Details')}</p>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('religious_beliefs', e.target.value)}
+            className={'w-full sm:w-96'}
+            value={profile['religious_beliefs'] ?? undefined}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.interests', 'Interests')}/>
+        <AddOptionEntry
+          // title={t('profile.optional.interests', 'Interests')}
+          choices={interestChoices}
+          setChoices={setInterestChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'interests'}
+        />
+
+        <Category title={t('profile.optional.category.morality', 'Morality')}/>
+        <AddOptionEntry
+          title={t('profile.optional.causes', 'Causes')}
+          choices={causeChoices}
+          setChoices={setCauseChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'causes'}
+        />
+
+        <Category title={t('profile.optional.category.psychology', 'Psychology')}/>
+        <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>
-            {t('profile.optional.socials', 'Socials')}
+            {t('profile.optional.mbti', 'MBTI Personality Type')}
           </label>
+          <ChoicesToggleGroup
+            currentChoice={profile['mbti'] ?? ''}
+            choicesMap={MBTI_CHOICES}
+            setChoice={(c) => setProfile('mbti', c)}
+            className="grid grid-cols-4 xs:grid-cols-8"
+          />
+        </Col>
+
+        <Category title={t('profile.optional.diet', 'Diet')}/>
+
+        <Col className={clsx(colClassName)}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.diet', 'Diet')}*/}
+          {/*</label>*/}
+          <MultiCheckbox
+            choices={DIET_CHOICES}
+            selected={profile['diet'] ?? []}
+            translationPrefix={'profile.diet'}
+            onChange={(selected) => setProfile('diet', selected)}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.category.work', 'Work')}/>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {profile['company']
+              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {company: profile['company']})
+              : t('profile.optional.job_title', 'Job title')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('occupation_title', e.target.value)}
+            className={'w-52'}
+            value={profile['occupation_title'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.company', 'Company')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('company', e.target.value)}
+            className={'w-52'}
+            value={profile['company'] ?? undefined}
+          />
+        </Col>
+
+        <AddOptionEntry
+          title={t('profile.optional.work', 'Work Area')}
+          choices={workChoices}
+          setChoices={setWorkChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'work'}
+        />
+
+        <Category title={t('profile.optional.category.education', 'Education')}/>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.education_level', 'Highest completed education level')}
+          </label>
+          <Carousel className="max-w-full">
+            <ChoicesToggleGroup
+              currentChoice={profile['education_level'] ?? ''}
+              choicesMap={Object.fromEntries(Object.entries(EDUCATION_CHOICES).map(([k, v]) => [t(`profile.education.${v}`, k), v]))}
+              setChoice={(c) => setProfile('education_level', c)}
+            />
+          </Carousel>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.university', 'University')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('university', e.target.value)}
+            className={'w-52'}
+            value={profile['university'] ?? undefined}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.category.substances', 'Substances')}/>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.smoke', 'Do you smoke?')}
+          </label>
+          <ChoicesToggleGroup
+            currentChoice={profile['is_smoker'] ?? undefined}
+            choicesMap={Object.fromEntries(Object.entries({
+              Yes: true,
+              No: false
+            }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v]))}
+            setChoice={(c) => setProfile('is_smoker', c)}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
+          </label>
+          <Input
+            type="number"
+            onChange={(e) => {
+              const value =
+                e.target.value === '' ? null : Number(e.target.value)
+              setProfile('drinks_per_month', value)
+            }}
+            className={'w-20'}
+            min={0}
+            value={profile['drinks_per_month'] ?? undefined}
+          />
+        </Col>
+
+        {/* <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>Birthplace</label>
+          <Input
+            type="text"
+            onChange={(e) => setProfileState('born_in_location', e.target.value)}
+            className={'w-52'}
+            value={profile['born_in_location'] ?? undefined}
+          />
+        </Col> */}
+
+        {/*<Col className={clsx(colClassName)}>*/}
+        {/*  <label className={clsx(labelClassName)}>Looking for a relationship?</label>*/}
+        {/*  <ChoicesToggleGroup*/}
+        {/*    currentChoice={lookingRelationship}*/}
+        {/*    choicesMap={{Yes: true, No: false}}*/}
+        {/*    setChoice={(c) => setLookingRelationship(c)}*/}
+        {/*  />*/}
+        {/*</Col>*/}
+
+        <Category title={t('profile.optional.socials', 'Socials')}/>
+
+        <Col className={clsx(colClassName, 'pb-4')}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.socials', 'Socials')}*/}
+          {/*</label>*/}
 
           <div className="grid w-full grid-cols-[8rem_1fr_auto] gap-2">
             {Object.entries(newLinks)
@@ -473,298 +785,12 @@ export const OptionalProfileUserForm = (props: {
           </div>
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.languages', 'Languages')}
-          </label>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="col-span-full max-h-60 overflow-y-auto w-full">
-                <MultiCheckbox
-                  choices={LANGUAGE_CHOICES}
-                  selected={profile.languages || []}
-                  translationPrefix={'profile.language'}
-                  onChange={(selected) => setProfile('languages', selected)}
-                />
-              </div>
-            </div>
-          </div>
-        </Col>
+        <Category title={t('profile.optional.photos', 'Photos')}/>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.political_beliefs', 'Political beliefs')}
-          </label>
-          <MultiCheckbox
-            choices={POLITICAL_CHOICES}
-            selected={profile['political_beliefs'] ?? []}
-            translationPrefix={'profile.political'}
-            onChange={(selected) => setProfile('political_beliefs', selected)}
-          />
-          <p>{t('profile.optional.details', 'Details')}</p>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('political_details', e.target.value)}
-            className={'w-full sm:w-96'}
-            value={profile['political_details'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.religious_beliefs', 'Religious beliefs')}
-          </label>
-          <MultiCheckbox
-            choices={RELIGION_CHOICES}
-            selected={profile['religion'] ?? []}
-            translationPrefix={'profile.religion'}
-            onChange={(selected) => setProfile('religion', selected)}
-          />
-          <Input
-            type="text"
-            onChange={(e) => setProfile('religious_beliefs', e.target.value)}
-            className={'w-full sm:w-96'}
-            value={profile['religious_beliefs'] ?? undefined}
-          />
-          <p>{t('profile.optional.details', 'Details')}</p>
-        </Col>
-
-        <AddOptionEntry
-          title={t('profile.optional.interests', 'Interests')}
-          choices={interestChoices}
-          setChoices={setInterestChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'interests'}
-        />
-
-        <AddOptionEntry
-          title={t('profile.optional.causes', 'Causes')}
-          choices={causeChoices}
-          setChoices={setCauseChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'causes'}
-        />
-
-        <Col className={clsx(colClassName, 'max-w-[550px]')}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.mbti', 'MBTI Personality Type')}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile['mbti'] ?? ''}
-            choicesMap={MBTI_CHOICES}
-            setChoice={(c) => setProfile('mbti', c)}
-            className="grid grid-cols-4 xs:grid-cols-8"
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.diet', 'Diet')}
-          </label>
-          <MultiCheckbox
-            choices={DIET_CHOICES}
-            selected={profile['diet'] ?? []}
-            translationPrefix={'profile.diet'}
-            onChange={(selected) => setProfile('diet', selected)}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {profile['company']
-              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {company: profile['company']})
-              : t('profile.optional.job_title', 'Job title')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('occupation_title', e.target.value)}
-            className={'w-52'}
-            value={profile['occupation_title'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.company', 'Company')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('company', e.target.value)}
-            className={'w-52'}
-            value={profile['company'] ?? undefined}
-          />
-        </Col>
-
-        <AddOptionEntry
-          title={t('profile.optional.work', 'Work Area')}
-          choices={workChoices}
-          setChoices={setWorkChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'work'}
-        />
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.education_level', 'Highest completed education level')}
-          </label>
-          <Carousel className="max-w-full">
-            <ChoicesToggleGroup
-              currentChoice={profile['education_level'] ?? ''}
-              choicesMap={Object.fromEntries(Object.entries(EDUCATION_CHOICES).map(([k, v]) => [t(`profile.education.${v}`, k), v]))}
-              setChoice={(c) => setProfile('education_level', c)}
-            />
-          </Carousel>
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.university', 'University')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('university', e.target.value)}
-            className={'w-52'}
-            value={profile['university'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.smoke', 'Do you smoke?')}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile['is_smoker'] ?? undefined}
-            choicesMap={Object.fromEntries(Object.entries({
-              Yes: true,
-              No: false
-            }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v]))}
-            setChoice={(c) => setProfile('is_smoker', c)}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
-          </label>
-          <Input
-            type="number"
-            onChange={(e) => {
-              const value =
-                e.target.value === '' ? null : Number(e.target.value)
-              setProfile('drinks_per_month', value)
-            }}
-            className={'w-20'}
-            min={0}
-            value={profile['drinks_per_month'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.height', 'Height')}
-          </label>
-          <Row className={'gap-2'}>
-            <Col>
-              <span>{t('profile.optional.feet', 'Feet')}</span>
-              <Input
-                type="number"
-                onChange={(e) => {
-                  if (e.target.value === '') {
-                    setHeightFeet(undefined)
-                  } else {
-                    setHeightFeet(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
-                    setProfile('height_in_inches', heightInInches)
-                  }
-                }}
-                className={'w-16'}
-                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
-              />
-            </Col>
-            <Col>
-              <span>{t('profile.optional.inches', 'Inches')}</span>
-              <Input
-                type="number"
-                onChange={(e) => {
-                  if (e.target.value === '') {
-                    setHeightInches(undefined)
-                  } else {
-                    setHeightInches(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
-                    setProfile('height_in_inches', heightInInches)
-                  }
-                }}
-                className={'w-16'}
-                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
-              />
-            </Col>
-            <div className="self-end mb-2 text-ink-700 mx-2">
-              {t('common.or', 'OR').toUpperCase()}
-            </div>
-            <Col>
-              <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
-              <Input
-                type="number"
-                onChange={(e) => {
-                  if (e.target.value === '') {
-                    setHeightFeet(undefined)
-                    setHeightInches(undefined)
-                    setProfile('height_in_inches', null)
-                  } else {
-                    // Convert cm to inches
-                    const totalInches = Number(e.target.value) / 2.54
-                    setHeightFeet(Math.floor(totalInches / 12))
-                    setHeightInches(totalInches % 12)
-                    setProfile('height_in_inches', totalInches)
-                  }
-                }}
-                className={'w-20'}
-                value={heightFeet !== undefined
-                  ? Math.round((heightFeet * 12 + (heightInches ?? 0)) * 2.54)
-                  : ''}
-              />
-            </Col>
-          </Row>
-        </Col>
-
-        {/* <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>Birthplace</label>
-          <Input
-            type="text"
-            onChange={(e) => setProfileState('born_in_location', e.target.value)}
-            className={'w-52'}
-            value={profile['born_in_location'] ?? undefined}
-          />
-        </Col> */}
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.ethnicity', 'Ethnicity/origin')}
-          </label>
-          <MultiCheckbox
-            choices={RACE_CHOICES}
-            translationPrefix={'profile.race'}
-            selected={profile['ethnicity'] ?? []}
-            onChange={(selected) => setProfile('ethnicity', selected)}
-          />
-        </Col>
-
-        {/*<Col className={clsx(colClassName)}>*/}
-        {/*  <label className={clsx(labelClassName)}>Looking for a relationship?</label>*/}
-        {/*  <ChoicesToggleGroup*/}
-        {/*    currentChoice={lookingRelationship}*/}
-        {/*    choicesMap={{Yes: true, No: false}}*/}
-        {/*    setChoice={(c) => setLookingRelationship(c)}*/}
-        {/*  />*/}
-        {/*</Col>*/}
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.photos', 'Photos')}
-          </label>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.photos', 'Photos')}*/}
+          {/*</label>*/}
 
           {/*<div className="mb-1">*/}
           {/*  A real or stylized photo of you is required.*/}
@@ -847,5 +873,9 @@ const CitySearchBox = (props: {
       </div>
     </>
   )
+}
+
+function Category({title, className}: { title: string, className?: string }) {
+  return <h3 className={clsx("text-xl font-semibold mb-[-8px]", className)}>{title}</h3>;
 }
 

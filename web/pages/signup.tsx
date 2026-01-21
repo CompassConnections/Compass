@@ -153,4 +153,4 @@ export default function SignupPage() {
   )
 }
 export const colClassName = 'items-start gap-2'
-export const labelClassName = 'font-semibold text-lg'
+export const labelClassName = 'font-semibold text-md'

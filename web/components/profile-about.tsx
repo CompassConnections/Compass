@@ -356,13 +356,23 @@ function LastOnline(props: { lastOnlineTime?: string }) {
 function HasKids(props: { profile: Profile }) {
   const t = useT()
   const {profile} = props
-  const hasKidsText =
-    profile.has_kids && profile.has_kids > 0
-      ? profile.has_kids > 1
-        ? t('profile.has_kids_many', 'Has {count} kids', {count: profile.has_kids})
-        : t('profile.has_kids_one', 'Has {count} kid', {count: profile.has_kids})
-      : null
-  return <AboutRow icon={<FaChild className="h-5 w-5"/>} text={hasKidsText}/>
+  if (typeof profile.has_kids !== 'number') return null
+  const hasKidsText = profile.has_kids == 0
+    ? t('profile.has_kids.doesnt_have_kids', 'Does not have children')
+    : profile.has_kids > 1
+      ? t('profile.has_kids_many', 'Has {count} kids', {count: profile.has_kids})
+      : t('profile.has_kids_one', 'Has {count} kid', {count: profile.has_kids})
+  const faChild = <FaChild className="h-5 w-5"/>
+  const icon = profile.has_kids === 0 ? (
+    <div className="relative h-5 w-5">
+      {faChild}
+      <div className="absolute inset-0">
+        {/*<div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rotate-45 transform bg-ink-500"/>*/}
+        <div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 -rotate-45 transform bg-ink-1000"/>
+      </div>
+    </div>
+  ) : faChild
+  return <AboutRow icon={icon} text={hasKidsText}/>
 }
 
 export const formatProfileValue = (key: string, value: any) => {

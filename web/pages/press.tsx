@@ -13,17 +13,32 @@ type PressItem = {
 
 const pressItems: PressItem[] = [
   {
-    title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
-    source: 'Matélé (Video Reportage)',
-    date: '2026-01-15',
-    url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
+    title: 'Un Havelangeois lance Compass, une appli de rencontre qui mise avant tout sur la personnalité : "Les recherches se font via des mots-clés spécifiques"',
+    source: 'La DH',
+    date: '2026-01-21',
+    url: 'https://www.dhnet.be/regions/namur/2026/01/21/un-havelangeois-lance-compass-une-appli-de-rencontre-qui-mise-avant-tout-sur-la-personnalite-les-recherches-se-font-via-des-mots-cles-specifiques-6ZBEE4GNVZHHZBWH5PFXNLD4WI/',
     language: 'fr',
+  },
+  {
+    title: 'Un Havelangeois lance Compass, une appli de rencontre qui mise avant tout sur la personnalité : "Les recherches se font via des mots-clés spécifiques"',
+    source: "L'Avenir",
+    date: '2026-01-21',
+    url: 'https://www.lavenir.net/regions/namur/2026/01/21/un-havelangeois-lance-compass-une-appli-de-rencontre-qui-mise-avant-tout-sur-la-personnalite-les-recherches-se-font-via-des-mots-cles-specifiques-LPAHVUX5VFAOFGZ4X3UJDXZD2Q/',
+    language: 'fr',
+    //   TODO: add unpaywalled PDF, word or txt
   },
   {
     title: 'Martin Braquet, un jeune ingénieur havelangeois, sort son appli de rencontre éthique.',
     source: 'Matélé (Facebook Reel)',
     date: '2026-01-17',
     url: 'https://www.facebook.com/reel/757129776892904',
+    language: 'fr',
+  },
+  {
+    title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
+    source: 'Matélé (Video Reportage)',
+    date: '2026-01-15',
+    url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
     language: 'fr',
   },
 ];

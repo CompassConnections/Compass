@@ -4,47 +4,57 @@ import {useLocale, useT} from "web/lib/locale";
 import Link from "next/link";
 
 type PressItem = {
+  id: number;
   title: string;
   source: string;
   date: string;
   url: string;
+  summary?: string;
   language: 'en' | 'fr' | 'de';
 };
 
 const pressItems: PressItem[] = [
   {
+    id: 4,
     title: 'Un Havelangeois lance Compass, une appli de rencontre qui mise avant tout sur la personnalité : "Les recherches se font via des mots-clés spécifiques"',
     source: 'La DH',
     date: '2026-01-21',
     url: 'https://www.dhnet.be/regions/namur/2026/01/21/un-havelangeois-lance-compass-une-appli-de-rencontre-qui-mise-avant-tout-sur-la-personnalite-les-recherches-se-font-via-des-mots-cles-specifiques-6ZBEE4GNVZHHZBWH5PFXNLD4WI/',
+    summary: 'Belgian and local article about the beginnings of Compass. Developed in just eight weeks and offered for free, Compass stands out from mainstream apps by eliminating hidden algorithms and swiping mechanisms, favoring instead a keyword-based search focused on values, interests, and personality, with photos being secondary. As an open-source project, Compass embraces a non-profit, community-driven approach. Four months after launch, it counts just over 400 users, with ambitions to reach a critical local mass.',
     language: 'fr',
   },
   {
+    id: 3,
     title: 'Un Havelangeois lance Compass, une appli de rencontre qui mise avant tout sur la personnalité : "Les recherches se font via des mots-clés spécifiques"',
     source: "L'Avenir",
     date: '2026-01-21',
     url: 'https://www.lavenir.net/regions/namur/2026/01/21/un-havelangeois-lance-compass-une-appli-de-rencontre-qui-mise-avant-tout-sur-la-personnalite-les-recherches-se-font-via-des-mots-cles-specifiques-LPAHVUX5VFAOFGZ4X3UJDXZD2Q/',
     language: 'fr',
-    //   TODO: add unpaywalled PDF, word or txt
   },
   {
+    id: 2,
     title: 'Martin Braquet, un jeune ingénieur havelangeois, sort son appli de rencontre éthique.',
-    source: 'Matélé (Facebook Reel)',
+    source: 'Matélé',
     date: '2026-01-17',
     url: 'https://www.facebook.com/reel/757129776892904',
+    summary: 'Short video (Facebook Reel) showcasing Compass in a fun and dynamic way. Martin Braquet, a young engineer from Havelange, introduces his ethical dating app. This is a different approach. Compass is non-profit, designed to create connections. The platform is open, collaborative, with no opaque algorithms. And without the pressure of profile photos.',
     language: 'fr',
   },
   {
+    id: 1,
     title: 'Une application qui réinvente les rencontres en ligne développée par un Havelangeois',
-    source: 'Matélé (Video Reportage)',
+    source: 'Matélé',
     date: '2026-01-15',
     url: 'https://www.matele.be/une-application-qui-reinvente-les-rencontres-en-ligne-developpee-par-un-havelangeois',
+    summary: 'Belgian and local video report describing Compass as an open-source platform that sits between a dating app and a social network, breaking with conventional approaches by eliminating hidden algorithms and the emphasis on photos. Created by engineer Martin Braquet from Havelange, it allows users to search profiles based on values and interests for friendly, professional, or romantic relationships. Designed as a sort of "library" of profiles with filtering capabilities, Compass aims to recreate social connections. Free, ad-free, and already with over 400 users.',
     language: 'fr',
   },
 ];
 
-const PressItem = ({item}: { item: PressItem, locales: Intl.LocalesArgument }) => (
-  <div className="mb-8 px-6 pb-4 border border-canvas-200 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+const PressItem = ({item}: { item: PressItem, locales: Intl.LocalesArgument }) => {
+  const t = useT()
+  return <div
+    className="mb-8 px-6 pb-4 border border-canvas-200 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h3 className="text-xl font-semibold mb-2">
       <Link href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
         {item.title}
@@ -55,13 +65,16 @@ const PressItem = ({item}: { item: PressItem, locales: Intl.LocalesArgument }) =
       {/*<span>{new Date(item.date).toLocaleDateString(locales, { year: 'numeric', month: 'long', day: 'numeric' })}</span>*/}
       <span>{item.date}</span>
     </div>
+    {item.summary &&
+        <p><b>{t('press.summary', 'Summary (Compass editorial)')}</b>: {t(`press.summary.${item.id}`, item.summary)}
+        </p>}
     {/*<div className="mt-2">*/}
     {/*  <span className="inline-block px-2 py-1 text-xs rounded-full">*/}
     {/*    {item.language.toUpperCase()}*/}
     {/*  </span>*/}
     {/*</div>*/}
   </div>
-);
+}
 
 export default function PressPage() {
   const t = useT();

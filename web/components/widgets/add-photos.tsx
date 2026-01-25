@@ -58,14 +58,21 @@ export const AddPhotosWidget = (props: {
         disabled={uploadingImages}
       />
       <Row className="flex-wrap gap-2">
-        <label
-          className={clsx(
-            'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px]  cursor-pointer flex-col items-center rounded-md transition-colors'
-          )}
-          htmlFor="photo-upload"
-        >
-          <PlusIcon className=" mx-auto my-auto h-16 w-16 text-gray-500"/>
-        </label>
+        <div className="relative">
+          <label
+            className={clsx(
+              'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center rounded-md transition-colors',
+              uploadingImages && 'opacity-50 cursor-not-allowed'
+            )}
+            htmlFor="photo-upload"
+          >
+            {uploadingImages ? (
+              <div className="mx-auto my-auto h-16 w-16 animate-spin rounded-full border-b-2 border-gray-500"></div>
+            ) : (
+              <PlusIcon className="mx-auto my-auto h-16 w-16 text-gray-500"/>
+            )}
+          </label>
+        </div>
         {uniq(buildArray(pinned_url, photo_urls))?.map((url, index) => {
           const isPinned = url === pinned_url
           return (

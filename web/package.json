@@ -46,6 +46,7 @@
     "csstype": "3.0.10",
     "dayjs": "1.11.10",
     "firebase": "11.1.0",
+    "heic2any": "0.0.4",
     "link-preview-js": "3.0.4",
     "lodash": "4.17.21",
     "nanoid": "5.0.9",

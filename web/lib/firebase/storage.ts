@@ -1,9 +1,14 @@
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { nanoid } from 'nanoid'
-import { storage } from './init'
+import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage'
+import {nanoid} from 'nanoid'
+import {storage} from './init'
 import Compressor from 'compressorjs'
 
 const ONE_YEAR_SECS = 60 * 60 * 24 * 365
+
+const isHeic = (file: File) =>
+  file.type === 'image/heic' ||
+  file.type === 'image/heif' ||
+  /\.heic$/i.test(file.name)
 
 export const uploadImage = async (
   username: string,
@@ -13,7 +18,8 @@ export const uploadImage = async (
 ) => {
   // Replace filename with a nanoid to avoid collisions
   const [, ext] = file.name.split('.')
-  const filename = `${nanoid(10)}.${ext}`
+  const stem = nanoid(10);
+  const filename = `${stem}.${ext}`
   const storageRef = ref(
     storage,
     `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`
@@ -23,7 +29,22 @@ export const uploadImage = async (
     return Promise.reject('File is over 20 MB')
   }
 
-  // if  >1MB compress
+  // Convert HEIC → JPEG immediately (as HEIC not rendered)
+  if (isHeic(file) && typeof window !== 'undefined') {
+    // heic2any available in client only
+    const {default: heic2any} = await import('heic2any')
+    const converted = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.9,
+    })
+
+    file = new File([converted as Blob], `${stem}.jpg`, {
+      type: 'image/jpeg',
+    })
+  }
+
+  // 2️⃣ Compress if > 1MB
   if (file.size > 1024 ** 2) {
     file = await new Promise((resolve, reject) => {
       new Compressor(file, {

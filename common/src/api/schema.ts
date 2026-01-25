@@ -345,7 +345,9 @@ export const API = (_apiTypeCheck = {
     method: 'GET',
     authed: true,
     rateLimited: false,
-    props: z.object({}),
+    props: z.object({
+      locale: z.string().optional()
+    }),
     returns: {} as {
       status: 'success'
       questions: (Row<'compatibility_prompts'> & {

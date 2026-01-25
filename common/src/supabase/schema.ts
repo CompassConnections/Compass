@@ -198,6 +198,38 @@ export type Database = {
           },
         ]
       }
+      compatibility_prompts_translations: {
+        Row: {
+          locale: string
+          multiple_choice_options: Json | null
+          question: string
+          question_id: number
+          updated_at: string
+        }
+        Insert: {
+          locale: string
+          multiple_choice_options?: Json | null
+          question: string
+          question_id: number
+          updated_at?: string
+        }
+        Update: {
+          locale?: string
+          multiple_choice_options?: Json | null
+          question?: string
+          question_id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'fk_question'
+            columns: ['question_id']
+            isOneToOne: false
+            referencedRelation: 'compatibility_prompts'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       compatibility_scores: {
         Row: {
           created_time: string
@@ -1301,8 +1333,8 @@ export type Database = {
         }[]
       }
       is_admin:
-        | { Args: { user_id: string }; Returns: boolean }
         | { Args: never; Returns: boolean }
+        | { Args: { user_id: string }; Returns: boolean }
       millis_interval: {
         Args: { end_millis: number; start_millis: number }
         Returns: unknown

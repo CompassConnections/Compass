@@ -1,15 +1,16 @@
-import { sortBy } from 'lodash'
-import { useEffect, useState } from 'react'
-import { Row } from 'common/supabase/utils'
+import {sortBy} from 'lodash'
+import {useEffect, useState} from 'react'
+import {Row} from 'common/supabase/utils'
 import {
   getAllQuestions,
-  getFRQuestionsWithAnswerCount,
   getFreeResponseQuestions,
+  getFRQuestionsWithAnswerCount,
   getUserAnswers,
   getUserCompatibilityAnswers,
 } from 'web/lib/supabase/questions'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { api } from 'web/lib/api'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {api} from 'web/lib/api'
+import {useLocale} from "web/lib/locale";
 
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
@@ -93,6 +94,7 @@ export const useFRQuestionsWithAnswerCount = () => {
 }
 
 export const useCompatibilityQuestionsWithAnswerCount = () => {
+  const {locale} = useLocale()
   const [compatibilityQuestions, setCompatibilityQuestions] =
     usePersistentInMemoryState<QuestionWithCountType[]>(
       [],
@@ -100,14 +102,14 @@ export const useCompatibilityQuestionsWithAnswerCount = () => {
     )
 
   async function refreshCompatibilityQuestions() {
-    return api('get-compatibility-questions', {}).then((res) => {
+    return api('get-compatibility-questions', {locale}).then((res) => {
       setCompatibilityQuestions(res.questions)
     })
   }
 
   useEffect(() => {
     refreshCompatibilityQuestions()
-  }, [])
+  }, [locale])
 
   return {
     refreshCompatibilityQuestions,

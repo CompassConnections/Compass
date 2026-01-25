@@ -17,17 +17,8 @@ export const uploadImage = async (
   onProgress?: (progress: number, isRunning: boolean) => void
 ) => {
   // Replace filename with a nanoid to avoid collisions
-  const [, ext] = file.name.split('.')
-  const stem = nanoid(10);
-  const filename = `${stem}.${ext}`
-  const storageRef = ref(
-    storage,
-    `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`
-  )
-
-  if (file.size > 20 * 1024 ** 2) {
-    return Promise.reject('File is over 20 MB')
-  }
+  let [, ext] = file.name.split('.')
+  const stem = nanoid(10)
 
   // Convert HEIC → JPEG immediately (as HEIC not rendered)
   if (isHeic(file) && typeof window !== 'undefined') {
@@ -42,6 +33,17 @@ export const uploadImage = async (
     file = new File([converted as Blob], `${stem}.jpg`, {
       type: 'image/jpeg',
     })
+    ext = 'jpg'
+  }
+
+  const filename = `${stem}.${ext}`
+  const storageRef = ref(
+    storage,
+    `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`
+  )
+
+  if (file.size > 20 * 1024 ** 2) {
+    return Promise.reject('File is over 20 MB')
   }
 
   // 2️⃣ Compress if > 1MB

@@ -20,6 +20,20 @@ export const uploadImage = async (
   let [, ext] = file.name.split('.')
   const stem = nanoid(10)
 
+  const ALLOWED_TYPES = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+    'image/heic',
+    'image/heif',
+  ]
+
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    // throw new Error('Unsupported image format')
+    console.warn('Likely unsupported image format', file.type)
+  }
+
   // Convert HEIC → JPEG immediately (as HEIC not rendered)
   if (isHeic(file) && typeof window !== 'undefined') {
     // heic2any available in client only

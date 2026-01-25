@@ -19,7 +19,7 @@ describe('getCompatibilityQuestions', () => {
     
     describe('when given valid input', () => {
         it('should get compatibility questions', async () => {
-            const mockProps = {} as any;
+          const mockProps = {locale: 'en'} as any;
             const mockAuth = {} as any;
             const mockReq = {} as any;
             const mockQuestions = {
@@ -38,18 +38,18 @@ describe('getCompatibilityQuestions', () => {
             (mockPg.manyOrNone as jest.Mock).mockResolvedValue(mockQuestions);
             
             const results: any = await compatibililtyQuestionsModules.getCompatibilityQuestions(mockProps, mockAuth, mockReq);
-            const [sql, params] = (mockPg.manyOrNone as jest.Mock).mock.calls[0];
+          const [sql, _params] = (mockPg.manyOrNone as jest.Mock).mock.calls[0];
             
             expect(results.status).toBe('success');
             expect(results.questions).toBe(mockQuestions);
             expect(sql).toEqual(
-                expect.stringContaining('compatibility_prompts.*')
+              expect.stringContaining('FROM compatibility_prompts')
             );
+          expect(sql).toEqual(
+            expect.stringContaining('LEFT JOIN compatibility_prompts_translations')
+          );
             expect(sql).toEqual(
-                expect.stringContaining('COUNT(compatibility_answers.question_id) as answer_count')
-            );
-            expect(sql).toEqual(
-                expect.stringContaining('AVG(POWER(compatibility_answers.importance + 1 + CASE WHEN compatibility_answers.explanation IS NULL THEN 1 ELSE 0 END, 2)) as score')
+              expect.stringContaining('COUNT(ca.question_id)')
             );
         });
     });

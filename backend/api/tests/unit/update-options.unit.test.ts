@@ -96,7 +96,7 @@ describe('updateOptions', () => {
         it('should throw if the table param is invalid', async () => {
             const mockProps = {
                 table: 'causes' as const,
-                names: ["mockNamesOne", "mockNamesTwo"]
+              values: ["mockNamesOne", "mockNamesTwo"]
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
@@ -111,7 +111,7 @@ describe('updateOptions', () => {
         it('should throw if the names param is not provided', async () => {
             const mockProps = {
                 table: 'causes' as const,
-                names: []
+              values: undefined
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
@@ -120,13 +120,13 @@ describe('updateOptions', () => {
             
             expect(updateOptions(mockProps, mockAuth, mockReq))
                 .rejects
-                .toThrow('No names provided');
+              .toThrow('No ids provided');
         });
 
         it('should throw if unable to find profile', async () => {
             const mockProps = {
                 table: 'causes' as const,
-                names: ["mockNamesOne", "mockNamesTwo"]
+              values: ["mockNamesOne", "mockNamesTwo"]
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
@@ -142,7 +142,7 @@ describe('updateOptions', () => {
         it('should update user', async () => {
             const mockProps = {
                 table: 'causes' as const,
-                names: ["mockNamesOne", "mockNamesTwo"]
+              values: ["mockNamesOne", "mockNamesTwo"]
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;

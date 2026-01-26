@@ -89,7 +89,7 @@ export const RequiredProfileUserForm = (props: {
       <Title>{t('profile.basics.title', 'The Basics')}</Title>
       {step === 1 && !profileCreatedAlready &&
           <div className="text-ink-500 mb-6 text-lg">
-            {t('profile.basics.subtitle', 'No endless forms—write your own bio, your own way.')}
+            {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
           </div>}
       <Col className={'gap-8 pb-[env(safe-area-inset-bottom)]'}>
         {step === 0 && <Col>

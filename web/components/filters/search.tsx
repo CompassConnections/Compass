@@ -91,8 +91,8 @@ export const WORDS: string[] = [
   "Finance",
 ]
 
-function getRandomPair(count = 3): string {
-  const shuffled = [...WORDS].sort(() => 0.5 - Math.random())
+function getRandomPair(words = WORDS, count = 3): string {
+  const shuffled = [...words].sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count).join(", ")
 }
 
@@ -168,7 +168,7 @@ export const Search = (props: {
           setTimeout(() => {
             setPlaceholder('');
             setCharIndex(0);
-            setTextToType(getRandomPair()); // pick new pair
+            setTextToType(getRandomPair(Object.values(interestChoices))); // pick new pair
             setIsHolding(false);
           }, HOLD_TIME);
           return prev;

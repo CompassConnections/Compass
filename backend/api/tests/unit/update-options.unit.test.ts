@@ -1,9 +1,9 @@
 jest.mock('common/util/try-catch');
 jest.mock('shared/supabase/init');
 
-import { AuthedUser } from "api/helpers/endpoint";
-import { updateOptions } from "api/update-options";
-import { tryCatch } from "common/util/try-catch";
+import {AuthedUser} from "api/helpers/endpoint";
+import {updateOptions} from "api/update-options";
+import {tryCatch} from "common/util/try-catch";
 import * as supabaseInit from "shared/supabase/init";
 
 describe('updateOptions', () => {
@@ -13,10 +13,12 @@ describe('updateOptions', () => {
         jest.resetAllMocks();
         mockTx = {
             one: jest.fn(),
-            none: jest.fn()
+          none: jest.fn(),
+          manyOrNone: jest.fn(),
         };
         mockPg = {
             oneOrNone: jest.fn(),
+          manyOrNone: jest.fn(),
             tx: jest.fn(async (cb) => await cb(mockTx))
         };
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
@@ -30,7 +32,7 @@ describe('updateOptions', () => {
         it('should update user', async () => {
             const mockProps = {
                 table: 'causes' as const,
-                names: ["mockNamesOne", "mockNamesTwo"]
+              values: ["mockNamesOne", "mockNamesTwo"]
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
@@ -55,6 +57,7 @@ describe('updateOptions', () => {
             (mockTx.one as jest.Mock)
                 .mockResolvedValueOnce(mockRow1)
                 .mockResolvedValueOnce(mockRow2);
+          (mockTx.manyOrNone as jest.Mock).mockResolvedValue([]);
             
             const result: any = await updateOptions(mockProps, mockAuth, mockReq);
 
@@ -69,12 +72,12 @@ describe('updateOptions', () => {
             expect(mockTx.one).toHaveBeenNthCalledWith(
                 1,
                 expect.stringContaining(`INSERT INTO ${mockProps.table} (name, creator_id)`),
-                [mockProps.names[0], mockAuth.uid]
+              [mockProps.values[0], mockAuth.uid]
             );
             expect(mockTx.one).toHaveBeenNthCalledWith(
                 2,
                 expect.stringContaining(`INSERT INTO ${mockProps.table} (name, creator_id)`),
-                [mockProps.names[1], mockAuth.uid]
+              [mockProps.values[1], mockAuth.uid]
             );
             expect(mockTx.none).toBeCalledTimes(2);
             expect(mockTx.none).toHaveBeenNthCalledWith(

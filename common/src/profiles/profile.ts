@@ -21,30 +21,30 @@ export const getProfileRow = async (userId: string, db: SupabaseClient): Promise
   const interestsRes = await run(
     db
       .from('profile_interests')
-      .select('interests(name)')
+      .select('interests(name, id)')
       .eq('profile_id', profile.id)
   )
-  const interests = interestsRes.data?.map((row: any) => row.interests.name) || []
+  const interests = interestsRes.data?.map((row: any) => String(row.interests.id)) || []
 
   // Fetch causes
   const causesRes = await run(
     db
       .from('profile_causes')
-      .select('causes(name)')
+      .select('causes(name, id)')
       .eq('profile_id', profile.id)
   )
-  const causes = causesRes.data?.map((row: any) => row.causes.name) || []
+  const causes = causesRes.data?.map((row: any) => String(row.causes.id)) || []
 
   // Fetch causes
   const workRes = await run(
     db
       .from('profile_work')
-      .select('work(name)')
+      .select('work(name, id)')
       .eq('profile_id', profile.id)
   )
-  const work = workRes.data?.map((row: any) => row.work.name) || []
+  const work = workRes.data?.map((row: any) => String(row.work.id)) || []
 
-  // console.debug('work', work)
+  // console.debug({work, interests, causes})
 
   return {
     ...profile,

@@ -3,8 +3,9 @@ import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-te
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {FilterFields} from "common/filters";
 import {OptionTableKey} from 'common/profiles/constants'
-import {useT} from 'web/lib/locale'
-import {toKey} from "common/parsing";
+import {useLocale, useT} from 'web/lib/locale'
+import {useChoices} from "web/hooks/use-choices";
+import {invert} from "lodash";
 
 export function InterestFilterText(props: {
   options: string[] | undefined
@@ -14,6 +15,7 @@ export function InterestFilterText(props: {
   const {options, highlightedClass, label} = props
   const t = useT()
   const length = (options ?? []).length
+  const {choices} = useChoices('interests')
 
   if (!options || length < 1) {
     return (
@@ -37,7 +39,7 @@ export function InterestFilterText(props: {
     <div>
       <span className={clsx('font-semibold', highlightedClass)}>
         {stringOrStringArrayToText({
-          text: options.map((o) => t(`profile.${label}.${toKey(o)}`, o)),
+          text: options.map(id => choices[id]),
           capitalizeFirstLetterOption: true,
           t: t,
         })}{' '}
@@ -49,18 +51,21 @@ export function InterestFilterText(props: {
 export function InterestFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
-  choices: Record<string, string[]>
+  choices: Record<string, string>
   label: OptionTableKey
 }) {
   const {filters, updateFilter, choices, label} = props
+  const {locale} = useLocale()
+  const sortedChoices = Object.fromEntries(
+    Object.entries(invert(choices)).sort((a, b) =>
+      a[0].localeCompare(b[0], locale)
+    )
+  )
   return (
     <MultiCheckbox
       selected={filters[label] ?? []}
-      choices={choices as any}
-      translationPrefix={`profile.${label}`}
-      onChange={(c) => {
-        updateFilter({[label]: c})
-      }}
+      choices={sortedChoices as any}
+      onChange={(c) => updateFilter({[label]: c})}
     />
   )
 }

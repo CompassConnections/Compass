@@ -33,7 +33,7 @@ import {MAX_INT, MIN_INT} from "common/constants";
 import {GiFruitBowl} from "react-icons/gi";
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 import {useLocale, useT} from "web/lib/locale";
-import {toKey} from "common/parsing";
+import {useChoices} from "web/hooks/use-choices";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -79,6 +79,11 @@ export default function ProfileAbout(props: {
 }) {
   const {profile, userActivity, isCurrentUser} = props
   const t = useT()
+  const {choices: interestsById} = useChoices('interests')
+  const {choices: causesById} = useChoices('causes')
+  const {choices: workById} = useChoices('work')
+  const {locale} = useLocale()
+
   return (
     <Col
       className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded p-4')}
@@ -90,7 +95,7 @@ export default function ProfileAbout(props: {
       <Occupation profile={profile}/>
       <AboutRow
         icon={<FaBriefcase className="h-5 w-5"/>}
-        text={profile.work?.map(work => t(`profile.work.${toKey(work)}`, work))}
+        text={profile.work?.map(id => workById[id]).filter(Boolean).sort((a, b) => a.localeCompare(b, locale)) as string[]}
       />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5"/>}
@@ -104,11 +109,11 @@ export default function ProfileAbout(props: {
       />
       <AboutRow
         icon={<FaStar className="h-5 w-5"/>}
-        text={profile.interests?.map(interest => t(`profile.interests.${toKey(interest)}`, interest))}
+        text={profile.interests?.map(id => interestsById[id]).filter(Boolean).sort((a, b) => a.localeCompare(b, locale)) as string[]}
       />
       <AboutRow
         icon={<FaHandsHelping className="h-5 w-5"/>}
-        text={profile.causes?.map(cause => t(`profile.causes.${toKey(cause)}`, cause))}
+        text={profile.causes?.map(id => causesById[id]).filter(Boolean).sort((a, b) => a.localeCompare(b, locale)) as string[]}
       />
       <AboutRow
         icon={<BsPersonVcard className="h-5 w-5"/>}

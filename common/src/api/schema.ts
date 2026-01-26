@@ -482,6 +482,7 @@ export const API = (_apiTypeCheck = {
         radius: z.coerce.number().optional(),
         compatibleWithUserId: z.string().optional(),
         skipId: z.string().optional(),
+        locale: z.string().optional(),
         orderBy: z
           .enum(['last_online_time', 'created_time', 'compatibility_score'])
           .optional()
@@ -504,6 +505,7 @@ export const API = (_apiTypeCheck = {
     props: z
       .object({
         table: z.enum(OPTION_TABLES),
+        locale: z.string().optional(),
       })
       .strict(),
     summary: 'Get profile options like interests',
@@ -517,7 +519,7 @@ export const API = (_apiTypeCheck = {
     props: z
       .object({
         table: z.enum(OPTION_TABLES),
-        names: arraybeSchema.optional(),
+        values: arraybeSchema.optional(),
       })
       .strict(),
     summary: 'Update profile options like interests',

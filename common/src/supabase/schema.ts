@@ -78,6 +78,32 @@ export type Database = {
           },
         ]
       }
+      causes_translations: {
+        Row: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Insert: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Update: {
+          locale?: string
+          name?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'causes_translations_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'causes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       compatibility_answers: {
         Row: {
           created_time: string
@@ -323,6 +349,32 @@ export type Database = {
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      interests_translations: {
+        Row: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Insert: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Update: {
+          locale?: string
+          name?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'interests_translations_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'interests'
             referencedColumns: ['id']
           },
         ]
@@ -814,6 +866,8 @@ export type Database = {
           religion: string[] | null
           religious_belief_strength: number | null
           religious_beliefs: string | null
+          search_text: string | null
+          search_tsv: unknown
           twitter: string | null
           university: string | null
           user_id: string
@@ -869,6 +923,8 @@ export type Database = {
           religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
+          search_text?: string | null
+          search_tsv?: unknown
           twitter?: string | null
           university?: string | null
           user_id: string
@@ -924,6 +980,8 @@ export type Database = {
           religion?: string[] | null
           religious_belief_strength?: number | null
           religious_beliefs?: string | null
+          search_text?: string | null
+          search_tsv?: unknown
           twitter?: string | null
           university?: string | null
           user_id?: string
@@ -1289,6 +1347,32 @@ export type Database = {
           },
         ]
       }
+      work_translations: {
+        Row: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Insert: {
+          locale: string
+          name: string
+          option_id: number
+        }
+        Update: {
+          locale?: string
+          name?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'work_translations_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'work'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1341,6 +1425,10 @@ export type Database = {
       }
       millis_to_ts: { Args: { millis: number }; Returns: string }
       random_alphanumeric: { Args: { length: number }; Returns: string }
+      rebuild_profile_search: {
+        Args: { profile_id_param: number }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { '': string }; Returns: string[] }
       to_jsonb: { Args: { '': Json }; Returns: Json }

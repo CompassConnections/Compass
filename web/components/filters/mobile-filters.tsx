@@ -53,7 +53,7 @@ function MobileFilters(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
-  choices: Record<OptionTableKey, Record<string, string[]>>
+  choices: Record<OptionTableKey, Record<string, string>>
 }) {
   const t = useT()
   const {

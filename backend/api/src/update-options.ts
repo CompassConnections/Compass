@@ -5,15 +5,22 @@ import {tryCatch} from 'common/util/try-catch'
 import {OPTION_TABLES} from "common/profiles/constants";
 
 export const updateOptions: APIHandler<'update-options'> = async (
-  {table, names},
+  {table, values},
   auth
 ) => {
   if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')
-  if (!names || !Array.isArray(names) || names.length === 0) {
-    throw new APIError(400, 'No names provided')
+  if (!values || !Array.isArray(values)) {
+    throw new APIError(400, 'No ids provided')
   }
 
-  log('Updating profile options', {table, names})
+  const idsWithNumbers = values.map(id => {
+    const numberId = Number(id)
+    return isNaN(numberId) ? {isNumber: false, v: id} : {isNumber: true, v: numberId}
+  })
+  const names: string[] = idsWithNumbers.filter(item => !item.isNumber).map(item => item.v) as string[]
+  const ids: number[] = idsWithNumbers.filter(item => item.isNumber).map(item => item.v) as number[]
+
+  log('Updating profile options', {table, ids, names})
 
   const pg = createSupabaseDirectClient()
 
@@ -25,8 +32,20 @@ export const updateOptions: APIHandler<'update-options'> = async (
   const profileId = profileIdResult.id
 
   const result = await tryCatch(pg.tx(async (t) => {
-    const ids: number[] = []
-    for (const name of names) {
+    const currentOptionsResult = await t.manyOrNone<{ id: string }>(
+      `SELECT option_id as id
+       FROM profile_${table}
+       WHERE profile_id = $1`,
+      [profileId]
+    )
+    const currentOptions = currentOptionsResult.map(row => row.id)
+    if (currentOptions.sort().join(',') === ids.sort().join(',') && !names?.length) {
+      log(`Skipping /update-${table} because they are already the same`)
+      return undefined
+    }
+
+    // Add new options
+    for (const name of (names || [])) {
       const row = await t.one<{ id: number }>(
         `INSERT INTO ${table} (name, creator_id)
          VALUES ($1, $2)

@@ -14,7 +14,7 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches"
 import {useFilters} from "web/components/filters/use-filters"
-import {useT} from "web/lib/locale";
+import {useLocale, useT} from "web/lib/locale";
 
 export function ProfilesHome() {
   const user = useUser()
@@ -35,6 +35,7 @@ export function ProfilesHome() {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
   const t = useT()
+  const {locale} = useLocale()
 
   // const [debouncedAgeRange, setRawAgeRange] = useState({
   //   min: filters.pref_age_min ?? PREF_AGE_MIN,
@@ -56,6 +57,7 @@ export function ProfilesHome() {
     const args = removeNullOrUndefinedProps({
       limit: 20,
       compatibleWithUserId: user?.id,
+      locale,
       ...filters
     })
     console.debug('Refreshing profiles, filters:', args)
@@ -87,6 +89,7 @@ export function ProfilesHome() {
         limit: 20,
         compatibleWithUserId: user?.id,
         after: lastProfile?.id.toString(),
+        locale,
         ...filters
       }) as any)
       if (result.profiles.length === 0) return false

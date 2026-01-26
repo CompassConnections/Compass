@@ -3,7 +3,7 @@ import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {useT} from 'web/lib/locale'
+import {useLocale, useT} from 'web/lib/locale'
 import {Row} from 'web/components/layout/row'
 import {Input} from 'web/components/widgets/input'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
@@ -81,11 +81,12 @@ export const OptionalProfileUserForm = (props: {
   const [interestChoices, setInterestChoices] = useState({})
   const [causeChoices, setCauseChoices] = useState({})
   const [workChoices, setWorkChoices] = useState({})
+  const {locale} = useLocale()
 
   useEffect(() => {
-    fetchChoices('interests').then(setInterestChoices)
-    fetchChoices('causes').then(setCauseChoices)
-    fetchChoices('work').then(setWorkChoices)
+    fetchChoices('interests', locale).then(setInterestChoices)
+    fetchChoices('causes', locale).then(setCauseChoices)
+    fetchChoices('work', locale).then(setWorkChoices)
   }, [db])
 
   const handleSubmit = async () => {
@@ -104,14 +105,14 @@ export const OptionalProfileUserForm = (props: {
     const promises: Promise<any>[] = [
       tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any))
     ]
-    if (interests?.length) {
-      promises.push(api('update-options', {table: 'interests', names: interests}))
+    if (interests) {
+      promises.push(api('update-options', {table: 'interests', values: interests}))
     }
-    if (causes?.length) {
-      promises.push(api('update-options', {table: 'causes', names: causes}))
+    if (causes) {
+      promises.push(api('update-options', {table: 'causes', values: causes}))
     }
-    if (work?.length) {
-      promises.push(api('update-options', {table: 'work', names: work}))
+    if (work) {
+      promises.push(api('update-options', {table: 'work', values: work}))
     }
     try {
       await Promise.all(promises)

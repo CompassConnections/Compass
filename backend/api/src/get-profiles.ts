@@ -38,6 +38,7 @@ export type profileQueryType = {
   skipId?: string | undefined,
   orderBy?: string | undefined,
   lastModificationWithin?: string | undefined,
+  locale?: string | undefined,
 } & {
   [K in OptionTableKey]?: string[] | undefined
 }
@@ -82,6 +83,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     orderBy: orderByParam = 'created_time',
     lastModificationWithin,
     skipId,
+    locale = 'en',
   } = props
 
   const filterLocation = lat && lon && radius
@@ -101,6 +103,10 @@ export const loadProfiles = async (props: profileQueryType) => {
       : 'profiles'
 
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
+
+  const joinInterests = !!interests?.length
+  const joinCauses = !!causes?.length
+  const joinWork = !!work?.length
 
   // Pre-aggregated interests per profile
   function getManyToManyJoin(label: OptionTableKey) {
@@ -122,9 +128,9 @@ export const loadProfiles = async (props: profileQueryType) => {
   const joins = [
     orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
     orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
-    interests && leftJoin(interestsJoin),
-    causes && leftJoin(causesJoin),
-    work && leftJoin(workJoin),
+    joinInterests && leftJoin(interestsJoin),
+    joinCauses && leftJoin(causesJoin),
+    joinWork && leftJoin(workJoin),
   ]
 
   const _orderBy = orderByParam === 'compatibility_score' ? 'cs.score' : `${tablePrefix}.${orderByParam}`
@@ -146,9 +152,22 @@ export const loadProfiles = async (props: profileQueryType) => {
       SELECT 1 FROM profile_${label}
       JOIN ${label} ON ${label}.id = profile_${label}.option_id
       WHERE profile_${label}.profile_id = profiles.id
-        AND ${label}.name = ANY (ARRAY[$(values)])
+        AND ${label}.id = ANY (ARRAY[$(values)])
       )`
   }
+
+  function getOptionClauseKeyword(label: OptionTableKey) {
+    return `EXISTS (
+      SELECT 1 FROM profile_${label}
+      JOIN ${label} ON ${label}.id = profile_${label}.option_id
+      LEFT JOIN ${label}_translations
+        ON ${label}_translations.option_id = profile_${label}.option_id
+          AND ${label}_translations.locale = $(locale)
+      WHERE profile_${label}.profile_id = profiles.id
+        AND lower(COALESCE(${label}_translations.name, ${label}.name)) ILIKE '%' || lower($(word)) || '%'
+    )`
+  }
+
 
   const filters = [
     where('looking_for_matches = true'),
@@ -160,8 +179,14 @@ export const loadProfiles = async (props: profileQueryType) => {
     where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
 
     ...keywords.map(word => where(
-      `lower(users.name) ilike '%' || lower($(word)) || '%' or lower(bio::text) ilike '%' || lower($(word)) || '%' or bio_tsv @@ phraseto_tsquery('english', $(word))`,
-      {word}
+      `lower(users.name) ilike '%' || lower($(word)) || '%'
+       or lower(search_text) ilike '%' || lower($(word)) || '%'
+       or search_tsv @@ phraseto_tsquery('english', $(word))
+       OR ${getOptionClauseKeyword('interests')}
+       OR ${getOptionClauseKeyword('causes')}
+       OR ${getOptionClauseKeyword('work')}
+       `,
+      {word, locale}
     )),
 
     genders?.length && where(`gender = ANY($(genders))`, {genders}),
@@ -227,7 +252,7 @@ export const loadProfiles = async (props: profileQueryType) => {
       {religion}
     ),
 
-    interests?.length && where(getManyToManyClause('interests'), {values: interests}),
+    interests?.length && where(getManyToManyClause('interests'), {values: interests.map(Number)}),
 
     causes?.length && where(getManyToManyClause('causes'), {values: causes}),
 
@@ -278,9 +303,9 @@ export const loadProfiles = async (props: profileQueryType) => {
   } else if (orderByParam === 'last_online_time') {
     selectCols += ', user_activity.last_online_time'
   }
-  if (interests) selectCols += `, COALESCE(profile_interests.interests, '{}') AS interests`
-  if (causes) selectCols += `, COALESCE(profile_causes.causes, '{}') AS causes`
-  if (work) selectCols += `, COALESCE(profile_work.work, '{}') AS work`
+  if (joinInterests) selectCols += `, COALESCE(profile_interests.interests, '{}') AS interests`
+  if (joinCauses) selectCols += `, COALESCE(profile_causes.causes, '{}') AS causes`
+  if (joinWork) selectCols += `, COALESCE(profile_work.work, '{}') AS work`
 
   const query = renderSql(
     select(selectCols),

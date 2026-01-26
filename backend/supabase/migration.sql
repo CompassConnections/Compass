@@ -1,4 +1,5 @@
 BEGIN;
+\i backend/supabase/rebuild_profile_search.sql
 \i backend/supabase/functions.sql
 \i backend/supabase/firebase.sql
 \i backend/supabase/profiles.sql

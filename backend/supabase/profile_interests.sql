@@ -21,3 +21,28 @@ CREATE INDEX idx_profile_interests_profile
 
 CREATE INDEX idx_profile_interests_interest
     ON profile_interests (option_id);
+
+-- Trigger to update /get-profiles search
+CREATE OR REPLACE FUNCTION trg_profile_interests_rebuild_search()
+    RETURNS trigger AS
+$$
+BEGIN
+    PERFORM rebuild_profile_search(
+            COALESCE(NEW.profile_id, OLD.profile_id)
+            );
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_profile_interests_search_ins
+    AFTER INSERT
+    ON profile_interests
+    FOR EACH ROW
+EXECUTE FUNCTION trg_profile_interests_rebuild_search();
+
+CREATE TRIGGER trg_profile_interests_search_del
+    AFTER DELETE
+    ON profile_interests
+    FOR EACH ROW
+EXECUTE FUNCTION trg_profile_interests_rebuild_search();
+

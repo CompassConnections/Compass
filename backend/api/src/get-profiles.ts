@@ -254,9 +254,9 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     interests?.length && where(getManyToManyClause('interests'), {values: interests.map(Number)}),
 
-    causes?.length && where(getManyToManyClause('causes'), {values: causes}),
+    causes?.length && where(getManyToManyClause('causes'), {values: causes.map(Number)}),
 
-    work?.length && where(getManyToManyClause('work'), {values: work}),
+    work?.length && where(getManyToManyClause('work'), {values: work.map(Number)}),
 
     !!wants_kids_strength &&
     wants_kids_strength !== -1 &&

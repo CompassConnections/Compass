@@ -15,7 +15,7 @@ export function InterestFilterText(props: {
   const {options, highlightedClass, label} = props
   const t = useT()
   const length = (options ?? []).length
-  const {choices} = useChoices('interests')
+  const {choices} = useChoices(label)
 
   if (!options || length < 1) {
     return (

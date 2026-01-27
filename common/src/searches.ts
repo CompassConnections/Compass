@@ -18,6 +18,9 @@ const filterLabels: Record<string, string> = {
   wants_kids_strength: "Kids",
   is_smoker: "",
   pref_relation_styles: "Seeking",
+  interests: "",
+  causes: "",
+  work: "",
   religion: "",
   pref_gender: "",
   orderBy: "",
@@ -47,7 +50,11 @@ const skippedKeys = [
 ]
 
 
-export function formatFilters(filters: Partial<FilterFields>, location: locationType | null): String[] | null {
+export function formatFilters(
+  filters: Partial<FilterFields>,
+  location: locationType | null,
+  choicesIdsToLabels: Record<string, any>
+): String[] | null {
   const entries: String[] = []
 
   let ageEntry = null
@@ -83,7 +90,12 @@ export function formatFilters(filters: Partial<FilterFields>, location: location
     let stringValue = value
     if (key === 'has_kids') stringValue = hasKidsNames[value as number]
     if (key === 'wants_kids_strength') stringValue = wantsKidsNames[value as number]
-    if (Array.isArray(value)) stringValue = value.join(', ')
+    if (Array.isArray(value)) {
+      if (choicesIdsToLabels[key]) {
+        value = value.map((id) => choicesIdsToLabels[key][id])
+      }
+      stringValue = value.join(', ')
+    }
 
     if (!label) {
       const str = String(stringValue)

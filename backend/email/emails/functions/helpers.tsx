@@ -11,6 +11,7 @@ import {MatchesType} from "common/profiles/bookmarked_searches";
 import NewSearchAlertsEmail from "email/new-search_alerts";
 import WelcomeEmail from "email/welcome";
 import * as admin from "firebase-admin";
+import {getOptionsIdsToLabels} from "shared/supabase/options";
 
 export const fromEmail = 'Compass <compass@compassmeet.com>'
 
@@ -111,6 +112,11 @@ export const sendSearchAlertsEmail = async (
   const email = privateUser.email;
   if (!email || !sendToEmail) return
 
+  // Determine locale (fallback to 'en') and load option labels before rendering
+  // TODO: add locale to user array
+  const locale = (toUser as any)?.locale ?? 'en'
+  const optionIdsToLabels = await getOptionsIdsToLabels(locale)
+
   return await sendEmail({
     from: fromEmail,
     subject: `People aligned with your values just joined`,
@@ -121,6 +127,7 @@ export const sendSearchAlertsEmail = async (
         matches={matches}
         unsubscribeUrl={unsubscribeUrl}
         email={email}
+        optionIdsToLabels={optionIdsToLabels}
       />
     ),
   })

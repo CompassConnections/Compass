@@ -1,9 +1,5 @@
-import {
-  CreateEmailRequestOptions,
-  Resend,
-  type CreateEmailOptions,
-} from 'resend'
-import { log } from 'shared/utils'
+import {type CreateEmailOptions, CreateEmailRequestOptions, Resend,} from 'resend'
+import {log} from 'shared/utils'
 import {sleep} from "common/util/time";
 
 
@@ -16,6 +12,12 @@ export const sendEmail = async (
 ) => {
   const resend = getResend()
   console.debug(resend, payload, options)
+
+  const skip = false
+  if (skip) {
+    console.warn("Skipping email send")
+    return null
+  }
 
   if (!resend) return null
 

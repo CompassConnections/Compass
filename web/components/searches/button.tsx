@@ -13,6 +13,7 @@ import {useState} from "react";
 import {useT} from "web/lib/locale";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import {useAllChoices} from "web/hooks/use-choices";
 
 export function BookmarkSearchButton(props: {
   bookmarkedSearches: BookmarkedSearchesType[]
@@ -70,6 +71,7 @@ function ButtonModal(props: {
 }) {
   const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches} = props
   const t = useT()
+  const choicesIdsToLabels = useAllChoices()
   return (
     <Modal
       open={open}
@@ -91,7 +93,7 @@ function ButtonModal(props: {
                   {(bookmarkedSearches || []).map((search) => (
                     <li key={search.id}
                         className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                      {formatFilters(search.search_filters as Partial<FilterFields>, search.location as locationType)?.join(" • ")}
+                      {formatFilters(search.search_filters as Partial<FilterFields>, search.location as locationType, choicesIdsToLabels)?.join(" • ")}
                       <button
                         onClick={async () => {
                           await deleteBookmarkedSearch(search.id)

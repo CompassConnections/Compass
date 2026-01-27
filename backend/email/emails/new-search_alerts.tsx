@@ -13,6 +13,7 @@ interface NewMessageEmailProps {
   matches: MatchesType[]
   unsubscribeUrl: string
   email?: string
+  optionIdsToLabels?: Record<string, Record<string, string>>
 }
 
 export const NewSearchAlertsEmail = ({
@@ -20,6 +21,7 @@ export const NewSearchAlertsEmail = ({
                                        unsubscribeUrl,
                                        matches,
                                        email,
+                                       optionIdsToLabels = {},
                                      }: NewMessageEmailProps) => {
   const name = toUser.name.split(' ')[0]
 
@@ -44,7 +46,8 @@ export const NewSearchAlertsEmail = ({
                 <Text style={{fontWeight: "bold", marginBottom: "5px"}}>
                   {formatFilters(
                     match.description.filters as Partial<FilterFields>,
-                    match.description.location as locationType
+                    match.description.location as locationType,
+                    optionIdsToLabels,
                   )?.join(" • ")}
                 </Text>
                 <Text style={{margin: 0}}>

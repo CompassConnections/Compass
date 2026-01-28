@@ -18,6 +18,8 @@ import {buildArray} from 'common/util/array'
 import {DeleteYourselfButton} from '../profile/delete-yourself'
 import {toast} from "react-hot-toast";
 import Router from "next/router";
+import {useT} from 'web/lib/locale'
+import {Tooltip} from "web/components/widgets/tooltip";
 
 export function MoreOptionsUserButton(props: { user: User }) {
   const {user} = props
@@ -26,6 +28,7 @@ export function MoreOptionsUserButton(props: { user: User }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const isAdmin = useAdmin()
   const isTrusted = useTrusted()
+  const t = useT()
 
   if (!currentPrivateUser) return <div/>
 
@@ -38,16 +41,19 @@ export function MoreOptionsUserButton(props: { user: User }) {
 
   return (
     <>
-      <Button
-        color={'gray-white'}
-        className="rounded-none px-6"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <DotsHorizontalIcon
-          className={clsx('h-5 w-5 flex-shrink-0')}
-          aria-hidden="true"
-        />
-      </Button>
+      <Tooltip text={t('more_options_user.more_options', 'More Options')} noTap>
+        <Button
+          color={'gray-white'}
+          className="rounded-none px-6"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <DotsHorizontalIcon
+            className={clsx('h-5 w-5 flex-shrink-0')}
+            aria-hidden="true"
+          />
+        </Button>
+      </Tooltip>
+
       <Modal open={isModalOpen} setOpen={setIsModalOpen}>
         <Col className={'bg-canvas-0 text-ink-1000 rounded-md p-4 '}>
           <div className="mb-2 flex flex-wrap justify-between">
@@ -64,18 +70,18 @@ export function MoreOptionsUserButton(props: { user: User }) {
                         unban: user.isBannedFromPosting ?? false,
                       }),
                       {
-                        loading: 'Banning...',
+                        loading: t('more_options_user.banning', 'Banning...'),
                         success: () => {
-                          return 'User banned!'
+                          return t('more_options_user.user_banned', 'User banned!')
                         },
                         error: () => {
-                          return 'Error banning user'
+                          return t('more_options_user.error_banning', 'Error banning user')
                         },
                       }
                     )
                   }}
                 >
-                  {user.isBannedFromPosting ? 'Banned' : 'Ban User'}
+                  {user.isBannedFromPosting ? t('more_options_user.banned', 'Banned') : t('more_options_user.ban_user', 'Ban User')}
                 </Button>
                 <Button
                   size="sm"
@@ -86,7 +92,7 @@ export function MoreOptionsUserButton(props: { user: User }) {
                     )
                   }}
                 >
-                  Delete pinned photo
+                  {t('more_options_user.delete_pinned_photo', 'Delete pinned photo')}
                 </Button>
               </Row>
             )}
@@ -96,11 +102,11 @@ export function MoreOptionsUserButton(props: { user: User }) {
               'text-ink-600 flex-wrap items-center gap-x-3 gap-y-1 px-1'
             }
           >
-            <span className={'text-sm'}>Joined {createdTime}</span>
+            <span className={'text-sm'}>{t('more_options_user.joined', 'Joined')} {createdTime}</span>
             {isAdmin && (
               <SimpleCopyTextButton
                 text={user.id}
-                tooltip="Copy user id"
+                tooltip={t('more_options_user.copy_user_id', 'Copy user id')}
                 className="!px-1 !py-px"
                 eventTrackingName={'admin copy user id'}
               />
@@ -113,7 +119,7 @@ export function MoreOptionsUserButton(props: { user: User }) {
               isYou
                 ? [
                   {
-                    title: 'Delete Account',
+                    title: t('more_options_user.delete_account', 'Delete Account'),
                     content: (
                       <div className="flex min-h-[200px] items-center justify-center p-4">
                         <DeleteYourselfButton/>
@@ -123,7 +129,7 @@ export function MoreOptionsUserButton(props: { user: User }) {
                 ]
                 : [
                   {
-                    title: 'Block',
+                    title: t('more_options_user.block', 'Block'),
                     content: (
                       <BlockUser
                         user={user}
@@ -133,7 +139,7 @@ export function MoreOptionsUserButton(props: { user: User }) {
                     ),
                   },
                   {
-                    title: 'Report',
+                    title: t('more_options_user.report', 'Report'),
                     content: (
                       <ReportUser
                         user={user}

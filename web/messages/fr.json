@@ -408,7 +408,7 @@
   "profile.bio.tips_intro": "Rédigez une bio claire et engageante pour aider les autres à comprendre qui vous êtes et les connexions que vous recherchez. Incluez :",
   "profile.bio.tips_link": "Lire tous les conseils pour rédiger une bio de haute qualité",
   "profile.bio.tips_list": "- Vos valeurs fondamentales, intérêts et activités\n- Traits de personnalité, ce qui vous rend unique et ce qui vous tient à cœur\n- Objectifs de connexion (collaboration, amitié, romantique)\n- Attentes et limites\n- Disponibilité, comment vous contacter ou démarrer une conversation (e-mail, réseaux sociaux, etc.)\n- Optionnel : préférences romantiques, habitudes de vie et sujets de conversation",
-  "profile.bio.too_short": "Bio trop courte. Le profil peut être filtré des résultats de recherche.",
+  "profile.bio.too_short": "Bio trop courte. Votre profil n'est pas affiché dans les résultats de recherche par défaut.",
   "profile.bio.too_short_tooltip": "Comme votre bio est trop courte, l'algorithme de Compass filtre votre profil des résultats de recherche (sauf si « Inclure les bios courtes » est sélectionné). Cela garantit que les recherches affichent des profils significatifs.",
   "profile.comments.current_user_hint": "Les autres utilisateurs peuvent vous laisser des recommandations ici.",
   "profile.comments.add_comment": "Ajouter un commentaire",

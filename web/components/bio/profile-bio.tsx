@@ -6,53 +6,18 @@ import {BioBlock} from './profile-bio-block'
 import {MAX_INT, MIN_BIO_LENGTH} from "common/constants";
 import {useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core"
-import {flip, offset, shift, useFloating} from "@floating-ui/react-dom";
 import {useT} from "web/lib/locale";
+import {Row} from "web/components/layout/row";
+import {QuestionMarkTooltip} from "web/components/widgets/tooltip-question-mark";
 
 export default function TooShortBio() {
-  const [open, setOpen] = useState(false);
-  const t = useT();
-  const {y, refs, strategy} = useFloating({
-    placement: "bottom", // place below the trigger
-    middleware: [
-      offset(8), // small gap between ? and box
-      flip(),
-      shift({padding: 8}), // prevent viewport clipping
-    ],
-  });
-
+  const t = useT()
+  const text = t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include Short Bios\" is selected). This ensures searches show meaningful profiles.");
   return (
-    <p className="text-red-600">
-      {t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}{" "}
-      <span
-        className="inline-flex align-middle"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        ref={refs.setReference}
-      >
-        <span
-          className="cursor-help text-red-600 border border-red-600 rounded-full w-5 h-5 inline-flex items-center justify-center align-middle">
-          ?
-        </span>
-      </span>
-
-      {open && (
-        <div
-          ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: "50%",
-            transform: `translateX(-50%)`,
-          }}
-          className="p-3 bg-canvas-50 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 transition-opacity w-72 max-w-[calc(100vw-1rem)] whitespace-normal break-words"
-        >
-          <p className="text-sm text-gray-800 dark:text-gray-100">
-            {t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include Short Bios\" is selected). This ensures searches show meaningful profiles.")}
-          </p>
-        </div>
-      )}
-    </p>
+    <Row className="text-red-600 gap-1">
+      <p>{t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}</p>
+      <QuestionMarkTooltip text={text}/>
+    </Row>
   );
 }
 

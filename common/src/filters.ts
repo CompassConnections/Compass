@@ -86,7 +86,7 @@ export const initialFilters: Partial<FilterFields> = {
   religion: undefined,
   mbti: undefined,
   pref_gender: undefined,
-  shortBio: true,
+  shortBio: undefined,
   drinks_min: undefined,
   drinks_max: undefined,
   orderBy: 'created_time',

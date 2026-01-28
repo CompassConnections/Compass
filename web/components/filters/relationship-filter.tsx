@@ -23,7 +23,7 @@ export function RelationshipFilterText(props: {
     )
   }
 
-  const convertedRelationships = relationship.map((r) =>
+  const convertedRelationships = relationship?.map((r) =>
     t(`profile.relationship.${r}`, convertRelationshipType(r))
   )
 

@@ -2,7 +2,6 @@ import {type APIHandler} from 'api/helpers/endpoint'
 import {convertRow} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
 import {from, join, leftJoin, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
-import {MIN_BIO_LENGTH} from "common/constants";
 import {compact} from "lodash";
 import {OptionTableKey} from "common/profiles/constants";
 
@@ -119,6 +118,7 @@ export const loadProfiles = async (props: profileQueryType) => {
         GROUP BY profile_${label}.profile_id
     ) profile_${label} ON profile_${label}.profile_id = profiles.id`
   }
+
   const interestsJoin = getManyToManyJoin('interests')
   const causesJoin = getManyToManyJoin('causes')
   const workJoin = getManyToManyJoin('work')
@@ -292,7 +292,12 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
-    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH}`, {MIN_BIO_LENGTH}),
+    !shortBio && where(
+      `bio_length >= ${100}
+       OR array_length(profile_work.work, 1) > 0
+       OR array_length(profile_interests.interests, 1) > 0
+       OR occupation_title IS NOT NULL
+       `),
 
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
   ]

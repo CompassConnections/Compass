@@ -116,9 +116,9 @@ function ProfilePreview(props: {
 
   const seekingGenderText = getSeekingGenderText(profile, t)
 
-  if (!profile.work?.length && !profile.occupation_title && !profile.interests?.length && (profile.bio_length || 0) < 100) {
-    return null
-  }
+  // if (!profile.work?.length && !profile.occupation_title && !profile.interests?.length && (profile.bio_length || 0) < 100) {
+  //   return null
+  // }
 
   return (
     <Link
@@ -173,9 +173,8 @@ function ProfilePreview(props: {
               <div className="line-clamp-4">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
                 <Content className="w-full" content={bio}/>
-                {/*<Col>*/}
                 {seekingGenderText && <p>{seekingGenderText}.</p>}
-                {!!profile.work?.length && <p>
+                {(!!profile.work?.length || profile.occupation_title) && <p>
                   {t("profile.optional.category.work", "Work")}:{" "}
                   {profile.occupation_title && profile.occupation_title + ", "}
                   {profile.work?.slice(0, 3).map(id => choicesIdsToLabels['work'][id]).join(', ')}
@@ -185,7 +184,6 @@ function ProfilePreview(props: {
                   {t("profile.optional.interests", "Interests")}:{" "}
                   {profile.interests?.map(id => choicesIdsToLabels['interests'][id]).join(', ')}
                 </p>}
-                {/*</Col>*/}
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import {Title} from 'web/components/widgets/title'
 import {Row} from 'web/components/layout/row'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
+import {Tooltip} from "web/components/widgets/tooltip";
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -95,24 +96,28 @@ export const SendMessageButton = (props: {
 
   return (
     <>
-      {circleButton ? (
-        <button
-          className="bg-primary-900 hover:bg-primary-600 h-7 w-7 rounded-full transition-colors"
-          onClick={messageButtonClicked}
-        >
-          <BiEnvelope
-            className={clsx(
-              'm-auto h-5 w-5 text-white drop-shadow',
-              includeLabel && 'mr-2'
-            )}
-          />
-        </button>
-      ) : (
-        <Button size={'sm'} onClick={messageButtonClicked} color={'none'} className='bg-canvas-200 hover:bg-canvas-300'>
-          <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
-          {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
-        </Button>
-      )}
+      <Tooltip text={t('send_message.button_label', 'Message')} noTap>
+        {circleButton ? (
+          <button
+            className="bg-primary-900 hover:bg-primary-600 h-7 w-7 rounded-full transition-colors"
+            onClick={messageButtonClicked}
+          >
+            <BiEnvelope
+              className={clsx(
+                'm-auto h-5 w-5 text-white drop-shadow',
+                includeLabel && 'mr-2'
+              )}
+            />
+          </button>
+        ) : (
+          <Button size={'sm'} onClick={messageButtonClicked} color={'none'}
+                  className='bg-canvas-200 hover:bg-canvas-300'>
+            <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')}/>{' '}
+            {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
+          </Button>
+        )}
+      </Tooltip>
+
       <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
         <Col className={MODAL_CLASS}>
           <Row className={'w-full'}>

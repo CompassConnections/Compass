@@ -1,12 +1,13 @@
 import clsx from 'clsx'
-import { StarIcon } from '@heroicons/react/outline'
-import { useState, useEffect } from 'react'
+import {StarIcon} from '@heroicons/react/outline'
+import {useEffect, useState} from 'react'
 
-import { api } from 'web/lib/api'
-import { buttonClass } from 'web/components/buttons/button'
-import { track } from 'web/lib/service/analytics'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { Profile } from 'common/profiles/profile'
+import {api} from 'web/lib/api'
+import {buttonClass} from 'web/components/buttons/button'
+import {track} from 'web/lib/service/analytics'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {Profile} from 'common/profiles/profile'
+import {useT} from 'web/lib/locale'
 
 export const StarButton = (props: {
   targetProfile: Profile
@@ -18,6 +19,7 @@ export const StarButton = (props: {
   const { targetProfile, refresh, hideTooltip, className } = props
   const targetId = targetProfile.user_id
   const [isStarred, setIsStarred] = useState(props.isStarred)
+  const t = useT()
 
   useEffect(() => {
     setIsStarred(props.isStarred)
@@ -63,7 +65,7 @@ export const StarButton = (props: {
   if (hideTooltip) return button
 
   return (
-    <Tooltip text={isStarred ? 'Unsave Profile' : 'Save Profile'} noTap>
+    <Tooltip text={isStarred ? t('star_button.unsave', 'Unsave Profile') : t('star_button.save', 'Save Profile')} noTap>
       {button}
     </Tooltip>
   )

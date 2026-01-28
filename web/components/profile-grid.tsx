@@ -12,6 +12,8 @@ import {Row} from "web/components/layout/row";
 import {CompatibleBadge} from "web/components/widgets/compatible-badge";
 import {useUser} from "web/hooks/use-user";
 import {useT} from "web/lib/locale";
+import {useAllChoices} from "web/hooks/use-choices";
+import {getSeekingGenderText} from "web/lib/profile/seeking";
 
 export const ProfileGrid = (props: {
   profiles: Profile[]
@@ -83,6 +85,8 @@ function ProfilePreview(props: {
 }) {
   const {profile, compatibilityScore} = props
   const {user} = profile
+  const choicesIdsToLabels = useAllChoices()
+  const t = useT()
   // const currentUser = useUser()
 
   const bio = profile.bio as JSONContent;
@@ -108,6 +112,12 @@ function ProfilePreview(props: {
       if (i >= 5) break
     }
     bio.content = newBio
+  }
+
+  const seekingGenderText = getSeekingGenderText(profile, t)
+
+  if (!profile.work?.length && !profile.occupation_title && !profile.interests?.length && (profile.bio_length || 0) < 100) {
+    return null
   }
 
   return (
@@ -152,18 +162,31 @@ function ProfilePreview(props: {
           )}
         </Row>
 
-        <Col className="absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent px-4 pb-2 pt-6">
+        <Col className="absolute inset-x-0 top-[-15px] bg-gradient-to-b to-transparent px-4 pt-0">
           <div>
             <div className="flex-1 min-w-0">
               {/* <OnlineIcon last_online_time={last_online_time} /> */}
               <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
-                {user.name}
+                {user.name}{profile.age && `, ${profile.age}`}
+                {/*{profile.gender && <GenderIcon gender={profile.gender} className={clsx('h-4 w-4')} hasColor />}*/}
               </h3>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="line-clamp-4">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
-                <Content className="w-full line-clamp-4" content={bio}/>
+                <Content className="w-full" content={bio}/>
+                {/*<Col>*/}
+                {seekingGenderText && <p>{seekingGenderText}.</p>}
+                {!!profile.work?.length && <p>
+                  {t("profile.optional.category.work", "Work")}:{" "}
+                  {profile.occupation_title && profile.occupation_title + ", "}
+                  {profile.work?.slice(0, 3).map(id => choicesIdsToLabels['work'][id]).join(', ')}
+                  {(profile.work?.length || 0) > 3 && ',...'}
+                </p>}
+                {!!profile.interests?.length && <p>
+                  {t("profile.optional.interests", "Interests")}:{" "}
+                  {profile.interests?.map(id => choicesIdsToLabels['interests'][id]).join(', ')}
+                </p>}
+                {/*</Col>*/}
               </div>
-              {/*{age}*/}
             </div>
           </div>
           {/*<Row className="gap-1 text-xs">*/}

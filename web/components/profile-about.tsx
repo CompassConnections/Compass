@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {convertRace, convertRelationshipType, type RelationshipType,} from 'web/lib/util/convert-types'
+import {convertRace, type RelationshipType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import React, {ReactNode} from 'react'
 import {
@@ -10,7 +10,6 @@ import {
   INVERTED_POLITICAL_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
-  INVERTED_ROMANTIC_CHOICES,
   RELATIONSHIP_ICONS
 } from 'web/components/filters/choices'
 import {BiSolidDrink} from 'react-icons/bi'
@@ -34,6 +33,7 @@ import {GiFruitBowl} from "react-icons/gi";
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 import {useLocale, useT} from "web/lib/locale";
 import {useChoices} from "web/hooks/use-choices";
+import {getSeekingGenderText} from "web/lib/profile/seeking";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -188,25 +188,7 @@ function Seeking(props: { profile: Profile }) {
 function RelationshipType(props: { profile: Profile }) {
   const t = useT()
   const {profile} = props
-  const relationshipTypes = profile.pref_relation_styles
-  let seekingGenderText = stringOrStringArrayToText({
-    text: relationshipTypes?.map((rel) =>
-      t(`profile.relationship.${rel}`, convertRelationshipType(rel as RelationshipType)).toLowerCase()
-    ).sort(),
-    preText: t('profile.seeking', 'Seeking'),
-    asSentence: true,
-    capitalizeFirstLetterOption: false,
-    t: t,
-  })
-  if (relationshipTypes?.includes('relationship')) {
-    const romanticStyles = profile.pref_romantic_styles
-      ?.map((style) => t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]).toLowerCase())
-      .filter(Boolean)
-    if (romanticStyles && romanticStyles.length > 0) {
-      seekingGenderText += ` (${romanticStyles.join(', ')})`
-    }
-
-  }
+  const seekingGenderText = getSeekingGenderText(profile, t)
   return (
     <AboutRow
       icon={<BsPersonHeart className="h-5 w-5"/>}

@@ -104,16 +104,16 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
 
-  const joinInterests = !!interests?.length
+  const joinInterests = true // !!interests?.length
   const joinCauses = !!causes?.length
-  const joinWork = !!work?.length
+  const joinWork = true // !!work?.length
 
   // Pre-aggregated interests per profile
   function getManyToManyJoin(label: OptionTableKey) {
     return `(
         SELECT 
             profile_${label}.profile_id,
-            ARRAY_AGG(${label}.name ORDER BY ${label}.name) AS ${label}
+            ARRAY_AGG(${label}.id ORDER BY ${label}.id) AS ${label}
         FROM profile_${label}
         JOIN ${label} ON ${label}.id = profile_${label}.option_id
         GROUP BY profile_${label}.profile_id

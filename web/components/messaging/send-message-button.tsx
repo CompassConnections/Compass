@@ -1,21 +1,22 @@
 import clsx from 'clsx'
-import { User } from 'common/user'
-import { Button } from 'web/components/buttons/button'
-import { useRouter } from 'next/router'
-import { BiEnvelope } from 'react-icons/bi'
-import { useSortedPrivateMessageMemberships } from 'web/hooks/use-private-messages'
-import { usePrivateUser } from 'web/hooks/use-user'
-import { findKey } from 'lodash'
-import { useState } from 'react'
-import { Modal, MODAL_CLASS } from 'web/components/layout/modal'
-import { Col } from 'web/components/layout/col'
-import { api } from 'web/lib/api'
-import { useTextEditor } from 'web/components/widgets/editor'
-import { MAX_COMMENT_LENGTH } from 'common/comment'
-import { CommentInputTextArea } from 'web/components/comments/comment-input'
-import { Title } from 'web/components/widgets/title'
-import { Row } from 'web/components/layout/row'
-import { firebaseLogin } from 'web/lib/firebase/users'
+import {User} from 'common/user'
+import {Button} from 'web/components/buttons/button'
+import {useRouter} from 'next/router'
+import {BiEnvelope} from 'react-icons/bi'
+import {useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
+import {usePrivateUser} from 'web/hooks/use-user'
+import {findKey} from 'lodash'
+import {useEffect, useState} from 'react'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Col} from 'web/components/layout/col'
+import {api} from 'web/lib/api'
+import {useTextEditor} from 'web/components/widgets/editor'
+import {MAX_COMMENT_LENGTH} from 'common/comment'
+import {CommentInputTextArea} from 'web/components/comments/comment-input'
+import {Title} from 'web/components/widgets/title'
+import {Row} from 'web/components/layout/row'
+import {firebaseLogin} from 'web/lib/firebase/users'
+import {useT} from 'web/lib/locale'
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -28,6 +29,7 @@ export const SendMessageButton = (props: {
   const privateUser = usePrivateUser()
   const channelMemberships = useSortedPrivateMessageMemberships(currentUser?.id)
   const { memberIdsByChannelId } = channelMemberships
+  const t = useT()
 
   const [openComposeModal, setOpenComposeModal] = useState(false)
   const [error, setError] = useState('')
@@ -52,8 +54,17 @@ export const SendMessageButton = (props: {
     key: `compose-new-message-${toUser.id}`,
     size: 'sm',
     max: MAX_COMMENT_LENGTH,
-    placeholder: 'Say something...',
+    // placeholder: t('send_message.placeholder', '...'),
   })
+
+  useEffect(() => {
+    if (openComposeModal && editor) {
+      // Focus the editor after a short delay to ensure the modal is fully rendered
+      setTimeout(() => {
+        editor.commands.focus()
+      }, 100)
+    }
+  }, [openComposeModal, editor])
 
   const sendMessage = async () => {
     if (!editor) return
@@ -99,13 +110,13 @@ export const SendMessageButton = (props: {
       ) : (
         <Button size={'sm'} onClick={messageButtonClicked} color={'none'} className='bg-canvas-200 hover:bg-canvas-300'>
           <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
-          {includeLabel && <>Message</>}
+          {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
         </Button>
       )}
       <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
         <Col className={MODAL_CLASS}>
           <Row className={'w-full'}>
-            <Title className={'!mb-2'}>Message {toUser.name}</Title>
+            <Title className={'!mb-2'}>{t('send_message.title', 'Message')} {toUser.name}</Title>
           </Row>
           <CommentInputTextArea
             editor={editor}

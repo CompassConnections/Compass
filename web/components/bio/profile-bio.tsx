@@ -7,7 +7,6 @@ import {MAX_INT, MIN_BIO_LENGTH} from "common/constants";
 import {useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core"
 import {useT} from "web/lib/locale";
-import {Row} from "web/components/layout/row";
 import {Tooltip} from "web/components/widgets/tooltip";
 import {QuestionMarkCircleIcon} from "@heroicons/react/outline";
 
@@ -15,13 +14,15 @@ export default function TooShortBio() {
   const t = useT()
   const text = t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include Short Bios\" is selected). This ensures searches show meaningful profiles.");
   return (
-    <Row className="text-red-600 gap-1">
-      <p>{t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}</p>
-      <Tooltip
-        text={text}>
-        <QuestionMarkCircleIcon className="w-5 h-5 inline-flex align-middle"/>
-      </Tooltip>
-    </Row>
+    <p className="text-red-600">
+      {t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}{" "}
+      <span className="inline-flex align-middle">
+          <Tooltip
+            text={text}>
+            <QuestionMarkCircleIcon className="w-5 h-5"/>
+          </Tooltip>
+        </span>
+    </p>
   );
 }
 

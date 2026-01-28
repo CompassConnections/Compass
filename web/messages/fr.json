@@ -263,6 +263,8 @@
   "home.subtitle": "Trouvez des personnes qui partagent vos valeurs, idées et intentions — pas seulement vos photos.",
   "home.title": "Fini les swipes.",
   "home.typewriter": "Cherche.",
+  "copy_link_button.copy_link": "Copier le lien",
+  "copy_link_button.link_copied": "Lien copié !",
   "search.include_short_bios_tooltip": "Pour lister tous les profils, cochez \"Inclure les bios courtes\"",
   "more_options_user.more_options": "Plus d'options",
   "more_options_user.banning": "Bannissement...",

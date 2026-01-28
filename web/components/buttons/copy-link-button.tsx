@@ -1,21 +1,13 @@
-import { ComponentProps, useState } from 'react'
-import { copyToClipboard } from 'web/lib/util/copy'
-import { track } from 'web/lib/service/analytics'
-import { Tooltip } from '../widgets/tooltip'
+import {ComponentProps, useState} from 'react'
+import {copyToClipboard} from 'web/lib/util/copy'
+import {track} from 'web/lib/service/analytics'
+import {Tooltip} from '../widgets/tooltip'
 import clsx from 'clsx'
-import {
-  Button,
-  ColorType,
-  IconButton,
-  SizeType,
-} from 'web/components/buttons/button'
+import {Button, ColorType, IconButton, SizeType,} from 'web/components/buttons/button'
 import toast from 'react-hot-toast'
 import LinkIcon from 'web/lib/icons/link-icon.svg'
-import {
-  CheckIcon,
-  ClipboardCopyIcon,
-  DuplicateIcon,
-} from '@heroicons/react/outline'
+import {CheckIcon, ClipboardCopyIcon, DuplicateIcon,} from '@heroicons/react/outline'
+import {useT} from "web/lib/locale";
 
 export function CopyLinkOrShareButton(props: {
   url: string
@@ -33,6 +25,7 @@ export function CopyLinkOrShareButton(props: {
   const { url, size, children, className, iconClassName, tooltip, color } =
     props
   const [isSuccess, setIsSuccess] = useState(false)
+  const t = useT()
 
   const onClick = () => {
     if (!url) return
@@ -41,12 +34,12 @@ export function CopyLinkOrShareButton(props: {
     setTimeout(() => setIsSuccess(false), 2000) // Reset after 2 seconds
   }
 
-  const content = isSuccess ? 'Copied!' : children
+  const content = isSuccess ? t('about.settings.copied', 'Copied!') : children
 
   return (
     <ToolTipOrDiv
       hasChildren={!!children}
-      text={tooltip ?? 'Copy link'}
+      text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')}
       noTap
       placement="bottom"
     >
@@ -103,6 +96,7 @@ export const CopyLinkRow = (props: {
   // "copied" success state animations
   const [bgPressed, setBgPressed] = useState(false)
   const [iconPressed, setIconPressed] = useState(false)
+  const t = useT()
 
   const onClick = () => {
     if (!url) return
@@ -112,7 +106,7 @@ export const CopyLinkRow = (props: {
     setTimeout(() => setBgPressed(false), 300)
     setTimeout(() => setIconPressed(false), 1000)
     copyToClipboard(url)
-    toast.success('Link copied!')
+    toast.success(t('copy_link_button.link_copied', 'Link copied!'))
   }
 
   // remove any http:// prefix
@@ -152,18 +146,19 @@ export function SimpleCopyTextButton(props: {
   className?: string
 }) {
   const { text, eventTrackingName, className, tooltip } = props
+  const t = useT()
 
   const onClick = () => {
     if (!text) return
 
     copyToClipboard(text)
-    toast.success('Link copied!')
+    toast.success(t('copy_link_button.link_copied', 'Link copied!'))
     track(eventTrackingName, { text })
   }
 
   return (
     <IconButton onClick={onClick} className={className} disabled={!text}>
-      <Tooltip text={tooltip ?? 'Copy link'} noTap placement="bottom">
+      <Tooltip text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')} noTap placement="bottom">
         <ClipboardCopyIcon className={'h-5'} aria-hidden="true" />
       </Tooltip>
     </IconButton>

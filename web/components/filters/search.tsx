@@ -313,10 +313,10 @@ export const Search = (props: {
         {(profileCount ?? 0) > 0 && (
           <Row className="text-sm text-ink-500 gap-2">
             <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
-            <Tooltip
-              text={!filters.shortBio && t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}>
+            {!filters.shortBio && <Tooltip
+                text={t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}>
               <QuestionMarkCircleIcon className="w-5 h-5"/>
-            </Tooltip>
+            </Tooltip>}
           </Row>
         )}
       </Row>

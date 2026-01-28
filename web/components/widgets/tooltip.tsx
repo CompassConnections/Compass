@@ -6,15 +6,13 @@ import {
   Placement,
   safePolygon,
   shift,
-  useClick,
   useFloating,
   useHover,
   useInteractions,
   useRole,
 } from '@floating-ui/react'
-import {Transition} from '@headlessui/react'
-import {ReactNode, useRef, useState} from 'react'
-import {useIsMobile} from "web/hooks/use-is-mobile";
+import { Transition } from '@headlessui/react'
+import { ReactNode, useRef, useState } from 'react'
 
 // See https://floating-ui.com/docs/react-dom
 
@@ -41,7 +39,6 @@ export function Tooltip(props: {
   const arrowRef = useRef(null)
 
   const [open, setOpen] = useState(false)
-  const isMobile = useIsMobile()
 
   const {
     x,
@@ -60,22 +57,19 @@ export function Tooltip(props: {
     middleware: [
       offset(8),
       flip(),
-      shift({padding: 4}),
-      arrow({element: arrowRef}),
+      shift({ padding: 4 }),
+      arrow({ element: arrowRef }),
     ],
   })
 
-  const clickHook = useClick(context)
+  const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {}
 
-  const {x: arrowX, y: arrowY} = middlewareData.arrow ?? {}
-
-  const {getReferenceProps, getFloatingProps} = useInteractions([
+  const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, {
       mouseOnly: noTap,
-      handleClose: hasSafePolygon ? safePolygon({buffer: -0.5}) : null,
+      handleClose: hasSafePolygon ? safePolygon({ buffer: -0.5 }) : null,
     }),
-    ...(isMobile ? [clickHook] : []),
-    useRole(context, {role: 'tooltip'}),
+    useRole(context, { role: 'tooltip' }),
   ])
   // which side of tooltip arrow is on. like: if tooltip is top-left, arrow is on bottom of tooltip
   const arrowSide = {
@@ -107,7 +101,7 @@ export function Tooltip(props: {
         // div attributes
         role="tooltip"
         ref={floating}
-        style={{position: strategy, top: y ?? 0, left: x ?? 0}}
+        style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}
         className="text-ink-0 bg-ink-700 z-20 w-max max-w-xs whitespace-normal rounded px-2 py-1 text-center text-sm font-medium"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}

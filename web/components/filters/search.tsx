@@ -21,6 +21,7 @@ import {useChoices} from "web/hooks/use-choices";
 import {useT} from "web/lib/locale";
 import {isEqual} from "lodash";
 import {Tooltip} from "web/components/widgets/tooltip";
+import {QuestionMarkCircleIcon} from "@heroicons/react/outline";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -310,21 +311,13 @@ export const Search = (props: {
           />
         </Row>
         {(profileCount ?? 0) > 0 && (
-          <Tooltip
-            text={!filters.shortBio && t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}>
-            <Row className="text-sm text-ink-500 gap-2">
-              <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
-              {!filters.shortBio && <span
-                  className="border rounded-full w-4 h-4 inline-flex items-center justify-center align-middle text-xs">
-                ?
-              </span>}
-            </Row>
-          </Tooltip>
-
-          // <Row className="text-red-600 gap-1">
-          //   <p>{t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}</p>
-          //   <QuestionMarkTooltip text={!filters.shortBio && t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}/>
-          // </Row>
+          <Row className="text-sm text-ink-500 gap-2">
+            <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
+            <Tooltip
+              text={!filters.shortBio && t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}>
+              <QuestionMarkCircleIcon className="w-5 h-5"/>
+            </Tooltip>
+          </Row>
         )}
       </Row>
     </Col>

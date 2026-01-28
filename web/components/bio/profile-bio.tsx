@@ -8,7 +8,8 @@ import {useTextEditor} from "web/components/widgets/editor";
 import {JSONContent} from "@tiptap/core"
 import {useT} from "web/lib/locale";
 import {Row} from "web/components/layout/row";
-import {QuestionMarkTooltip} from "web/components/widgets/tooltip-question-mark";
+import {Tooltip} from "web/components/widgets/tooltip";
+import {QuestionMarkCircleIcon} from "@heroicons/react/outline";
 
 export default function TooShortBio() {
   const t = useT()
@@ -16,7 +17,10 @@ export default function TooShortBio() {
   return (
     <Row className="text-red-600 gap-1">
       <p>{t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}</p>
-      <QuestionMarkTooltip text={text}/>
+      <Tooltip
+        text={text}>
+        <QuestionMarkCircleIcon className="w-5 h-5 inline-flex align-middle"/>
+      </Tooltip>
     </Row>
   );
 }

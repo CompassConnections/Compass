@@ -8,6 +8,7 @@ export function QuestionMarkTooltip(props: {
   // Work like Tooltip but also gets triggered upon click and not just highlight (which is necessary for mobile)
   // Use QuestionMarkTooltip for question marks (no click, no button)
   // Use Tooltip for buttons (star, message, etc.)
+  // Seems like tooltip without noTap works
   const {text} = props
   const [open, setOpen] = useState(false)
   const {y, refs, strategy} = useFloating({

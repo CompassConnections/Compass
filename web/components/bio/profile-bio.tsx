@@ -48,7 +48,7 @@ export default function TooShortBio() {
           className="p-3 bg-canvas-50 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 transition-opacity w-72 max-w-[calc(100vw-1rem)] whitespace-normal break-words"
         >
           <p className="text-sm text-gray-800 dark:text-gray-100">
-            {t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include short bios\" is selected). This ensures searches show meaningful profiles.")}
+            {t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include Short Bios\" is selected). This ensures searches show meaningful profiles.")}
           </p>
         </div>
       )}

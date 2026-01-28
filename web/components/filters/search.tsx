@@ -20,6 +20,7 @@ import {DisplayUser} from "common/api/user-types";
 import {useChoices} from "web/hooks/use-choices";
 import {useT} from "web/lib/locale";
 import {isEqual} from "lodash";
+import {Tooltip} from "web/components/widgets/tooltip";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -309,9 +310,16 @@ export const Search = (props: {
           />
         </Row>
         {(profileCount ?? 0) > 0 && (
-          <Col className="text-sm text-ink-500">
-            <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
-          </Col>
+          <Tooltip text={t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include Short Bios"')}
+                   noTap>
+            <Row className="text-sm text-ink-500 gap-2">
+              <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
+              {!filters.shortBio && <span
+                  className="border rounded-full w-4 h-4 inline-flex items-center justify-center align-middle text-xs">
+                ?
+              </span>}
+            </Row>
+          </Tooltip>
         )}
       </Row>
     </Col>

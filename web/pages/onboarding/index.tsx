@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
@@ -32,6 +32,17 @@ function OnboardingScreen({
                             welcomeTitle
                           }: OnboardingScreenProps) {
   const t = useT()
+  const [showWelcome, setShowWelcome] = useState(!!welcomeTitle)
+
+  useEffect(() => {
+    if (welcomeTitle) {
+      const timer = setTimeout(() => {
+        setShowWelcome(false)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [welcomeTitle])
+
   return (
     <Col className="max-w-2xl mx-auto text-center px-6 py-12">
       {onBack && (
@@ -45,14 +56,9 @@ function OnboardingScreen({
         </div>
       )}
 
-      {welcomeTitle && (
-        <h2 className="text-5xl text-gray-500 mb-4 animate-fade-in animate-fade-out-slow">
-          {welcomeTitle}
-        </h2>
-      )}
-
-      <h1 className="text-4xl font-bold text-ink-900 mb-6">
-        {title}
+      <h1
+        className={`text-4xl font-bold mb-6 transition-all duration-500 ${showWelcome ? 'text-5xl text-gray-500' : 'text-ink-900'}`}>
+        {showWelcome && welcomeTitle ? welcomeTitle : title}
       </h1>
 
       <div className="text-lg text-ink-700 leading-relaxed mb-8">
@@ -184,10 +190,12 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
 
   const handleNext = () => {
+    window.scrollTo(0, 0)
     setCurrentStep(currentStep + 1)
   }
 
   const handleBack = () => {
+    window.scrollTo(0, 0)
     setCurrentStep(currentStep - 1)
   }
 

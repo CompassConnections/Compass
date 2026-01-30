@@ -13,8 +13,6 @@ import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileWithoutUser} from 'common/profiles/profile'
-import {PageBase} from "web/components/page-base";
-import {SEO} from "web/components/SEO";
 import {useLocale, useT} from 'web/lib/locale'
 
 export default function SignupPage() {
@@ -77,23 +75,23 @@ export default function SignupPage() {
     }
   }, [existingProfile])
 
-  if (step === 1 && user) {
-    return <PageBase trackPageView={'register'}>
-      <SEO
-        title={t('signup.seo.title','Sign up')}
-        description={t('signup.seo.description','Create a new account')}
-        url={`/signup`}
-      />
-      <Col className={'w-full px-6 py-4'}>
-        <OptionalProfileUserForm
-          setProfile={setProfileState}
-          profile={profileForm}
-          user={user}
-          fromSignup
-        />
-      </Col>
-    </PageBase>
-  }
+  // if (step === 1 && user) {
+  //   return <PageBase trackPageView={'register'}>
+  //     <SEO
+  //       title={t('signup.seo.title','Sign up')}
+  //       description={t('signup.seo.description','Create a new account')}
+  //       url={`/signup`}
+  //     />
+  //     <Col className={'w-full px-6 py-4'}>
+  //       <OptionalProfileUserForm
+  //         setProfile={setProfileState}
+  //         profile={profileForm}
+  //         user={user}
+  //         fromSignup
+  //       />
+  //     </Col>
+  //   </PageBase>
+  // }
 
   if (user === null && !holdLoading) {
     console.log('user === null && !holdLoading')
@@ -143,7 +141,14 @@ export default function SignupPage() {
               }}
             />
           ) : step === 1 ? (
-            <CompassLoadingIndicator/>
+            <Col className={'w-full px-6 py-4'}>
+              <OptionalProfileUserForm
+                setProfile={setProfileState}
+                profile={profileForm}
+                user={user}
+                fromSignup
+              />
+            </Col>
           ) : (
             <CompassLoadingIndicator/>
           )}

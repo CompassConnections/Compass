@@ -816,7 +816,7 @@ export const OptionalProfileUserForm = (props: {
 
         <Row className={'justify-end'}>
           <Button
-            className="fixed bottom-[calc(90px+var(--bnh))] lg:bottom-6 right-4 z-50 text-xl"
+            className="fixed bottom-[calc(90px+var(--bnh))] lg:bottom-6 right-4 sm:right-60 z-50 text-xl"
             disabled={isSubmitting}
             loading={isSubmitting}
             onClick={handleSubmit}

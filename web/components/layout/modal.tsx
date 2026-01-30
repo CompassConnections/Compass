@@ -1,12 +1,12 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { XIcon } from '@heroicons/react/outline'
+import {Dialog, Transition} from '@headlessui/react'
+import {XIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { Fragment, ReactNode, useEffect, useRef } from 'react'
+import {Fragment, ReactNode, useEffect, useRef} from 'react'
 
 export const MODAL_CLASS =
-  'items-center gap-4 rounded-md bg-canvas-0 sm:px-8 px-4 py-6 text-ink-1000'
+  'items-center gap-4 rounded-md bg-canvas-0 sm:px-8 px-4 pt-6 pb-2 text-ink-1000'
 export const SCROLLABLE_MODAL_CLASS =
-  'max-h-[70vh] min-h-[20rem] !overflow-auto'
+  '!overflow-auto'
 
 // From https://tailwindui.com/components/application-ui/overlays/modals
 export function Modal(props: {

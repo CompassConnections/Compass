@@ -156,8 +156,8 @@ export function AnswerCompatibilityQuestionContent(props: {
     ? shortenNumber(compatibilityQuestion.answer_count)
     : null
   return (
-    <Col className="h-full w-full gap-4">
-      <Col className="gap-1">
+    <Col className="h-[calc(100vh-120px)] sm:h-[calc(95vh-120px)] min-h-0 w-full gap-4">
+      <Col className="gap-1 shrink-0">
         {/*{compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">*/}
         {/*  <span>*/}
         {/*    Massive upgrade coming soon! More prompts, better predictive power, filtered by category, etc.*/}
@@ -190,7 +190,7 @@ export function AnswerCompatibilityQuestionContent(props: {
       <Col
         className={clsx(
           SCROLLABLE_MODAL_CLASS,
-          'h-[20rem] w-full gap-4 sm:h-[30rem]'
+          'w-full gap-4 flex-1 min-h-0'
         )}
       >
         <Col className="gap-2">
@@ -238,7 +238,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           />
         </Col>
       </Col>
-      <Row className="w-full justify-between gap-4">
+      <Row className="w-full justify-between gap-4 shrink-0">
         {noSkip ? (
           <div/>
         ) : (

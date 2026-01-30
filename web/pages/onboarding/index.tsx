@@ -44,9 +44,9 @@ function OnboardingScreen({
   }, [welcomeTitle])
 
   return (
-    <Col className="max-w-2xl mx-auto text-center px-6 py-12">
+    <Col className="max-w-2xl mx-auto text-center px-6 sm:py-12 py-2">
       {onBack && (
-        <div className="self-start mb-4">
+        <div className="self-start mb-0">
           <button
             onClick={onBack}
             className="text-ink-500 hover:text-ink-700 text-sm"
@@ -57,11 +57,11 @@ function OnboardingScreen({
       )}
 
       <h1
-        className={`text-4xl font-bold mb-6 transition-all duration-500 ${showWelcome ? 'text-5xl text-gray-500' : 'text-ink-900'}`}>
+        className={`text-4xl font-bold mb-4 mt-2 transition-all duration-500 ${showWelcome ? 'text-5xl text-gray-500' : 'text-ink-900'}`}>
         {showWelcome && welcomeTitle ? welcomeTitle : title}
       </h1>
 
-      <div className="text-lg text-ink-700 leading-relaxed mb-8">
+      <div className="text-lg text-ink-700 leading-relaxed mb-4">
         {content}
       </div>
 

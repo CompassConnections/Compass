@@ -73,7 +73,7 @@ function LoadedNotificationsContent(props: { user: User }) {
 
   return (
     <div className="relative mt-2 h-full w-full">
-      <Col className={'min-h-[100vh] gap-0 text-sm'}>
+      <Col className={'min-h-[100dvh] gap-0 text-sm'}>
         {groupedNotifications === undefined ||
         paginatedGroupedNotifications === undefined ? (
           <CompassLoadingIndicator/>

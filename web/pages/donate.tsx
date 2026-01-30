@@ -16,7 +16,7 @@ export default function DonatePage() {
       <Col className="max-w-3xl w-full mx-auto gap-6 custom-link">
         <h1 className="text-3xl font-semibold">{t('donate.title','Donate')}</h1>
         <iframe src="https://opencollective.com/embed/compass-connection/donate?hideFAQ=true"
-                style={{width: '100%', minHeight: '100vh'}}></iframe>
+                style={{width: '100%', minHeight: '100dvh'}}></iframe>
       </Col>
     </PageBase>
   )

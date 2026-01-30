@@ -1,7 +1,7 @@
 import Router from 'next/router'
-import { firebaseLogin } from 'web/lib/firebase/users'
-import { db } from 'web/lib/supabase/db'
-import { getProfileRow } from 'common/profiles/profile'
+import {firebaseLogin} from 'web/lib/firebase/users'
+import {db} from 'web/lib/supabase/db'
+import {getProfileRow} from 'common/profiles/profile'
 import toast from "react-hot-toast";
 
 export const signupThenMaybeRedirectToSignup = async () => {
@@ -13,7 +13,7 @@ export const signupThenMaybeRedirectToSignup = async () => {
       if (profile) {
         await Router.push('/')
       } else {
-        await Router.push('/signup')
+        await Router.push('/onboarding')
       }
     }
   } catch (e: any) {

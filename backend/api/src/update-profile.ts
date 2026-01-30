@@ -1,16 +1,18 @@
-import { APIError, APIHandler } from 'api/helpers/endpoint'
-import { removePinnedUrlFromPhotoUrls } from 'shared/profiles/parse-photos'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { updateUser } from 'shared/supabase/users'
-import { log } from 'shared/utils'
-import { tryCatch } from 'common/util/try-catch'
-import { update } from 'shared/supabase/utils'
-import { type Row } from 'common/supabase/utils'
+import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {updateUser} from 'shared/supabase/users'
+import {log} from 'shared/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {update} from 'shared/supabase/utils'
+import {type Row} from 'common/supabase/utils'
+import {trimStrings} from "common/parsing";
 
 export const updateProfile: APIHandler<'update-profile'> = async (
   parsedBody,
   auth
 ) => {
+  trimStrings(parsedBody)
   log('Updating profile', parsedBody)
   const pg = createSupabaseDirectClient()
 

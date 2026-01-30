@@ -1,14 +1,15 @@
-import { APIError, APIHandler } from 'api/helpers/endpoint'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { log, getUser } from 'shared/utils'
+import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser, log} from 'shared/utils'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
-import { removePinnedUrlFromPhotoUrls } from 'shared/profiles/parse-photos'
-import { track } from 'shared/analytics'
-import { updateUser } from 'shared/supabase/users'
-import { tryCatch } from 'common/util/try-catch'
-import { insert } from 'shared/supabase/utils'
+import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
+import {track} from 'shared/analytics'
+import {updateUser} from 'shared/supabase/users'
+import {tryCatch} from 'common/util/try-catch'
+import {insert} from 'shared/supabase/utils'
 import {sendDiscordMessage} from "common/discord/core";
 import {jsonToMarkdown} from "common/md";
+import {trimStrings} from "common/parsing";
 
 export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
@@ -23,6 +24,8 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
   }
 
   await removePinnedUrlFromPhotoUrls(body)
+  trimStrings(body)
+
   const user = await getUser(auth.uid)
   if (!user) throw new APIError(401, 'Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {

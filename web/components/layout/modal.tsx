@@ -90,7 +90,7 @@ export function Modal(props: {
               <div
                 className={clsx(
                   'relative w-full transform transition-all',
-                  'lg:mx-6 lg:my-8',
+                  'lg:mx-6 lg:my-8 mb-[var(--bnh)]',
                   'max-h-[90vh] min-h-[60vh]', // 👈 add this
                   sizeClass,
                   className

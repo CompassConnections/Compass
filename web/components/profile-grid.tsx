@@ -176,9 +176,10 @@ function ProfilePreview(props: {
                 {seekingGenderText && <p>{seekingGenderText}.</p>}
                 {(!!profile.work?.length || profile.occupation_title) && <p>
                   {t("profile.optional.category.work", "Work")}:{" "}
-                  {profile.occupation_title && profile.occupation_title + ", "}
-                  {profile.work?.slice(0, 3).map(id => choicesIdsToLabels['work'][id]).join(', ')}
-                  {(profile.work?.length || 0) > 3 && ',...'}
+                  {profile.occupation_title}
+                  {profile.occupation_title && !!profile.work?.length && (", ")}
+                  {profile.work?.map(id => choicesIdsToLabels['work'][id]).join(', ')}
+                  {/*{(profile.work?.length || 0) > 3 && ',...'}*/}
                 </p>}
                 {!!profile.interests?.length && <p>
                   {t("profile.optional.interests", "Interests")}:{" "}

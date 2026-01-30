@@ -22,7 +22,7 @@ import {useT} from 'web/lib/locale'
 export function AddCompatibilityQuestionButton(props: {
   refreshCompatibilityAll: () => void
 }) {
-  const { refreshCompatibilityAll } = props
+  const {refreshCompatibilityAll} = props
   const [open, setOpen] = useState(false)
   const t = useT()
   const user = useUser()
@@ -54,7 +54,7 @@ function AddCompatibilityQuestionModal(props: {
   user: User
   onClose?: () => void
 }) {
-  const { open, setOpen, user, onClose } = props
+  const {open, setOpen, user, onClose} = props
   const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(
     null
   )
@@ -95,7 +95,7 @@ function CreateCompatibilityModalContent(props: {
   afterAddQuestion: (question: rowFor<'compatibility_prompts'>) => void
   setOpen: (open: boolean) => void
 }) {
-  const { afterAddQuestion, setOpen } = props
+  const {afterAddQuestion, setOpen} = props
   const t = useT()
   const [question, setQuestion] = useState('')
   const [options, setOptions] = useState<string[]>(['', ''])
@@ -124,7 +124,7 @@ function CreateCompatibilityModalContent(props: {
   const noRepeatOptions = uniq(options).length == options.length
 
   const generateJson = () => {
-     // Note the change in the generic type
+    // Note the change in the generic type
     return options.reduce((obj, item, index) => {
       if (item.trim() !== '') {
         obj[item] = index // Mapping each option to its index
@@ -176,7 +176,7 @@ function CreateCompatibilityModalContent(props: {
                 value={options[index]}
                 onChange={(e) => onOptionChange(index, e.target.value)}
                 className="w-full"
-                placeholder={t('answers.add.option_placeholder', 'Option {n}', { n: String(index + 1) })}
+                placeholder={t('answers.add.option_placeholder', 'Option {n}', {n: String(index + 1)})}
                 rows={1}
                 maxLength={MAX_ANSWER_LENGTH}
               />
@@ -185,14 +185,14 @@ function CreateCompatibilityModalContent(props: {
                   className="bg-ink-400 text-ink-0 hover:bg-ink-600 transition-color absolute -right-1.5 -top-1.5 rounded-full p-0.5"
                   onClick={() => deleteOption(index)}
                 >
-                  <XIcon className="z-10 h-3 w-3" />
+                  <XIcon className="z-10 h-3 w-3"/>
                 </button>
               )}
             </div>
           ))}
           <Button onClick={addOption} color="gray-outline">
             <Row className="items-center gap-1">
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4"/>
               {t('answers.add.add_option', 'Add Option')}
             </Row>
           </Button>

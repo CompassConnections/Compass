@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import {Fragment, ReactNode, useEffect, useRef} from 'react'
 
 export const MODAL_CLASS =
-  'items-center gap-4 rounded-md bg-canvas-0 sm:px-8 px-4 pt-6 pb-2 text-ink-1000'
+  'items-center gap-4 rounded-md bg-canvas-0 sm:px-8 px-4 pt-6 pb-2 text-ink-1000 h-[calc(100dvh-var(--hloss)-120px)] sm:h-[calc(95dvh-var(--hloss)-120px)] '
 export const SCROLLABLE_MODAL_CLASS =
   '!overflow-auto'
 

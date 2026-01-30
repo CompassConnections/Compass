@@ -156,7 +156,7 @@ export function AnswerCompatibilityQuestionContent(props: {
     ? shortenNumber(compatibilityQuestion.answer_count)
     : null
   return (
-    <Col className="h-[calc(100dvh-var(--hloss)-120px)] sm:h-[calc(95dvh-var(--hloss)-120px)] min-h-0 w-full gap-4">
+    <Col className="min-h-0 w-full gap-4">
       <Col className="gap-1 shrink-0">
         {/*{compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">*/}
         {/*  <span>*/}

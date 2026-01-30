@@ -3,11 +3,12 @@ import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
-import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
 import router from "next/router";
 import Link from "next/link";
 import {useT} from 'web/lib/locale'
+import clsx from "clsx";
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
@@ -105,7 +106,7 @@ function CompatibilityOnboardingScreen({onNext, onSkip}: { onNext: () => void; o
   const t = useT()
 
   return (
-    <Col className="max-w-2xl mx-auto text-center px-6 py-12">
+    <Col className={clsx(SCROLLABLE_MODAL_CLASS, "max-w-2xl mx-auto text-center px-6")}>
       <h1 className="text-4xl font-bold text-ink-900 mb-6">
         {t('compatibility.onboarding.title', 'See who you\'ll actually align with')}
       </h1>

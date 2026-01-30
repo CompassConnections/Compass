@@ -488,25 +488,89 @@ export const OptionalProfileUserForm = (props: {
             </Col>
         </>}
 
-        <Category title={t('profile.optional.languages', 'Languages')}/>
+        <Category title={t('profile.optional.interests', 'Interests')}/>
+        <AddOptionEntry
+          // title={t('profile.optional.interests', 'Interests')}
+          choices={interestChoices}
+          setChoices={setInterestChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'interests'}
+        />
+
+        <Category title={t('profile.optional.category.morality', 'Morality')}/>
+        <AddOptionEntry
+          title={t('profile.optional.causes', 'Causes')}
+          choices={causeChoices}
+          setChoices={setCauseChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'causes'}
+        />
+
+        <Category title={t('profile.optional.category.education', 'Education')}/>
 
         <Col className={clsx(colClassName)}>
-          {/*<label className={clsx(labelClassName)}>*/}
-          {/*  {t('profile.optional.languages', 'Languages')}*/}
-          {/*</label>*/}
-          <div className="grid grid-cols-1 gap-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="col-span-full max-h-60 overflow-y-auto w-full">
-                <MultiCheckbox
-                  choices={LANGUAGE_CHOICES}
-                  selected={profile.languages || []}
-                  translationPrefix={'profile.language'}
-                  onChange={(selected) => setProfile('languages', selected)}
-                />
-              </div>
-            </div>
-          </div>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.education_level', 'Highest completed education level')}
+          </label>
+          <Carousel className="max-w-full">
+            <ChoicesToggleGroup
+              currentChoice={profile['education_level'] ?? ''}
+              choicesMap={Object.fromEntries(Object.entries(EDUCATION_CHOICES).map(([k, v]) => [t(`profile.education.${v}`, k), v]))}
+              setChoice={(c) => setProfile('education_level', c)}
+            />
+          </Carousel>
         </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.university', 'University')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('university', e.target.value)}
+            className={'w-52'}
+            value={profile['university'] ?? undefined}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.category.work', 'Work')}/>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {profile['company']
+              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {company: profile['company']})
+              : t('profile.optional.job_title', 'Job title')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('occupation_title', e.target.value)}
+            className={'w-52'}
+            value={profile['occupation_title'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.company', 'Company')}
+          </label>
+          <Input
+            type="text"
+            onChange={(e) => setProfile('company', e.target.value)}
+            className={'w-52'}
+            value={profile['company'] ?? undefined}
+          />
+        </Col>
+
+        <AddOptionEntry
+          title={t('profile.optional.work', 'Work Area')}
+          choices={workChoices}
+          setChoices={setWorkChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'work'}
+        />
 
         <Category title={t('profile.optional.political_beliefs', 'Political beliefs')}/>
 
@@ -550,26 +614,6 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.interests', 'Interests')}/>
-        <AddOptionEntry
-          // title={t('profile.optional.interests', 'Interests')}
-          choices={interestChoices}
-          setChoices={setInterestChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'interests'}
-        />
-
-        <Category title={t('profile.optional.category.morality', 'Morality')}/>
-        <AddOptionEntry
-          title={t('profile.optional.causes', 'Causes')}
-          choices={causeChoices}
-          setChoices={setCauseChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'causes'}
-        />
-
         <Category title={t('profile.optional.category.psychology', 'Psychology')}/>
         <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>
@@ -594,70 +638,6 @@ export const OptionalProfileUserForm = (props: {
             selected={profile['diet'] ?? []}
             translationPrefix={'profile.diet'}
             onChange={(selected) => setProfile('diet', selected)}
-          />
-        </Col>
-
-        <Category title={t('profile.optional.category.work', 'Work')}/>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {profile['company']
-              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {company: profile['company']})
-              : t('profile.optional.job_title', 'Job title')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('occupation_title', e.target.value)}
-            className={'w-52'}
-            value={profile['occupation_title'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.company', 'Company')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('company', e.target.value)}
-            className={'w-52'}
-            value={profile['company'] ?? undefined}
-          />
-        </Col>
-
-        <AddOptionEntry
-          title={t('profile.optional.work', 'Work Area')}
-          choices={workChoices}
-          setChoices={setWorkChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'work'}
-        />
-
-        <Category title={t('profile.optional.category.education', 'Education')}/>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.education_level', 'Highest completed education level')}
-          </label>
-          <Carousel className="max-w-full">
-            <ChoicesToggleGroup
-              currentChoice={profile['education_level'] ?? ''}
-              choicesMap={Object.fromEntries(Object.entries(EDUCATION_CHOICES).map(([k, v]) => [t(`profile.education.${v}`, k), v]))}
-              setChoice={(c) => setProfile('education_level', c)}
-            />
-          </Carousel>
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.university', 'University')}
-          </label>
-          <Input
-            type="text"
-            onChange={(e) => setProfile('university', e.target.value)}
-            className={'w-52'}
-            value={profile['university'] ?? undefined}
           />
         </Col>
 
@@ -692,6 +672,26 @@ export const OptionalProfileUserForm = (props: {
             min={0}
             value={profile['drinks_per_month'] ?? undefined}
           />
+        </Col>
+
+        <Category title={t('profile.optional.languages', 'Languages')}/>
+
+        <Col className={clsx(colClassName)}>
+          {/*<label className={clsx(labelClassName)}>*/}
+          {/*  {t('profile.optional.languages', 'Languages')}*/}
+          {/*</label>*/}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="col-span-full max-h-60 overflow-y-auto w-full">
+                <MultiCheckbox
+                  choices={LANGUAGE_CHOICES}
+                  selected={profile.languages || []}
+                  translationPrefix={'profile.language'}
+                  onChange={(selected) => setProfile('languages', selected)}
+                />
+              </div>
+            </div>
+          </div>
         </Col>
 
         {/* <Col className={clsx(colClassName)}>

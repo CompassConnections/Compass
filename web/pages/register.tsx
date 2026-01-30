@@ -51,8 +51,8 @@ function RegisterComponent() {
           console.log("Router.push('/')")
           await Router.push('/')
         } else {
-          console.log("Router.push('/signup')")
-          await Router.push('/signup')
+          console.log("Router.push('/onboarding')")
+          await Router.push('/onboarding')
         }
         setIsLoading(false)
       }

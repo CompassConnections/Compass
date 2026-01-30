@@ -1,16 +1,17 @@
-import { PencilIcon, XIcon } from '@heroicons/react/outline'
-import { JSONContent } from '@tiptap/core'
+import {PencilIcon, XIcon} from '@heroicons/react/outline'
+import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 
-import { Profile } from 'common/profiles/profile'
+import {Profile} from 'common/profiles/profile'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Content } from 'web/components/widgets/editor'
-import { updateProfile } from 'web/lib/api'
-import { EditableBio } from './editable-bio'
-import { tryCatch } from 'common/util/try-catch'
-import { useT } from 'web/lib/locale'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Content} from 'web/components/widgets/editor'
+import {updateProfile} from 'web/lib/api'
+import {EditableBio} from './editable-bio'
+import {tryCatch} from 'common/util/try-catch'
+import {useT} from 'web/lib/locale'
+import {Tooltip} from "web/components/widgets/tooltip";
 
 export function BioBlock(props: {
   isCurrentUser: boolean
@@ -46,6 +47,7 @@ export function BioBlock(props: {
           />
         )}
         {isCurrentUser && !edit && (
+          <Tooltip text={t('more_options_user.edit_bio', 'Bio options')} noTap>
           <DropdownMenu
             items={[
               {
@@ -65,6 +67,7 @@ export function BioBlock(props: {
             ]}
             closeOnClick
           />
+          </Tooltip>
         )}
       </Row>
     </Col>

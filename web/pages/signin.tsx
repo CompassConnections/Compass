@@ -52,7 +52,7 @@ function RegisterComponent() {
           if (profile) {
             await Router.push('/')
           } else {
-            await Router.push('/signup')
+            await Router.push('/onboarding')
           }
         } catch (error) {
           console.error("Error fetching profile profile:", error)

@@ -22,6 +22,7 @@ import toast from "react-hot-toast";
 import {StarButton} from "web/components/widgets/star-button";
 import {disableProfile} from "web/lib/util/disable";
 import {useT} from 'web/lib/locale'
+import {Tooltip} from "web/components/widgets/tooltip";
 
 export default function ProfileHeader(props: {
   user: User
@@ -80,6 +81,7 @@ export default function ProfileHeader(props: {
               className="hidden sm:flex"
               username={user.username}
             />
+            <Tooltip text={t('more_options_user.edit_profile', 'Edit profile')} noTap>
             <Button
               color={'gray-outline'}
               onClick={() => {
@@ -90,7 +92,9 @@ export default function ProfileHeader(props: {
             >
               <PencilIcon className=" h-4 w-4"/>
             </Button>
+            </Tooltip>
 
+            <Tooltip text={t('more_options_user.profile_options', 'Profile options')} noTap>
             <DropdownMenu
               menuWidth={'w-52'}
               icon={
@@ -145,6 +149,7 @@ export default function ProfileHeader(props: {
                 },
               ]}
             />
+            </Tooltip>
           </Row>
         ) : (
           <Row className="items-center gap-1 sm:gap-2">

@@ -51,9 +51,10 @@ export function AnswerCompatibilityQuestionButton(props: {
         setOpen={setOpen}
         user={user}
         otherQuestions={questionsToAnswer}
+        fromSignup={fromSignup}
         refreshCompatibilityAll={refreshCompatibilityAll}
         onClose={() => {
-          if (fromSignup) router.push('/')
+          if (fromSignup) router.push('/onboarding/soft-gate')
         }}
       />
     </>
@@ -74,8 +75,9 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
   user: User | null | undefined
   skippedQuestions: QuestionWithCountType[]
   refreshCompatibilityAll: () => void
+  fromSignup?: boolean
 }) {
-  const {user, skippedQuestions, refreshCompatibilityAll} = props
+  const {user, skippedQuestions, refreshCompatibilityAll, fromSignup} = props
   const [open, setOpen] = useState(false)
   const t = useT()
   if (!user) return null
@@ -92,9 +94,53 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
         setOpen={setOpen}
         user={user}
         otherQuestions={skippedQuestions}
+        fromSignup={fromSignup}
         refreshCompatibilityAll={refreshCompatibilityAll}
       />
     </>
+  )
+}
+
+function CompatibilityOnboardingScreen({onNext, onSkip}: { onNext: () => void; onSkip: () => void }) {
+  const t = useT()
+
+  return (
+    <Col className="max-w-2xl mx-auto text-center px-6 py-12">
+      <h1 className="text-4xl font-bold text-ink-900 mb-6">
+        {t('compatibility.onboarding.title', 'See who you\'ll actually align with')}
+      </h1>
+
+      <div className="text-lg text-ink-700 leading-relaxed mb-8 space-y-4">
+        <p>
+          {t('compatibility.onboarding.body1', 'Answer a few short questions to calculate compatibility based on values and preferences — not photos or swipes.')}
+        </p>
+        <p>
+          {t('compatibility.onboarding.body2', 'Your answers directly affect who matches with you and how strongly.')}
+        </p>
+      </div>
+
+      <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-8">
+        <p className="text-primary-800 font-medium">
+          {t('compatibility.onboarding.impact', 'Most people who answer at least 5 questions see far more relevant matches.')}
+        </p>
+      </div>
+
+      <Col className="gap-4">
+        <Button
+          onClick={onNext}
+          size="lg"
+          className="w-full max-w-xs mx-auto"
+        >
+          {t('compatibility.onboarding.start', 'Start answering')}
+        </Button>
+        <button
+          onClick={onSkip}
+          className="text-sm text-ink-500 hover:text-ink-700 underline"
+        >
+          {t('compatibility.onboarding.later', 'Do this later')}
+        </button>
+      </Col>
+    </Col>
   )
 }
 
@@ -105,9 +151,21 @@ function AnswerCompatibilityQuestionModal(props: {
   otherQuestions: QuestionWithCountType[]
   refreshCompatibilityAll: () => void
   onClose?: () => void
+  fromSignup?: boolean
 }) {
-  const {open, setOpen, user, otherQuestions, refreshCompatibilityAll, onClose} = props
+  const {open, setOpen, user, otherQuestions, refreshCompatibilityAll, onClose, fromSignup} = props
   const [questionIndex, setQuestionIndex] = useState(0)
+  const [showOnboarding, setShowOnboarding] = useState(fromSignup ?? false)
+
+  const handleStartQuestions = () => {
+    setShowOnboarding(false)
+  }
+
+  const handleSkipOnboarding = () => {
+    setShowOnboarding(false)
+    setOpen(false)
+  }
+  
   return (
     <Modal
       open={open}
@@ -115,28 +173,36 @@ function AnswerCompatibilityQuestionModal(props: {
       onClose={() => {
         refreshCompatibilityAll()
         setQuestionIndex(0)
+        setShowOnboarding(fromSignup ?? false)
         onClose?.()
       }}
     >
       <Col className={MODAL_CLASS}>
-        <AnswerCompatibilityQuestionContent
-          key={otherQuestions[questionIndex].id}
-          index={questionIndex}
-          total={otherQuestions.length}
-          compatibilityQuestion={otherQuestions[questionIndex]}
-          user={user}
-          onSubmit={() => {
-            setOpen(false)
-          }}
-          isLastQuestion={questionIndex === otherQuestions.length - 1}
-          onNext={() => {
-            if (questionIndex === otherQuestions.length - 1) {
+        {showOnboarding ? (
+          <CompatibilityOnboardingScreen
+            onNext={handleStartQuestions}
+            onSkip={handleSkipOnboarding}
+          />
+        ) : (
+          <AnswerCompatibilityQuestionContent
+            key={otherQuestions[questionIndex].id}
+            index={questionIndex}
+            total={otherQuestions.length}
+            compatibilityQuestion={otherQuestions[questionIndex]}
+            user={user}
+            onSubmit={() => {
               setOpen(false)
-            } else {
-              setQuestionIndex(questionIndex + 1)
-            }
-          }}
-        />
+            }}
+            isLastQuestion={questionIndex === otherQuestions.length - 1}
+            onNext={() => {
+              if (questionIndex === otherQuestions.length - 1) {
+                setOpen(false)
+              } else {
+                setQuestionIndex(questionIndex + 1)
+              }
+            }}
+          />
+        )}
       </Col>
     </Modal>
   )

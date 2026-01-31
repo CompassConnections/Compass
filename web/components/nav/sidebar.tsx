@@ -40,17 +40,17 @@ export default function Sidebar(props: {
     <nav
       aria-label="Sidebar"
       className={clsx(
-        'flex h-screen flex-col h-full max-h-screen overflow-y-auto safe-bottom mt-[calc(env(safe-area-inset-top))]',
+        'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))]',
         className
       )}
     >
-      <SiteLogo/>
+      <SiteLogo className={''}/>
 
-      {user === undefined && <div className="h-[56px]"/>}
+      {user === undefined && <div className="h-[24px]"/>}
 
       {user && !isMobile && <ProfileSummary user={user} className="mb-3"/>}
 
-      <div className="mb-4 flex flex-col gap-1">
+      <div className="mb-4 flex flex-col gap-1 !overflow-y-auto">
         {navOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage}/>
         ))}
@@ -72,7 +72,7 @@ export default function Sidebar(props: {
           </Button>
         )}
       </div>
-      <div className="mb-[calc(24px+env(safe-area-inset-bottom))] mt-auto flex flex-col gap-1">
+      <div className="mb-[12px] mt-auto flex flex-col gap-1">
         {user === null && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'}/>}
         {bottomNavOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage}/>

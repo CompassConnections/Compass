@@ -13,10 +13,9 @@ import {safeLocalStorage} from 'web/lib/util/local'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileWithoutUser} from 'common/profiles/profile'
-import {useLocale, useT} from 'web/lib/locale'
+import {useLocale} from 'web/lib/locale'
 
 export default function SignupPage() {
-  const t = useT()
   const [step, setStep] = useState(0)
   const user = useUser()
   // console.debug('user:', user)
@@ -141,7 +140,7 @@ export default function SignupPage() {
               }}
             />
           ) : step === 1 ? (
-            <Col className={'w-full px-6 py-4'}>
+            <Col className={'w-full px-2 sm:px-6 py-4 mb-2'}>
               <OptionalProfileUserForm
                 setProfile={setProfileState}
                 profile={profileForm}

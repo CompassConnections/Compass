@@ -12,7 +12,7 @@ export default function SoftGatePage() {
   const t = useT()
 
   const handleExplore = () => {
-    Router.push('/')
+    Router.push('/?fromSignup=true')
   }
 
   const handleRefine = () => {

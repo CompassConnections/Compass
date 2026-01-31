@@ -53,6 +53,7 @@ export function ProfilesHome() {
   const {query} = router
   const fromSignup = query.fromSignup === 'true'
   const isMobile = useIsMobile()
+  const [sendScrollWarning, setSendScrollWarning] = useState(true)
 
   // const [debouncedAgeRange, setRawAgeRange] = useState({
   //   min: filters.pref_age_min ?? PREF_AGE_MIN,
@@ -101,7 +102,8 @@ export function ProfilesHome() {
 
   const loadMore = useCallback(async () => {
     if (!profiles || isLoadingMore) return false
-    if (fromSignup && isClearedFilters && profiles.length <= limit) {
+    if (fromSignup && isClearedFilters && sendScrollWarning) {
+      setSendScrollWarning(false)
       toast(t('profiles.search_tip', 'Tip: Searching first helps you find better matches. Scrolling endlessly reduces relevance.'), {
         icon: '⚠️',
         style: {
@@ -164,7 +166,7 @@ export function ProfilesHome() {
                     setTimeout(() => {
                       setHighlightFilters(false)
                       setOpenFiltersModal(true)
-                    }, 700)
+                    }, 500)
                   }}
               >
                 {t('profiles.show_filters', 'Show me the filters')}
@@ -177,7 +179,7 @@ export function ProfilesHome() {
                   setHighlightSort(true)
                   setTimeout(() => {
                     setHighlightSort(false)
-                  }, 1000)
+                  }, 500)
                 }}
               >
                 {t('profiles.sort_differently', 'Sort differently')}
@@ -222,7 +224,7 @@ export function ProfilesHome() {
       {displayProfiles === undefined || compatibleProfiles === undefined ? (
         <CompassLoadingIndicator/>
       ) : (<>
-        {isClearedFilters &&
+        {fromSignup && isClearedFilters &&
             <p className={'guidance'}>
               {t('profiles.seeing_all_profiles', 'You are seeing all profiles. Use search or filters to narrow it down.')}
             </p>

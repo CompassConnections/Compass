@@ -14,7 +14,7 @@ export function ShortBioToggle(props: {
     return <></>
   }
 
-  const label = t('filter.short_bio_toggle', 'Include Short Bios')
+  const label = t('filter.short_bio_toggle', 'Include incomplete profiles')
 
   const on = filters.shortBio || false
 

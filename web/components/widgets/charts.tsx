@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {getProfilesCreations, getProfilesWithBioCreations} from "web/lib/supabase/users";
+import {getCompletedProfilesCreations, getProfilesCreations} from "web/lib/supabase/users";
 import {useT} from "web/lib/locale";
 
 // Helper to convert rows into date -> count map
@@ -48,24 +48,24 @@ export default function ChartMembers() {
 
   useEffect(() => {
     async function load() {
-      const [allProfiles, bioProfiles] = await Promise.all([
+      const [allProfiles, complatedProfiles] = await Promise.all([
         getProfilesCreations(),
-        getProfilesWithBioCreations(),
+        getCompletedProfilesCreations(),
       ])
 
       const countsAll = buildCounts(allProfiles)
-      const countsBio = buildCounts(bioProfiles)
+      const countsCompleted = buildCounts(complatedProfiles)
 
       // Build a full daily date range from min to max date for equidistant time axis
       const allDates = Object.keys(countsAll)
-      const bioDates = Object.keys(countsBio)
+      const completedDates = Object.keys(countsCompleted)
       const minDateStr = [
         ...allDates,
-        ...bioDates,
+        ...completedDates,
       ].sort((a, b) => a.localeCompare(b))[0]
       const maxDateStr = [
         ...allDates,
-        ...bioDates,
+        ...completedDates,
       ].sort((a, b) => b.localeCompare(a))[0]
 
       function toISODate(d: Date) {
@@ -93,13 +93,13 @@ export default function ChartMembers() {
       const dates = buildDailyRange(minDateStr, maxDateStr)
 
       const cumAll = cumulativeFromCounts(countsAll, dates)
-      const cumBio = cumulativeFromCounts(countsBio, dates)
+      const cumCompleted = cumulativeFromCounts(countsCompleted, dates)
 
       const merged = dates.map((date) => ({
         date,
         dateTs: new Date(date + 'T00:00:00.000Z').getTime(),
         profilesCreations: cumAll[date] || 0,
-        profilesWithBioCreations: cumBio[date] || 0,
+        profilesCompletedCreations: cumCompleted[date] || 0,
       }))
 
       setData(merged)
@@ -159,8 +159,8 @@ export default function ChartMembers() {
           />
           <Line
             type="monotone"
-            dataKey="profilesWithBioCreations"
-            name={t('stats.with_bio', 'With Bio')}
+            dataKey="profilesCompletedCreations"
+            name={t('stats.with_bio', 'Completed')}
             stroke="#9ca3af"
             strokeDasharray="4 2"
             strokeWidth={2}

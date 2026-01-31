@@ -2,7 +2,6 @@ import {db} from './db'
 import {run} from 'common/supabase/utils'
 import {api} from 'web/lib/api'
 import type {DisplayUser} from 'common/api/user-types'
-import {MIN_BIO_LENGTH} from "common/constants";
 import {MONTH_MS} from "common/util/time";
 import {APIError} from "common/api/utils";
 
@@ -67,12 +66,12 @@ export async function getProfilesCreations() {
   return data
 }
 
-export async function getProfilesWithBioCreations() {
+export async function getCompletedProfilesCreations() {
   const {data} = await run(
     db
       .from('profiles')
       .select(`id, created_time`)
-      .gt('bio_length', MIN_BIO_LENGTH)
+      .or(`bio_length.gte.100,occupation_title.not.is.null`)
       .order('created_time')
   )
   return data

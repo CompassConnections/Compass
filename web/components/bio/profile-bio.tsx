@@ -12,7 +12,7 @@ import {QuestionMarkCircleIcon} from "@heroicons/react/outline";
 
 export default function TooShortBio() {
   const t = useT()
-  const text = t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include Short Bios\" is selected). This ensures searches show meaningful profiles.");
+  const text = t('profile.bio.too_short_tooltip', "Since your bio is too short, Compass' algorithm filters out your profile from search results (unless \"Include incomplete profiles\" is selected). This ensures searches show meaningful profiles.");
   return (
     <p className="text-red-600">
       {t('profile.bio.too_short', "Bio too short. Profile may be filtered from search results.")}{" "}

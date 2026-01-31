@@ -40,9 +40,9 @@ export default function SoftGatePage() {
             </p>
 
             <ul className="text-left mx-auto space-y-2">
-              <li>
-                {t("onboarding.soft-gate.bullet1", "Compatibility scores now reflect your values and preferences")}
-              </li>
+              {/*<li>*/}
+              {/*  {t("onboarding.soft-gate.bullet1", "Compatibility scores now reflect your values and preferences")}*/}
+              {/*</li>*/}
               <li>
                 <span>{t("onboarding.soft-gate.bullet2", "You'll see match percentages that align closely with what you care about")}</span>
               </li>

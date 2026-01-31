@@ -100,7 +100,7 @@ L’[implémentation complète](https://github.com/CompassConnections/Compass/bl
 
 ### Sur quelles plateformes Compass fonctionne-t-il ?
 
-Compass est principalement disponible à la fois sous forme de [site web](https://www.compassmeet.com/) et
+Compass est disponible à la fois sous forme de [site web](https://www.compassmeet.com/) et
 d’application [Android](https://play.google.com/store/apps/details?id=com.compassconnections.app).
 
 Sur iPhone, vous pouvez installer Compass en tant qu’application web progressive (PWA). Ouvrez Compass dans Safari (et
@@ -109,7 +109,7 @@ terminée, ouvrez l’application depuis votre écran d’accueil et acceptez l�
 en charge les notifications que pour les PWA Safari ajoutées à l’écran d’accueil ; si vous installez via Chrome, les
 notifications push ne fonctionneront pas.
 
-Une application iOS native est prévue dans les mois à venir. Elle sera développée dès qu’un contributeur (ou l’équipe
+Une application iOS est prévue dans les mois à venir. Elle sera développée dès qu’un contributeur (ou l’équipe
 cœur) s’en chargera. Si vous souhaitez aider à accélérer ce développement, consultez le dépôt GitHub ou contactez la
 communauté sur Discord.
 

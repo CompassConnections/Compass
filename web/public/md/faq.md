@@ -99,7 +99,7 @@ The [full implementation](https://github.com/CompassConnections/Compass/blob/mai
 
 ### What platforms does Compass run on?
 
-Compass is mostly available both as [website](https://www.compassmeet.com/)
+Compass is mostly both as [website](https://www.compassmeet.com/)
 and [android](https://play.google.com/store/apps/details?id=com.compassconnections.app) application.
 
 On iPhone, you can install Compass as a Progressive Web App (PWA). Open Compass in Safari (not Chrome), tap the Share

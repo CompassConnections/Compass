@@ -1,5 +1,5 @@
 import {Profile} from 'common/profiles/profile'
-import {useEffect, useState} from 'react'
+import {forwardRef, useEffect, useRef, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -15,13 +15,14 @@ import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {submitBookmarkedSearch} from "web/lib/supabase/searches";
 import {useUser} from "web/hooks/use-user";
 import toast from "react-hot-toast";
-import {FilterFields, initialFilters} from "common/filters";
+import {FilterFields} from "common/filters";
 import {DisplayUser} from "common/api/user-types";
 import {useChoices} from "web/hooks/use-choices";
 import {useT} from "web/lib/locale";
-import {isEqual} from "lodash";
 import {Tooltip} from "web/components/widgets/tooltip";
 import {QuestionMarkCircleIcon} from "@heroicons/react/outline";
+import {useIsClearedFilters} from "web/hooks/use-is-cleared-filters";
+import {FilterGuide} from "web/components/guidance";
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(
@@ -100,7 +101,8 @@ function getRandomPair(words = WORDS, count = 3): string {
 
 
 const MAX_BOOKMARKED_SEARCHES = 10;
-export const Search = (props: {
+
+export const Search = forwardRef<HTMLInputElement, {
   youProfile: Profile | undefined | null
   starredUsers: DisplayUser[]
   refreshStars: () => void
@@ -114,7 +116,12 @@ export const Search = (props: {
   bookmarkedSearches: BookmarkedSearchesType[]
   refreshBookmarkedSearches: () => void
   profileCount: number | undefined
-}) => {
+  openFilters?: () => void
+  openFiltersModal?: boolean
+  highlightFilters?: boolean
+  highlightSort?: boolean
+  setOpenFiltersModal?: (open: boolean) => void
+}>((props, ref) => {
   const {
     youProfile,
     updateFilter,
@@ -128,9 +135,43 @@ export const Search = (props: {
     starredUsers,
     refreshStars,
     profileCount,
+    openFilters,
+    openFiltersModal: parentOpenFiltersModal,
+    setOpenFiltersModal: parentSetOpenFiltersModal,
+    highlightFilters,
+    highlightSort,
   } = props
 
-  const [openFiltersModal, setOpenFiltersModal] = useState(false)
+  const [internalOpenFiltersModal, setInternalOpenFiltersModal] = useState(false)
+
+  const openFiltersModal = parentOpenFiltersModal ?? internalOpenFiltersModal
+  const setOpenFiltersModal = parentSetOpenFiltersModal ?? setInternalOpenFiltersModal
+
+  const sortSelectRef = useRef<HTMLSelectElement>(null)
+
+  const handleOpenFilters = () => {
+    if (openFilters) {
+      openFilters()
+    } else {
+      setOpenFiltersModal(true)
+    }
+  }
+
+  useEffect(() => {
+    if (highlightSort && sortSelectRef.current) {
+      setTimeout(() => {
+        if (sortSelectRef.current) {
+          sortSelectRef.current.focus()
+          // Try multiple approaches to open the dropdown
+          sortSelectRef.current.click()
+          const event = new MouseEvent('mousedown', {bubbles: true})
+          sortSelectRef.current.dispatchEvent(event)
+          const event2 = new MouseEvent('click', {bubbles: true})
+          sortSelectRef.current.dispatchEvent(event2)
+        }
+      }, 1000)
+    }
+  }, [highlightSort])
 
   const [placeholder, setPlaceholder] = useState('');
   const [textToType, setTextToType] = useState(getRandomPair());
@@ -143,10 +184,7 @@ export const Search = (props: {
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false);
   const user = useUser()
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
-  const isClearedFilters = isEqual(
-    {...filters, orderBy: undefined},
-    {...initialFilters, orderBy: undefined}
-  )
+  const isClearedFilters = useIsClearedFilters(filters)
   const {choices: interestChoices} = useChoices('interests')
   const {choices: causeChoices} = useChoices('causes')
   const {choices: workChoices} = useChoices('work')
@@ -189,6 +227,7 @@ export const Search = (props: {
     <Col className={'text-ink-600 w-full gap-2 py-2 text-sm main-font'}>
       <Row className={'mb-2 justify-between gap-2'}>
         <Input
+          ref={ref}
           value={filters.name ?? ''}
           placeholder={placeholder}
           className={'w-full max-w-xs'}
@@ -199,6 +238,7 @@ export const Search = (props: {
 
         <Row className="gap-2">
           <Select
+            ref={sortSelectRef}
             onChange={(e) => {
               if (isOrderBy(e.target.value)) {
                 updateFilter({
@@ -207,7 +247,7 @@ export const Search = (props: {
               }
             }}
             value={filters.orderBy || 'created_time'}
-            className={'w-18 border-ink-300 rounded-md'}
+            className={`w-18 border-ink-300 rounded-md${highlightSort ? ' border-blue-500 ring-2 ring-blue-300' : ''}`}
           >
             <option value="created_time">{t('common.new', 'New')}</option>
             {youProfile && (
@@ -216,15 +256,16 @@ export const Search = (props: {
             <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
           <Button
-            color="none"
+            color={highlightFilters ? "blue" : "none"}
             size="sm"
-            className="border-ink-300 border sm:hidden "
-            onClick={() => setOpenFiltersModal(true)}
+            className={`border-ink-300 border sm:hidden${highlightFilters ? " border-blue-500" : ""}`}
+            onClick={handleOpenFilters}
           >
             <IoFilterSharp className="h-5 w-5"/>
           </Button>
         </Row>
       </Row>
+      <FilterGuide className={'hidden sm:inline'}/>
       <Row
         className={
           'border-ink-300 dark:border-ink-300 hidden flex-wrap items-center gap-4 pb-4 pt-1 sm:inline-flex'
@@ -315,11 +356,11 @@ export const Search = (props: {
             <p>{profileCount} {(profileCount ?? 0) > 1 ? t('common.people', 'people') : t('common.person', 'person')}</p>
             {!filters.shortBio && <Tooltip
                 text={t('search.include_short_bios_tooltip', 'To list all the profiles, tick "Include incomplete profiles"')}>
-              <QuestionMarkCircleIcon className="w-5 h-5"/>
+                <QuestionMarkCircleIcon className="w-5 h-5"/>
             </Tooltip>}
           </Row>
         )}
       </Row>
     </Col>
   )
-}
+})

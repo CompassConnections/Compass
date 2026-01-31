@@ -43,6 +43,7 @@ import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {RiScales3Line} from "react-icons/ri";
 import {PiHandsPrayingBold} from "react-icons/pi";
 import {ResetFiltersButton} from "web/components/searches/button";
+import {FilterGuide} from "web/components/guidance";
 
 function MobileFilters(props: {
   filters: Partial<FilterFields>
@@ -81,13 +82,9 @@ function MobileFilters(props: {
 
   return (
     <Col className="mb-[calc(20px+env(safe-area-inset-bottom))] mt-[calc(20px+env(safe-area-inset-top))]">
-      {/*<div*/}
-      {/*  // className="fixed inset-x-0 bg-canvas-50"*/}
-      {/*  style={{*/}
-      {/*    // bottom: 0,*/}
-      {/*    height: 'env(safe-area-inset-top)',*/}
-      {/*  }}*/}
-      {/*/>*/}
+
+      <FilterGuide className={'justify-between px-4 py-2'}/>
+
       <Row className="justify-between px-4">
         <Col className="py-2">
           <MyMatchesToggle

@@ -491,7 +491,7 @@ ol > li {
 ol > li::marker {
     font-weight: 600;
     font-size: 1em;
-    color: #374151;               /* pick a visible color */
+    color: #374151; /* pick a visible color */
 }
 
 /* Onboarding animations */
@@ -529,3 +529,7 @@ ol > li::marker {
     animation: fade-out-slow 3s ease-out forwards;
 }
 
+.guidance {
+    opacity: 0.55;
+    font-size: 14px;
+}

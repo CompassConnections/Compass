@@ -18,12 +18,12 @@ export default function SiteLogo(props: {
     </>
   )
   if (noLink) {
-    return <Row className="gap-1 pb-3 pt-6">{inner}</Row>
+    return <Row className={clsx("gap-1 pb-2 pt-2 sm:pt-6", className)}>{inner}</Row>
   }
   return (
     <Link
       href={'/home'}
-      className={clsx('flex flex-row gap-1 pb-3 pt-6', className)}
+      className={clsx('flex flex-row gap-1 pb-2 pt-2 sm:pt-6', className)}
     >
       {inner}
     </Link>

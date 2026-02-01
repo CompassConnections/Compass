@@ -53,9 +53,10 @@ export const OptionalProfileUserForm = (props: {
   user: User
   buttonLabel?: string
   fromSignup?: boolean
+  bottomBarVisible?: boolean
   onSubmit?: () => Promise<void>
 }) => {
-  const {profile, user, buttonLabel, setProfile, fromSignup, onSubmit} = props
+  const {profile, user, buttonLabel, setProfile, fromSignup, onSubmit, bottomBarVisible = true} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState((profile.pref_relation_styles || []).includes('relationship'))
@@ -816,7 +817,7 @@ export const OptionalProfileUserForm = (props: {
 
         <Row className={'justify-end'}>
           <Button
-            className="fixed bottom-[calc(90px+var(--bnh))] lg:bottom-6 right-4 sm:right-60 z-50 text-xl"
+            className={`fixed bottom-[calc(${bottomBarVisible ? "90" : "30"}px + var(--bnh))] lg:bottom-6 right-4 sm:right-60 z-50 text-xl`}
             disabled={isSubmitting}
             loading={isSubmitting}
             onClick={handleSubmit}

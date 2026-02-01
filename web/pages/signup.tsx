@@ -146,7 +146,7 @@ export default function SignupPage() {
                 profile={profileForm}
                 user={user}
                 fromSignup
-                classNameNext="bottom-[calc(30px+var(--bnh))]"
+                bottomNavBarVisible={false}
               />
             </Col>
           ) : (

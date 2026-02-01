@@ -819,7 +819,7 @@ export const OptionalProfileUserForm = (props: {
           <Button
             className={clsx(
               "fixed lg:bottom-6 right-4 sm:right-60 z-50 text-xl",
-              bottomNavBarVisible ? "bottom-[calc(30px+var(--bnh))]" : "bottom-[calc(90px+var(--bnh))]"
+              bottomNavBarVisible ? "bottom-[calc(90px+var(--bnh))]" : "bottom-[calc(30px+var(--bnh))]"
             )}
             disabled={isSubmitting}
             loading={isSubmitting}

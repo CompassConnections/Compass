@@ -1,14 +1,7 @@
 {
-  "storage": [
-    {
-      "bucket": "compass-130ba-public",
-      "rules": "storage.rules"
-    },
-    {
-      "bucket": "compass-130ba-private",
-      "rules": "private-storage.rules"
-    }
-  ],
+  "storage": {
+    "rules": "backend/firebase/storage.rules"
+  },
   "emulators": {
     "auth": {
       "port": 9099
@@ -17,5 +10,5 @@
       "enabled": true,
       "port": 4000
     }
-}
+  }
 }

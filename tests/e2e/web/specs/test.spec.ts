@@ -1,9 +1,8 @@
 import axios from 'axios';
-
-const base = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';
+import { config } from "../SPEC_CONFIG";
 
 async function setup() {
-    const results = await axios.post(`${base}/accounts:signUp?key=fake-api-key`, {
+    const results = await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SIGNUP}`, {
         email: "trial_test@email.com",
         password: "trialTestPassword",
         returnSecureToken: true

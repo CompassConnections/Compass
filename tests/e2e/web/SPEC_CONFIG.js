@@ -1,6 +1,11 @@
 export const config = {
   BASE_URL: 'http://localhost:3000',
-  
+  FIREBASE_URL: {
+    BASE: 'http://localhost:9099/identitytoolkit.googleapis.com/v1',
+    SIGNUP: '/accounts:signUp?key=fake-api-key',
+    SIGN_IN_PASSWORD: '/accounts:signInWithPassword?key=fake-api-key',
+    DELETE: '/accounts:delete?key=fake-api-key',
+  },
   USERS: {
     DEV_1: {
       EMAIL: 'dev_1@compass.com',

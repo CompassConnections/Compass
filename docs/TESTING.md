@@ -283,20 +283,24 @@ jest.mock('path/to/module');
  * We create a mock for any information passed into the function that is being tested
  * and if the function returns a result we create a mock to test the result
  */
-const mockParam = "mockParam"
-const mockReturnValue = "mockModuleValue"
+const mockParam = "mockParam";
+const mockReturnValue = "mockModuleValue";
 
 /**
  * use .mockResolvedValue when handling async/await modules that return values
  * use .mockReturnValue when handling non async/await modules that return values
  */
-(module as jest.Mock).mockResolvedValue(mockReturnValue);
+describe('functionUnderTest', () => {
+  it('returns mocked module value and calls dependency correctly', async () => {
+    (mockedDep as jest.Mock).mockResolvedValue(mockReturnValue);
 
-const result = await functionUnderTest(mockParam);
+    const result = await functionUnderTest(mockParam);
 
-expect(result).toBe(mockReturnValue);
-expect(module).toBeCalledTimes(1);
-expect(module).toBeCalledWith(mockParam);
+    expect(result).toBe(mockReturnValue);
+    expect(mockedDep).toHaveBeenCalledTimes(1);
+    expect(mockedDep).toHaveBeenCalledWith(mockParam);
+  });
+});
 ```
 
 Use namespace imports when you want to import everything a module exports under a single name.
@@ -474,4 +478,28 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
 
 ### Playwright (E2E) Testing Guide
 
-TODO
+##### Component Selection Hierarchy
+
+Use this priority order for selecting elements in Playwright tests:
+
+1. Prefer `getByRole()` — use semantic roles that reflect how users interact
+   ```typescript
+   await page.getByRole('button', { name: 'Submit' }).click();
+   ```
+   If a meaningful ARIA role is not available, fall back to accessible text selectors (next point).
+
+2. Use accessible text selectors — when roles don't apply, target user-facing text
+   ```typescript
+   await page.getByLabel('Email').fill('user@example.com');
+   await page.getByPlaceholder('Enter your name').fill('John');
+   await page.getByText('Welcome back').isVisible();
+   ```
+
+3. Only use `data-testid` — when elements have no stable user-facing text
+   ```typescript
+   // For icons, toggles, or dynamic content without text
+   await page.getByTestId('menu-toggle').click();
+   await page.getByTestId('loading-spinner').isVisible();
+   ```
+
+This hierarchy mirrors how users actually interact with your application, making tests more reliable and meaningful.

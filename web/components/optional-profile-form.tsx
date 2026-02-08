@@ -364,6 +364,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.feet', 'Feet')}</span>
               <Input
                 type="number"
+                data-testId='height-feet'
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
@@ -382,6 +383,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.inches', 'Inches')}</span>
               <Input
                 type="number"
+                data-testId='height-inches'
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightInches(undefined)
@@ -403,6 +405,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
               <Input
                 type="number"
+                data-testId='height-centimeters'
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
@@ -464,6 +467,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.min', 'Min')}</span>
               <Select
+                data-testId='pref-age-min'
                 value={profile['pref_age_min'] ?? ''}
                 onChange={(e) => {
                   const newMin = e.target.value ? Number(e.target.value) : 18
@@ -483,6 +487,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.max', 'Max')}</span>
               <Select
+                data-testId='pref-age-max'
                 value={profile['pref_age_max'] ?? ''}
                 onChange={(e) => {
                   const newMax = e.target.value ? Number(e.target.value) : 100
@@ -553,6 +558,7 @@ export const OptionalProfileUserForm = (props: {
                   {t('profile.optional.num_kids', 'Current number of kids')}
                 </label>
                 <Input
+                    data-testId='current-number-of-kids'
                     type="number"
                     onChange={(e) => {
                       const value =
@@ -620,6 +626,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.university', 'University')}
           </label>
           <Input
+            data-testId='university'
             type="text"
             onChange={(e) => setProfile('university', e.target.value)}
             className={'w-52'}
@@ -636,6 +643,7 @@ export const OptionalProfileUserForm = (props: {
               : t('profile.optional.job_title', 'Job title')}
           </label>
           <Input
+            data-testId='job-title'
             type="text"
             onChange={(e) => setProfile('occupation_title', e.target.value)}
             className={'w-52'}
@@ -648,6 +656,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.company', 'Company')}
           </label>
           <Input
+            data-testId='company'
             type="text"
             onChange={(e) => setProfile('company', e.target.value)}
             className={'w-52'}
@@ -678,6 +687,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
+            data-testId='political-belief-details'
             type="text"
             onChange={(e) => setProfile('political_details', e.target.value)}
             className={'w-full sm:w-96'}
@@ -699,6 +709,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
+            data-testId='religious-belief-details'
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
@@ -803,6 +814,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
           </label>
           <Input
+            data-testId='alcohol-consumed-per-month'
             type="number"
             onChange={(e) => {
               const value =

@@ -9,7 +9,7 @@ async function setup() {
     });
     
     console.log('Auth created: ', "trial_test@email.com");
-    console.log(results);
+    console.log('Id: ', results.data.localId);
 }
 
 setup()

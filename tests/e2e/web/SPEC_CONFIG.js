@@ -15,6 +15,10 @@ export const config = {
       EMAIL: 'dev_2@compass.com',
       PASSWORD: 'dev_2Password',
     },
+    ONBOARDING: {
+      EMAIL: 'onboarding@compass.com',
+      PASSWORD: 'compassConnections1!',
+    },
     SPEC: {
       EMAIL: 'spec@compass.com',
       PASSWORD: 'compassConnections1!',

@@ -15,6 +15,15 @@ type PressItem = {
 
 const pressItems: PressItem[] = [
   {
+    id: 5,
+    title: 'Compass, une application de rencontre belge',
+    source: 'RCF',
+    date: '2026-02-09',
+    url: 'https://www.rcf.fr/culture/le-temps-dun-cafe?episode=657722',
+    summary: 'Radio interview with Martin; he explains his background, his philosophy of learning through practice, and the creation of a meeting app designed differently. The discussion covers the pitfalls of traditional apps (addiction, swiping, data exploitation), the emphasis on interests and values over physical appearance, and the goal of fostering deeper friendships, professional connections, or romantic relationships. Martin also details the choice of an open-source, free, and transparent model, its international development, and the audience-related challenges to make the tool genuinely useful for users.',
+    language: 'fr',
+  },
+  {
     id: 4,
     title: 'Un Havelangeois lance Compass, une appli de rencontre qui mise avant tout sur la personnalité : "Les recherches se font via des mots-clés spécifiques"',
     source: 'La DH',

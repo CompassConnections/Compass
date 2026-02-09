@@ -1,24 +1,25 @@
 // eslint-disable-next-line no-restricted-imports
-import { ENV_CONFIG } from 'common/envs/constants'
-import { db } from 'web/lib/supabase/db'
-import { removeUndefinedProps } from 'common/util/object'
-import { run, SupabaseClient } from 'common/supabase/utils'
-import { Json } from 'common/supabase/schema'
+import {ENV_CONFIG} from 'common/envs/constants'
+import {db} from 'web/lib/supabase/db'
+import {removeUndefinedProps} from 'common/util/object'
+import {run, SupabaseClient} from 'common/supabase/utils'
+import {Json} from 'common/supabase/schema'
 import posthog from 'posthog-js'
 
 type EventIds = {
   contractId?: string | null
   commentId?: string | null
+  userId?: string | null
   adId?: string | null
 }
 
 type EventData = Record<string, Json | undefined>
 
 export async function track(name: string, properties?: EventIds & EventData) {
-  const { commentId, ...data } = properties || {}
+  const {commentId, userId, ...data} = properties || {}
   try {
     posthog?.capture(name, data)
-    await insertUserEvent(name, data, db, null, commentId)
+    await insertUserEvent(name, data, db, userId, commentId)
     // console.debug('result', result)
   } catch (e) {
     console.error('error tracking event:', e)
@@ -57,8 +58,8 @@ export const withTracking =
   ) =>
   async () => {
     const promise = f()
-    track(eventName, eventProperties)
     await promise
+    track(eventName, eventProperties)
   }
 
 function insertUserEvent(
@@ -73,7 +74,7 @@ function insertUserEvent(
     db.from('user_events').insert({
       name,
       data: removeUndefinedProps(data) as Record<string, Json>,
-      // user_id: userId,
+      user_id: userId,
       comment_id: commentId,
     })
   )

@@ -30,7 +30,7 @@ import {MdThumbUp} from "react-icons/md"
 import {FaEnvelope} from "react-icons/fa"
 
 export function PageBase(props: {
-  trackPageView: string | false
+  trackPageView?: string | false
   trackPageProps?: Record<string, any>
   className?: string
   children?: ReactNode

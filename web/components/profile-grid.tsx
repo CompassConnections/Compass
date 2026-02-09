@@ -2,7 +2,6 @@ import {Profile} from 'common/profiles/profile'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
-import {track} from 'web/lib/service/analytics'
 import {Col} from './layout/col'
 import clsx from 'clsx'
 import {JSONContent} from "@tiptap/core";
@@ -122,7 +121,7 @@ function ProfilePreview(props: {
 
   return (
     <Link
-      onClick={() => track('click profile preview')}
+      // onClick={() => track('click profile preview')}
       href={`/${user.username}`}
       className="cursor-pointer group block rounded-lg overflow-hidden bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50 h-full border border-canvas-300"
     >

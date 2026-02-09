@@ -24,8 +24,8 @@ export function SidebarItem(props: { item: Item; currentPage?: string }) {
     item.href != null && currentBasePath === item.href.split('?')[0]
 
   const onClick = () => {
-    track('sidebar: ' + item.name)
     item.onClick?.()
+    track('sidebar: ' + item.name)
   }
 
   const sidebarClass = clsx(

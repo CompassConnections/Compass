@@ -14,6 +14,7 @@ export const MultiCheckbox = (props: {
   selected: string[]
   onChange: (selected: string[]) => void
   className?: string
+  optionsClassName?: string
   // If provided, enables adding a new option and should persist it (e.g. to DB)
   // Return value can be:
   //  - string: the stored value for the new option; label will be the input text
@@ -23,7 +24,7 @@ export const MultiCheckbox = (props: {
   addPlaceholder?: string
   translationPrefix?: string
 }) => {
-  const {choices, selected, onChange, className, addOption, addPlaceholder, translationPrefix} = props
+  const {choices, selected, onChange, className, optionsClassName, addOption, addPlaceholder, translationPrefix} = props
 
   // Keep a local merged copy to allow optimistic adds while remaining in sync with props
   const [localChoices, setLocalChoices] = useState<{ [key: string]: string }>(choices)
@@ -125,7 +126,7 @@ export const MultiCheckbox = (props: {
         </Row>
       )}
 
-      <Row className={clsx('flex-wrap')}>
+      <Row className={clsx('flex-wrap', optionsClassName)}>
         {filteredEntries.map(([key, value]) => (
           <Checkbox
             key={key}

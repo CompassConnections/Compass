@@ -533,3 +533,18 @@ ol > li::marker {
     opacity: 0.55;
     font-size: 14px;
 }
+
+input {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.hover-bold {
+    transition: text-shadow 0.2s ease;
+}
+
+.hover-bold:hover {
+    text-shadow: 0.01em 0 currentColor,
+    -0.01em 0 currentColor,
+    0 0.01em currentColor,
+    0 -0.01em currentColor;
+}

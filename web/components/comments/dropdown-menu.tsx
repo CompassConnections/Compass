@@ -1,7 +1,7 @@
-import { DotsHorizontalIcon } from '@heroicons/react/solid'
-import { Fragment, ReactNode, useState } from 'react'
-import { usePopper } from 'react-popper'
-import { Popover, Transition } from '@headlessui/react'
+import {DotsHorizontalIcon} from '@heroicons/react/solid'
+import {Fragment, ReactNode, useState} from 'react'
+import {usePopper} from 'react-popper'
+import {Popover, Transition} from '@headlessui/react'
 import clsx from 'clsx'
 
 export type DropdownItem = {
@@ -51,7 +51,7 @@ export default function DropdownMenu(props: {
           <Popover.Button
             ref={setReferenceElement}
             className={clsx(
-              'text-ink-500 hover:text-ink-800 flex items-center',
+              'text-ink-500 hover-bold flex items-center',
               buttonClass
             )}
             onClick={(e: any) => {

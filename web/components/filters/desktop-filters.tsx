@@ -561,7 +561,7 @@ export function DesktopFilters(props: {
           />
         }
         popoverClassName="bg-canvas-50"
-        menuWidth="w-50 max-h-[400px] overflow-y-auto"
+        menuWidth="w-100 max-h-[400px] overflow-y-auto"
       />
 
       {/* POLITICS */}
@@ -643,7 +643,7 @@ export function DesktopFilters(props: {
           <MbtiFilter filters={filters} updateFilter={updateFilter} />
         }
         popoverClassName="bg-canvas-50"
-        menuWidth="w-[350px] grid-cols-2"
+        menuWidth="w-[400px]"
       />
 
       {/* EDUCATION */}

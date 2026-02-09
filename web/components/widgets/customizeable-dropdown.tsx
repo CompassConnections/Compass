@@ -46,7 +46,7 @@ export function CustomizeableDropdown(props: {
         <>
           <Popover.Button
             ref={setReferenceElement}
-            className={clsx('flex items-center relative', buttonClass)}
+            className={clsx('flex items-center relative hover-bold', buttonClass)}
             onClick={(e: any) => {
               e.stopPropagation()
             }}

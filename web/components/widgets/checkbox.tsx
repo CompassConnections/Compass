@@ -10,30 +10,26 @@ export function Checkbox(props: {
   const { label, checked, toggle, className, disabled } = props
 
   return (
-    <div className={clsx(className, 'space-y-5 px-2 py-1 hover:bg-canvas-200 hover:rounded')}>
-      <div className="relative flex items-center">
-        <div className="flex h-6 items-center">
-          <input
-            id={label}
-            type="checkbox"
-            className="border-ink-300 bg-canvas-0 dark:border-ink-500 text-primary-600 focus:ring-primary-500 h-5 w-5 rounded"
-            checked={checked}
-            onChange={(e) => toggle(e.target.checked)}
-            disabled={disabled}
-          />
-        </div>
-        <div className="ml-3">
-          <label
-            htmlFor={label}
-            className={clsx(
-              'whitespace-nowrap font-medium',
-              disabled ? 'text-ink-300' : 'text-ink-700'
-            )}
-          >
-            {label}
-          </label>
-        </div>
-      </div>
+    <div className={clsx(className, 'space-y-5 px-2 py-1')}>
+      <label
+        className={clsx('relative flex items-center cursor-pointer select-none hover-bold', disabled && 'cursor-not-allowed')}>
+        <input
+          id={label}
+          type="checkbox"
+          className="border-ink-300 bg-canvas-0 dark:border-ink-500 text-primary-600 focus:ring-primary-500 h-5 w-5 rounded hover:bg-canvas-300"
+          checked={checked}
+          onChange={(e) => toggle(e.target.checked)}
+          disabled={disabled}
+        />
+        <span
+          className={clsx(
+            'ml-3 whitespace-nowrap font-medium',
+            disabled ? 'text-ink-300' : 'text-ink-700'
+          )}
+        >
+          {label}
+        </span>
+      </label>
     </div>
   )
 }

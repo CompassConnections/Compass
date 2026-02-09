@@ -66,6 +66,7 @@ export function InterestFilter(props: {
       selected={filters[label] ?? []}
       choices={sortedChoices as any}
       onChange={(c) => updateFilter({[label]: c})}
+      optionsClassName={'w-[200px] sm:w-[400px]'}
     />
   )
 }

@@ -70,7 +70,7 @@ export function ReligionFilter(props: {
         onChange={(c) => {
           updateFilter({religion: c})
         }}
-        className={className}
+        optionsClassName={className}
       />
     </>
   )

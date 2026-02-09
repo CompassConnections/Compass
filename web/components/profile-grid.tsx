@@ -145,7 +145,7 @@ function ProfilePreview(props: {
         {/*)}*/}
 
         <Row
-          className="absolute top-2 right-2 items-start justify-end px-2 pb-3">
+          className="absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10">
           {/*  {currentUser ? (*/}
           {/*    <StarButton*/}
           {/*      className="!pt-0"*/}

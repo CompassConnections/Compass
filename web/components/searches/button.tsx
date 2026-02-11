@@ -1,6 +1,6 @@
 import {User} from "common/user";
 import {Button} from "web/components/buttons/button";
-import {Modal, MODAL_CLASS} from "web/components/layout/modal";
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from "web/components/layout/modal";
 import {Col} from "web/components/layout/col";
 import {BookmarkedSearchesType} from "web/hooks/use-bookmarked-searches";
 import {useUser} from "web/hooks/use-user";
@@ -8,12 +8,16 @@ import {deleteBookmarkedSearch} from "web/lib/supabase/searches";
 import {formatFilters, locationType} from "common/searches";
 import {FilterFields} from "common/filters";
 import {api} from "web/lib/api";
+import {XIcon} from "@heroicons/react/outline";
 import {DisplayUser} from "common/api/user-types";
 import {useState} from "react";
 import {useT} from "web/lib/locale";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import {useAllChoices} from "web/hooks/use-choices";
+import clsx from "clsx";
+import {Row} from "web/components/layout/row";
+import {Avatar} from "web/components/widgets/avatar";
 
 export function BookmarkSearchButton(props: {
   bookmarkedSearches: BookmarkedSearchesType[]
@@ -191,54 +195,50 @@ function StarModal(props: {
         <h3>{t('saved_people.title', 'Saved People')}</h3>
         {visibleUsers?.length ? (<>
             <p>{t('saved_people.list_header', 'Here are the people you saved:')}</p>
-            <Col
-              className={
-                'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
-              }
-            >
-              <ol className="list-decimal list-inside space-y-2">
-                {visibleUsers.map((user) => (
-                  <li key={user.id}
-                      className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold">
-                    <a className={'custom-link'}>
-                      {user.name} (<Link
-                      href={`/${user.username}`}
-                      // style={{color: "#2563eb", textDecoration: "none"}}
-                    >
-                      @{user.username}
-                    </Link>) {' '}
-                    </a>
-                    <button
-                      onClick={() => {
-                        // Optimistically remove the user from the list
-                        setRemovingIds((prev) => new Set(prev).add(user.id))
-                        // Fire the API call without blocking UI
-                        api('star-profile', {
-                          targetUserId: user.id,
-                          remove: true,
+            <Col className={clsx("divide-y divide-canvas-300 w-full pr-4", SCROLLABLE_MODAL_CLASS)}>
+              {visibleUsers.map((u) => (
+                <Row key={u.id} className="items-center justify-between py-2 gap-2">
+                  <Link
+                    className="w-full rounded-md hover:bg-canvas-100 p-2"
+                    href={'/' + u.username}
+                  >
+                    <Row className="items-center gap-3">
+                      <Avatar size="md" username={u.username} avatarUrl={u.avatarUrl ?? undefined}/>
+                      <Col>
+                        <div className="font-medium">{u.name}</div>
+                        <div className="text-ink-500 text-sm">@{u.username}</div>
+                      </Col>
+                    </Row>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      // Optimistically remove the user from the list
+                      setRemovingIds((prev) => new Set(prev).add(u.id))
+                      // Fire the API call without blocking UI
+                      api('star-profile', {
+                        targetUserId: u.id,
+                        remove: true,
+                      })
+                        .then(() => {
+                          // Sync with server state
+                          refreshStars()
                         })
-                          .then(() => {
-                            // Sync with server state
-                            refreshStars()
+                        .catch(() => {
+                          toast.error("Couldn't remove saved profile. Please try again.")
+                          // Revert optimistic removal on failure
+                          setRemovingIds((prev) => {
+                            const next = new Set(prev)
+                            next.delete(u.id)
+                            return next
                           })
-                          .catch(() => {
-                            toast.error("Couldn't remove saved profile. Please try again.")
-                            // Revert optimistic removal on failure
-                            setRemovingIds((prev) => {
-                              const next = new Set(prev)
-                              next.delete(user.id)
-                              return next
-                            })
-                          })
-                      }}
-                      className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                    >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ol>
-
+                        })
+                    }}
+                    className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  >
+                    <XIcon className="h-6 w-6"/>
+                  </button>
+                </Row>
+              ))}
             </Col>
           </>
         ) : <p>You haven't saved any profile. To save one, click on the star on their profile page.</p>}

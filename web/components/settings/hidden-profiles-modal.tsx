@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -30,9 +30,6 @@ export function HiddenProfilesModal(props: {
   const [error, setError] = useState<string | null>(null)
   const [hidden, setHidden] = useState<HiddenUser[] | null>(null)
   const [busyIds, setBusyIds] = useState<Record<string, boolean>>({})
-  // Throttle/batch success toasts when unhiding multiple profiles quickly
-  const [pendingUnhideCount, setPendingUnhideCount] = useState(0)
-  const toastTimerRef = useRef<number | ReturnType<typeof setTimeout> | null>(null)
 
   const empty = useMemo(() => (hidden ? hidden.length === 0 : false), [hidden])
 
@@ -49,45 +46,13 @@ export function HiddenProfilesModal(props: {
       .catch((e) => {
         console.error('Failed to load hidden profiles', e)
         if (!alive) return
-        setError(
-          t(
-            'settings.hidden_profiles.load_error',
-            'Failed to load hidden profiles.'
-          )
-        )
+        setError(t('settings.hidden_profiles.load_error', 'Failed to load hidden profiles.'))
       })
       .finally(() => alive && setLoading(false))
     return () => {
       alive = false
-      // Reset toast batching state on close/unmount
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current as number)
-        toastTimerRef.current = null
-      }
-      setPendingUnhideCount(0)
     }
   }, [open])
-
-  const flushUnhideToast = () => {
-    if (pendingUnhideCount <= 0) return
-    if (pendingUnhideCount === 1) {
-      toast.success(
-        t(
-          'settings.hidden_profiles.unhidden_success',
-          'Profile unhidden. You will start seeing this person again in results.'
-        )
-      )
-    } else {
-      toast.success(
-        t(
-          'settings.hidden_profiles.unhidden_success_many',
-          'Unhid {n} profiles.',
-          // Simple param replacement; if your i18n library supports interpolation, it will use it.
-        ).replace('{n}', String(pendingUnhideCount))
-      )
-    }
-    setPendingUnhideCount(0)
-  }
 
   const unhide = async (userId: string) => {
     if (busyIds[userId]) return
@@ -95,14 +60,6 @@ export function HiddenProfilesModal(props: {
     try {
       await api('unhide-profile', {hiddenUserId: userId})
       setHidden((list) => (list ? list.filter((u) => u.id !== userId) : list))
-      // Batch/throttle the success toast
-      setPendingUnhideCount((c) => c + 1)
-      if (!toastTimerRef.current) {
-        toastTimerRef.current = setTimeout(() => {
-          flushUnhideToast()
-          toastTimerRef.current = null
-        }, 600)
-      }
     } catch (e) {
       console.error('Failed to unhide profile', e)
       toast.error(t('settings.hidden_profiles.unhide_failed', 'Failed to unhide'))

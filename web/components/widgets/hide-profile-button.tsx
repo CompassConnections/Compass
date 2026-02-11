@@ -1,9 +1,8 @@
 import clsx from 'clsx'
 import {useState} from 'react'
-import {EyeOffIcon} from '@heroicons/react/outline'
+import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {api} from 'web/lib/api'
-import toast from 'react-hot-toast'
 import {useT} from 'web/lib/locale'
 
 export type HideProfileButtonProps = {
@@ -14,7 +13,6 @@ export type HideProfileButtonProps = {
   tooltip?: string
   ariaLabel?: string
   stopPropagation?: boolean
-  suppressToast?: boolean
 }
 
 export function HideProfileButton(props: HideProfileButtonProps) {
@@ -26,7 +24,6 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     tooltip,
     ariaLabel,
     stopPropagation,
-    suppressToast,
   } = props
 
   const t = useT()
@@ -42,30 +39,29 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     try {
       await api('hide-profile', {hiddenUserId})
       onHidden?.(hiddenUserId)
-      if (!suppressToast)
-        toast.success(
-          t(
-            'profiles.hidden_success',
-            'Profile hidden. You will no longer see this person in search results.'
-          )
-        )
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Tooltip text={!clicked ? (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")) : ''}
-             noTap>
+    <Tooltip
+      text={!clicked ? (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")) : t('profile_grid.unhide_profile', "Show again in search results")}
+      noTap>
       <button
         className={clsx(
           'rounded-full p-1 hover:bg-canvas-200 shadow focus:outline-none',
           className
         )}
         onClick={onClick}
-        aria-label={ariaLabel ?? t('profile_grid.hide_profile', 'Hide this profile')}
+        aria-label={
+          ariaLabel ?? (!clicked
+            ? t('profile_grid.hide_profile', 'Hide this profile')
+            : t('profile_grid.unhide_profile', 'Unhide this profile'))
+        }
       >
-        <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>
+        {clicked || submitting ? <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
+          <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>}
       </button>
     </Tooltip>
   )

@@ -32,6 +32,7 @@ export default function ProfileHeader(props: {
   simpleView?: boolean
   starredUserIds: string[]
   refreshStars: () => Promise<void>
+  isHiddenFromMe: boolean | undefined
   showMessageButton: boolean
   refreshProfile: () => void
 }) {
@@ -44,6 +45,7 @@ export default function ProfileHeader(props: {
     refreshStars,
     showMessageButton,
     refreshProfile,
+    isHiddenFromMe,
   } = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
@@ -55,12 +57,17 @@ export default function ProfileHeader(props: {
 
   return (
     <Col className="w-full">
+      {currentUser && !isCurrentUser && isHiddenFromMe &&
+          <div className="guidance">
+            {t('profile_grid.hidden_notice', "You hid this person, so they don't appear in your search results.")}
+          </div>}
+      {currentUser && isCurrentUser && disabled &&
+          <div className="text-red-500">
+            {t('profile.header.disabled_notice', 'You disabled your profile, so no one else can access it.')}
+          </div>}
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
         <Row className="items-center gap-1">
           <Col className="gap-1">
-            {currentUser && isCurrentUser && disabled &&
-                <div
-                    className="text-red-500">{t('profile.header.disabled_notice', 'You disabled your profile, so no one else can access it.')}</div>}
             <Row className="items-center gap-1 text-xl">
               {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
               <span>

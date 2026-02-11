@@ -21,6 +21,7 @@ import {Keyboard} from "@capacitor/keyboard"
 import {IS_VERCEL} from "common/hosting/constants"
 import {getLocale, resetCachedLocale} from "web/lib/locale-cookie"
 import {I18nContext} from "web/lib/locale"
+import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
 import {updateStatusBar} from "web/hooks/use-theme"
 import {DAYJS_LOCALE_IMPORTS} from "web/lib/dayjs";
 import 'web/lib/dayjs'
@@ -200,11 +201,13 @@ function MyApp(props: AppProps<PageProps>) {
           )}
         >
           <AuthProvider serverUser={pageProps.auth}>
-            <WebPush/>
-            <AndroidPush/>
-            <I18nContext.Provider value={{locale, setLocale}}>
-              <Component {...pageProps} />
-            </I18nContext.Provider>
+            <HiddenProfilesProvider>
+              <WebPush/>
+              <AndroidPush/>
+              <I18nContext.Provider value={{locale, setLocale}}>
+                <Component {...pageProps} />
+              </I18nContext.Provider>
+            </HiddenProfilesProvider>
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">

@@ -17,6 +17,7 @@ import {JSONContent} from "@tiptap/core";
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {UserActivity} from "common/user";
 import {useT} from 'web/lib/locale'
+import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -39,6 +40,9 @@ export function ProfileInfo(props: {
     getStars
   )
   const starredUserIds = starredUsers?.map((u) => u.id)
+
+  const {hiddenProfiles} = useHiddenProfiles()
+  const isHiddenFromMe = hiddenProfiles?.some((v) => v.id === user.id)
 
   // const { data, refresh } = useAPIGetter('get-likes-and-ships', {
   //   userId: user.id,
@@ -78,6 +82,7 @@ export function ProfileInfo(props: {
         refreshStars={refreshStars}
         showMessageButton={showMessageButton}
         refreshProfile={refreshProfile}
+        isHiddenFromMe={isHiddenFromMe}
       />
       {isProfileVisible ? (
         <ProfileContent

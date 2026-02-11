@@ -24,6 +24,8 @@ export const ProfileGrid = (props: {
   starredUserIds: string[] | undefined
   refreshStars: () => Promise<void>
   onHide?: (userId: string) => void
+  hiddenUserIds?: string[]
+  onUndoHidden?: (userId: string) => void
 }) => {
   const {
     profiles,
@@ -34,6 +36,8 @@ export const ProfileGrid = (props: {
     starredUserIds,
     refreshStars,
     onHide,
+    hiddenUserIds,
+    onUndoHidden,
   } = props
 
   const user = useUser()
@@ -58,6 +62,8 @@ export const ProfileGrid = (props: {
               hasStar={starredUserIds?.includes(profile.user_id) ?? false}
               refreshStars={refreshStars}
               onHide={onHide}
+              isHidden={hiddenUserIds?.includes(profile.user_id) ?? false}
+              onUndoHidden={onUndoHidden}
             />
           ))}
       </div>
@@ -86,14 +92,39 @@ function ProfilePreview(props: {
   hasStar: boolean
   refreshStars: () => Promise<void>
   onHide?: (userId: string) => void
+  isHidden?: boolean
+  onUndoHidden?: (userId: string) => void
 }) {
-  const {profile, compatibilityScore, onHide} = props
+  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden} = props
   const {user} = profile
   const choicesIdsToLabels = useAllChoices()
   const t = useT()
   // const currentUser = useUser()
 
   const bio = profile.bio as JSONContent;
+
+  // If this profile was just hidden, render a compact placeholder with Undo action.
+  if (isHidden) {
+    return (
+      <div className="block rounded-lg border border-canvas-300 bg-canvas-50 dark:bg-gray-800/50 p-3 text-sm">
+        <Row className="items-center justify-between gap-2">
+          <span className="text-ink-700 dark:text-ink-300">
+            {t('profile_grid.profile_hidden_short', "You won't see {name} in your search results anymore.", {name: user?.name})}
+          </span>
+          <button
+            className="text-primary-500 hover:text-primary-700 underline"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onUndoHidden?.(profile.user_id)
+            }}
+          >
+            {t('profile_grid.undo', 'Undo')}
+          </button>
+        </Row>
+      </div>
+    )
+  }
 
   if (bio && bio.content) {
     const newBio = []

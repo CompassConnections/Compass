@@ -22,6 +22,7 @@ import {Row} from "web/components/layout/row";
 import {useRouter} from "next/router";
 import {useIsMobile} from "web/hooks/use-is-mobile";
 import toast from "react-hot-toast";
+import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
 
 export function ProfilesHome() {
   const user = useUser()
@@ -54,6 +55,8 @@ export function ProfilesHome() {
   const fromSignup = query.fromSignup === 'true'
   const isMobile = useIsMobile()
   const [sendScrollWarning, setSendScrollWarning] = useState(true)
+  const [recentlyHiddenIds, setRecentlyHiddenIds] = useState<string[]>([])
+  const {refreshHiddenProfiles} = useHiddenProfiles()
 
   // const [debouncedAgeRange, setRawAgeRange] = useState({
   //   min: filters.pref_age_min ?? PREF_AGE_MIN,
@@ -139,9 +142,21 @@ export function ProfilesHome() {
   }, [profiles, filters, isLoadingMore, setProfiles])
 
   const onHide = useCallback((userId: string) => {
-    setProfiles((prev) => prev?.filter((p) => p.user_id !== userId))
-    setProfileCount((prev) => prev ? prev - 1 : 0)
-  }, [setProfiles, t])
+    // Do not remove the profile from the list; mark as recently hidden to show placeholder with Undo.
+    setRecentlyHiddenIds((prev) => (prev.includes(userId) ? prev : [...prev, userId]))
+  }, [])
+
+  const onUndoHidden = useCallback(async (userId: string) => {
+    try {
+      await api('unhide-profile', {hiddenUserId: userId})
+    } catch (e) {
+      console.error('Failed to unhide profile', e)
+    } finally {
+      // Remove from local hidden ids regardless; server state is best-effort and will refresh.
+      setRecentlyHiddenIds((prev) => prev.filter((id) => id !== userId))
+      refreshHiddenProfiles()
+    }
+  }, [refreshHiddenProfiles])
 
   return (
     <>
@@ -243,6 +258,8 @@ export function ProfilesHome() {
           starredUserIds={starredUserIds}
           refreshStars={refreshStars}
           onHide={onHide}
+          hiddenUserIds={recentlyHiddenIds}
+          onUndoHidden={onUndoHidden}
         />
       </>)}
     </>

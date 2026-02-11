@@ -327,6 +327,42 @@ export type Database = {
           },
         ]
       }
+      hidden_profiles: {
+        Row: {
+          created_time: string
+          hidden_user_id: string
+          hider_user_id: string
+          id: number
+        }
+        Insert: {
+          created_time?: string
+          hidden_user_id: string
+          hider_user_id: string
+          id?: never
+        }
+        Update: {
+          created_time?: string
+          hidden_user_id?: string
+          hider_user_id?: string
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'fk_hidden_profiles_hidden'
+            columns: ['hidden_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'fk_hidden_profiles_hider'
+            columns: ['hider_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       interests: {
         Row: {
           creator_id: string | null

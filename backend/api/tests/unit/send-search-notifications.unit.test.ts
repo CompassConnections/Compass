@@ -118,11 +118,13 @@ describe('sendSearchNotification', () => {
             const mockProps = [
                 {
                     skipId: "mockCreatorId",
+                  userId: "mockCreatorId",
                     lastModificationWithin: '24 hours',
                     shortBio: true,
                 },
                 {
                     skipId: "mockCreatorId1",
+                  userId: "mockCreatorId1",
                     lastModificationWithin: '24 hours',
                     shortBio: true,
                 },

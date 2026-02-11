@@ -471,6 +471,7 @@
   "profile.has_kids_one": "Hat {count} Kind",
   "profiles.hidden_success": "Profil ausgeblendet. Sie werden diese Person nicht mehr in den Suchergebnissen sehen.",
   "profile_grid.hide_profile": "Nicht mehr in den Suchergebnissen anzeigen",
+  "profile_grid.unhide_profile": "Wieder in den Suchergebnissen anzeigen",
   "profile.header.disabled_notice": "Sie haben Ihr Profil deaktiviert, niemand sonst kann darauf zugreifen.",
   "profile.header.menu.disable_profile": "Profil deaktivieren",
   "profile.header.menu.enable_profile": "Profil aktivieren",

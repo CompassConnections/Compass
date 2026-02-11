@@ -141,7 +141,6 @@ export function ProfilesHome() {
   const onHide = useCallback((userId: string) => {
     setProfiles((prev) => prev?.filter((p) => p.user_id !== userId))
     setProfileCount((prev) => prev ? prev - 1 : 0)
-    toast.success(t('profiles.hidden_success', 'Profile hidden. You will no longer see this person in search results.'))
   }, [setProfiles, t])
 
   return (

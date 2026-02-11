@@ -471,6 +471,7 @@
   "profile.has_kids_one": "A {count} enfant",
   "profiles.hidden_success": "Profil masqué. Vous ne verrez plus cette personne dans les résultats de recherche.",
   "profile_grid.hide_profile": "Ne plus afficher dans les résultats de recherche",
+  "profile_grid.unhide_profile": "Afficher à nouveau dans les résultats de recherche",
   "profile.header.disabled_notice": "Vous avez désactivé votre profil, personne d'autre ne peut y accéder.",
   "profile.header.menu.disable_profile": "Désactiver le profil",
   "profile.header.menu.enable_profile": "Activer le profil",

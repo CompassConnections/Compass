@@ -56,7 +56,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     <Tooltip text={tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")} noTap>
       <button
         className={clsx(
-          'rounded-full p-1 hover:bg-canvas-300 shadow focus:outline-none',
+          'rounded-full p-1 hover:bg-canvas-200 shadow focus:outline-none',
           className
         )}
         onClick={onClick}

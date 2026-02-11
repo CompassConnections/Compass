@@ -457,6 +457,41 @@ export const API = (_apiTypeCheck = {
     summary: 'Hide a profile for the current user',
     tag: 'Profiles',
   },
+  'unhide-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      hiddenUserId: z.string(),
+    }),
+    returns: {} as {
+      status: 'success'
+    },
+    summary: 'Unhide a previously hidden profile for the current user',
+    tag: 'Profiles',
+  },
+  'get-hidden-profiles': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      limit: z.coerce.number().min(1).max(200).optional(),
+      offset: z.coerce.number().min(0).optional(),
+    }).strict(),
+    returns: {} as {
+      status: 'success'
+      hidden: {
+        id: string
+        name: string
+        username: string
+        avatarUrl?: string | null
+        createdTime?: string
+      }[]
+      count: number
+    },
+    summary: 'Get the list of profiles the current user has hidden',
+    tag: 'Profiles',
+  },
   'get-profiles': {
     method: 'GET',
     authed: true,

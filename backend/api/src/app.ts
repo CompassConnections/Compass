@@ -77,6 +77,8 @@ import {deleteMessage} from "api/delete-message";
 import {updateOptions} from "api/update-options";
 import {getOptions} from "api/get-options";
 import {hideProfile} from "api/hide-profile";
+import {unhideProfile} from "api/unhide-profile";
+import {getHiddenProfiles} from "api/get-hidden-profiles";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -341,6 +343,8 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'has-free-like': hasFreeLike,
   'hide-comment': hideComment,
   'hide-profile': hideProfile,
+  'unhide-profile': unhideProfile,
+  'get-hidden-profiles': getHiddenProfiles,
   'leave-private-user-message-channel': leavePrivateUserMessageChannel,
   'like-profile': likeProfile,
   'mark-all-notifs-read': markAllNotifsRead,

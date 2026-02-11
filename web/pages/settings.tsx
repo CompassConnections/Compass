@@ -21,6 +21,7 @@ import {sendPasswordReset} from "web/lib/firebase/password";
 import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
+import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 
 export default function NotificationsPage() {
   const t = useT()
@@ -54,6 +55,7 @@ const LoadedGeneralSettings = (props: {
   const {privateUser} = props
 
   const [isChangingEmail, setIsChangingEmail] = useState(false)
+  const [showHiddenProfiles, setShowHiddenProfiles] = useState(false)
   const {register, handleSubmit, formState: {errors}, reset} = useForm<{ newEmail: string }>()
   const t = useT()
 
@@ -136,15 +138,21 @@ const LoadedGeneralSettings = (props: {
       <h3>{t('settings.general.language', 'Language')}</h3>
       <LanguagePicker className={'w-fit min-w-[120px]'}/>
 
+      <h3>{t('settings.general.people', 'People')}</h3>
+      {/*<h5>{t('settings.hidden_profiles.title', 'Hidden profiles')}</h5>*/}
+      <Button color={'gray-outline'} onClick={() => setShowHiddenProfiles(true)}>
+        {t('settings.hidden_profiles.manage', 'Manage hidden profiles')}
+      </Button>
+
       <h3>{t('settings.general.account', 'Account')}</h3>
       <h5>{t('settings.general.email', 'Email')}</h5>
 
-      <Button onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
+      <Button color={'gray-outline'} onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
         {isEmailVerified ? t('settings.email.verified', 'Email Verified ✔️') : t('settings.email.send_verification', 'Send verification email')}
       </Button>
 
       {!isChangingEmail ? (
-        <Button onClick={() => setIsChangingEmail(true)}>
+        <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)}>
           {t('settings.email.change', 'Change email address')}
         </Button>
       ) : (
@@ -191,7 +199,8 @@ const LoadedGeneralSettings = (props: {
       <h5>{t('settings.general.password', 'Password')}</h5>
       <Button
         onClick={() => sendPasswordReset(privateUser?.email)}
-        className="mb-2"
+        className="mb-2 max-w-[250px]"
+        color={'gray-outline'}
       >
         {t('settings.password.send_reset', 'Send password reset email')}
       </Button>
@@ -201,5 +210,8 @@ const LoadedGeneralSettings = (props: {
         {t('settings.delete_account', 'Delete Account')}
       </Button>
     </div>
+
+    {/* Hidden profiles modal */}
+    <HiddenProfilesModal open={showHiddenProfiles} setOpen={setShowHiddenProfiles}/>
   </>
 }

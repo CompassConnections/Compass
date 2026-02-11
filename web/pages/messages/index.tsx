@@ -100,7 +100,7 @@ export const MessageChannelRow = (props: {
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
-    <Row className={'items-center gap-3 rounded-md hover:bg-canvas-100 p-2'}>
+    <Row className={'items-center gap-3'}>
       {otherUsers && otherUsers.length > 0 ? (
         <MultipleOrSingleAvatars
           size="md"
@@ -113,7 +113,7 @@ export const MessageChannelRow = (props: {
         <Avatar size="md" username="?" noLink/>
       )}
       <Link
-        className="rounded w-full"
+        className="w-full rounded-md hover:bg-canvas-100 p-2"
         key={channelId}
         href={'/messages/' + channelId}
       >

@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-export class OnboardingPage {
+export class ProfilePage {
     private readonly startAnsweringButton: Locator;
     private readonly doThisLaterLink: Locator;
     private readonly closeButton: Locator;

@@ -12,20 +12,20 @@ import {
     MBTI_CHOICES,
 } from "../../../../web/components/filters/choices";
 
-type Gender = 'Woman' | 'Man' | 'Other';
-type ConnectionType = keyof typeof RELATIONSHIP_CHOICES;
-type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES;
-type RelationshipStyle = keyof typeof ROMANTIC_CHOICES;
-type PoliticalBeliefs = keyof typeof POLITICAL_CHOICES;
-type Diet = keyof typeof DIET_CHOICES;
-type Education = keyof typeof EDUCATION_CHOICES;
-type Religion = keyof typeof RELIGION_CHOICES;
-type Language = keyof typeof LANGUAGE_CHOICES;
-type Ethnicity = keyof typeof RACE_CHOICES;
-type Personality = keyof typeof MBTI_CHOICES;
-type Interests = 'Chess' | 'Games' | 'Joy' | 'Livres';
-type Causes = 'Animal Rights' | 'Feminism';
-type Platforms = 
+export type Gender = 'Woman' | 'Man' | 'Other';
+export type ConnectionType = keyof typeof RELATIONSHIP_CHOICES;
+export type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES;
+export type RelationshipStyle = keyof typeof ROMANTIC_CHOICES;
+export type PoliticalBeliefs = keyof typeof POLITICAL_CHOICES;
+export type Diet = keyof typeof DIET_CHOICES;
+export type Education = keyof typeof EDUCATION_CHOICES;
+export type Religion = keyof typeof RELIGION_CHOICES;
+export type Language = keyof typeof LANGUAGE_CHOICES;
+export type Ethnicity = keyof typeof RACE_CHOICES;
+export type Personality = keyof typeof MBTI_CHOICES;
+export type Interests = 'Chess' | 'Games' | 'Joy' | 'Livres';
+export type Causes = 'Animal Rights' | 'Feminism';
+export type Platforms = 
     | 'Website'
     | 'Twitter/X'
     | 'Discord'
@@ -46,7 +46,7 @@ type Platforms =
     | 'Work Doc'
     | 'Spotify'
 
-export class OnboardingPage {
+export class SignUpPage {
     private readonly displayNameField: Locator;
     private readonly usernameField: Locator;
     private readonly nextButton: Locator;
@@ -86,6 +86,7 @@ export class OnboardingPage {
     private readonly addSocialPlatformField: Locator;
     private readonly addSocialPlatformButton: Locator;
     private readonly photoUploadButton: Locator;
+    private readonly saveButton: Locator;
 
     constructor(public readonly page: Page) {
         this.displayNameField = page.getByPlaceholder('Display name');
@@ -126,7 +127,8 @@ export class OnboardingPage {
         this.socialPlatformSearchField = page.getByRole('textbox', { name: 'Search...' });
         this.addSocialPlatformField = page.getByRole('textbox', { name: 'URL' });
         this.addSocialPlatformButton = page.locator('button').filter({ hasText: 'Add' }).nth(3);
-        this.photoUploadButton = page.locator("label[for='photo-upload']");
+        this.photoUploadButton = page.getByTestId('profile-upload-photo');
+        this.saveButton = page.getByRole('button', { name: 'Save' });
     };
     
     async fillUsername(username: string) {
@@ -408,8 +410,18 @@ export class OnboardingPage {
         await expect(this.page.locator(`input[value='${urlOrUsername}']`)).toBeVisible();
     };
 
-    async goToNextPage() {
+    async clickNextButton() {
         await expect(this.nextButton).toBeVisible();
         await this.nextButton.click();
+    };
+
+    async uploadProfilePhoto() {
+        await expect(this.photoUploadButton).toBeVisible();
+        await this.photoUploadButton.click();
+    };
+
+    async saveProfileChanges() {
+        await expect(this.saveButton).toBeVisible();
+        await this.saveButton.click();
     };
 };

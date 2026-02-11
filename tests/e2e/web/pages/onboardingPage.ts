@@ -16,4 +16,14 @@ export class OnboardingPage {
         this.exploreProfilesNowButton = page.getByRole('button', {});
         this.refineProfileButton = page.getByRole('button', {});
     };
+
+    async clickContinueButton() {
+        await expect(this.continueButton).toBeVisible();
+        await this.continueButton.click();
+    };
+
+    async clickGetStartedButton() {
+        await expect(this.getStartedButton).toBeVisible();
+        await this.getStartedButton.click();
+    };
 };

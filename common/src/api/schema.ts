@@ -444,6 +444,19 @@ export const API = (_apiTypeCheck = {
     summary: 'Star or unstar a profile',
     tag: 'Profiles',
   },
+  'hide-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      hiddenUserId: z.string(),
+    }),
+    returns: {} as {
+      status: 'success'
+    },
+    summary: 'Hide a profile for the current user',
+    tag: 'Profiles',
+  },
   'get-profiles': {
     method: 'GET',
     authed: true,

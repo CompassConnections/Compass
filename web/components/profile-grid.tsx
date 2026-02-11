@@ -13,6 +13,10 @@ import {useUser} from "web/hooks/use-user";
 import {useT} from "web/lib/locale";
 import {useAllChoices} from "web/hooks/use-choices";
 import {getSeekingGenderText} from "web/lib/profile/seeking";
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {EyeOffIcon} from '@heroicons/react/outline'
+import {useState} from 'react'
+import {api} from 'web/lib/api'
 
 export const ProfileGrid = (props: {
   profiles: Profile[]
@@ -22,6 +26,7 @@ export const ProfileGrid = (props: {
   compatibilityScores: Record<string, CompatibilityScore> | undefined
   starredUserIds: string[] | undefined
   refreshStars: () => Promise<void>
+  onHide?: (userId: string) => void
 }) => {
   const {
     profiles,
@@ -31,6 +36,7 @@ export const ProfileGrid = (props: {
     compatibilityScores,
     starredUserIds,
     refreshStars,
+    onHide,
   } = props
 
   const user = useUser()
@@ -54,6 +60,7 @@ export const ProfileGrid = (props: {
               compatibilityScore={compatibilityScores?.[profile.user_id]}
               hasStar={starredUserIds?.includes(profile.user_id) ?? false}
               refreshStars={refreshStars}
+              onHide={onHide}
             />
           ))}
       </div>
@@ -81,12 +88,14 @@ function ProfilePreview(props: {
   compatibilityScore: CompatibilityScore | undefined
   hasStar: boolean
   refreshStars: () => Promise<void>
+  onHide?: (userId: string) => void
 }) {
-  const {profile, compatibilityScore} = props
+  const {profile, compatibilityScore, onHide} = props
   const {user} = profile
   const choicesIdsToLabels = useAllChoices()
   const t = useT()
   // const currentUser = useUser()
+  const [hiding, setHiding] = useState(false)
 
   const bio = profile.bio as JSONContent;
 
@@ -157,7 +166,30 @@ function ProfilePreview(props: {
           {/*    <div />*/}
           {/*  )}*/}
           {compatibilityScore && (
-            <CompatibleBadge compatibility={compatibilityScore}/>
+            <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'}/>
+          )}
+          {/* Hide profile button */}
+          {onHide && (
+            <Tooltip text={t('profile_grid.hide_profile', "Don't show again")} noTap>
+              <button
+                className="ml-2 rounded-full p-1 hover:bg-canvas-300 shadow focus:outline-none"
+                onClick={async (e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  if (hiding) return
+                  setHiding(true)
+                  try {
+                    await api('hide-profile', {hiddenUserId: profile.user_id})
+                    onHide(profile.user_id)
+                  } finally {
+                    setHiding(false)
+                  }
+                }}
+                aria-label={t('profile_grid.hide_profile', 'Hide this profile')}
+              >
+                <EyeOffIcon className="h-5 w-5 guidance"/>
+              </button>
+            </Tooltip>
           )}
         </Row>
 

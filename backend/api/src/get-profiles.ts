@@ -8,7 +8,7 @@ import {OptionTableKey} from "common/profiles/constants";
 export type profileQueryType = {
   limit?: number | undefined,
   after?: string | undefined,
-  // Search and filter parameters
+  userId?: string | undefined,
   name?: string | undefined,
   genders?: string[] | undefined,
   education_levels?: string[] | undefined,
@@ -52,6 +52,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     limit: limitParam,
     after,
     name,
+    userId,
     genders,
     education_levels,
     pref_gender,
@@ -300,6 +301,15 @@ export const loadProfiles = async (props: profileQueryType) => {
        `),
 
     lastModificationWithin && where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {lastModificationWithin}),
+
+    // Exclude profiles that the requester has chosen to hide
+    userId && where(
+      `NOT EXISTS (
+         SELECT 1 FROM hidden_profiles hp
+         WHERE hp.hider_user_id = $(userId)
+           AND hp.hidden_user_id = profiles.user_id
+       )`, {userId}
+    ),
   ]
 
   let selectCols = 'profiles.*, users.name, users.username, users.data as user'
@@ -341,7 +351,7 @@ export const loadProfiles = async (props: profileQueryType) => {
 export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
   try {
     if (!props.skipId) props.skipId = auth.uid
-    const {profiles, count} = await loadProfiles(props)
+    const {profiles, count} = await loadProfiles({...props, userId: auth.uid})
     return {status: 'success', profiles: profiles, count: count}
   } catch (error) {
     console.log(error)

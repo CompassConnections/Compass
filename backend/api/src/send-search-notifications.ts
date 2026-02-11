@@ -57,6 +57,7 @@ export const sendSearchNotifications = async () => {
     const props = {
       ...filters,
       skipId: row.creator_id,
+      userId: row.creator_id,
       lastModificationWithin: '24 hours',
       shortBio: true,
     }

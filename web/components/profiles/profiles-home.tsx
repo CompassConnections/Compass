@@ -138,6 +138,12 @@ export function ProfilesHome() {
     }
   }, [profiles, filters, isLoadingMore, setProfiles])
 
+  const onHide = useCallback((userId: string) => {
+    setProfiles((prev) => prev?.filter((p) => p.user_id !== userId))
+    setProfileCount((prev) => prev ? prev - 1 : 0)
+    toast.success(t('profiles.hidden_success', 'Profile hidden. You will no longer see this person in search results.'))
+  }, [setProfiles, t])
+
   return (
     <>
       {showBanner && fromSignup && (
@@ -237,6 +243,7 @@ export function ProfilesHome() {
           compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
           starredUserIds={starredUserIds}
           refreshStars={refreshStars}
+          onHide={onHide}
         />
       </>)}
     </>

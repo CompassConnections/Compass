@@ -4,7 +4,7 @@ type FavIconProps = {
 
 const FavIcon = ({ className }: FavIconProps) => (
   <img
-    src="favicon.svg"
+    src="https://www.compassmeet.com/favicon.svg"
     alt="Compass logo"
     className={`w-12 h-12 ${className ?? ""}`}
   />

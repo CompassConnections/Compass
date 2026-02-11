@@ -314,6 +314,8 @@
   "messages.toast.muting_forever.success": "Benachrichtigungen dauerhaft stummgeschaltet",
   "messages.toast.send_failed": "Senden der Nachricht fehlgeschlagen. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support, wenn das Problem weiterhin besteht.",
   "messages.you_prefix": "Sie: ",
+  "messages.cannot_message_deleted": "Sie können ihnen keine Nachricht senden, da sie ihr Konto gelöscht haben",
+  "messages.deleted_user": "Gelöschter Benutzer",
   "multi-checkbox.enter_value": "Bitte geben Sie einen Wert ein.",
   "multi-checkbox.could_not_add": "Option konnte nicht hinzugefügt werden.",
   "multi-checkbox.add_failed": "Hinzufügen der Option fehlgeschlagen.",

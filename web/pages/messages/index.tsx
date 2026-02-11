@@ -17,6 +17,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {Avatar} from 'web/components/widgets/avatar'
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {SEO} from "web/components/SEO";
@@ -66,8 +67,7 @@ export function MessagesContent(props: { currentUser: User }) {
         {channels?.map((channel) => {
           const userIds = memberIdsByChannelId?.[channel.channel_id]?.map(
             (m) => m
-          )
-          if (!userIds) return null
+          ) || []
           return (
             <MessageChannelRow
               key={channel.channel_id}
@@ -100,26 +100,30 @@ export const MessageChannelRow = (props: {
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
-    <Row className={'items-center gap-3 rounded-md'}>
-      <MultipleOrSingleAvatars
-        size="md"
-        spacing={numOthers === 2 ? 0.3 : 0.15}
-        startLeft={numOthers === 2 ? 2.2 : 1.2}
-        avatars={otherUsers ?? []}
-        className={numOthers > 1 ? '-ml-2' : ''}
-      />
+    <Row className={'items-center gap-3 rounded-md hover:bg-canvas-100 p-2'}>
+      {otherUsers && otherUsers.length > 0 ? (
+        <MultipleOrSingleAvatars
+          size="md"
+          spacing={numOthers === 2 ? 0.3 : 0.15}
+          startLeft={numOthers === 2 ? 2.2 : 1.2}
+          avatars={otherUsers}
+          className={numOthers > 1 ? '-ml-2' : ''}
+        />
+      ) : (
+        <Avatar size="md" username="?" noLink/>
+      )}
       <Link
-        className="hover:bg-canvas-0 rounded p-2 transition-colors w-full"
+        className="rounded w-full"
         key={channelId}
         href={'/messages/' + channelId}
       >
         <Col className={''}>
           <Row className={'items-center justify-between'}>
             <span className={'font-semibold'}>
-              {otherUsers && (
+              {otherUsers && otherUsers.length > 0 ? (
                 <span>
                   {otherUsers
-                    .map((user) => user.name.split(' ')[0].trim())
+                    .map((user) => (user.name ? user.name.split(' ')[0].trim() : t('messages.deleted_user', 'Deleted user')))
                     .slice(0, 2)
                     .join(', ')}
                   {otherUsers.length > 2 && (
@@ -129,6 +133,8 @@ export const MessageChannelRow = (props: {
                     </>
                   )}
                 </span>
+              ) : (
+                <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
               )}
               {isBanned && <BannedBadge/>}
             </span>

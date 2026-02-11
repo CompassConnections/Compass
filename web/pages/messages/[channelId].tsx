@@ -1,6 +1,6 @@
 import {PageBase} from 'web/components/page-base'
 import {useRouter} from 'next/router'
-import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
+import {usePrivateMessages, useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
 import {Col} from 'web/components/layout/col'
 import {User} from 'common/user'
 import {useCallback, useEffect, useState} from 'react'
@@ -19,6 +19,7 @@ import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {Avatar} from 'web/components/widgets/avatar'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {BannedBadge, UserAvatarAndBadge,} from 'web/components/widgets/user-link'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
@@ -69,6 +70,7 @@ export function PrivateMessagesContent(props: {
   useRedirectIfSignedOut()
 
   const {channelId, user} = props
+  const t = useT()
   const channelMembership = useSortedPrivateMessageMemberships(
     user.id,
     1,
@@ -77,14 +79,20 @@ export function PrivateMessagesContent(props: {
   const {channels, memberIdsByChannelId} = channelMembership
   const thisChannel = channels?.find((c) => c.channel_id == channelId)
   const loaded = channels !== undefined && channelId
-  const memberIds = thisChannel
+  const memberIds = (thisChannel
     ? memberIdsByChannelId?.[thisChannel.channel_id]
-    : undefined
+    : undefined) ?? []
 
   return (
     <>
-      {user && loaded && thisChannel && memberIds ? (
-        <PrivateChat channel={thisChannel} user={user} memberIds={memberIds}/>
+      {user && loaded ? (
+        thisChannel ? (
+          <PrivateChat channel={thisChannel} user={user} memberIds={memberIds}/>
+        ) : (
+          <div className="flex h-[50vh] flex-col items-center justify-center mx-4 font-bold text-2xl">
+            {t('', 'You do not have access to this conversation.')}
+          </div>
+        )
       ) : (
         <CompassLoadingIndicator/>
       )}
@@ -102,6 +110,8 @@ export const PrivateChat = (props: {
   const channelId = channel.channel_id
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
+
+  const noOtherUser = memberIds.length === 0
 
   const totalMessagesToLoad = 100
   const {messages: realtimeMessages, setMessages, fetchMessages} = usePrivateMessages(
@@ -246,16 +256,20 @@ export const PrivateChat = (props: {
         }
       >
         <BackButton className="self-stretch"/>
-        <MultipleOrSingleAvatars
-          size="sm"
-          spacing={0.5}
-          startLeft={1}
-          avatars={members ?? []}
-          onClick={() => setShowUsers(true)}
-        />
-        {members && (
+        {members && members.length > 0 ? (
+          <MultipleOrSingleAvatars
+            size="sm"
+            spacing={0.5}
+            startLeft={1}
+            avatars={members}
+            onClick={() => setShowUsers(true)}
+          />
+        ) : (
+          <Avatar size="sm" username="?" noLink/>
+        )}
+        {members && members.length > 0 ? (
           <span
-            className={'ml-1 cursor-pointer hover:underline'}
+            className={clsx('ml-1 cursor-pointer hover:underline', noOtherUser && 'italic')}
             onClick={() =>
               members.length === 1
                 ? router.push(`/${members[0].username}`)
@@ -263,11 +277,13 @@ export const PrivateChat = (props: {
             }
           >
             {members
-              .map((user) => user.name.split(' ')[0].trim())
+              .map((user) => (user.name ? user.name.split(' ')[0].trim() : t('messages.deleted_user', 'Deleted user')))
               .slice(0, 2)
               .join(', ')}
             {members.length > 2 && ` & ${members.length - 2} more`}
           </span>
+        ) : (
+          <span className={'ml-1 italic'}>{t('messages.deleted_user', 'Deleted user')}</span>
         )}
 
         {members?.length == 1 && members[0].isBannedFromPosting && (
@@ -419,16 +435,24 @@ export const PrivateChat = (props: {
           </div>
         </div>
       </Col>
-      <CommentInputTextArea
-        editor={editor}
-        user={user}
-        submit={submitMessage}
-        isSubmitting={isSubmitting}
-        submitOnEnter={!isMobile}
-        replyTo={replyToUserInfo}
-        isEditing={!!editingMessage}
-        cancelEditing={cancelEditing}
-      />
+      {noOtherUser ? (
+        <div className="border-ink-200 p-4 text-center">
+          <span className="text-ink-600">
+            {t('messages.cannot_message_deleted', "You can't text them as they deleted their account")}
+          </span>
+        </div>
+      ) : (
+        <CommentInputTextArea
+          editor={editor}
+          user={user}
+          submit={submitMessage}
+          isSubmitting={isSubmitting}
+          submitOnEnter={!isMobile}
+          replyTo={replyToUserInfo}
+          isEditing={!!editingMessage}
+          cancelEditing={cancelEditing}
+        />
+      )}
     </Col>
   )
 }

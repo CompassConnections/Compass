@@ -90,7 +90,7 @@ export function PrivateMessagesContent(props: {
           <PrivateChat channel={thisChannel} user={user} memberIds={memberIds}/>
         ) : (
           <div className="flex h-[50vh] flex-col items-center justify-center mx-4 font-bold text-2xl">
-            {t('', 'You do not have access to this conversation.')}
+            {t('messages.no_access', 'You do not have access to this conversation.')}
           </div>
         )
       ) : (
@@ -438,7 +438,7 @@ export const PrivateChat = (props: {
       {noOtherUser ? (
         <div className="border-ink-200 p-4 text-center">
           <span className="text-ink-600">
-            {t('messages.cannot_message_deleted', "You can't text them as they deleted their account")}
+            {t('messages.cannot_message_deleted', "You can't text them as they deleted their account.")}
           </span>
         </div>
       ) : (

@@ -4,21 +4,21 @@ Consultez [ce tableau](https://docs.google.com/spreadsheets/d/18GJr-xSi_ypkgQIxf
 
 ### Dépenses
 
-* **Hébergement & Infrastructure** : 100 $
+* **Hébergement & Infrastructure** : 300,83 $
 * **Développement** : 0 $ (entièrement réalisé par des bénévoles)
 * **Marketing** : 0 $ (la croissance est organique et portée par la communauté)
 * **Divers / Coûts privés** : 0 $
 
 ### Sources de financement
 
-* **Dons** : 0 $
+* **Dons** : 29,78 $
 * **Subventions** : 0 $
 
 ### Résumé financier
 
-* **Revenus totaux** : 0 $
-* **Dépenses totales** : 100 $
-* **Solde net** : -100 $
+* **Revenus totaux** : 29,78 $
+* **Dépenses totales** : 300,83 $
+* **Solde net** : -271,05 $
 
 ### Pourquoi Compass est économiquement efficace
 

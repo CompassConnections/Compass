@@ -23,6 +23,7 @@ import {StarButton} from "web/components/widgets/star-button";
 import {disableProfile} from "web/lib/util/disable";
 import {useT} from 'web/lib/locale'
 import {Tooltip} from "web/components/widgets/tooltip";
+import HideProfileButton from 'web/components/widgets/hide-profile-button'
 
 export default function ProfileHeader(props: {
   user: User
@@ -153,8 +154,9 @@ export default function ProfileHeader(props: {
           </Row>
         ) : (
           <Row className="items-center gap-1 sm:gap-2">
-            {/*TODO: Add score to profile page once we can efficiently compute it (i.e., not recomputing it for every profile)*/}
-            {/*<CompatibleBadge compatibility={compatibilityScore}/>*/}
+            {currentUser && !isCurrentUser && (
+              <HideProfileButton hiddenUserId={user.id}/>
+            )}
             <ShareProfileButton
               className="sm:flex"
               username={user.username}

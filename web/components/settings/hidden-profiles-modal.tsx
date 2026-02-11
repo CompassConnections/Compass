@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import {useT} from 'web/lib/locale'
 import clsx from "clsx";
 import Link from "next/link";
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
 type HiddenUser = {
   id: string
@@ -87,11 +88,7 @@ export function HiddenProfilesModal(props: {
         {!loading && hidden && hidden.length > 0 && <p>
           {t('settings.hidden_profiles.description', "These people don't appear in your search results.")}
         </p>}
-        {loading && (
-          <div className="text-ink-500 py-4">
-            {t('settings.hidden_profiles.loading', 'Loading hidden profiles...')}
-          </div>
-        )}
+        {loading && <CompassLoadingIndicator/>}
         {error && <div className="text-red-500 py-2">{error}</div>}
         {!loading && hidden && hidden.length > 0 && (
           <Col className={clsx("divide-y divide-canvas-300 w-full pr-4", SCROLLABLE_MODAL_CLASS)}>

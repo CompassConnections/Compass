@@ -31,12 +31,14 @@ export function HideProfileButton(props: HideProfileButtonProps) {
 
   const t = useT()
   const [submitting, setSubmitting] = useState(false)
+  const [clicked, setClicked] = useState(false)
 
   const onClick = async (e: React.MouseEvent) => {
     e.preventDefault()
     if (stopPropagation) e.stopPropagation()
     if (submitting) return
     setSubmitting(true)
+    setClicked(true)
     try {
       await api('hide-profile', {hiddenUserId})
       onHidden?.(hiddenUserId)
@@ -53,7 +55,8 @@ export function HideProfileButton(props: HideProfileButtonProps) {
   }
 
   return (
-    <Tooltip text={tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")} noTap>
+    <Tooltip text={!clicked ? (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")) : ''}
+             noTap>
       <button
         className={clsx(
           'rounded-full p-1 hover:bg-canvas-200 shadow focus:outline-none',

@@ -45,7 +45,7 @@ export function Tooltip(props: {
   // that appear under the finger due to layout shifts (e.g., when a card is removed).
   // We keep a short global cooldown window during which tooltip "open" requests are ignored.
   // This helps avoid ghost tooltips appearing on adjacent cards after actions like hide/remove.
-  let nowFn = () => Date.now()
+  const nowFn = () => Date.now()
   // Module-level shared state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const g: any = (globalThis as any)

@@ -1,9 +1,10 @@
 import clsx from 'clsx'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
 
 export type HideProfileButtonProps = {
   hiddenUserId: string
@@ -28,17 +29,34 @@ export function HideProfileButton(props: HideProfileButtonProps) {
 
   const t = useT()
   const [submitting, setSubmitting] = useState(false)
-  const [clicked, setClicked] = useState(false)
+  const {hiddenProfiles, refreshHiddenProfiles} = useHiddenProfiles()
+  const [optimisticHidden, setOptimisticHidden] = useState<boolean | undefined>(undefined)
+  const hidden = useMemo(() => {
+    if (optimisticHidden !== undefined) return optimisticHidden
+    return hiddenProfiles?.some((u) => u.id === hiddenUserId) ?? false
+  }, [hiddenProfiles, hiddenUserId, optimisticHidden])
 
   const onClick = async (e: React.MouseEvent) => {
     e.preventDefault()
     if (stopPropagation) e.stopPropagation()
     if (submitting) return
     setSubmitting(true)
-    setClicked(true)
+
+    // Optimistically update hidden state
+    setOptimisticHidden(!hidden)
+    
     try {
-      await api('hide-profile', {hiddenUserId})
+      if (hidden) {
+        await api('unhide-profile', {hiddenUserId})
+      } else {
+        await api('hide-profile', {hiddenUserId})
+      }
+      refreshHiddenProfiles()
       onHidden?.(hiddenUserId)
+    } catch (e) {
+      console.error('Failed to toggle hide profile', e)
+      // Revert optimistic update on failure
+      setOptimisticHidden(hidden)
     } finally {
       setSubmitting(false)
     }
@@ -46,21 +64,20 @@ export function HideProfileButton(props: HideProfileButtonProps) {
 
   return (
     <Tooltip
-      text={!clicked ? (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results")) : t('profile_grid.unhide_profile', "Show again in search results")}
+      text={hidden ? t('profile_grid.unhide_profile', "Show again in search results") : (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results"))}
       noTap>
       <button
         className={clsx(
           'rounded-full p-1 hover:bg-canvas-200 shadow focus:outline-none',
           className
         )}
+        disabled={submitting}
         onClick={onClick}
         aria-label={
-          ariaLabel ?? (!clicked
-            ? t('profile_grid.hide_profile', 'Hide this profile')
-            : t('profile_grid.unhide_profile', 'Unhide this profile'))
+          ariaLabel ?? (hidden ? t('profile_grid.unhide_profile', 'Unhide this profile') : t('profile_grid.hide_profile', 'Hide this profile'))
         }
       >
-        {clicked || submitting ? <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
+        {hidden ? <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
           <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>}
       </button>
     </Tooltip>

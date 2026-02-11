@@ -3,6 +3,7 @@ import {discordLink, githubRepo, redditLink, stoatLink, supportEmail, xLink} fro
 import {GeneralButton} from "web/components/buttons/general-button"
 import {SEO} from "web/components/SEO"
 import {useT} from "web/lib/locale"
+import {Row} from "web/components/layout/row";
 
 function Section({
                    title,
@@ -40,9 +41,11 @@ export default function Social() {
         title={t('social.community.title', 'Community')}
         description={t('social.community.desc', 'Join our community chats and discussions.')}
       >
-        <GeneralButton url={discordLink} content={t('social.discord', 'Discord')}/>
-        <GeneralButton url={redditLink} content={t('social.reddit', 'Reddit')}/>
-        <GeneralButton url={stoatLink} content={t('social.stoat', 'Revolt / Stoat')}/>
+        <Row className="flex-wrap">
+          <GeneralButton url={discordLink} content={t('social.discord', 'Discord')}/>
+          <GeneralButton url={redditLink} content={t('social.reddit', 'Reddit')}/>
+          <GeneralButton url={stoatLink} content={t('social.stoat', 'Revolt / Stoat')}/>
+        </Row>
       </Section>
 
       {/* FOLLOW / UPDATES */}
@@ -50,7 +53,9 @@ export default function Social() {
         title={t('social.follow.title', 'Follow & Updates')}
         description={t('social.follow.desc', 'Stay informed about announcements and news.')}
       >
-        <GeneralButton url={xLink} content={t('social.x', 'X')}/>
+        <Row className="flex-wrap">
+          <GeneralButton url={xLink} content={t('social.x', 'X')}/>
+        </Row>
       </Section>
 
       {/* DEVELOPMENT */}
@@ -58,7 +63,9 @@ export default function Social() {
         title={t('social.dev.title', 'Development')}
         description={t('social.dev.desc', 'See our source code or contribute.')}
       >
-        <GeneralButton url={githubRepo} content={t('social.github', 'GitHub')}/>
+        <Row className="flex-wrap">
+          <GeneralButton url={githubRepo} content={t('social.github', 'GitHub')}/>
+        </Row>
       </Section>
 
       {/* CONTACT */}
@@ -66,7 +73,10 @@ export default function Social() {
         title={t('social.contact.title', 'Contact')}
         description={t('social.contact.desc', 'Reach out to us directly for inquiries.')}
       >
-        <GeneralButton url={`mailto:${supportEmail}`} content={`${t('social.email_button', 'Email')} ${supportEmail}`}/>
+        <Row className="flex-wrap">
+          <GeneralButton url={`mailto:${supportEmail}`}
+                         content={`${t('social.email_button', 'Email')} ${supportEmail}`}/>
+        </Row>
       </Section>
     </PageBase>
   )

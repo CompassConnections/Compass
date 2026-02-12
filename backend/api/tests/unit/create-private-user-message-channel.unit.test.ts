@@ -2,13 +2,17 @@ jest.mock('shared/supabase/init');
 jest.mock('common/util/array');
 jest.mock('api/helpers/private-messages');
 jest.mock('shared/utils');
+jest.mock('firebase-admin', () => ({
+  auth: jest.fn()
+}));
 
-import { createPrivateUserMessageChannel } from "api/create-private-user-message-channel";
+import {createPrivateUserMessageChannel} from "api/create-private-user-message-channel";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";
 import * as utilArrayModules from "common/util/array";
 import * as privateMessageModules from "api/helpers/private-messages";
-import { AuthedUser } from "api/helpers/endpoint";
+import * as admin from 'firebase-admin';
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('createPrivateUserMessageChannel', () => {
     let mockPg = {} as any;
@@ -21,7 +25,11 @@ describe('createPrivateUserMessageChannel', () => {
         };
 
         (supabaseInit.createSupabaseDirectClient as jest.Mock)
-            .mockReturnValue(mockPg)
+          .mockReturnValue(mockPg);
+
+      (admin.auth as jest.Mock).mockReturnValue({
+        getUser: jest.fn().mockResolvedValue({emailVerified: true})
+      });
     });
     afterEach(() => {
         jest.restoreAllMocks()
@@ -133,6 +141,24 @@ describe('createPrivateUserMessageChannel', () => {
     });
     
     describe('when an error occurs', () => {
+      it('should throw if user email is not verified', async () => {
+        const mockBody = {
+          userIds: ["123"]
+        };
+        const mockAuth = {uid: '321'} as AuthedUser;
+        const mockReq = {} as any;
+
+        (admin.auth as jest.Mock).mockReturnValue({
+          getUser: jest.fn().mockResolvedValue({emailVerified: false})
+        });
+
+        expect(createPrivateUserMessageChannel(mockBody, mockAuth, mockReq))
+          .rejects
+          .toThrowError('You must verify your email to contact people.');
+
+        expect(admin.auth().getUser).toHaveBeenCalledWith(mockAuth.uid);
+      });
+
         it('should throw if the user account doesnt exist', async () => {
             const mockBody = {
                 userIds: ["123"]

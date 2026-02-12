@@ -14,6 +14,7 @@ export type HideProfileButtonProps = {
   tooltip?: string
   ariaLabel?: string
   stopPropagation?: boolean
+  eyeOff?: boolean
 }
 
 export function HideProfileButton(props: HideProfileButtonProps) {
@@ -25,6 +26,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     tooltip,
     ariaLabel,
     stopPropagation,
+    eyeOff,
   } = props
 
   const t = useT()
@@ -77,8 +79,8 @@ export function HideProfileButton(props: HideProfileButtonProps) {
           ariaLabel ?? (hidden ? t('profile_grid.unhide_profile', 'Unhide this profile') : t('profile_grid.hide_profile', 'Hide this profile'))
         }
       >
-        {hidden ? <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
-          <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>}
+        {(hidden || eyeOff) ? <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
+          <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>}
       </button>
     </Tooltip>
   )

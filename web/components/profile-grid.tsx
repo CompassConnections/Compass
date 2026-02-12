@@ -202,6 +202,7 @@ function ProfilePreview(props: {
               onHidden={onHide}
               className="ml-2"
               stopPropagation
+              eyeOff
             />
           )}
         </Row>

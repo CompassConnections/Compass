@@ -15,9 +15,10 @@ import {MAX_COMMENT_LENGTH} from 'common/comment'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Title} from 'web/components/widgets/title'
 import {Row} from 'web/components/layout/row'
-import {firebaseLogin} from 'web/lib/firebase/users'
+import {auth, firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {Tooltip} from "web/components/widgets/tooltip";
+import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -25,11 +26,12 @@ export const SendMessageButton = (props: {
   includeLabel?: boolean
   circleButton?: boolean
 }) => {
-  const { toUser, currentUser, includeLabel, circleButton } = props
+  const {toUser, currentUser, includeLabel, circleButton} = props
+  const firebaseUser = auth.currentUser
   const router = useRouter()
   const privateUser = usePrivateUser()
   const channelMemberships = useSortedPrivateMessageMemberships(currentUser?.id)
-  const { memberIdsByChannelId } = channelMemberships
+  const {memberIdsByChannelId} = channelMemberships
   const t = useT()
 
   const [openComposeModal, setOpenComposeModal] = useState(false)
@@ -123,13 +125,15 @@ export const SendMessageButton = (props: {
           <Row className={'w-full'}>
             <Title className={'!mb-2'}>{t('send_message.title', 'Message')} {toUser.name}</Title>
           </Row>
-          <CommentInputTextArea
-            editor={editor}
-            user={currentUser}
-            submit={sendMessage}
-            isSubmitting={!editor || submitting}
-            submitOnEnter={false}
-          />
+          {firebaseUser?.emailVerified ? <CommentInputTextArea
+              editor={editor}
+              user={currentUser}
+              submit={sendMessage}
+              isSubmitting={!editor || submitting}
+              submitOnEnter={false}
+            /> :
+            <EmailVerificationPrompt firebaseUser={firebaseUser} t={t} className='max-w-xl'/>
+          }
           <span className={'text-red-500'}>{error}</span>
         </Col>
       </Modal>

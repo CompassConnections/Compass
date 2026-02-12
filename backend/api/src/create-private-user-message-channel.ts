@@ -1,13 +1,24 @@
-import { APIError, APIHandler } from 'api/helpers/endpoint'
-import { filterDefined } from 'common/util/array'
-import { uniq } from 'lodash'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { addUsersToPrivateMessageChannel } from 'api/helpers/private-messages'
-import { getPrivateUser, getUser } from 'shared/utils'
+import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {filterDefined} from 'common/util/array'
+import {uniq} from 'lodash'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
+import {getPrivateUser, getUser} from 'shared/utils'
+import * as admin from 'firebase-admin'
 
 export const createPrivateUserMessageChannel: APIHandler<
   'create-private-user-message-channel'
 > = async (body, auth) => {
+  // Do not use auth.creds.data as its info can be staled. It comes from a client token, which refreshes hourly or so
+  const user = await admin.auth().getUser(auth.uid)
+  // console.log(JSON.stringify(user, null, 2))
+  if (!user?.emailVerified) {
+    throw new APIError(
+      403,
+      'You must verify your email to contact people.'
+    )
+  }
+
   const userIds = uniq(body.userIds.concat(auth.uid))
 
   const pg = createSupabaseDirectClient()
@@ -41,11 +52,12 @@ export const createPrivateUserMessageChannel: APIHandler<
 
   const currentChannel = await pg.oneOrNone(
     `
-        select channel_id from private_user_message_channel_members
-          group by channel_id
-          having array_agg(user_id::text) @> array[$1]::text[]
-          and array_agg(user_id::text) <@ array[$1]::text[]
-      `,
+        select channel_id
+        from private_user_message_channel_members
+        group by channel_id
+        having array_agg(user_id::text) @> array [$1]::text[]
+           and array_agg(user_id::text) <@ array [$1]::text[]
+    `,
     [userIds]
   )
   if (currentChannel)
@@ -55,17 +67,19 @@ export const createPrivateUserMessageChannel: APIHandler<
     }
 
   const channel = await pg.one(
-    `insert into private_user_message_channels default values returning id`
+    `insert into private_user_message_channels default
+     values
+     returning id`
   )
 
   await pg.none(
     `insert into private_user_message_channel_members (channel_id, user_id, role, status)
-       values ($1, $2, 'creator', 'joined')
-      `,
+     values ($1, $2, 'creator', 'joined')
+    `,
     [channel.id, creatorId]
   )
 
   const memberIds = userIds.filter((id) => id !== creatorId)
   await addUsersToPrivateMessageChannel(memberIds, channel.id, pg)
-  return { status: 'success', channelId: Number(channel.id) }
+  return {status: 'success', channelId: Number(channel.id)}
 }

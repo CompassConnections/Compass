@@ -822,6 +822,7 @@
   "settings.email.verification_failed": "Senden der Bestätigungs-E-Mail fehlgeschlagen.",
   "settings.email.verification_sent": "Bestätigungs-E-Mail gesendet – prüfen Sie Ihren Posteingang und Spam-Ordner.",
   "settings.email.verified": "E-Mail bestätigt ✔️",
+  "messaging.email_verification_required": "Sie müssen Ihre E-Mail überprüfen, um Personen zu schreiben.",
   "settings.general.account": "Konto",
   "settings.general.email": "E-Mail",
   "settings.general.language": "Sprache",

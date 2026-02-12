@@ -22,12 +22,15 @@ import {BannedBadge} from 'web/components/widgets/user-link'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {SEO} from "web/components/SEO";
 import {useT} from 'web/lib/locale'
+import {auth} from "web/lib/firebase/users";
+import {EmailVerificationPrompt} from "web/components/messaging/email-verification-prompt";
 
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()
 
   const currentUser = useUser()
+  const firebaseUser = auth.currentUser
   const t = useT()
   return (
     <PageBase trackPageView={'messages page'} className={'p-2'}>
@@ -36,7 +39,11 @@ export default function MessagesPage() {
         description={t('messages.seo.description', 'Your Messages')}
         url={`/messages`}
       />
-      {currentUser && <MessagesContent currentUser={currentUser}/>}        
+      {currentUser && (
+        firebaseUser?.emailVerified ?
+          <MessagesContent currentUser={currentUser}/>
+          : <EmailVerificationPrompt firebaseUser={firebaseUser} t={t}/>
+      )}
     </PageBase>
   )
 }

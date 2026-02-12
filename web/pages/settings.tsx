@@ -12,7 +12,7 @@ import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
 import {deleteAccount} from "web/lib/util/delete";
 import router from "next/router";
 import {Button} from "web/components/buttons/button";
-import {sendEmailVerification, updateEmail} from 'firebase/auth';
+import {updateEmail} from 'firebase/auth';
 import {auth} from "web/lib/firebase/users";
 import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
@@ -22,6 +22,7 @@ import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
+import {sendVerificationEmail} from "web/lib/firebase/email-verification";
 
 export default function NotificationsPage() {
   const t = useT()
@@ -107,27 +108,6 @@ const LoadedGeneralSettings = (props: {
     changeUserEmail(data.newEmail)
   }
 
-
-  const sendVerificationEmail = async () => {
-    if (!privateUser?.email) {
-      toast.error(t('settings.email.no_email', 'No email found on your account.'))
-      return
-    }
-    if (!user) {
-      toast.error(t('settings.email.must_sign_in', 'You must be signed in to send a verification email.'))
-      return
-    }
-    toast
-      .promise(sendEmailVerification(user), {
-        loading: t('settings.email.sending', 'Sending verification email...'),
-        success: t('settings.email.verification_sent', 'Verification email sent — check your inbox and spam.'),
-        error: t('settings.email.verification_failed', 'Failed to send verification email.'),
-      })
-      .catch(() => {
-        console.log("Failed to send verification email")
-      })
-  }
-
   const isEmailVerified = user.emailVerified
 
   return <>
@@ -147,7 +127,8 @@ const LoadedGeneralSettings = (props: {
       <h3>{t('settings.general.account', 'Account')}</h3>
       <h5>{t('settings.general.email', 'Email')}</h5>
 
-      <Button color={'gray-outline'} onClick={sendVerificationEmail} disabled={!privateUser?.email || isEmailVerified}>
+      <Button color={'gray-outline'} onClick={() => sendVerificationEmail(user, t)}
+              disabled={!privateUser?.email || isEmailVerified}>
         {isEmailVerified ? t('settings.email.verified', 'Email Verified ✔️') : t('settings.email.send_verification', 'Send verification email')}
       </Button>
 

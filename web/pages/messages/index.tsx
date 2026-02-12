@@ -39,7 +39,7 @@ export default function MessagesPage() {
         description={t('messages.seo.description', 'Your Messages')}
         url={`/messages`}
       />
-      {currentUser && (
+      {currentUser && firebaseUser && (
         firebaseUser?.emailVerified ?
           <MessagesContent currentUser={currentUser}/>
           : <EmailVerificationPrompt firebaseUser={firebaseUser} t={t}/>

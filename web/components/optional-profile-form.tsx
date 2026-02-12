@@ -45,6 +45,8 @@ import {db} from "web/lib/supabase/db";
 import {fetchChoices} from "web/hooks/use-choices";
 import {AddOptionEntry} from "web/components/add-option-entry";
 import {sleep} from "common/util/time"
+import {SignupBio} from "web/components/bio/editable-bio";
+import {Editor} from "@tiptap/core";
 
 
 export const OptionalProfileUserForm = (props: {
@@ -93,10 +95,10 @@ export const OptionalProfileUserForm = (props: {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const {
-      bio: _bio,
-      bio_text: _bio_text,
-      bio_tsv: _bio_tsv,
-      bio_length: _bio_length,
+      // bio: _bio,
+      // bio_text: _bio_text,
+      // bio_tsv: _bio_tsv,
+      // bio_length: _bio_length,
       interests,
       causes,
       work,
@@ -211,6 +213,20 @@ export const OptionalProfileUserForm = (props: {
       <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
+
+        {!fromSignup &&
+            <>
+                <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'}/>
+                <SignupBio
+                    profile={profile}
+                    onChange={(e: Editor) => {
+                      console.debug('bio changed', e, profile.bio)
+                      setProfile('bio', e.getJSON())
+                      setProfile('bio_length', e.getText().length)
+                    }}
+                />
+            </>
+        }
 
         <Category title={t('profile.optional.category.personal_info', 'Personal Information')} className={'mt-0'}/>
 
@@ -818,7 +834,7 @@ export const OptionalProfileUserForm = (props: {
         <Row className={'justify-end'}>
           <Button
             className={clsx(
-              "fixed lg:bottom-6 right-4 sm:right-60 z-50 text-xl",
+              "fixed lg:bottom-6 right-4 lg:right-32 z-50 text-xl",
               bottomNavBarVisible ? "bottom-[calc(90px+var(--bnh))]" : "bottom-[calc(30px+var(--bnh))]"
             )}
             disabled={isSubmitting}

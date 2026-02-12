@@ -102,7 +102,7 @@ export default function SignupPage() {
       {!user ? (
         <CompassLoadingIndicator/>
       ) : (
-        <Col className={'w-full max-w-2xl px-6 py-4'}>
+        <Col className={'w-full max-w-4xl px-6 py-4'}>
           {step === 0 ? (
             <RequiredProfileUserForm
               user={user}

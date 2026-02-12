@@ -86,7 +86,7 @@ export const RequiredProfileUserForm = (props: {
 
   return (
     <>
-      <Title>{t('profile.basics.title', 'The Basics')}</Title>
+      {!profileCreatedAlready && <Title>{t('profile.basics.title', 'The Basics')}</Title>}
       {step === 1 && !profileCreatedAlready &&
           <div className="text-ink-500 mb-6 text-lg">
             {t('profile.basics.subtitle', 'Write your own bio, your own way.')}

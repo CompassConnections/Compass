@@ -1,6 +1,6 @@
 import {Editor} from '@tiptap/core'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
-import {Profile} from 'common/profiles/profile'
+import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {tryCatch} from 'common/util/try-catch'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -10,9 +10,9 @@ import {updateProfile} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
 import {useEffect, useState} from "react";
 import ReactMarkdown from "react-markdown";
-import Link from "next/link"
 import {MIN_BIO_LENGTH} from "common/constants";
 import {ShowMore} from 'web/components/widgets/show-more'
+import {NewTabLink} from 'web/components/widgets/new-tab-link'
 import {useT} from 'web/lib/locale'
 
 export function BioTips() {
@@ -25,16 +25,17 @@ export function BioTips() {
 - Availability, how to contact you or start a conversation (email, social media, etc.)
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `);
-  
+
   return (
-    <ShowMore 
-      labelClosed={t('profile.bio.tips', 'Tips')} 
-      labelOpen={t('profile.bio.hide_info', 'Hide info')} 
+    <ShowMore
+      labelClosed={t('profile.bio.tips', 'Tips')}
+      labelOpen={t('profile.bio.hide_info', 'Hide info')}
       className={'custom-link text-sm'}
     >
       <p>{t('profile.bio.tips_intro', "Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:")}</p>
       <ReactMarkdown>{tips}</ReactMarkdown>
-      <Link href="/tips-bio" target="_blank">{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</Link>
+      <NewTabLink
+        href="/tips-bio">{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</NewTabLink>
     </ShowMore>
   )
 }
@@ -99,11 +100,13 @@ export function EditableBio(props: {
 
 export function SignupBio(props: {
   onChange: (e: Editor) => void
+  profile?: ProfileWithoutUser | undefined
 }) {
-  const {onChange} = props
+  const {onChange, profile} = props
   return (
     <Col className="relative w-full">
       <BaseBio
+        defaultValue={profile?.bio}
         onBlur={(editor) => {
           if (!editor) return
           onChange(editor)
@@ -138,10 +141,10 @@ export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
     <div>
       {textLength < MIN_BIO_LENGTH &&
           <p>
-              {remainingChars === 1 
-                ? t('profile.bio.add_characters_one', 'Add {count} more character so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
-                : t('profile.bio.add_characters_many', 'Add {count} more characters so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
-              }
+            {remainingChars === 1
+              ? t('profile.bio.add_characters_one', 'Add {count} more character so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
+              : t('profile.bio.add_characters_many', 'Add {count} more characters so you can appear in search results—or take your time and start by exploring others.', {count: remainingChars})
+            }
           </p>
       }
       <BioTips/>

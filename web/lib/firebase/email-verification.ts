@@ -20,7 +20,7 @@ export const sendVerificationEmail = async (
       success: t('settings.email.verification_sent', 'Verification email sent — check your inbox and spam.'),
       error: t('settings.email.verification_failed', 'Failed to send verification email.'),
     })
-    .catch(() => {
-      console.error("Failed to send verification email")
+    .catch((e) => {
+      console.error("Failed to send verification email", e)
     })
 }

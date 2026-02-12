@@ -65,7 +65,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
     ],
     color === 'gray' &&
       'bg-ink-300 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-ink-200 dark:enabled:hover:bg-ink-400 hover:text-ink-1000',
-    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-200'],
+    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-100'],
     color === 'gradient' && [gradient, 'from-primary-500 to-blue-400'],
     color === 'gradient-pink' && [gradient, 'from-primary-500 to-fuchsia-500'],
     color === 'gray-white' &&
@@ -91,7 +91,7 @@ export const Button = forwardRef(function Button(
     children,
     className,
     size = 'md',
-    color = 'indigo',
+    color = 'gray-outline',
     type = 'button',
     disabled = false,
     loading,

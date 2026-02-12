@@ -1,24 +1,24 @@
-import { PlusIcon } from '@heroicons/react/solid'
-import { Button } from '../buttons/button'
-import { useState } from 'react'
-import { MODAL_CLASS, Modal } from '../layout/modal'
-import { Col } from '../layout/col'
-import { api } from 'web/lib/api'
-import { useRouter } from 'next/router'
+import {PlusIcon} from '@heroicons/react/solid'
+import {Button} from '../buttons/button'
+import {useState} from 'react'
+import {Modal, MODAL_CLASS} from '../layout/modal'
+import {Col} from '../layout/col'
+import {api} from 'web/lib/api'
+import {useRouter} from 'next/router'
 import clsx from 'clsx'
-import { Row } from 'web/components/layout/row'
-import { SelectUsers } from 'web/components/select-users'
-import { DisplayUser } from 'common/api/user-types'
-import { usePrivateUser } from 'web/hooks/use-user'
-import { buildArray } from 'common/util/array'
-import { useT } from 'web/lib/locale'
+import {Row} from 'web/components/layout/row'
+import {SelectUsers} from 'web/components/select-users'
+import {DisplayUser} from 'common/api/user-types'
+import {usePrivateUser} from 'web/hooks/use-user'
+import {buildArray} from 'common/util/array'
+import {useT} from 'web/lib/locale'
 
 export default function NewMessageButton() {
   const [open, setOpen] = useState(false)
   const t = useT()
   return (
     <>
-      <Button className="h-fit gap-1" onClick={() => setOpen(true)}>
+      <Button className="h-fit gap-1" color={'gray-outline'} onClick={() => setOpen(true)}>
         <PlusIcon className="h-5 w-5" aria-hidden="true" />
         {t('messages.new_message', 'New Message')}
       </Button>

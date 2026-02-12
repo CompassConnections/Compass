@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS user_events (
     user_id TEXT
 );
 
+alter table user_events
+    add constraint user_events_user_id_fkey foreign key (user_id) references users (id) ON DELETE set null;
+
 -- Row Level Security
 ALTER TABLE user_events ENABLE ROW LEVEL SECURITY;
 

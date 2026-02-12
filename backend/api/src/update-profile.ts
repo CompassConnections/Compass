@@ -29,8 +29,9 @@ export const updateProfile: APIHandler<'update-profile'> = async (
   log('Updating profile', { userId: auth.uid, parsedBody })
 
   await removePinnedUrlFromPhotoUrls(parsedBody)
-  if (parsedBody.avatar_url) {
-    await updateUser(pg, auth.uid, { avatarUrl: parsedBody.avatar_url })
+
+  if (parsedBody.pinned_url) {
+    await updateUser(pg, auth.uid, {avatarUrl: parsedBody.pinned_url})
   }
 
   const { data, error } = await tryCatch(

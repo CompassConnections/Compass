@@ -4,13 +4,13 @@ jest.mock("common/util/try-catch");
 jest.mock("shared/profiles/parse-photos");
 jest.mock("shared/supabase/users");
 
-import { updateProfile } from "api/update-profile";
-import { AuthedUser } from "api/helpers/endpoint";
+import {updateProfile} from "api/update-profile";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
 import * as supabaseUtils from "shared/supabase/utils";
 import * as supabaseUsers from "shared/supabase/users";
-import { tryCatch } from "common/util/try-catch";
-import { removePinnedUrlFromPhotoUrls } from "shared/profiles/parse-photos";
+import {tryCatch} from "common/util/try-catch";
+import {removePinnedUrlFromPhotoUrls} from "shared/profiles/parse-photos";
 
 describe('updateProfiles', () => {
     let mockPg: any;
@@ -30,7 +30,7 @@ describe('updateProfiles', () => {
     describe('when given valid input', () => {
         it('should update an existing profile when provided the user id', async () => {
             const mockProps = {
-                avatar_url: "mockAvatarUrl"
+              pinned_url: "mockAvatarUrl"
             };
             const mockAuth = { uid: '321' } as AuthedUser;
             const mockReq = {} as any;
@@ -54,7 +54,7 @@ describe('updateProfiles', () => {
             expect(supabaseUsers.updateUser).toBeCalledWith(
                 expect.any(Object),
                 mockAuth.uid,
-                {avatarUrl: mockProps.avatar_url}
+              {avatarUrl: mockProps.pinned_url}
             );
             expect(supabaseUtils.update).toBeCalledTimes(1);
             expect(supabaseUtils.update).toBeCalledWith(

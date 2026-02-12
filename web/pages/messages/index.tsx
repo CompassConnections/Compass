@@ -141,7 +141,7 @@ export const MessageChannelRow = (props: {
                   )}
                 </span>
               ) : (
-                <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
+                otherUserIds.length == 0 && <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
               )}
               {isBanned && <BannedBadge/>}
             </span>

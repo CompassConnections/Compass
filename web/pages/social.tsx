@@ -1,5 +1,5 @@
 import {PageBase} from 'web/components/page-base'
-import {discordLink, githubRepo, redditLink, stoatLink, supportEmail, xLink} from "common/constants"
+import {discordLink, githubRepo, instagramLink, redditLink, stoatLink, supportEmail, xLink} from "common/constants"
 import {GeneralButton} from "web/components/buttons/general-button"
 import {SEO} from "web/components/SEO"
 import {useT} from "web/lib/locale"
@@ -55,6 +55,7 @@ export default function Social() {
       >
         <Row className="flex-wrap">
           <GeneralButton url={xLink} content={t('social.x', 'X')}/>
+          <GeneralButton url={instagramLink} content={t('social.instagram', 'Instagram')}/>
         </Row>
       </Section>
 

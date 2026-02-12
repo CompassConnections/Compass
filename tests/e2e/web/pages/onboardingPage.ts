@@ -22,8 +22,28 @@ export class OnboardingPage {
         await this.continueButton.click();
     };
 
+    async clickBackButton() {
+        await expect(this.backButton).toBeVisible();
+        await this.backButton.click();
+    };
+
+    async clickSkipOnboardingButton() {
+        await expect(this.skipOnboardingLink).toBeVisible();
+        await this.skipOnboardingLink.click();
+    };
+
     async clickGetStartedButton() {
         await expect(this.getStartedButton).toBeVisible();
         await this.getStartedButton.click();
+    };
+
+    async clickExploreProfilesNowButton() {
+        await expect(this.exploreProfilesNowButton).toBeVisible();
+        await this.exploreProfilesNowButton.click();
+    };
+
+    async clickRefineProfileButton() {
+        await expect(this.refineProfileButton).toBeVisible();
+        await this.refineProfileButton.click();
     };
 };

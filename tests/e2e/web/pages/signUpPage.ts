@@ -16,6 +16,7 @@ export type Gender = 'Woman' | 'Man' | 'Other';
 export type ConnectionType = keyof typeof RELATIONSHIP_CHOICES;
 export type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES;
 export type RelationshipStyle = keyof typeof ROMANTIC_CHOICES;
+export type ChildrenExpectation = "Strongly against" | "Against" | "Neutral" | "For" | "Strongly for";
 export type PoliticalBeliefs = keyof typeof POLITICAL_CHOICES;
 export type Diet = keyof typeof DIET_CHOICES;
 export type Education = keyof typeof EDUCATION_CHOICES;
@@ -82,6 +83,7 @@ export class SignUpPage {
     private readonly smokerField: Locator;
     private readonly nonSmokerField: Locator;
     private readonly alcoholConsumedPerMonthField: Locator;
+    private readonly socialPlatformSelectionField: Locator;
     private readonly socialPlatformSearchField: Locator;
     private readonly addSocialPlatformField: Locator;
     private readonly addSocialPlatformButton: Locator;
@@ -94,7 +96,7 @@ export class SignUpPage {
         this.nextButton = page.getByRole('button', { name: 'Next',  exact: true });
         this.bioField = page.locator('//div[@contenteditable="true"]/p'); //Very brittle needs data-test attribute
         this.locationField = page.getByPlaceholder('Search city...');
-        this.ageField = page.getByRole('textbox', { name: 'Age' });
+        this.ageField = page.getByPlaceholder('Age', { exact: true });
         this.feetHeightField = page.getByTestId('height-feet');
         this.inchesHeightField = page.getByTestId('height-inches');
         this.centimetersHeightField = page.getByTestId('height-centimeters');
@@ -124,6 +126,7 @@ export class SignUpPage {
         this.smokerField = page.getByText('Yes', { exact: true });
         this.nonSmokerField = page.getByText('No', { exact: true });
         this.alcoholConsumedPerMonthField = page.getByTestId('alcohol-consumed-per-month');
+        this.socialPlatformSelectionField = page.getByRole('button', { name: 'Platform' });
         this.socialPlatformSearchField = page.getByRole('textbox', { name: 'Search...' });
         this.addSocialPlatformField = page.getByRole('textbox', { name: 'URL' });
         this.addSocialPlatformButton = page.locator('button').filter({ hasText: 'Add' }).nth(3);
@@ -141,40 +144,61 @@ export class SignUpPage {
         await this.displayNameField.fill(displayName);
     };
 
-    async fillBio(bio: string) {
+    async fillBio(bio: string | undefined) {
+        if (!bio) return;
         await expect(this.bioField).toBeVisible();
         await this.bioField.fill(bio);
     };
 
-    async fillLocation(location: string) {
+    async fillLocation(location: string | undefined) {
+        if (!location) return;
         await expect(this.locationField).toBeVisible();
         await this.locationField.fill(location);
     };
     
-    async chooseGender(gender: Gender) {
+    async chooseGender(gender: Gender | undefined) {
         await expect(this.page.locator(`span:has-text("${gender}")`)).toBeVisible();
         await this.page.locator(`span:has-text("${gender}")`).click();
         await expect(this.page.locator(`span:has-text("${gender}")`)).toBeChecked();
     };
 
-    async fillAge(age: string) {
+    async fillAge(age: string | undefined) {
+        if (!age) return;
         await expect(this.ageField).toBeVisible();
         await this.ageField.fill(age);
     };
 
-    async fillHeightFeetInches(feet: string, inches: string) {
+    async fillHeight(height: {feet?: string, inches?: string, centimeters?: string}) {
+        const {feet, inches, centimeters} = height;
+
+        if ((!feet || !inches) && !centimeters) return;
+
+        if (centimeters) {
+            await expect(this.centimetersHeightField).toBeVisible();
+            await this.centimetersHeightField.fill(centimeters);
+        } else if (feet && inches){
+            await expect(this.feetHeightField).toBeVisible();
+            await expect(this.inchesHeightField).toBeVisible();
+            await this.feetHeightField.fill(feet);
+            await this.inchesHeightField.fill(inches);
+        }
+    };
+
+    async fillHeightFeetInches(feet: string | undefined, inches: string | undefined) {
+        if (!feet || !inches) return;
         await expect(this.feetHeightField).toBeVisible();
         await expect(this.inchesHeightField).toBeVisible();
         await this.feetHeightField.fill(feet);
         await this.inchesHeightField.fill(inches);
     };
 
-    async fillHeightCentimeters(centimeters: string) {
+    async fillHeightCentimeters(centimeters: string | undefined) {
+        if (!centimeters) return;
         await expect(this.centimetersHeightField).toBeVisible();
         await this.centimetersHeightField.fill(centimeters);
     };
 
-    async fillEthnicity(ethnicity: Ethnicity) {
+    async fillEthnicity(ethnicity: Ethnicity | undefined) {
         if (ethnicity === 'Other') {
             await expect(this.page.locator('label').filter({ hasText: `${ethnicity}` }).first()).toBeVisible();
             await this.page.locator('label').filter({ hasText: `${ethnicity}` }).first().click();
@@ -186,163 +210,183 @@ export class SignUpPage {
         };
     };
 
-    async interestedInWomen() {
-        await expect(this.interestedInWomenCheckbox).toBeVisible();
-        await this.interestedInWomenCheckbox.click()
-        await expect(this.interestedInWomenCheckbox).toBeChecked();
+    async fillInterestedInConnectingWith(interestedIn: Gender | undefined) {
+        if (interestedIn === "Man") {
+            await expect(this.interestedInMenCheckbox).toBeVisible();
+            await this.interestedInMenCheckbox.click()
+            await expect(this.interestedInMenCheckbox).toBeChecked();
+        } else if (interestedIn === "Woman") {
+            await expect(this.interestedInWomenCheckbox).toBeVisible();
+            await this.interestedInWomenCheckbox.click()
+            await expect(this.interestedInWomenCheckbox).toBeChecked();
+        } else {
+            await expect(this.interestedInOtherCheckbox).toBeVisible();
+            await this.interestedInOtherCheckbox.click()
+            await expect(this.interestedInOtherCheckbox).toBeChecked();
+        }
+
     };
 
-    async interestedInMen() {
-        await expect(this.interestedInMenCheckbox).toBeVisible();
-        await this.interestedInMenCheckbox.click()
-        await expect(this.interestedInMenCheckbox).toBeChecked();
-    };
-
-    async interestedInOther() {
-        await expect(this.interestedInOtherCheckbox).toBeVisible();
-        await this.interestedInOtherCheckbox.click()
-        await expect(this.interestedInOtherCheckbox).toBeChecked();
-    };
-
-    async fillAgeRangeInterest(min: string, max: string) {
+    async fillAgeRangeInterest(min: string | undefined, max?: string | undefined) {
+        if (!min || !max) return;
         await expect(this.minAgeOption).toBeVisible();
         await expect(this.maxAgeOption).toBeVisible();
         await this.minAgeOption.selectOption(min);
-        await this.maxAgeOption.selectOption(max);
+        if (max){
+            await this.maxAgeOption.selectOption(max);
+        };
     };
 
-    async setConnectionType(type: ConnectionType) {
-        await expect(this.page.getByRole('checkbox', { name: `${type}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${type}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${type}` })).toBeChecked();
+    async setConnectionType(type: ConnectionType | undefined) {
+        await expect(this.page.getByLabel(`${type}`, { exact: true})).toBeVisible();
+        await this.page.getByLabel(`${type}`, { exact: true}).click();
+        await expect(this.page.getByLabel(`${type}`, { exact: true})).toBeChecked();
     };
 
-    async setRelationshipStatus(status: RelationshipStatus) {
-        await expect(this.page.getByRole('checkbox', { name: `${status}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${status}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${status}` })).toBeChecked();
+    async setRelationshipStatus(status: RelationshipStatus | undefined) {
+        await expect(this.page.getByLabel(`${status}`, { exact: true})).toBeVisible();
+        await this.page.getByLabel(`${status}`, { exact: true}).click();
+        await expect(this.page.getByLabel(`${status}`, { exact: true})).toBeChecked();
     };
 
-    async setRelationshipStyle(style: RelationshipStyle) {
-        await expect(this.page.getByRole('checkbox', { name: `${style}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${style}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${style}` })).toBeChecked();
+    async setRelationshipStyle(style: RelationshipStyle | undefined) {
+        await expect(this.page.getByLabel(`${style}`, { exact: true})).toBeVisible();
+        await this.page.getByLabel(`${style}`, { exact: true}).click();
+        await expect(this.page.getByLabel(`${style}`, { exact: true})).toBeChecked();
     };
 
-    async fillCurrentNumberOfChildren(numberOfKids: string) {
+    async fillCurrentNumberOfChildren(numberOfKids: string | undefined) {
+        if (!numberOfKids) return;
         await expect(this.currentNumberOfKidsField).toBeVisible();
         await this.currentNumberOfKidsField.fill(numberOfKids);
     };
 
-    async stronglyDontWantChildren() {
-        await expect(this.stronglyDisagreeOnWantingKids).toBeVisible();
-        await this.stronglyDisagreeOnWantingKids.click();
-        await expect(this.stronglyDisagreeOnWantingKids).toBeChecked();
+    async setWantChildrenExpectation(expectation: ChildrenExpectation | undefined) {
+        if (expectation === "Strongly against") {
+            await expect(this.stronglyDisagreeOnWantingKids).toBeVisible();
+            await this.stronglyDisagreeOnWantingKids.click();
+            await expect(this.stronglyDisagreeOnWantingKids).toBeChecked();
+        } else if (expectation === "Against") {
+            await expect(this.disagreeOnWantingKids).toBeVisible();
+            await this.disagreeOnWantingKids.click();
+            await expect(this.disagreeOnWantingKids).toBeChecked();
+        } else if (expectation === "Neutral") {
+            await expect(this.neutralOnWantingKids).toBeVisible();
+            await this.neutralOnWantingKids.click();
+            await expect(this.neutralOnWantingKids).toBeChecked();
+        } else if (expectation === "For") {
+            await expect(this.agreeOnWantingKids).toBeVisible();
+            await this.agreeOnWantingKids.click();
+            await expect(this.agreeOnWantingKids).toBeChecked();
+        } else {
+            await expect(this.stronglyAgreeOnWantingKids).toBeVisible();
+            await this.stronglyAgreeOnWantingKids.click();
+            await expect(this.stronglyAgreeOnWantingKids).toBeChecked();
+        }
+    };
+    
+    async setInterests(interest: (Interests | string)[] | undefined) {
+        if (!interest || interest.length === 0) return;
+        
+        for (let i = 0; i < interest.length; i++) {
+            const checkbox = this.page.getByRole('checkbox', { name: `${interest[i]}` });
+            const isExisting = await checkbox.count() > 0;
+
+            if (isExisting) {
+                await expect(this.page.getByRole('checkbox', { name: `${interest[i]}` })).toBeVisible();
+                await this.page.getByRole('checkbox', { name: `${interest[i]}` }).click();
+            } else {
+                await expect(this.addInterestsField).toBeVisible();
+                await expect(this.addInterestsButton).toBeVisible();
+                await this.addInterestsField.fill(interest[i]);
+                await this.addInterestsButton.click();
+            };
+            await expect(this.page.getByRole('checkbox', { name: `${interest[i]}` })).toBeVisible();
+            await expect(this.page.getByRole('checkbox', { name: `${interest[i]}` })).toBeChecked();
+        }
     };
 
-    async DontWantChildren() {
-        await expect(this.disagreeOnWantingKids).toBeVisible();
-        await this.disagreeOnWantingKids.click();
-        await expect(this.disagreeOnWantingKids).toBeChecked();
+    async setCauses(cause: (Causes | string)[] | undefined) {
+        if (!cause || cause?.length === 0) return;
+
+        for (let i = 0; i < cause.length; i++) {
+            const checkbox = this.page.getByRole('checkbox', { name: `${cause[i]}` })
+            const isExisting = await checkbox.count() > 0
+            
+            if (isExisting) {
+                await expect(this.page.getByRole('checkbox', { name: `${cause[i]}` })).toBeVisible();
+                await this.page.getByRole('checkbox', { name: `${cause[i]}` }).click();
+            } else {
+                await expect(this.addCausesField).toBeVisible();
+                await expect(this.addCausesButton).toBeVisible();
+                await this.addCausesField.fill(cause[i]);
+                await this.addCausesButton.click();
+            };
+            await expect(this.page.getByRole('checkbox', { name: `${cause[i]}` })).toBeVisible();
+            await expect(this.page.getByRole('checkbox', { name: `${cause[i]}` })).toBeChecked();
+        };
     };
 
-    async neutralOnWantChildren() {
-        await expect(this.neutralOnWantingKids).toBeVisible();
-        await this.neutralOnWantingKids.click();
-        await expect(this.neutralOnWantingKids).toBeChecked();
-    };
-
-    async WantChildren() {
-        await expect(this.agreeOnWantingKids).toBeVisible();
-        await this.agreeOnWantingKids.click();
-        await expect(this.agreeOnWantingKids).toBeChecked();
-    };
-
-    async stronglyWantChildren() {
-        await expect(this.stronglyAgreeOnWantingKids).toBeVisible();
-        await this.stronglyAgreeOnWantingKids.click();
-        await expect(this.stronglyAgreeOnWantingKids).toBeChecked();
-    };
-
-    async setInterests(interests: Interests) {
-        await expect(this.page.getByRole('checkbox', { name: `${interests}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${interests}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${interests}` })).toBeChecked();
-    };
-
-    async addInterest(interest: string) {
-        await expect(this.addInterestsField).toBeVisible();
-        await expect(this.addInterestsButton).toBeVisible();
-        await this.addInterestsField.fill(interest);
-        await this.addInterestsButton.click();
-        await expect(this.page.getByRole('checkbox', { name: `${interest}` })).toBeVisible();
-        await expect(this.page.getByRole('checkbox', { name: `${interest}` })).toBeChecked();
-    };
-
-    async setCauses(causes: Causes) {
-        await expect(this.page.getByRole('checkbox', { name: `${causes}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${causes}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${causes}` })).toBeChecked();
-    };
-
-    async addCause(cause: string) {
-        await expect(this.addCausesField).toBeVisible();
-        await expect(this.addCausesButton).toBeVisible();
-        await this.addCausesField.fill(cause);
-        await this.addCausesButton.click();
-        await expect(this.page.getByRole('checkbox', { name: `${cause}` })).toBeVisible();
-        await expect(this.page.getByRole('checkbox', { name: `${cause}` })).toBeChecked();
-    };
-
-    async setHighestEducationLevel(education: Education) {
+    async setHighestEducationLevel(education: Education | undefined) {
         await expect(this.page.getByText(`${education}`, { exact: true })).toBeVisible();
         await this.page.getByText(`${education}`, { exact: true }).click();
         await expect(this.page.getByText(`${education}`, { exact: true })).toBeChecked();
     };
 
-    async fillUniversity(university: string) {
+    async fillUniversity(university: string | undefined) {
+        if (!university) return;
         await expect(this.universityField).toBeVisible();
         await this.universityField.fill(university);
     };
 
-    async fillJobTitle(jobTitle: string) {
+    async fillJobTitle(jobTitle: string | undefined) {
+        if (!jobTitle) return;
         await expect(this.jobTitleField).toBeVisible();
         await this.jobTitleField.fill(jobTitle);
     };
 
-    async fillCompany(company: string) {
+    async fillCompany(company: string | undefined) {
+        if (!company) return;
         await expect(this.companyField).toBeVisible();
         await this.companyField.fill(company);
     };
 
-    async setWorkAreaUniversity(company: string) {
-        await expect(this.universityCheckbox).toBeVisible();
-        await this.universityCheckbox.click();
-        await expect(this.universityCheckbox).toBeChecked();
+    async setWorkArea(workArea: string[] | undefined) {
+        if (!workArea || workArea?.length === 0) return;
+
+        for (let i = 0; i < workArea.length; i++) {
+            const checkbox = this.page.getByLabel(`${workArea[i]}`, { exact: true})
+            const isExisting = await checkbox.count() > 0
+            
+            if (isExisting) {
+                await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeVisible();
+                await this.page.getByLabel(`${workArea[i]}`, { exact: true}).click();
+            } else {
+                await expect(this.addCausesField).toBeVisible();
+                await expect(this.addCausesButton).toBeVisible();
+                await this.addCausesField.fill(workArea[i]);
+                await this.addCausesButton.click();
+            };
+            await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeVisible();
+            await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeChecked();
+        };
     };
 
-    async addWorkArea(workArea: string) {
-        await expect(this.addWorkAreaField).toBeVisible();
-        await expect(this.addWorkAreaButton).toBeVisible();
-        await this.addWorkAreaField.fill(workArea);
-        await this.addWorkAreaButton.click();
-        await expect(this.page.getByRole('checkbox', { name: `${workArea}` })).toBeVisible();
-        await expect(this.page.getByRole('checkbox', { name: `${workArea}` })).toBeChecked();
+    async setPoliticalBeliefs(politicalBeliefs?: PoliticalBeliefs | undefined, details?: string | undefined) {
+        if (politicalBeliefs) {
+            await expect(this.page.getByRole('checkbox', { name: `${politicalBeliefs}` })).toBeVisible();
+            await this.page.getByRole('checkbox', { name: `${politicalBeliefs}` }).click();
+            await expect(this.page.getByRole('checkbox', { name: `${politicalBeliefs}` })).toBeChecked();
+        };
+
+        if (details) {
+            await expect(this.politicalBeliefDetailsField).toBeVisible();
+            await this.politicalBeliefDetailsField.fill(details);
+        };
     };
 
-    async setPoliticalBeliefs(politicalBeliefs: PoliticalBeliefs) {
-        await expect(this.page.getByRole('checkbox', { name: `${politicalBeliefs}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${politicalBeliefs}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${politicalBeliefs}` })).toBeChecked();
-    };
-
-    async fillPoliticalBeliefDetails(details: string) {
-        await expect(this.politicalBeliefDetailsField).toBeVisible();
-        await this.politicalBeliefDetailsField.fill(details);
-    };
-
-    async setReligiousBeliefs(religiousBeliefs: Religion) {
-        if (religiousBeliefs === 'Other') {
+    async setReligiousBeliefs(religiousBeliefs?: Religion | undefined, details?: string | undefined) {
+        if (religiousBeliefs && religiousBeliefs === 'Other') {
             await expect(this.page.locator('label').filter({ hasText: `${religiousBeliefs}` }).nth(3)).toBeVisible();
             await this.page.locator('label').filter({ hasText: `${religiousBeliefs}` }).nth(3).click();
             await expect(this.page.locator('label').filter({ hasText: `${religiousBeliefs}` }).nth(3)).toBeChecked();
@@ -351,20 +395,20 @@ export class SignUpPage {
             await this.page.getByRole('checkbox', { name: `${religiousBeliefs}` }).click();
             await expect(this.page.getByRole('checkbox', { name: `${religiousBeliefs}` })).toBeChecked();
         };
+
+        if (details) {
+            await expect(this.religiousBeliefsDetailsField).toBeVisible();
+            await this.religiousBeliefsDetailsField.fill(details);
+        };
     };
 
-    async fillReligiousBeliefDetails(details: string) {
-        await expect(this.religiousBeliefsDetailsField).toBeVisible();
-        await this.religiousBeliefsDetailsField.fill(details);
-    };
-
-    async setPersonalityType(personalityType: Personality) {
+    async setPersonalityType(personalityType: Personality | undefined) {
         await expect(this.page.getByText(`${personalityType}`, { exact: true })).toBeVisible();
         await this.page.getByText(`${personalityType}`, { exact: true }).click();
         await expect(this.page.getByText(`${personalityType}`, { exact: true })).toBeChecked();
     };
 
-    async setDietType(dietType: Diet) {
+    async setDietType(dietType: Diet | undefined) {
         if (dietType === 'Other') {
             await expect(this.page.locator('label').filter({ hasText: 'Other' }).nth(4)).toBeVisible();
             await this.page.locator('label').filter({ hasText: 'Other' }).nth(4).click();
@@ -376,7 +420,7 @@ export class SignUpPage {
         };
     };
 
-    async setIsSmoker(bool: boolean) {
+    async setIsSmoker(bool: boolean | undefined) {
         if (bool) {
             await expect(this.smokerField).toBeVisible();
             await this.smokerField.click();
@@ -388,26 +432,35 @@ export class SignUpPage {
         };
     };
 
-    async fillAlcoholPerMonth(amount: string) {
+    async fillAlcoholPerMonth(amount: string | undefined) {
+        if (!amount) return;
         await expect(this.alcoholConsumedPerMonthField).toBeVisible();
         await this.alcoholConsumedPerMonthField.fill(amount);
     };
 
-    async setLanguages(language: Language) {
-        await expect(this.page.getByRole('checkbox', { name: `${language}` })).toBeVisible();
-        await this.page.getByRole('checkbox', { name: `${language}` }).click();
-        await expect(this.page.getByRole('checkbox', { name: `${language}` })).toBeChecked();
+    async setLanguages(language: Language[] | undefined) {
+        if (!language || language.length === 0) return;
+        for (let i = 0; i < language.length; i++) {
+            await expect(this.page.getByRole('checkbox', { name: `${language[i]}` })).toBeVisible();
+            await this.page.getByRole('checkbox', { name: `${language[i]}` }).click();
+            await expect(this.page.getByRole('checkbox', { name: `${language[i]}` })).toBeChecked();  
+        };
     };
 
-    async addSocialMediaPlatform(platform: Platforms, urlOrUsername: string) {
-        await expect(this.socialPlatformSearchField).toBeVisible();
-        await this.socialPlatformSearchField.fill(platform);
-        await expect(this.page.getByText(`${platform}`, { exact: true })).toBeVisible();
-        await this.page.getByText(`${platform}`, { exact: true }).click();
-        await this.addSocialPlatformField.fill(urlOrUsername);
-        await this.addSocialPlatformButton.click();
-        await expect(this.page.getByText(`${platform}`, { exact: true })).toBeVisible();
-        await expect(this.page.locator(`input[value='${urlOrUsername}']`)).toBeVisible();
+    async addSocialMediaPlatform(socialMedia: {platform: Platforms, urlOrUsername: string}[] | undefined) {
+        if (!socialMedia) return;
+        for (let i = 0; i < socialMedia.length; i++) {
+            await expect(this.socialPlatformSelectionField).toBeVisible();
+            await this.socialPlatformSelectionField.click();
+            await expect(this.socialPlatformSearchField).toBeVisible();
+            await this.socialPlatformSearchField.fill(socialMedia[i].platform);
+            await expect(this.page.getByText(`${socialMedia[i].platform}`, { exact: true })).toBeVisible();
+            await this.page.getByText(`${socialMedia[i].platform}`, { exact: true }).click();
+            await this.addSocialPlatformField.fill(socialMedia[i].urlOrUsername);
+            await this.addSocialPlatformButton.click();
+            await expect(this.page.getByText(`${socialMedia[i].platform}`, { exact: true })).toBeVisible();
+            await expect(this.page.locator(`input[value='${socialMedia[i].urlOrUsername}']`)).toBeVisible();  
+        };
     };
 
     async clickNextButton() {

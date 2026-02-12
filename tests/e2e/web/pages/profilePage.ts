@@ -10,4 +10,18 @@ export class ProfilePage {
         this.doThisLaterLink = page.getByRole('button', {});
         this.closeButton = page.getByRole('button', { name: 'Close' });
     };
+
+    async clickCloseButton() {
+        await expect(this.closeButton).toBeVisible();
+        await this.closeButton.click();
+    };
+
+    async clickStartAnsweringButton() {
+        await expect(this.startAnsweringButton).toBeVisible();
+        await this.startAnsweringButton.click();
+    };
+    async clickDoThisLaterButton() {
+        await expect(this.doThisLaterLink).toBeVisible();
+        await this.doThisLaterLink.click();
+    };
 };

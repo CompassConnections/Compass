@@ -73,7 +73,7 @@ export function MessageActions(props: {
         <div
           ref={emojiPickerRef}
           className={clsx(
-            'absolute mb-2 rounded-lg bg-canvas-200 p-2 shadow-lg pr-10 z-10 max-w-[250px]',
+            'absolute mb-2 rounded-lg bg-canvas-100 p-2 shadow-lg pr-10 z-10 max-w-[250px]',
             isMobile ? 'left-1/2 transform -translate-x-1/2'
               : isOwner ? 'right-20' : 'left-20'
           )}

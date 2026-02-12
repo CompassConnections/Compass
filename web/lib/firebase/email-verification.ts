@@ -23,7 +23,7 @@ export const sendVerificationEmail = async (
     .catch((e) => {
       console.error("Failed to send verification email", e)
       if (e?.code === 'auth/too-many-requests') {
-        toast.error(t('settings.email.too_many_requests', 'Please wait for a minute before sending another request.'))
+        toast.error(t('settings.email.too_many_requests', "You can't request more than one email per minute. Please wait before sending another request."))
       }
     })
 }

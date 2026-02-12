@@ -821,7 +821,7 @@
   "settings.email.updated_success": "Adresse e‑mail mise à jour avec succès",
   "settings.email.verification_failed": "Échec de l'envoi de l'e-mail de vérification.",
   "settings.email.verification_sent": "E-mail de vérification envoyé — vérifiez votre boîte de réception et les spams.",
-  "settings.email.too_many_requests": "Veuillez attendre une minute avant d'envoyer une autre demande.",
+  "settings.email.too_many_requests": "Vous ne pouvez pas demander plus d'un e-mail par minute. Veuillez attendre avant d'envoyer une autre demande.",
   "settings.email.verified": "E-mail vérifié ✔️",
   "messaging.email_verification_required": "Vous devez vérifier votre e-mail pour pouvoir envoyer des messages.",
   "settings.general.account": "Compte",

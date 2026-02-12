@@ -183,7 +183,7 @@ export function CompatibilityQuestionsDisplay(props: {
               : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", { name: shortenName(user.name) })}
           </Subtitle>
           {compatibilityScore &&
-              <CompatibleBadge compatibility={compatibilityScore} className={'mt-4 mr-4'}/>
+              <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'}/>
           }
         </Row>
         {(!isCurrentUser || fromProfilePage) && (

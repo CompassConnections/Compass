@@ -57,7 +57,7 @@ Here is a tailored selection of things that would be very useful. If you want to
 - [ ] Cover more than 90% with tests (unit, integration, e2e)
 - [x] Add Android mobile app
 - [ ] Add iOS mobile app
-- [ ] Add better onboarding (tooltips, modals, etc.)
+- [x] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
 - [ ] Add calendar integration and scheduling

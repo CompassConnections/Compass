@@ -26,6 +26,7 @@ export const sendVerificationEmail = async (
       if (e?.code === 'auth/too-many-requests') {
         toast.error(t('settings.email.too_many_requests', "You can't request more than one email per minute. Please wait before sending another request."))
       }
+      return
     })
 
   async function waitForEmailVerification(intervalMs = 2000, timeoutMs = 5 * 60 * 1000) {

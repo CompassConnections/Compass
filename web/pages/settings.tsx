@@ -13,7 +13,6 @@ import {deleteAccount} from "web/lib/util/delete";
 import router from "next/router";
 import {Button} from "web/components/buttons/button";
 import {updateEmail} from 'firebase/auth';
-import {auth} from "web/lib/firebase/users";
 import {NotificationSettings} from "web/components/notifications";
 import ThemeIcon from "web/components/theme-icon";
 import {WithPrivateUser} from "web/components/user/with-user";
@@ -26,6 +25,7 @@ import {EmailVerificationButton} from "web/components/email-verification-button"
 import {api} from 'web/lib/api'
 import {useUser} from "web/hooks/use-user";
 import {isNativeMobile} from "web/lib/util/webview";
+import {useFirebaseUser} from "web/hooks/use-firebase-user";
 
 export default function NotificationsPage() {
   const t = useT()
@@ -63,7 +63,7 @@ const LoadedGeneralSettings = (props: {
   const {register, handleSubmit, formState: {errors}, reset} = useForm<{ newEmail: string }>()
   const t = useT()
 
-  const user = auth.currentUser
+  const user = useFirebaseUser()
   if (!user) return null
 
   const handleDeleteAccount = async () => {
@@ -131,7 +131,7 @@ const LoadedGeneralSettings = (props: {
       <h3>{t('settings.general.account', 'Account')}</h3>
       <h5>{t('settings.general.email', 'Email')}</h5>
 
-      <EmailVerificationButton user={user}/>
+      <EmailVerificationButton/>
 
       {!isChangingEmail ? (
         <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)} className="w-fit">

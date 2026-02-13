@@ -15,10 +15,11 @@ import {MAX_COMMENT_LENGTH} from 'common/comment'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Title} from 'web/components/widgets/title'
 import {Row} from 'web/components/layout/row'
-import {auth, firebaseLogin} from 'web/lib/firebase/users'
+import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {Tooltip} from "web/components/widgets/tooltip";
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
+import {useFirebaseUser} from "web/hooks/use-firebase-user";
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -27,7 +28,7 @@ export const SendMessageButton = (props: {
   circleButton?: boolean
 }) => {
   const {toUser, currentUser, includeLabel, circleButton} = props
-  const firebaseUser = auth.currentUser
+  const firebaseUser = useFirebaseUser()
   const router = useRouter()
   const privateUser = usePrivateUser()
   const channelMemberships = useSortedPrivateMessageMemberships(currentUser?.id)
@@ -132,7 +133,7 @@ export const SendMessageButton = (props: {
               isSubmitting={!editor || submitting}
               submitOnEnter={false}
             /> :
-            <EmailVerificationPrompt firebaseUser={firebaseUser} t={t} className='max-w-xl'/>
+            <EmailVerificationPrompt t={t} className='max-w-xl'/>
           }
           <span className={'text-red-500'}>{error}</span>
         </Col>

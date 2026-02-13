@@ -1,10 +1,9 @@
 import toast from "react-hot-toast";
 import {sendEmailVerification, User} from "firebase/auth";
-import {auth} from "web/lib/firebase/users";
 
 
 export const sendVerificationEmail = async (
-  user: User,
+  user: User | null,
   t: any
 ) => {
   // if (!privateUser?.email) {
@@ -14,6 +13,10 @@ export const sendVerificationEmail = async (
   if (!user) {
     toast.error(t('settings.email.must_sign_in', 'You must be signed in to send a verification email.'))
     return
+  }
+  if (user?.emailVerified) {
+    toast.success(t('settings.email.verified', 'Email Verified ✔️'))
+    return true
   }
   toast
     .promise(sendEmailVerification(user), {
@@ -33,7 +36,6 @@ export const sendVerificationEmail = async (
     const start = Date.now();
 
     while (Date.now() - start < timeoutMs) {
-      const user = auth.currentUser;
       if (!user) return false;
 
       // Refresh user record from Firebase
@@ -41,9 +43,9 @@ export const sendVerificationEmail = async (
 
       if (user.emailVerified) {
         // IMPORTANT: force a new ID token with updated claims
-        await user.getIdToken(true);
+        await user.getIdToken(true)
         toast.success(t('settings.email.verified', 'Email Verified ✔️'))
-        return true;
+        return true
       }
 
       await new Promise(r => setTimeout(r, intervalMs));

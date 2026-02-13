@@ -1,19 +1,34 @@
-import {User} from 'firebase/auth'
 import {Button} from 'web/components/buttons/button'
 import {sendVerificationEmail} from 'web/lib/firebase/email-verification'
 import {useT} from 'web/lib/locale'
 import {Col} from "web/components/layout/col"
+import toast from "react-hot-toast";
+import {useFirebaseUser} from "web/hooks/use-firebase-user";
 
-export function EmailVerificationButton(props: {
-  user: User
-}) {
-  const {user} = props
+export function EmailVerificationButton() {
+  const user = useFirebaseUser()
   const t = useT()
 
-  const isEmailVerified = user.emailVerified
+  const isEmailVerified = user?.emailVerified
+
+  async function reload() {
+    if (!user) return false;
+
+    // Refresh user record from Firebase
+    await user.reload();
+
+    if (user.emailVerified) {
+      // IMPORTANT: force a new ID token with updated claims
+      await user.getIdToken(true)
+      console.log("User email verified")
+      return true
+    } else {
+      toast.error(t('', "Email still not verified..."))
+    }
+  }
 
   return (
-    <Col>
+    <Col className={'gap-2 mx-4'}>
       <Button
         color={'gray-outline'}
         onClick={() => sendVerificationEmail(user, t)}
@@ -24,6 +39,15 @@ export function EmailVerificationButton(props: {
           ? t('settings.email.verified', 'Email Verified ✔️')
           : t('settings.email.send_verification', 'Send verification email')}
       </Button>
+      <div className={'custom-link'}>
+        <button
+          type="button"
+          onClick={reload}
+          className={'w-fit mx-2'}
+        >
+          {t('settings.email.just_verified', 'I verified my email')}
+        </button>
+      </div>
     </Col>
   )
 }

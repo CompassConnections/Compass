@@ -1,23 +1,29 @@
 package com.compassconnections.app;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin;
-import com.compassconnections.app.MainActivity.WebAppInterface;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.Plugin;
@@ -35,6 +41,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import ee.forgr.capacitor.social.login.GoogleProvider;
 import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
@@ -64,7 +72,7 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         }
     }
 
-    public static class WebAppInterface {
+    public class WebAppInterface {
         private final Context context;
 
         public WebAppInterface(Context context) {
@@ -74,26 +82,94 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         @JavascriptInterface
         public void downloadFile(String filename, String content) {
             try {
-                // Create file in app-specific external storage
-                File downloadsDir = android.os.Environment
-                        .getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // Android 10+ (API 29+) - Use MediaStore
+                    downloadFileModern(filename, content);
+                } else {
+                    // Android 9 and below - Use legacy method
+                    downloadFileLegacy(filename, content);
+                }
 
-                File file = new File(downloadsDir, filename);
-
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(content.getBytes());
-                fos.close();
-
-                android.net.Uri uri = android.net.Uri.fromFile(file);
-
-                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                intent.setData(uri);
-                context.sendBroadcast(intent);
+                // Show success message
+                runOnUiThread(() ->
+                        Toast.makeText(MainActivity.this, "File downloaded: " + filename, Toast.LENGTH_SHORT).show()
+                );
 
             } catch (IOException e) {
-                Log.i("CompassApp", "Failed to download file", e);
+                Log.e("CompassApp", "Failed to download file", e);
+                runOnUiThread(() ->
+                        Toast.makeText(MainActivity.this, "Download failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
             }
         }
+
+        // For Android 10+ (Scoped Storage)
+        @RequiresApi(api = Build.VERSION_CODES.Q)
+        private void downloadFileModern(String filename, String content) throws IOException {
+            ContentResolver resolver = getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, getMimeType(filename));
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+            Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+            if (uri != null) {
+                try (OutputStream outputStream = resolver.openOutputStream(uri)) {
+                    if (outputStream != null) {
+                        outputStream.write(content.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            }
+        }
+
+        // For Android 9 and below
+        private void downloadFileLegacy(String filename, String content) throws IOException {
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (!downloadsDir.exists()) {
+                downloadsDir.mkdirs();
+            }
+
+            File file = getUniqueFile(downloadsDir, filename);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(content.getBytes(StandardCharsets.UTF_8));
+            }
+
+            MediaScannerConnection.scanFile(context, new String[]{file.getAbsolutePath()}, null, null);
+        }
+
+        private File getUniqueFile(File directory, String filename) {
+            File file = new File(directory, filename);
+            if (!file.exists()) {
+                return file;
+            }
+
+            // Add number suffix if file exists
+            String name = filename.substring(0, filename.lastIndexOf("."));
+            String extension = filename.substring(filename.lastIndexOf("."));
+
+            int counter = 1;
+            while (file.exists()) {
+                file = new File(directory, name + "(" + counter + ")" + extension);
+                counter++;
+            }
+            return file;
+        }
+
+        // Helper method to determine MIME type
+        private String getMimeType(String filename) {
+            String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            return switch (extension) {
+                case "txt" -> "text/plain";
+                case "pdf" -> "application/pdf";
+                case "json" -> "application/json";
+                case "csv" -> "text/csv";
+                case "html" -> "text/html";
+                case "jpg", "jpeg" -> "image/jpeg";
+                case "png" -> "image/png";
+                default -> "application/octet-stream";
+            };
+        }
+
     }
 
 

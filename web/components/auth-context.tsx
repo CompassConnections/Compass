@@ -1,7 +1,7 @@
 'use client'
 import {createContext, ReactNode, useEffect, useState} from 'react'
 import {pickBy} from 'lodash'
-import {onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
+import {onAuthStateChanged, onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
 import {auth} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
 import {randomString} from 'common/util/random'
@@ -20,7 +20,7 @@ import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
 export type AuthUser =
   | undefined
   | null
-  | (UserAndPrivateUser & { authLoaded: boolean })
+  | (UserAndPrivateUser & { authLoaded: boolean, firebaseUser: FirebaseUser })
 const CACHED_USER_KEY = 'CACHED_USER_KEY_V2'
 
 export const ensureDeviceToken = () => {
@@ -74,6 +74,35 @@ export const clearUserCookie = () => {
   ])
 }
 
+/**
+ * Subscribe to Firebase Auth user updates.
+ * Reactively returns the current Firebase `User` and updates when:
+ * - auth state changes (sign in/out)
+ * - ID token changes (after `getIdToken(true)` or `user.reload()`),
+ *   which is important for reflecting `emailVerified` changes without a hard refresh.
+ */
+export function useAndSetupFirebaseUser() {
+  const [, forceRender] = useState(0);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(auth.currentUser);
+
+  useEffect(() => {
+    const update = (u: FirebaseUser | null) => {
+      setFirebaseUser(u);      // keep the real User instance
+      forceRender(v => v + 1); // force React to re-render
+    };
+
+    const unsubAuth = onAuthStateChanged(auth, update);
+    const unsubToken = onIdTokenChanged(auth, update);
+
+    return () => {
+      unsubAuth();
+      unsubToken();
+    };
+  }, []);
+
+  return firebaseUser;
+}
+
 
 export const AuthContext = createContext<AuthUser>(undefined)
 
@@ -90,12 +119,13 @@ export function AuthProvider(props: {
     PrivateUser | undefined
   >(serverUser ? serverUser.privateUser : undefined)
   const [authLoaded, setAuthLoaded] = useState(false)
+  const firebaseUser = useAndSetupFirebaseUser()
 
   const authUser = !user
     ? user
     : !privateUser
       ? privateUser
-      : {user, privateUser, authLoaded}
+      : firebaseUser ? {user, privateUser, authLoaded, firebaseUser} : undefined
 
   useEffect(() => {
     if (serverUser === undefined) {

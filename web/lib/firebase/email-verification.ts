@@ -3,7 +3,7 @@ import {sendEmailVerification, User} from "firebase/auth";
 
 
 export const sendVerificationEmail = async (
-  user: User | null,
+  user: User | null | undefined,
   t: any
 ) => {
   // if (!privateUser?.email) {

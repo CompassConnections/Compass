@@ -22,7 +22,7 @@ import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
-import {sendVerificationEmail} from "web/lib/firebase/email-verification";
+import {EmailVerificationButton} from "web/components/email-verification-button";
 
 export default function NotificationsPage() {
   const t = useT()
@@ -108,8 +108,6 @@ const LoadedGeneralSettings = (props: {
     changeUserEmail(data.newEmail)
   }
 
-  const isEmailVerified = user.emailVerified
-
   return <>
     <div className="flex flex-col gap-2 max-w-fit">
       <h3>{t('settings.general.theme', 'Theme')}</h3>
@@ -127,10 +125,7 @@ const LoadedGeneralSettings = (props: {
       <h3>{t('settings.general.account', 'Account')}</h3>
       <h5>{t('settings.general.email', 'Email')}</h5>
 
-      <Button color={'gray-outline'} onClick={() => sendVerificationEmail(user, t)}
-              disabled={!privateUser?.email || isEmailVerified}>
-        {isEmailVerified ? t('settings.email.verified', 'Email Verified ✔️') : t('settings.email.send_verification', 'Send verification email')}
-      </Button>
+      <EmailVerificationButton user={user}/>
 
       {!isChangingEmail ? (
         <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)}>

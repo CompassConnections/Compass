@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import {sendEmailVerification, User} from "firebase/auth";
+import {auth} from "web/lib/firebase/users";
 
 
 export const sendVerificationEmail = async (
@@ -26,4 +27,30 @@ export const sendVerificationEmail = async (
         toast.error(t('settings.email.too_many_requests', "You can't request more than one email per minute. Please wait before sending another request."))
       }
     })
+
+  async function waitForEmailVerification(intervalMs = 2000, timeoutMs = 5 * 60 * 1000) {
+    const start = Date.now();
+
+    while (Date.now() - start < timeoutMs) {
+      const user = auth.currentUser;
+      if (!user) return false;
+
+      // Refresh user record from Firebase
+      await user.reload();
+
+      if (user.emailVerified) {
+        // IMPORTANT: force a new ID token with updated claims
+        await user.getIdToken(true);
+        toast.success(t('settings.email.verified', 'Email Verified ✔️'))
+        return true;
+      }
+
+      await new Promise(r => setTimeout(r, intervalMs));
+    }
+
+    return false;
+  }
+
+  waitForEmailVerification()
+
 }

@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     company TEXT,
     country TEXT,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
+    diet                TEXT[],
+    disabled            BOOLEAN DEFAULT FALSE NOT NULL,
     drinks_per_month INTEGER,
     education_level TEXT,
     ethnicity TEXT[],
@@ -27,7 +29,6 @@ CREATE TABLE IF NOT EXISTS profiles (
     id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     image_descriptions jsonb,
     is_smoker BOOLEAN,
-    diet TEXT[],
     last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     looking_for_matches BOOLEAN DEFAULT TRUE NOT NULL,
     messaging_status TEXT DEFAULT 'open'::TEXT NOT NULL,
@@ -35,9 +36,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     occupation_title TEXT,
     photo_urls TEXT[],
     pinned_url TEXT,
-    political_details TEXT,
     political_beliefs TEXT[],
-    relationship_status TEXT[],
+    political_details   TEXT,
     pref_age_max INTEGER NULL,
     pref_age_min INTEGER NULL,
     pref_gender TEXT[] NOT NULL,
@@ -45,16 +45,16 @@ CREATE TABLE IF NOT EXISTS profiles (
     pref_romantic_styles TEXT[],
     referred_by_username TEXT,
     region_code TEXT,
+    relationship_status TEXT[],
+    religion            TEXT[],
     religious_belief_strength INTEGER,
     religious_beliefs TEXT,
-    religion TEXT[],
     twitter TEXT,
     university TEXT,
     user_id TEXT NOT NULL,
     visibility profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
     wants_kids_strength INTEGER DEFAULT 0 NOT NULL,
     website TEXT,
-    disabled BOOLEAN DEFAULT FALSE NOT NULL,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
     );
 
@@ -95,6 +95,38 @@ CREATE INDEX IF NOT EXISTS profiles_lat_lon_idx ON profiles (city_latitude, city
 
 -- Optional additional index for large tables / clustered inserts
 CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (city_latitude, city_longitude) WITH (pages_per_range = 32);
+
+CREATE INDEX profiles_pref_gender_gin ON profiles USING GIN (pref_gender);
+CREATE INDEX profiles_pref_relation_styles_gin ON profiles USING GIN (pref_relation_styles);
+CREATE INDEX profiles_pref_romantic_styles_gin ON profiles USING GIN (pref_romantic_styles);
+CREATE INDEX profiles_diet_gin ON profiles USING GIN (diet);
+CREATE INDEX profiles_political_beliefs_gin ON profiles USING GIN (political_beliefs);
+CREATE INDEX profiles_relationship_status_gin ON profiles USING GIN (relationship_status);
+CREATE INDEX profiles_languages_gin ON profiles USING GIN (languages);
+CREATE INDEX profiles_religion_gin ON profiles USING GIN (religion);
+CREATE INDEX profiles_ethnicity_gin ON profiles USING GIN (ethnicity);
+
+CREATE INDEX profiles_active_idx
+    ON profiles (created_time DESC)
+    WHERE looking_for_matches = true
+        AND disabled = false;
+
+CREATE INDEX profiles_age_idx ON profiles (age);
+CREATE INDEX profiles_drinks_idx ON profiles (drinks_per_month);
+CREATE INDEX profiles_has_kids_idx ON profiles (has_kids);
+CREATE INDEX profiles_wants_kids_idx ON profiles (wants_kids_strength);
+CREATE INDEX profiles_smoker_idx ON profiles (is_smoker);
+CREATE INDEX profiles_education_level_idx ON profiles (education_level);
+CREATE INDEX profiles_gender_idx ON profiles (gender);
+CREATE INDEX profiles_geodb_city_idx ON profiles (geodb_city_id);
+
+CREATE INDEX profiles_recent_active_idx
+    ON profiles (last_modification_time DESC)
+    WHERE looking_for_matches = true
+        AND disabled = false;
+
+CREATE INDEX users_name_trgm_idx
+    ON users USING gin (lower(name) gin_trgm_ops);
 
 
 -- Functions and Triggers

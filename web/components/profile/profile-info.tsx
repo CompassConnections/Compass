@@ -176,6 +176,7 @@ function ProfileContent(props: {
         refreshProfile={refreshProfile}
         fromProfilePage={fromProfilePage}
       />
+      {isProfileVisible && <ProfileCarousel profile={profile} refreshProfile={refreshProfile}/>}
       <ProfileAnswers
         isCurrentUser={isCurrentUser}
         user={user}
@@ -183,7 +184,6 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
-      {isProfileVisible && profile.photo_urls && <ProfileCarousel profile={profile} refreshProfile={refreshProfile}/>}
       <ProfileCommentSection
         onUser={user}
         profile={profile}

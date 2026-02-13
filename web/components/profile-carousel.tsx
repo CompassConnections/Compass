@@ -35,6 +35,8 @@ export default function ProfileCarousel(props: {
   //   refreshProfile()
   // }
 
+  if (photoNums == 0 && !profile.pinned_url) return
+
   if (!currentUser && profile.visibility !== 'public') {
     return (
       <Carousel>

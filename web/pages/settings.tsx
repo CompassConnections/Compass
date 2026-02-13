@@ -25,6 +25,7 @@ import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import {EmailVerificationButton} from "web/components/email-verification-button";
 import {api} from 'web/lib/api'
 import {useUser} from "web/hooks/use-user";
+import {isNativeMobile} from "web/lib/util/webview";
 
 export default function NotificationsPage() {
   const t = useT()
@@ -209,17 +210,21 @@ const DataPrivacySettings = () => {
     try {
       setIsDownloading(true)
       const data = await api('me/data', {})
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json',
-      })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `compass-data-export${user?.username ? `-${user.username}` : ''}.json`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      const jsonString = JSON.stringify(data, null, 2)
+      const filename = `compass-data-export${user?.username ? `-${user.username}` : ''}.json`;
+      if (isNativeMobile() && window.AndroidBridge && window.AndroidBridge.downloadFile) {
+        window.AndroidBridge.downloadFile(filename, jsonString)
+      } else {
+        const blob = new Blob([jsonString], {type: 'application/json'})
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }
       toast.success(
         t(
           'settings.data_privacy.download.success',
@@ -256,4 +261,3 @@ const DataPrivacySettings = () => {
     </div>
   )
 }
-

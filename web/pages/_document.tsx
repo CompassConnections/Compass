@@ -4,6 +4,14 @@ import Script from 'next/script'
 import clsx from "clsx";
 import {IS_DEPLOYED} from "common/hosting/constants";
 
+declare global {
+  interface Window {
+    AndroidBridge?: {
+      downloadFile: (filename: string, content: string) => void
+    }
+  }
+}
+
 export default function Document() {
   return (
     <Html lang="en">

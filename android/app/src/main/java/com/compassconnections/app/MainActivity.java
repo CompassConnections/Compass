@@ -1,6 +1,7 @@
 package com.compassconnections.app;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -13,8 +14,10 @@ import android.webkit.WebView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin;
+import com.compassconnections.app.MainActivity.WebAppInterface;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.Plugin;
@@ -28,6 +31,10 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import ee.forgr.capacitor.social.login.GoogleProvider;
 import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
@@ -57,12 +64,41 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         }
     }
 
-    public static class NativeBridge {
+    public static class WebAppInterface {
+        private final Context context;
+
+        public WebAppInterface(Context context) {
+            this.context = context;
+        }
+
         @JavascriptInterface
-        public boolean isNativeApp() {
-            return true;
+        public void downloadFile(String filename, String content) {
+            try {
+                // Create file in app-specific external storage
+                File file = new File(context.getExternalFilesDir(null), filename);
+
+                // Write content to file
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(content.getBytes());
+                fos.close();
+
+                // Get URI via FileProvider
+                String authority = context.getPackageName() + ".provider";
+                android.net.Uri uri = FileProvider.getUriForFile(context, authority, file);
+
+                // Launch intent to view/share file
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "application/json");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(intent);
+
+            } catch (IOException e) {
+                Log.i("CompassApp", "Failed to download file", e);
+            }
         }
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -100,7 +136,7 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         settings.setUserAgentString(settings.getUserAgentString() + " CompassAppWebView");
 
         settings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new NativeBridge(), "AndroidBridge");
+        webView.addJavascriptInterface(new WebAppInterface(this), "AndroidBridge");
 
         registerPlugin(PushNotificationsPlugin.class);
         // Initialize the Bridge with Push Notifications plugin

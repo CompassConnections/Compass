@@ -18,6 +18,7 @@ export function EmailVerificationButton(props: {
         color={'gray-outline'}
         onClick={() => sendVerificationEmail(user, t)}
         disabled={isEmailVerified}
+        className={'w-fit'}
       >
         {isEmailVerified
           ? t('settings.email.verified', 'Email Verified ✔️')

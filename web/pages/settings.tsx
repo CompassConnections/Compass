@@ -23,6 +23,8 @@ import {LanguagePicker} from "web/components/language/language-picker";
 import {useT} from "web/lib/locale";
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import {EmailVerificationButton} from "web/components/email-verification-button";
+import {api} from 'web/lib/api'
+import {useUser} from "web/hooks/use-user";
 
 export default function NotificationsPage() {
   const t = useT()
@@ -116,9 +118,12 @@ const LoadedGeneralSettings = (props: {
       <h3>{t('settings.general.language', 'Language')}</h3>
       <LanguagePicker className={'w-fit min-w-[120px]'}/>
 
+      <h3>{t('settings.data_privacy.title', 'Data & Privacy')}</h3>
+      <DataPrivacySettings/>
+
       <h3>{t('settings.general.people', 'People')}</h3>
       {/*<h5>{t('settings.hidden_profiles.title', 'Hidden profiles')}</h5>*/}
-      <Button color={'gray-outline'} onClick={() => setShowHiddenProfiles(true)}>
+      <Button color={'gray-outline'} onClick={() => setShowHiddenProfiles(true)} className="w-fit">
         {t('settings.hidden_profiles.manage', 'Manage hidden profiles')}
       </Button>
 
@@ -128,7 +133,7 @@ const LoadedGeneralSettings = (props: {
       <EmailVerificationButton user={user}/>
 
       {!isChangingEmail ? (
-        <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)}>
+        <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)} className="w-fit">
           {t('settings.email.change', 'Change email address')}
         </Button>
       ) : (
@@ -155,7 +160,7 @@ const LoadedGeneralSettings = (props: {
             )}
           </Col>
           <div className="flex gap-2">
-            <Button type="submit" color="green">
+            <Button type="submit" color="green" className="w-fit">
               {t('settings.action.save', 'Save')}
             </Button>
             <Button
@@ -165,6 +170,7 @@ const LoadedGeneralSettings = (props: {
                 setIsChangingEmail(false)
                 reset()
               }}
+              className="w-fit"
             >
               {t('settings.action.cancel', 'Cancel')}
             </Button>
@@ -175,14 +181,14 @@ const LoadedGeneralSettings = (props: {
       <h5>{t('settings.general.password', 'Password')}</h5>
       <Button
         onClick={() => sendPasswordReset(privateUser?.email)}
-        className="mb-2 max-w-[250px]"
+        className="mb-2 max-w-[250px] w-fit"
         color={'gray-outline'}
       >
         {t('settings.password.send_reset', 'Send password reset email')}
       </Button>
 
       <h5>{t('settings.danger_zone', 'Danger Zone')}</h5>
-      <Button color="red" onClick={handleDeleteAccount}>
+      <Button color="red" onClick={handleDeleteAccount} className="w-fit">
         {t('settings.delete_account', 'Delete Account')}
       </Button>
     </div>
@@ -191,3 +197,63 @@ const LoadedGeneralSettings = (props: {
     <HiddenProfilesModal open={showHiddenProfiles} setOpen={setShowHiddenProfiles}/>
   </>
 }
+
+const DataPrivacySettings = () => {
+  const t = useT()
+  const user = useUser()
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const handleDownload = async () => {
+    if (isDownloading) return
+
+    try {
+      setIsDownloading(true)
+      const data = await api('me/data', {})
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `compass-data-export${user?.username ? `-${user.username}` : ''}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      toast.success(
+        t(
+          'settings.data_privacy.download.success',
+          'Your data export has been downloaded.'
+        )
+      )
+    } catch (e) {
+      console.error('Error downloading data export', e)
+      toast.error(
+        t(
+          'settings.data_privacy.download.error',
+          'Failed to download your data. Please try again.'
+        )
+      )
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4 max-w-xl">
+      <p className="text-sm guidance">
+        {t(
+          'settings.data_privacy.description',
+          'Download a JSON file containing all your information: profile, account, messages, compatibility answers, starred profiles, votes, endorsements, search bookmarks, etc.'
+        )}
+      </p>
+      <Button color="gray-outline" onClick={handleDownload} className="w-fit" disabled={isDownloading}
+              loading={isDownloading}>
+        {isDownloading ? t('settings.data_privacy.downloading', 'Downloading...')
+          : t('settings.data_privacy.download', 'Download all my data (JSON)')
+        }
+      </Button>
+    </div>
+  )
+}
+

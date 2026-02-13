@@ -979,4 +979,3 @@ const Big5Slider = (props: {
   )
 }
 
-

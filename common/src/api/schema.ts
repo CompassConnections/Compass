@@ -188,6 +188,18 @@ export const API = (_apiTypeCheck = {
     summary: 'Get the authenticated user full data',
     tag: 'Users',
   },
+  'me/data': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}),
+    // Full JSON export of the user's data, including
+    // profile, private user, answers, messages, endorsements, bookmarks, etc.
+    // We deliberately keep this loosely typed as it's meant for export/inspection.
+    returns: {} as Record<string, any>,
+    summary: 'Download all data for the authenticated user as JSON',
+    tag: 'Users',
+  },
   'me/update': {
     method: 'POST',
     authed: true,

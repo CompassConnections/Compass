@@ -79,6 +79,7 @@ import {getOptions} from "api/get-options";
 import {hideProfile} from "api/hide-profile";
 import {unhideProfile} from "api/unhide-profile";
 import {getHiddenProfiles} from "api/get-hidden-profiles";
+import {getUserDataExport} from "./get-user-data-export";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -349,6 +350,7 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   'like-profile': likeProfile,
   'mark-all-notifs-read': markAllNotifsRead,
   'me/delete': deleteMe,
+  'me/data': getUserDataExport,
   'me/private': getCurrentPrivateUser,
   'me/update': updateMe,
   'react-to-message': reactToMessage,

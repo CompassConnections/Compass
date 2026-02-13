@@ -8,6 +8,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:fitsSystemWindows="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
 
         <activity
@@ -65,6 +66,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 

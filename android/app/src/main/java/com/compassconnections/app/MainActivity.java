@@ -75,23 +75,20 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         public void downloadFile(String filename, String content) {
             try {
                 // Create file in app-specific external storage
-                File file = new File(context.getExternalFilesDir(null), filename);
+                File downloadsDir = android.os.Environment
+                        .getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
 
-                // Write content to file
+                File file = new File(downloadsDir, filename);
+
                 FileOutputStream fos = new FileOutputStream(file);
                 fos.write(content.getBytes());
                 fos.close();
 
-                // Get URI via FileProvider
-                String authority = context.getPackageName() + ".provider";
-                android.net.Uri uri = FileProvider.getUriForFile(context, authority, file);
+                android.net.Uri uri = android.net.Uri.fromFile(file);
 
-                // Launch intent to view/share file
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(uri, "application/json");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                context.startActivity(intent);
+                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                intent.setData(uri);
+                context.sendBroadcast(intent);
 
             } catch (IOException e) {
                 Log.i("CompassApp", "Failed to download file", e);

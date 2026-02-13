@@ -22,10 +22,11 @@ export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => 
   return message
 }
 
-type MessageObject = Omit<ChatMessage, "id"> & { id: number; createdTimeTs: string } & {
-  ciphertext: string;
-  iv: string;
-  tag: string
+type MessageObject = {
+  ciphertext: string | null;
+  iv: string | null;
+  tag: string | null
+  content?: any
 }
 
 export function parseMessageObject(message: MessageObject) {

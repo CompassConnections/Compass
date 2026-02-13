@@ -3,6 +3,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
 import {getLikesAndShipsMain} from './get-likes-and-ships'
 import {parseJsonContentToText} from 'common/util/parse'
+import {parseMessageObject} from "shared/supabase/messages";
 
 export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
   const userId = auth.uid
@@ -116,6 +117,7 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
       [channelIds]
     )
     : []
+  for (const message of messages) parseMessageObject(message)
 
   const membershipsWithUsernames = channelIds.length
     ? await pg.manyOrNone(

@@ -101,7 +101,7 @@ export const getChannelMessagesEndpoint: APIHandler<'get-channel-messages'> = as
 
 export async function getChannelMessages(props: {
   channelId: number;
-  limit: number;
+  limit?: number;
   id?: number | undefined;
   userId: string;
 }) {
@@ -119,7 +119,7 @@ export async function getChannelMessages(props: {
        and ($4 is null or id > $4)
        and not visibility = 'system_status'
      order by created_time desc
-     limit $3
+         ${limit ? 'limit $3' : ''}
     `,
     [channelId, userId, limit, id],
     convertPrivateChatMessage

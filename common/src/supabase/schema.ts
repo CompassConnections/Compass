@@ -856,6 +856,11 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          big5_agreeableness: number | null
+          big5_conscientiousness: number | null
+          big5_extraversion: number | null
+          big5_neuroticism: number | null
+          big5_openness: number | null
           bio: Json | null
           bio_length: number | null
           bio_text: string | null
@@ -913,6 +918,11 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          big5_agreeableness?: number | null
+          big5_conscientiousness?: number | null
+          big5_extraversion?: number | null
+          big5_neuroticism?: number | null
+          big5_openness?: number | null
           bio?: Json | null
           bio_length?: number | null
           bio_text?: string | null
@@ -970,6 +980,11 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          big5_agreeableness?: number | null
+          big5_conscientiousness?: number | null
+          big5_extraversion?: number | null
+          big5_neuroticism?: number | null
+          big5_openness?: number | null
           bio?: Json | null
           bio_length?: number | null
           bio_text?: string | null
@@ -1204,7 +1219,15 @@ export type Database = {
           ts?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'user_events_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_notifications: {
         Row: {

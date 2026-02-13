@@ -42,6 +42,7 @@ import {InterestFilter, InterestFilterText} from "web/components/filters/interes
 import {OptionTableKey} from "common/profiles/constants";
 import {useT} from "web/lib/locale";
 import {ResetFiltersButton} from "web/components/searches/button";
+import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from "web/components/filters/big5-filter";
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -644,6 +645,31 @@ export function DesktopFilters(props: {
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-[400px]"
+      />
+
+      {/* BIG FIVE PERSONALITY */}
+      <CustomizeableDropdown
+        buttonContent={(open) => (
+          <DropdownButton
+            open={open}
+            content={
+              <Row className="items-center gap-1">
+                <BsPersonVcard className="h-4 w-4"/>
+                <Big5FilterText
+                  filters={filters}
+                  highlightedClass={open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined}
+                />
+              </Row>
+            }
+          />
+        )}
+        dropdownMenuContent={
+          <Col className="mx-2 mb-4">
+            <Big5Filters filters={filters} updateFilter={updateFilter}/>
+          </Col>
+        }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-[420px]"
       />
 
       {/* EDUCATION */}

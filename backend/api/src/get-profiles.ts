@@ -17,6 +17,16 @@ export type profileQueryType = {
   pref_age_max?: number | undefined,
   drinks_min?: number | undefined,
   drinks_max?: number | undefined,
+  big5_openness_min?: number | undefined,
+  big5_openness_max?: number | undefined,
+  big5_conscientiousness_min?: number | undefined,
+  big5_conscientiousness_max?: number | undefined,
+  big5_extraversion_min?: number | undefined,
+  big5_extraversion_max?: number | undefined,
+  big5_agreeableness_min?: number | undefined,
+  big5_agreeableness_max?: number | undefined,
+  big5_neuroticism_min?: number | undefined,
+  big5_neuroticism_max?: number | undefined,
   pref_relation_styles?: string[] | undefined,
   pref_romantic_styles?: string[] | undefined,
   diet?: string[] | undefined,
@@ -60,6 +70,16 @@ export const loadProfiles = async (props: profileQueryType) => {
     pref_age_max,
     drinks_min,
     drinks_max,
+    big5_openness_min,
+    big5_openness_max,
+    big5_conscientiousness_min,
+    big5_conscientiousness_max,
+    big5_extraversion_min,
+    big5_extraversion_max,
+    big5_agreeableness_min,
+    big5_agreeableness_max,
+    big5_neuroticism_min,
+    big5_neuroticism_max,
     pref_relation_styles,
     pref_romantic_styles,
     diet,
@@ -210,6 +230,42 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     drinks_max &&
     where(`drinks_per_month <= $(drinks_max) or drinks_per_month is null`, {drinks_max}),
+
+    big5_openness_min &&
+    where(`big5_openness >= $(big5_openness_min) or big5_openness is null`, {big5_openness_min}),
+
+    big5_openness_max &&
+    where(`big5_openness <= $(big5_openness_max) or big5_openness is null`, {big5_openness_max}),
+
+    big5_conscientiousness_min &&
+    where(
+      `big5_conscientiousness >= $(big5_conscientiousness_min) or big5_conscientiousness is null`,
+      {big5_conscientiousness_min}
+    ),
+
+    big5_conscientiousness_max &&
+    where(
+      `big5_conscientiousness <= $(big5_conscientiousness_max) or big5_conscientiousness is null`,
+      {big5_conscientiousness_max}
+    ),
+
+    big5_extraversion_min &&
+    where(`big5_extraversion >= $(big5_extraversion_min) or big5_extraversion is null`, {big5_extraversion_min}),
+
+    big5_extraversion_max &&
+    where(`big5_extraversion <= $(big5_extraversion_max) or big5_extraversion is null`, {big5_extraversion_max}),
+
+    big5_agreeableness_min &&
+    where(`big5_agreeableness >= $(big5_agreeableness_min) or big5_agreeableness is null`, {big5_agreeableness_min}),
+
+    big5_agreeableness_max &&
+    where(`big5_agreeableness <= $(big5_agreeableness_max) or big5_agreeableness is null`, {big5_agreeableness_max}),
+
+    big5_neuroticism_min &&
+    where(`big5_neuroticism >= $(big5_neuroticism_min) or big5_neuroticism is null`, {big5_neuroticism_min}),
+
+    big5_neuroticism_max &&
+    where(`big5_neuroticism <= $(big5_neuroticism_max) or big5_neuroticism is null`, {big5_neuroticism_max}),
 
     pref_relation_styles?.length &&
     where(

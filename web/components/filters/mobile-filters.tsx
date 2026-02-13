@@ -43,6 +43,7 @@ import {LuCigarette, LuGraduationCap} from "react-icons/lu";
 import {RiScales3Line} from "react-icons/ri";
 import {PiHandsPrayingBold} from "react-icons/pi";
 import {ResetFiltersButton} from "web/components/searches/button";
+import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from "web/components/filters/big5-filter";
 import {FilterGuide} from "web/components/guidance";
 
 function MobileFilters(props: {
@@ -532,6 +533,25 @@ function MobileFilters(props: {
         }
       >
         <MbtiFilter filters={filters} updateFilter={updateFilter}/>
+      </MobileFilterSection>
+
+      {/* BIG FIVE PERSONALITY */}
+      <MobileFilterSection
+        title={t('profile.big5', 'Personality (Big Five)')}
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAnyBig5Filter(filters)}
+        icon={<BsPersonVcard className="h-4 w-4"/>}
+        selection={
+          <Big5FilterText
+            filters={filters}
+            highlightedClass={
+              hasAnyBig5Filter(filters) ? 'text-primary-600' : 'text-ink-900'
+            }
+          />
+        }
+      >
+        <Big5Filters filters={filters} updateFilter={updateFilter}/>
       </MobileFilterSection>
 
       {/* EDUCATION */}

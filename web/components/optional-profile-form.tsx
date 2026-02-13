@@ -47,6 +47,7 @@ import {AddOptionEntry} from "web/components/add-option-entry";
 import {sleep} from "common/util/time"
 import {SignupBio} from "web/components/bio/editable-bio";
 import {Editor} from "@tiptap/core";
+import {Slider} from "web/components/widgets/slider";
 
 
 export const OptionalProfileUserForm = (props: {
@@ -644,6 +645,55 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        {/* Big Five personality traits (0–100) */}
+        <Col className={clsx(colClassName, 'max-w-[550px]')}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.big5', 'Big Five Personality Traits')}
+          </label>
+          <div className="space-y-4">
+            <Big5Slider
+              label={t('profile.big5_openness', 'Openness')}
+              value={profile.big5_openness ?? 50}
+              onChange={(v) => setProfile('big5_openness', v)}
+            />
+            <Big5Slider
+              label={t(
+                'profile.big5_conscientiousness',
+                'Conscientiousness'
+              )}
+              value={profile.big5_conscientiousness ?? 50}
+              onChange={(v) => setProfile('big5_conscientiousness', v)}
+            />
+            <Big5Slider
+              label={t('profile.big5_extraversion', 'Extraversion')}
+              value={profile.big5_extraversion ?? 50}
+              onChange={(v) => setProfile('big5_extraversion', v)}
+            />
+            <Big5Slider
+              label={t(
+                'profile.big5_agreeableness',
+                'Agreeableness'
+              )}
+              value={profile.big5_agreeableness ?? 50}
+              onChange={(v) => setProfile('big5_agreeableness', v)}
+            />
+            <Big5Slider
+              label={t(
+                'profile.big5_neuroticism',
+                'Neuroticism'
+              )}
+              value={profile.big5_neuroticism ?? 50}
+              onChange={(v) => setProfile('big5_neuroticism', v)}
+            />
+            <p className="text-sm text-ink-500">
+              {t(
+                'profile.big5_hint',
+                'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).'
+              )}
+            </p>
+          </div>
+        </Col>
+
         <Category title={t('profile.optional.diet', 'Diet')}/>
 
         <Col className={clsx(colClassName)}>
@@ -899,4 +949,34 @@ const CitySearchBox = (props: {
 function Category({title, className}: { title: string, className?: string }) {
   return <h3 className={clsx("text-xl font-semibold mb-[-8px]", className)}>{title}</h3>;
 }
+
+const Big5Slider = (props: {
+  label: string
+  value: number
+  onChange: (v: number) => void
+}) => {
+  const {label, value, onChange} = props
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
+        <span>{label}</span>
+        <span className="font-semibold text-ink-700">{Math.round(value)}</span>
+      </div>
+      <Slider
+        amount={value}
+        min={0}
+        max={100}
+        onChange={(v) => onChange(Math.round(v))}
+        marks={[
+          {value: 0, label: '0'},
+          {value: 25, label: '25'},
+          {value: 50, label: '50'},
+          {value: 75, label: '75'},
+          {value: 100, label: '100'},
+        ]}
+      />
+    </div>
+  )
+}
+
 

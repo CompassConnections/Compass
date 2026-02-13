@@ -113,6 +113,11 @@ export const sinclairProfile: ProfileRow = {
   search_text: 'the futa in futarchy',
   search_tsv: 'the futa in futarchy',
   age: 25,
+  big5_agreeableness: 10,
+  big5_openness: 10,
+  big5_conscientiousness: 10,
+  big5_extraversion: 10,
+  big5_neuroticism: 10,
 }
 
 export const jamesUser: User = {
@@ -226,4 +231,9 @@ export const jamesProfile: ProfileRow = {
   search_text: 'the futa in futarchy',
   search_tsv: 'the futa in futarchy',
   age: 32,
+  big5_agreeableness: 10,
+  big5_openness: 10,
+  big5_conscientiousness: 10,
+  big5_extraversion: 10,
+  big5_neuroticism: 10,
 }

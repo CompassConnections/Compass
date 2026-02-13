@@ -34,6 +34,7 @@ import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
 import {useLocale, useT} from "web/lib/locale";
 import {useChoices} from "web/hooks/use-choices";
 import {getSeekingGenderText} from "web/lib/profile/seeking";
+import {TbBulb, TbCheck, TbMoodSad, TbUsers} from "react-icons/tb";
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -119,6 +120,7 @@ export default function ProfileAbout(props: {
         icon={<BsPersonVcard className="h-5 w-5"/>}
         text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
       />
+      <Big5Traits profile={profile}/>
       <AboutRow
         icon={<HiOutlineGlobe className="h-5 w-5"/>}
         text={profile.ethnicity
@@ -337,6 +339,85 @@ function LastOnline(props: { lastOnlineTime?: string }) {
       icon={<ClockIcon className="h-5 w-5"/>}
       text={t('profile.last_online', 'Active {time}', {time: fromNow(lastOnlineTime, true, t, locale)})}
     />
+  )
+}
+
+function Big5Traits(props: { profile: Profile }) {
+  const t = useT()
+  const {profile} = props
+
+  const traits = [
+    {
+      key: 'big5_openness',
+      icon: <TbBulb className="h-5 w-5"/>,
+      label: t('profile.big5_openness', 'Openness'),
+      value: profile.big5_openness
+    },
+    {
+      key: 'big5_conscientiousness',
+      icon: <TbCheck className="h-5 w-5"/>,
+      label: t('profile.big5_conscientiousness', 'Conscientiousness'),
+      value: profile.big5_conscientiousness
+    },
+    {
+      key: 'big5_extraversion',
+      icon: <TbUsers className="h-5 w-5"/>,
+      label: t('profile.big5_extraversion', 'Extraversion'),
+      value: profile.big5_extraversion
+    },
+    {
+      key: 'big5_agreeableness',
+      icon: <FaHeart className="h-5 w-5"/>,
+      label: t('profile.big5_agreeableness', 'Agreeableness'),
+      value: profile.big5_agreeableness
+    },
+    {
+      key: 'big5_neuroticism',
+      icon: <TbMoodSad className="h-5 w-5"/>,
+      label: t('profile.big5_neuroticism', 'Neuroticism'),
+      value: profile.big5_neuroticism
+    }
+  ]
+
+  const hasAnyTraits = traits.some(trait => trait.value !== null && trait.value !== undefined)
+
+  if (!hasAnyTraits) {
+    return <></>
+  }
+
+  return (
+    <Col className="gap-2">
+      <div className="text-ink-600 font-medium">
+        {t('profile.big5', 'Big Five personality traits')}:
+      </div>
+      <div className="ml-6">
+        {traits.map((trait) => {
+          if (trait.value === null || trait.value === undefined) return null
+
+          let levelText: string
+          if (trait.value <= 20) {
+            levelText = t('profile.big5_very_low', 'Very low')
+          } else if (trait.value <= 40) {
+            levelText = t('profile.big5_low', 'Low')
+          } else if (trait.value <= 60) {
+            levelText = t('profile.big5_average', 'Average')
+          } else if (trait.value <= 80) {
+            levelText = t('profile.big5_high', 'High')
+          } else {
+            levelText = t('profile.big5_very_high', 'Very high')
+          }
+
+          return (
+            <Row key={trait.key} className="items-center gap-2">
+              <div className="text-ink-600 w-5">{trait.icon}</div>
+              <div>
+                {trait.label}: {levelText} ({trait.value})
+              </div>
+            </Row>
+          )
+        })}
+      </div>
+    </Col>
   )
 }
 

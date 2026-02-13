@@ -22,6 +22,17 @@ export type FilterFields = {
   shortBio: boolean | undefined
   drinks_min: number | undefined
   drinks_max: number | undefined
+  // Big Five personality filters (0-100 range)
+  big5_openness_min: number | undefined
+  big5_openness_max: number | undefined
+  big5_conscientiousness_min: number | undefined
+  big5_conscientiousness_max: number | undefined
+  big5_extraversion_min: number | undefined
+  big5_extraversion_max: number | undefined
+  big5_agreeableness_min: number | undefined
+  big5_agreeableness_max: number | undefined
+  big5_neuroticism_min: number | undefined
+  big5_neuroticism_max: number | undefined
 } & {
   [K in OptionTableKey]: string[]
 }
@@ -89,6 +100,16 @@ export const initialFilters: Partial<FilterFields> = {
   shortBio: undefined,
   drinks_min: undefined,
   drinks_max: undefined,
+  big5_openness_min: undefined,
+  big5_openness_max: undefined,
+  big5_conscientiousness_min: undefined,
+  big5_conscientiousness_max: undefined,
+  big5_extraversion_min: undefined,
+  big5_extraversion_max: undefined,
+  big5_agreeableness_min: undefined,
+  big5_agreeableness_max: undefined,
+  big5_neuroticism_min: undefined,
+  big5_neuroticism_max: undefined,
   orderBy: 'created_time',
 }
 

@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import {SEO} from "web/components/SEO";
 import {capitalize} from "lodash";
 import {CustomLink} from "web/components/links";
+import {BackButton} from "web/components/back-button";
 
 export const MD_PATHS = [
   'constitution',
@@ -39,8 +40,11 @@ export default function MarkdownPage({content, filename}: Props) {
         url={`/` + filename}
       />
       <Col className="items-center mb-8">
-        <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4 custom-link'>
-          <CustomMarkdown>{content}</CustomMarkdown>
+        <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
+          <BackButton className="-ml-2 self-start"/>
+          <div className={'custom-link !mt-0'}>
+            <CustomMarkdown>{content}</CustomMarkdown>
+          </div>
         </Col>
       </Col>
     </PageBase>

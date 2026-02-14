@@ -39,7 +39,7 @@ export function EmailVerificationButton() {
           ? t('settings.email.verified', 'Email Verified ✔️')
           : t('settings.email.send_verification', 'Send verification email')}
       </Button>
-      <div className={'custom-link'}>
+      {!isEmailVerified && <div className={'custom-link'}>
         <button
           type="button"
           onClick={reload}
@@ -47,7 +47,7 @@ export function EmailVerificationButton() {
         >
           {t('settings.email.just_verified', 'I verified my email')}
         </button>
-      </div>
+      </div>}
     </Col>
   )
 }

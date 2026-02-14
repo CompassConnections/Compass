@@ -15,6 +15,7 @@ import {ShowMore} from 'web/components/widgets/show-more'
 import {NewTabLink} from 'web/components/widgets/new-tab-link'
 import {useT} from 'web/lib/locale'
 import {richTextToString} from 'common/util/parse'
+import {useRouter} from "next/router";
 
 export function BioTips({onClick}: { onClick?: () => void }) {
   const t = useT();
@@ -27,6 +28,13 @@ export function BioTips({onClick}: { onClick?: () => void }) {
 - Optional: romantic preferences, lifestyle habits, and conversation starters
 `);
 
+  let href = '/tips-bio'
+
+  const router = useRouter()
+  if (router.pathname === '/signup') {
+    href += '?fromSignup=true'
+  }
+
   return (
     <ShowMore
       labelClosed={t('profile.bio.tips', 'Tips')}
@@ -36,7 +44,7 @@ export function BioTips({onClick}: { onClick?: () => void }) {
       <p>{t('profile.bio.tips_intro', "Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:")}</p>
       <ReactMarkdown>{tips}</ReactMarkdown>
       <NewTabLink
-        href="/tips-bio"
+        href={href}
         onClick={onClick}>{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</NewTabLink>
     </ShowMore>
   )

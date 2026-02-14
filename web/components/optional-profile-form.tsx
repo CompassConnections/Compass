@@ -1,4 +1,4 @@
-import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
+import {Fragment, useEffect, useRef, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
@@ -27,6 +27,7 @@ import {City, CityRow, profileToCity, useCitySearch} from "web/components/search
 import {AddPhotosWidget} from './widgets/add-photos'
 import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
 import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
+import {useProfileDraft} from 'web/hooks/use-profile-draft'
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
@@ -48,7 +49,6 @@ import {sleep} from "common/util/time"
 import {SignupBio} from "web/components/bio/editable-bio";
 import {Editor} from "@tiptap/core";
 import {Slider} from "web/components/widgets/slider";
-import {safeLocalStorage} from "web/lib/util/local";
 
 
 export const OptionalProfileUserForm = (props: {
@@ -100,79 +100,7 @@ export const OptionalProfileUserForm = (props: {
   const [workChoices, setWorkChoices] = useState({})
   const {locale} = useLocale()
 
-  const KEY = `draft-profile-${user.id}`
-
-  const clearProfileDraft = (userId: string) => {
-    try {
-      safeLocalStorage?.removeItem(`draft-profile-${userId}`)
-      safeLocalStorage?.removeItem(`draft-profile-${userId}-timestamp`)
-    } catch (error) {
-      console.warn('Failed to clear profile from store:', error)
-    }
-  }
-
-  // Debounced save function
-  const debouncedSaveProfile = useCallback(
-    (() => {
-      let timeoutId: NodeJS.Timeout
-      return (profileToSave: ProfileWithoutUser) => {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => {
-          try {
-            safeLocalStorage?.setItem(KEY, JSON.stringify({
-              profile: profileToSave,
-              timestamp: Date.now().toString(),
-            }))
-          } catch (error) {
-            console.warn('Failed to save profile to store:', error)
-          }
-        }, 500) // 500ms debounce delay
-      }
-    })(),
-    [KEY]
-  )
-
-  useEffect(() => {
-    console.log({profile})
-    if (profile && Object.keys(profile).length > 0) {
-      debouncedSaveProfile(profile)
-    }
-  }, [profile, user.id, debouncedSaveProfile])
-
-  useEffect(() => {
-    try {
-      const savedProfileString = safeLocalStorage?.getItem(KEY)
-      if (savedProfileString) {
-        const data = JSON.parse(savedProfileString)
-        if (data) {
-          const {profile: savedProfile, timestamp} = data
-          // Check if saved data is older than 24 hours
-          if (timestamp) {
-            const savedTime = parseInt(timestamp, 10)
-            const now = Date.now()
-            const twentyFourHoursInMs = 24 * 60 * 60 * 1000
-
-            if (now - savedTime > twentyFourHoursInMs) {
-              console.log('Skipping profile update: saved data is older than 24 hours')
-              return
-            }
-          }
-
-          // Update all profile fields
-          Object.entries(savedProfile).forEach(([key, value]) => {
-            const typedKey = key as keyof ProfileWithoutUser
-            if (value !== profile[typedKey]) {
-              console.log(key, value)
-              setProfile(typedKey, value)
-              if (typedKey === 'height_in_inches') updateHeight(value)
-            }
-          })
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load profile from store:', error)
-    }
-  }, []) // Only run once on mount
+  const {clearProfileDraft} = useProfileDraft(user.id, profile, setProfile, updateHeight)
 
   useEffect(() => {
     fetchChoices('interests', locale).then(setInterestChoices)

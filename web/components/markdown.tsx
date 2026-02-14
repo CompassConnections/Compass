@@ -5,6 +5,7 @@ import {SEO} from "web/components/SEO";
 import {capitalize} from "lodash";
 import {CustomLink} from "web/components/links";
 import {BackButton} from "web/components/back-button";
+import {useRouter} from "next/router";
 
 export const MD_PATHS = [
   'constitution',
@@ -32,6 +33,25 @@ export const CustomMarkdown = ({children}: { children: string }) => {
 
 export default function MarkdownPage({content, filename}: Props) {
   const title = /[A-Z]/.test(filename) ? filename : capitalize(filename)
+  const router = useRouter()
+  const {query} = router
+  const fromSignup = query.fromSignup === 'true'
+
+  if (fromSignup) {
+    return (
+      <Col className="items-center">
+        <Col className="items-center justify-center mb-8 max-w-4xl">
+          <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
+            <BackButton className="-ml-2 self-start"/>
+            <div className={'custom-link !mt-0'}>
+              <CustomMarkdown>{content}</CustomMarkdown>
+            </div>
+          </Col>
+        </Col>
+      </Col>
+    )
+  }
+
   return (
     <PageBase trackPageView={filename} className={'col-span-8'}>
       <SEO
@@ -41,7 +61,6 @@ export default function MarkdownPage({content, filename}: Props) {
       />
       <Col className="items-center mb-8">
         <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
-          <BackButton className="-ml-2 self-start"/>
           <div className={'custom-link !mt-0'}>
             <CustomMarkdown>{content}</CustomMarkdown>
           </div>

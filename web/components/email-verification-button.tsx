@@ -28,7 +28,7 @@ export function EmailVerificationButton() {
   }
 
   return (
-    <Col className={'gap-2 mx-4'}>
+    <Col className={'gap-2'}>
       <Button
         color={'gray-outline'}
         onClick={() => sendVerificationEmail(user, t)}

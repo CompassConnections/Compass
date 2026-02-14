@@ -13,6 +13,7 @@ import {ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {SignupBio} from "web/components/bio/editable-bio"
 import {Editor} from "@tiptap/core"
 import {useT} from 'web/lib/locale'
+import {useProfileDraft} from 'web/hooks/use-profile-draft'
 
 export const initialRequiredState = {
   age: undefined,
@@ -52,6 +53,14 @@ export const RequiredProfileUserForm = (props: {
 
   const [step, setStep] = useState<number>(0)
   const t = useT()
+
+  const {draftLoaded} = useProfileDraft(user.id, profile, setProfile)
+
+  useEffect(() => {
+    if (draftLoaded) {
+      setStep(1)
+    }
+  }, [draftLoaded])
 
   const {
     name,
@@ -140,6 +149,7 @@ export const RequiredProfileUserForm = (props: {
                 {t('profile.basics.bio', 'Bio')}
               </label>
               <SignupBio
+                  profile={profile}
                   onChange={(e: Editor) => {
                     console.debug('bio changed', e, profile.bio)
                     setProfile('bio', e.getJSON())

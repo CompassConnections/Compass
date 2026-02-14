@@ -14,8 +14,9 @@ import {MIN_BIO_LENGTH} from "common/constants";
 import {ShowMore} from 'web/components/widgets/show-more'
 import {NewTabLink} from 'web/components/widgets/new-tab-link'
 import {useT} from 'web/lib/locale'
+import {richTextToString} from 'common/util/parse'
 
-export function BioTips() {
+export function BioTips({onClick}: { onClick?: () => void }) {
   const t = useT();
   const tips = t('profile.bio.tips_list', `
 - Your core values, interests, and activities
@@ -35,7 +36,8 @@ export function BioTips() {
       <p>{t('profile.bio.tips_intro', "Write a clear and engaging bio to help others understand who you are and the connections you seek. Include:")}</p>
       <ReactMarkdown>{tips}</ReactMarkdown>
       <NewTabLink
-        href="/tips-bio">{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</NewTabLink>
+        href="/tips-bio"
+        onClick={onClick}>{t('profile.bio.tips_link', 'Read full tips for writing a high-quality bio')}</NewTabLink>
     </ShowMore>
   )
 }
@@ -71,6 +73,7 @@ export function EditableBio(props: {
         defaultValue={profile.bio}
         onEditor={(e) => {
           setEditor(e);
+          if (e) setTextLength(e.getText().length)
           e?.on('update', () => {
             setTextLength(e.getText().length);
           });
@@ -101,8 +104,23 @@ export function EditableBio(props: {
 export function SignupBio(props: {
   onChange: (e: Editor) => void
   profile?: ProfileWithoutUser | undefined
+  onClickTips?: () => void
+  onEditor?: (editor: any) => void
 }) {
-  const {onChange, profile} = props
+  const {onChange, profile, onClickTips, onEditor} = props
+  const [editor, setEditor] = useState<any>(null)
+
+  // Keep the editor content in sync with profile.bio when it becomes available
+  useEffect(() => {
+    if (!editor) return
+    const profileText = profile?.bio ? richTextToString(profile.bio as any) : ''
+    const currentText = editor?.getText?.() ?? ''
+    // Only update if the underlying text differs to avoid clobbering user input unnecessarily
+    if (profileText !== currentText) {
+      editor.commands.setContent(profile?.bio ?? '')
+    }
+  }, [profile?.bio, editor])
+
   return (
     <Col className="relative w-full">
       <BaseBio
@@ -110,6 +128,11 @@ export function SignupBio(props: {
         onBlur={(editor) => {
           if (!editor) return
           onChange(editor)
+        }}
+        onClickTips={onClickTips}
+        onEditor={(e) => {
+          setEditor(e)
+          onEditor?.(e)
         }}
       />
     </Col>
@@ -120,9 +143,10 @@ interface BaseBioProps {
   defaultValue?: any
   onBlur?: (editor: any) => void
   onEditor?: (editor: any) => void
+  onClickTips?: () => void
 }
 
-export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
+export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioProps) {
   const t = useT();
   const editor = useTextEditor({
     // extensions: [StarterKit],
@@ -147,7 +171,7 @@ export function BaseBio({defaultValue, onBlur, onEditor}: BaseBioProps) {
             }
           </p>
       }
-      <BioTips/>
+      <BioTips onClick={onClickTips}/>
       <TextEditor
         editor={editor}
         onBlur={() => onBlur?.(editor)}

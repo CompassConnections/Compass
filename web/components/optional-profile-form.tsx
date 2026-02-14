@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
@@ -48,6 +48,7 @@ import {sleep} from "common/util/time"
 import {SignupBio} from "web/components/bio/editable-bio";
 import {Editor} from "@tiptap/core";
 import {Slider} from "web/components/widgets/slider";
+import {safeLocalStorage} from "web/lib/util/local";
 
 
 export const OptionalProfileUserForm = (props: {
@@ -76,6 +77,18 @@ export const OptionalProfileUserForm = (props: {
       : undefined
   )
 
+  // Keep local feet/inches inputs in sync when profile.height_in_inches updates
+  // This covers cases like hydration from localStorage where setProfile is called externally
+  const updateHeight = (h: any) => {
+    if (h == null || Number.isNaN(h as any)) {
+      setHeightFeet(undefined)
+      setHeightInches(undefined)
+      return
+    }
+    setHeightFeet(Math.floor(h / 12))
+    setHeightInches(Math.round(h % 12))
+  }
+
   const [newLinks, setNewLinks] = useState<Record<string, string | null>>(
     user.link
   )
@@ -86,6 +99,80 @@ export const OptionalProfileUserForm = (props: {
   const [causeChoices, setCauseChoices] = useState({})
   const [workChoices, setWorkChoices] = useState({})
   const {locale} = useLocale()
+
+  const KEY = `draft-profile-${user.id}`
+
+  const clearProfileDraft = (userId: string) => {
+    try {
+      safeLocalStorage?.removeItem(`draft-profile-${userId}`)
+      safeLocalStorage?.removeItem(`draft-profile-${userId}-timestamp`)
+    } catch (error) {
+      console.warn('Failed to clear profile from store:', error)
+    }
+  }
+
+  // Debounced save function
+  const debouncedSaveProfile = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout
+      return (profileToSave: ProfileWithoutUser) => {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => {
+          try {
+            safeLocalStorage?.setItem(KEY, JSON.stringify({
+              profile: profileToSave,
+              timestamp: Date.now().toString(),
+            }))
+          } catch (error) {
+            console.warn('Failed to save profile to store:', error)
+          }
+        }, 500) // 500ms debounce delay
+      }
+    })(),
+    [KEY]
+  )
+
+  useEffect(() => {
+    console.log({profile})
+    if (profile && Object.keys(profile).length > 0) {
+      debouncedSaveProfile(profile)
+    }
+  }, [profile, user.id, debouncedSaveProfile])
+
+  useEffect(() => {
+    try {
+      const savedProfileString = safeLocalStorage?.getItem(KEY)
+      if (savedProfileString) {
+        const data = JSON.parse(savedProfileString)
+        if (data) {
+          const {profile: savedProfile, timestamp} = data
+          // Check if saved data is older than 24 hours
+          if (timestamp) {
+            const savedTime = parseInt(timestamp, 10)
+            const now = Date.now()
+            const twentyFourHoursInMs = 24 * 60 * 60 * 1000
+
+            if (now - savedTime > twentyFourHoursInMs) {
+              console.log('Skipping profile update: saved data is older than 24 hours')
+              return
+            }
+          }
+
+          // Update all profile fields
+          Object.entries(savedProfile).forEach(([key, value]) => {
+            const typedKey = key as keyof ProfileWithoutUser
+            if (value !== profile[typedKey]) {
+              console.log(key, value)
+              setProfile(typedKey, value)
+              if (typedKey === 'height_in_inches') updateHeight(value)
+            }
+          })
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load profile from store:', error)
+    }
+  }, []) // Only run once on mount
 
   useEffect(() => {
     fetchChoices('interests', locale).then(setInterestChoices)
@@ -120,6 +207,8 @@ export const OptionalProfileUserForm = (props: {
     }
     try {
       await Promise.all(promises)
+      // Clear profile draft from Zustand store after successful submission
+      clearProfileDraft(user.id)
     } catch (error) {
       console.error(error)
       toast.error(
@@ -308,6 +397,7 @@ export const OptionalProfileUserForm = (props: {
                 }}
                 className={'w-16'}
                 value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
+                min={0}
               />
             </Col>
             <Col>
@@ -325,6 +415,7 @@ export const OptionalProfileUserForm = (props: {
                 }}
                 className={'w-16'}
                 value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
+                min={0}
               />
             </Col>
             <div className="self-end mb-2 text-ink-700 mx-2">
@@ -348,9 +439,10 @@ export const OptionalProfileUserForm = (props: {
                   }
                 }}
                 className={'w-20'}
-                value={heightFeet !== undefined
-                  ? Math.round((heightFeet * 12 + (heightInches ?? 0)) * 2.54)
+                value={heightFeet !== undefined && profile['height_in_inches']
+                  ? Math.round(profile['height_in_inches'] * 2.54)
                   : ''}
+                min={0}
               />
             </Col>
           </Row>

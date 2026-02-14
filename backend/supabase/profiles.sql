@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     gender TEXT NOT NULL,
     geodb_city_id TEXT,
     has_kids INTEGER,
-    height_in_inches INTEGER,
+    height_in_inches float4,
     id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     image_descriptions jsonb,
     is_smoker BOOLEAN,

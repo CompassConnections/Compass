@@ -69,7 +69,7 @@
   "add_photos.add_description": "Ajouter une description",
   "add_photos.profile_picture_hint": "L'image mise en surbrillance est votre photo de profil",
   "answers.add.error_create": "Erreur lors de la création de la question de compatibilité. Réessayez ?",
-  "answers.add.submit_own": "Proposez la vôtre !",
+  "answers.add.submit_own": "proposez la vôtre !",
   "answers.answer.answer_skipped": "Répondre à {n} questions ignorées",
   "answers.answer.answer_yourself": "Répondez vous-même",
   "answers.answer.cta": "Répondre aux questions",

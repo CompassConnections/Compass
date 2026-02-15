@@ -69,7 +69,7 @@
   "add_photos.add_description": "Beschreibung hinzufügen",
   "add_photos.profile_picture_hint": "Das hervorgehobene Bild ist Ihr Profilbild",
   "answers.add.error_create": "Fehler beim Erstellen der Kompatibilitätsfrage. Erneut versuchen?",
-  "answers.add.submit_own": "Schlagen Sie Ihre eigene vor!",
+  "answers.add.submit_own": "schlagen Sie Ihre eigene vor!",
   "answers.answer.answer_skipped": "{n} übersprungene Fragen beantworten",
   "answers.answer.answer_yourself": "Selbst beantworten",
   "answers.answer.cta": "Fragen{core} beantworten",

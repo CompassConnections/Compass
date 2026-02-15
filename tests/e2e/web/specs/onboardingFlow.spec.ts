@@ -32,7 +32,7 @@ test.describe('when given valid input', () => {
         await signUpPage.setRelationshipStatus(testAccount.relationship_status);
         await signUpPage.setRelationshipStyle(testAccount.relationship_style);
         await signUpPage.fillCurrentNumberOfChildren(testAccount.number_of_kids);
-        // await signUpPage.setWantChildrenExpectation(testAccount.children_expectation);
+        await signUpPage.setWantChildrenExpectation(testAccount.children_expectation);
         await signUpPage.setInterests(testAccount.interests);
         await signUpPage.setCauses(testAccount.causes);
         await signUpPage.setHighestEducationLevel(testAccount.education_level);

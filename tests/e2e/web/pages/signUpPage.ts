@@ -81,6 +81,11 @@ export class SignUpPage {
     private readonly addWorkAreaButton: Locator;
     private readonly politicalBeliefDetailsField: Locator;
     private readonly religiousBeliefsDetailsField: Locator;
+    // private readonly opennessPersonalitySlider: Locator;
+    // private readonly conscientiousnessPersonalitySlider: Locator;
+    // private readonly extraversionPersonalitySlider: Locator;
+    // private readonly agreeablenessPersonalitySlider: Locator;
+    // private readonly neuroticismPersonalitySlider: Locator;
     private readonly smokerField: Locator;
     private readonly nonSmokerField: Locator;
     private readonly alcoholConsumedPerMonthField: Locator;
@@ -95,7 +100,7 @@ export class SignUpPage {
         this.displayNameField = page.getByPlaceholder('Display name');
         this.usernameField = page.getByPlaceholder('Username');
         this.nextButton = page.getByRole('button', { name: 'Next',  exact: true });
-        this.bioField = page.locator('//div[@contenteditable="true"]/p'); //Very brittle needs data-test attribute
+        this.bioField = page.locator('.tiptap');
         this.locationField = page.getByPlaceholder('Search city...');
         this.ageField = page.getByPlaceholder('Age', { exact: true });
         this.feetHeightField = page.getByTestId('height-feet');
@@ -103,15 +108,15 @@ export class SignUpPage {
         this.centimetersHeightField = page.getByTestId('height-centimeters');
         this.interestedInWomenCheckbox = page.getByRole('checkbox', { name: 'Women',  exact: true });
         this.interestedInMenCheckbox = page.getByRole('checkbox', { name: 'Men',  exact: true });
-        this.interestedInOtherCheckbox = page.locator('div').filter({ hasText: 'Other' }).first(); //Very brittle needs data-test attribute
+        this.interestedInOtherCheckbox = page.getByRole('checkbox', { name: 'Other' }).nth(1);
         this.minAgeOption = page.getByTestId('pref-age-min');
         this.maxAgeOption = page.getByTestId('pref-age-max');
         this.currentNumberOfKidsField = page.getByTestId('current-number-of-kids');
-        this.stronglyDisagreeOnWantingKids = page.locator('#headlessui-radiogroup-option-\:rgh\:');
-        this.disagreeOnWantingKids = page.locator('#headlessui-radiogroup-option-\:rgj\:');
-        this.neutralOnWantingKids = page.locator('#headlessui-radiogroup-option-\:rgl\:');
-        this.agreeOnWantingKids = page.locator('#headlessui-radiogroup-option-\:rgn\:');
-        this.stronglyAgreeOnWantingKids = page.locator('#headlessui-radiogroup-option-\:rgp\:');
+        this.stronglyDisagreeOnWantingKids = page.locator('[id="headlessui-radiogroup-option-:r49:"]');
+        this.disagreeOnWantingKids = page.locator('[id="headlessui-radiogroup-option-:r4b:"]');
+        this.neutralOnWantingKids = page.locator('[id="headlessui-radiogroup-option-:r4d:"]');
+        this.agreeOnWantingKids = page.locator('[id="headlessui-radiogroup-option-:r4f:"]');
+        this.stronglyAgreeOnWantingKids = page.locator('[id="headlessui-radiogroup-option-:r4h:"]');
         this.addInterestsField = page.getByRole('textbox', { name: 'Search or add' }).first();
         this.addInterestsButton = page.getByRole('button', { name: 'Add' }).first();
         this.addCausesField = page.getByRole('textbox', { name: 'Search or add' }).nth(1);
@@ -363,10 +368,10 @@ export class SignUpPage {
                 await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeVisible();
                 await this.page.getByLabel(`${workArea[i]}`, { exact: true}).click();
             } else {
-                await expect(this.addCausesField).toBeVisible();
-                await expect(this.addCausesButton).toBeVisible();
-                await this.addCausesField.fill(workArea[i]);
-                await this.addCausesButton.click();
+                await expect(this.addWorkAreaField).toBeVisible();
+                await expect(this.addWorkAreaButton).toBeVisible();
+                await this.addWorkAreaField.fill(workArea[i]);
+                await this.addWorkAreaButton.click();
             };
             await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeVisible();
             await expect(this.page.getByLabel(`${workArea[i]}`, { exact: true})).toBeChecked();

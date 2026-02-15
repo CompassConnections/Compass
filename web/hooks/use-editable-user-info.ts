@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { cleanDisplayName, cleanUsername } from 'common/util/clean-username'
-import { APIError } from 'common/api/utils'
-import { User } from 'common/user'
-import { updateUser } from 'web/lib/api'
+import {useState} from 'react'
+import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
+import {APIError} from 'common/api/utils'
+import {User} from 'common/user'
+import {updateUser} from 'web/lib/api'
 
 type UserInfoState = {
   name: string
@@ -24,19 +24,19 @@ export const useEditableUserInfo = (user: User) => {
   })
 
   const updateUserState = (newState: Partial<UserInfoState>) => {
-    setUserInfo((prevState) => ({ ...prevState, ...newState }))
+    setUserInfo((prevState) => ({...prevState, ...newState}))
   }
 
   const updateDisplayName = async () => {
     const newName = cleanDisplayName(userInfo.name)
     if (newName === user.name) return
 
-    updateUserState({ loadingName: true, errorName: '' })
-    if (!newName) return updateUserState({ name: user.name })
+    updateUserState({loadingName: true, errorName: ''})
+    if (!newName) return updateUserState({name: user.name})
 
     try {
-      await updateUser({ name: newName })
-      updateUserState({ errorName: '', name: newName })
+      await updateUser({name: newName})
+      updateUserState({errorName: '', name: newName})
     } catch (reason) {
       updateUserState({
         errorName: (reason as APIError).message,
@@ -44,33 +44,34 @@ export const useEditableUserInfo = (user: User) => {
       })
     }
 
-    updateUserState({ loadingName: false })
+    updateUserState({loadingName: false})
   }
 
   const updateUsername = async () => {
     const newUsername = cleanUsername(userInfo.username)
-    if (newUsername === user.username) return
+    // console.log({newUsername})
+    if (newUsername === user.username) return true
 
-    updateUserState({ loadingUsername: true, errorUsername: '' })
+    updateUserState({loadingUsername: true, errorUsername: ''})
 
+    let success = true
     try {
-      await updateUser({ username: newUsername })
-      updateUserState({ errorUsername: '', username: newUsername })
+      await updateUser({username: newUsername})
+      updateUserState({errorUsername: ''})
       user.username = newUsername
     } catch (reason) {
-      updateUserState({
-        errorUsername: (reason as APIError).message,
-        username: user.username,
-      })
+      updateUserState({errorUsername: (reason as APIError).message})
+      success = false
     }
 
-    updateUserState({ loadingUsername: false })
+    updateUserState({loadingUsername: false})
+    return success
   }
 
   return {
     userInfo,
     updateDisplayName,
-    updateUsername,
     updateUserState,
+    updateUsername,
   }
 }

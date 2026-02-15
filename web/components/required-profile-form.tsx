@@ -49,7 +49,7 @@ export const RequiredProfileUserForm = (props: {
   profileCreatedAlready?: boolean
 }) => {
   const {user, onSubmit, profileCreatedAlready, setProfile, profile, isSubmitting} = props
-  const {updateUsername, updateDisplayName, userInfo, updateUserState} = useEditableUserInfo(user)
+  const {updateDisplayName, userInfo, updateUserState, updateUsername} = useEditableUserInfo(user)
 
   const [step, setStep] = useState<number>(0)
   const t = useT()
@@ -100,7 +100,7 @@ export const RequiredProfileUserForm = (props: {
           <div className="text-ink-500 mb-6 text-lg">
             {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
           </div>}
-      <Col className={'gap-8 pb-[env(safe-area-inset-bottom)]'}>
+      <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-fit'}>
         {step === 0 && <Col>
             <label className={clsx(labelClassName)}>
               {t('profile.basics.display_name', 'Display name')}
@@ -128,14 +128,13 @@ export const RequiredProfileUserForm = (props: {
               </label>
               <Row className={'items-center gap-2'}>
                   <Input
-                      disabled={loadingUsername}
+                    // disabled={loadingUsername}
                       type="text"
                       placeholder="Username"
                       value={username}
                       onChange={(e) => {
-                        updateUserState({username: e.target.value || ''})
+                        updateUserState({username: e.target.value || '', errorUsername: ''})
                       }}
-                      onBlur={updateUsername}
                   />
                 {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
               </Row>
@@ -163,13 +162,19 @@ export const RequiredProfileUserForm = (props: {
         {onSubmit && (
           <Row className={'justify-end'}>
             <Button
-              disabled={!canContinue || isSubmitting}
+              disabled={!canContinue || isSubmitting || loadingUsername}
               loading={isSubmitting}
-              onClick={() => {
-                if (step === 1) {
-                  onSubmit()
-                } else {
-                  setStep(1)
+              onClick={async () => {
+                let success = true
+                if (step === 0) {
+                  success = await updateUsername()
+                }
+                if (success) {
+                  if (step === 1) {
+                    onSubmit()
+                  } else {
+                    setStep(1)
+                  }
                 }
               }}
             >

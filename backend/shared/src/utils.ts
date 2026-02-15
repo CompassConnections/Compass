@@ -41,7 +41,7 @@ export const getUserByUsername = async (
   const res = await pg.oneOrNone(
     `select *
      from users
-     where username = $1`,
+     where username ilike $1`,
     username
   )
 

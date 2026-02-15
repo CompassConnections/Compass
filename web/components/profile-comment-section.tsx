@@ -27,7 +27,7 @@ export const ProfileCommentSection = (props: {
   const [profile, setProfile] = useState<Profile>(props.profile)
   const isCurrentUser = currentUser?.id === onUser.id
 
-  if (simpleView && (!profile.comments_enabled || parentComments.length == 0))
+  if (!currentUser && (!profile.comments_enabled || parentComments.length == 0))
     return null
 
   return (
@@ -62,7 +62,7 @@ export const ProfileCommentSection = (props: {
       </Row>
       {!simpleView && (
         <>
-          {profile.comments_enabled && (
+          {currentUser && profile.comments_enabled && (
             <>
               <div className="mb-4">
                 {isCurrentUser ? (
@@ -71,7 +71,7 @@ export const ProfileCommentSection = (props: {
                   <>{t('profile.comments.other_user_hint', 'If you know them, write something nice that adds to their profile.')}</>
                 )}
               </div>
-              {currentUser && !isCurrentUser && (
+              {!isCurrentUser && (
                 <ProfileCommentInput
                   className="mb-4 mr-px mt-px"
                   onUserId={onUser.id}

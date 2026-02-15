@@ -13,8 +13,8 @@ export class OnboardingPage {
         this.skipOnboardingLink = page.getByRole('button', { name: 'Skip onboarding', exact: true });
         this.backButton = page.getByRole('button', { name: 'Back' });
         this.getStartedButton = page.getByRole('button', { name: 'Get started' });
-        this.exploreProfilesNowButton = page.getByRole('button', {});
-        this.refineProfileButton = page.getByRole('button', {});
+        this.exploreProfilesNowButton = page.getByRole('button', { name: 'Explore Profiles Now', exact: true });
+        this.refineProfileButton = page.getByRole('button', { name: 'Refine Profile', exact: true });
     };
 
     async clickContinueButton() {

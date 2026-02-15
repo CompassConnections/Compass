@@ -2,6 +2,7 @@ import {
     ConnectionType,
     Ethnicity,
     Gender,
+    InterestedIn,
     RelationshipStatus,
     RelationshipStyle,
     ChildrenExpectation,
@@ -26,7 +27,7 @@ export type OnboardingUser = {
     age?: string;
     height?: Height;
     ethnicity_origin?: Ethnicity;
-    interested_in?: Gender;
+    interested_in?: InterestedIn;
     Interested_in_ages?: InterestedInAges;
     connection_type?: ConnectionType;
     relationship_status?: RelationshipStatus;
@@ -95,7 +96,7 @@ export const onboarding: OnboardingConfig = {
             "centimeters": "182.88"
         },
         "ethnicity_origin": "South/Southeast Asian",
-        "interested_in": "Man",
+        "interested_in": "Men",
         "Interested_in_ages": {
             "min": "20",
             "max": "30"

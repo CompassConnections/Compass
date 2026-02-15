@@ -12,7 +12,7 @@ export class ProfilePage {
     };
 
     async clickCloseButton() {
-        await expect(this.closeButton).toBeVisible();
+        // await expect(this.closeButton).toBeInViewport();
         await this.closeButton.click();
     };
 

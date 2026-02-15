@@ -13,6 +13,7 @@ import {
 } from "../../../../web/components/filters/choices";
 
 export type Gender = 'Woman' | 'Man' | 'Other';
+export type InterestedIn = 'Women' | 'Men' | 'Other';
 export type ConnectionType = keyof typeof RELATIONSHIP_CHOICES;
 export type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES;
 export type RelationshipStyle = keyof typeof ROMANTIC_CHOICES;
@@ -210,12 +211,12 @@ export class SignUpPage {
         };
     };
 
-    async fillInterestedInConnectingWith(interestedIn: Gender | undefined) {
-        if (interestedIn === "Man") {
+    async fillInterestedInConnectingWith(interestedIn: InterestedIn | undefined) {
+        if (interestedIn === "Men") {
             await expect(this.interestedInMenCheckbox).toBeVisible();
             await this.interestedInMenCheckbox.click()
             await expect(this.interestedInMenCheckbox).toBeChecked();
-        } else if (interestedIn === "Woman") {
+        } else if (interestedIn === "Women") {
             await expect(this.interestedInWomenCheckbox).toBeVisible();
             await this.interestedInWomenCheckbox.click()
             await expect(this.interestedInWomenCheckbox).toBeChecked();

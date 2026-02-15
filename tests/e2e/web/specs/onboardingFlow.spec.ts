@@ -51,6 +51,10 @@ test.describe('when given valid input', () => {
         await signUpPage.clickNextButton();
         await profilePage.clickCloseButton();
         await onboardingPage.clickRefineProfileButton();
+        await expect(
+            profilePage.page.getByText(
+                `Interested in ${testAccount.interested_in?.toLowerCase()} between ${testAccount.Interested_in_ages?.min} - ${testAccount.Interested_in_ages?.max} years old`,
+                { exact: true })).toBeVisible();
     });
 });
 

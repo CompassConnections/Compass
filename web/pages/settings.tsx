@@ -121,7 +121,7 @@ const LoadedGeneralSettings = (props: {
       <LanguagePicker className={'w-fit min-w-[120px]'}/>
 
       <h3>{t('settings.general.font', 'Font')}</h3>
-      <FontPicker className={'w-fit min-w-[160px]'}/>
+      <FontPicker className={'w-fit min-w-[180px]'}/>
 
       <h3>{t('settings.data_privacy.title', 'Data & Privacy')}</h3>
       <DataPrivacySettings/>

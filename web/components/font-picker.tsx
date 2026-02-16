@@ -1,10 +1,16 @@
 'use client'
 
 import clsx from 'clsx'
-import {useFontPreference, FontOption} from 'web/hooks/use-font-preference'
+import {FontOption, useFontPreference} from 'web/hooks/use-font-preference'
 import {useT} from 'web/lib/locale'
 
 const FONT_OPTIONS: FontOption[] = ['atkinson', 'system-sans', 'classic-serif']
+
+const EN_TRANSLATIONS = {
+  "atkinson": "Atkinson Hyperlegible",
+  "system-sans": "Sytem Sans-serif",
+  "classic-serif": "Classic Serif"
+}
 
 export function FontPicker(props: { className?: string } = {}) {
   const {className} = props
@@ -20,7 +26,7 @@ export function FontPicker(props: { className?: string } = {}) {
     >
       {FONT_OPTIONS.map((option) => (
         <option key={option} value={option}>
-          {t(`font.${option}`, option)}
+          {t(`font.${option}`, EN_TRANSLATIONS[option] ?? option)}
         </option>
       ))}
     </select>

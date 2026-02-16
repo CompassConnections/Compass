@@ -1042,5 +1042,9 @@
   "more_options_user.edit_profile": "Profil bearbeiten",
   "more_options_user.profile_options": "Profiloptionen",
   "more_options_user.edit_bio": "Bio bearbeiten",
-  "vote.with_priority": "mit Priorität"
+  "vote.with_priority": "mit Priorität",
+  "settings.general.font": "Schriftart",
+  "font.atkinson": "Atkinson Hyperlegible",
+  "font.system-sans": "System Sans",
+  "font.classic-serif": "Klassische Serifenschrift"
 }

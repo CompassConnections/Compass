@@ -1,16 +1,9 @@
 import {useEffect} from 'react'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-
-export type FontOption = 'atkinson' | 'system-sans' | 'classic-serif'
-
-const FONT_VARIABLES: Record<FontOption, string> = {
-  atkinson: '"Atkinson Hyperlegible Next", Georgia, "Times New Roman", Times, serif',
-  'system-sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
-  'classic-serif': 'Georgia, "Times New Roman", Times, serif',
-}
+import {DEFAULT_FONT_PREFERENCE, FontOption, FONT_FAMILIES} from 'web/lib/font-preference'
 
 export const useFontPreference = () => {
-  const [font, setFontState] = usePersistentLocalState<FontOption>('atkinson', 'font-preference')
+  const [font, setFontState] = usePersistentLocalState<FontOption>(DEFAULT_FONT_PREFERENCE, 'font-preference')
 
   const setFont = (newFont: FontOption) => {
     setFontState(newFont)
@@ -27,11 +20,11 @@ export const useFontPreferenceManager = () => {
 }
 
 export const applyFontPreference = (font: FontOption) => {
-  const fontFamily = FONT_VARIABLES[font] ?? FONT_VARIABLES.atkinson
+  const fontFamily = FONT_FAMILIES[font] ?? FONT_FAMILIES[DEFAULT_FONT_PREFERENCE]
   document.documentElement.style.setProperty('--font-main', fontFamily)
 }
 
 const getStoredFontPreference = (): FontOption => {
-  if (typeof window === 'undefined') return 'atkinson'
-  return JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? 'atkinson'
+  if (typeof window === 'undefined') return DEFAULT_FONT_PREFERENCE
+  return JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? DEFAULT_FONT_PREFERENCE
 }

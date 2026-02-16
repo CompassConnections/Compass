@@ -8,14 +8,13 @@
   }
 
   const localFontPreference = localStorage.getItem('font-preference')
-  const fontPreference = localFontPreference ? JSON.parse(localFontPreference) : 'atkinson'
-
-  const fontFamilies = {
+  const defaultFont = window.__COMPASS_DEFAULT_FONT__ || 'atkinson'
+  const fontPreference = localFontPreference ? JSON.parse(localFontPreference) : defaultFont
+  const fontFamilies = window.__COMPASS_FONT_FAMILIES__ || {
     atkinson: '"Atkinson Hyperlegible Next", Georgia, "Times New Roman", Times, serif',
     'system-sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
     'classic-serif': 'Georgia, "Times New Roman", Times, serif',
   }
 
-  document.documentElement.style.setProperty('--font-main', fontFamilies[fontPreference] ?? fontFamilies.atkinson)
-
+  document.documentElement.style.setProperty('--font-main', fontFamilies[fontPreference] ?? fontFamilies[defaultFont])
 }

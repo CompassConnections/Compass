@@ -1,7 +1,8 @@
 'use client'
 
 import clsx from 'clsx'
-import {useFontPreference, FontOption} from 'web/hooks/use-font-preference'
+import {useFontPreference} from 'web/hooks/use-font-preference'
+import {FontOption} from 'web/lib/font-preference'
 import {useT} from 'web/lib/locale'
 
 const FONT_OPTIONS: FontOption[] = ['atkinson', 'system-sans', 'classic-serif']

@@ -1046,7 +1046,7 @@ const Big5Slider = (props: {
     <div>
       <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
         <span>{label}</span>
-        <span className="font-semibold text-ink-700">{Math.round(value)}</span>
+        <span className="font-semibold text-ink-700" data-testid={`${label.toLowerCase()}-value`}>{Math.round(value)}</span>
       </div>
       <Slider
         amount={value}

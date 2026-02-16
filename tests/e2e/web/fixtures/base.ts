@@ -15,9 +15,13 @@ export const test = base.extend<{
     authPage: AuthPage,
     cleanUpUsers: void;
     testAccount: OnboardingUser
+    fakerAccount: OnboardingUser
 }>({
     testAccount: async({}, use) => {
         await use(onboarding.account_one)
+    },
+    fakerAccount: async({}, use) => {
+        await use(onboarding.faker_account)
     },
     onboardingPage: async ({page}, use) => {
         const onboardingPage = new OnboardingPage(page);

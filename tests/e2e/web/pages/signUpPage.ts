@@ -81,11 +81,16 @@ export class SignUpPage {
     private readonly addWorkAreaButton: Locator;
     private readonly politicalBeliefDetailsField: Locator;
     private readonly religiousBeliefsDetailsField: Locator;
-    // private readonly opennessPersonalitySlider: Locator;
-    // private readonly conscientiousnessPersonalitySlider: Locator;
-    // private readonly extraversionPersonalitySlider: Locator;
-    // private readonly agreeablenessPersonalitySlider: Locator;
-    // private readonly neuroticismPersonalitySlider: Locator;
+    private readonly opennessPersonalitySlider: Locator;
+    private readonly opennessPersonalityValue: Locator;
+    private readonly conscientiousnessPersonalitySlider: Locator;
+    private readonly conscientiousnessPersonalityValue: Locator;
+    private readonly extraversionPersonalitySlider: Locator;
+    private readonly extraversionPersonalityValue: Locator;
+    private readonly agreeablenessPersonalitySlider: Locator;
+    private readonly agreeablenessPersonalityValue: Locator;
+    private readonly neuroticismPersonalitySlider: Locator;
+    private readonly neuroticismPersonalityValue: Locator;
     private readonly smokerField: Locator;
     private readonly nonSmokerField: Locator;
     private readonly alcoholConsumedPerMonthField: Locator;
@@ -129,6 +134,16 @@ export class SignUpPage {
         this.addWorkAreaButton = page.getByRole('button', { name: 'Add' }).nth(2);
         this.politicalBeliefDetailsField = page.getByTestId('political-belief-details');
         this.religiousBeliefsDetailsField = page.getByTestId('religious-belief-details');
+        this.opennessPersonalitySlider = page.getByRole('slider').first();
+        this.opennessPersonalityValue = page.getByTestId('openness-value');
+        this.conscientiousnessPersonalitySlider = page.getByRole('slider').nth(1);
+        this.conscientiousnessPersonalityValue = page.getByTestId('conscientiousness-value');
+        this.extraversionPersonalitySlider = page.getByRole('slider').nth(2);
+        this.extraversionPersonalityValue = page.getByTestId('extraversion-value');
+        this.agreeablenessPersonalitySlider = page.getByRole('slider').nth(3);
+        this.agreeablenessPersonalityValue = page.getByTestId('agreeableness-value');
+        this.neuroticismPersonalitySlider = page.getByRole('slider').nth(4);
+        this.neuroticismPersonalityValue = page.getByTestId('neuroticism-value');
         this.smokerField = page.getByText('Yes', { exact: true });
         this.nonSmokerField = page.getByText('No', { exact: true });
         this.alcoholConsumedPerMonthField = page.getByTestId('alcohol-consumed-per-month');
@@ -412,6 +427,161 @@ export class SignUpPage {
         await expect(this.page.getByText(`${personalityType}`, { exact: true })).toBeVisible();
         await this.page.getByText(`${personalityType}`, { exact: true }).click();
         await expect(this.page.getByText(`${personalityType}`, { exact: true })).toBeChecked();
+    };
+
+    async setOpennessPersonalityValue(value: number | undefined) {
+        if (!value) return;
+        await expect(this.opennessPersonalitySlider).toBeVisible();
+        await expect(this.opennessPersonalityValue).toBeVisible();
+        await this.opennessPersonalitySlider.click();
+        const originalValue = await this.opennessPersonalityValue.textContent();
+        if (!originalValue) return;
+        if (parseInt(originalValue) < value) {
+            while (true) {
+                const actualValue = await this.opennessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) >= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowRight');
+            };
+        };
+        if (parseInt(originalValue) > value) {
+            while (true) {
+                const actualValue = await this.opennessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) <= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowLeft');
+            };
+        };
+    };
+
+    async setConscientiousnessPersonalityValue(value: number | undefined) {
+        if (!value) return;
+        await expect(this.conscientiousnessPersonalitySlider).toBeVisible();
+        await expect(this.conscientiousnessPersonalityValue).toBeVisible();
+        await this.conscientiousnessPersonalitySlider.click();
+        const originalValue = await this.conscientiousnessPersonalityValue.textContent();
+        if (!originalValue) return;
+        if (parseInt(originalValue) < value) {
+            while (true) {
+                const actualValue = await this.conscientiousnessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) >= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowRight');
+            };
+        };
+        if (parseInt(originalValue) > value) {
+            while (true) {
+                const actualValue = await this.conscientiousnessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) <= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowLeft');
+            };
+        };
+    };
+
+    async setExtraversionPersonalityValue(value: number | undefined) {
+        if (!value) return;
+        await expect(this.extraversionPersonalitySlider).toBeVisible();
+        await expect(this.extraversionPersonalityValue).toBeVisible();
+        await this.extraversionPersonalitySlider.click();
+        const originalValue = await this.extraversionPersonalityValue.textContent();
+        if (!originalValue) return;
+        if (parseInt(originalValue) < value) {
+            while (true) {
+                const actualValue = await this.extraversionPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) >= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowRight');
+            };
+        };
+        if (parseInt(originalValue) > value) {
+            while (true) {
+                const actualValue = await this.extraversionPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) <= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowLeft');
+            };
+        };
+    };
+
+    async setAgreeablenessPersonalityValue(value: number | undefined) {
+        if (!value) return;
+        await expect(this.agreeablenessPersonalitySlider).toBeVisible();
+        await expect(this.agreeablenessPersonalityValue).toBeVisible();
+        await this.agreeablenessPersonalitySlider.click();
+        const originalValue = await this.agreeablenessPersonalityValue.textContent();
+        if (!originalValue) return;
+        if (parseInt(originalValue) < value) {
+            while (true) {
+                const actualValue = await this.agreeablenessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) >= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowRight');
+            };
+        };
+        if (parseInt(originalValue) > value) {
+            while (true) {
+                const actualValue = await this.agreeablenessPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) <= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowLeft');
+            };
+        };
+    };
+
+    async setNeuroticismPersonalityValue(value: number | undefined) {
+        if (!value) return;
+        await expect(this.neuroticismPersonalitySlider).toBeVisible();
+        await expect(this.neuroticismPersonalityValue).toBeVisible();
+        await this.neuroticismPersonalitySlider.click();
+        const originalValue = await this.neuroticismPersonalityValue.textContent();
+        if (!originalValue) return;
+        if (parseInt(originalValue) < value) {
+            while (true) {
+                const actualValue = await this.neuroticismPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) >= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowRight');
+            };
+        };
+        if (parseInt(originalValue) > value) {
+            while (true) {
+                const actualValue = await this.neuroticismPersonalityValue.textContent();
+                if (!actualValue) break;
+                
+                if (parseInt(actualValue) <= value) {
+                    break;
+                };
+                await this.page.keyboard.press('ArrowLeft');
+            };
+        };
     };
 
     async setDietType(dietType: Diet | undefined) {

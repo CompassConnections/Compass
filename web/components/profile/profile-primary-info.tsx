@@ -18,7 +18,7 @@ export default function ProfilePrimaryInfo(props: { profile: Profile }) {
       ? profile.region_code
       : profile.country
   return (
-    <Row className="text-ink-700 gap-4 text-sm">
+    <Row className="text-ink-700 gap-4 text-sm" data-testid="profile-gender-location-height-inches">
       {profile.city && <IconWithInfo
         text={`${profile.city ?? ''}, ${stateOrCountry ?? ''}`}
         icon={<IoLocationOutline className="h-4 w-4" />}

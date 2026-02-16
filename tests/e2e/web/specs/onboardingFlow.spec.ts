@@ -39,10 +39,11 @@ test.describe('when given valid input', () => {
         await signUpPage.fillUniversity(testAccount.university);
         await signUpPage.fillJobTitle(testAccount.job_title);
         await signUpPage.fillCompany(testAccount.company);
-        await signUpPage.setWorkArea(testAccount.work_area);
-        await signUpPage.setPoliticalBeliefs(testAccount.beliefs?.political?.belief);
-        await signUpPage.setReligiousBeliefs(testAccount.beliefs?.religious?.belief);
+        await signUpPage.setWorkArea(testAccount.work_area); //Is not displayed correctly
+        await signUpPage.setPoliticalBeliefs(testAccount.beliefs?.political?.belief, testAccount.beliefs?.political?.details);
+        await signUpPage.setReligiousBeliefs(testAccount.beliefs?.religious?.belief, testAccount.beliefs?.religious?.details);
         await signUpPage.setPersonalityType(testAccount.personality_type);
+        await signUpPage.setOpennessPersonalityValue(testAccount.big_five_personality_traits?.openness);
         await signUpPage.setDietType(testAccount.diet);
         await signUpPage.setIsSmoker(testAccount.is_smoker);
         await signUpPage.fillAlcoholPerMonth(testAccount.alcohol_consumed_per_month);
@@ -51,10 +52,61 @@ test.describe('when given valid input', () => {
         await signUpPage.clickNextButton();
         await profilePage.clickCloseButton();
         await onboardingPage.clickRefineProfileButton();
-        await expect(
-            profilePage.page.getByText(
-                `Interested in ${testAccount.interested_in?.toLowerCase()} between ${testAccount.Interested_in_ages?.min} - ${testAccount.Interested_in_ages?.max} years old`,
-                { exact: true })).toBeVisible();
+
+        await profilePage.verifyDisplayNameAndAge(testAccount.display_name, testAccount.age);
+        await profilePage.verifyGenderLocationHeight(
+            testAccount.gender,
+            undefined,
+            testAccount.height?.feet,
+            testAccount.height?.inches
+        );
+        await profilePage.verifyIntrestedInConnectingWith(
+            testAccount.interested_in,
+            testAccount.Interested_in_ages?.min,
+            testAccount.Interested_in_ages?.max
+        );
+        await profilePage.verifyRelationShipTypeAndInterest(testAccount.connection_type, testAccount.relationship_style);
+        await profilePage.verifyRelationshipStatus(testAccount.relationship_status);
+        await profilePage.verifyCurrentNumberOfKids(testAccount.number_of_kids);
+        await profilePage.verifyWantChildrenExpectation(testAccount.children_expectation);
+        await profilePage.verifyInterests(testAccount.interests);
+        await profilePage.verifyCauses(testAccount.causes);
+        await profilePage.verifyEducationLevelAndUniversity(testAccount.education_level, testAccount.university);
+        await profilePage.verifyJobInformation(testAccount.job_title, testAccount.company);
+        await profilePage.verifyPoliticalBeliefs(testAccount.beliefs?.political?.belief, testAccount.beliefs?.political?.details);
+        await profilePage.verifyReligiousBeliefs(testAccount.beliefs?.religious?.belief, testAccount.beliefs?.religious?.details);
+        await profilePage.verifyPersonalityType(testAccount.personality_type);
+        await profilePage.verifyBigFivePersonalitySection(testAccount.big_five_personality_traits);
+        await profilePage.verifyDiet(testAccount.diet);
+        await profilePage.verifySmoker(testAccount.is_smoker);
+        await profilePage.verifyDrinksPerMonth(testAccount.alcohol_consumed_per_month);
+        await profilePage.verifyLanguages(testAccount.languages);
+        await profilePage.verifySocialMedia(testAccount.social_media);
+               
+
+
+    });
+    test('should successfully skip the onboarding flow', async ({
+        homePage,
+        onboardingPage,
+        signUpPage,
+        authPage,
+        profilePage,
+        fakerAccount
+    }) => {
+        await homePage.gotToHomePage();
+        await homePage.clickSignUpButton();
+        await authPage.fillEmailField(fakerAccount.email);
+        await authPage.fillPasswordField(fakerAccount.password);
+        await authPage.clickSignUpWithEmailButton();
+        await onboardingPage.clickSkipOnboardingButton();
+        await signUpPage.fillDisplayName(fakerAccount.display_name);
+        await signUpPage.fillUsername(fakerAccount.username);
+        await signUpPage.clickNextButton();
+        await signUpPage.clickNextButton(); //Skip bio
+        await signUpPage.clickNextButton(); //Skip optional information
+        await profilePage.clickCloseButton();
+        await onboardingPage.clickRefineProfileButton();
     });
 });
 

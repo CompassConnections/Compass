@@ -25,6 +25,7 @@ export function Tooltip(props: {
   noFade?: boolean
   hasSafePolygon?: boolean
   suppressHydrationWarning?: boolean
+  testId?: string
 }) {
   const {
     text,
@@ -34,6 +35,7 @@ export function Tooltip(props: {
     noFade,
     hasSafePolygon,
     suppressHydrationWarning,
+    testId
   } = props
 
   const arrowRef = useRef(null)
@@ -141,6 +143,7 @@ export function Tooltip(props: {
   return text ? (
     <>
       <span
+        data-testid={testId}
         suppressHydrationWarning={suppressHydrationWarning}
         className={className}
         ref={reference}

@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import {
     ConnectionType,
     Ethnicity,
@@ -43,6 +44,7 @@ export type OnboardingUser = {
     work_area?: string[],
     beliefs?: BeliefDetails,
     personality_type?: Personality,
+    big_five_personality_traits?: FiveBigPersonalityTraits,
     diet?: Diet,
     is_smoker?: boolean,
     alcohol_consumed_per_month?: string,
@@ -72,16 +74,31 @@ type BeliefDetails = {
     },
 };
 
-type Socials = {
+export type Socials = {
     platform: Platforms;
     urlOrUsername: string;
 };
 
+type FiveBigPersonalityTraits = {
+    openness?: number;
+    conscientiousness?: number;
+    extraversion?: number;
+    agreeableness?: number;
+    neutroticism?: number;
+};
+
 type OnboardingConfig = {
+    faker_account: OnboardingUser;
     account_one: OnboardingUser;
 };
 
 export const onboarding: OnboardingConfig = {
+    "faker_account": {
+        "email": faker.internet.email(),
+        "password": faker.internet.password(),
+        "display_name": faker.internet.displayName(),
+        "username": faker.internet.username(),
+    },
     "account_one": {
         "email": "onboardingOne@compass.com",
         "password": "CompassTest",
@@ -115,13 +132,18 @@ export const onboarding: OnboardingConfig = {
         "work_area": ["Living Room", "University"],
         "beliefs": {
             "political": {
-                "belief": "Green / Eco-Socialist"
+                "belief": "Green / Eco-Socialist",
+                "details": "This will be details"
             },
             "religious": {
-                "belief": "Shinto"
+                "belief": "Shinto",
+                "details": "This will be details"
             },
         },
         "personality_type": "ENFJ",
+        "big_five_personality_traits": {
+            "openness": 43
+        },
         "diet": "Omnivore",
         "is_smoker": false,
         "alcohol_consumed_per_month": "4",

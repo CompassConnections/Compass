@@ -40,6 +40,7 @@ export function UserHandles(props: { links: Socials; className?: string }) {
         'text-ink-400 flex-wrap items-center gap-2 sm:gap-x-4',
         className
       )}
+      data-testid="profile-social-media-accounts"
     >
       {display.map(({platform, label, url}) => (
         <a key={platform} target="_blank" href={url}>

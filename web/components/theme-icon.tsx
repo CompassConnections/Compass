@@ -29,7 +29,8 @@ export default function ThemeIcon(props: {
     <SunIcon className={clsx(className, 'block dark:hidden')}/>
   </>
   return <button onClick={toggleTheme}>
-    <Row className="items-center gap-1 border-2 border-gray-500 rounded-full p-1 max-w-fit mx-2 px-3">
+    <Row
+      className="items-center gap-1 border-2 border-gray-500 rounded-full p-1 max-w-fit mx-2 px-3 hover:bg-canvas-100">
       {icon}
     {children}
     </Row>

@@ -6,4 +6,16 @@
   if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark')
   }
+
+  const localFontPreference = localStorage.getItem('font-preference')
+  const fontPreference = localFontPreference ? JSON.parse(localFontPreference) : 'atkinson'
+
+  const fontFamilies = {
+    atkinson: '"Atkinson Hyperlegible Next", Georgia, "Times New Roman", Times, serif',
+    'system-sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+    'classic-serif': 'Georgia, "Times New Roman", Times, serif',
+  }
+
+  document.documentElement.style.setProperty('--font-main', fontFamilies[fontPreference] ?? fontFamilies.atkinson)
+
 }

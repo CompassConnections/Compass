@@ -19,6 +19,7 @@ import {WithPrivateUser} from "web/components/user/with-user";
 import {sendPasswordReset} from "web/lib/firebase/password";
 import {AboutSettings} from "web/components/about-settings";
 import {LanguagePicker} from "web/components/language/language-picker";
+import {FontPicker} from 'web/components/font-picker'
 import {useT} from "web/lib/locale";
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import {EmailVerificationButton} from "web/components/email-verification-button";
@@ -118,6 +119,9 @@ const LoadedGeneralSettings = (props: {
 
       <h3>{t('settings.general.language', 'Language')}</h3>
       <LanguagePicker className={'w-fit min-w-[120px]'}/>
+
+      <h3>{t('settings.general.font', 'Font')}</h3>
+      <FontPicker className={'w-fit min-w-[160px]'}/>
 
       <h3>{t('settings.data_privacy.title', 'Data & Privacy')}</h3>
       <DataPrivacySettings/>

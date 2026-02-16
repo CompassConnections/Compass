@@ -3,15 +3,12 @@ import {ENV_CONFIG} from 'common/envs/constants'
 import Script from 'next/script'
 import clsx from "clsx";
 import {IS_DEPLOYED} from "common/hosting/constants";
-import {DEFAULT_FONT_PREFERENCE, FONT_FAMILIES} from 'web/lib/font-preference'
 
 declare global {
   interface Window {
     AndroidBridge?: {
       downloadFile: (filename: string, content: string) => void
     }
-    __COMPASS_FONT_FAMILIES__?: typeof FONT_FAMILIES
-    __COMPASS_DEFAULT_FONT__?: string
   }
 }
 
@@ -36,14 +33,6 @@ export default function Document() {
         <link rel="manifest" href="/manifest.json"/>
         {/*/!* App icons *!/*/}
         <link rel="apple-touch-icon" href="https://www.compassmeet.com/favicon.ico"/>
-
-        <Script
-          id="init-font-families"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `window.__COMPASS_FONT_FAMILIES__ = ${JSON.stringify(FONT_FAMILIES)}; window.__COMPASS_DEFAULT_FONT__ = ${JSON.stringify(DEFAULT_FONT_PREFERENCE)};`,
-          }}
-        />
 
         <Script src="/init-theme.js" strategy="beforeInteractive"/>
         {IS_DEPLOYED && <Script id="devtools-warning" strategy="afterInteractive" dangerouslySetInnerHTML={{

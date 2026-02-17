@@ -187,9 +187,7 @@ docker --version
 Supabase CLI
 
 ```bash
-npm install -g supabase
-
-# Verify
+# Verify it got installed from `yarn install`
 npx supabase --version
 ```
 

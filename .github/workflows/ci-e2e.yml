@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '21'   # Required for firebase-tools@15+
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

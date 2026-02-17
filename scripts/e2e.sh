@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Change to project root
+cd "$(dirname "$0")"/..
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -9,17 +12,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Function to print colored output
-print_status() {
-  echo -e "${GREEN}[E2E]${NC} $1"
-}
-
-print_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
-}
-
-print_warning() {
-  echo -e "${YELLOW}[WARN]${NC} $1"
-}
+print_status() { echo -e "${GREEN}[E2E]${NC} $1"; }
+print_error()  { echo -e "${RED}[ERROR]${NC} $1"; }
+print_warning(){ echo -e "${YELLOW}[WARN]${NC} $1"; }
 
 # Array to track background process PIDs
 PIDS=()
@@ -36,6 +31,9 @@ cleanup() {
     fi
   done
 
+  # Stop Firebase emulators
+  ./scripts/firebase_stop.sh
+
   # Stop Docker containers
   if [ "${SKIP_DB_CLEANUP:-}" != "true" ]; then
     print_status "Stopping test database..."
@@ -48,13 +46,16 @@ cleanup() {
 # Trap EXIT, INT, TERM to run cleanup automatically
 trap cleanup EXIT INT TERM
 
-# Change to project root
-cd "$(dirname "$0")"/..
-
 # Load test environment variables
 if [ -f .env.test ]; then
   export $(cat .env.test | grep -v '^#' | xargs)
 fi
+
+# ✅ Kill stale processes from previous runs
+print_status "Killing any stale processes..."
+./scripts/firebase_stop.sh
+supabase stop --no-backup 2>/dev/null || true
+sleep 2  # Give ports time to free up
 
 # Start Supabase (includes Postgres, Auth, Storage, etc.)
 supabase start

@@ -64,6 +64,7 @@ export const OptionalProfileUserForm = (props: {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState((profile.pref_relation_styles || []).includes('relationship'))
+  const [ageError, setAgeError] = useState<string | null>(null)
   const router = useRouter()
   const t = useT()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
@@ -108,7 +109,39 @@ export const OptionalProfileUserForm = (props: {
     fetchChoices('work', locale).then(setWorkChoices)
   }, [db])
 
+  const errorToast = () => {
+    toast.error(
+      t(
+        'profile.optional.error.invalid_fields',
+        'Some fields are incorrect...'
+      )
+    )
+  }
+
   const handleSubmit = async () => {
+    // Validate age before submitting
+    if (profile['age'] !== null && profile['age'] !== undefined) {
+      if (profile['age'] < 18) {
+        setAgeError(
+          t(
+            'profile.optional.age.error_min',
+            'You must be at least 18 years old'
+          )
+        )
+        setIsSubmitting(false)
+        errorToast()
+        return
+      }
+      if (profile['age'] > 100) {
+        setAgeError(
+          t('profile.optional.age.error_max', 'Please enter a valid age')
+        )
+        setIsSubmitting(false)
+        errorToast()
+        return
+      }
+    }
+
     setIsSubmitting(true)
     const {
       // bio: _bio,
@@ -301,8 +334,27 @@ export const OptionalProfileUserForm = (props: {
             value={profile['age'] ?? undefined}
             min={18}
             max={100}
-            onChange={(e) => setProfile('age', e.target.value ? Number(e.target.value) : null)}
+            error={!!ageError}
+            onChange={(e) => {
+              const value = e.target.value ? Number(e.target.value) : null
+              if (value !== null && value < 18) {
+                setAgeError(
+                  t(
+                    'profile.optional.age.error_min',
+                    'You must be at least 18 years old'
+                  )
+                )
+              } else if (value !== null && value > 100) {
+                setAgeError(
+                  t('profile.optional.age.error_max', 'Please enter a valid age')
+                )
+              } else {
+                setAgeError(null)
+              }
+              setProfile('age', value)
+            }}
           />
+          {ageError && <p className="text-error text-sm mt-1">{ageError}</p>}
         </Col>
 
         <Col className={clsx(colClassName)}>

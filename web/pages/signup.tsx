@@ -14,6 +14,7 @@ import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {useLocale} from 'web/lib/locale'
+import {Toaster} from "react-hot-toast";
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
@@ -99,6 +100,10 @@ export default function SignupPage() {
 
   return (
     <Col className="items-center">
+      <Toaster
+        position={'top-center'}
+        containerClassName="!bottom-[70px]"
+      />
       {!user ? (
         <CompassLoadingIndicator/>
       ) : (

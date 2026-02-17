@@ -23,6 +23,9 @@ PIDS=()
 cleanup() {
   print_status "Cleaning up..."
 
+  # Stop Firebase emulators
+  ./scripts/firebase_stop.sh
+
   # Kill all background processes
   for pid in "${PIDS[@]:-}"; do
     if kill -0 "$pid" 2>/dev/null; then
@@ -31,14 +34,13 @@ cleanup() {
     fi
   done
 
-  # Stop Firebase emulators
-  ./scripts/firebase_stop.sh
-
   # Stop Docker containers
   if [ "${SKIP_DB_CLEANUP:-}" != "true" ]; then
     print_status "Stopping test database..."
     docker compose -f scripts/docker-compose.test.yml down -v
   fi
+
+  sleep 2
 
   print_status "Cleanup complete"
 }

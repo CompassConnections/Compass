@@ -16,6 +16,7 @@ import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
 export default function ProfilePage() {
   const user = useUser()
   const {profile} = useProfileByUser(user ?? undefined)
+  const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
     if (user === null || profile === null) {
@@ -23,7 +24,23 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  return user && profile ? <ProfilePageInner user={user} profile={profile}/> : <CompassLoadingIndicator/>
+  useEffect(() => {
+    if (!user || !profile) {
+      const timer = setTimeout(() => {
+        setShowLoading(true)
+      }, 3000)
+      return () => clearTimeout(timer)
+    } else {
+      setShowLoading(false)
+    }
+  }, [user, profile])
+
+  return user && profile ? <ProfilePageInner user={user} profile={profile}/> :
+    <PageBase trackPageView={'profile'}>
+      <Col className="items-center">
+        {showLoading ? <CompassLoadingIndicator/> : null}
+      </Col>
+    </PageBase>
 }
 
 function ProfilePageInner(props: { user: User; profile: Profile }) {

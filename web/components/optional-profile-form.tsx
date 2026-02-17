@@ -90,9 +90,7 @@ export const OptionalProfileUserForm = (props: {
     setHeightInches(Math.round(h % 12))
   }
 
-  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(
-    user.link
-  )
+  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(user.link)
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
@@ -201,7 +199,7 @@ export const OptionalProfileUserForm = (props: {
         i++
       }
       if (profile) {
-        await sleep(5000)
+        await sleep(5000) // attempt to mitigate profile not found at /${username} upon creation
         router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
       } else {
         console.log("Profile not found after fetching, going back home...")

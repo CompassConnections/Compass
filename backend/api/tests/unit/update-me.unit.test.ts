@@ -8,8 +8,8 @@ jest.mock('shared/supabase/users');
 jest.mock('shared/websockets/helpers');
 jest.mock('common/envs/constants');
 
-import { updateMe } from "api/update-me";
-import { toUserAPIResponse } from "common/api/user-types";
+import {updateMe} from "api/update-me";
+import {toUserAPIResponse} from "common/api/user-types";
 import * as cleanUsernameModules from "common/util/clean-username";
 import * as supabaseInit from "shared/supabase/init";
 import * as objectUtils from "common/util/object";
@@ -17,7 +17,7 @@ import * as lodashModules from "lodash";
 import * as sharedUtils from "shared/utils";
 import * as supabaseUsers from "shared/supabase/users";
 import * as websocketHelperModules from "shared/websockets/helpers";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('updateMe', () => {
     let mockPg = {} as any;
@@ -44,12 +44,7 @@ describe('updateMe', () => {
                 name: "mockName",
                 username: "mockUsername",
                 avatarUrl: "mockAvatarUrl",
-                bio: "mockBio",
                 link: {"mockLink" : "mockLinkValue"},
-                optOutBetWarnings:true,
-                website: "mockWebsite",
-                twitterHandle: "mockTwitterHandle",
-                discordHandle: "mockDiscordHandle",
             };
             const mockStripped = {
                 bio: "mockBio"
@@ -152,12 +147,7 @@ describe('updateMe', () => {
                 name: "mockName",
                 username: "mockUsername",
                 avatarUrl: "mockAvatarUrl",
-                bio: "mockBio",
                 link: {"mockLink" : "mockLinkValue"},
-                optOutBetWarnings:true,
-                website: "mockWebsite",
-                twitterHandle: "mockTwitterHandle",
-                discordHandle: "mockDiscordHandle",
             };
 
             (lodashModules.cloneDeep as jest.Mock).mockReturnValue(mockUpdate);
@@ -176,12 +166,7 @@ describe('updateMe', () => {
                 name: "mockName",
                 username: "mockUsername",
                 avatarUrl: "mockAvatarUrl",
-                bio: "mockBio",
                 link: {"mockLink" : "mockLinkValue"},
-                optOutBetWarnings:true,
-                website: "mockWebsite",
-                twitterHandle: "mockTwitterHandle",
-                discordHandle: "mockDiscordHandle",
             };
 
             (lodashModules.cloneDeep as jest.Mock).mockReturnValue(mockUpdate);
@@ -202,12 +187,7 @@ describe('updateMe', () => {
                 name: "mockName",
                 username: "mockUsername",
                 avatarUrl: "mockAvatarUrl",
-                bio: "mockBio",
                 link: {"mockLink" : "mockLinkValue"},
-                optOutBetWarnings:true,
-                website: "mockWebsite",
-                twitterHandle: "mockTwitterHandle",
-                discordHandle: "mockDiscordHandle",
             };
 
             const arrySpy = jest.spyOn(Array.prototype, 'includes');
@@ -231,12 +211,7 @@ describe('updateMe', () => {
                 name: "mockName",
                 username: "mockUsername",
                 avatarUrl: "mockAvatarUrl",
-                bio: "mockBio",
                 link: {"mockLink" : "mockLinkValue"},
-                optOutBetWarnings:true,
-                website: "mockWebsite",
-                twitterHandle: "mockTwitterHandle",
-                discordHandle: "mockDiscordHandle",
             };
             const arrySpy = jest.spyOn(Array.prototype, 'includes');
 

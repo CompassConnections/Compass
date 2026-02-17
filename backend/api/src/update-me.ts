@@ -1,14 +1,14 @@
-import { toUserAPIResponse } from 'common/api/user-types'
-import { RESERVED_PATHS } from 'common/envs/constants'
-import { cleanDisplayName, cleanUsername } from 'common/util/clean-username'
-import { removeUndefinedProps } from 'common/util/object'
-import { cloneDeep, mapValues } from 'lodash'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { getUser, getUserByUsername } from 'shared/utils'
-import { APIError, APIHandler } from './helpers/endpoint'
-import { updateUser } from 'shared/supabase/users'
-import { broadcastUpdatedUser } from 'shared/websockets/helpers'
-import { strip } from 'common/socials'
+import {toUserAPIResponse} from 'common/api/user-types'
+import {RESERVED_PATHS} from 'common/envs/constants'
+import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
+import {removeUndefinedProps} from 'common/util/object'
+import {cloneDeep, mapValues} from 'lodash'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser, getUserByUsername} from 'shared/utils'
+import {APIError, APIHandler} from './helpers/endpoint'
+import {updateUser} from 'shared/supabase/users'
+import {broadcastUpdatedUser} from 'shared/websockets/helpers'
+import {strip} from 'common/socials'
 
 export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   const update = cloneDeep(props)
@@ -34,10 +34,6 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
 
   const { name, username, avatarUrl, link = {}, ...rest } = update
   await updateUser(pg, auth.uid, removeUndefinedProps(rest))
-
-  if (update.website != undefined) link.site = update.website
-  if (update.twitterHandle != undefined) link.x = update.twitterHandle
-  if (update.discordHandle != undefined) link.discord = update.discordHandle
 
   const stripped = mapValues(
     link,
@@ -69,23 +65,26 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
     newLinks = data?.link
   }
 
-  if (name || username || avatarUrl) {
-    if (name) {
-      await pg.none(`update users set name = $1 where id = $2`, [
-        name,
-        auth.uid,
-      ])
-    }
-    if (username) {
-      await pg.none(`update users set username = $1 where id = $2`, [
-        username,
-        auth.uid,
-      ])
-    }
-    if (avatarUrl) {
-      await updateUser(pg, auth.uid, { avatarUrl })
-    }
+  if (name) {
+    await pg.none(`update users
+                   set name = $1
+                   where id = $2`, [name, auth.uid])
+  }
+  if (username) {
+    await pg.none(`update users
+                   set username = $1
+                   where id = $2`, [
+      username,
+      auth.uid,
+    ])
+  }
+  if (avatarUrl) {
+    await updateUser(pg, auth.uid, {avatarUrl})
+  }
 
+  // Ensure clients listening on `user/{id}` (e.g. AuthContext via useWebsocketUser)
+  // get notified about link-only changes as well.
+  if (name || username || avatarUrl || newLinks != null) {
     broadcastUpdatedUser(
       removeUndefinedProps({
         id: auth.uid,

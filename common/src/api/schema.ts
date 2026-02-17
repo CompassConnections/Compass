@@ -208,23 +208,7 @@ export const API = (_apiTypeCheck = {
       name: z.string().trim().min(1).optional(),
       username: z.string().trim().min(1).optional(),
       avatarUrl: z.string().optional(),
-      bio: z.string().optional(),
       link: z.record(z.string().nullable()).optional(),
-      // settings
-      optOutBetWarnings: z.boolean().optional(),
-      isAdvancedTrader: z.boolean().optional(),
-      //internal
-      shouldShowWelcome: z.boolean().optional(),
-      hasSeenContractFollowModal: z.boolean().optional(),
-      hasSeenLoanModal: z.boolean().optional(),
-
-      // Legacy fields (deprecated)
-      /** @deprecated Use links.site instead */
-      website: z.string().optional(),
-      /** @deprecated Use links.x instead */
-      twitterHandle: z.string().optional(),
-      /** @deprecated Use links.discord instead */
-      discordHandle: z.string().optional(),
     }),
     returns: {} as FullUser,
     summary: 'Update authenticated user profile and settings',

@@ -1,10 +1,10 @@
 'use client'
-import { PrivateUser, User } from 'common/user'
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from 'web/components/auth-context'
-import { useIsPageVisible } from './use-page-visible'
-import { useApiSubscription } from './use-api-subscription'
-import { getFullUserById, getPrivateUserSafe } from 'web/lib/supabase/users'
+import {PrivateUser, User} from 'common/user'
+import {useContext, useEffect, useState} from 'react'
+import {AuthContext} from 'web/components/auth-context'
+import {useIsPageVisible} from './use-page-visible'
+import {useApiSubscription} from './use-api-subscription'
+import {getFullUserById, getPrivateUserSafe} from 'web/lib/supabase/users'
 
 export const useUser = () => {
   const authUser = useContext(AuthContext)
@@ -29,7 +29,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
   useApiSubscription({
     topics: [`user/${userId ?? '_'}`],
     onBroadcast: ({ data }) => {
-      console.debug(data)
+      console.debug('User broadcast', {data})
       setUser((user) => {
         if (!user || !data.user) {
           return user

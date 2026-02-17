@@ -38,8 +38,8 @@ jobs:
         env:
           SKIP_DB_CLEANUP: true # Don't try to stop Docker in CI
         run: |
-          yarn install -W supabase
-          supabase stop --no-backup
+          npm install -g supabase
+          supabase stop --no-backup || true
           yarn test:e2e
 
       - name: Upload Playwright report

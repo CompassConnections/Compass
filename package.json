@@ -31,7 +31,7 @@
     "test:e2e:ui": "./scripts/e2e.sh --ui",
     "test:e2e:debug": "./scripts/e2e.sh --debug",
     "test:e2e:services": "concurrently --names 'firebase,api,web' 'yarn emulate' 'yarn --cwd=backend/api dev' 'yarn --cwd=web dev'",
-    "test:db:reset": "supabase start && ./scripts/combine-migrations.sh && supabase db reset",
+    "test:db:reset": "npx supabase start && ./scripts/combine-migrations.sh && npx supabase db reset",
     "test:db:reset-postgres": "docker compose -f scripts/docker-compose.test.yml down -v && docker compose -f scripts/docker-compose.test.yml up -d",
     "test:db:migrate": "./scripts/test_db_migration.sh",
     "playwright": "playwright test",

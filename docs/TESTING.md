@@ -480,7 +480,7 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
 
 E2E tests use [Playwright](https://playwright.dev/) and run against a fully isolated local stack:
 
-- **Supabase** (Postgres) via `supabase start`
+- **Supabase** (Postgres) via `npx supabase start`
 - **Firebase** (Auth and Storage) via `firebase emulators:start`
 - **Backend API** (`backend/api`)
 - **Next.js frontend** (`web`)
@@ -570,8 +570,8 @@ This starts Firebase emulators, the backend API, and Next.js in one terminal.
 In a separate terminal, start Supabase:
 
 ```bash
-supabase start
-supabase db reset  # Apply migrations + seed
+npx supabase start
+npx supabase db reset  # Apply migrations + seed
 ```
 
 ### 2. Open Playwright UI
@@ -598,7 +598,7 @@ No restart needed for test file changes.
 If your tests leave dirty state or you need a fresh DB:
 
 ```bash
-supabase db reset  # Drops and re-applies all migrations + seed
+npx supabase db reset  # Drops and re-applies all migrations + seed
 ```
 
 ---
@@ -610,8 +610,8 @@ supabase db reset  # Drops and re-applies all migrations + seed
 | Edit test file                | Just re-run in Playwright UI             |
 | Edit app code (Next.js)       | Next.js hot reloads automatically        |
 | Edit API code                 | API dev server hot reloads automatically |
-| Database schema change        | `supabase db reset`                      |
-| Seed data change              | `supabase db reset`                      |
+| Database schema change        | `npx supabase db reset`                  |
+| Seed data change              | `npx supabase db reset`                  |
 | Change `playwright.config.ts` | Restart Playwright UI                    |
 | Change env variables          | Restart affected service                 |
 
@@ -709,7 +709,7 @@ test.describe('Authentication', () => {
 
 ### Test accounts
 
-These are seeded automatically by `supabase db reset`:
+These are seeded automatically by `npx supabase db reset`:
 
 | Email               | Password      |
 |---------------------|---------------|
@@ -756,7 +756,7 @@ curl http://localhost:3000  # Next.js
 ### Database is in a bad state
 
 ```bash
-supabase db reset  # Full reset - drops everything and reseeds
+npx supabase db reset  # Full reset - drops everything and reseeds
 ```
 
 ### Firebase auth warning in CI

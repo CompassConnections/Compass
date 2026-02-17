@@ -17,6 +17,13 @@ cd "$(dirname "$0")"/..
 # In the auth system (firebase emulator) to see the auth info (email, provider, etc.): http://127.0.0.1:4000/auth
 # In the database (users and private_users table) to see the user info specific to compass (username, notif preferences, etc.): http://127.0.0.1:54323
 
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+print_status() { echo -e "${GREEN}[E2E-DEV]${NC} $1"; }
+print_error()  { echo -e "${RED}[ERROR]${NC} $1"; }
+
 # Clean ghost processes
 kill_ghosts() {
   for p in 3000 4000 4400 4500 8088 9099 9199; do

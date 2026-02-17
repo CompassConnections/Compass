@@ -28,6 +28,11 @@ jobs:
           distribution: 'temurin'
           java-version: '21'   # Required for firebase-tools@15+
 
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -38,7 +43,6 @@ jobs:
         env:
           SKIP_DB_CLEANUP: true # Don't try to stop Docker in CI
         run: |
-          npm install -g supabase
           supabase stop --no-backup || true
           yarn test:e2e
 

@@ -11,6 +11,7 @@ import {api} from 'web/lib/api'
 import {PageBase} from "web/components/page-base";
 import {SEO} from "web/components/SEO";
 import {useT} from 'web/lib/locale'
+import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
 
 export default function ProfilePage() {
   const user = useUser()
@@ -22,7 +23,7 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  return user && profile && <ProfilePageInner user={user} profile={profile}/>
+  return user && profile ? <ProfilePageInner user={user} profile={profile}/> : <CompassLoadingIndicator/>
 }
 
 function ProfilePageInner(props: { user: User; profile: Profile }) {

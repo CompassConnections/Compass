@@ -123,7 +123,13 @@ npx wait-on http://localhost:3000 --timeout 60000 || {
 }
 
 # Run Playwright tests
-print_status "Running Playwright tests..."
+echo ""
+print_status "✅ Running Playwright tests..."
+print_status "  Useful links:"
+print_status "  - Front end: http://127.0.0.1:3000"
+print_status "  - Supabase UI: http://127.0.0.1:54323"
+print_status "  - Firebase UI: http://127.0.0.1:4000"
+
 TEST_FAILED=0
 npx playwright test tests/e2e "$@" || TEST_FAILED=$?
 

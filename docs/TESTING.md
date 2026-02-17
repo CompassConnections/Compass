@@ -476,25 +476,194 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
 });
 ```
 
-### Playwright (E2E) Testing Guide
+# Playwright (E2E) Testing Guide
 
-##### Usage
+E2E tests use [Playwright](https://playwright.dev/) and run against a fully isolated local stack:
 
-```shell
-# Run all tests
-yarn test:e2e
+- **Supabase** (Postgres) via `supabase start`
+- **Firebase** (Auth and Storage) via `firebase emulators:start`
+- **Backend API** (`backend/api`)
+- **Next.js frontend** (`web`)
 
-# Run with UI
-yarn test:e2e:ui
+Tests live in `tests/e2e/` and follow the `*.e2e.spec.ts` naming convention.
 
-# Run specific test file
-yarn test:e2e tests/e2e/auth.spec.ts
+---
 
-# Reset test database
-yarn test:db:reset
+## Prerequisites
+
+Make sure you have these installed:
+
+```bash
+# Supabase CLI
+npm install -g supabase
+
+# Firebase CLI
+npm install -g firebase-tools
+
+# Java 21+ (required for Firebase emulators)
+java -version  # Must be 21+
+
+# Docker (for Supabase)
+docker --version
 ```
 
-##### Component Selection Hierarchy
+---
+
+## Quick Start
+
+### Option A: Full Clean Run (CI-style)
+
+Starts everything from scratch, seeds the database, and runs all tests.
+Use this the first time, after schema changes, or to reproduce CI failures.
+
+```bash
+yarn test:e2e
+```
+
+This will:
+
+1. Kill any stale Firebase/Supabase processes
+2. Start Supabase and apply migrations
+3. Start Firebase emulators
+4. Seed test data
+5. Start backend API and Next.js
+6. Run all Playwright tests
+7. Clean up everything on exit
+
+### Option B: Dev Mode (Fast Iteration)
+
+Use this while writing or debugging tests to open Playwright UI (recommended for development).
+
+```bash
+yarn test:e2e:ui
+```
+
+If you don't like the UI, you can run specific tests in your terminal. Assumes services are already running.
+
+```bash
+# Run all e2e tests
+yarn test:e2e:dev
+
+# Run a specific test file
+yarn test:e2e:dev tests/e2e/web/specs/signUp.spec.ts
+
+# Run tests matching a pattern
+yarn test:e2e:dev --grep "login"
+
+# Debug a specific test step by step
+yarn test:e2e:dev --debug tests/e2e/web/specs/signUp.spec.ts
+```
+
+> **Note:** `yarn test:e2e:dev` will fail with a helpful message if any required service is not running.
+
+---
+
+## Recommended Dev Workflow
+
+### 1. Start services once
+
+```bash
+yarn e2e:services
+```
+
+This starts Firebase emulators, the backend API, and Next.js in one terminal.
+In a separate terminal, start Supabase:
+
+```bash
+supabase start
+supabase db reset  # Apply migrations + seed
+```
+
+### 2. Open Playwright UI
+
+```bash
+yarn test:e2e:ui
+```
+
+This opens a visual browser interface where you can:
+
+- ▶️ Run individual tests with one click
+- 🔍 See step-by-step execution
+- 📸 View screenshots and videos on failure
+- 🔄 Re-run tests without restarting anything
+- 🕵️ Time-travel debug through test steps
+
+### 3. Edit tests and re-run
+
+Edit your `*.e2e.spec.ts` file, save, then click **Run** in the Playwright UI.
+No restart needed for test file changes.
+
+### 4. Reset data when needed
+
+If your tests leave dirty state or you need a fresh DB:
+
+```bash
+supabase db reset  # Drops and re-applies all migrations + seed
+```
+
+---
+
+## What Needs a Restart vs Not
+
+| Change                        | Action needed                            |
+|-------------------------------|------------------------------------------|
+| Edit test file                | Just re-run in Playwright UI             |
+| Edit app code (Next.js)       | Next.js hot reloads automatically        |
+| Edit API code                 | API dev server hot reloads automatically |
+| Database schema change        | `supabase db reset`                      |
+| Seed data change              | `supabase db reset`                      |
+| Change `playwright.config.ts` | Restart Playwright UI                    |
+| Change env variables          | Restart affected service                 |
+
+---
+
+## Environment
+
+E2E tests run against local emulators with these defaults (set in `.env.test`):
+
+| Service          | Local URL                                                 |
+|------------------|-----------------------------------------------------------|
+| Supabase API     | `http://127.0.0.1:54321`                                  |
+| Supabase DB      | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Supabase Studio  | `http://127.0.0.1:54323` (browse data visually)           |
+| Firebase Studio  | `http://127.0.0.1:4000` (browse data visually)            |
+| Firebase Auth    | `http://127.0.0.1:9099`                                   |
+| Firebase Storage | `http://127.0.0.1:9199`                                   |
+| Backend API      | `http://localhost:8088`                                   |
+| Next.js          | `http://localhost:3000`                                   |
+
+### Viewing test data
+
+Open Supabase Studio while tests are running to inspect the database:
+
+```
+http://127.0.0.1:54323
+```
+
+Or connect via psql:
+
+```bash
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
+```
+
+---
+
+## Writing Tests
+
+Tests live in `tests/e2e/` and follow this structure:
+
+```
+tests/
+└── e2e/
+    ├── web/
+    │   └── specs/
+    │       └── auth.e2e.spec.ts
+    └── backend/
+        └── specs/
+            └── api.e2e.spec.ts
+```
+
+### Component Selection Hierarchy
 
 Use this priority order for selecting elements in Playwright tests:
 
@@ -519,3 +688,116 @@ Use this priority order for selecting elements in Playwright tests:
    ```
 
 This hierarchy mirrors how users actually interact with your application, making tests more reliable and meaningful.
+
+### Example test
+
+```typescript
+import { test, expect } from '@playwright/test'
+
+test.describe('Authentication', () => {
+  test('should login successfully', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Sign In' }).click()
+    await page.getByLabel('Email').fill('test@example.com')
+    await page.getByLabel('Password').fill('password123')
+    await page.getByRole('button', { name: 'Login' }).click()
+
+    await expect(page.getByText('Welcome')).toBeVisible()
+  })
+})
+```
+
+### Test accounts
+
+These are seeded automatically by `supabase db reset`:
+
+| Email               | Password      |
+|---------------------|---------------|
+| `test1@example.com` | `password123` |
+| `test2@example.com` | `password123` |
+
+---
+
+## Troubleshooting
+
+### Port already in use
+
+```bash
+# Supabase port conflict
+supabase stop --no-backup
+supabase start
+
+# Firebase port conflict
+pkill -f "firebase emulators"; pkill -f "java.*emulator"
+yarn emulate
+```
+
+### Supabase won't stop (permission denied)
+
+This happens with snap-installed Docker. Use native Docker instead:
+
+```bash
+sudo snap remove docker
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+# Log out and back in
+```
+
+### Tests fail with "service not running"
+
+```bash
+# Check what's running
+supabase status
+curl http://127.0.0.1:9099  # Firebase Auth
+curl http://localhost:8088/health  # Backend API
+curl http://localhost:3000  # Next.js
+```
+
+### Database is in a bad state
+
+```bash
+supabase db reset  # Full reset - drops everything and reseeds
+```
+
+### Firebase auth warning in CI
+
+```
+⚠ You are not currently authenticated
+```
+
+This is safe to ignore for emulators. They don't connect to real Firebase.
+
+### Multiple emulator instances warning
+
+```
+⚠ It seems that you are running multiple instances of the emulator suite
+```
+
+Kill stale processes:
+
+```bash
+pkill -f "firebase emulators"; pkill -f "java.*emulator"
+sleep 2
+yarn emulate
+```
+
+---
+
+## CI
+
+E2E tests run automatically on every PR and push to `main` via `.github/workflows/e2e-tests.yml`.
+
+The CI workflow:
+
+- Uses `supabase/setup-cli@v1` for the Supabase CLI
+- Uses Java 21 for Firebase emulators
+- Runs `yarn test:e2e` (same script as local)
+- Uploads Playwright reports as artifacts on failure
+
+To download the Playwright report from a failed CI run:
+
+1. Go to the GitHub Actions run
+2. Click **Artifacts** at the bottom
+3. Download `playwright-report`
+4. Open `index.html` in your browser
+

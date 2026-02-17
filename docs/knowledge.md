@@ -424,6 +424,17 @@ const res = await pg.manyOrNone(query)
 
 Use these functions instead of string concatenation.
 
+### Translations
+
+```typescript
+import {useT} from "web/lib/locale";
+
+const t = useT()
+t("common.key", "English translations")
+```
+
+Translations should go to the JSON files in `web/messages` (`de.json` and `fr.json`, as of now).
+
 ### Misc coding tips
 
 We have many useful hooks that should be reused rather than rewriting them again.

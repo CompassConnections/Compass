@@ -32,7 +32,7 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
 
   const pg = createSupabaseDirectClient()
 
-  const { name, username, avatarUrl, link = {}, ...rest } = update
+  const {name, username, avatarUrl, link = {}, ...rest} = update
   await updateUser(pg, auth.uid, removeUndefinedProps(rest))
 
   const stripped = mapValues(
@@ -53,14 +53,14 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   let newLinks: any = null
   if (Object.keys(adds).length > 0 || removes.length > 0) {
     const data = await pg.oneOrNone(
-      `update users 
-      set data = jsonb_set(
-        data, '{link}',
-        (data->'link' || $(adds)) - $(removes)
-      )
-      where id = $(id)
-      returning data->'link' as link`,
-      { adds, removes, id: auth.uid }
+      `update users
+       set data = jsonb_set(
+               data, '{link}',
+               (data -> 'link' || $(adds)) - $(removes)
+                  )
+       where id = $(id)
+       returning data -> 'link' as link`,
+      {adds, removes, id: auth.uid}
     )
     newLinks = data?.link
   }
@@ -73,10 +73,7 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   if (username) {
     await pg.none(`update users
                    set username = $1
-                   where id = $2`, [
-      username,
-      auth.uid,
-    ])
+                   where id = $2`, [username, auth.uid])
   }
   if (avatarUrl) {
     await updateUser(pg, auth.uid, {avatarUrl})
@@ -96,5 +93,5 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
     )
   }
 
-  return toUserAPIResponse({ ...user, ...update, link: newLinks })
+  return toUserAPIResponse({...user, ...update, link: newLinks})
 }

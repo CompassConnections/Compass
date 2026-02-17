@@ -1,10 +1,11 @@
-jest.mock('common/util/try-catch');
-jest.mock('shared/supabase/init');
-
+import {sqlMatch} from "common/test-utils";
 import {AuthedUser} from "api/helpers/endpoint";
 import {updateOptions} from "api/update-options";
 import {tryCatch} from "common/util/try-catch";
 import * as supabaseInit from "shared/supabase/init";
+
+jest.mock('common/util/try-catch');
+jest.mock('shared/supabase/init');
 
 describe('updateOptions', () => {
     let mockPg = {} as any;
@@ -64,30 +65,33 @@ describe('updateOptions', () => {
             expect(result.updatedIds).toStrictEqual([mockRow1.id, mockRow2.id]);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('SELECT id FROM profiles WHERE user_id = $1'),
+              sqlMatch('SELECT id FROM profiles WHERE user_id = $1'),
                 [mockAuth.uid]
             );
             expect(tryCatch).toBeCalledTimes(1);
             expect(mockTx.one).toBeCalledTimes(2);
             expect(mockTx.one).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining(`INSERT INTO ${mockProps.table} (name, creator_id)`),
+              sqlMatch(`INSERT INTO ${mockProps.table} (name, creator_id)`),
               [mockProps.values[0], mockAuth.uid]
             );
             expect(mockTx.one).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining(`INSERT INTO ${mockProps.table} (name, creator_id)`),
+              sqlMatch(`INSERT INTO ${mockProps.table} (name, creator_id)`),
               [mockProps.values[1], mockAuth.uid]
             );
             expect(mockTx.none).toBeCalledTimes(2);
             expect(mockTx.none).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining(`DELETE FROM profile_${mockProps.table} WHERE profile_id = $1`),
+              sqlMatch(`DELETE
+                        FROM profile_${mockProps.table}
+                        WHERE profile_id = $1`),
                 [mockProfileIdResult.id]
             );
             expect(mockTx.none).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining(`INSERT INTO profile_${mockProps.table} (profile_id, option_id) VALUES`),
+              sqlMatch(`INSERT INTO profile_${mockProps.table} (profile_id, option_id)
+                        VALUES`),
                 [mockProfileIdResult.id, mockRow1.id, mockRow2.id]
             );
         });

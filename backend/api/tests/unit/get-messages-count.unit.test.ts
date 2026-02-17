@@ -1,8 +1,9 @@
-jest.mock('shared/supabase/init');
-
-import { getMessagesCount } from "api/get-messages-count";
-import { AuthedUser } from "api/helpers/endpoint";
+import {sqlMatch} from "common/test-utils";
+import {getMessagesCount} from "api/get-messages-count";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
+
+jest.mock('shared/supabase/init');
 
 describe('getMessagesCount', () => {
     let mockPg = {} as any;
@@ -32,7 +33,7 @@ describe('getMessagesCount', () => {
             expect(result.count).toBe(Number(mockResults.count));
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-                expect.stringContaining('SELECT COUNT(*) AS count'),
+              sqlMatch('SELECT COUNT(*) AS count'),
                 expect.any(Object)
             );
         });

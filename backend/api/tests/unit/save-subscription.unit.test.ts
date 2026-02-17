@@ -1,8 +1,9 @@
 jest.mock('shared/supabase/init');
 
-import { AuthedUser } from "api/helpers/endpoint";
-import { saveSubscription } from "api/save-subscription";
+import {AuthedUser} from "api/helpers/endpoint";
+import {saveSubscription} from "api/save-subscription";
 import * as supabaseInit from "shared/supabase/init";
+import {sqlMatch} from 'common/test-utils'
 
 describe('saveSubscription', () => {
     let mockPg = {} as any;
@@ -40,12 +41,12 @@ describe('saveSubscription', () => {
             expect(result.success).toBeTruthy();
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select id from push_subscriptions where endpoint = $1'),
+              sqlMatch('select id from push_subscriptions where endpoint = $1'),
                 [mockBody.subscription.endpoint]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('update push_subscriptions set keys = $1, user_id = $2 where id = $3'),
+              sqlMatch('update push_subscriptions set keys = $1, user_id = $2 where id = $3'),
                 [mockBody.subscription.keys, mockAuth.uid, mockExists.id]
             );
         });
@@ -68,12 +69,12 @@ describe('saveSubscription', () => {
             expect(result.success).toBeTruthy();
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select id from push_subscriptions where endpoint = $1'),
+              sqlMatch('select id from push_subscriptions where endpoint = $1'),
                 [mockBody.subscription.endpoint]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('insert into push_subscriptions(endpoint, keys, user_id) values($1, $2, $3)'),
+              sqlMatch('insert into push_subscriptions(endpoint, keys, user_id) values($1, $2, $3)'),
                 [mockBody.subscription.endpoint, mockBody.subscription.keys, mockAuth.uid]
             );
         });

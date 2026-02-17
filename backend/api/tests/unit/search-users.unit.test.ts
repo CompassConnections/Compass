@@ -1,16 +1,17 @@
+import {sqlMatch} from "common/test-utils";
+import {searchUsers} from "api/search-users";
+import * as supabaseInit from "shared/supabase/init";
+import * as searchHelpers from "shared/helpers/search";
+import * as sqlBuilderModules from "shared/supabase/sql-builder";
+import * as supabaseUsers from "common/supabase/users";
+import {toUserAPIResponse} from "common/api/user-types";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('shared/helpers/search');
 jest.mock('shared/supabase/sql-builder');
 jest.mock('common/supabase/users');
 jest.mock('common/api/user-types');
-
-import { searchUsers } from "api/search-users";
-import * as supabaseInit from "shared/supabase/init";
-import * as searchHelpers from "shared/helpers/search";
-import * as sqlBuilderModules from "shared/supabase/sql-builder";
-import * as supabaseUsers from "common/supabase/users";
-import { toUserAPIResponse } from "common/api/user-types";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('searchUsers', () => {
     let mockPg = {} as any;
@@ -76,12 +77,12 @@ describe('searchUsers', () => {
             expect(sqlBuilderModules.from).toBeCalledWith('users');
             expect(sqlBuilderModules.where).toBeCalledTimes(1);
             expect(sqlBuilderModules.where).toBeCalledWith(
-                expect.stringContaining("name_username_vector @@ websearch_to_tsquery('english', $1)"),
+              sqlMatch("name_username_vector @@ websearch_to_tsquery('english', $1)"),
                 [mockProps.term, 'ConstructPrefix']
             );
             expect(sqlBuilderModules.orderBy).toBeCalledTimes(1);
             expect(sqlBuilderModules.orderBy).toBeCalledWith(
-                expect.stringContaining("ts_rank(name_username_vector, websearch_to_tsquery($1)) desc,"),
+              sqlMatch("ts_rank(name_username_vector, websearch_to_tsquery($1)) desc,"),
                 [mockProps.term]
             );
             expect(sqlBuilderModules.limit).toBeCalledTimes(1);

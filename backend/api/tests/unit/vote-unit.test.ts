@@ -1,10 +1,11 @@
 jest.mock('shared/supabase/init');
 jest.mock('shared/utils');
 
-import { AuthedUser } from "api/helpers/endpoint";
-import { vote } from "api/vote";
+import {AuthedUser} from "api/helpers/endpoint";
+import {vote} from "api/vote";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";
+import {sqlMatch} from 'common/test-utils'
 
 describe('vote', () => {
     let mockPg = {} as any;
@@ -42,7 +43,7 @@ describe('vote', () => {
             expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid);
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-                expect.stringContaining('insert into vote_results (user_id, vote_id, choice, priority)'),
+              sqlMatch('insert into vote_results (user_id, vote_id, choice, priority)'),
                 [mockUser.id, mockProps.voteId, 1, mockProps.priority]
             );
         });

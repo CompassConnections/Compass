@@ -8,16 +8,17 @@ jest.mock('shared/analytics');
 jest.mock('common/discord/core');
 jest.mock('common/util/time');
 
-import { createProfile } from "api/create-profile";
+import {createProfile} from "api/create-profile";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";
 import * as supabaseUsers from "shared/supabase/users";
 import * as supabaseUtils from "shared/supabase/utils";
-import { tryCatch } from "common/util/try-catch";
-import { removePinnedUrlFromPhotoUrls } from "shared/profiles/parse-photos";
+import {tryCatch} from "common/util/try-catch";
+import {removePinnedUrlFromPhotoUrls} from "shared/profiles/parse-photos";
 import * as sharedAnalytics from "shared/analytics";
-import { sendDiscordMessage } from "common/discord/core";
-import { AuthedUser } from "api/helpers/endpoint";
+import {sendDiscordMessage} from "common/discord/core";
+import {AuthedUser} from "api/helpers/endpoint";
+import {sqlMatch} from 'common/test-utils'
 
 describe('createProfile', () => {
     let mockPg = {} as any;
@@ -71,7 +72,7 @@ describe('createProfile', () => {
             expect(tryCatch).toBeCalledTimes(2);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select id from profiles where user_id = $1'),
+              sqlMatch('select id from profiles where user_id = $1'),
                 [mockAuth.uid]
             );
             expect(removePinnedUrlFromPhotoUrls).toBeCalledTimes(1);
@@ -147,7 +148,7 @@ describe('createProfile', () => {
 
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-                expect.stringContaining('SELECT count(*) FROM profiles'),
+              sqlMatch('SELECT count(*) FROM profiles'),
                 [],
                 expect.any(Function)
             );

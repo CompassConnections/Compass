@@ -1,8 +1,9 @@
-jest.mock('shared/supabase/init');
-
-import { getProfileAnswers } from "api/get-profile-answers";
-import { AuthedUser } from "api/helpers/endpoint";
+import {sqlMatch} from "common/test-utils";
+import {getProfileAnswers} from "api/get-profile-answers";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
+
+jest.mock('shared/supabase/init');
 
 describe('getProfileAnswers', () => {
     let mockPg = {} as any;
@@ -45,7 +46,7 @@ describe('getProfileAnswers', () => {
             expect(result.answers).toBe(mockAnswers);
             expect(mockPg.manyOrNone).toBeCalledTimes(1);
             expect(mockPg.manyOrNone).toBeCalledWith(
-                expect.stringContaining('select * from compatibility_answers'),
+              sqlMatch('select * from compatibility_answers'),
                 [mockProps.userId]
             );
         });    

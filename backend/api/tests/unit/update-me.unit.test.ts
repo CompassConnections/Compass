@@ -18,6 +18,7 @@ import * as sharedUtils from "shared/utils";
 import * as supabaseUsers from "shared/supabase/users";
 import * as websocketHelperModules from "shared/websockets/helpers";
 import {AuthedUser} from "api/helpers/endpoint";
+import {sqlMatch} from 'common/test-utils'
 
 describe('updateMe', () => {
     let mockPg = {} as any;
@@ -114,12 +115,16 @@ describe('updateMe', () => {
             expect(mockPg.none).toBeCalledTimes(2);
             expect(mockPg.none).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining(`update users set name = $1 where id = $2`),
+              sqlMatch(`update users
+                        set name = $1
+                        where id = $2`),
                 [mockUpdate.name, mockAuth.uid]
             );
             expect(mockPg.none).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining(`update users set username = $1 where id = $2`),
+              sqlMatch(`update users
+                        set username = $1
+                        where id = $2`),
                 [mockUpdate.username, mockAuth.uid]
             );
             expect(objectUtils.removeUndefinedProps).toBeCalledTimes(2);

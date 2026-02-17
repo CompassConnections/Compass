@@ -1,8 +1,9 @@
 jest.mock('shared/supabase/init');
 
-import { getNotifications } from "api/get-notifications";
-import { AuthedUser } from "api/helpers/endpoint";
+import {getNotifications} from "api/get-notifications";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
+import {sqlMatch} from 'common/test-utils'
 
 describe('getNotifications', () => {
     let mockPg = {} as any;
@@ -35,7 +36,7 @@ describe('getNotifications', () => {
             expect(result).toBe(mockNotifications);
             expect(mockPg.map).toBeCalledTimes(1);
             expect(mockPg.map).toBeCalledWith(
-                expect.stringContaining('select data from user_notifications'),
+              sqlMatch('select data from user_notifications'),
                 [mockAuth.uid, mockProps.limit, mockProps.after],
                 expect.any(Function)
             );

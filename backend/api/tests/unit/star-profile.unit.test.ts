@@ -1,12 +1,13 @@
+import {sqlMatch} from "common/test-utils";
+import {AuthedUser} from "api/helpers/endpoint";
+import {starProfile} from "api/star-profile";
+import {tryCatch} from "common/util/try-catch";
+import * as supabaseInit from "shared/supabase/init";
+import * as supabaseUtils from "shared/supabase/utils";
+
 jest.mock('common/util/try-catch');
 jest.mock('shared/supabase/init');
 jest.mock('shared/supabase/utils');
-
-import { AuthedUser } from "api/helpers/endpoint";
-import { starProfile } from "api/star-profile";
-import { tryCatch } from "common/util/try-catch";
-import * as supabaseInit from "shared/supabase/init";
-import * as supabaseUtils from "shared/supabase/utils";
 
 describe('startProfile', () => {
     let mockPg = {} as any;
@@ -45,7 +46,7 @@ describe('startProfile', () => {
             expect(tryCatch).toBeCalledTimes(2);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select * from profile_stars where creator_id = $1 and target_id = $2'),
+              sqlMatch('select * from profile_stars where creator_id = $1 and target_id = $2'),
                 [mockAuth.uid, mockProps.targetUserId]
             );
             expect(supabaseUtils.insert).toBeCalledTimes(1);
@@ -101,7 +102,7 @@ describe('startProfile', () => {
             expect(tryCatch).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('delete from profile_stars where creator_id = $1 and target_id = $2'),
+              sqlMatch('delete from profile_stars where creator_id = $1 and target_id = $2'),
                 [mockAuth.uid, mockProps.targetUserId]
             );
         });

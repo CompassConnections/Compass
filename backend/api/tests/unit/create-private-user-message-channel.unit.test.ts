@@ -1,11 +1,4 @@
-jest.mock('shared/supabase/init');
-jest.mock('common/util/array');
-jest.mock('api/helpers/private-messages');
-jest.mock('shared/utils');
-jest.mock('firebase-admin', () => ({
-  auth: jest.fn()
-}));
-
+import {sqlMatch} from "common/test-utils";
 import {createPrivateUserMessageChannel} from "api/create-private-user-message-channel";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";
@@ -13,6 +6,14 @@ import * as utilArrayModules from "common/util/array";
 import * as privateMessageModules from "api/helpers/private-messages";
 import * as admin from 'firebase-admin';
 import {AuthedUser} from "api/helpers/endpoint";
+
+jest.mock('shared/supabase/init');
+jest.mock('common/util/array');
+jest.mock('api/helpers/private-messages');
+jest.mock('shared/utils');
+jest.mock('firebase-admin', () => ({
+  auth: jest.fn()
+}));
 
 describe('createPrivateUserMessageChannel', () => {
     let mockPg = {} as any;
@@ -77,7 +78,7 @@ describe('createPrivateUserMessageChannel', () => {
             expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[1]);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-              expect.stringContaining('select channel_id\n        from private_user_message_channel_members'),
+              sqlMatch('select channel_id\n        from private_user_message_channel_members'),
                 [mockUserIds]
             );
         });
@@ -124,11 +125,11 @@ describe('createPrivateUserMessageChannel', () => {
             expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[1]);
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-              expect.stringContaining('insert into private_user_message_channels default\n     values\n     returning id')
+              sqlMatch('insert into private_user_message_channels default\n     values\n     returning id')
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('insert into private_user_message_channel_members (channel_id, user_id, role, status)'),
+              sqlMatch('insert into private_user_message_channel_members (channel_id, user_id, role, status)'),
                 [mockChannel.id, mockAuth.uid]
             );
             expect(privateMessageModules.addUsersToPrivateMessageChannel).toBeCalledTimes(1);

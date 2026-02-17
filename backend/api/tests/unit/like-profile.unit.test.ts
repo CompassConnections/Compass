@@ -1,14 +1,15 @@
+import {sqlMatch} from "common/test-utils";
+import {likeProfile} from "api/like-profile";
+import * as supabaseInit from "shared/supabase/init";
+import * as profileNotifiction from "shared/create-profile-notification";
+import * as likeModules from "api/has-free-like";
+import {tryCatch} from "common/util/try-catch";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('shared/create-profile-notification');
 jest.mock('api/has-free-like');
 jest.mock('common/util/try-catch');
-
-import { likeProfile } from "api/like-profile";
-import * as supabaseInit from "shared/supabase/init";
-import * as profileNotifiction from "shared/create-profile-notification";
-import * as likeModules from "api/has-free-like";
-import { tryCatch } from "common/util/try-catch";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('likeProfile', () => {
     let mockPg = {} as any;
@@ -51,13 +52,13 @@ describe('likeProfile', () => {
             expect(result.result.status).toBe('success');
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select * from profile_likes where creator_id = $1 and target_id = $2'),
+              sqlMatch('select * from profile_likes where creator_id = $1 and target_id = $2'),
                 [mockAuth.uid, mockProps.targetUserId]
             );
             expect(tryCatch).toBeCalledTimes(2);
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-                expect.stringContaining('insert into profile_likes (creator_id, target_id) values ($1, $2) returning *'),
+              sqlMatch('insert into profile_likes (creator_id, target_id) values ($1, $2) returning *'),
                 [mockAuth.uid, mockProps.targetUserId]
             );
 
@@ -105,7 +106,7 @@ describe('likeProfile', () => {
             expect(result.status).toBe('success');
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('delete from profile_likes where creator_id = $1 and target_id = $2'),
+              sqlMatch('delete from profile_likes where creator_id = $1 and target_id = $2'),
                 [mockAuth.uid, mockProps.targetUserId]
             );
         });

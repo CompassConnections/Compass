@@ -1,13 +1,14 @@
+import {sqlMatch} from "common/test-utils";
+import {hideComment} from "api/hide-comment";
+import * as supabaseInit from "shared/supabase/init";
+import * as envConsts from "common/envs/constants";
+import {convertComment} from "common/supabase/comment";
+import * as websocketHelpers from "shared/websockets/helpers";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('common/supabase/comment');
 jest.mock('shared/websockets/helpers');
-
-import { hideComment } from "api/hide-comment";
-import * as supabaseInit from "shared/supabase/init";
-import * as envConsts from "common/envs/constants";
-import { convertComment } from "common/supabase/comment";
-import * as websocketHelpers from "shared/websockets/helpers";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('hideComment', () => {
     let mockPg = {} as any;
@@ -55,7 +56,7 @@ describe('hideComment', () => {
 
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select * from profile_comments where id = $1'),
+              sqlMatch('select * from profile_comments where id = $1'),
                 [mockProps.commentId]
             );
             expect(envConsts.isAdminId).toBeCalledTimes(1);

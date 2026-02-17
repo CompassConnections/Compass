@@ -1,3 +1,15 @@
+import {sqlMatch} from "common/test-utils";
+import * as supabaseInit from "shared/supabase/init";
+import {AuthedUser} from "api/helpers/endpoint";
+import * as sharedUtils from "shared/utils";
+import {createComment} from "api/create-comment";
+import * as notificationPrefs from "common/user-notification-preferences";
+import * as supabaseNotifications from "shared/supabase/notifications";
+import * as emailHelpers from "email/functions/helpers";
+import * as websocketHelpers from "shared/websockets/helpers";
+import {convertComment} from "common/supabase/comment";
+import {richTextToString} from "common/util/parse";
+
 jest.mock('shared/supabase/init');
 jest.mock('shared/supabase/notifications');
 jest.mock('email/functions/helpers');
@@ -5,17 +17,6 @@ jest.mock('common/supabase/comment');
 jest.mock('shared/utils');
 jest.mock('common/user-notification-preferences');
 jest.mock('shared/websockets/helpers');
-
-import * as supabaseInit from "shared/supabase/init";
-import { AuthedUser } from "api/helpers/endpoint";
-import * as sharedUtils from "shared/utils";
-import { createComment } from "api/create-comment";
-import * as notificationPrefs from "common/user-notification-preferences";
-import * as supabaseNotifications from "shared/supabase/notifications";
-import * as emailHelpers from "email/functions/helpers";
-import * as websocketHelpers from "shared/websockets/helpers";
-import { convertComment } from "common/supabase/comment";
-import { richTextToString } from "common/util/parse";
 
 describe('createComment', () => {
     let mockPg: any;
@@ -102,7 +103,7 @@ describe('createComment', () => {
             expect(sharedUtils.getPrivateUser).toHaveBeenNthCalledWith(2, mockOnUser.id);
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
-                expect.stringContaining('insert into profile_comments'),
+              sqlMatch('insert into profile_comments'),
                 [
                     mockCreator.id,
                     mockCreator.name,

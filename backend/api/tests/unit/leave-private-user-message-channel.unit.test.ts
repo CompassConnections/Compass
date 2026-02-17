@@ -2,11 +2,12 @@ jest.mock('shared/supabase/init');
 jest.mock('shared/utils');
 jest.mock('api/helpers/private-messages');
 
-import { leavePrivateUserMessageChannel } from "api/leave-private-user-message-channel";
+import {leavePrivateUserMessageChannel} from "api/leave-private-user-message-channel";
 import * as supabaseInit from "shared/supabase/init";
 import * as sharedUtils from "shared/utils";
 import * as messageHelpers from "api/helpers/private-messages";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
+import {sqlMatch} from 'common/test-utils'
 
 describe('leavePrivateUserMessageChannel', () => {
     let mockPg = {} as any;
@@ -43,12 +44,12 @@ describe('leavePrivateUserMessageChannel', () => {
             expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select status from private_user_message_channel_members'),
+              sqlMatch('select status from private_user_message_channel_members'),
                 [mockProps.channelId, mockAuth.uid]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('update private_user_message_channel_members'),
+              sqlMatch('update private_user_message_channel_members'),
                 [mockProps.channelId, mockAuth.uid]
             );
             expect(messageHelpers.leaveChatContent).toBeCalledTimes(1);

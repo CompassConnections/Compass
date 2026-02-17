@@ -1,10 +1,11 @@
-jest.mock('shared/supabase/init');
-jest.mock('api/helpers/private-messages');
-
-import { reactToMessage } from "api/react-to-message";
+import {sqlMatch} from "common/test-utils";
+import {reactToMessage} from "api/react-to-message";
 import * as supabaseInit from "shared/supabase/init";
 import * as messageHelpers from "api/helpers/private-messages";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
+
+jest.mock('shared/supabase/init');
+jest.mock('api/helpers/private-messages');
 
 describe('reactToMessage', () => {
     let mockPg = {} as any;
@@ -45,18 +46,18 @@ describe('reactToMessage', () => {
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(params).toEqual([mockAuth.uid, mockProps.messageId])
             expect(sql).toEqual(
-                expect.stringContaining('SELECT *')
+              sqlMatch('SELECT *')
             );
             expect(sql).toEqual(
-                expect.stringContaining('FROM private_user_message_channel_members m')
+              sqlMatch('FROM private_user_message_channel_members m')
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(params1).toEqual([mockProps.reaction, mockAuth.uid, mockProps.messageId])
             expect(sql1).toEqual(
-                expect.stringContaining('UPDATE private_user_messages')
+              sqlMatch('UPDATE private_user_messages')
             );
             expect(sql1).toEqual(
-                expect.stringContaining('SET reactions =')
+              sqlMatch('SET reactions =')
             );
             expect(messageHelpers.broadcastPrivateMessages).toBeCalledTimes(1);
             expect(messageHelpers.broadcastPrivateMessages).toBeCalledWith(
@@ -89,10 +90,10 @@ describe('reactToMessage', () => {
             expect(mockPg.none).toBeCalledTimes(1);
             expect(params1).toEqual([mockProps.reaction, mockProps.messageId, mockAuth.uid])
             expect(sql1).toEqual(
-                expect.stringContaining('UPDATE private_user_messages')
+              sqlMatch('UPDATE private_user_messages')
             );
             expect(sql1).toEqual(
-                expect.stringContaining('SET reactions = reactions - $1')
+              sqlMatch('SET reactions = reactions - $1')
             );
         });
     });

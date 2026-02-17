@@ -3,12 +3,13 @@ jest.mock('common/util/try-catch');
 jest.mock('shared/supabase/utils');
 jest.mock('shared/create-profile-notification');
 
-import { shipProfiles } from "api/ship-profiles";
+import {shipProfiles} from "api/ship-profiles";
 import * as supabaseInit from "shared/supabase/init";
-import { tryCatch } from "common/util/try-catch";
+import {tryCatch} from "common/util/try-catch";
 import * as supabaseUtils from "shared/supabase/utils";
 import * as profileNotificationModules from "shared/create-profile-notification";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
+import {sqlMatch} from 'common/test-utils'
 
 describe('shipProfiles', () => {
     let mockPg = {} as any;
@@ -49,7 +50,7 @@ describe('shipProfiles', () => {
             expect(tryCatch).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select ship_id from profile_ships'),
+              sqlMatch('select ship_id from profile_ships'),
                 [mockAuth.uid, mockProps.targetUserId1, mockProps.targetUserId2]
             );
         });
@@ -79,12 +80,12 @@ describe('shipProfiles', () => {
             expect(tryCatch).toBeCalledTimes(2);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select ship_id from profile_ships'),
+              sqlMatch('select ship_id from profile_ships'),
                 [mockAuth.uid, mockProps.targetUserId1, mockProps.targetUserId2]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('delete from profile_ships where ship_id = $1'),
+              sqlMatch('delete from profile_ships where ship_id = $1'),
                 [mockExisting.data.ship_id]
             );
         });
@@ -121,7 +122,7 @@ describe('shipProfiles', () => {
             expect(tryCatch).toBeCalledTimes(2);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select ship_id from profile_ships'),
+              sqlMatch('select ship_id from profile_ships'),
                 [mockAuth.uid, mockProps.targetUserId1, mockProps.targetUserId2]
             );
             expect(supabaseUtils.insert).toBeCalledTimes(1);

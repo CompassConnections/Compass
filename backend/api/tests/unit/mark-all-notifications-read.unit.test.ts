@@ -1,8 +1,9 @@
 jest.mock('shared/supabase/init');
 
-import { markAllNotifsRead } from "api/mark-all-notifications-read";
-import { AuthedUser } from "api/helpers/endpoint";
+import {markAllNotifsRead} from "api/mark-all-notifications-read";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
+import {sqlMatch} from 'common/test-utils'
 
 describe('markAllNotifsRead', () => {
     let mockPg = {} as any;
@@ -29,7 +30,7 @@ describe('markAllNotifsRead', () => {
             
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('update user_notifications'),
+              sqlMatch('update user_notifications'),
                 [mockAuth.uid]
             );
         });    

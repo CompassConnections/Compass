@@ -2,11 +2,12 @@ jest.mock('shared/supabase/init');
 jest.mock('common/envs/constants');
 jest.mock('common/util/try-catch');
 
-import { removePinnedPhoto } from "api/remove-pinned-photo";
+import {removePinnedPhoto} from "api/remove-pinned-photo";
 import * as supabaseInit from "shared/supabase/init";
 import * as envConstants from "common/envs/constants";
-import { tryCatch } from "common/util/try-catch";
-import { AuthedUser } from "api/helpers/endpoint";
+import {tryCatch} from "common/util/try-catch";
+import {AuthedUser} from "api/helpers/endpoint";
+import {sqlMatch} from 'common/test-utils'
 
 describe('removePinnedPhoto', () => {
     let mockPg = {} as any;
@@ -40,7 +41,7 @@ describe('removePinnedPhoto', () => {
             expect(envConstants.isAdminId).toBeCalledWith(mockAuth.uid);
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('update profiles set pinned_url = null where user_id = $1'),
+              sqlMatch('update profiles set pinned_url = null where user_id = $1'),
                 [mockBody.userId]
             );
         });

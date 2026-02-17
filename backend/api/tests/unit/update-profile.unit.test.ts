@@ -11,6 +11,7 @@ import * as supabaseUtils from "shared/supabase/utils";
 import * as supabaseUsers from "shared/supabase/users";
 import {tryCatch} from "common/util/try-catch";
 import {removePinnedUrlFromPhotoUrls} from "shared/profiles/parse-photos";
+import {sqlMatch} from 'common/test-utils'
 
 describe('updateProfiles', () => {
     let mockPg: any;
@@ -45,7 +46,7 @@ describe('updateProfiles', () => {
             expect(result).toBe(mockData);
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('select * from profiles where user_id = $1'),
+              sqlMatch('select * from profiles where user_id = $1'),
                 [mockAuth.uid]
             );
             expect(removePinnedUrlFromPhotoUrls).toBeCalledTimes(1);

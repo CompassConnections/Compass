@@ -1,11 +1,12 @@
+import {sqlMatch} from "common/test-utils";
+import * as getPrivateMessages from "api/get-private-messages";
+import * as supabaseInit from "shared/supabase/init";
+import {tryCatch} from "common/util/try-catch";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('common/util/try-catch');
 jest.mock('shared/supabase/messages');
-
-import * as getPrivateMessages from "api/get-private-messages";
-import * as supabaseInit from "shared/supabase/init";
-import { tryCatch } from "common/util/try-catch";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('getChannelMemberships', () => {
     let mockPg = {} as any;
@@ -58,13 +59,13 @@ describe('getChannelMemberships', () => {
             expect(mockPg.map).toBeCalledTimes(2);
             expect(mockPg.map).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining('select channel_id, notify_after_time, pumcm.created_time, last_updated_time'),
+              sqlMatch('select channel_id, notify_after_time, pumcm.created_time, last_updated_time'),
                 [mockAuth.uid, mockProps.channelId, mockProps.limit],
                 expect.any(Function)
             );
             expect(mockPg.map).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining('select channel_id, user_id'),
+              sqlMatch('select channel_id, user_id'),
                 [mockAuth.uid, [mockChannels[0].channel_id]],
                 expect.any(Function)
             );
@@ -105,13 +106,13 @@ describe('getChannelMemberships', () => {
             expect(mockPg.map).toBeCalledTimes(2);
             expect(mockPg.map).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining('with latest_channels as (select distinct on (pumc.id) pumc.id                as channel_id'),
+              sqlMatch('with latest_channels as (select distinct on (pumc.id) pumc.id                as channel_id'),
                 [mockAuth.uid, mockProps.createdTime, mockProps.limit, mockProps.lastUpdatedTime],
                 expect.any(Function)
             );
             expect(mockPg.map).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining('select channel_id, user_id'),
+              sqlMatch('select channel_id, user_id'),
                 [mockAuth.uid, [mockChannels[0].channel_id]],
                 expect.any(Function)
             );
@@ -138,7 +139,7 @@ describe('getChannelMemberships', () => {
             expect(mockPg.map).toBeCalledTimes(1);
             expect(mockPg.map).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining('select channel_id, notify_after_time, pumcm.created_time, last_updated_time'),
+              sqlMatch('select channel_id, notify_after_time, pumcm.created_time, last_updated_time'),
                 [mockAuth.uid, mockProps.channelId, mockProps.limit],
                 expect.any(Function)
             );
@@ -179,7 +180,7 @@ describe('getChannelMessagesEndpoint', () => {
             expect(result).toBe(mockData);
             expect(mockPg.map).toBeCalledTimes(1);
             expect(mockPg.map).toBeCalledWith(
-                expect.stringContaining('select *, created_time as created_time_ts'),
+              sqlMatch('select *, created_time as created_time_ts'),
                 [mockProps.channelId, mockAuth.uid, mockProps.limit, mockProps.id],
                 expect.any(Function)
             );
@@ -244,7 +245,7 @@ describe('getLastSeenChannelTime', () => {
             expect(result).toBe(mockUnseens);
             expect(mockPg.map).toBeCalledTimes(1);
             expect(mockPg.map).toBeCalledWith(
-                expect.stringContaining('select distinct on (channel_id) channel_id, created_time'),
+              sqlMatch('select distinct on (channel_id) channel_id, created_time'),
                 [mockProps.channelIds, mockAuth.uid],
                 expect.any(Function)
             );
@@ -281,7 +282,7 @@ describe('setChannelLastSeenTime', () => {
 
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('insert into private_user_seen_message_channels (user_id, channel_id)'),
+              sqlMatch('insert into private_user_seen_message_channels (user_id, channel_id)'),
                 [mockAuth.uid, mockProps.channelId]
             );
         });

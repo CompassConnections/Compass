@@ -1,10 +1,11 @@
+import {sqlMatch} from "common/test-utils";
+import {getUser} from "api/get-user";
+import * as supabaseInit from "shared/supabase/init";
+import {toUserAPIResponse} from "common/api/user-types";
+
 jest.mock("shared/supabase/init");
 jest.mock("common/supabase/users");
 jest.mock("common/api/user-types");
-
-import { getUser } from "api/get-user";
-import * as supabaseInit from "shared/supabase/init";
-import { toUserAPIResponse } from "common/api/user-types";
 
 describe('getUser', () =>{
     let mockPg: any;
@@ -36,7 +37,7 @@ describe('getUser', () =>{
                 expect(result).toBe('mockApiResponse');
                 expect(mockPg.oneOrNone).toBeCalledTimes(1);
                 expect(mockPg.oneOrNone).toBeCalledWith(
-                    expect.stringContaining('select * from users'),
+                  sqlMatch('select * from users'),
                     [mockProps.id],
                     expect.any(Function)
                 );
@@ -55,7 +56,7 @@ describe('getUser', () =>{
                 await getUser(mockProps)
         
                 expect(mockPg.oneOrNone).toHaveBeenCalledWith(
-                    expect.stringContaining('where username = $1'),
+                  sqlMatch('where username = $1'),
                     [mockProps.username],
                     expect.any(Function)
                 );

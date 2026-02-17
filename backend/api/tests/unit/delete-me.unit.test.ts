@@ -1,16 +1,17 @@
+import {sqlMatch} from "common/test-utils";
+import {deleteMe} from "api/delete-me";
+import * as supabaseInit from "shared/supabase/init";
+import * as sharedUtils from "shared/utils";
+import * as firebaseAdmin from "firebase-admin";
+import * as firebaseUtils from "shared/firebase-utils";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('shared/utils');
 jest.mock('firebase-admin', () => ({
     auth: jest.fn()
 }));
 jest.mock('shared/firebase-utils');
-
-import { deleteMe } from "api/delete-me";
-import * as supabaseInit from "shared/supabase/init";
-import * as sharedUtils from "shared/utils";
-import * as firebaseAdmin from "firebase-admin";
-import * as firebaseUtils from "shared/firebase-utils";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('deleteMe', () => {
     let mockPg = {} as any;
@@ -50,7 +51,7 @@ describe('deleteMe', () => {
             expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid);
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('DELETE FROM users WHERE id = $1'),
+              sqlMatch('DELETE FROM users WHERE id = $1'),
                 [mockUser.id]
             );
             expect(firebaseUtils.deleteUserFiles).toBeCalledTimes(1);

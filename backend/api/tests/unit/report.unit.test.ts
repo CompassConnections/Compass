@@ -1,14 +1,15 @@
+import {sqlMatch} from "common/test-utils";
+import {report} from "api/report";
+import * as supabaseInit from "shared/supabase/init";
+import {tryCatch} from "common/util/try-catch";
+import * as supabaseUtils from "shared/supabase/utils";
+import {sendDiscordMessage} from "common/discord/core";
+import {AuthedUser} from "api/helpers/endpoint";
+
 jest.mock('shared/supabase/init');
 jest.mock('common/util/try-catch');
 jest.mock('shared/supabase/utils');
 jest.mock('common/discord/core');
-
-import { report } from "api/report";
-import * as supabaseInit from "shared/supabase/init";
-import { tryCatch } from "common/util/try-catch";
-import * as supabaseUtils from "shared/supabase/utils";
-import { sendDiscordMessage } from "common/discord/core";
-import { AuthedUser } from "api/helpers/endpoint";
 
 describe('report', () => {
     let mockPg = {} as any;
@@ -72,12 +73,12 @@ describe('report', () => {
             expect(mockPg.oneOrNone).toBeCalledTimes(2);
             expect(mockPg.oneOrNone).toHaveBeenNthCalledWith(
                 1,
-                expect.stringContaining('select * from users where id = $1'),
+              sqlMatch('select * from users where id = $1'),
                 [mockAuth.uid]
             );
             expect(mockPg.oneOrNone).toHaveBeenNthCalledWith(
                 2,
-                expect.stringContaining('select * from users where id = $1'),
+              sqlMatch('select * from users where id = $1'),
                 [mockBody.contentOwnerId]
             );
             expect(sendDiscordMessage).toBeCalledTimes(1);

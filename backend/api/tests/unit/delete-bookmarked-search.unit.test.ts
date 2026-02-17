@@ -1,8 +1,9 @@
-jest.mock('shared/supabase/init');
-
-import { deleteBookmarkedSearch } from "api/delete-bookmarked-search";
-import { AuthedUser } from "api/helpers/endpoint";
+import {sqlMatch} from "common/test-utils";
+import {deleteBookmarkedSearch} from "api/delete-bookmarked-search";
+import {AuthedUser} from "api/helpers/endpoint";
 import * as supabaseInit from "shared/supabase/init";
+
+jest.mock('shared/supabase/init');
 
 describe('deleteBookmarkedSearch', () => {
     let mockPg = {} as any;
@@ -32,7 +33,7 @@ describe('deleteBookmarkedSearch', () => {
             expect(result).toStrictEqual({});
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('DELETE FROM bookmarked_searches'),
+              sqlMatch('DELETE FROM bookmarked_searches'),
                 [
                     mockProps.id,
                     mockAuth.uid

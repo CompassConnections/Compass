@@ -1,8 +1,9 @@
-jest.mock('shared/supabase/init');
-
-import { AuthedUser } from "api/helpers/endpoint";
-import { saveSubscriptionMobile } from "api/save-subscription-mobile";
+import {sqlMatch} from "common/test-utils";
+import {AuthedUser} from "api/helpers/endpoint";
+import {saveSubscriptionMobile} from "api/save-subscription-mobile";
 import * as supabaseInit from "shared/supabase/init";
+
+jest.mock('shared/supabase/init');
 
 describe('saveSubscriptionMobile', () => {
     let mockPg = {} as any;
@@ -32,7 +33,7 @@ describe('saveSubscriptionMobile', () => {
             expect(result.success).toBeTruthy();
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('insert into push_subscriptions_mobile(token, platform, user_id)'),
+              sqlMatch('insert into push_subscriptions_mobile(token, platform, user_id)'),
                 [mockBody.token, 'android', mockAuth.uid]
             );
         });

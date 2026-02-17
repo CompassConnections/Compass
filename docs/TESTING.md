@@ -563,15 +563,14 @@ yarn test:e2e:dev --debug tests/e2e/web/specs/signUp.spec.ts
 ### 1. Start services once
 
 ```bash
-yarn e2e:services
+yarn test:e2e:services
 ```
 
 This starts Firebase emulators, the backend API, and Next.js in one terminal.
 In a separate terminal, start Supabase:
 
 ```bash
-npx supabase start
-npx supabase db reset  # Apply migrations + seed
+yarn test:db:reset  # Restart and apply migrations + seed
 ```
 
 ### 2. Open Playwright UI
@@ -598,7 +597,7 @@ No restart needed for test file changes.
 If your tests leave dirty state or you need a fresh DB:
 
 ```bash
-npx supabase db reset  # Drops and re-applies all migrations + seed
+yarn test:db:reset  # Drops and re-applies all migrations + seed
 ```
 
 ---
@@ -610,8 +609,8 @@ npx supabase db reset  # Drops and re-applies all migrations + seed
 | Edit test file                | Just re-run in Playwright UI             |
 | Edit app code (Next.js)       | Next.js hot reloads automatically        |
 | Edit API code                 | API dev server hot reloads automatically |
-| Database schema change        | `npx supabase db reset`                  |
-| Seed data change              | `npx supabase db reset`                  |
+| Database schema change        | `yarn test:db:reset`                     |
+| Seed data change              | `yarn test:db:reset`                     |
 | Change `playwright.config.ts` | Restart Playwright UI                    |
 | Change env variables          | Restart affected service                 |
 
@@ -709,7 +708,7 @@ test.describe('Authentication', () => {
 
 ### Test accounts
 
-These are seeded automatically by `npx supabase db reset`:
+These are seeded automatically by `yarn test:db:seed`:
 
 | Email               | Password      |
 |---------------------|---------------|
@@ -756,7 +755,7 @@ curl http://localhost:3000  # Next.js
 ### Database is in a bad state
 
 ```bash
-npx supabase db reset  # Full reset - drops everything and reseeds
+yarn test:db:reset  # Full reset - drops everything and reseeds
 ```
 
 ### Firebase auth warning in CI

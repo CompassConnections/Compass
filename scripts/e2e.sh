@@ -59,8 +59,8 @@ print_status "Killing any stale processes..."
 supabase stop --no-backup 2>/dev/null || true
 sleep 2  # Give ports time to free up
 
-# Start Supabase (includes Postgres, Auth, Storage, etc.) and Apply migrations
-yarn test:db:reset
+# Build backend (required?)
+./scripts/build_api.sh
 
 # Get connection details
 export NEXT_PUBLIC_SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')
@@ -87,14 +87,8 @@ npx wait-on \
   http-get://127.0.0.1:9099 \
   --timeout 30000
 
-# Build backend (required?)
-./scripts/build_api.sh
-
-# Seed test data if script exists
-if [ -f "scripts/seed-test-data.ts" ]; then
-  print_status "Seeding test data..."
-  npx tsx scripts/seed-test-data.ts
-fi
+# Start Supabase (includes Postgres, Auth, Storage, etc.) and Apply migrations and seed (needs firebase emulator running)
+yarn test:db:reset
 
 # Start backend API
 print_status "Starting backend API..."

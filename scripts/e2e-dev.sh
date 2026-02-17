@@ -38,7 +38,7 @@ check_services() {
 
   if [ $missing -eq 1 ]; then
     echo ""
-    echo "Start everything with: yarn e2e:services"
+    echo "Start everything with: yarn test:e2e:services"
     echo "Or start full clean run: yarn test:e2e"
     exit 1
   fi

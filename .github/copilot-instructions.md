@@ -1230,7 +1230,7 @@ If you want to avoid any conflict / break or simply have it run faster, run the 
 
 ```bash
 yarn test:db:reset  # reset your local supabase
-yarn isolated
+yarn dev:isolated
 ```
 
 ### Contributing

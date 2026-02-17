@@ -122,7 +122,7 @@ yarn install --frozen-lockfile
 
 ### Tests
 
-Make sure the tests pass:
+Make sure the Jest tests pass:
 ```bash
 yarn test
 ```
@@ -190,7 +190,7 @@ Supabase CLI
 npm install -g supabase
 
 # Verify
-supabase --version
+npx supabase --version
 ```
 
 Java 21+
@@ -218,7 +218,7 @@ firebase --version
 Run in isolation
 
 ```bash
-yarn isolated
+yarn dev:isolated
 ```
 
 Visit `http://localhost:3000` as usual. Your local database comes preloaded with synthetic test profiles so the app

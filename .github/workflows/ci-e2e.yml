@@ -38,8 +38,8 @@ jobs:
         env:
           SKIP_DB_CLEANUP: true # Don't try to stop Docker in CI
         run: |
-          #          chmod +x scripts/e2e.sh
-               yarn test:e2e
+          supabase stop --no-backup
+          yarn test:e2e
 
       - name: Upload Playwright report
         if: always()

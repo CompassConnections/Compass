@@ -139,7 +139,7 @@ Once the server is running, visit http://localhost:3000 to start using the app. 
 
 Note: it's normal if page loading locally is much slower than the deployed version. It can take up to 10 seconds, it would be great to improve that though!
 
-##### Full isolation
+#### Full isolation
 
 Running `yarn dev:isolated` spins up a local Supabase and Firebase emulator instead of pointing at the shared remote
 database. This is strongly recommended for day-to-day development:

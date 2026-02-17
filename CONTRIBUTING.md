@@ -7,6 +7,8 @@ We welcome pull requests, but only if they meet the project's quality and design
 - Familiarity with Git and GitHub (basic commands, branching, forking, etc.)
 - A functioning development environment
 - Node.js, Python, or other relevant runtime/tools installed (check the `README.md`)
+- Read the [Development Documentation](docs/development.md) for project-specific setup and guidelines (adding languages,
+  profile fields, etc.)
 
 ## Fork & Clone
 

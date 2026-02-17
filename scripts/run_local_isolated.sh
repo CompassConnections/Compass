@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"/..
+
 # Run the web app locally in full isolation (database, storage and authentication all stored locally)
 # What runs on each port?
 # - 4000: Firebase emulator UI
@@ -17,7 +19,7 @@
 
 # Clean ghost processes
 kill_ghosts() {
-  for p in 3000 4000 4400 4500 8088; do
+  for p in 3000 4000 4400 4500 8088 9099 9199; do
     pids=$(lsof -ti :$p 2>/dev/null)
     if [ -n "$pids" ]; then
       kill $pids || true
@@ -30,21 +32,34 @@ set -euo pipefail
 
 # Function to clean up background processes
 cleanup() {
-  echo "Stopping background processes..."
+  print_status "Cleaning up..."
+
+  # Stop Firebase emulators
+  ./scripts/firebase_stop.sh
+
+  # Kill all background processes
   for pid in "${PIDS[@]:-}"; do
     if kill -0 "$pid" 2>/dev/null; then
-      kill "$pid" || true
+      kill "$pid" 2>/dev/null || true
       wait "$pid" 2>/dev/null || true
-      echo "Killed PID $pid"
     fi
   done
+
   kill_ghosts
+
+  # Stop Docker containers
+  if [ "${SKIP_DB_CLEANUP:-}" != "true" ]; then
+    print_status "Stopping test database..."
+    docker compose -f scripts/docker-compose.test.yml down -v
+  fi
+
+  sleep 2
+
+  print_status "Cleanup complete"
 }
 
 # Trap EXIT, INT, TERM to run cleanup automatically
 trap cleanup EXIT INT TERM
-
-cd "$(dirname "$0")"/..
 
 export $(cat .env.test | grep -v '^#' | xargs)
 

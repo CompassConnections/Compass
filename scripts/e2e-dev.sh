@@ -17,8 +17,7 @@ check_services() {
 
   if ! supabase status --output json | jq -r '.API_URL'; then
     print_error "Supabase is not running. Starting..."
-    supabase start
-    supabase db reset
+    yarn test:db:reset
     missing=1
   fi
 

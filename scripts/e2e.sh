@@ -59,12 +59,8 @@ print_status "Killing any stale processes..."
 supabase stop --no-backup 2>/dev/null || true
 sleep 2  # Give ports time to free up
 
-# Start Supabase (includes Postgres, Auth, Storage, etc.)
-supabase start
-
-# Apply migrations (if using Supabase migrations)
-./scripts/combine-migrations.sh
-supabase db reset
+# Start Supabase (includes Postgres, Auth, Storage, etc.) and Apply migrations
+yarn test:db:reset
 
 # Get connection details
 export NEXT_PUBLIC_SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')

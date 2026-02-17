@@ -141,13 +141,88 @@ Note: it's normal if page loading locally is much slower than the deployed versi
 
 ##### Full isolation
 
-`yarn dev` runs the app locally but uses the data from a shared remote database (Supabase) and authentication (
-Firebase).
-If you want to avoid any conflict / break or simply have it run faster, run the app in full isolation locally:
+Running `yarn dev:isolated` spins up a local Supabase and Firebase emulator instead of pointing at the shared remote
+database. This is strongly recommended for day-to-day development:
+
+- **Freedom** — Reset, wipe, and reseed your local database as many times as you want without affecting other
+  contributors.
+- **No conflicts** — Multiple contributors can work simultaneously without stepping on each other's data or schema.
+- **Works offline** — No internet required once services are started locally.
+- **Faster** — No network latency on every database query.
+
+However, running in full isolation requires installing several heavy dependencies:
+
+- **Docker** (~500MB) — runs the Supabase Postgres container
+- **Supabase CLI** — manages the local Supabase stack (10+ Docker containers, ~1-2GB RAM when running)
+- **Java 21+** (~300MB) — required by Firebase emulators
+- **Firebase CLI** — manages the local Firebase emulators
+
+First startup is slow (30-60s) and the stack uses significant memory. If your machine has less than 8GB RAM, you may
+notice slowdowns.
+
+If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote
+and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the
+database or authentication.
+
+###### Setup instructions
+
+As always, don't hesitate to raise an issue if you run into any problems!
+
+Docker
+
+```bash
+# Ubuntu/Debian (native - recommended over snap)
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+# Log out and back in for group changes to take effect
+
+# macOS
+brew install --cask docker
+# Or download from https://www.docker.com/products/docker-desktop
+
+# Verify
+docker --version
+```
+
+Supabase CLI
+
+```bash
+npm install -g supabase
+
+# Verify
+supabase --version
+```
+
+Java 21+
+
+```bash
+# Ubuntu/Debian
+sudo apt install openjdk-21-jdk
+
+# macOS
+brew install openjdk@21
+
+# Verify (must be 21+)
+java -version
+```
+
+Firebase CLI
+
+```bash
+npm install -g firebase-tools
+
+# Verify
+firebase --version
+```
+
+Run in isolation
 
 ```bash
 yarn isolated
 ```
+
+Visit `http://localhost:3000` as usual. Your local database comes preloaded with synthetic test profiles so the app
+looks and feels like the real thing.
 
 ### Contributing
 

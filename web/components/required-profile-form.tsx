@@ -101,7 +101,7 @@ export const RequiredProfileUserForm = (props: {
             {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
           </div>}
       <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-fit'}>
-        {step === 0 && <Col>
+        {(step === 0 || profileCreatedAlready) && <Col>
             <label className={clsx(labelClassName)}>
               {t('profile.basics.display_name', 'Display name')}
             </label>

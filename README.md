@@ -117,7 +117,7 @@ npm install --global yarn
 
 Then, install the dependencies for this project:
 ```bash
-yarn install
+yarn install --frozen-lockfile
 ```
 
 ### Tests

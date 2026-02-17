@@ -415,9 +415,11 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('common.min', 'Min')}</span>
               <Select
                 value={profile['pref_age_min'] ?? ''}
-                onChange={(e) =>
-                  setProfile('pref_age_min', e.target.value ? Number(e.target.value) : 18)
-                }
+                onChange={(e) => {
+                  const newMin = e.target.value ? Number(e.target.value) : 18
+                  const currentMax = profile['pref_age_max'] ?? 100
+                  setProfile('pref_age_min', Math.min(newMin, currentMax))
+                }}
                 className={'w-18 border-ink-300 rounded-md'}
               >
                 <option key={""} value={""}></option>
@@ -432,9 +434,11 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('common.max', 'Max')}</span>
               <Select
                 value={profile['pref_age_max'] ?? ''}
-                onChange={(e) =>
-                  setProfile('pref_age_max', e.target.value ? Number(e.target.value) : 100)
-                }
+                onChange={(e) => {
+                  const newMax = e.target.value ? Number(e.target.value) : 100
+                  const currentMin = profile['pref_age_min'] ?? 18
+                  setProfile('pref_age_max', Math.max(newMax, currentMin))
+                }}
                 className={'w-18 border-ink-300 rounded-md'}
               >
                 <option key={""} value={""}></option>

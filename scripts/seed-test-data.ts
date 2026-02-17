@@ -22,7 +22,7 @@ async function createAuth(email: string, password: string) {
     if (err.response?.status === 400 || err.response?.data?.error?.message?.includes('EMAIL_EXISTS')) {
       return;
     }
-    if (err.code === 'ECONNREFUSED') throw Error('Firebase emulator not running. Start with:\n  yarn test:e2e:services\n')
+    if (err.code === 'ECONNREFUSED') throw Error('Firebase emulator not running. Start it with:\n  yarn test:e2e:services\n')
     console.log(err);
   }
 

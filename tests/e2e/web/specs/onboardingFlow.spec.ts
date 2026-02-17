@@ -82,9 +82,6 @@ test.describe('when given valid input', () => {
         await profilePage.verifyDrinksPerMonth(testAccount.alcohol_consumed_per_month);
         await profilePage.verifyLanguages(testAccount.languages);
         await profilePage.verifySocialMedia(testAccount.social_media);
-               
-
-
     });
     test('should successfully skip the onboarding flow', async ({
         homePage,

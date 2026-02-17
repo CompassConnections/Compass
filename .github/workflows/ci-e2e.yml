@@ -41,7 +41,9 @@ jobs:
 
       - name: Run E2E tests
         env:
-          SKIP_DB_CLEANUP: true # Don't try to stop Docker in CI
+          SKIP_DB_CLEANUP: true   # Don't try to stop Docker in CI
+          FIREBASE_TOKEN: "dummy" # Suppresses auth warning
+        # or
         run: |
           supabase stop --no-backup || true
           yarn test:e2e

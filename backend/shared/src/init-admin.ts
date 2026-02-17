@@ -6,7 +6,7 @@ import {IS_FIREBASE_EMULATOR} from "common/envs/constants";
 export const initAdmin = () => {
 
   if (IS_LOCAL && IS_FIREBASE_EMULATOR) {
-    console.log("Using Firebase Emulator Suite.")
+    // console.log("Using Firebase Emulator Suite.")
     return admin.initializeApp({
       projectId: "compass-57c3c",
       storageBucket: "compass-130ba-public",

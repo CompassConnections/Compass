@@ -45,7 +45,6 @@ jobs:
           FIREBASE_TOKEN: "dummy" # Suppresses auth warning
         # or
         run: |
-          supabase stop --no-backup || true
           yarn test:e2e
 
       - name: Upload Playwright report

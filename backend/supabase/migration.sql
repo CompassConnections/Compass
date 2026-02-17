@@ -1,9 +1,10 @@
 BEGIN;
+\i backend/supabase/extensions.sql
 \i backend/supabase/rebuild_profile_search.sql
 \i backend/supabase/functions.sql
 \i backend/supabase/firebase.sql
-\i backend/supabase/profiles.sql
 \i backend/supabase/users.sql
+\i backend/supabase/profiles.sql
 \i backend/supabase/private_user_message_channels.sql
 \i backend/supabase/private_user_message_channel_members.sql
 \i backend/supabase/private_users.sql
@@ -23,4 +24,26 @@ BEGIN;
 \i backend/supabase/functions_others.sql
 \i backend/supabase/reports.sql
 \i backend/supabase/bookmarked_searches.sql
+\i backend/supabase/causes.sql
+\i backend/supabase/causes_translations.sql
+\i backend/supabase/contact.sql
+\i backend/supabase/hidden_profiles.sql
+\i backend/supabase/interests.sql
+\i backend/supabase/interests_translations.sql
+\i backend/supabase/push_subscriptions.sql
+\i backend/supabase/push_subscriptions_mobile.sql
+\i backend/supabase/temp_users.sql
+\i backend/supabase/user_activity.sql
+\i backend/supabase/votes.sql
+\i backend/supabase/vote_results.sql
+\i backend/supabase/work.sql
+\i backend/supabase/work_translations.sql
+\i backend/supabase/profile_causes.sql
+\i backend/supabase/profile_interests.sql
+\i backend/supabase/profile_work.sql
+\i backend/supabase/compatibility_prompts_translations.sql
+\i backend/supabase/migrations/20251106_add_message_actions.sql
+\i backend/supabase/migrations/20251110_add_languages_to_profiles.sql
+\i backend/supabase/migrations/20251112_add_mbti_to_profiles.sql
+\i backend/supabase/migrations/20260213_add_big_5_to_profiles.sql
 COMMIT;

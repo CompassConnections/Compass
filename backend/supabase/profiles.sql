@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     bio JSONB,
     bio_length integer null,
     born_in_location TEXT,
-    city TEXT NOT NULL,
+    city                 TEXT,
     city_latitude NUMERIC(9, 6),
     city_longitude NUMERIC(9, 6),
     comments_enabled BOOLEAN DEFAULT TRUE NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     drinks_per_month INTEGER,
     education_level TEXT,
     ethnicity TEXT[],
-    gender TEXT NOT NULL,
+    gender               TEXT,
     geodb_city_id TEXT,
     has_kids INTEGER,
     height_in_inches float4,
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     political_details   TEXT,
     pref_age_max INTEGER NULL,
     pref_age_min INTEGER NULL,
-    pref_gender TEXT[] NOT NULL,
-    pref_relation_styles TEXT[] NOT NULL,
+    pref_gender          TEXT[],
+    pref_relation_styles TEXT[],
     pref_romantic_styles TEXT[],
     referred_by_username TEXT,
     region_code TEXT,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     university TEXT,
     user_id TEXT NOT NULL,
     visibility profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
-    wants_kids_strength INTEGER DEFAULT 0 NOT NULL,
+    wants_kids_strength  INTEGER DEFAULT 0,
     website TEXT,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
     );
@@ -102,7 +102,6 @@ CREATE INDEX profiles_pref_romantic_styles_gin ON profiles USING GIN (pref_roman
 CREATE INDEX profiles_diet_gin ON profiles USING GIN (diet);
 CREATE INDEX profiles_political_beliefs_gin ON profiles USING GIN (political_beliefs);
 CREATE INDEX profiles_relationship_status_gin ON profiles USING GIN (relationship_status);
-CREATE INDEX profiles_languages_gin ON profiles USING GIN (languages);
 CREATE INDEX profiles_religion_gin ON profiles USING GIN (religion);
 CREATE INDEX profiles_ethnicity_gin ON profiles USING GIN (ethnicity);
 

@@ -39,7 +39,6 @@ yarn-error.log*
 .env.local
 .env.*
 .envrc
-supabase/*
 
 # vercel
 .vercel

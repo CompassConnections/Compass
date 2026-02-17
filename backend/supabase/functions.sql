@@ -56,17 +56,6 @@ END;
 $function$;
 
 create
-or replace function public.can_access_private_messages (channel_id bigint, user_id text) returns boolean language sql parallel SAFE as $function$
-select exists (
-    select 1 from private_user_message_channel_members
-    where private_user_message_channel_members.channel_id = $1
-      and private_user_message_channel_members.user_id = $2
-)
-$function$;
-
-
-
-create
 or replace function public.get_average_rating (user_id text) returns numeric language plpgsql as $function$
 DECLARE
   result numeric;

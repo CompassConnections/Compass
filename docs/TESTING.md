@@ -478,6 +478,22 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
 
 ### Playwright (E2E) Testing Guide
 
+##### Usage
+
+```shell
+# Run all tests
+yarn test:e2e
+
+# Run with UI
+yarn test:e2e:ui
+
+# Run specific test file
+yarn test:e2e tests/e2e/auth.spec.ts
+
+# Reset test database
+yarn test:db:reset
+```
+
 ##### Component Selection Hierarchy
 
 Use this priority order for selecting elements in Playwright tests:

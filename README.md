@@ -138,6 +138,16 @@ Once the server is running, visit http://localhost:3000 to start using the app. 
 
 Note: it's normal if page loading locally is much slower than the deployed version. It can take up to 10 seconds, it would be great to improve that though!
 
+##### Full isolation
+
+`yarn dev` runs the app locally but uses the data from a shared remote database (Supabase) and authentication (
+Firebase).
+If you want to avoid any conflict / break or simply have it run faster, run the app in full isolation locally:
+
+```bash
+yarn isolated
+```
+
 ### Contributing
 
 Now you can start contributing by making changes and submitting pull requests!

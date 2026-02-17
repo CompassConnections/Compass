@@ -1,0 +1,2 @@
+-- You can seed basic stuff in the Supabase SQL database here, but most of the seeding is done in seed-test-data.ts
+-- to populate both the Firebase auth section and Supabase SQL database (as the user IDs must match between the two)

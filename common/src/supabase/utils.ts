@@ -25,11 +25,12 @@ export type Column<T extends Selectable> = keyof Row<T> & string
 export type SupabaseClient = SupabaseClientGeneric<Database, 'public', Schema>
 
 export function createClient(
-  instanceId: string,
+  instanceIdOrUrl: string,
   key: string,
   opts?: SupabaseClientOptionsGeneric<'public'>
 ) {
-  const url = `https://${instanceId}.supabase.co`
+  // Allow passing a full Supabase URL directly (e.g., http://localhost:54321)
+  const url = /:\/\//.test(instanceIdOrUrl) ? instanceIdOrUrl : `https://${instanceIdOrUrl}.supabase.co`
   // console.debug('createClient', instanceId, key, opts)
   return createClientGeneric(
     url,

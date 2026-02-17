@@ -43,3 +43,15 @@ CREATE INDEX IF NOT EXISTS pumcm_members_idx
 CREATE UNIQUE INDEX IF NOT EXISTS unique_user_channel
     ON public.private_user_message_channel_members
     USING btree (channel_id, user_id);
+
+-- Functions
+create
+    or replace function public.can_access_private_messages(channel_id bigint, user_id text) returns boolean
+    language sql
+    parallel SAFE as
+$function$
+select exists (select 1
+               from private_user_message_channel_members
+               where private_user_message_channel_members.channel_id = $1
+                 and private_user_message_channel_members.user_id = $2)
+$function$;

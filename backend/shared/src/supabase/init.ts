@@ -51,18 +51,35 @@ const newClient = (
 ) => {
   const {instanceId, password, ...settings} = props
 
-  const config = {
-    // This host is IPV4 compatible, for the google cloud VM
-    host: 'aws-1-us-west-1.pooler.supabase.com',
-    port: 5432,
-    user: `postgres.${instanceId}`,
-    password: password,
-    database: 'postgres',
-    pool_mode: 'session',
-    ssl: {rejectUnauthorized: false},
-    family: 4, // <- forces IPv4
-    ...settings,
+  // If DATABASE_URL is provided (e.g., for E2E tests), prefer connecting directly to that Postgres instance.
+  const databaseUrl = process.env.DATABASE_URL
+  if (process.env.DATABASE_URL) {
+    console.log('Creating direct Postgres client (DATABASE_URL)')
+  } else {
+    console.log('Creating Supabase direct client')
   }
+
+  const config: any = databaseUrl
+    ? {
+      // Use connection string for local/dev Postgres
+      connectionString: databaseUrl,
+      // Local Postgres typically doesn't need SSL
+      ssl: false,
+      ...settings,
+    }
+    : {
+      // Default: connect to Supabase's pooled Postgres
+      // This host is IPV4 compatible, for the google cloud VM
+      host: 'aws-1-us-west-1.pooler.supabase.com',
+      port: 5432,
+      user: `postgres.${instanceId}`,
+      password: password,
+      database: 'postgres',
+      pool_mode: 'session',
+      ssl: {rejectUnauthorized: false},
+      family: 4, // <- forces IPv4
+      ...settings,
+    }
 
   // console.debug(config)
 
@@ -77,15 +94,16 @@ export function createSupabaseDirectClient(
   password?: string
 ) {
   if (pgpDirect) return pgpDirect
-  console.log('Creating Supabase direct client')
+  const hasDatabaseUrl = !!process.env.DATABASE_URL
+  // Only enforce Supabase credentials when not using DATABASE_URL
   instanceId = instanceId ?? getInstanceId()
-  if (!instanceId) {
+  if (!hasDatabaseUrl && !instanceId) {
     throw new Error(
       "Can't connect to Supabase; no process.env.SUPABASE_INSTANCE_ID and no instance ID in config."
     )
   }
   password = password ?? getSupabasePwd()
-  if (!password) {
+  if (!hasDatabaseUrl && !password) {
     throw new Error(
       "Can't connect to Supabase; no process.env.SUPABASE_DB_PASSWORD."
     )

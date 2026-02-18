@@ -107,7 +107,7 @@ export function EventCard(props: {
         </p>
         {event.participants.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {event.participants.map((participantId: any) => (
+            {event.participants.map((participantId: string) => (
               <span key={participantId} className="bg-canvas-100 text-ink-700 px-2 py-1 rounded text-xs">
                 <UserLinkFromId userId={participantId}/>
               </span>

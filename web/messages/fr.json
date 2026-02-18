@@ -530,7 +530,7 @@
   "events.try_again": "Réessayer",
   "events.going": "Participer",
   "events.maybe": "Peut-être",
-  "events.not_going": "Ne pas aller",
+  "events.not_going": "Annuler",
   "events.cancel_rsvp": "Annuler RSVP",
   "events.cancel_event": "Annuler l'événement",
   "events.edit_event": "Modifier l'événement",

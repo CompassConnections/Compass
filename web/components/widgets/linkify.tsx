@@ -1,11 +1,16 @@
 import clsx from 'clsx'
-import { Fragment } from 'react'
+import {Fragment} from 'react'
 import Link from 'next/link'
-import { linkClass } from './site-link'
+import {linkClass} from './site-link'
 
 // Return a JSX span, linkifying @username, and https://...
 export function Linkify(props: { text: string; className?: string }) {
   const { text, className } = props
+
+  // Handle undefined/null text
+  if (!text) {
+    return <span className={clsx(className, 'break-anywhere')}></span>
+  }
   // Replace "m1234" with "ϻ1234"
   // const mRegex = /(\W|^)m(\d+)/g
   // text = text.replace(mRegex, (_, pre, num) => `${pre}ϻ${num}`)
@@ -53,10 +58,7 @@ export function Linkify(props: { text: string; className?: string }) {
 
 export const getLinkTarget = (href: string, newTab?: boolean) => {
   // TODO: make this more robust against domain changes?
-  if (
-    href.startsWith('http') &&
-    !href.startsWith(`https://compassmeet`)
-  )
+  if (href.startsWith('http') && !href.startsWith(`https://compassmeet`))
     return '_blank'
   return newTab ? '_blank' : '_self'
 }

@@ -527,7 +527,7 @@
   "events.no_past": "Keine vergangenen Events",
   "events.failed_to_load": "Events konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
   "events.try_again": "Erneut versuchen",
-  "events.going": "1 partant",
+  "events.going": "going",
   "events.maybe": "maybe",
   "events.not_going": "Nicht gehen",
   "events.cancel_rsvp": "RSVP abbrechen",

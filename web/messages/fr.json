@@ -545,7 +545,7 @@
   "events.failed_create_event": "Échec de la création de l'événement. Veuillez réessayer.",
   "events.cancelled": "Annulé",
   "events.completed": "Terminé",
-  "events.participants_count": "{count} going",
+  "events.participants_count": "{count} participant(s)",
   "events.participants_max": " / {max} max",
   "events.maybe_count": " ({count} maybe)",
   "events.event_title": "Titre de l'événement",

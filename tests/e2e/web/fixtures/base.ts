@@ -46,8 +46,8 @@ export const test = base.extend<{
     cleanUpUsers: [
         async ({ }, use) => {
             await use();
-
             await deleteUser(onboarding.account_one.email, onboarding.account_one.password);
+            await deleteUser(onboarding.faker_account.email, onboarding.faker_account.password);
         },
         { auto: true },
     ],

@@ -7,7 +7,7 @@ class DatabaseTestingUtilities {
         `;
         const userResults = await page.db.query(queryUserById,[name])
         return userResults[0]
-    }
+    };
     
     findProfileById = async (page: any, user_id: string) => {
         const queryProfileById = `
@@ -20,8 +20,8 @@ class DatabaseTestingUtilities {
         `;
         const profileResults = await page.db.query(queryProfileById,[user_id])
         return profileResults[0]
-    }
+    };
 
-}
+};
 
 export const databaseUtils = new DatabaseTestingUtilities();

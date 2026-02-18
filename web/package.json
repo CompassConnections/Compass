@@ -53,6 +53,7 @@
     "next": "14.1.0",
     "posthog-js": "1.234.1",
     "punycode": "2.3.1",
+    "react-datepicker": "9.1.0",
     "react-expanding-textarea": "2.3.6",
     "react-hook-form": "7.65.0",
     "react-hot-toast": "2.2.0",

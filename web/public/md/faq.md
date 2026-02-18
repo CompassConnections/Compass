@@ -29,6 +29,7 @@ Anyone who wants more than small talk or casual networking. If you value **depth
 * **Notification System**: Get alerts when new people match your searches — no endless scrolling required.
 * **Personality-Centered**: Values and ideas first. Photos stay secondary.
 * **Democratic & Open Source**: Built by the community, for the community — no ads, no hidden monetization.
+* **Events**: Create and join real-world or virtual gatherings to form deeper connections.
 
 ### Is Compass for dating or friendship?
 
@@ -96,6 +97,36 @@ The **compatibility score** comes from answers to **compatibility prompts**. Eac
 Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
 
 The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts) is **open source** and open to review, feedback, and improvement by the community.
+
+### What are Events and why do they matter?
+
+**Events** are at the core of Compass's mission to foster deep, meaningful connections. While profiles and compatibility
+scores help you discover kindred spirits, events create the space where genuine relationships actually form.
+
+**Why events matter for our mission:**
+
+* **Depth through shared experience**: Meeting in person (or virtually) allows for the nuanced conversations, laughter,
+  and spontaneous moments that build real trust and understanding.
+* **Community building**: Events transform individual connections into a thriving ecosystem of people supporting each
+  other's growth and goals.
+* **Purposeful gathering**: Unlike generic social platforms, Compass events are organized around shared values,
+  interests, and intentions — creating natural alignment from the start.
+* **Accessibility**: Both online and in-person events ensure everyone can participate, regardless of geography or
+  mobility.
+
+Examples of events you might find or create:
+
+* **Book clubs** — Discuss ideas that shape our worldview
+* **Walking groups** — Explore nature while exploring ideas
+* **Coffee chats** — One-on-one or small group deep conversations
+* **Creative workshops** — Learn and create together
+* **Philosophy discussions** — Explore life's big questions
+* **Sustainability meetups** — Collaborate on positive impact
+* **Game nights** — Bond over shared play
+* **Hobby exchanges** — Teach and learn skills from each other
+
+Anyone can [create an event](/events) — whether you're looking to find a hiking buddy, start a writers' circle, or host
+a discussion about effective altruism. Events are how we turn shared values into shared lives.
 
 ### What platforms does Compass run on?
 

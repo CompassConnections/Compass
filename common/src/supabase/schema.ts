@@ -327,6 +327,101 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          created_time: string
+          creator_id: string | null
+          description: string | null
+          event_end_time: string | null
+          event_start_time: string
+          id: string
+          is_public: boolean
+          location_address: string | null
+          location_type: string
+          location_url: string | null
+          max_participants: number | null
+          status: string
+          title: string
+        }
+        Insert: {
+          created_time?: string
+          creator_id?: string | null
+          description?: string | null
+          event_end_time?: string | null
+          event_start_time: string
+          id?: string
+          is_public?: boolean
+          location_address?: string | null
+          location_type: string
+          location_url?: string | null
+          max_participants?: number | null
+          status?: string
+          title: string
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string | null
+          description?: string | null
+          event_end_time?: string | null
+          event_start_time?: string
+          id?: string
+          is_public?: boolean
+          location_address?: string | null
+          location_type?: string
+          location_url?: string | null
+          max_participants?: number | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'events_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      events_participants: {
+        Row: {
+          event_id: string
+          id: string
+          rsvp_time: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          rsvp_time?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          rsvp_time?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'events_participants_event_id_fkey'
+            columns: ['event_id']
+            isOneToOne: false
+            referencedRelation: 'events'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'events_participants_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       hidden_profiles: {
         Row: {
           created_time: string

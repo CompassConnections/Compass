@@ -80,6 +80,12 @@ import {hideProfile} from "api/hide-profile";
 import {unhideProfile} from "api/unhide-profile";
 import {getHiddenProfiles} from "api/get-hidden-profiles";
 import {getUserDataExport} from "./get-user-data-export";
+import {getEvents} from "./get-events";
+import {createEvent} from "./create-event";
+import {rsvpEvent} from "./rsvp-event";
+import {cancelRsvp} from "./cancel-rsvp";
+import {cancelEvent} from "./cancel-event";
+import {updateEvent} from "./update-event";
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -376,6 +382,12 @@ const handlers: { [k in APIPath]: APIHandler<k> } = {
   // 'user/:username': getUser,
   // 'user/:username/lite': getDisplayUser,
   // 'user/by-id/:id/lite': getDisplayUser,
+  'cancel-event': cancelEvent,
+  'cancel-rsvp': cancelRsvp,
+  'create-event': createEvent,
+  'get-events': getEvents,
+  'rsvp-event': rsvpEvent,
+  'update-event': updateEvent,
   health: health,
   me: getMe,
   report: report,

@@ -893,17 +893,91 @@ export const API = (_apiTypeCheck = {
     summary: 'Delete a bookmarked search by ID',
     tag: 'Searches',
   },
-  // 'auth-google': {
-  //   method: 'GET',
-  //   authed: false,
-  //   rateLimited: true,
-  //   returns: {} as any,
-  //   props: z.object({
-  //     code: z.string(),
-  //   }),
-  //   summary: 'Google Auth',
-  //   tag: 'Tokens',
-  // },
+  'cancel-event': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as { success: boolean },
+    props: z.object({
+      eventId: z.string(),
+    }),
+    summary: 'Cancel an event (creator only)',
+    tag: 'Events',
+  },
+  'rsvp-event': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as { success: boolean },
+    props: z.object({
+      eventId: z.string(),
+      status: z.enum(['going', 'maybe', 'not_going']),
+    }),
+    summary: 'RSVP to an event',
+    tag: 'Events',
+  },
+  'cancel-rsvp': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as { success: boolean },
+    props: z.object({
+      eventId: z.string(),
+    }),
+    summary: 'Cancel RSVP to an event',
+    tag: 'Events',
+  },
+  'create-event': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      title: z.string().min(1).max(200),
+      description: z.string().max(2000).optional(),
+      locationType: z.enum(['in_person', 'online']),
+      locationAddress: z.string().max(500).optional(),
+      locationUrl: z.string().url().max(500).optional(),
+      eventStartTime: z.string().datetime(),
+      eventEndTime: z.string().datetime().optional(),
+      maxParticipants: z.number().int().min(1).optional(),
+    }),
+    summary: 'Create a new event',
+    tag: 'Events',
+  },
+  'get-events': {
+    method: 'GET',
+    authed: false,
+    rateLimited: false,
+    returns: {} as {
+      upcoming: any[]
+      past: any[]
+    },
+    props: z.object({}),
+    summary: 'Get all public events split into upcoming and past',
+    tag: 'Events',
+  },
+  'update-event': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    returns: {} as { success: boolean },
+    props: z
+      .object({
+        eventId: z.string(),
+        title: z.string().min(1).max(200),
+        description: z.string().max(2000).optional(),
+        locationType: z.enum(['in_person', 'online']),
+        locationAddress: z.string().max(500).optional(),
+        locationUrl: z.string().url().max(500).optional(),
+        eventStartTime: z.string(),
+        eventEndTime: z.string().optional(),
+        maxParticipants: z.number().min(1).max(1000).optional(),
+      })
+      .strict(),
+    summary: 'Update an existing event',
+    tag: 'Events',
+  },
 } as const)
 
 export type APIPath = keyof typeof API

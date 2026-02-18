@@ -19,8 +19,14 @@ const FORMATTER = new Intl.DateTimeFormat('default', {
 
 export const formatTime = FORMATTER.format
 
-export function formatTimeShort(time: number) {
-  return dayjs(time).format('MMM D, h:mma')
+export function formatTimeShort(time: number | string | Date, locale: string | null = null, hourOnly: boolean | null = null) {
+  let date = dayjs(time)
+  let template = hourOnly ? 'h:mm A' : 'MMM D, h:mm A'
+  if (locale) {
+    date = date.locale(locale)
+    if (locale !== 'en') template = hourOnly ? 'HH:mm' : 'D MMM, HH:mm'
+  }
+  return date.format(template)
 }
 
 export function formatJustTime(time: number) {

@@ -30,6 +30,39 @@ Pour toute personne qui souhaite autre chose que des discussions superficielles 
 * **Système de notifications** : Recevez des alertes lorsque de nouvelles personnes correspondent à vos critères — pas de scroll infini.
 * **Centré sur la personnalité** : Valeurs et idées d’abord. Les photos restent secondaires.
 * **Démocratique et open-source** : Construit par la communauté, pour la communauté — pas de publicité, pas de monétisation cachée.
+* **Événements** : Créez et participez à des rencontres réelles ou virtuelles pour tisser des liens plus profonds.
+
+### Qu'est-ce que les Événements et pourquoi sont-ils importants ?
+
+**Les Événements** sont au cœur de la mission de Compass : favoriser des connexions profondes et significatives. Si les
+profils et les scores de compatibilité vous aident à découvrir des âmes sœurs, les événements créent l'espace où les
+relations authentiques se forment réellement.
+
+**Pourquoi les événements comptent pour notre mission :**
+
+* **Profondeur par l'expérience partagée** : Se rencontrer en personne (ou virtuellement) permet des conversations
+  nuancées, des rires et des moments spontanés qui construisent la confiance et la compréhension.
+* **Construction de communauté** : Les événements transforment les connexions individuelles en un écosystème florissant
+  de personnes qui se soutiennent mutuellement dans leur croissance et leurs objectifs.
+* **Rencontres intentionnelles** : Contrairement aux plateformes sociales génériques, les événements Compass sont
+  organisés autour de valeurs, d'intérêts et d'intentions partagés — créant un alignement naturel dès le départ.
+* **Accessibilité** : Les événements en ligne et en personne garantissent que chacun peut participer, indépendamment de
+  la géographie ou de la mobilité.
+
+**Exemples d'événements que vous pouvez trouver ou créer :**
+
+* 📚 **Clubs de lecture** — Discutez des idées qui façonnent notre vision du monde
+* 🚶 **Groupes de marche** — Explorez la nature tout en explorant des idées
+* ☕ **Conversations autour d'un café** — Entretiens en tête-à-tête ou petits groupes
+* 🎨 **Ateliers créatifs** — Apprenez et créez ensemble
+* 🤔 **Discussions philosophiques** — Explorez les grandes questions de l'existence
+* 🌱 **Rencontres sur la durabilité** — Collaborez pour un impact positif
+* 🎮 **Soirées jeux** — Créez des liens autour du jeu partagé
+* 🎯 **Échanges de hobbies** — Enseignez et apprenez des compétences mutuellement
+
+Chacun peut [créer un événement](/events) — que vous cherchiez un compagnon de randonnée, que vous souhaitiez lancer un
+cercle d'écriture, ou organiser une discussion sur l'altruisme efficace. Les événements sont le moyen par lequel nous
+transformons les valeurs partagées en vies partagées.
 
 ### Compass est-il destiné à la rencontre ou à l’amitié ?
 

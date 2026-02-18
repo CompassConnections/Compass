@@ -42,6 +42,39 @@ und du Beziehungen suchst, die auf **geteilten Werten, Vertrauen und Verständni
   Scrollen nötig.
 * **Persönlichkeitszentriert**: Werte und Ideen stehen im Vordergrund. Fotos sind zweitrangig.
 * **Demokratisch & Open Source**: Von der Community für die Community — keine Werbung, keine versteckte Monetarisierung.
+* **Events**: Erstelle und nimm an realen oder virtuellen Treffen teil, um tiefere Verbindungen zu knüpfen.
+
+### Was sind Events und warum sind sie wichtig?
+
+**Events** stehen im Mittelpunkt von Compass' Mission, tiefe und bedeutungsvolle Verbindungen zu fördern. Während
+Profile und Kompatibilitätswerte dir helfen, Gleichgesinnte zu entdecken, schaffen Events den Raum, in dem echte
+Beziehungen entstehen.
+
+**Warum Events für unsere Mission wichtig sind:**
+
+* **Tiefe durch gemeinsame Erlebnisse**: Treffen im echten Leben (oder virtuell) ermöglichen nuancierte Gespräche,
+  Lachen und spontane Momente, die echtes Vertrauen und Verständnis aufbauen.
+* **Community-Aufbau**: Events verwandeln individuelle Verbindungen in ein florierendes Ökosystem von Menschen, die sich
+  gegenseitig bei ihrem Wachstum und ihren Zielen unterstützen.
+* **Zielgerichtetes Zusammenkommen**: Im Gegensatz zu generischen sozialen Plattformen werden Compass-Events um
+  gemeinsame Werte, Interessen und Absichten herum organisiert — was von Anfang an natürliche Übereinstimmung schafft.
+* **Zugänglichkeit**: Sowohl Online- als auch Offline-Events stellen sicher, dass jeder teilnehmen kann, unabhängig von
+  Geografie oder Mobilität.
+
+**Beispiele für Events, die du finden oder erstellen kannst:**
+
+* 📚 **Buchclubs** — Diskutiere Ideen, die unsere Weltanschauung prägen
+* 🚶 **Wandertreffs** — Erkunde die Natur und tausche dich aus
+* ☕ **Kaffeeklatsch** — Eins-zu-eins oder kleine Gruppen für tiefe Gespräche
+* 🎨 **Kreativ-Workshops** — Lerne und schaffe gemeinsam
+* 🤔 **Philosophie-Diskussionen** — Erkunde die großen Fragen des Lebens
+* 🌱 **Nachhaltigkeits-Treffs** — Kollaboriere für positive Wirkung
+* 🎮 **Spieleabende** — Verbünde dich beim gemeinsamen Spielen
+* 🎯 **Hobby-Tauschbörsen** — Lehre und lerne Fähigkeiten voneinander
+
+Jeder kann [ein Event erstellen](/events) — ob du eine Wanderung organisieren, einen Schreibkreis starten oder eine
+Diskussion über effektiven Altruismus hosten möchtest. Events sind es, wie wir gemeinsame Werte in gemeinsames Leben
+verwandeln.
 
 ### Ist Compass für Dating oder Freundschaften?
 

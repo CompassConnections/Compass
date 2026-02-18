@@ -99,6 +99,7 @@ export const RESERVED_PATHS = [
   'dashboard',
   'discord',
   'embed',
+  'events',
   'facebook',
   'faq',
   'financials',

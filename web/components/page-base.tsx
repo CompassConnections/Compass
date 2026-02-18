@@ -1,4 +1,4 @@
-import {HomeIcon, NewspaperIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {CalendarIcon, HomeIcon, NewspaperIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
 import {
   CogIcon,
   GlobeAltIcon,
@@ -116,17 +116,19 @@ const Signin = {key: 'nav.sign_in', name: 'Sign in', href: '/signin', icon: User
 const Notifs = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
 const NotifsSolid = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon}
 const Messages = {key: 'nav.messages', name: 'Messages', href: '/messages', icon: PrivateMessagesIcon}
-const Social = {key: 'nav.social', name: 'Social', href: '/social', icon: LinkIcon}
+const Social = {key: 'nav.social', name: 'Socials', href: '/social', icon: LinkIcon}
 const Organization = {key: 'nav.organization', name: 'Organization', href: '/organization', icon: GlobeAltIcon}
 const Vote = {key: 'nav.vote', name: 'Vote', href: '/vote', icon: MdThumbUp}
 const Contact = {key: 'nav.contact', name: 'Contact', href: '/contact', icon: FaEnvelope}
 const News = {key: 'nav.news', name: "What's new", href: '/news', icon: NewspaperIcon}
 const Settings = {key: 'nav.settings', name: "Settings", href: '/settings', icon: CogIcon}
+const Events = {key: 'nav.events', name: "Events", href: '/events', icon: CalendarIcon}
 
 const base = [
   About,
   faq,
   Vote,
+  Events,
   News,
   Social,
   Organization,

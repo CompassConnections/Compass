@@ -17,8 +17,8 @@ if [ ! -f "backend/supabase/migration.sql" ]; then
   exit 1
 fi
 
-# Remove existing files
-rm supabase/migrations/*
+# Remove existing files (if any)
+find supabase/migrations -name "*.sql" -type f -delete 2>/dev/null || true
 
 # Extract file paths from \i commands
 FILES=$(grep '\\i ' backend/supabase/migration.sql | sed 's/\\i //' | sed 's/;//' | tr -d '\r')

@@ -1116,6 +1116,9 @@
   "more_options_user.edit_bio": "Bio bearbeiten",
   "vote.with_priority": "mit Priorität",
   "settings.general.font": "Schriftart",
+  "settings.general.measurement": "Maßeinheitensystem",
+  "settings.measurement.imperial": "Imperial",
+  "settings.measurement.metric": "Metrisch",
   "font.atkinson": "Atkinson Hyperlegible",
   "font.system-sans": "System Sans",
   "font.classic-serif": "Klassische Serifenschrift"

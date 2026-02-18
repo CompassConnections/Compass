@@ -11,7 +11,9 @@ import {useT} from 'web/lib/locale'
 import {XIcon} from '@heroicons/react/solid'
 import {uniqBy} from 'lodash'
 import {buildArray} from 'common/util/array'
-import {OriginLocation} from "common/filters";
+import {OriginLocation} from 'common/filters'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
+import {formatDistance, kmToMiles, milesToKm} from 'web/lib/measurement-utils'
 
 export function LocationFilterText(props: {
   location: OriginLocation | undefined | null
@@ -19,21 +21,27 @@ export function LocationFilterText(props: {
   radius: number
   highlightedClass?: string
 }) {
-  const { location, radius, highlightedClass } = props
+  const {location, radius, highlightedClass} = props
+  const {measurementSystem} = useMeasurementSystem()
 
   const t = useT()
   if (!location) {
     return (
       <span>
-        <span className={clsx('text-semibold', highlightedClass)}>{t('filter.location.any', 'Any')}</span>
+        <span className={clsx('text-semibold', highlightedClass)}>
+          {t('filter.location.any', 'Any')}
+        </span>
         <span className=""> {t('filter.location', 'location')}</span>
       </span>
     )
   }
+
+  const formattedDistance = formatDistance(radius, measurementSystem)
+
   return (
     <span className="font-semibold">
       <span className="">
-        <span className={clsx(highlightedClass)}>{radius}</span> miles
+        <span className={clsx(highlightedClass)}>{formattedDistance}</span>
       </span>{' '}
       <span className="sm:normal-case">{t('filter.near', 'near')}</span>{' '}
       <span className={highlightedClass}>{location.name}</span>
@@ -62,9 +70,9 @@ export function LocationFilter(props: {
   youProfile: Profile | undefined | null
   locationFilterProps: LocationFilterProps
 }) {
-  const { youProfile } = props
+  const {youProfile} = props
 
-  const { location, setLocation, radius, setRadius } = props.locationFilterProps
+  const {location, setLocation, radius, setRadius} = props.locationFilterProps
 
   const youCity = youProfile && profileToCity(youProfile)
 
@@ -79,13 +87,18 @@ export function LocationFilter(props: {
     if (!city) {
       setLocation(undefined)
     } else {
-      setLocation({ id: city.geodb_city_id, name: city.city, lat: city.latitude, lon: city.longitude })
+      setLocation({
+        id: city.geodb_city_id,
+        name: city.city,
+        lat: city.latitude,
+        lon: city.longitude,
+      })
       setLastCity(city)
     }
   }
 
   // search results
-  const { cities, loading, query, setQuery } = useCitySearch()
+  const {cities, loading, query, setQuery} = useCitySearch()
 
   const listedCities = uniqBy(
     buildArray(cities, lastCity, youCity),
@@ -105,7 +118,7 @@ export function LocationFilter(props: {
         />
       </Row>
 
-      {location && <DistanceSlider radius={radius} setRadius={setRadius} />}
+      {location && <DistanceSlider radius={radius} setRadius={setRadius}/>}
 
       <LocationResults
         showAny={!!location && query === ''}
@@ -125,7 +138,8 @@ function DistanceSlider(props: {
   radius: number
   setRadius: (radius: number) => void
 }) {
-  const { radius, setRadius } = props
+  const {radius, setRadius} = props
+  const {measurementSystem} = useMeasurementSystem()
 
   const snapValues = [10, 50, 100, 200, 300, 500]
 
@@ -133,16 +147,19 @@ function DistanceSlider(props: {
     const closest = snapValues.reduce((prev, curr) =>
       Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
     )
-    setRadius(closest)
+    // Convert back to miles if needed for internal storage
+    const closestMiles = measurementSystem === 'metric' ? kmToMiles(closest) : closest
+    setRadius(closestMiles)
   }
 
   const min = snapValues[0]
   const max = snapValues[snapValues.length - 1]
+
   return (
     <Slider
       min={min}
       max={max}
-      amount={radius}
+      amount={measurementSystem === 'metric' ? milesToKm(radius) : radius}
       onChange={snapToValue}
       className="mb-4 w-full"
       marks={snapValues.map((value) => ({
@@ -160,7 +177,7 @@ function LocationResults(props: {
   loading: boolean
   className?: string
 }) {
-  const { showAny, cities, onCitySelected, loading, className } = props
+  const {showAny, cities, onCitySelected, loading, className} = props
 
   // delay loading animation by 150 ms
   const [debouncedLoading, setDebouncedLoading] = useState(loading)
@@ -182,7 +199,10 @@ function LocationResults(props: {
           className="hover:bg-primary-200 hover:text-ink-950 cursor-pointer px-4 py-2 transition-colors"
         >
           <Row className="items-center gap-2">
-            <XIcon className="h-4 w-4 text-ink-400" aria-label={t('common.close', 'Close')}/>
+            <XIcon
+              className="h-4 w-4 text-ink-400"
+              aria-label={t('common.close', 'Close')}
+            />
             <span>{t('filter.location.set_any_city', 'Set to Any City')}</span>
           </Row>
         </button>
@@ -200,8 +220,8 @@ function LocationResults(props: {
       })}
       {debouncedLoading && (
         <div className="flex flex-col gap-2 px-4 py-2">
-          <div className="bg-ink-600 h-4 w-1/3 animate-pulse rounded-full" />
-          <div className="bg-ink-400 h-4 w-2/3 animate-pulse rounded-full" />
+          <div className="bg-ink-600 h-4 w-1/3 animate-pulse rounded-full"/>
+          <div className="bg-ink-400 h-4 w-2/3 animate-pulse rounded-full"/>
         </div>
       )}
     </Col>

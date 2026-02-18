@@ -89,7 +89,7 @@ export default function EventsPage() {
   return (
 
     <PageBase trackPageView={'events'}>
-      <Col className=" mx-8 px-4 py-8 sm:px-6 lg:px-8">
+      <Col className=" sm:mx-8 px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-4">
           <div>

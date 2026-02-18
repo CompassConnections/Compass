@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import {getLocale} from "web/lib/locale-cookie";
+import {registerLocale} from "react-datepicker";
 
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
@@ -242,6 +243,17 @@ export const DAYJS_LOCALE_IMPORTS: Record<string, () => Promise<unknown>> = {
 }
 
 DAYJS_LOCALE_IMPORTS[getLocale()]?.()
-DATEPICKER_LOCALE_IMPORTS[getLocale()]?.()
+
+export const registerDatePickerLocale = async (locale: string) => {
+  if (locale && DATEPICKER_LOCALE_IMPORTS[locale]) {
+    try {
+      const dateFnsLocale = await DATEPICKER_LOCALE_IMPORTS[locale]()
+      registerLocale(locale, dateFnsLocale.default)
+    } catch (error) {
+      console.warn(`Failed to register react-datepicker locale for ${locale}:`, error)
+    }
+  }
+}
+registerDatePickerLocale(getLocale())
 
 export default dayjs

@@ -13,29 +13,24 @@ async function createAuth(email: string, password: string) {
   const base = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';
 
   try {
-    await axios.post(`${base}/accounts:signUp?key=fake-api-key`, {
+    const response = await axios.post(`${base}/accounts:signUp?key=fake-api-key`, {
       email: email,
       password: password,
       returnSecureToken: true
     })
+    const userId = response.data.localId
+    console.log('User created in Firebase Auth:', email, userId)
+    return userId
   } catch (err: any) {
     if (err.response?.status === 400 || err.response?.data?.error?.message?.includes('EMAIL_EXISTS')) {
       return;
     }
     if (err.code === 'ECONNREFUSED') throw Error('Firebase emulator not running. Start it with:\n  yarn test:e2e:services\n')
     console.log(err);
+    throw err
   }
-
-  console.log('Auth created', config.USERS.DEV_1.EMAIL)
-
-  // TODY: retrieve real user ID from response
-  const userId = Date.now().toString()
-
-  return userId
 }
 
-// Can remove this later once we update tests/e2e/web/fixtures/signInFixture.ts
-createAuth(config.USERS.DEV_1.EMAIL, config.USERS.DEV_1.PASSWORD)
 
 async function seedCompatibilityPrompts(pg: any, userId: string = null) {
   // Need some prompts to prevent the onboarding from stopping once it reaches them (just after profile creation)
@@ -69,13 +64,17 @@ type ProfileType = 'basic' | 'medium' | 'full'
   for (const {count, profileType} of seedConfig) {
     for (let i = 0; i < count; i++) {
       const userInfo = new UserAccountInformation()
-      userInfo.user_id = await createAuth(userInfo.email, userInfo.password)
-      if (i == 0) {
+      if (i == 0 && profileType === 'full') {
         // Seed the first profile with deterministic data for the e2e tests
         userInfo.name = 'Franklin Buckridge'
+        userInfo.email = config.USERS.DEV_1.EMAIL
+        userInfo.password = config.USERS.DEV_1.PASSWORD
       }
-      console.log('Seeded user:', userInfo)
-      await seedDatabase(pg, userInfo, profileType)
+      userInfo.user_id = await createAuth(userInfo.email, userInfo.password)
+      if (userInfo.user_id) {
+        console.log('User created in Supabase:', userInfo)
+        await seedDatabase(pg, userInfo, profileType)
+      }
     }
   }
 

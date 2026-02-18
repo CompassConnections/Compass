@@ -9,6 +9,7 @@ import router from "next/router";
 import Link from "next/link";
 import {useT} from 'web/lib/locale'
 import clsx from "clsx";
+import toast from "react-hot-toast";
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
@@ -27,7 +28,7 @@ export function AnswerCompatibilityQuestionButton(props: {
   const [open, setOpen] = useState(fromSignup ?? false)
   const t = useT()
   if (!user) return null
-  if (otherQuestions.length === 0) return null
+  if (!fromSignup && otherQuestions.length === 0) return null
   const isCore = otherQuestions.some((q) => q.importance_score === 0)
   const questionsToAnswer = isCore ? otherQuestions.filter((q) => q.importance_score === 0) : otherQuestions
   return (
@@ -159,6 +160,11 @@ function AnswerCompatibilityQuestionModal(props: {
   const [showOnboarding, setShowOnboarding] = useState(fromSignup ?? false)
 
   const handleStartQuestions = () => {
+    if (otherQuestions.length === 0) {
+      toast.error('No questions to answer')
+      setOpen(false)
+      return
+    }
     setShowOnboarding(false)
   }
 

@@ -180,7 +180,7 @@ export function CompatibilityQuestionsDisplay(props: {
           <Subtitle>
             {isCurrentUser
               ? t('answers.display.your_prompts', 'Your Compatibility Prompts')
-              : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", { name: shortenName(user.name) })}
+              : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {name: shortenName(user.name)})}
           </Subtitle>
           {compatibilityScore &&
               <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'}/>
@@ -200,7 +200,7 @@ export function CompatibilityQuestionsDisplay(props: {
         <span className="text-ink-600 text-sm">
           {isCurrentUser
             ? t('answers.display.none_answered_you', "You haven't answered any compatibility questions yet!")
-            : t('answers.display.none_answered_user', "{name} hasn't answered any compatibility questions yet!", { name: user.name })}{' '}
+            : t('answers.display.none_answered_user', "{name} hasn't answered any compatibility questions yet!", {name: user.name})}{' '}
           {isCurrentUser && (
             <>{t('answers.display.add_some', "Add some to better see who you'd be most compatible with.")}</>
           )}
@@ -242,7 +242,7 @@ export function CompatibilityQuestionsDisplay(props: {
           )}
         </>
       )}
-      {otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage && (
+      {(fromSignup || otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage) && (
         <Row className={'w-full justify-center gap-8'}>
           <AnswerCompatibilityQuestionButton
             user={user}
@@ -287,9 +287,9 @@ function CompatibilitySortWidget(props: {
   const t = useT()
   const sortToDisplay = {
     'your-important': fromProfilePage
-      ? t('answers.sort.important_to_user', 'Important to {name}', { name: fromProfilePage.user.name })
+      ? t('answers.sort.important_to_user', 'Important to {name}', {name: fromProfilePage.user.name})
       : t('answers.sort.important_to_you', 'Important to you'),
-    'their-important': t('answers.sort.important_to_them', 'Important to {name}', { name: user.name }),
+    'their-important': t('answers.sort.important_to_them', 'Important to {name}', {name: user.name}),
     disagree: t('answers.sort.incompatible', 'Incompatible'),
     'your-unanswered': t('answers.sort.unanswered_by_you', 'Unanswered by you'),
   }
@@ -476,9 +476,9 @@ export function CompatibilityAnswerBlock(props: {
       {distinctPreferredAnswersText.length > 0 && (
         <Col className="gap-2">
           <div className="text-ink-800 text-sm">
-          {preferredDoesNotIncludeAnswerText
-            ? t('answers.display.acceptable', 'Acceptable')
-            : t('answers.display.also_acceptable', 'Also acceptable')}
+            {preferredDoesNotIncludeAnswerText
+              ? t('answers.display.acceptable', 'Acceptable')
+              : t('answers.display.also_acceptable', 'Also acceptable')}
           </div>
           <Row className="flex-wrap gap-2 mt-0">
             {distinctPreferredAnswersText.map((text) => (
@@ -653,10 +653,10 @@ function CompatibilityDisplay(props: {
           <Subtitle>{question.question}</Subtitle>
           <Col className={clsx('w-full gap-1', SCROLLABLE_MODAL_CLASS)}>
             <div className="text-ink-600 items-center gap-2">
-              {t('answers.modal.preferred_of_user', "{name}'s preferred answers", { name: shortenName(user1.name) })}
+              {t('answers.modal.preferred_of_user', "{name}'s preferred answers", {name: shortenName(user1.name)})}
             </div>
             <div className="text-ink-500 text-sm">
-              {t('answers.modal.user_marked', '{name} marked this as ', { name: shortenName(user1.name) })}
+              {t('answers.modal.user_marked', '{name} marked this as ', {name: shortenName(user1.name)})}
               <span className="font-semibold">
                 <ImportanceDisplay importance={answer1.importance}/>
               </span>
@@ -677,12 +677,12 @@ function CompatibilityDisplay(props: {
                 <div className="text-ink-600 mt-6 items-center gap-2">
                   {isCurrentUser
                     ? t('answers.modal.your_preferred', 'Your preferred answers')
-                    : t('answers.modal.preferred_of_user', "{name}'s preferred answers", { name: shortenName(user2.name) })}
+                    : t('answers.modal.preferred_of_user', "{name}'s preferred answers", {name: shortenName(user2.name)})}
                 </div>
                 <div className="text-ink-500 text-sm">
                   {isCurrentUser
                     ? t('answers.modal.you_marked', 'You marked this as ')
-                    : t('answers.modal.user_marked', '{name} marked this as ', { name: shortenName(user2.name) })}
+                    : t('answers.modal.user_marked', '{name} marked this as ', {name: shortenName(user2.name)})}
                   <span className="font-semibold">
                     <ImportanceDisplay importance={answer2.importance}/>
                   </span>

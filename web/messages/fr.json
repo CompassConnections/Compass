@@ -533,6 +533,7 @@
   "events.not_going": "Annuler",
   "events.cancel_rsvp": "Annuler RSVP",
   "events.cancel_event": "Annuler l'événement",
+  "events.cancel_event_confirmation": "Êtes-vous sûr de vouloir annuler cet événement ? Cette action ne peut pas être annulée.",
   "events.edit_event": "Modifier l'événement",
   "events.create_new_event": "Créer un nouvel événement",
   "events.update_event": "Mettre à jour l'événement",

@@ -194,7 +194,11 @@ export function EventCard(props: {
       {user && isCreator && event.status === 'active' && (
         <div className="mt-3 pt-3 border-t border-canvas-200 flex gap-2">
           <button
-            onClick={() => onCancelEvent?.(event.id)}
+            onClick={() => {
+              if (confirm(t('events.cancel_event_confirmation', 'Are you sure you want to cancel this event? This action cannot be undone.'))) {
+                onCancelEvent?.(event.id)
+              }
+            }}
             className="text-red-600 hover:text-red-700 text-sm font-medium"
           >
             {t('events.cancel_event', 'Cancel Event')}

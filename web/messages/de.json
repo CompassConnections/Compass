@@ -533,6 +533,7 @@
   "events.not_going": "Nicht gehen",
   "events.cancel_rsvp": "RSVP abbrechen",
   "events.cancel_event": "Event abbrechen",
+  "events.cancel_event_confirmation": "Sind Sie sicher, dass Sie dieses Event abbrechen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "events.edit_event": "Event bearbeiten",
   "events.create_new_event": "Neues Event erstellen",
   "events.update_event": "Event aktualisieren",

@@ -24,7 +24,7 @@ import {I18nContext} from "web/lib/locale"
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
 import {updateStatusBar} from "web/hooks/use-theme"
 import {useFontPreferenceManager} from "web/hooks/use-font-preference"
-import {DAYJS_LOCALE_IMPORTS} from "web/lib/dayjs";
+import {DATEPICKER_LOCALE_IMPORTS, DAYJS_LOCALE_IMPORTS} from "web/lib/dayjs";
 import 'web/lib/dayjs'
 
 if (Capacitor.isNativePlatform()) {
@@ -104,6 +104,7 @@ function MyApp(props: AppProps<PageProps>) {
     setLocaleState(newLocale)
     resetCachedLocale()
     DAYJS_LOCALE_IMPORTS[newLocale]?.()
+    DATEPICKER_LOCALE_IMPORTS[newLocale]?.()
   }
 
   useEffect(() => {

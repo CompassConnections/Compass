@@ -556,6 +556,8 @@
   "events.location_url": "Orts-URL",
   "events.start_time": "Startzeit",
   "events.end_time": "Endzeit",
+  "events.select_start_datetime": "Datum und Uhrzeit auswählen",
+  "events.select_end_datetime": "Endzeit auswählen (optional)",
   "events.max_participants": "Max. Teilnehmer (optional)",
   "events.leave_empty": "Leer lassen für unbegrenzt",
   "events.in_person": "In Person",

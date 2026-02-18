@@ -61,6 +61,7 @@ module.exports = {
             {hostname: '*.giphy.com'},
             {hostname: 'ui-avatars.com'},
             {hostname: 'localhost'},
+            {hostname: '127.0.0.1'},
         ],
     },
     webpack: (config, {dev}) => {

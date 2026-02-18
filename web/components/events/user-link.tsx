@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import {useUserInStore} from "web/hooks/use-user-supabase";
 
 type User = {
   id: string
@@ -28,4 +29,13 @@ export function UserLink({user, className = ""}: {
       <span>{user.name}</span>
     </Link>
   )
+}
+
+export function UserLinkFromId({userId, className = ""}: {
+  userId: string | null | undefined
+  className?: string
+}) {
+  if (!userId) return null
+  const user = useUserInStore(userId)
+  return <UserLink user={user} className={className}/>
 }

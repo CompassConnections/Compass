@@ -4,8 +4,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useLocale, useT} from 'web/lib/locale'
 import Link from 'next/link'
 import dayjs from 'dayjs'
-import {UserLink} from './user-link'
-import {useUsersInStore} from "web/hooks/use-user-supabase";
+import {UserLink, UserLinkFromId} from './user-link'
 import {formatTimeShort, fromNow} from "web/lib/util/time";
 import {capitalize} from "lodash";
 import {HOUR_MS} from "common/util/time";
@@ -22,12 +21,7 @@ export function EventCard(props: {
   const user = useUser()
   const t = useT()
   const {locale} = useLocale()
-  const users = useUsersInStore([
-      ...(event.participants ?? []),
-      ...(event.maybe ?? []),
-    ],
-    `event-card-${event.id}`
-  )
+
 
   const isRsvped = user && event.participants.includes(user.id)
   const isMaybe = user && event.maybe.includes(user.id)
@@ -111,11 +105,11 @@ export function EventCard(props: {
           {event.max_participants && t('events.participants_max', ' / {max} max', {max: event.max_participants})}
           {event.maybe.length > 0 && t('events.maybe_count', ' ({count} maybe)', {count: event.maybe.length})}
         </p>
-        {users && event.participants.length > 0 && (
+        {event.participants.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {event.participants.map((participantId: any) => (
               <span key={participantId} className="bg-canvas-100 text-ink-700 px-2 py-1 rounded text-xs">
-                <UserLink user={participantId === user?.id ? user : users[participantId]}/>
+                <UserLinkFromId userId={participantId}/>
               </span>
             ))}
           </div>

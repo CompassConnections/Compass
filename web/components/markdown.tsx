@@ -37,20 +37,20 @@ export default function MarkdownPage({content, filename}: Props) {
   const {query} = router
   const fromSignup = query.fromSignup === 'true'
 
-  if (fromSignup) {
-    return (
-      <Col className="items-center">
-        <Col className="items-center justify-center mb-8 max-w-4xl">
-          <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
-            <BackButton className="-ml-2 self-start"/>
-            <div className={'custom-link !mt-0'}>
-              <CustomMarkdown>{content}</CustomMarkdown>
-            </div>
-          </Col>
-        </Col>
+  const backButton = fromSignup && <BackButton className="-ml-2 self-start"/>
+
+  const formattedContent = <Col className="items-center">
+    <Col className="items-center justify-center mb-8 max-w-5xl">
+      <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
+        {backButton}
+        <div className={'custom-link !mt-0 prose prose-neutral dark:prose-invert'}>
+          <CustomMarkdown>{content}</CustomMarkdown>
+        </div>
       </Col>
-    )
-  }
+    </Col>
+  </Col>
+
+  if (fromSignup) return formattedContent
 
   return (
     <PageBase trackPageView={filename} className={'col-span-8'}>
@@ -59,13 +59,7 @@ export default function MarkdownPage({content, filename}: Props) {
         description={title}
         url={`/` + filename}
       />
-      <Col className="items-center mb-8">
-        <Col className='w-full rounded px-3 py-4 sm:px-6 space-y-4'>
-          <div className={'custom-link !mt-0'}>
-            <CustomMarkdown>{content}</CustomMarkdown>
-          </div>
-        </Col>
-      </Col>
+      {formattedContent}
     </PageBase>
-  );
+  )
 }

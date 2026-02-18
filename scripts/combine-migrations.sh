@@ -17,11 +17,14 @@ if [ ! -f "backend/supabase/migration.sql" ]; then
   exit 1
 fi
 
+# Remove existing files
+rm supabase/migrations/*
+
 # Extract file paths from \i commands
 FILES=$(grep '\\i ' backend/supabase/migration.sql | sed 's/\\i //' | sed 's/;//' | tr -d '\r')
 
 # Starting timestamp (you can adjust this)
-TIMESTAMP=20260101000000
+TIMESTAMP=20250101000000
 COUNTER=0
 
 echo "Files to copy:"

@@ -105,7 +105,7 @@ describe('updateMe', () => {
             );
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('update users'),
+              sqlMatch('update users'),
                 {
                     adds: expect.any(Object),
                     removes: expect.any(Array),

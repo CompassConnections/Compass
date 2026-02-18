@@ -1,10 +1,11 @@
 jest.mock('shared/supabase/init');
 jest.mock('api/helpers/private-messages');
 
-import { deleteMessage } from "api/delete-message";
+import {sqlMatch} from "common/test-utils";
+import {deleteMessage} from "api/delete-message";
 import * as supabaseInit from "shared/supabase/init";
 import * as messageHelpers from "api/helpers/private-messages";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('deleteMessage', () => {
     let mockPg = {} as any;
@@ -42,12 +43,12 @@ describe('deleteMessage', () => {
 
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('SELECT *'),
+              sqlMatch('SELECT *'),
                 [mockMessageId.messageId, mockAuth.uid]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('DELETE'),
+              sqlMatch('DELETE'),
                 [mockMessageId.messageId, mockAuth.uid]
             );
             expect(messageHelpers.broadcastPrivateMessages).toBeCalledTimes(1);

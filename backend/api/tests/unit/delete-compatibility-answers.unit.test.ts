@@ -1,10 +1,11 @@
 jest.mock('shared/supabase/init');
 jest.mock('shared/compatibility/compute-scores');
 
-import { deleteCompatibilityAnswer } from "api/delete-compatibility-answer";
+import {sqlMatch} from "common/test-utils";
+import {deleteCompatibilityAnswer} from "api/delete-compatibility-answer";
 import * as supabaseInit from "shared/supabase/init";
-import { recomputeCompatibilityScoresForUser } from "shared/compatibility/compute-scores";
-import { AuthedUser } from "api/helpers/endpoint";
+import {recomputeCompatibilityScoresForUser} from "shared/compatibility/compute-scores";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('deleteCompatibilityAnswers', () => {
     let mockPg = {} as any;
@@ -37,12 +38,12 @@ describe('deleteCompatibilityAnswers', () => {
             expect(results.status).toBe('success');
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining(`SELECT *`),
+              sqlMatch(`SELECT *`),
                 [mockProps.id, mockAuth.uid]
             );
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('DELETE'),
+              sqlMatch('DELETE'),
                 [mockProps.id, mockAuth.uid]
             );
 

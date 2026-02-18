@@ -2,8 +2,9 @@ jest.mock('shared/supabase/init');
 jest.mock('shared/supabase/users');
 jest.mock('shared/websockets/helpers');
 
-import { AuthedUser } from "api/helpers/endpoint";
-import { updateNotifSettings } from "api/update-notif-setting";
+import {sqlMatch} from "common/test-utils";
+import {AuthedUser} from "api/helpers/endpoint";
+import {updateNotifSettings} from "api/update-notif-setting";
 import * as supabaseInit from "shared/supabase/init";
 import * as supabaseUsers from "shared/supabase/users";
 import * as websocketHelpers from "shared/websockets/helpers";
@@ -40,7 +41,7 @@ describe('updateNotifSettings', () => {
 
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('update private_users'),
+              sqlMatch('update private_users'),
                 [mockProps.type, mockProps.medium, mockAuth.uid]
             );
             expect(websocketHelpers.broadcastUpdatedPrivateUser).toBeCalledTimes(1);

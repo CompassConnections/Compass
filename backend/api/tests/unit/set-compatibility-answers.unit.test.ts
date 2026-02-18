@@ -1,10 +1,11 @@
 jest.mock('shared/supabase/init');
 jest.mock('shared/compatibility/compute-scores');
 
-import { setCompatibilityAnswer } from "api/set-compatibility-answer";
+import {sqlMatch} from "common/test-utils";
+import {setCompatibilityAnswer} from "api/set-compatibility-answer";
 import * as supabaseInit from "shared/supabase/init";
-import { recomputeCompatibilityScoresForUser } from "shared/compatibility/compute-scores";
-import { AuthedUser } from "api/helpers/endpoint";
+import {recomputeCompatibilityScoresForUser} from "shared/compatibility/compute-scores";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('setCompatibilityAnswer', () => {
     let mockPg = {} as any;
@@ -53,7 +54,7 @@ describe('setCompatibilityAnswer', () => {
             expect(mockPg.one).toBeCalledTimes(1);
             expect(mockPg.one).toBeCalledWith(
                 {
-                    text: expect.stringContaining('INSERT INTO compatibility_answers'),
+                    text: sqlMatch('INSERT INTO compatibility_answers'),
                     values: [
                         mockAuth.uid,
                         mockProps.questionId,

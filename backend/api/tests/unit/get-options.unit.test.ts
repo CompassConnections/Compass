@@ -1,10 +1,11 @@
 jest.mock('shared/supabase/init');
 jest.mock('common/util/try-catch');
 
-import { getOptions } from "api/get-options";
+import {sqlMatch} from "common/test-utils";
+import {getOptions} from "api/get-options";
 import * as supabaseInit from "shared/supabase/init";
-import { tryCatch } from "common/util/try-catch";
-import { AuthedUser } from "api/helpers/endpoint";
+import {tryCatch} from "common/util/try-catch";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('getOptions', () => {
     let mockPg = {} as any;
@@ -38,7 +39,7 @@ describe('getOptions', () => {
             expect(result.names).toContain(mockData[0].name);
             expect(mockPg.manyOrNone).toBeCalledTimes(1);
             expect(mockPg.manyOrNone).toBeCalledWith(
-                expect.stringContaining('SELECT interests.name')
+              sqlMatch('SELECT interests.name')
             );
             expect(tryCatch).toBeCalledTimes(1);
         });

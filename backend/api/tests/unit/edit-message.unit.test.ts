@@ -2,11 +2,12 @@ jest.mock('shared/supabase/init');
 jest.mock('shared/encryption');
 jest.mock('api/helpers/private-messages');
 
-import { editMessage } from "api/edit-message";
+import {sqlMatch} from "common/test-utils";
+import {editMessage} from "api/edit-message";
 import * as supabaseInit from "shared/supabase/init";
 import * as encryptionModules from "shared/encryption";
 import * as messageHelpers from "api/helpers/private-messages";
-import { AuthedUser } from "api/helpers/endpoint";
+import {AuthedUser} from "api/helpers/endpoint";
 
 describe('editMessage', () => {
     let mockPg = {} as any;
@@ -54,14 +55,14 @@ describe('editMessage', () => {
             expect(result.success).toBeTruthy();
             expect(mockPg.oneOrNone).toBeCalledTimes(1);
             expect(mockPg.oneOrNone).toBeCalledWith(
-                expect.stringContaining('SELECT *'),
+              sqlMatch('SELECT *'),
                 [mockProps.messageId, mockAuth.uid]
             );
             expect(encryptionModules.encryptMessage).toBeCalledTimes(1);
             expect(encryptionModules.encryptMessage).toBeCalledWith(mockPlainTextContent);
             expect(mockPg.none).toBeCalledTimes(1);
             expect(mockPg.none).toBeCalledWith(
-                expect.stringContaining('UPDATE private_user_messages'),
+              sqlMatch('UPDATE private_user_messages'),
                 [mockCipher, mockIV, mockTag, mockProps.messageId]
             );
             expect(messageHelpers.broadcastPrivateMessages).toBeCalledTimes(1);

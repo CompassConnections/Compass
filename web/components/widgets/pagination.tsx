@@ -1,13 +1,13 @@
 import clsx from 'clsx'
-import { Spacer } from '../layout/spacer'
-import { Row } from '../layout/row'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
-import { useEffect } from 'react'
-import { range } from 'lodash'
-import { usePathname, useRouter } from 'next/navigation'
-import { useDefinedSearchParams } from 'web/hooks/use-defined-search-params'
-import { LoadingIndicator } from 'web/components/widgets/loading-indicator'
-import { buttonClass } from 'web/components/buttons/button'
+import {Spacer} from '../layout/spacer'
+import {Row} from '../layout/row'
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
+import {useEffect} from 'react'
+import {range} from 'lodash'
+import {usePathname, useRouter} from 'next/navigation'
+import {useDefinedSearchParams} from 'web/hooks/use-defined-search-params'
+import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {buttonClass} from 'web/components/buttons/button'
 export const PAGE_ELLIPSES = '...'
 
 export function PaginationNextPrev(props: {
@@ -19,18 +19,13 @@ export function PaginationNextPrev(props: {
   getPrev: () => void
   getNext: () => void
 }) {
-  const { className, isStart, isEnd, isLoading, isComplete, getPrev, getNext } =
-    props
+  const {className, isStart, isEnd, isLoading, isComplete, getPrev, getNext} = props
   return (
     <Row
       aria-label="Pagination"
       className={clsx(className, 'flex-1 justify-between gap-2 sm:justify-end')}
     >
-      <button
-        className={buttonClass('lg', 'gray-outline')}
-        onClick={getPrev}
-        disabled={isStart}
-      >
+      <button className={buttonClass('lg', 'gray-outline')} onClick={getPrev} disabled={isStart}>
         Previous
       </button>
       <button
@@ -52,10 +47,9 @@ export function Pagination(props: {
   className?: string
   savePageToQuery?: boolean
 }) {
-  const { page, pageSize, totalItems, setPage, className, savePageToQuery } =
-    props
+  const {page, pageSize, totalItems, setPage, className, savePageToQuery} = props
   const router = useRouter()
-  const { searchParams, createQueryString } = useDefinedSearchParams()
+  const {searchParams, createQueryString} = useDefinedSearchParams()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -81,26 +75,15 @@ export function Pagination(props: {
   const pageNumbers = getPageNumbers(maxPage, page)
   return (
     <nav
-      className={clsx(
-        'flex w-full items-center bg-inherit pb-4 pt-2',
-        className
-      )}
+      className={clsx('flex w-full items-center bg-inherit pb-4 pt-2', className)}
       aria-label="Pagination"
     >
       <Row className="mx-auto gap-4">
-        <PaginationArrow
-          onClick={() => onClick(page - 1)}
-          disabled={page <= 0}
-          nextOrPrev="prev"
-        />
+        <PaginationArrow onClick={() => onClick(page - 1)} disabled={page <= 0} nextOrPrev="prev" />
         <Row className="gap-2">
           {pageNumbers.map((pageNumber, index) => (
             <PageNumbers
-              key={
-                pageNumber === PAGE_ELLIPSES
-                  ? `${pageNumber}-${index}`
-                  : pageNumber
-              }
+              key={pageNumber === PAGE_ELLIPSES ? `${pageNumber}-${index}` : pageNumber}
               pageNumber={pageNumber}
               setPage={onClick}
               page={page}
@@ -122,7 +105,7 @@ export function PaginationArrow(props: {
   disabled: boolean
   nextOrPrev: 'next' | 'prev'
 }) {
-  const { onClick, disabled, nextOrPrev } = props
+  const {onClick, disabled, nextOrPrev} = props
   return (
     <div
       onClick={onClick}
@@ -130,15 +113,11 @@ export function PaginationArrow(props: {
         'select-none rounded-lg transition-colors',
         disabled
           ? 'text-ink-200 pointer-events-none'
-          : 'hover:bg-ink-100 text-primary-700 cursor-pointer'
+          : 'hover:bg-ink-100 text-primary-700 cursor-pointer',
       )}
     >
-      {nextOrPrev === 'prev' && (
-        <ChevronLeftIcon className="h-[24px] w-[24px]" />
-      )}
-      {nextOrPrev === 'next' && (
-        <ChevronRightIcon className="h-[24px] w-[24px]" />
-      )}
+      {nextOrPrev === 'prev' && <ChevronLeftIcon className="h-[24px] w-[24px]" />}
+      {nextOrPrev === 'next' && <ChevronRightIcon className="h-[24px] w-[24px]" />}
     </div>
   )
 }
@@ -148,7 +127,7 @@ export function PageNumbers(props: {
   setPage: (page: number) => void
   page: number
 }) {
-  const { pageNumber, setPage, page } = props
+  const {pageNumber, setPage, page} = props
   if (pageNumber === PAGE_ELLIPSES || typeof pageNumber === 'string') {
     return <div className="text-ink-600 select-none">{PAGE_ELLIPSES}</div>
   }
@@ -157,9 +136,7 @@ export function PageNumbers(props: {
       onClick={() => setPage(pageNumber)}
       className={clsx(
         'select-none rounded-lg px-2',
-        page === pageNumber
-          ? 'bg-primary-100 text-primary-700'
-          : 'text-ink-600 hover:bg-ink-100'
+        page === pageNumber ? 'bg-primary-100 text-primary-700' : 'text-ink-600 hover:bg-ink-100',
       )}
     >
       {pageNumber + 1}
@@ -174,17 +151,14 @@ function getPageNumbers(maxPage: number, page: number): Array<PageNumbers> {
     return range(0, maxPage + 1)
   }
   if (page < 4) {
-    return Array.from<unknown, PageNumbers>(
-      { length: 5 },
-      (_, index) => index
-    ).concat([PAGE_ELLIPSES, maxPage])
+    return Array.from<unknown, PageNumbers>({length: 5}, (_, index) => index).concat([
+      PAGE_ELLIPSES,
+      maxPage,
+    ])
   }
   if (page >= maxPage - 3) {
     return [0, PAGE_ELLIPSES].concat(
-      Array.from<unknown, PageNumbers>(
-        { length: 5 },
-        (_, index) => index + maxPage - 4
-      )
+      Array.from<unknown, PageNumbers>({length: 5}, (_, index) => index + maxPage - 4),
     )
   }
   return [0, PAGE_ELLIPSES, page - 1, page, page + 1, PAGE_ELLIPSES, maxPage]

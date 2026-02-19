@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {FilterFields} from "common/filters";
-import {EDUCATION_CHOICES} from "common/choices";
-import {convertEducationTypes} from "web/lib/util/convert-types";
-import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
+import {FilterFields} from 'common/filters'
+import {EDUCATION_CHOICES} from 'common/choices'
+import {convertEducationTypes} from 'web/lib/util/convert-types'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {getSortedOptions} from 'common/util/sorting'
 import {useT} from 'web/lib/locale'
 import {toKey} from 'common/parsing'
@@ -28,7 +28,7 @@ export function EducationFilterText(props: {
 
   const sortedOptions = getSortedOptions(options, EDUCATION_CHOICES)
   const convertedTypes = sortedOptions.map((r) =>
-    t(`profile.education.${toKey(r)}`, convertEducationTypes(r as any))
+    t(`profile.education.${toKey(r)}`, convertEducationTypes(r as any)),
   )
 
   return (

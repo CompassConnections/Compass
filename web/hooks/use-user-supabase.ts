@@ -4,18 +4,20 @@ import {uniq, uniqBy} from 'lodash'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {filterDefined} from 'common/util/array'
 import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
-import {DisplayUser, getDisplayUsers, getFullUserById,} from 'web/lib/supabase/users'
+import {DisplayUser, getDisplayUsers, getFullUserById} from 'web/lib/supabase/users'
 import {FullUser} from 'common/api/user-types'
 
 export function useUserById(userId: string | undefined) {
-  const [user, setUser] = usePersistentInMemoryState<
-    FullUser | null | undefined
-  >(undefined, `user-${userId}`)
+  const [user, setUser] = usePersistentInMemoryState<FullUser | null | undefined>(
+    undefined,
+    `user-${userId}`,
+  )
   useEffect(() => {
     if (userId) {
-      getFullUserById(userId).then((result) => {
-        setUser(result)
-      })
+      getFullUserById(userId)
+        .then((result) => {
+          setUser(result)
+        })
         .catch(() => {
           console.log('Failed to fetch user')
         })
@@ -75,16 +77,12 @@ export function useUserById(userId: string | undefined) {
 
 // TODO: decide whether in-memory or in-localstorage is better and stick to it
 
-export function useUsersInStore(
-  userIds: (string | null)[],
-  key: string,
-  limit?: number
-) {
+export function useUsersInStore(userIds: (string | null)[], key: string, limit?: number) {
   const validUserIds = Array.from(new Set(userIds.filter((id): id is string => !!id)))
 
   const [users, setUsers] = usePersistentLocalState<DisplayUser[] | undefined>(
     undefined,
-    'use-users-in-local-storage-' + key
+    'use-users-in-local-storage-' + key,
   )
 
   // Fetch all users at least once on load.
@@ -92,16 +90,12 @@ export function useUsersInStore(
   const fetchedSet = new Set(userIdsFetched)
 
   const userIdsNotFetched = validUserIds.filter((id) => !fetchedSet.has(id))
-  const userIdsToFetch = limit
-    ? userIdsNotFetched.slice(0, limit)
-    : userIdsNotFetched
+  const userIdsToFetch = limit ? userIdsNotFetched.slice(0, limit) : userIdsNotFetched
 
   useEffectCheckEquality(() => {
     if (userIdsToFetch.length === 0) return
     getDisplayUsers(userIdsToFetch).then((newUsers) => {
-      setUsers((currentUsers) =>
-        uniqBy(filterDefined(newUsers).concat(currentUsers ?? []), 'id')
-      )
+      setUsers((currentUsers) => uniqBy(filterDefined(newUsers).concat(currentUsers ?? []), 'id'))
       setUserIdsFetched((currentIds) => uniq(currentIds.concat(userIdsToFetch)))
     })
   }, [userIdsToFetch])

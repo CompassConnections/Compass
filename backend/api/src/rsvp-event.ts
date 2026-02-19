@@ -15,7 +15,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
     `SELECT id, status, max_participants
      FROM events
      WHERE id = $1`,
-    [body.eventId]
+    [body.eventId],
   )
 
   if (!event) {
@@ -34,7 +34,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
      FROM events_participants
      WHERE event_id = $1
        AND user_id = $2`,
-    [body.eventId, auth.uid]
+    [body.eventId, auth.uid],
   )
 
   if (existingRsvp) {
@@ -43,7 +43,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
       update(pg, 'events_participants', 'id', {
         status: body.status,
         id: existingRsvp.id,
-      })
+      }),
     )
 
     if (error) {
@@ -52,12 +52,12 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
   } else {
     // Check max participants limit
     if (event.max_participants && body.status === 'going') {
-      const count = await pg.one<{ count: number }>(
+      const count = await pg.one<{count: number}>(
         `SELECT COUNT(*)
          FROM events_participants
          WHERE event_id = $1
            AND status = 'going'`,
-        [body.eventId]
+        [body.eventId],
       )
 
       if (Number(count.count) >= event.max_participants) {
@@ -71,7 +71,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
         event_id: body.eventId,
         user_id: auth.uid,
         status: body.status,
-      })
+      }),
     )
 
     if (error) {

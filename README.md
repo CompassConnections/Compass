@@ -1,4 +1,3 @@
-
 ![Vercel](https://deploy-badge.vercel.app/vercel/compass)
 [![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
 [![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
@@ -34,14 +33,17 @@ No contribution is too small—whether it’s changing a color, resizing a butto
 The complete, official list of tasks is available [here on ClickUp](https://sharing.clickup.com/90181043445/l/h/6-901810339879-1/bbfd32f4f4bf64b). If you are working on one task, just assign it to yourself and move its status to "in progress". If there is also a GitHub issue for that task, assign it to yourself as well.
 
 To have edit access to the ClickUp workspace, you need an admin to manually give you permission (one time thing). To do so, use your preferred option:
+
 - Ask or DM an admin on [Discord](https://discord.gg/8Vd7jzqjun)
 - Email hello@compassmeet.com
 - Raise an issue on GitHub
 
 If you want to add tasks without creating an account, you can simply email
+
 ```
 a.t.901810339879.u-276866260.b847aba1-2709-4f17-b4dc-565a6967c234@tasks.clickup.com
 ```
+
 Put the task title in the email subject and the task description in the email content.
 
 Here is a tailored selection of things that would be very useful. If you want to help but don’t know where to start, just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
@@ -105,17 +107,20 @@ Below are the steps to contribute. If you have any trouble or questions, please 
 ### Installation
 
 Fork the [repo](https://github.com/CompassConnections/Compass) on GitHub (button in top right). Then, clone your repo and navigating into it:
+
 ```bash
 git clone https://github.com/<your-username>/Compass.git
 cd Compass
 ```
 
 Install `yarn` (if not already installed):
+
 ```bash
 npm install --global yarn
 ```
 
 Then, install the dependencies for this project:
+
 ```bash
 yarn install --frozen-lockfile
 ```
@@ -123,14 +128,17 @@ yarn install --frozen-lockfile
 ### Tests
 
 Make sure the Jest tests pass:
+
 ```bash
 yarn test
 ```
+
 If they don't and you can't find out why, simply raise an issue! Sometimes it's something on our end that we overlooked.
 
 ### Running the Development Server
 
 Start the development server:
+
 ```bash
 yarn dev
 ```
@@ -227,6 +235,7 @@ looks and feels like the real thing.
 Now you can start contributing by making changes and submitting pull requests!
 
 We recommend using a good code editor (VSCode, WebStorm, Cursor, etc.) with Typescript support and a good AI assistant (GitHub Copilot, etc.) to make your life easier. To debug, you can use the browser developer tools (F12), specifically:
+
 - Components tab to see the React component tree and props (you need to install the [React Developer Tools](https://react.dev/learn/react-developer-tools) extension)
 - Console tab for errors and logs
 - Network tab to see the requests and responses
@@ -239,6 +248,7 @@ If you are new to Typescript or the open-source space, you could start with smal
 ##### Resources
 
 There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
+
 - [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
 - [development.md](docs/development.md) for additional instructions, such as adding new profile fields or languages.
@@ -252,22 +262,26 @@ There are a lot of useful scripts you can use in the [scripts](scripts) folder.
 ### Submission
 
 Add the original repo as upstream for syncing:
+
 ```bash
 git remote add upstream https://github.com/CompassConnections/Compass.git
 ```
 
 Create a new branch for your changes:
+
 ```bash
 git checkout -b <branch-name>
 ```
 
 Make changes, then stage and commit:
+
 ```bash
 git add .
 git commit -m "Describe your changes"
 ```
 
 Push branch to your fork:
+
 ```bash
 git push origin <branch-name>
 ```
@@ -279,6 +293,7 @@ Finally, open a Pull Request on GitHub from your `fork/<branch-name>` → `Compa
 Almost all the features will work out of the box, so you can skip this step and come back later if you need to test the following services: email, geolocation.
 
 We can't make the following information public, for security and privacy reasons:
+
 - Database, otherwise anyone could access all the user data (including private messages)
 - Firebase, otherwise anyone could remove users or modify the media files
 - Email, analytics, and location services, otherwise anyone could use the service plans Compass paid for and run up the bill.
@@ -289,4 +304,5 @@ Contributors should use the default keys for local development. Production uses 
 If you do need one of the few remaining services, you need to set them up and store your own secrets as environment variables. To do so, simply open `.env` and fill in the variables according to the instructions in the file.
 
 ## Acknowledgements
+
 This project is built on top of [manifold.love](https://github.com/sipec/polylove), an open-source dating platform licensed under the MIT License. We greatly appreciate their work and contributions to open-source, which have significantly aided in the development of some core features such as direct messaging, prompts, and email notifications. We invite the community to explore and contribute to other open-source projects like manifold.love as well, especially if you're interested in functionalities that deviate from Compass' ideals of deep, intentional connections.

@@ -9,7 +9,6 @@ import {getSortedOptions} from 'common/util/sorting'
 import {useT} from 'web/lib/locale'
 import {toKey} from 'common/parsing'
 
-
 export function ReligionFilterText(props: {
   options: string[] | undefined
   highlightedClass?: string
@@ -39,7 +38,7 @@ export function ReligionFilterText(props: {
 
   const sortedOptions = getSortedOptions(options, RELIGION_CHOICES)
   const convertedTypes = sortedOptions.map((r) =>
-    t(`profile.religion.${toKey(r)}`, convertReligionTypes(r as any))
+    t(`profile.religion.${toKey(r)}`, convertReligionTypes(r as any)),
   )
 
   return (

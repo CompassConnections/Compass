@@ -1,6 +1,6 @@
-import { ENV_CONFIG, MOD_USERNAMES } from 'common/envs/constants'
-import { User } from 'common/user'
-import { removeUndefinedProps } from 'common/util/object'
+import {ENV_CONFIG, MOD_USERNAMES} from 'common/envs/constants'
+import {User} from 'common/user'
+import {removeUndefinedProps} from 'common/util/object'
 
 export type DisplayUser = {
   id: string

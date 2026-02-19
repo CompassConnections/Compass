@@ -12,12 +12,12 @@ import {Profile} from 'common/profiles/profile'
 import {ProfileBio} from 'web/components/bio/profile-bio'
 import {useGetter} from 'web/hooks/use-getter'
 import {getStars} from 'web/lib/supabase/stars'
-import {Content} from "web/components/widgets/editor";
-import {JSONContent} from "@tiptap/core";
+import {Content} from 'web/components/widgets/editor'
+import {JSONContent} from '@tiptap/core'
 import {useUserActivity} from 'web/hooks/use-user-activity'
-import {UserActivity} from "common/user";
+import {UserActivity} from 'common/user'
 import {useT} from 'web/lib/locale'
-import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
+import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -34,11 +34,7 @@ export function ProfileInfo(props: {
   // const currentProfile = useProfile()
   // const isCurrentUser = currentUser?.id === user.id
 
-  const {data: starredUsers, refresh: refreshStars} = useGetter(
-    'stars',
-    currentUser?.id,
-    getStars
-  )
+  const {data: starredUsers, refresh: refreshStars} = useGetter('stars', currentUser?.id, getStars)
   const starredUserIds = starredUsers?.map((u) => u.id)
 
   const {hiddenProfiles} = useHiddenProfiles()
@@ -101,16 +97,16 @@ export function ProfileInfo(props: {
       ) : (
         <Col className="bg-canvas-0 w-full gap-4 rounded p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            <Content className="w-full line-clamp-6" content={profile.bio as JSONContent}/>
+            <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />
           </div>
           <Col className="relative gap-4">
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5"/>
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5"/>
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-1/2"/>
-            <div className="from-canvas-0 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent"/>
+            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
+            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
+            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-1/2" />
+            <div className="from-canvas-0 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
           </Col>
           <Row className="gap-2">
-            <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')}/>
+            <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')} />
           </Row>
         </Col>
       )}
@@ -157,7 +153,7 @@ function ProfileContent(props: {
     refreshProfile,
     fromProfilePage,
     fromSignup,
-    isProfileVisible
+    isProfileVisible,
     // likesGiven,
     // likesReceived,
     // ships,
@@ -169,14 +165,14 @@ function ProfileContent(props: {
 
   return (
     <>
-      <ProfileAbout profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser}/>
+      <ProfileAbout profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
       <ProfileBio
         isCurrentUser={isCurrentUser}
         profile={profile}
         refreshProfile={refreshProfile}
         fromProfilePage={fromProfilePage}
       />
-      {isProfileVisible && <ProfileCarousel profile={profile} refreshProfile={refreshProfile}/>}
+      {isProfileVisible && <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />}
       <ProfileAnswers
         isCurrentUser={isCurrentUser}
         user={user}

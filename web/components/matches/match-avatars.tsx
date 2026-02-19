@@ -1,9 +1,8 @@
-import { Row } from 'web/components/layout/row'
-import { HeartIcon } from '@heroicons/react/solid'
-import { Profile } from 'common/profiles/profile'
+import {Row} from 'web/components/layout/row'
+import {HeartIcon, UserIcon} from '@heroicons/react/solid'
+import {Profile} from 'common/profiles/profile'
 import Image from 'next/image'
-import { Col } from 'web/components/layout/col'
-import { UserIcon } from '@heroicons/react/solid'
+import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
 
 export function MatchAvatars(props: {
@@ -11,7 +10,7 @@ export function MatchAvatars(props: {
   matchedProfile: Profile
   className?: string
 }) {
-  const { profileProfile, matchedProfile, className } = props
+  const {profileProfile, matchedProfile, className} = props
 
   return (
     <Row className={clsx(className, 'mx-auto items-center gap-1')}>

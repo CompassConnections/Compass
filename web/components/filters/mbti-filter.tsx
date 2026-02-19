@@ -18,9 +18,7 @@ export function MbtiFilterText(props: {
   const label = defaultLabel || t('filter.any', 'Any')
 
   if (!options || length < 1) {
-    return (
-      <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
-    )
+    return <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
   }
 
   if (length > 2) {

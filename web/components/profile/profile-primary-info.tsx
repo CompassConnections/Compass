@@ -10,53 +10,39 @@ import {Profile} from 'common/profiles/profile'
 import {useT} from 'web/lib/locale'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 
-export default function ProfilePrimaryInfo(props: { profile: Profile }) {
+export default function ProfilePrimaryInfo(props: {profile: Profile}) {
   const {profile} = props
   const t = useT()
   const {measurementSystem} = useMeasurementSystem()
   const stateOrCountry =
-    profile.country === 'United States of America'
-      ? profile.region_code
-      : profile.country
+    profile.country === 'United States of America' ? profile.region_code : profile.country
   return (
     <Row className="text-ink-700 gap-4 text-sm">
       {profile.city && (
         <IconWithInfo
           text={`${profile.city ?? ''}, ${stateOrCountry ?? ''}`}
-          icon={<IoLocationOutline className="h-4 w-4"/>}
+          icon={<IoLocationOutline className="h-4 w-4" />}
         />
       )}
       {profile.gender && (
         <IconWithInfo
           text={capitalize(
-            t(
-              `profile.gender.${profile.gender}`,
-              convertGender(profile.gender as Gender)
-            )
+            t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender)),
           )}
-          icon={
-            <GenderIcon
-              gender={profile.gender as Gender}
-              className="h-4 w-4 "
-            />
-          }
+          icon={<GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />}
         />
       )}
       {profile.height_in_inches != null && (
         <IconWithInfo
-          text={formatProfileValue(
-            'height_in_inches',
-            profile.height_in_inches,
-            measurementSystem
-          )}
-          icon={<MdHeight className="h-4 w-4 "/>}
+          text={formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem)}
+          icon={<MdHeight className="h-4 w-4 " />}
         />
       )}
     </Row>
   )
 }
 
-function IconWithInfo(props: { text: string; icon: ReactNode }) {
+function IconWithInfo(props: {text: string; icon: ReactNode}) {
   const {text, icon} = props
   return (
     <Row className="items-center gap-0.5">

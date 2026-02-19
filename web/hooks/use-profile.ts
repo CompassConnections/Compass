@@ -9,9 +9,10 @@ import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 
 export const useProfile = () => {
   const user = useUser()
-  const [profile, setProfile] = usePersistentLocalState<
-    Row<'profiles'> | undefined | null
-  >(undefined, `profile-${user?.id}`)
+  const [profile, setProfile] = usePersistentLocalState<Row<'profiles'> | undefined | null>(
+    undefined,
+    `profile-${user?.id}`,
+  )
 
   const refreshProfile = () => {
     if (user) {
@@ -32,9 +33,10 @@ export const useProfile = () => {
 
 export const useProfileByUser = (user: User | undefined) => {
   const userId = user?.id
-  const [profile, setProfile] = usePersistentInMemoryState<
-    Profile | undefined | null
-  >(undefined, `profile-user-${userId}`)
+  const [profile, setProfile] = usePersistentInMemoryState<Profile | undefined | null>(
+    undefined,
+    `profile-user-${userId}`,
+  )
 
   function refreshProfile() {
     if (userId) {
@@ -44,12 +46,12 @@ export const useProfileByUser = (user: User | undefined) => {
           if (!profile) setProfile(null)
           else setProfile({...profile, user})
         })
-        .catch(error => {
-          console.debug('Warning: profile not found', user?.username, error);
+        .catch((error) => {
+          console.debug('Warning: profile not found', user?.username, error)
           setProfile(null)
           return
-        });
-      console.debug('End Refreshing profile for', user?.username, profile);
+        })
+      console.debug('End Refreshing profile for', user?.username, profile)
     }
   }
 
@@ -61,9 +63,10 @@ export const useProfileByUser = (user: User | undefined) => {
 }
 
 export const useProfileByUserId = (userId: string | undefined) => {
-  const [profile, setProfile] = usePersistentInMemoryState<
-    ProfileWithoutUser | undefined | null
-  >(undefined, `profile-${userId}`)
+  const [profile, setProfile] = usePersistentInMemoryState<ProfileWithoutUser | undefined | null>(
+    undefined,
+    `profile-${userId}`,
+  )
 
   useEffect(() => {
     // console.debug('Refreshing profile in useProfileByUserId for', userId, profile);

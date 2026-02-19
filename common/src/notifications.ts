@@ -10,7 +10,7 @@ export type NotificationTemplate = {
   sourceUserAvatarUrl?: string
   sourceUpdateType?: 'created' | 'updated' | 'deleted'
   createdTime: number
-  data?: { [key: string]: any }
+  data?: {[key: string]: any}
 }
 
 // User-specific notification data (lightweight - references template)
@@ -41,7 +41,7 @@ export type Notification = {
   sourceUserUsername?: string
   sourceUserAvatarUrl?: string
   sourceText: string
-  data?: { [key: string]: any }
+  data?: {[key: string]: any}
 
   sourceContractTitle?: string
   sourceContractCreatorUsername?: string
@@ -65,31 +65,23 @@ export type Notification = {
 
 export const NOTIFICATIONS_PER_PAGE = 30
 
-export async function getNotifications(
-  db: SupabaseClient,
-  userId: string,
-  limit: number
-) {
-  const { data } = await db
+export async function getNotifications(db: SupabaseClient, userId: string, limit: number) {
+  const {data} = await db
     .from('user_notifications')
     .select('*')
     .eq('user_id', userId)
-    .order('data->createdTime', { ascending: false } as any)
+    .order('data->createdTime', {ascending: false} as any)
     .limit(limit)
   return data?.map((d: Row<'user_notifications'>) => d)
 }
 
-export async function getUnseenNotifications(
-  db: SupabaseClient,
-  userId: string,
-  limit: number
-) {
-  const { data } = await db
+export async function getUnseenNotifications(db: SupabaseClient, userId: string, limit: number) {
+  const {data} = await db
     .from('user_notifications')
     .select('*')
     .eq('user_id', userId)
     .eq('data->>isSeen', 'false')
-    .order('data->createdTime', { ascending: false } as any)
+    .order('data->createdTime', {ascending: false} as any)
     .limit(limit)
 
   return data?.map((d: Row<'user_notifications'>) => d) ?? []

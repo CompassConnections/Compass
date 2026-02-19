@@ -1,24 +1,22 @@
-import { NoSEO } from 'web/components/NoSEO'
-import { useEffect, useState } from 'react'
-import { Row as rowfor, run } from 'common/supabase/utils'
-import { db } from 'web/lib/supabase/db'
-import { HOUR_MS } from 'common/util/time'
-import { groupBy, orderBy } from 'lodash'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Button } from 'web/components/buttons/button'
-import { User } from 'common/user'
-import { UserAvatarAndBadge } from 'web/components/widgets/user-link'
-import { usePersistentQueryState } from 'web/hooks/use-persistent-query-state'
+import {NoSEO} from 'web/components/NoSEO'
+import {useEffect, useState} from 'react'
+import {Row as rowfor, run} from 'common/supabase/utils'
+import {db} from 'web/lib/supabase/db'
+import {HOUR_MS} from 'common/util/time'
+import {groupBy, orderBy} from 'lodash'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Button} from 'web/components/buttons/button'
+import {User} from 'common/user'
+import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
+import {usePersistentQueryState} from 'web/hooks/use-persistent-query-state'
 import clsx from 'clsx'
-import { useAdmin } from 'web/hooks/use-admin'
-import { useIsAuthorized } from 'web/hooks/use-user'
-import { convertUser } from 'common/supabase/users'
+import {useAdmin} from 'web/hooks/use-admin'
+import {useIsAuthorized} from 'web/hooks/use-user'
+import {convertUser} from 'common/supabase/users'
 
 export default function Journeys() {
-  const [eventsByUser, setEventsByUser] = useState<
-    Record<string, rowfor<'user_events'>[]>
-  >({})
+  const [eventsByUser, setEventsByUser] = useState<Record<string, rowfor<'user_events'>[]>>({})
   const [hoursFromNowQ, setHoursFromNowQ] = usePersistentQueryState('h', '5')
   const hoursFromNow = parseInt(hoursFromNowQ ?? '5')
   const [unBannedUsers, setUnBannedUsers] = useState<User[]>([])
@@ -27,30 +25,26 @@ export default function Journeys() {
 
   const getEvents = async () => {
     const start = Date.now() - hoursFromNow * HOUR_MS
-    const users = await run(
-      db.from('users').select('id').gt('data->createdTime', start)
-    )
+    const users = await run(db.from('users').select('id').gt('data->createdTime', start))
     const events = await run(
       db
         .from('user_events')
         .select('*')
         .in(
           'user_id',
-          users.data.map((u) => u.id)
-        )
+          users.data.map((u) => u.id),
+        ),
     )
     const eventsByUser = groupBy(
       orderBy(events.data as rowfor<'user_events'>[], 'ts', 'asc'),
-      'user_id'
+      'user_id',
     )
 
     setEventsByUser(eventsByUser)
   }
 
   const getUsers = async () => {
-    const userData = await run(
-      db.from('users').select().in('id', Object.keys(eventsByUser))
-    )
+    const userData = await run(db.from('users').select().in('id', Object.keys(eventsByUser)))
     const users = userData.data.map(convertUser)
     setBannedUsers(users.filter((u) => u.isBannedFromPosting))
     setUnBannedUsers(users.filter((u) => !u.isBannedFromPosting))
@@ -74,8 +68,8 @@ export default function Journeys() {
       <div className="text-ink-900 mx-8">
         <div className={'text-primary-700 my-1 text-2xl'}>User Journeys</div>
         <Row className={'items-center gap-2'}>
-          Viewing journeys from {unBannedUsers.length} unbanned users ({bannedUsers.length} banned). Showing users created:{' '}
-          {hoursFromNow}h ago.
+          Viewing journeys from {unBannedUsers.length} unbanned users ({bannedUsers.length} banned).
+          Showing users created: {hoursFromNow}h ago.
           <Button
             color={'indigo-outline'}
             size={'xs'}
@@ -90,7 +84,7 @@ export default function Journeys() {
           {Object.keys(eventsByUser).map((userId) => {
             if (bannedUsers.find((u) => u.id === userId)) return null
             const events = eventsByUser[userId]
-            const eventGroups: { [key: string]: any[] } = {}
+            const eventGroups: {[key: string]: any[]} = {}
             let eventName = ''
             let groupKey = ''
             events.forEach((event, index) => {
@@ -105,7 +99,7 @@ export default function Journeys() {
               <Col className={'mt-4 min-w-[15rem]'} key={userId}>
                 <Row
                   className={clsx(
-                    'rounded-md p-1'
+                    'rounded-md p-1',
                     // user && isUserLikelySpammer(user) ? 'bg-amber-100' : ''
                   )}
                 >
@@ -119,8 +113,7 @@ export default function Journeys() {
                     const name = group[0].name
                     const times = group.length
                     const timePeriod =
-                      new Date(group[times - 1].ts!).valueOf() -
-                      new Date(group[0].ts!).valueOf()
+                      new Date(group[times - 1].ts!).valueOf() - new Date(group[0].ts!).valueOf()
                     const duration = Math.round(timePeriod / 1000)
 
                     return (
@@ -132,9 +125,7 @@ export default function Journeys() {
                   })}
                 </Col>
                 <ul>
-                  <li>
-                    {new Date(events[events.length - 1].ts!).toLocaleString()}
-                  </li>
+                  <li>{new Date(events[events.length - 1].ts!).toLocaleString()}</li>
                 </ul>
               </Col>
             )

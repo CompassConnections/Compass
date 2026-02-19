@@ -4,14 +4,14 @@ import {
   getAnswersForUser,
   getCompatibilityAnswers,
   getGenderCompatibleProfiles,
-  getProfile
-} from "shared/profiles/supabase"
-import {groupBy} from "lodash"
-import {hrtime} from "node:process"
+  getProfile,
+} from 'shared/profiles/supabase'
+import {groupBy} from 'lodash'
+import {hrtime} from 'node:process'
 
 // Canonicalize pair ordering (user_id_1 < user_id_2 lexicographically)
 function canonicalPair(a: string, b: string) {
-  return a < b ? [a, b] as const : [b, a] as const
+  return a < b ? ([a, b] as const) : ([b, a] as const)
 }
 
 export async function recomputeCompatibilityScoresForUser(
@@ -25,7 +25,7 @@ export async function recomputeCompatibilityScoresForUser(
   if (!profile) throw new Error(`Profile not found for user ${userId}`)
 
   // Load all answers for the target user
-  const answersSelf = await getAnswersForUser(userId);
+  const answersSelf = await getAnswersForUser(userId)
 
   // If the user has no answered questions, set the score to null
   if (!hasAnsweredQuestions(answersSelf)) {
@@ -34,7 +34,7 @@ export async function recomputeCompatibilityScoresForUser(
        set score = null
        where user_id_1 = $1
           or user_id_2 = $1`,
-      [userId]
+      [userId],
     )
     return
   }
@@ -43,7 +43,9 @@ export async function recomputeCompatibilityScoresForUser(
   const profileAnswers = await getCompatibilityAnswers([userId, ...otherUserIds])
   const answersByUser = groupBy(profileAnswers, 'creator_id')
 
-  console.log(`Recomputing compatibility scores for user ${userId}, ${otherUserIds.length} other users.`)
+  console.log(
+    `Recomputing compatibility scores for user ${userId}, ${otherUserIds.length} other users.`,
+  )
 
   const rows = []
 
@@ -60,11 +62,9 @@ export async function recomputeCompatibilityScoresForUser(
 
   if (rows.length === 0) return
 
-  const values = rows
-    .map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`)
-    .join(", ");
+  const values = rows.map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`).join(', ')
 
-  const flatParams = rows.flat();
+  const flatParams = rows.flat()
 
   // Upsert scores for each pair
   await pg.none(
@@ -75,8 +75,8 @@ export async function recomputeCompatibilityScoresForUser(
         ON CONFLICT (user_id_1, user_id_2)
         DO UPDATE SET score = EXCLUDED.score
     `,
-    flatParams
-  );
+    flatParams,
+  )
 
   //
   // for (const otherId of otherUserIds) {

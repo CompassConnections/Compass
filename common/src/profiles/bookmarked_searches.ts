@@ -10,17 +10,17 @@ export interface MatchUser {
 
 export interface MatchesType {
   description: {
-    filters: any; // You might want to replace 'any' with a more specific type
-    location: any; // You might want to replace 'any' with a more specific type
-  };
-  matches: MatchUser[]; // You might want to replace 'any' with a more specific type
+    filters: any // You might want to replace 'any' with a more specific type
+    location: any // You might want to replace 'any' with a more specific type
+  }
+  matches: MatchUser[] // You might want to replace 'any' with a more specific type
   id: string
 }
 
 export interface MatchesByUserType {
   [key: string]: {
-    user: any;
-    privateUser: any;
-    matches: MatchesType[];
+    user: any
+    privateUser: any
+    matches: MatchesType[]
   }
 }

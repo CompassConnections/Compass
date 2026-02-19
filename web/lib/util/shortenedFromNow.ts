@@ -16,7 +16,7 @@ export function simpleFromNow(time: number): string {
 }
 
 export function shortenedDuration(diff: duration.Duration) {
-  const units: { [key: string]: number } = {
+  const units: {[key: string]: number} = {
     y: diff.years(),
     mo: diff.months(),
     d: diff.days(),
@@ -35,7 +35,7 @@ export function shortenedDuration(diff: duration.Duration) {
 }
 
 export function durationFormat(diff: duration.Duration) {
-  const units: { [key: string]: number } = {
+  const units: {[key: string]: number} = {
     years: diff.years(),
     months: diff.months(),
     days: diff.days(),

@@ -1,7 +1,6 @@
-import { compact, flattenDeep, isEqual } from 'lodash'
+import {compact, flattenDeep, isEqual} from 'lodash'
 
-export const arrify = <T>(maybeArr: T | T[]) =>
-  Array.isArray(maybeArr) ? maybeArr : [maybeArr]
+export const arrify = <T>(maybeArr: T | T[]) => (Array.isArray(maybeArr) ? maybeArr : [maybeArr])
 
 export function filterDefined<T>(array: (T | null | undefined)[]) {
   return array.filter((item) => item !== null && item !== undefined) as T[]
@@ -19,12 +18,12 @@ export function groupConsecutive<T, U>(xs: T[], key: (x: T) => U) {
     return []
   }
   const result = []
-  let curr = { key: key(xs[0]), items: [xs[0]] }
+  let curr = {key: key(xs[0]), items: [xs[0]]}
   for (const x of xs.slice(1)) {
     const k = key(x)
     if (!isEqual(k, curr.key)) {
       result.push(curr)
-      curr = { key: k, items: [x] }
+      curr = {key: k, items: [x]}
     } else {
       curr.items.push(x)
     }

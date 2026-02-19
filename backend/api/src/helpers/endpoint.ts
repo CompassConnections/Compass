@@ -4,7 +4,13 @@ import {NextFunction, Request, Response} from 'express'
 
 import {PrivateUser} from 'common/user'
 import {APIError} from 'common/api/utils'
-import {API, APIPath, APIResponseOptionalContinue, APISchema, ValidatedAPIParams,} from 'common/api/schema'
+import {
+  API,
+  APIPath,
+  APIResponseOptionalContinue,
+  APISchema,
+  ValidatedAPIParams,
+} from 'common/api/schema'
 import {getPrivateUserByKey, log} from 'shared/utils'
 
 export {APIError} from 'common/api/utils'
@@ -27,10 +33,10 @@ export {APIError} from 'common/api/utils'
 
 export type AuthedUser = {
   uid: string
-  creds: JwtCredentials | (KeyCredentials & { privateUser: PrivateUser })
+  creds: JwtCredentials | (KeyCredentials & {privateUser: PrivateUser})
 }
-type JwtCredentials = { kind: 'jwt'; data: admin.auth.DecodedIdToken }
-type KeyCredentials = { kind: 'key'; data: string }
+type JwtCredentials = {kind: 'jwt'; data: admin.auth.DecodedIdToken}
+type KeyCredentials = {kind: 'key'; data: string}
 type Credentials = JwtCredentials | KeyCredentials
 
 // export async function verifyIdToken(payload: string): Promise<DecodedIdToken> {
@@ -76,8 +82,8 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
       try {
         return {kind: 'jwt', data: await auth.verifyIdToken(payload)}
       } catch (err) {
-        const raw = payload.split(".")[0];
-        console.log("JWT header:", JSON.parse(Buffer.from(raw, "base64").toString()));
+        const raw = payload.split('.')[0]
+        console.log('JWT header:', JSON.parse(Buffer.from(raw, 'base64').toString()))
         // This is somewhat suspicious, so get it into the firebase console
         console.error('Error verifying Firebase JWT: ', err, scheme, payload)
         throw new APIError(500, 'Error validating token.')
@@ -170,10 +176,8 @@ export const validate = <T extends z.ZodTypeAny>(schema: T, val: unknown) => {
 
 export type APIHandler<N extends APIPath> = (
   props: ValidatedAPIParams<N>,
-  auth: APISchema<N> extends { authed: true }
-    ? AuthedUser
-    : AuthedUser | undefined,
-  req: Request
+  auth: APISchema<N> extends {authed: true} ? AuthedUser : AuthedUser | undefined,
+  req: Request,
 ) => Promise<APIResponseOptionalContinue<N>>
 
 // Simple in-memory fixed-window rate limiter keyed by auth uid (or IP if unauthenticated)
@@ -182,7 +186,7 @@ export type APIHandler<N extends APIPath> = (
 //   API_RATE_LIMIT_PER_MIN_AUTHED
 //   API_RATE_LIMIT_PER_MIN_UNAUTHED
 // Endpoints can be exempted by adding their name to RATE_LIMIT_EXEMPT (comma-separated)
-const __rateLimitState: Map<string, { windowStart: number; count: number }> = new Map()
+const __rateLimitState: Map<string, {windowStart: number; count: number}> = new Map()
 
 function getRateLimitConfig() {
   const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 120)
@@ -228,11 +232,13 @@ function checkRateLimit(name: string, req: Request, res: Response, auth?: Authed
   }
 }
 
-export const typedEndpoint = <N extends APIPath>(
-  name: N,
-  handler: APIHandler<N>
-) => {
-  const {props: propSchema, authed: authRequired, rateLimited = false, method} = API[name] as APISchema<N>
+export const typedEndpoint = <N extends APIPath>(name: N, handler: APIHandler<N>) => {
+  const {
+    props: propSchema,
+    authed: authRequired,
+    rateLimited = false,
+    method,
+  } = API[name] as APISchema<N>
 
   return async (req: Request, res: Response, next: NextFunction) => {
     let authUser: AuthedUser | undefined = undefined
@@ -260,16 +266,14 @@ export const typedEndpoint = <N extends APIPath>(
       const resultOptionalContinue = await handler(
         validate(propSchema, props),
         authUser as AuthedUser,
-        req
+        req,
       )
 
       const hasContinue =
         resultOptionalContinue &&
         'continue' in resultOptionalContinue &&
         'result' in resultOptionalContinue
-      const result = hasContinue
-        ? resultOptionalContinue.result
-        : resultOptionalContinue
+      const result = hasContinue ? resultOptionalContinue.result : resultOptionalContinue
 
       if (!res.headersSent) {
         // Convert bigint to number, b/c JSON doesn't support bigint.

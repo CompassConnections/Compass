@@ -36,14 +36,14 @@ Here's an example component from web in our style:
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import { isAdminId, isModId } from 'common/envs/constants'
-import { type Headline } from 'common/news'
-import { EditNewsButton } from 'web/components/news/edit-news-button'
-import { Carousel } from 'web/components/widgets/carousel'
-import { useUser } from 'web/hooks/use-user'
-import { track } from 'web/lib/service/analytics'
-import { DashboardEndpoints } from 'web/components/dashboard/dashboard-page'
-import { removeEmojis } from 'common/util/string'
+import {isAdminId, isModId} from 'common/envs/constants'
+import {type Headline} from 'common/news'
+import {EditNewsButton} from 'web/components/news/edit-news-button'
+import {Carousel} from 'web/components/widgets/carousel'
+import {useUser} from 'web/hooks/use-user'
+import {track} from 'web/lib/service/analytics'
+import {DashboardEndpoints} from 'web/components/dashboard/dashboard-page'
+import {removeEmojis} from 'common/util/string'
 
 export function HeadlineTabs(props: {
   headlines: Headline[]
@@ -53,20 +53,13 @@ export function HeadlineTabs(props: {
   notSticky?: boolean
   className?: string
 }) {
-  const { headlines, endpoint, currentSlug, hideEmoji, notSticky, className } =
-    props
+  const {headlines, endpoint, currentSlug, hideEmoji, notSticky, className} = props
   const user = useUser()
 
   return (
-    <div
-      className={clsx(
-        className,
-        'bg-canvas-50 w-full',
-        !notSticky && 'sticky top-0 z-50'
-      )}
-    >
+    <div className={clsx(className, 'bg-canvas-50 w-full', !notSticky && 'sticky top-0 z-50')}>
       <Carousel labelsParentClassName="gap-px">
-        {headlines.map(({ id, slug, title }) => (
+        {headlines.map(({id, slug, title}) => (
           <Tab
             key={id}
             label={hideEmoji ? removeEmojis(title) : title}
@@ -140,9 +133,7 @@ Here's the definition of usePersistentInMemoryState:
 
 ```ts
 export const usePersistentInMemoryState = <T>(initialValue: T, key: string) => {
-  const [state, setState] = useStateCheckEquality<T>(
-    safeJsonParse(store[key]) ?? initialValue
-  )
+  const [state, setState] = useStateCheckEquality<T>(safeJsonParse(store[key]) ?? initialValue)
 
   useEffect(() => {
     const storedValue = safeJsonParse(store[key]) ?? initialValue
@@ -186,25 +177,19 @@ In `use-bets`, we have this hook to get live updates with useApiSubscription:
 ```ts
 export const useContractBets = (
   contractId: string,
-  opts?: APIParams<'bets'> & { enabled?: boolean }
+  opts?: APIParams<'bets'> & {enabled?: boolean},
 ) => {
-  const { enabled = true, ...apiOptions } = {
+  const {enabled = true, ...apiOptions} = {
     contractId,
     ...opts,
   }
   const optionsKey = JSON.stringify(apiOptions)
 
-  const [newBets, setNewBets] = usePersistentInMemoryState<Bet[]>(
-    [],
-    `${optionsKey}-bets`
-  )
+  const [newBets, setNewBets] = usePersistentInMemoryState<Bet[]>([], `${optionsKey}-bets`)
 
   const addBets = (bets: Bet[]) => {
     setNewBets((currentBets) => {
-      const uniqueBets = sortBy(
-        uniqBy([...currentBets, ...bets], 'id'),
-        'createdTime'
-      )
+      const uniqueBets = sortBy(uniqBy([...currentBets, ...bets], 'id'), 'createdTime')
       return uniqueBets.filter((b) => !betShouldBeFiltered(b, apiOptions))
     })
   }
@@ -239,12 +224,12 @@ export function broadcastUpdatedPrivateUser(userId: string) {
   broadcast(`private-user/${userId}`, {})
 }
 
-export function broadcastUpdatedUser(user: Partial<User> & { id: string }) {
-  broadcast(`user/${user.id}`, { user })
+export function broadcastUpdatedUser(user: Partial<User> & {id: string}) {
+  broadcast(`user/${user.id}`, {user})
 }
 
 export function broadcastUpdatedComment(comment: Comment) {
-  broadcast(`user/${comment.onUserId}/comment`, { comment })
+  broadcast(`user/${comment.onUserId}/comment`, {comment})
 }
 ```
 
@@ -313,7 +298,7 @@ export const placeBet: APIHandler<'bet'> = async (props, auth) => {
   const isApi = auth.creds.kind === 'key'
   return await betsQueue.enqueueFn(
     () => placeBetMain(props, auth.uid, isApi),
-    [props.contractId, auth.uid]
+    [props.contractId, auth.uid],
   )
 }
 ```
@@ -335,7 +320,7 @@ const handlers = {
 We have two ways to access our postgres database.
 
 ```ts
-import { db } from 'web/lib/supabase/db'
+import {db} from 'web/lib/supabase/db'
 
 db.from('profiles').select('*').eq('user_id', userId)
 ```
@@ -343,7 +328,7 @@ db.from('profiles').select('*').eq('user_id', userId)
 and
 
 ```ts
-import { createSupabaseDirectClient } from 'shared/supabase/init'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 const pg = createSupabaseDirectClient()
 pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [userId])
@@ -356,13 +341,10 @@ The supabase client just uses the supabase client library, which is a wrapper ar
 Another example using the direct client:
 
 ```ts
-export const getUniqueBettorIds = async (
-  contractId: string,
-  pg: SupabaseDirectClient
-) => {
+export const getUniqueBettorIds = async (contractId: string, pg: SupabaseDirectClient) => {
   const res = await pg.manyOrNone(
     'select distinct user_id from contract_bets where contract_id = $1',
-    [contractId]
+    [contractId],
   )
   return res.map((r) => r.user_id as string)
 }
@@ -414,9 +396,9 @@ Example usage:
 const query = renderSql(
   select('distinct user_id'),
   from('contract_bets'),
-  where('contract_id = ${id}', { id }),
+  where('contract_id = ${id}', {id}),
   orderBy('created_time desc'),
-  limitValue != null && limit(limitValue)
+  limitValue != null && limit(limitValue),
 )
 
 const res = await pg.manyOrNone(query)
@@ -427,10 +409,10 @@ Use these functions instead of string concatenation.
 ### Translations
 
 ```typescript
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 const t = useT()
-t("common.key", "English translations")
+t('common.key', 'English translations')
 ```
 
 Translations should go to the JSON files in `web/messages` (`de.json` and `fr.json`, as of now).
@@ -444,7 +426,7 @@ We have many useful hooks that should be reused rather than rewriting them again
 We prefer using lodash functions instead of reimplementing them with for loops:
 
 ```ts
-import { keyBy, uniq } from 'lodash'
+import {keyBy, uniq} from 'lodash'
 
 const betsByUserId = keyBy(bets, 'userId')
 const betIds = uniq(bets, (b) => b.id)

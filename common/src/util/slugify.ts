@@ -1,8 +1,4 @@
-export const slugify = (
-  text: string,
-  separator = '-',
-  maxLength = 35
-): string => {
+export const slugify = (text: string, separator = '-', maxLength = 35): string => {
   return text
     .toString()
     .normalize('NFD') // split an accented letter in the base letter and the acent

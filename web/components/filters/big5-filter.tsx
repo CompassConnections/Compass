@@ -40,19 +40,14 @@ export function hasAnyBig5Filter(filters: Partial<FilterFields>) {
   )
 }
 
-export function Big5FilterText(props: {
-  filters: Partial<FilterFields>
-  highlightedClass?: string
-}) {
+export function Big5FilterText(props: {filters: Partial<FilterFields>; highlightedClass?: string}) {
   const {filters, highlightedClass} = props
   const t = useT()
   const hasAny = hasAnyBig5Filter(filters)
 
   if (!hasAny) {
     return (
-      <span className={clsx(!hasAny && 'text-ink-600')}>
-        {t('filter.big5.any', 'Any Big 5')}
-      </span>
+      <span className={clsx(!hasAny && 'text-ink-600')}>{t('filter.big5.any', 'Any Big 5')}</span>
     )
   }
 
@@ -89,7 +84,7 @@ export function Big5SliderRow(props: {
         setValues={(low, high) => {
           onChange(
             low > BIG5_MIN ? Math.round(low) : undefined,
-            high < BIG5_MAX ? Math.round(high) : undefined
+            high < BIG5_MAX ? Math.round(high) : undefined,
           )
         }}
         marks={[
@@ -128,10 +123,7 @@ export function Big5Filters(props: {
         }
       />
       <Big5SliderRow
-        label={t(
-          'profile.big5_conscientiousness',
-          'Conscientiousness'
-        )}
+        label={t('profile.big5_conscientiousness', 'Conscientiousness')}
         minValue={filters.big5_conscientiousness_min}
         maxValue={filters.big5_conscientiousness_max}
         onChange={(min, max) =>
@@ -177,5 +169,3 @@ export function Big5Filters(props: {
     </div>
   )
 }
-
-

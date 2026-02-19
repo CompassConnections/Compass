@@ -1,4 +1,4 @@
-import { type JSONContent } from '@tiptap/core'
+import {type JSONContent} from '@tiptap/core'
 
 export const MAX_COMMENT_LENGTH = 10000
 
@@ -36,4 +36,4 @@ export type Comment = {
   isApi?: boolean
 }
 
-export type ReplyToUserInfo = { id: string; username: string }
+export type ReplyToUserInfo = {id: string; username: string}

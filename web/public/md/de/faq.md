@@ -35,14 +35,14 @@ und du Beziehungen suchst, die auf **geteilten Werten, Vertrauen und Verständni
 
 ### Warum unterscheidet sich Compass von anderen Kennenlern-Apps?
 
-* **Schlagwortsuche**: Finde Menschen mit denselben Nischeninteressen (z. B. „Minimalismus“, „Thinking, Fast and Slow“,
+- **Schlagwortsuche**: Finde Menschen mit denselben Nischeninteressen (z. B. „Minimalismus“, „Thinking, Fast and Slow“,
   „Indie-Film“).
-* **Transparente Datenbank**: Sieh alle Profile, wende Filter an und suche frei — ohne versteckte Algorithmen.
-* **Benachrichtigungssystem**: Erhalte Hinweise, wenn neue Personen deinen Suchkriterien entsprechen — kein endloses
+- **Transparente Datenbank**: Sieh alle Profile, wende Filter an und suche frei — ohne versteckte Algorithmen.
+- **Benachrichtigungssystem**: Erhalte Hinweise, wenn neue Personen deinen Suchkriterien entsprechen — kein endloses
   Scrollen nötig.
-* **Persönlichkeitszentriert**: Werte und Ideen stehen im Vordergrund. Fotos sind zweitrangig.
-* **Demokratisch & Open Source**: Von der Community für die Community — keine Werbung, keine versteckte Monetarisierung.
-* **Events**: Erstelle und nimm an realen oder virtuellen Treffen teil, um tiefere Verbindungen zu knüpfen.
+- **Persönlichkeitszentriert**: Werte und Ideen stehen im Vordergrund. Fotos sind zweitrangig.
+- **Demokratisch & Open Source**: Von der Community für die Community — keine Werbung, keine versteckte Monetarisierung.
+- **Events**: Erstelle und nimm an realen oder virtuellen Treffen teil, um tiefere Verbindungen zu knüpfen.
 
 ### Was sind Events und warum sind sie wichtig?
 
@@ -52,25 +52,25 @@ Beziehungen entstehen.
 
 **Warum Events für unsere Mission wichtig sind:**
 
-* **Tiefe durch gemeinsame Erlebnisse**: Treffen im echten Leben (oder virtuell) ermöglichen nuancierte Gespräche,
+- **Tiefe durch gemeinsame Erlebnisse**: Treffen im echten Leben (oder virtuell) ermöglichen nuancierte Gespräche,
   Lachen und spontane Momente, die echtes Vertrauen und Verständnis aufbauen.
-* **Community-Aufbau**: Events verwandeln individuelle Verbindungen in ein florierendes Ökosystem von Menschen, die sich
+- **Community-Aufbau**: Events verwandeln individuelle Verbindungen in ein florierendes Ökosystem von Menschen, die sich
   gegenseitig bei ihrem Wachstum und ihren Zielen unterstützen.
-* **Zielgerichtetes Zusammenkommen**: Im Gegensatz zu generischen sozialen Plattformen werden Compass-Events um
+- **Zielgerichtetes Zusammenkommen**: Im Gegensatz zu generischen sozialen Plattformen werden Compass-Events um
   gemeinsame Werte, Interessen und Absichten herum organisiert — was von Anfang an natürliche Übereinstimmung schafft.
-* **Zugänglichkeit**: Sowohl Online- als auch Offline-Events stellen sicher, dass jeder teilnehmen kann, unabhängig von
+- **Zugänglichkeit**: Sowohl Online- als auch Offline-Events stellen sicher, dass jeder teilnehmen kann, unabhängig von
   Geografie oder Mobilität.
 
 **Beispiele für Events, die du finden oder erstellen kannst:**
 
-* 📚 **Buchclubs** — Diskutiere Ideen, die unsere Weltanschauung prägen
-* 🚶 **Wandertreffs** — Erkunde die Natur und tausche dich aus
-* ☕ **Kaffeeklatsch** — Eins-zu-eins oder kleine Gruppen für tiefe Gespräche
-* 🎨 **Kreativ-Workshops** — Lerne und schaffe gemeinsam
-* 🤔 **Philosophie-Diskussionen** — Erkunde die großen Fragen des Lebens
-* 🌱 **Nachhaltigkeits-Treffs** — Kollaboriere für positive Wirkung
-* 🎮 **Spieleabende** — Verbünde dich beim gemeinsamen Spielen
-* 🎯 **Hobby-Tauschbörsen** — Lehre und lerne Fähigkeiten voneinander
+- 📚 **Buchclubs** — Diskutiere Ideen, die unsere Weltanschauung prägen
+- 🚶 **Wandertreffs** — Erkunde die Natur und tausche dich aus
+- ☕ **Kaffeeklatsch** — Eins-zu-eins oder kleine Gruppen für tiefe Gespräche
+- 🎨 **Kreativ-Workshops** — Lerne und schaffe gemeinsam
+- 🤔 **Philosophie-Diskussionen** — Erkunde die großen Fragen des Lebens
+- 🌱 **Nachhaltigkeits-Treffs** — Kollaboriere für positive Wirkung
+- 🎮 **Spieleabende** — Verbünde dich beim gemeinsamen Spielen
+- 🎯 **Hobby-Tauschbörsen** — Lehre und lerne Fähigkeiten voneinander
 
 Jeder kann [ein Event erstellen](/events) — ob du eine Wanderung organisieren, einen Schreibkreis starten oder eine
 Diskussion über effektiven Altruismus hosten möchtest. Events sind es, wie wir gemeinsame Werte in gemeinsames Leben
@@ -107,17 +107,17 @@ Händen der Community, geregelt durch die Compass-Verfassung (wie im nächsten A
 Compass wird demokratisch auf Grundlage einer [Verfassung](/constitution) geführt, die zentrale Kontrolle verhindert und
 eine langfristige Ausrichtung an der Mission sicherstellt.
 
-* Wichtige Entscheidungen (Umfang, Finanzierung, Regeln) werden von **aktiven Mitwirkenden** [abgestimmt](/vote).
-* Die vollständige Verfassung ist **öffentlich und transparent**.
-* Keine Vereinnahmung durch Unternehmen — Compass bleibt dauerhaft ein gemeinschaftseigenes Projekt.
+- Wichtige Entscheidungen (Umfang, Finanzierung, Regeln) werden von **aktiven Mitwirkenden** [abgestimmt](/vote).
+- Die vollständige Verfassung ist **öffentlich und transparent**.
+- Keine Vereinnahmung durch Unternehmen — Compass bleibt dauerhaft ein gemeinschaftseigenes Projekt.
 
 ### Ist Compass wirklich kostenlos?
 
 Ja. Compass wird immer sein:
 
-* **Werbefrei**
-* **Abonnementfrei**
-* **Open Source**
+- **Werbefrei**
+- **Abonnementfrei**
+- **Open Source**
 
 Vollständig getragen von **Spenden**, nicht vom Verkauf deiner Daten oder Aufmerksamkeit.
 
@@ -125,13 +125,13 @@ Vollständig getragen von **Spenden**, nicht vom Verkauf deiner Daten oder Aufme
 
 Durch **[Spenden](/support) und Beiträge aus der Community**. Dazu gehören:
 
-* Open Collective
-* Liberapay
-* Ko-fi
-* GitHub Sponsors
-* Patreon
-* PayPal
-* Teilen von Ideen, Feedback oder Code
+- Open Collective
+- Liberapay
+- Ko-fi
+- GitHub Sponsors
+- Patreon
+- PayPal
+- Teilen von Ideen, Feedback oder Code
 
 Jeder Beitrag — egal wie groß oder klein, von einer kleinen Code-Änderung über Hilfe bei der Interface-Gestaltung bis
 hin zum Weitersagen — ist Teil des Geschenks, das Compass frei, werbefrei und gemeinschaftseigen hält. Alle Einnahmen
@@ -141,19 +141,19 @@ und Ausgaben sind **öffentlich dokumentiert** [hier](/financials).
 
 Ja.
 
-* Deine Daten werden **niemals verkauft**.
-* Du kannst **selbst kontrollieren, was öffentlich sichtbar ist**.
-* Chat-Nachrichten werden mit AES-256-Verschlüsselung in der Datenbank gespeichert (eine Umstellung auf *
-  *Ende-zu-Ende-Verschlüsselung** ist für zukünftige Versionen geplant).
-* Speicherung in sicheren Supabase- und Firebase-Datenbanken.
+- Deine Daten werden **niemals verkauft**.
+- Du kannst **selbst kontrollieren, was öffentlich sichtbar ist**.
+- Chat-Nachrichten werden mit AES-256-Verschlüsselung in der Datenbank gespeichert (eine Umstellung auf \*
+  \*Ende-zu-Ende-Verschlüsselung\*\* ist für zukünftige Versionen geplant).
+- Speicherung in sicheren Supabase- und Firebase-Datenbanken.
 
 ### Wie wird der Kompatibilitätsscore berechnet?
 
 Der **Kompatibilitätsscore** basiert auf Antworten auf **Kompatibilitätsfragen**. Jede Person gibt an:
 
-* **Ihre eigene Antwort**
-* **Antworten, die sie von anderen akzeptieren würde**
-* **Den Wichtigkeitsgrad** jeder Frage
+- **Ihre eigene Antwort**
+- **Antworten, die sie von anderen akzeptieren würde**
+- **Den Wichtigkeitsgrad** jeder Frage
 
 Übereinstimmungen werden danach bewertet, wie gut die Antworten und akzeptierten Antworten zweier Personen
 zusammenpassen, gewichtet nach Wichtigkeit. Dieses [Video](https://www.youtube.com/watch?v=m9PiPlRuy6E) erklärt die
@@ -171,10 +171,10 @@ nutzen.
 Wenn dir jemand eine Nachricht sendet, kannst du sofortige Push-Benachrichtigungen auf deinem Telefon erhalten, indem du
 Compass als Progressive Web App (PWA) installierst.
 
-* **Android**: Öffne Compass in Chrome, tippe auf das Menü (⋮) und wähle „Zum Startbildschirm hinzufügen“. Öffne
+- **Android**: Öffne Compass in Chrome, tippe auf das Menü (⋮) und wähle „Zum Startbildschirm hinzufügen“. Öffne
   anschließend die App vom Startbildschirm und erlaube Benachrichtigungen — du erhältst dann Hinweise auch bei
   geschlossener App.
-* **iPhone**: Öffne Compass in Safari (nicht in Chrome), tippe auf das Teilen-Symbol und wähle „Zum Home-Bildschirm“.
+- **iPhone**: Öffne Compass in Safari (nicht in Chrome), tippe auf das Teilen-Symbol und wähle „Zum Home-Bildschirm“.
   Öffne danach die App vom Home-Bildschirm und erteile die Berechtigung für Benachrichtigungen. iOS unterstützt
   Push-Benachrichtigungen nur für Safari-PWAs, die dem Home-Bildschirm hinzugefügt wurden; bei Installation über Chrome
   funktionieren sie nicht.
@@ -198,10 +198,10 @@ Ja. Compass stellt eine **öffentliche API** für Entwickler:innen bereit, die T
 rund um die Plattform bauen möchten. Die API ist vollständig **über Swagger/OpenAPI dokumentiert** und folgt denselben
 Transparenzprinzipien wie das gesamte Projekt:
 
-* **Offener Zugriff** auf nicht-sensible öffentliche Endpunkte
-* **Authentifizierte Endpunkte** für nutzerspezifische oder administrative Aktionen
-* **Rate-Limiting** zum Schutz der Serverstabilität
-* **Versionierung** zur Sicherstellung der Abwärtskompatibilität
+- **Offener Zugriff** auf nicht-sensible öffentliche Endpunkte
+- **Authentifizierte Endpunkte** für nutzerspezifische oder administrative Aktionen
+- **Rate-Limiting** zum Schutz der Serverstabilität
+- **Versionierung** zur Sicherstellung der Abwärtskompatibilität
 
 Du kannst die API unter [api.compassmeet.com](https://api.compassmeet.com) erkunden oder testen. Entwickler:innen können
 neue Endpunkte beitragen oder Verbesserungen vorschlagen.
@@ -211,17 +211,17 @@ neue Endpunkte beitragen oder Verbesserungen vorschlagen.
 Compass ist im **Oktober 2025 offiziell gestartet** und wächst schnell. Du kannst Echtzeit-Statistiken und transparente
 Community-Daten auf unserer [**Wachstums- & Statistikseite**](/stats) einsehen, darunter:
 
-* Wachstum der Community über die Zeit
-* Anzahl aktiver Nutzer:innen
-* Gesendete Nachrichten
-* Gestartete Diskussionen
-* Erstellte Such-Lesezeichen
-* Vergebene Empfehlungen
-* Kompatibilitätsfragen
-* Beantwortete Fragen
-* Anzahl von Vorschlägen und Abstimmungen
+- Wachstum der Community über die Zeit
+- Anzahl aktiver Nutzer:innen
+- Gesendete Nachrichten
+- Gestartete Diskussionen
+- Erstellte Such-Lesezeichen
+- Vergebene Empfehlungen
+- Kompatibilitätsfragen
+- Beantwortete Fragen
+- Anzahl von Vorschlägen und Abstimmungen
 
-[//]: # "* Beiträge und Spenden"
+[//]: # '* Beiträge und Spenden'
 
 Da Compass vollständig transparent und gemeinschaftseigen ist, kannst du beobachten, wie sich das Ökosystem entwickelt —
 nicht nur in Zahlen, sondern auch darin, wie Menschen sich verbinden, zusammenarbeiten und die Plattform gemeinsam
@@ -244,12 +244,12 @@ gemeinschaftseigen zu halten.
 
 ### Wie kann ich helfen?
 
-* **Feedback geben**: [Vorschlagsformular ausfüllen](https://forms.gle/tKnXUMAbEreMK6FC6)
-* **Diskussionen beitreten**: [Discord-Community](https://discord.gg/8Vd7jzqjun)
-* **Vorschläge machen und abstimmen**: [hier abstimmen](/vote)
-* **Zur Entwicklung beitragen**: [Code auf GitHub ansehen](https://github.com/CompassConnections/Compass)
-* **Spenden**: [Infrastruktur unterstützen](/support)
-* **Weitersagen**: Erzähle Freund:innen und Familie davon, die Tiefe und echte Verbindung schätzen. Teile den Link oder
+- **Feedback geben**: [Vorschlagsformular ausfüllen](https://forms.gle/tKnXUMAbEreMK6FC6)
+- **Diskussionen beitreten**: [Discord-Community](https://discord.gg/8Vd7jzqjun)
+- **Vorschläge machen und abstimmen**: [hier abstimmen](/vote)
+- **Zur Entwicklung beitragen**: [Code auf GitHub ansehen](https://github.com/CompassConnections/Compass)
+- **Spenden**: [Infrastruktur unterstützen](/support)
+- **Weitersagen**: Erzähle Freund:innen und Familie davon, die Tiefe und echte Verbindung schätzen. Teile den Link oder
   diesen [QR-Code](/referrals).
 
 ### Wie kann ich die Community kontaktieren?

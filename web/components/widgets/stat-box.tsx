@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { Card } from './card'
-import { ReactNode } from 'react'
+import {Card} from './card'
+import {ReactNode} from 'react'
 
 export type StatBoxProps = {
   // The main numeric/stat value to display large and centered
@@ -20,30 +20,26 @@ export type StatBoxProps = {
  * It composes the shared Card style for visual consistency.
  */
 export function StatBox(props: StatBoxProps) {
-  const { value, label, children, className, size = '2xl' } = props
+  const {value, label, children, className, size = '2xl'} = props
 
   const sizeClass =
     size === '3xl'
       ? 'text-6xl'
       : size === '2xl'
-      ? 'text-5xl'
-      : size === 'xl'
-      ? 'text-4xl'
-      : 'text-3xl'
+        ? 'text-5xl'
+        : size === 'xl'
+          ? 'text-4xl'
+          : 'text-3xl'
 
   return (
     <Card
       className={clsx(
         'flex h-full w-full flex-col items-center justify-center gap-2 p-6 text-center',
-        className
+        className,
       )}
     >
-      <div className={clsx('font-semibold leading-none tracking-tight', sizeClass)}>
-        {value}
-      </div>
-      {label && (
-        <div className="text-ink-700 text-sm">{label}</div>
-      )}
+      <div className={clsx('font-semibold leading-none tracking-tight', sizeClass)}>{value}</div>
+      {label && <div className="text-ink-700 text-sm">{label}</div>}
       {children}
     </Card>
   )

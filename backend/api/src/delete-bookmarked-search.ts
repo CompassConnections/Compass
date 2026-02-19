@@ -3,7 +3,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const deleteBookmarkedSearch: APIHandler<'delete-bookmarked-search'> = async (
   props,
-  auth
+  auth,
 ) => {
   const creator_id = auth.uid
   const {id} = props
@@ -16,7 +16,7 @@ export const deleteBookmarkedSearch: APIHandler<'delete-bookmarked-search'> = as
       DELETE FROM bookmarked_searches
       WHERE id = $1 AND creator_id = $2
     `,
-    [id, creator_id]
+    [id, creator_id],
   )
 
   return {}

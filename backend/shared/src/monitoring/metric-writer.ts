@@ -3,8 +3,8 @@ import {average, sumOfSquaredError} from 'common/util/math'
 import {log} from './log'
 import {getInstanceInfo, InstanceInfo} from './instance-info'
 import {chunk} from 'lodash'
-import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry,} from './metrics'
-import {IS_GOOGLE_CLOUD} from "common/hosting/constants";
+import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry} from './metrics'
+import {IS_GOOGLE_CLOUD} from 'common/hosting/constants'
 
 // how often metrics are written. GCP says don't write for a single time series
 // more than once per 5 seconds.
@@ -56,11 +56,7 @@ function serializeValue(entry: MetricStoreEntry) {
 }
 
 // see https://cloud.google.com/monitoring/api/ref_v3/rest/v3/TimeSeries
-function serializeEntries(
-  instance: InstanceInfo,
-  entries: MetricStoreEntry[],
-  ts: number
-) {
+function serializeEntries(instance: InstanceInfo, entries: MetricStoreEntry[], ts: number) {
   return entries.map((entry) => ({
     metricKind: CUSTOM_METRICS[entry.type].metricKind,
     resource: {

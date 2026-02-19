@@ -1,5 +1,8 @@
 import {PencilIcon, TrashIcon} from '@heroicons/react/outline'
-import {getAnswerCompatibility, getScoredAnswerCompatibility,} from 'common/profiles/compatibility-score'
+import {
+  getAnswerCompatibility,
+  getScoredAnswerCompatibility,
+} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -13,7 +16,7 @@ import {
 import {useEffect, useState} from 'react'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS,} from 'web/components/layout/modal'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
@@ -36,15 +39,15 @@ import {
 } from './answer-compatibility-question-content'
 import clsx from 'clsx'
 import {shortenName} from 'web/components/widgets/user-link'
-import {PreferredList, PreferredListNoComparison,} from './compatibility-question-preferred-list'
+import {PreferredList, PreferredListNoComparison} from './compatibility-question-preferred-list'
 import {useUser} from 'web/hooks/use-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {DropdownButton} from '../filters/desktop-filters'
 import {buildArray} from 'common/util/array'
-import toast from "react-hot-toast";
-import {useCompatibleProfiles} from "web/hooks/use-profiles";
-import {CompatibleBadge} from "web/components/widgets/compatible-badge";
+import toast from 'react-hot-toast'
+import {useCompatibleProfiles} from 'web/hooks/use-profiles'
+import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {useT} from 'web/lib/locale'
 
 const NUM_QUESTIONS_TO_SHOW = 8
@@ -52,7 +55,7 @@ const NUM_QUESTIONS_TO_SHOW = 8
 export function separateQuestionsArray(
   questions: QuestionWithCountType[],
   skippedAnswerQuestionIds: Set<number>,
-  answeredQuestionIds: Set<number>
+  answeredQuestionIds: Set<number>,
 ) {
   const skippedQuestions: QuestionWithCountType[] = []
   const answeredQuestions: QuestionWithCountType[] = []
@@ -71,11 +74,7 @@ export function separateQuestionsArray(
   return {skippedQuestions, answeredQuestions, otherQuestions}
 }
 
-type CompatibilitySort =
-  | 'your-important'
-  | 'their-important'
-  | 'disagree'
-  | 'your-unanswered'
+type CompatibilitySort = 'your-important' | 'their-important' | 'disagree' | 'your-unanswered'
 
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
@@ -91,27 +90,24 @@ export function CompatibilityQuestionsDisplay(props: {
   const compatibleProfiles = useCompatibleProfiles(currentUser?.id)
   const compatibilityScore = compatibleProfiles?.profileCompatibilityScores?.[profile.user_id]
 
-  const {refreshCompatibilityQuestions, compatibilityQuestions} = useCompatibilityQuestionsWithAnswerCount()
+  const {refreshCompatibilityQuestions, compatibilityQuestions} =
+    useCompatibilityQuestionsWithAnswerCount()
 
   const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(user.id)
 
   const [skippedAnswers, answers] = partition(
     compatibilityAnswers,
-    (answer) => answer.importance == -1
+    (answer) => answer.importance == -1,
   )
 
-  const answeredQuestionIds = new Set(
-    answers.map((answer) => answer.question_id)
-  )
+  const answeredQuestionIds = new Set(answers.map((answer) => answer.question_id))
 
-  const skippedAnswerQuestionIds = new Set(
-    skippedAnswers.map((answer) => answer.question_id)
-  )
+  const skippedAnswerQuestionIds = new Set(skippedAnswers.map((answer) => answer.question_id))
 
   const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
     compatibilityQuestions,
     skippedAnswerQuestionIds,
-    answeredQuestionIds
+    answeredQuestionIds,
   )
 
   const refreshCompatibilityAll = () => {
@@ -122,7 +118,7 @@ export function CompatibilityQuestionsDisplay(props: {
   const isLooking = useIsLooking()
   const [sort, setSort] = usePersistentInMemoryState<CompatibilitySort>(
     !isLooking && !fromProfilePage ? 'their-important' : 'your-important',
-    `compatibility-sort-${user.id}`
+    `compatibility-sort-${user.id}`,
   )
 
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
@@ -150,9 +146,7 @@ export function CompatibilityQuestionsDisplay(props: {
       } else if (sort === 'their-important') {
         return -a.importance
       } else if (sort === 'disagree') {
-        return comparedAnswer
-          ? getScoredAnswerCompatibility(a, comparedAnswer)
-          : Infinity
+        return comparedAnswer ? getScoredAnswerCompatibility(a, comparedAnswer) : Infinity
       } else if (sort === 'your-unanswered') {
         // Not answered first, then skipped, then answered.
         return comparedAnswer ? (comparedAnswer.importance >= 0 ? 2 : 1) : 0
@@ -161,14 +155,14 @@ export function CompatibilityQuestionsDisplay(props: {
     // Break ties with their answer importance.
     (a) => -a.importance,
     // Then by whether they wrote an explanation.
-    (a) => (a.explanation ? 0 : 1)
+    (a) => (a.explanation ? 0 : 1),
   )
 
   const [page, setPage] = useState(0)
   const currentSlice = page * NUM_QUESTIONS_TO_SHOW
   const shownAnswers = sortedAndFilteredAnswers.slice(
     currentSlice,
-    currentSlice + NUM_QUESTIONS_TO_SHOW
+    currentSlice + NUM_QUESTIONS_TO_SHOW,
   )
 
   if (!isCurrentUser && !answeredQuestions.length) return null
@@ -180,11 +174,13 @@ export function CompatibilityQuestionsDisplay(props: {
           <Subtitle>
             {isCurrentUser
               ? t('answers.display.your_prompts', 'Your Compatibility Prompts')
-              : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {name: shortenName(user.name)})}
+              : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {
+                  name: shortenName(user.name),
+                })}
           </Subtitle>
-          {compatibilityScore &&
-              <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'}/>
-          }
+          {compatibilityScore && (
+            <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'} />
+          )}
         </Row>
         {(!isCurrentUser || fromProfilePage) && (
           <CompatibilitySortWidget
@@ -199,28 +195,44 @@ export function CompatibilityQuestionsDisplay(props: {
       {answeredQuestions.length <= 0 ? (
         <span className="text-ink-600 text-sm">
           {isCurrentUser
-            ? t('answers.display.none_answered_you', "You haven't answered any compatibility questions yet!")
-            : t('answers.display.none_answered_user', "{name} hasn't answered any compatibility questions yet!", {name: user.name})}{' '}
+            ? t(
+                'answers.display.none_answered_you',
+                "You haven't answered any compatibility questions yet!",
+              )
+            : t(
+                'answers.display.none_answered_user',
+                "{name} hasn't answered any compatibility questions yet!",
+                {name: user.name},
+              )}{' '}
           {isCurrentUser && (
-            <>{t('answers.display.add_some', "Add some to better see who you'd be most compatible with.")}</>
+            <>
+              {t(
+                'answers.display.add_some',
+                "Add some to better see who you'd be most compatible with.",
+              )}
+            </>
           )}
         </span>
       ) : (
         <>
           {isCurrentUser && !fromProfilePage && (
-            <span className='custom-link'>
+            <span className="custom-link">
               {otherQuestions.length < 1 ? (
                 <span className="text-ink-600 text-sm">
-                  {t('answers.display.already_answered_all', "You've already answered all the compatibility questions—")}
+                  {t(
+                    'answers.display.already_answered_all',
+                    "You've already answered all the compatibility questions—",
+                  )}
                 </span>
               ) : (
                 <span className="text-ink-600 text-sm">
-                  {t('answers.display.answer_more', 'Answer more questions to increase your compatibility scores—or ')}
+                  {t(
+                    'answers.display.answer_more',
+                    'Answer more questions to increase your compatibility scores—or ',
+                  )}
                 </span>
               )}
-              <AddCompatibilityQuestionButton
-                refreshCompatibilityAll={refreshCompatibilityAll}
-              />
+              <AddCompatibilityQuestionButton refreshCompatibilityAll={refreshCompatibilityAll} />
             </span>
           )}
           {shownAnswers.map((answer) => {
@@ -242,7 +254,7 @@ export function CompatibilityQuestionsDisplay(props: {
           )}
         </>
       )}
-      {(fromSignup || otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage) && (
+      {(fromSignup || (otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage)) && (
         <Row className={'w-full justify-center gap-8'}>
           <AnswerCompatibilityQuestionButton
             user={user}
@@ -250,7 +262,7 @@ export function CompatibilityQuestionsDisplay(props: {
             refreshCompatibilityAll={refreshCompatibilityAll}
             fromSignup={fromSignup}
           />
-          <CompatibilityPageButton/>
+          <CompatibilityPageButton />
         </Row>
       )}
       {skippedQuestions.length > 0 && isCurrentUser && (
@@ -287,9 +299,13 @@ function CompatibilitySortWidget(props: {
   const t = useT()
   const sortToDisplay = {
     'your-important': fromProfilePage
-      ? t('answers.sort.important_to_user', 'Important to {name}', {name: fromProfilePage.user.name})
+      ? t('answers.sort.important_to_user', 'Important to {name}', {
+          name: fromProfilePage.user.name,
+        })
       : t('answers.sort.important_to_you', 'Important to you'),
-    'their-important': t('answers.sort.important_to_them', 'Important to {name}', {name: user.name}),
+    'their-important': t('answers.sort.important_to_them', 'Important to {name}', {
+      name: user.name,
+    }),
     disagree: t('answers.sort.incompatible', 'Incompatible'),
     'your-unanswered': t('answers.sort.unanswered_by_you', 'Unanswered by you'),
   }
@@ -298,8 +314,7 @@ function CompatibilitySortWidget(props: {
     'your-important',
     'their-important',
     'disagree',
-    (!fromProfilePage || fromProfilePage.user_id === currentUser?.id) &&
-    'your-unanswered'
+    (!fromProfilePage || fromProfilePage.user_id === currentUser?.id) && 'your-unanswered',
   )
 
   return (
@@ -314,7 +329,7 @@ function CompatibilitySortWidget(props: {
       closeOnClick
       buttonClass={'!text-ink-600 !hover:!text-ink-600'}
       buttonContent={(open: boolean) => (
-        <DropdownButton content={sortToDisplay[sort]} open={open}/>
+        <DropdownButton content={sortToDisplay[sort]} open={open} />
       )}
       menuItemsClass={'bg-canvas-0'}
       menuWidth="w-48"
@@ -347,11 +362,13 @@ export function CompatibilityAnswerBlock(props: {
   const currentProfile = useProfile()
   const t = useT()
 
-  const [newAnswer, setNewAnswer] = useState<CompatibilityAnswerSubmitType | undefined>(props.answer)
+  const [newAnswer, setNewAnswer] = useState<CompatibilityAnswerSubmitType | undefined>(
+    props.answer,
+  )
 
   useEffect(() => {
     setNewAnswer(props.answer)
-  }, [props.answer]);
+  }, [props.answer])
 
   const comparedProfile = isCurrentUser
     ? null
@@ -359,28 +376,25 @@ export function CompatibilityAnswerBlock(props: {
       ? fromProfilePage
       : {...currentProfile, user: currentUser}
 
-  if (
-    !question ||
-    !question.multiple_choice_options ||
-    answer && answer?.multiple_choice == null
-  )
+  if (!question || !question.multiple_choice_options || (answer && answer?.multiple_choice == null))
     return null
 
-  const answerText = answer ? getStringKeyFromNumValue(
-    answer.multiple_choice,
-    question.multiple_choice_options as Record<string, number>
-  ) : null
-  const preferredAnswersText = answer ? answer.pref_choices.map((choice) =>
-    getStringKeyFromNumValue(
-      choice,
-      question.multiple_choice_options as Record<string, number>
-    )
-  ) : []
-  const distinctPreferredAnswersText = preferredAnswersText.filter(
-    (text) => text !== answerText
-  )
-  const preferredDoesNotIncludeAnswerText =
-    answerText && !preferredAnswersText.includes(answerText)
+  const answerText = answer
+    ? getStringKeyFromNumValue(
+        answer.multiple_choice,
+        question.multiple_choice_options as Record<string, number>,
+      )
+    : null
+  const preferredAnswersText = answer
+    ? answer.pref_choices.map((choice) =>
+        getStringKeyFromNumValue(
+          choice,
+          question.multiple_choice_options as Record<string, number>,
+        ),
+      )
+    : []
+  const distinctPreferredAnswersText = preferredAnswersText.filter((text) => text !== answerText)
+  const preferredDoesNotIncludeAnswerText = answerText && !preferredAnswersText.includes(answerText)
 
   const isAnswered = answer && answer.multiple_choice > -1
   const isSkipped = answer && answer.importance == -1
@@ -416,20 +430,19 @@ export function CompatibilityAnswerBlock(props: {
                 items={[
                   {
                     name: t('answers.menu.edit', 'Edit'),
-                    icon: <PencilIcon className="h-5 w-5"/>,
+                    icon: <PencilIcon className="h-5 w-5" />,
                     onClick: () => setEditOpen(true),
                   },
                   {
                     name: t('answers.menu.delete', 'Delete'),
-                    icon: <TrashIcon className="h-5 w-5"/>,
+                    icon: <TrashIcon className="h-5 w-5" />,
                     onClick: () => {
                       deleteCompatibilityAnswer(answer.id, user.id)
                         .then(() => refreshCompatibilityAll())
                         .catch((e) => {
                           toast.error(e.message)
                         })
-                        .finally(() => {
-                        })
+                        .finally(() => {})
                     },
                   },
                 ]}
@@ -444,7 +457,7 @@ export function CompatibilityAnswerBlock(props: {
                 items={[
                   {
                     name: t('answers.menu.skip', 'Skip'),
-                    icon: <TrashIcon className="h-5 w-5"/>,
+                    icon: <TrashIcon className="h-5 w-5" />,
                     onClick: () => {
                       submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
                         .then(() => {
@@ -453,8 +466,7 @@ export function CompatibilityAnswerBlock(props: {
                         .catch((e) => {
                           toast.error(e.message)
                         })
-                        .finally(() => {
-                        })
+                        .finally(() => {})
                     },
                   },
                 ]}
@@ -465,13 +477,11 @@ export function CompatibilityAnswerBlock(props: {
           )}
         </Row>
       </Row>
-      {answerText && <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
-        {answerText}
-      </Row>}
+      {answerText && (
+        <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">{answerText}</Row>
+      )}
       <Row className="px-2 -mt-4">
-        {answer?.explanation && (
-          <Linkify className="" text={answer.explanation}/>
-        )}
+        {answer?.explanation && <Linkify className="" text={answer.explanation} />}
       </Row>
       {distinctPreferredAnswersText.length > 0 && (
         <Col className="gap-2">
@@ -482,10 +492,7 @@ export function CompatibilityAnswerBlock(props: {
           </div>
           <Row className="flex-wrap gap-2 mt-0">
             {distinctPreferredAnswersText.map((text) => (
-              <Row
-                key={text}
-                className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm"
-              >
+              <Row key={text} className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
                 {text}
               </Row>
             ))}
@@ -494,27 +501,25 @@ export function CompatibilityAnswerBlock(props: {
       )}
       {!isAnswered && (
         <Row className="flex-wrap gap-2 mt-0">
-          {sortBy(
-            Object.entries(question.multiple_choice_options),
-            1
-          ).map(([label]) => label).map((label, i) => (
-            <button
-              key={label}
-              onClick={() => {
-                const _answer = getEmptyAnswer(user.id, question.id)
-                _answer.multiple_choice = i
-                setNewAnswer(_answer)
-                setEditOpen(true)
-              }}
-              className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded px-2 py-1 text-sm"
-            >
-              {label}
-            </button>
-          ))}
+          {sortBy(Object.entries(question.multiple_choice_options), 1)
+            .map(([label]) => label)
+            .map((label, i) => (
+              <button
+                key={label}
+                onClick={() => {
+                  const _answer = getEmptyAnswer(user.id, question.id)
+                  _answer.multiple_choice = i
+                  setNewAnswer(_answer)
+                  setEditOpen(true)
+                }}
+                className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded px-2 py-1 text-sm"
+              >
+                {label}
+              </button>
+            ))}
         </Row>
       )}
       <Col>
-
         {comparedProfile && isAnswered && (
           <Row className="w-full justify-end sm:hidden">
             <CompatibilityDisplay
@@ -529,10 +534,7 @@ export function CompatibilityAnswerBlock(props: {
         )}
         {isCurrentUser && isAnswered && (
           <Row className="w-full justify-end sm:hidden">
-            <ImportanceButton
-              importance={answer.importance}
-              onClick={() => setEditOpen(true)}
-            />
+            <ImportanceButton importance={answer.importance} onClick={() => setEditOpen(true)} />
           </Row>
         )}
         {/*{question.importance_score == 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
@@ -566,20 +568,13 @@ function CompatibilityDisplay(props: {
   currentUser: User | null | undefined
   className?: string
 }) {
-  const {
-    question,
-    profile1,
-    profile2,
-    answer1,
-    currentUserIsComparedProfile,
-    currentUser,
-  } = props
+  const {question, profile1, profile2, answer1, currentUserIsComparedProfile, currentUser} = props
 
   const t = useT()
 
-  const [answer2, setAnswer2] = useState<
-    rowFor<'compatibility_answers'> | null | undefined
-  >(undefined)
+  const [answer2, setAnswer2] = useState<rowFor<'compatibility_answers'> | null | undefined>(
+    undefined,
+  )
 
   async function getComparedProfileAnswer() {
     db.from('compatibility_answers')
@@ -604,16 +599,14 @@ function CompatibilityDisplay(props: {
   if (!profile1 || profile1.id === profile2.id) return null
 
   const showCreateAnswer =
-    (!answer2 || answer2.importance == -1) &&
-    currentUserIsComparedProfile &&
-    !!currentUser
+    (!answer2 || answer2.importance == -1) && currentUserIsComparedProfile && !!currentUser
 
   const isCurrentUser = currentUser?.id === profile2.user_id
 
   const answerCompatibility = answer2
     ? getAnswerCompatibility(answer1, answer2)
     : //getScoredAnswerCompatibility(answer1, answer2)
-    undefined
+      undefined
   const user1 = profile1.user
   const user2 = profile2.user
 
@@ -621,10 +614,7 @@ function CompatibilityDisplay(props: {
 
   return (
     <Row className="gap-2">
-      <ImportanceButton
-        importance={importanceScore}
-        onClick={() => setOpen(true)}
-      />
+      <ImportanceButton importance={importanceScore} onClick={() => setOpen(true)} />
 
       {showCreateAnswer || answerCompatibility === undefined || !answer2 ? (
         <AnswerCompatibilityQuestionButton
@@ -641,10 +631,12 @@ function CompatibilityDisplay(props: {
               'text-ink-1000 h-fit w-28 rounded-full px-2 py-0.5 text-xs transition-colors',
               answerCompatibility
                 ? 'bg-green-500/20 hover:bg-green-500/30'
-                : 'bg-red-500/20 hover:bg-red-500/30'
+                : 'bg-red-500/20 hover:bg-red-500/30',
             )}
           >
-            {answerCompatibility ? t('answers.compatible', 'Compatible') : t('answers.incompatible', 'Incompatible')}
+            {answerCompatibility
+              ? t('answers.compatible', 'Compatible')
+              : t('answers.incompatible', 'Incompatible')}
           </button>
         </>
       )}
@@ -653,17 +645,19 @@ function CompatibilityDisplay(props: {
           <Subtitle>{question.question}</Subtitle>
           <Col className={clsx('w-full gap-1', SCROLLABLE_MODAL_CLASS)}>
             <div className="text-ink-600 items-center gap-2">
-              {t('answers.modal.preferred_of_user', "{name}'s preferred answers", {name: shortenName(user1.name)})}
+              {t('answers.modal.preferred_of_user', "{name}'s preferred answers", {
+                name: shortenName(user1.name),
+              })}
             </div>
             <div className="text-ink-500 text-sm">
-              {t('answers.modal.user_marked', '{name} marked this as ', {name: shortenName(user1.name)})}
+              {t('answers.modal.user_marked', '{name} marked this as ', {
+                name: shortenName(user1.name),
+              })}
               <span className="font-semibold">
-                <ImportanceDisplay importance={answer1.importance}/>
+                <ImportanceDisplay importance={answer1.importance} />
               </span>
             </div>
-            {!answer2 && (
-              <PreferredListNoComparison question={question} answer={answer1}/>
-            )}
+            {!answer2 && <PreferredListNoComparison question={question} answer={answer1} />}
             {answer2 && (
               <>
                 <PreferredList
@@ -677,14 +671,18 @@ function CompatibilityDisplay(props: {
                 <div className="text-ink-600 mt-6 items-center gap-2">
                   {isCurrentUser
                     ? t('answers.modal.your_preferred', 'Your preferred answers')
-                    : t('answers.modal.preferred_of_user', "{name}'s preferred answers", {name: shortenName(user2.name)})}
+                    : t('answers.modal.preferred_of_user', "{name}'s preferred answers", {
+                        name: shortenName(user2.name),
+                      })}
                 </div>
                 <div className="text-ink-500 text-sm">
                   {isCurrentUser
                     ? t('answers.modal.you_marked', 'You marked this as ')
-                    : t('answers.modal.user_marked', '{name} marked this as ', {name: shortenName(user2.name)})}
+                    : t('answers.modal.user_marked', '{name} marked this as ', {
+                        name: shortenName(user2.name),
+                      })}
                   <span className="font-semibold">
-                    <ImportanceDisplay importance={answer2.importance}/>
+                    <ImportanceDisplay importance={answer2.importance} />
                   </span>
                 </div>
                 <PreferredList
@@ -702,21 +700,20 @@ function CompatibilityDisplay(props: {
   )
 }
 
-function ImportanceDisplay(props: { importance: number }) {
+function ImportanceDisplay(props: {importance: number}) {
   const {importance} = props
   const t = useT()
   return (
     <span className={clsx('w-fit')}>
-      {t(`answers.importance.${importance}`, getStringKeyFromNumValue(importance, IMPORTANCE_CHOICES) as string)}
+      {t(
+        `answers.importance.${importance}`,
+        getStringKeyFromNumValue(importance, IMPORTANCE_CHOICES) as string,
+      )}
     </span>
   )
 }
 
-function ImportanceButton(props: {
-  importance: number
-  onClick: () => void
-  className?: string
-}) {
+function ImportanceButton(props: {importance: number; onClick: () => void; className?: string}) {
   const {importance, onClick, className} = props
   return (
     <button
@@ -726,18 +723,15 @@ function ImportanceButton(props: {
         // Longer width for "Somewhat important"
         importance === 1 ? 'w-36' : 'w-28',
         IMPORTANCE_DISPLAY_COLORS[importance],
-        className
+        className,
       )}
     >
-      <ImportanceDisplay importance={importance}/>
+      <ImportanceDisplay importance={importance} />
     </button>
   )
 }
 
-function getStringKeyFromNumValue(
-  value: number,
-  map: Record<string, number>
-): string | undefined {
+function getStringKeyFromNumValue(value: number, map: Record<string, number>): string | undefined {
   const choices = Object.keys(map) as (keyof typeof map)[]
   return choices.find((choice) => map[choice] === value)
 }

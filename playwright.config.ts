@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import {defineConfig, devices} from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -15,7 +15,8 @@ export default defineConfig({
     {
       name: 'main',
       use: {
-        ...devices['Desktop Chrome'],      }, 
+        ...devices['Desktop Chrome'],
+      },
     },
     // {
     //   name: 'firefox',
@@ -27,5 +28,4 @@ export default defineConfig({
     // },
   ],
   timeout: 60000,
-
-});
+})

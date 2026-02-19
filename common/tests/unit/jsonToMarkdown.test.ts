@@ -1,4 +1,4 @@
-import {jsonToMarkdown} from "../../src/md";
+import {jsonToMarkdown} from '../../src/md'
 
 describe('JSON to Markdown', () => {
   it('', () => {

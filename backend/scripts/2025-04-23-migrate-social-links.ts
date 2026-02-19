@@ -1,11 +1,11 @@
-import { removeUndefinedProps } from 'common/util/object'
-import { runScript } from './run-script'
-import { log } from 'shared/monitoring/log'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { bulkUpdateData } from 'shared/supabase/utils'
-import { chunk } from 'lodash'
+import {removeUndefinedProps} from 'common/util/object'
+import {runScript} from './run-script'
+import {log} from 'shared/monitoring/log'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {bulkUpdateData} from 'shared/supabase/utils'
+import {chunk} from 'lodash'
 
-runScript(async ({ pg }) => {
+runScript(async ({pg}) => {
   const directClient = createSupabaseDirectClient()
 
   // Get all users and their corresponding profiles
@@ -17,9 +17,9 @@ runScript(async ({ pg }) => {
 
   log('Found', users.length, 'users to migrate')
 
-  const updates = [] as { id: string; link: {} }[]
+  const updates = [] as {id: string; link: {}}[]
 
-  for (const { id, data, twitter } of users) {
+  for (const {id, data, twitter} of users) {
     const add = removeUndefinedProps({
       discord: data.discordHandle,
       manifold: data.manifoldHandle,
@@ -32,7 +32,7 @@ runScript(async ({ pg }) => {
     })
 
     if (Object.keys(add).length) {
-      updates.push({ id, link: { ...add, ...(data.link || {}) } })
+      updates.push({id, link: {...add, ...(data.link || {})}})
     }
   }
 
@@ -54,6 +54,6 @@ runScript(async ({ pg }) => {
       COALESCE((data -> 'link'), '{}'::jsonb),
       true
     )
-    where data -> 'link' is null`
+    where data -> 'link' is null`,
   )
 })

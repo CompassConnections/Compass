@@ -1,4 +1,4 @@
-import { max, sumBy } from 'lodash'
+import {max, sumBy} from 'lodash'
 
 // each row has [column, value] pairs
 type SparseMatrix = [number, number][][]
@@ -23,7 +23,7 @@ export function factorizeMatrix(
   ITERS = 5000,
   LEARNING_RATE = 0.0002,
   REGULARIZATION_RATE = 0.02,
-  THRESHOLD = 0.001
+  THRESHOLD = 0.001,
 ) {
   const initCell = () => (2 * Math.random()) / FEATURES
   const m = TARGET_MATRIX.length

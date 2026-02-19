@@ -15,4 +15,4 @@ export function getCountryName(code: string) {
   return country
 }
 
-const countries = new Intl.DisplayNames(['en'], { type: 'region' })
+const countries = new Intl.DisplayNames(['en'], {type: 'region'})

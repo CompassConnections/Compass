@@ -12,21 +12,16 @@ import {getUser, getUserByUsername, log} from 'shared/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
-import {getBucket} from "shared/firebase-utils";
-import {sendWelcomeEmail} from "email/functions/helpers";
-import {setLastOnlineTimeUser} from "api/set-last-online-time";
-import {IS_LOCAL} from "common/hosting/constants";
+import {getBucket} from 'shared/firebase-utils'
+import {sendWelcomeEmail} from 'email/functions/helpers'
+import {setLastOnlineTimeUser} from 'api/set-last-online-time'
+import {IS_LOCAL} from 'common/hosting/constants'
 
-export const createUser: APIHandler<'create-user'> = async (
-  props,
-  auth,
-  req
-) => {
+export const createUser: APIHandler<'create-user'> = async (props, auth, req) => {
   const {deviceToken: preDeviceToken} = props
   const firebaseUser = await admin.auth().getUser(auth.uid)
 
-  const testUserAKAEmailPasswordUser =
-    firebaseUser.providerData[0].providerId === 'password'
+  const testUserAKAEmailPasswordUser = firebaseUser.providerData[0].providerId === 'password'
 
   // if (
   //   testUserAKAEmailPasswordUser &&
@@ -68,7 +63,7 @@ export const createUser: APIHandler<'create-user'> = async (
      from users
      where username ilike $1`,
     [username],
-    (r) => r.count
+    (r) => r.count,
   )
   const usernameExists = dupes > 0
   const isReservedName = RESERVED_PATHS.includes(username)
@@ -83,14 +78,13 @@ export const createUser: APIHandler<'create-user'> = async (
 
     // Check exact username to avoid problems with duplicate requests
     const sameNameUser = await getUserByUsername(username, tx)
-    if (sameNameUser)
-      throw new APIError(403, 'Username already taken', {username})
+    if (sameNameUser) throw new APIError(403, 'Username already taken', {username})
 
     const user = removeUndefinedProps({
       avatarUrl,
       isBannedFromPosting: Boolean(
         (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
-        (ip && bannedIpAddresses.includes(ip))
+          (ip && bannedIpAddresses.includes(ip)),
       ),
       link: {},
     })

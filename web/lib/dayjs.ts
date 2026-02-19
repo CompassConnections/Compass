@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import {getLocale} from "web/lib/locale-cookie";
-import {registerLocale} from "react-datepicker";
+import {getLocale} from 'web/lib/locale-cookie'
+import {registerLocale} from 'react-datepicker'
 
 dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)

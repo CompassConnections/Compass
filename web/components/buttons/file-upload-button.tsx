@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import {useRef} from 'react'
 
 /** button that opens file upload window */
 export function FileUploadButton(props: {
@@ -7,7 +7,7 @@ export function FileUploadButton(props: {
   children?: React.ReactNode
   disabled?: boolean
 }) {
-  const { onFiles, className, children, disabled } = props
+  const {onFiles, className, children, disabled} = props
   const ref = useRef<HTMLInputElement>(null)
   return (
     <>

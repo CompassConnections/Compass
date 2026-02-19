@@ -1,5 +1,5 @@
-import { isEqual } from 'lodash'
-import { SetStateAction, useMemo, useRef, useState } from 'react'
+import {isEqual} from 'lodash'
+import {SetStateAction, useMemo, useRef, useState} from 'react'
 
 export const useStateCheckEquality = <T>(initialState: T) => {
   const [state, setState] = useState(initialState)
@@ -15,7 +15,7 @@ export const useStateCheckEquality = <T>(initialState: T) => {
         setState(newState)
       }
     },
-    [stateRef]
+    [stateRef],
   )
 
   return [state, checkSetState] as const

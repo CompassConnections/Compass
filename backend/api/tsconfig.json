@@ -15,27 +15,14 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "paths": {
-      "common/*": [
-        "../../common/src/*",
-        "../../../common/lib/*"
-      ],
-      "shared/*": [
-        "../shared/src/*",
-        "../../shared/lib/*"
-      ],
-      "email/*": [
-        "../email/emails/*",
-        "../../email/lib/*"
-      ],
-      "api/*": [
-        "./src/*"
-      ]
+      "common/*": ["../../common/src/*", "../../../common/lib/*"],
+      "shared/*": ["../shared/src/*", "../../shared/lib/*"],
+      "email/*": ["../email/emails/*", "../../email/lib/*"],
+      "api/*": ["./src/*"]
     }
   },
   "ts-node": {
-    "require": [
-      "tsconfig-paths/register"
-    ]
+    "require": ["tsconfig-paths/register"]
   },
   "references": [
     {
@@ -49,9 +36,5 @@
     }
   ],
   "compileOnSave": true,
-  "include": [
-    "src/**/*.ts",
-    "package.json",
-    "backend/api/package.json"
-  ]
+  "include": ["src/**/*.ts", "package.json", "backend/api/package.json"]
 }

@@ -1,5 +1,5 @@
-import crypto from "crypto";
-import {ENV_CONFIG} from "common/envs/constants";
+import crypto from 'crypto'
+import {ENV_CONFIG} from 'common/envs/constants'
 
 /**
  * MASTER_KEY must be a 32-byte Buffer (AES-256).
@@ -11,11 +11,11 @@ const getMasterKey = () => {
 
   if (ENV_CONFIG.dbEncryptionKey) {
     const MASTER_KEY_BASE64 = ENV_CONFIG.dbEncryptionKey
-    _MASTER_KEY = Buffer.from(MASTER_KEY_BASE64, "base64")
-    if (_MASTER_KEY.length !== 32) throw new Error("MASTER_KEY must be 32 bytes")
+    _MASTER_KEY = Buffer.from(MASTER_KEY_BASE64, 'base64')
+    if (_MASTER_KEY.length !== 32) throw new Error('MASTER_KEY must be 32 bytes')
   }
 
-  if (!_MASTER_KEY) throw new Error("MASTER_KEY not set")
+  if (!_MASTER_KEY) throw new Error('MASTER_KEY not set')
 
   return _MASTER_KEY
 }
@@ -27,32 +27,40 @@ const getMasterKey = () => {
  * It's used to prove the authenticity and integrity of a message
  */
 export function encryptMessage(plaintext: string) {
-  const iv = crypto.randomBytes(12); // 96-bit IV, recommended for AES-GCM
-  const cipher = crypto.createCipheriv("aes-256-gcm", getMasterKey(), iv);
-  const ciphertext = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
-  const tag = cipher.getAuthTag();
+  const iv = crypto.randomBytes(12) // 96-bit IV, recommended for AES-GCM
+  const cipher = crypto.createCipheriv('aes-256-gcm', getMasterKey(), iv)
+  const ciphertext = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
+  const tag = cipher.getAuthTag()
 
   // console.debug(plaintext, iv, ciphertext, tag)
 
   return {
-    ciphertext: ciphertext.toString("base64"),
-    iv: iv.toString("base64"),
-    tag: tag.toString("base64"),
-  };
+    ciphertext: ciphertext.toString('base64'),
+    iv: iv.toString('base64'),
+    tag: tag.toString('base64'),
+  }
 }
 
 /**
  * Decrypt base64 ciphertext + iv + tag -> plaintext string.
  * Throws on auth failure.
  */
-export function decryptMessage({ciphertext, iv, tag}: { ciphertext: string; iv: string; tag: string; }) {
-  const ivBuf = Buffer.from(iv, "base64");
-  const ctBuf = Buffer.from(ciphertext, "base64");
-  const tagBuf = Buffer.from(tag, "base64");
+export function decryptMessage({
+  ciphertext,
+  iv,
+  tag,
+}: {
+  ciphertext: string
+  iv: string
+  tag: string
+}) {
+  const ivBuf = Buffer.from(iv, 'base64')
+  const ctBuf = Buffer.from(ciphertext, 'base64')
+  const tagBuf = Buffer.from(tag, 'base64')
 
-  const decipher = crypto.createDecipheriv("aes-256-gcm", getMasterKey(), ivBuf);
-  decipher.setAuthTag(tagBuf);
-  const plaintext = Buffer.concat([decipher.update(ctBuf), decipher.final()]).toString("utf8");
+  const decipher = crypto.createDecipheriv('aes-256-gcm', getMasterKey(), ivBuf)
+  decipher.setAuthTag(tagBuf)
+  const plaintext = Buffer.concat([decipher.update(ctBuf), decipher.final()]).toString('utf8')
   // console.debug("Decrypted message:", plaintext);
-  return plaintext;
+  return plaintext
 }

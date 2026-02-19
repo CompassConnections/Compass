@@ -10,7 +10,7 @@ import {bulkInsert} from 'shared/supabase/utils'
  */
 export const insertNotificationToSupabase = async (
   notification: Notification,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   // Check if this notification has a template_id (new style)
   if (notification.templateId) {
@@ -26,7 +26,7 @@ export const insertNotificationToSupabase = async (
           isSeen: notification.isSeen,
           viewTime: notification.viewTime,
         },
-      ]
+      ],
     )
   } else {
     // Legacy style - store full notification in data
@@ -34,19 +34,16 @@ export const insertNotificationToSupabase = async (
       `insert into user_notifications (user_id, notification_id, data)
        values ($1, $2, $3)
        on conflict do nothing`,
-      [notification.userId, notification.id, notification]
+      [notification.userId, notification.id, notification],
     )
   }
-  broadcast(`user-notifications/${notification.userId}`, { notification })
+  broadcast(`user-notifications/${notification.userId}`, {notification})
 }
 
 /**
  * Bulk insert notifications - for backwards compatibility
  */
-export const bulkInsertNotifications = async (
-  notifications: Notification[],
-  pg: SupabaseDirectClient
-) => {
+export const bulkInsertNotifications = async (notifications: Notification[], pg: SupabaseDirectClient) => {
   await bulkInsert(
     pg,
     'user_notifications',
@@ -54,10 +51,10 @@ export const bulkInsertNotifications = async (
       user_id: n.userId,
       notification_id: n.id,
       data: n,
-    }))
+    })),
   )
   notifications.forEach((notification) =>
-    broadcast(`user-notifications/${notification.userId}`, { notification })
+    broadcast(`user-notifications/${notification.userId}`, {notification}),
   )
 }
 
@@ -67,7 +64,7 @@ export const bulkInsertNotifications = async (
  */
 export const createNotificationTemplate = async (
   template: NotificationTemplate,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ): Promise<string> => {
   await pg.none(
     `insert into notification_templates
@@ -90,7 +87,7 @@ export const createNotificationTemplate = async (
       template.sourceUpdateType ?? null,
       template.createdTime,
       template.data ?? {},
-    ]
+    ],
   )
   return template.id
 }
@@ -132,7 +129,7 @@ export const createUserNotifications = async (
 export const createBulkNotification = async (
   template: Omit<NotificationTemplate, 'id' | 'createdTime'>,
   userIds: string[],
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   const timestamp = Date.now()
   const templateId = `${template.sourceType}-${timestamp}`
@@ -144,7 +141,7 @@ export const createBulkNotification = async (
       id: templateId,
       createdTime: timestamp,
     },
-    pg
+    pg,
   )
 
   // Create lightweight user notifications

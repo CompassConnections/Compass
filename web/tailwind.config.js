@@ -11,24 +11,23 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
+    screens: {
+      xxs: '320px',
+      xs: '480px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
 
-      screens: {
-          xxs: '320px',
-          xs: '480px',
-          sm: '640px',
-          md: '768px',
-          lg: '1024px',
-          xl: '1280px',
-          '2xl': '1536px',
-      },
-
-      fontFamily: Object.assign(
-      { ...defaultTheme.fontFamily },
+    fontFamily: Object.assign(
+      {...defaultTheme.fontFamily},
       {
         'major-mono': ['var(--font-logo)', 'monospace'],
         figtree: ['icomoon', 'var(--font-main)', 'emoji', 'sans-serif'],
         'grenze-gotisch': ['var(--font-match-cards)', 'cursive'], // just for match card game
-      }
+      },
     ),
     extend: {
       minHeight: {
@@ -362,43 +361,43 @@ module.exports = {
           950: 'hsl(0,0%,5%)',
         },
         green: {
-            50: 'rgb(var(--color-green-50) / <alpha-value>)',
-            100: 'rgb(var(--color-green-100) / <alpha-value>)',
-            200: 'rgb(var(--color-green-200) / <alpha-value>)',
-            300: 'rgb(var(--color-green-300) / <alpha-value>)',
-            400: 'rgb(var(--color-green-400) / <alpha-value>)',
-            500: 'rgb(var(--color-green-500) / <alpha-value>)',
-            600: 'rgb(var(--color-green-600) / <alpha-value>)',
-            700: 'rgb(var(--color-green-700) / <alpha-value>)',
-            800: 'rgb(var(--color-green-800) / <alpha-value>)',
-            900: 'rgb(var(--color-green-900) / <alpha-value>)',
-            950: 'rgb(var(--color-green-950) / <alpha-value>)',
+          50: 'rgb(var(--color-green-50) / <alpha-value>)',
+          100: 'rgb(var(--color-green-100) / <alpha-value>)',
+          200: 'rgb(var(--color-green-200) / <alpha-value>)',
+          300: 'rgb(var(--color-green-300) / <alpha-value>)',
+          400: 'rgb(var(--color-green-400) / <alpha-value>)',
+          500: 'rgb(var(--color-green-500) / <alpha-value>)',
+          600: 'rgb(var(--color-green-600) / <alpha-value>)',
+          700: 'rgb(var(--color-green-700) / <alpha-value>)',
+          800: 'rgb(var(--color-green-800) / <alpha-value>)',
+          900: 'rgb(var(--color-green-900) / <alpha-value>)',
+          950: 'rgb(var(--color-green-950) / <alpha-value>)',
         },
         yellow: {
-            50: 'rgb(var(--color-yellow-50) / <alpha-value>)',
-            100: 'rgb(var(--color-yellow-100) / <alpha-value>)',
-            200: 'rgb(var(--color-yellow-200) / <alpha-value>)',
-            300: 'rgb(var(--color-yellow-300) / <alpha-value>)',
-            400: 'rgb(var(--color-yellow-400) / <alpha-value>)',
-            500: 'rgb(var(--color-yellow-500) / <alpha-value>)',
-            600: 'rgb(var(--color-yellow-600) / <alpha-value>)',
-            700: 'rgb(var(--color-yellow-700) / <alpha-value>)',
-            800: 'rgb(var(--color-yellow-800) / <alpha-value>)',
-            900: 'rgb(var(--color-yellow-900) / <alpha-value>)',
-            950: 'rgb(var(--color-yellow-950) / <alpha-value>)',
+          50: 'rgb(var(--color-yellow-50) / <alpha-value>)',
+          100: 'rgb(var(--color-yellow-100) / <alpha-value>)',
+          200: 'rgb(var(--color-yellow-200) / <alpha-value>)',
+          300: 'rgb(var(--color-yellow-300) / <alpha-value>)',
+          400: 'rgb(var(--color-yellow-400) / <alpha-value>)',
+          500: 'rgb(var(--color-yellow-500) / <alpha-value>)',
+          600: 'rgb(var(--color-yellow-600) / <alpha-value>)',
+          700: 'rgb(var(--color-yellow-700) / <alpha-value>)',
+          800: 'rgb(var(--color-yellow-800) / <alpha-value>)',
+          900: 'rgb(var(--color-yellow-900) / <alpha-value>)',
+          950: 'rgb(var(--color-yellow-950) / <alpha-value>)',
         },
         red: {
-            50: 'rgb(var(--color-red-50) / <alpha-value>)',
-            100: 'rgb(var(--color-red-100) / <alpha-value>)',
-            200: 'rgb(var(--color-red-200) / <alpha-value>)',
-            300: 'rgb(var(--color-red-300) / <alpha-value>)',
-            400: 'rgb(var(--color-red-400) / <alpha-value>)',
-            500: 'rgb(var(--color-red-500) / <alpha-value>)',
-            600: 'rgb(var(--color-red-600) / <alpha-value>)',
-            700: 'rgb(var(--color-red-700) / <alpha-value>)',
-            800: 'rgb(var(--color-red-800) / <alpha-value>)',
-            900: 'rgb(var(--color-red-900) / <alpha-value>)',
-            950: 'rgb(var(--color-red-950) / <alpha-value>)',
+          50: 'rgb(var(--color-red-50) / <alpha-value>)',
+          100: 'rgb(var(--color-red-100) / <alpha-value>)',
+          200: 'rgb(var(--color-red-200) / <alpha-value>)',
+          300: 'rgb(var(--color-red-300) / <alpha-value>)',
+          400: 'rgb(var(--color-red-400) / <alpha-value>)',
+          500: 'rgb(var(--color-red-500) / <alpha-value>)',
+          600: 'rgb(var(--color-red-600) / <alpha-value>)',
+          700: 'rgb(var(--color-red-700) / <alpha-value>)',
+          800: 'rgb(var(--color-red-800) / <alpha-value>)',
+          900: 'rgb(var(--color-red-900) / <alpha-value>)',
+          950: 'rgb(var(--color-red-950) / <alpha-value>)',
         },
         warning: '#F0D630',
         error: '#E70D3D',
@@ -448,7 +447,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
-    plugin(function ({ addUtilities }) {
+    plugin(function ({addUtilities}) {
       addUtilities({
         '.scrollbar-hide': {
           /* IE and Edge */

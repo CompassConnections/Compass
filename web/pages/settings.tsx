@@ -34,22 +34,22 @@ export default function NotificationsPage() {
   useRedirectIfSignedOut()
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4 mb-4'}>
-      <NoSEO/>
+      <NoSEO />
       <Title>{t('settings.title', 'Settings')}</Title>
       <UncontrolledTabs
         name={'settings-page'}
         tabs={[
           {
             title: t('settings.tabs.general', 'General'),
-            content: <GeneralSettings/>,
+            content: <GeneralSettings />,
           },
           {
             title: t('settings.tabs.notifications', 'Notifications'),
-            content: <NotificationSettings/>,
+            content: <NotificationSettings />,
           },
           {
             title: t('settings.tabs.about', 'About'),
-            content: <AboutSettings/>,
+            content: <AboutSettings />,
           },
         ]}
         trackingName={'settings page'}
@@ -59,12 +59,10 @@ export default function NotificationsPage() {
 }
 
 export const GeneralSettings = () => (
-  <WithPrivateUser>
-    {(user) => <LoadedGeneralSettings privateUser={user}/>}
-  </WithPrivateUser>
+  <WithPrivateUser>{(user) => <LoadedGeneralSettings privateUser={user} />}</WithPrivateUser>
 )
 
-const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
+const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
   const {privateUser} = props
 
   const [isChangingEmail, setIsChangingEmail] = useState(false)
@@ -74,7 +72,7 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
     handleSubmit,
     formState: {errors},
     reset,
-  } = useForm<{ newEmail: string }>()
+  } = useForm<{newEmail: string}>()
   const t = useT()
 
   const user = useFirebaseUser()
@@ -84,8 +82,8 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
     const confirmed = confirm(
       t(
         'settings.delete_confirm',
-        'Are you sure you want to delete your profile? This cannot be undone.'
-      )
+        'Are you sure you want to delete your profile? This cannot be undone.',
+      ),
     )
     if (confirmed) {
       toast
@@ -93,10 +91,7 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
           loading: t('settings.delete.loading', 'Deleting account...'),
           success: () => {
             router.push('/')
-            return t(
-              'settings.delete.success',
-              'Your account has been deleted.'
-            )
+            return t('settings.delete.success', 'Your account has been deleted.')
           },
           error: () => {
             return t('settings.delete.error', 'Failed to delete account.')
@@ -113,31 +108,21 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
 
     try {
       await updateEmail(user, newEmail)
-      toast.success(
-        t('settings.email.updated_success', 'Email updated successfully')
-      )
+      toast.success(t('settings.email.updated_success', 'Email updated successfully'))
       setIsChangingEmail(false)
       reset()
       // Force a reload to update the UI with the new email
       // window.location.reload()
     } catch (error: any) {
       console.error('Error updating email:', error)
-      toast.error(
-        error.message ||
-        t('settings.email.update_failed', 'Failed to update email')
-      )
+      toast.error(error.message || t('settings.email.update_failed', 'Failed to update email'))
     }
   }
 
-  const onSubmitEmailChange = (data: { newEmail: string }) => {
+  const onSubmitEmailChange = (data: {newEmail: string}) => {
     if (!user) return
     if (data.newEmail === user.email) {
-      toast.error(
-        t(
-          'settings.email.same_as_current',
-          'New email is the same as current email'
-        )
-      )
+      toast.error(t('settings.email.same_as_current', 'New email is the same as current email'))
       return
     }
     changeUserEmail(data.newEmail)
@@ -146,21 +131,20 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
   return (
     <>
       <div className="flex flex-col gap-2 max-w-fit">
-
         <h3>{t('settings.general.language', 'Language')}</h3>
-        <LanguagePicker className={'w-fit min-w-[120px]'}/>
+        <LanguagePicker className={'w-fit min-w-[120px]'} />
 
         <h3>{t('settings.general.measurement', 'Measurement System')}</h3>
-        <MeasurementSystemToggle/>
+        <MeasurementSystemToggle />
 
         <h3>{t('settings.general.theme', 'Theme')}</h3>
-        <ThemeIcon className="h-6 w-6"/>
+        <ThemeIcon className="h-6 w-6" />
 
         <h3>{t('settings.general.font', 'Font')}</h3>
-        <FontPicker className={'w-fit min-w-[180px]'}/>
+        <FontPicker className={'w-fit min-w-[180px]'} />
 
         <h3>{t('settings.data_privacy.title', 'Data & Privacy')}</h3>
-        <DataPrivacySettings/>
+        <DataPrivacySettings />
 
         <h3>{t('settings.general.people', 'People')}</h3>
         {/*<h5>{t('settings.hidden_profiles.title', 'Hidden profiles')}</h5>*/}
@@ -175,36 +159,23 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
         <h3>{t('settings.general.account', 'Account')}</h3>
         <h5>{t('settings.general.email', 'Email')}</h5>
 
-        <EmailVerificationButton/>
+        <EmailVerificationButton />
 
         {!isChangingEmail ? (
-          <Button
-            color={'gray-outline'}
-            onClick={() => setIsChangingEmail(true)}
-            className="w-fit"
-          >
+          <Button color={'gray-outline'} onClick={() => setIsChangingEmail(true)} className="w-fit">
             {t('settings.email.change', 'Change email address')}
           </Button>
         ) : (
-          <form
-            onSubmit={handleSubmit(onSubmitEmailChange)}
-            className="flex flex-col gap-2"
-          >
+          <form onSubmit={handleSubmit(onSubmitEmailChange)} className="flex flex-col gap-2">
             <Col>
               <Input
                 type="email"
-                placeholder={t(
-                  'settings.email.new_placeholder',
-                  'New email address'
-                )}
+                placeholder={t('settings.email.new_placeholder', 'New email address')}
                 {...register('newEmail', {
                   required: 'Email is required',
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: t(
-                      'settings.email.invalid',
-                      'Invalid email address'
-                    ),
+                    message: t('settings.email.invalid', 'Invalid email address'),
                   },
                 })}
                 disabled={!user}
@@ -252,10 +223,7 @@ const LoadedGeneralSettings = (props: { privateUser: PrivateUser }) => {
       </div>
 
       {/* Hidden profiles modal */}
-      <HiddenProfilesModal
-        open={showHiddenProfiles}
-        setOpen={setShowHiddenProfiles}
-      />
+      <HiddenProfilesModal open={showHiddenProfiles} setOpen={setShowHiddenProfiles} />
     </>
   )
 }
@@ -273,11 +241,7 @@ const DataPrivacySettings = () => {
       const data = await api('me/data', {})
       const jsonString = JSON.stringify(data, null, 2)
       const filename = `compass-data-export${user?.username ? `-${user.username}` : ''}.json`
-      if (
-        isNativeMobile() &&
-        window.AndroidBridge &&
-        window.AndroidBridge.downloadFile
-      ) {
+      if (isNativeMobile() && window.AndroidBridge && window.AndroidBridge.downloadFile) {
         window.AndroidBridge.downloadFile(filename, jsonString)
       } else {
         const blob = new Blob([jsonString], {type: 'application/json'})
@@ -291,18 +255,15 @@ const DataPrivacySettings = () => {
         URL.revokeObjectURL(url)
       }
       toast.success(
-        t(
-          'settings.data_privacy.download.success',
-          'Your data export has been downloaded.'
-        )
+        t('settings.data_privacy.download.success', 'Your data export has been downloaded.'),
       )
     } catch (e) {
       console.error('Error downloading data export', e)
       toast.error(
         t(
           'settings.data_privacy.download.error',
-          'Failed to download your data. Please try again.'
-        )
+          'Failed to download your data. Please try again.',
+        ),
       )
     } finally {
       setIsDownloading(false)
@@ -314,7 +275,7 @@ const DataPrivacySettings = () => {
       <p className="text-sm guidance">
         {t(
           'settings.data_privacy.description',
-          'Download a JSON file containing all your information: profile, account, messages, compatibility answers, starred profiles, votes, endorsements, search bookmarks, etc.'
+          'Download a JSON file containing all your information: profile, account, messages, compatibility answers, starred profiles, votes, endorsements, search bookmarks, etc.',
         )}
       </p>
       <Button

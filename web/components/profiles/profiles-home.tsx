@@ -12,33 +12,33 @@ import {useGetter} from 'web/hooks/use-getter'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {useBookmarkedSearches} from "web/hooks/use-bookmarked-searches"
-import {useFilters} from "web/components/filters/use-filters"
-import {useLocale, useT} from "web/lib/locale";
-import {useIsClearedFilters} from "web/hooks/use-is-cleared-filters";
-import {Button} from "web/components/buttons/button";
-import {Col} from "web/components/layout/col";
-import {Row} from "web/components/layout/row";
-import {useRouter} from "next/router";
-import {useIsMobile} from "web/hooks/use-is-mobile";
-import toast from "react-hot-toast";
-import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
+import {useBookmarkedSearches} from 'web/hooks/use-bookmarked-searches'
+import {useFilters} from 'web/components/filters/use-filters'
+import {useLocale, useT} from 'web/lib/locale'
+import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {useRouter} from 'next/router'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
+import toast from 'react-hot-toast'
+import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 
 export function ProfilesHome() {
   const user = useUser()
   const you = useProfile()
 
-  const {
-    filters,
-    updateFilter,
-    clearFilters,
-    setYourFilters,
-    isYourFilters,
-    locationFilterProps,
-  } = useFilters(you ?? undefined)
+  const {filters, updateFilter, clearFilters, setYourFilters, isYourFilters, locationFilterProps} =
+    useFilters(you ?? undefined)
 
-  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(undefined, 'profiles')
-  const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(undefined, 'profile-count')
+  const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
+    undefined,
+    'profiles',
+  )
+  const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(
+    undefined,
+    'profile-count',
+  )
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
@@ -79,7 +79,7 @@ export function ProfilesHome() {
       limit: 20,
       compatibleWithUserId: user?.id,
       locale,
-      ...filters
+      ...filters,
     })
     console.debug('Refreshing profiles, filters:', args)
     api('get-profiles', args as any)
@@ -107,29 +107,38 @@ export function ProfilesHome() {
     if (!profiles || isLoadingMore) return false
     if (fromSignup && isClearedFilters && sendScrollWarning) {
       setSendScrollWarning(false)
-      toast(t('profiles.search_tip', 'Tip: Searching first helps you find better matches. Scrolling endlessly reduces relevance.'), {
-        icon: '⚠️',
-        style: {
-          // background: 'rgba(128,128,128,0.15)', // light gray bg, adjust for dark mode
-          // color: 'rgba(0,0,0,0.75)',           // dark text for light mode
-          padding: '8px 8px',
-          borderRadius: '8px',
-          // fontFamily: 'Inter, sans-serif',
-          fontSize: '14px',
+      toast(
+        t(
+          'profiles.search_tip',
+          'Tip: Searching first helps you find better matches. Scrolling endlessly reduces relevance.',
+        ),
+        {
+          icon: '⚠️',
+          style: {
+            // background: 'rgba(128,128,128,0.15)', // light gray bg, adjust for dark mode
+            // color: 'rgba(0,0,0,0.75)',           // dark text for light mode
+            padding: '8px 8px',
+            borderRadius: '8px',
+            // fontFamily: 'Inter, sans-serif',
+            fontSize: '14px',
+          },
+          duration: 10000,
         },
-        duration: 10000,
-      });
+      )
     }
     try {
       setIsLoadingMore(true)
       const lastProfile = profiles[profiles.length - 1]
-      const result = await api('get-profiles', removeNullOrUndefinedProps({
-        limit,
-        compatibleWithUserId: user?.id,
-        after: lastProfile?.id.toString(),
-        locale,
-        ...filters
-      }) as any)
+      const result = await api(
+        'get-profiles',
+        removeNullOrUndefinedProps({
+          limit,
+          compatibleWithUserId: user?.id,
+          after: lastProfile?.id.toString(),
+          locale,
+          ...filters,
+        }) as any,
+      )
       if (result.profiles.length === 0) return false
       setProfiles((prev) => (prev ? [...prev, ...result.profiles] : result.profiles))
       return true
@@ -146,25 +155,32 @@ export function ProfilesHome() {
     setRecentlyHiddenIds((prev) => (prev.includes(userId) ? prev : [...prev, userId]))
   }, [])
 
-  const onUndoHidden = useCallback(async (userId: string) => {
-    try {
-      await api('unhide-profile', {hiddenUserId: userId})
-    } catch (e) {
-      console.error('Failed to unhide profile', e)
-    } finally {
-      // Remove from local hidden ids regardless; server state is best-effort and will refresh.
-      setRecentlyHiddenIds((prev) => prev.filter((id) => id !== userId))
-      refreshHiddenProfiles()
-    }
-  }, [refreshHiddenProfiles])
+  const onUndoHidden = useCallback(
+    async (userId: string) => {
+      try {
+        await api('unhide-profile', {hiddenUserId: userId})
+      } catch (e) {
+        console.error('Failed to unhide profile', e)
+      } finally {
+        // Remove from local hidden ids regardless; server state is best-effort and will refresh.
+        setRecentlyHiddenIds((prev) => prev.filter((id) => id !== userId))
+        refreshHiddenProfiles()
+      }
+    },
+    [refreshHiddenProfiles],
+  )
 
   return (
     <>
       {showBanner && fromSignup && (
         <div className="lg:col-span-12 w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
           <Col className="items-center justify-center gap-2">
-            <span
-              className={'mb-2'}>{t('profiles.search_intention', 'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.')}</span>
+            <span className={'mb-2'}>
+              {t(
+                'profiles.search_intention',
+                'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.',
+              )}
+            </span>
             <Row className="gap-2 mb-2">
               <Button
                 size="sm"
@@ -176,9 +192,10 @@ export function ProfilesHome() {
               >
                 {t('profiles.try_keyword_search', 'Try a keyword search')}
               </Button>
-              {isMobile && <Button
+              {isMobile && (
+                <Button
                   size="sm"
-                  color={"gray-white"}
+                  color={'gray-white'}
                   className={'border'}
                   onClick={() => {
                     if (!isMobile) return
@@ -188,12 +205,13 @@ export function ProfilesHome() {
                       setOpenFiltersModal(true)
                     }, 500)
                   }}
-              >
-                {t('profiles.show_filters', 'Show me the filters')}
-              </Button>}
+                >
+                  {t('profiles.show_filters', 'Show me the filters')}
+                </Button>
+              )}
               <Button
                 size="sm"
-                color={"gray-white"}
+                color={'gray-white'}
                 className={'border'}
                 onClick={() => {
                   setHighlightSort(true)
@@ -206,7 +224,12 @@ export function ProfilesHome() {
               </Button>
             </Row>
             <Row className="gap-2 mb-6 sm:mb-2">
-              <p>{t('profiles.interactive_profiles', 'Profiles are interactive — click any card to learn more and reach out.')}</p>
+              <p>
+                {t(
+                  'profiles.interactive_profiles',
+                  'Profiles are interactive — click any card to learn more and reach out.',
+                )}
+              </p>
             </Row>
           </Col>
           <Button
@@ -220,7 +243,7 @@ export function ProfilesHome() {
         </div>
       )}
       {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
-      <Title className="!mb-2 text-3xl">{t("profiles.title", "People")}</Title>
+      <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
       <Search
         ref={searchInputRef}
         openFilters={() => setOpenFiltersModal(true)}
@@ -242,26 +265,31 @@ export function ProfilesHome() {
         profileCount={profileCount}
       />
       {displayProfiles === undefined || compatibleProfiles === undefined ? (
-        <CompassLoadingIndicator/>
-      ) : (<>
-        {fromSignup && isClearedFilters &&
+        <CompassLoadingIndicator />
+      ) : (
+        <>
+          {fromSignup && isClearedFilters && (
             <p className={'guidance'}>
-              {t('profiles.seeing_all_profiles', 'You are seeing all profiles. Use search or filters to narrow it down.')}
+              {t(
+                'profiles.seeing_all_profiles',
+                'You are seeing all profiles. Use search or filters to narrow it down.',
+              )}
             </p>
-        }
-        <ProfileGrid
-          profiles={displayProfiles}
-          loadMore={loadMore}
-          isLoadingMore={isLoadingMore}
-          isReloading={isReloading}
-          compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
-          starredUserIds={starredUserIds}
-          refreshStars={refreshStars}
-          onHide={onHide}
-          hiddenUserIds={recentlyHiddenIds}
-          onUndoHidden={onUndoHidden}
-        />
-      </>)}
+          )}
+          <ProfileGrid
+            profiles={displayProfiles}
+            loadMore={loadMore}
+            isLoadingMore={isLoadingMore}
+            isReloading={isReloading}
+            compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
+            starredUserIds={starredUserIds}
+            refreshStars={refreshStars}
+            onHide={onHide}
+            hiddenUserIds={recentlyHiddenIds}
+            onUndoHidden={onUndoHidden}
+          />
+        </>
+      )}
     </>
   )
 }

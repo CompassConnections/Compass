@@ -1,14 +1,14 @@
-import { XIcon } from '@heroicons/react/outline'
-import { Fragment, useRef, useEffect, useState } from 'react'
+import {XIcon} from '@heroicons/react/outline'
+import {Fragment, useEffect, useRef, useState} from 'react'
 import clsx from 'clsx'
-import { Menu, Transition } from '@headlessui/react'
-import { Avatar } from 'web/components/widgets/avatar'
-import { Row } from 'web/components/layout/row'
-import { UserLink } from 'web/components/widgets/user-link'
-import { Input } from './widgets/input'
-import { searchUsers, DisplayUser } from 'web/lib/supabase/users'
-import { Col } from 'web/components/layout/col'
-import { Button } from 'web/components/buttons/button'
+import {Menu, Transition} from '@headlessui/react'
+import {Avatar} from 'web/components/widgets/avatar'
+import {Row} from 'web/components/layout/row'
+import {UserLink} from 'web/components/widgets/user-link'
+import {Input} from './widgets/input'
+import {DisplayUser, searchUsers} from 'web/lib/supabase/users'
+import {Col} from 'web/components/layout/col'
+import {Button} from 'web/components/buttons/button'
 
 export function SelectUsers(props: {
   setSelectedUsers: (users: DisplayUser[]) => void
@@ -57,10 +57,10 @@ export function SelectUsers(props: {
           setFilteredUsers(
             results.filter((user) => {
               return (
-                !selectedUsers.some(({ name }) => name === user.name) &&
+                !selectedUsers.some(({name}) => name === user.name) &&
                 !ignoreUserIds.includes(user.id)
               )
-            })
+            }),
           )
         }
       })
@@ -90,7 +90,7 @@ export function SelectUsers(props: {
               as="div"
               className={clsx(
                 'relative inline-block w-full overflow-y-scroll text-right',
-                queryReady && 'h-56'
+                queryReady && 'h-56',
               )}
             >
               {({}) => (
@@ -111,13 +111,11 @@ export function SelectUsers(props: {
                     <div className="py-1">
                       {filteredUsers.map((user) => (
                         <Menu.Item key={user.id}>
-                          {({ active }) => (
+                          {({active}) => (
                             <button
                               className={clsx(
-                                active
-                                  ? 'bg-ink-100 text-ink-900'
-                                  : 'text-ink-700',
-                                'group flex w-full items-center px-4 py-2 text-sm'
+                                active ? 'bg-ink-100 text-ink-900' : 'text-ink-700',
+                                'group flex w-full items-center px-4 py-2 text-sm',
                               )}
                               onClick={() => {
                                 setQuery('')
@@ -132,9 +130,7 @@ export function SelectUsers(props: {
                               />
                               {user.name}
                               {showUserUsername && (
-                                <span className={'text-ink-500 ml-1'}>
-                                  @{user.username}
-                                </span>
+                                <span className={'text-ink-500 ml-1'}>@{user.username}</span>
                               )}
                             </button>
                           )}
@@ -150,23 +146,15 @@ export function SelectUsers(props: {
       )}
       {selectedUsers.length > 0 && (
         <>
-          {showSelectedUsersTitle && (
-            <div className={'mb-2'}>'Added members:'</div>
-          )}
+          {showSelectedUsersTitle && <div className={'mb-2'}>'Added members:'</div>}
           <Row className={clsx('mt-2 flex-wrap gap-2', selectedUsersClassName)}>
             {selectedUsers.map((user) => (
               <Row key={user.id} className={'items-center gap-1'}>
-                <Avatar
-                  username={user.username}
-                  avatarUrl={user.avatarUrl}
-                  size={'sm'}
-                />
+                <Avatar username={user.username} avatarUrl={user.avatarUrl} size={'sm'} />
                 <UserLink user={user} className="ml-1" />
                 <Button
                   onClick={() =>
-                    setSelectedUsers([
-                      ...selectedUsers.filter(({ id }) => id != user.id),
-                    ])
+                    setSelectedUsers([...selectedUsers.filter(({id}) => id != user.id)])
                   }
                   color={'gray-white'}
                   size={'xs'}

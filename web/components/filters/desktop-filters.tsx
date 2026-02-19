@@ -8,41 +8,41 @@ import {CustomizeableDropdown} from 'web/components/widgets/customizeable-dropdo
 import {Gender} from 'common/gender'
 import {AgeFilter, AgeFilterText} from './age-filter'
 import {GenderFilter, GenderFilterText} from './gender-filter'
-import {LocationFilter, LocationFilterProps, LocationFilterText,} from './location-filter'
-import {RelationshipFilter, RelationshipFilterText,} from './relationship-filter'
+import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
+import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
 import {Profile} from 'common/profiles/profile'
-import {FilterFields} from "common/filters";
-import {ShortBioToggle} from "web/components/filters/short-bio-toggle";
-import DropdownMenu from "web/components/comments/dropdown-menu";
-import {KidsLabel, useWantsKidsLabelsWithIcon} from "web/components/filters/wants-kids-filter";
-import {hasKidsLabels} from "common/has-kids";
-import {HasKidsLabel} from "web/components/filters/has-kids-filter";
-import {RomanticFilter, RomanticFilterText} from "web/components/filters/romantic-filter";
-import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from "react-icons/fa";
-import {DietFilter, DietFilterText} from "web/components/filters/diet-filter";
-import {PoliticalFilter, PoliticalFilterText} from "web/components/filters/political-filter";
-import {GiFruitBowl} from "react-icons/gi";
-import {RiScales3Line} from "react-icons/ri";
-import {EducationFilter, EducationFilterText} from "web/components/filters/education-filter";
-import {MbtiFilter, MbtiFilterText} from "web/components/filters/mbti-filter";
-import {BsPersonHeart, BsPersonVcard} from "react-icons/bs";
-import {LuCigarette, LuGraduationCap} from "react-icons/lu";
-import {DrinksFilter, DrinksFilterText} from "web/components/filters/drinks-filter";
+import {FilterFields} from 'common/filters'
+import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
+import {KidsLabel, useWantsKidsLabelsWithIcon} from 'web/components/filters/wants-kids-filter'
+import {hasKidsLabels} from 'common/has-kids'
+import {HasKidsLabel} from 'web/components/filters/has-kids-filter'
+import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
+import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from 'react-icons/fa'
+import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
+import {PoliticalFilter, PoliticalFilterText} from 'web/components/filters/political-filter'
+import {GiFruitBowl} from 'react-icons/gi'
+import {RiScales3Line} from 'react-icons/ri'
+import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
+import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
+import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
+import {LuCigarette, LuGraduationCap} from 'react-icons/lu'
+import {DrinksFilter, DrinksFilterText} from 'web/components/filters/drinks-filter'
 import {MdLanguage, MdLocalBar} from 'react-icons/md'
-import {SmokerFilter, SmokerFilterText} from "web/components/filters/smoker-filter"
-import {ReligionFilter, ReligionFilterText} from "web/components/filters/religion-filter";
-import {PiHandsPrayingBold} from "react-icons/pi";
-import {LanguageFilter, LanguageFilterText} from "web/components/filters/language-filter";
+import {SmokerFilter, SmokerFilterText} from 'web/components/filters/smoker-filter'
+import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
+import {PiHandsPrayingBold} from 'react-icons/pi'
+import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
 import {
   RelationshipStatusFilter,
-  RelationshipStatusFilterText
-} from "web/components/filters/relationship-status-filter";
-import {InterestFilter, InterestFilterText} from "web/components/filters/interest-filter";
-import {OptionTableKey} from "common/profiles/constants";
-import {useT} from "web/lib/locale";
-import {ResetFiltersButton} from "web/components/searches/button";
-import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from "web/components/filters/big5-filter";
+  RelationshipStatusFilterText,
+} from 'web/components/filters/relationship-status-filter'
+import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
+import {OptionTableKey} from 'common/profiles/constants'
+import {useT} from 'web/lib/locale'
+import {ResetFiltersButton} from 'web/components/searches/button'
+import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from 'web/components/filters/big5-filter'
 
 export function DesktopFilters(props: {
   filters: Partial<FilterFields>
@@ -72,10 +72,7 @@ export function DesktopFilters(props: {
 
   return (
     <>
-
-      <ResetFiltersButton
-        clearFilters={clearFilters}
-      />
+      <ResetFiltersButton clearFilters={clearFilters} />
 
       <MyMatchesToggle
         setYourFilters={setYourFilters}
@@ -85,11 +82,7 @@ export function DesktopFilters(props: {
       />
 
       {/* Short Bios */}
-      <ShortBioToggle
-        updateFilter={updateFilter}
-        filters={filters}
-        hidden={false}
-      />
+      <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
 
       {/* CONNECTION */}
       <CustomizeableDropdown
@@ -98,22 +91,16 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <FaUserGroup className="h-4 w-4"/>
+                <FaUserGroup className="h-4 w-4" />
                 <RelationshipFilterText
-                  relationship={
-                    filters.pref_relation_styles as
-                      | RelationshipType[]
-                      | undefined
-                  }
+                  relationship={filters.pref_relation_styles as RelationshipType[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
             }
           />
         )}
-        dropdownMenuContent={
-          <RelationshipFilter filters={filters} updateFilter={updateFilter}/>
-        }
+        dropdownMenuContent={<RelationshipFilter filters={filters} updateFilter={updateFilter} />}
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
@@ -125,13 +112,9 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <BsPersonHeart className="h-4 w-4"/>
+                <BsPersonHeart className="h-4 w-4" />
                 <RelationshipStatusFilterText
-                  options={
-                    filters.relationship_status as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.relationship_status as string[] | undefined}
                   defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
@@ -140,7 +123,7 @@ export function DesktopFilters(props: {
           />
         )}
         dropdownMenuContent={
-          <RelationshipStatusFilter filters={filters} updateFilter={updateFilter}/>
+          <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
@@ -162,10 +145,7 @@ export function DesktopFilters(props: {
           />
         )}
         dropdownMenuContent={
-          <LocationFilter
-            youProfile={youProfile}
-            locationFilterProps={locationFilterProps}
-          />
+          <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
         }
         popoverClassName="bg-canvas-50"
         menuWidth="w-80"
@@ -187,7 +167,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <AgeFilter filters={filters} updateFilter={updateFilter}/>
+            <AgeFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -209,7 +189,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col>
-            <GenderFilter filters={filters} updateFilter={updateFilter}/>
+            <GenderFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -236,127 +216,119 @@ export function DesktopFilters(props: {
       {/*  popoverClassName="bg-canvas-50"*/}
       {/*/>*/}
 
-      {includeRelationshipFilters && <>
-
-        {/* RELATIONSHIP STYLE */}
+      {includeRelationshipFilters && (
+        <>
+          {/* RELATIONSHIP STYLE */}
           <CustomizeableDropdown
-              buttonContent={(open) => (
-                <DropdownButton
-                  open={open}
-                  content={
-                    <Row className="items-center gap-1">
-                      <FaHeart className="h-4 w-4"/>
-                      <RomanticFilterText
-                        relationship={
-                          filters.pref_romantic_styles as
-                            | RomanticType[]
-                            | undefined
-                        }
-                        highlightedClass={open ? 'text-primary-500' : undefined}
-                      />
-                    </Row>
-                  }
-                />
-              )}
-              dropdownMenuContent={
-                <RomanticFilter filters={filters} updateFilter={updateFilter}/>
-              }
-              popoverClassName="bg-canvas-50"
-              menuWidth="w-50"
-          />
-
-        {/* WANTS KIDS */}
-          <DropdownMenu
-              items={[
-                {
-                  name: wantsKidsLabelsWithIcon.no_preference.name,
-                  icon: wantsKidsLabelsWithIcon.no_preference.icon,
-                  onClick: () => {
-                    updateFilter({
-                      wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
-                    })
-                  },
-                },
-                {
-                  name: wantsKidsLabelsWithIcon.wants_kids.name,
-                  icon: wantsKidsLabelsWithIcon.wants_kids.icon,
-                  onClick: () => {
-                    updateFilter({
-                      wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
-                    })
-                  },
-                },
-                {
-                  name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
-                  icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
-                  onClick: () => {
-                    updateFilter({
-                      wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
-                    })
-                  },
-                },
-              ]}
-              closeOnClick
-              buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-              buttonContent={(open: boolean) => (
-                <DropdownButton
-                  content={
-                    <KidsLabel
-                      strength={
-                        filters.wants_kids_strength ??
-                        wantsKidsLabelsWithIcon.no_preference.strength
-                      }
-                      highlightedClass={open ? 'text-primary-500' : ''}
+            buttonContent={(open) => (
+              <DropdownButton
+                open={open}
+                content={
+                  <Row className="items-center gap-1">
+                    <FaHeart className="h-4 w-4" />
+                    <RomanticFilterText
+                      relationship={filters.pref_romantic_styles as RomanticType[] | undefined}
+                      highlightedClass={open ? 'text-primary-500' : undefined}
                     />
-                  }
-                  open={open}
-                />
-              )}
-              menuItemsClass={'bg-canvas-50'}
-              menuWidth="w-48"
+                  </Row>
+                }
+              />
+            )}
+            dropdownMenuContent={<RomanticFilter filters={filters} updateFilter={updateFilter} />}
+            popoverClassName="bg-canvas-50"
+            menuWidth="w-50"
           />
 
-        {/* HAS KIDS */}
+          {/* WANTS KIDS */}
           <DropdownMenu
-              items={[
-                {
-                  name: t("profile.has_kids.no_preference", hasKidsLabels.no_preference.name),
-                  onClick: () => {
-                    updateFilter({has_kids: hasKidsLabels.no_preference.value})
-                  },
+            items={[
+              {
+                name: wantsKidsLabelsWithIcon.no_preference.name,
+                icon: wantsKidsLabelsWithIcon.no_preference.icon,
+                onClick: () => {
+                  updateFilter({
+                    wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
+                  })
                 },
-                {
-                  name: t("profile.has_kids.doesnt_have_kids", hasKidsLabels.doesnt_have_kids.name),
-                  onClick: () => {
-                    updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
-                  },
+              },
+              {
+                name: wantsKidsLabelsWithIcon.wants_kids.name,
+                icon: wantsKidsLabelsWithIcon.wants_kids.icon,
+                onClick: () => {
+                  updateFilter({
+                    wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
+                  })
                 },
-                {
-                  name: t("profile.has_kids.has_kids", hasKidsLabels.has_kids.name),
-                  onClick: () => {
-                    updateFilter({has_kids: hasKidsLabels.has_kids.value})
-                  },
+              },
+              {
+                name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
+                icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
+                onClick: () => {
+                  updateFilter({
+                    wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
+                  })
                 },
-              ]}
-              closeOnClick
-              buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-              buttonContent={(open: boolean) => (
-                <DropdownButton
-                  content={
-                    <HasKidsLabel
-                      has_kids={filters.has_kids ?? -1}
-                      highlightedClass={open ? 'text-primary-500' : ''}
-                    />
-                  }
-                  open={open}
-                />
-              )}
-              menuItemsClass="bg-canvas-50"
-              menuWidth="w-40"
+              },
+            ]}
+            closeOnClick
+            buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+            buttonContent={(open: boolean) => (
+              <DropdownButton
+                content={
+                  <KidsLabel
+                    strength={
+                      filters.wants_kids_strength ?? wantsKidsLabelsWithIcon.no_preference.strength
+                    }
+                    highlightedClass={open ? 'text-primary-500' : ''}
+                  />
+                }
+                open={open}
+              />
+            )}
+            menuItemsClass={'bg-canvas-50'}
+            menuWidth="w-48"
           />
 
-      </>
-      }
+          {/* HAS KIDS */}
+          <DropdownMenu
+            items={[
+              {
+                name: t('profile.has_kids.no_preference', hasKidsLabels.no_preference.name),
+                onClick: () => {
+                  updateFilter({has_kids: hasKidsLabels.no_preference.value})
+                },
+              },
+              {
+                name: t('profile.has_kids.doesnt_have_kids', hasKidsLabels.doesnt_have_kids.name),
+                onClick: () => {
+                  updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
+                },
+              },
+              {
+                name: t('profile.has_kids.has_kids', hasKidsLabels.has_kids.name),
+                onClick: () => {
+                  updateFilter({has_kids: hasKidsLabels.has_kids.value})
+                },
+              },
+            ]}
+            closeOnClick
+            buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+            buttonContent={(open: boolean) => (
+              <DropdownButton
+                content={
+                  <HasKidsLabel
+                    has_kids={filters.has_kids ?? -1}
+                    highlightedClass={open ? 'text-primary-500' : ''}
+                  />
+                }
+                open={open}
+              />
+            )}
+            menuItemsClass="bg-canvas-50"
+            menuWidth="w-40"
+          />
+        </>
+      )}
 
       {/* DIET */}
       <CustomizeableDropdown
@@ -365,22 +337,16 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <GiFruitBowl className="h-4 w-4"/>
+                <GiFruitBowl className="h-4 w-4" />
                 <DietFilterText
-                  options={
-                    filters.diet as
-                      | DietType[]
-                      | undefined
-                  }
+                  options={filters.diet as DietType[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
             }
           />
         )}
-        dropdownMenuContent={
-          <DietFilter filters={filters} updateFilter={updateFilter}/>
-        }
+        dropdownMenuContent={<DietFilter filters={filters} updateFilter={updateFilter} />}
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
@@ -392,7 +358,7 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <MdLocalBar className="h-4 w-4"/>
+                <MdLocalBar className="h-4 w-4" />
                 <DrinksFilterText
                   drinks_min={filters.drinks_min}
                   drinks_max={filters.drinks_max}
@@ -404,7 +370,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <DrinksFilter filters={filters} updateFilter={updateFilter}/>
+            <DrinksFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -418,7 +384,7 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <LuCigarette className="h-4 w-4"/>
+                <LuCigarette className="h-4 w-4" />
                 <SmokerFilterText
                   is_smoker={filters.is_smoker}
                   highlightedClass={open ? 'text-primary-500' : undefined}
@@ -429,7 +395,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <SmokerFilter filters={filters} updateFilter={updateFilter}/>
+            <SmokerFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -443,41 +409,31 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <MdLanguage className="h-4 w-4"/>
+                <MdLanguage className="h-4 w-4" />
                 <LanguageFilterText
-                  options={
-                    filters.languages as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.languages as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
             }
           />
         )}
-        dropdownMenuContent={
-          <LanguageFilter filters={filters} updateFilter={updateFilter}/>
-        }
+        dropdownMenuContent={<LanguageFilter filters={filters} updateFilter={updateFilter} />}
         popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
         menuWidth="w-50"
       />
 
       {/* Interests */}
       <CustomizeableDropdown
-        newBadgeClassName={"-top-3 -left-2"}
+        newBadgeClassName={'-top-3 -left-2'}
         buttonContent={(open) => (
           <DropdownButton
             open={open}
             content={
               <Row className="items-center gap-1">
-                <FaStar className="h-4 w-4"/>
+                <FaStar className="h-4 w-4" />
                 <InterestFilterText
-                  options={
-                    filters.interests as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.interests as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                   label={'interests'}
                 />
@@ -499,19 +455,15 @@ export function DesktopFilters(props: {
 
       {/* Causes */}
       <CustomizeableDropdown
-        newBadgeClassName={"-top-3 -left-2"}
+        newBadgeClassName={'-top-3 -left-2'}
         buttonContent={(open) => (
           <DropdownButton
             open={open}
             content={
               <Row className="items-center gap-1">
-                <FaHandsHelping className="h-4 w-4"/>
+                <FaHandsHelping className="h-4 w-4" />
                 <InterestFilterText
-                  options={
-                    filters.causes as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.causes as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                   label={'causes'}
                 />
@@ -533,19 +485,15 @@ export function DesktopFilters(props: {
 
       {/* Work */}
       <CustomizeableDropdown
-        newBadgeClassName={"-top-3 -left-2"}
+        newBadgeClassName={'-top-3 -left-2'}
         buttonContent={(open) => (
           <DropdownButton
             open={open}
             content={
               <Row className="items-center gap-1">
-                <FaBriefcase className="h-4 w-4"/>
+                <FaBriefcase className="h-4 w-4" />
                 <InterestFilterText
-                  options={
-                    filters.work as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.work as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                   label={'work'}
                 />
@@ -572,22 +520,16 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <RiScales3Line className="h-4 w-4"/>
+                <RiScales3Line className="h-4 w-4" />
                 <PoliticalFilterText
-                  options={
-                    filters.political_beliefs as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.political_beliefs as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
             }
           />
         )}
-        dropdownMenuContent={
-          <PoliticalFilter filters={filters} updateFilter={updateFilter}/>
-        }
+        dropdownMenuContent={<PoliticalFilter filters={filters} updateFilter={updateFilter} />}
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />
@@ -599,13 +541,9 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <PiHandsPrayingBold className="h-4 w-4"/>
+                <PiHandsPrayingBold className="h-4 w-4" />
                 <ReligionFilterText
-                  options={
-                    filters.religion as
-                      | string[]
-                      | undefined
-                  }
+                  options={filters.religion as string[] | undefined}
                   highlightedClass={open ? 'text-primary-500' : undefined}
                 />
               </Row>
@@ -640,9 +578,7 @@ export function DesktopFilters(props: {
             }
           />
         )}
-        dropdownMenuContent={
-          <MbtiFilter filters={filters} updateFilter={updateFilter} />
-        }
+        dropdownMenuContent={<MbtiFilter filters={filters} updateFilter={updateFilter} />}
         popoverClassName="bg-canvas-50"
         menuWidth="w-[400px]"
       />
@@ -654,10 +590,12 @@ export function DesktopFilters(props: {
             open={open}
             content={
               <Row className="items-center gap-1">
-                <BsPersonVcard className="h-4 w-4"/>
+                <BsPersonVcard className="h-4 w-4" />
                 <Big5FilterText
                   filters={filters}
-                  highlightedClass={open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined}
+                  highlightedClass={
+                    open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined
+                  }
                 />
               </Row>
             }
@@ -665,7 +603,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col className="mx-2 mb-4">
-            <Big5Filters filters={filters} updateFilter={updateFilter}/>
+            <Big5Filters filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -678,7 +616,7 @@ export function DesktopFilters(props: {
           <DropdownButton
             content={
               <Row className="items-center gap-1">
-                <LuGraduationCap className="h-4 w-4"/>
+                <LuGraduationCap className="h-4 w-4" />
                 <EducationFilterText
                   options={filters.education_levels as string[]}
                   highlightedClass={open ? 'text-primary-500' : undefined}
@@ -690,7 +628,7 @@ export function DesktopFilters(props: {
         )}
         dropdownMenuContent={
           <Col>
-            <EducationFilter filters={filters} updateFilter={updateFilter}/>
+            <EducationFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
         popoverClassName="bg-canvas-50"
@@ -700,17 +638,13 @@ export function DesktopFilters(props: {
   )
 }
 
-export function DropdownButton(props: { open: boolean; content: ReactNode }) {
+export function DropdownButton(props: {open: boolean; content: ReactNode}) {
   const {open, content} = props
   return (
     <Row className="hover:text-ink-700 items-center gap-0.5 transition-all">
       {content}
       <span className="text-ink-400">
-        {open ? (
-          <ChevronUpIcon className="h-4 w-4"/>
-        ) : (
-          <ChevronDownIcon className="h-4 w-4"/>
-        )}
+        {open ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
       </span>
     </Row>
   )

@@ -13,7 +13,7 @@ export const cancelRsvp: APIHandler<'cancel-rsvp'> = async (body, auth) => {
      FROM events_participants
      WHERE event_id = $1
        AND user_id = $2`,
-    [body.eventId, auth.uid]
+    [body.eventId, auth.uid],
   )
 
   if (!rsvp) {
@@ -26,8 +26,8 @@ export const cancelRsvp: APIHandler<'cancel-rsvp'> = async (body, auth) => {
       `DELETE
        FROM events_participants
        WHERE id = $1`,
-      [rsvp.id]
-    )
+      [rsvp.id],
+    ),
   )
 
   if (error) {

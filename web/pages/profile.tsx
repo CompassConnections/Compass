@@ -8,10 +8,10 @@ import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {PageBase} from "web/components/page-base";
-import {SEO} from "web/components/SEO";
+import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export default function ProfilePage() {
   const user = useUser()
@@ -35,15 +35,16 @@ export default function ProfilePage() {
     }
   }, [user, profile])
 
-  return user && profile ? <ProfilePageInner user={user} profile={profile}/> :
+  return user && profile ? (
+    <ProfilePageInner user={user} profile={profile} />
+  ) : (
     <PageBase trackPageView={'profile'}>
-      <Col className="items-center">
-        {showLoading ? <CompassLoadingIndicator/> : null}
-      </Col>
+      <Col className="items-center">{showLoading ? <CompassLoadingIndicator /> : null}</Col>
     </PageBase>
+  )
 }
 
-function ProfilePageInner(props: { user: User; profile: Profile }) {
+function ProfilePageInner(props: {user: User; profile: Profile}) {
   const {user} = props
   const t = useT()
 
@@ -52,7 +53,10 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
     user,
   })
 
-  const setProfileState = <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K] | undefined) => {
+  const setProfileState = <K extends keyof ProfileWithoutUser>(
+    key: K,
+    value: ProfileWithoutUser[K] | undefined,
+  ) => {
     setProfile((prevState) => ({...prevState, [key]: value}))
   }
 
@@ -62,8 +66,8 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
   return (
     <PageBase trackPageView={'profile'}>
       <SEO
-        title={t('profile.seo.title','Profile')}
-        description={t('profile.seo.description','Your Profile')}
+        title={t('profile.seo.title', 'Profile')}
+        description={t('profile.seo.description', 'Your Profile')}
         url={`/profile`}
       />
       <Col className="items-center">
@@ -77,12 +81,12 @@ function ProfilePageInner(props: { user: User; profile: Profile }) {
             setEditUsername={setUsername}
             setEditDisplayName={setDisplayName}
           />
-          <div className={'h-4'}/>
+          <div className={'h-4'} />
           <OptionalProfileUserForm
             profile={profile}
             user={user}
             setProfile={setProfileState}
-            buttonLabel={t('profile.save','Save')}
+            buttonLabel={t('profile.save', 'Save')}
             onSubmit={async () => {
               api('me/update', {
                 name: displayName === user.name ? undefined : displayName,

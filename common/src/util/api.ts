@@ -1,8 +1,8 @@
-import { API, APIParams, APIPath, APIResponse } from 'common/api/schema'
-import { APIError, getApiUrl } from 'common/api/utils'
-import { forEach } from 'lodash'
-import { removeUndefinedProps } from 'common/util/object'
-import { User } from 'firebase/auth'
+import {API, APIParams, APIPath, APIResponse} from 'common/api/schema'
+import {APIError, getApiUrl} from 'common/api/utils'
+import {forEach} from 'lodash'
+import {removeUndefinedProps} from 'common/util/object'
+import {User} from 'firebase/auth'
 
 export function unauthedApi<P extends APIPath>(path: P, params: APIParams<P>) {
   return typedAPICall(path, params, null)
@@ -11,7 +11,7 @@ export function unauthedApi<P extends APIPath>(path: P, params: APIParams<P>) {
 export const typedAPICall = <P extends APIPath>(
   path: P,
   params: APIParams<P>,
-  user: User | null
+  user: User | null,
 ) => {
   // parse any params that should part of the path (like market/:id)
   const newParams: any = {}
@@ -51,7 +51,7 @@ export async function baseApiCall(props: {
   params: any
   user: User | null
 }) {
-  const { url, method, params, user } = props
+  const {url, method, params, user} = props
 
   const actualUrl = method === 'POST' ? url : appendQuery(url, params)
   const headers: HeadersInit = {
@@ -64,12 +64,11 @@ export async function baseApiCall(props: {
   const req = new Request(actualUrl, {
     headers,
     method: method,
-    body:
-      params == null || method === 'GET' ? undefined : JSON.stringify(params),
+    body: params == null || method === 'GET' ? undefined : JSON.stringify(params),
   })
   // console.log('Request', req)
   return fetch(req).then(async (resp) => {
-    const json = (await resp.json()) as { [k: string]: any }
+    const json = (await resp.json()) as {[k: string]: any}
     if (!resp.ok) {
       throw new APIError(resp.status as any, json?.message, json?.details)
     }

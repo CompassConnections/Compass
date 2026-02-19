@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | {[key: string]: Json | undefined} | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -1533,29 +1527,29 @@ export type Database = {
     }
     Functions: {
       calculate_earth_distance_km: {
-        Args: { lat1: number; lat2: number; lon1: number; lon2: number }
+        Args: {lat1: number; lat2: number; lon1: number; lon2: number}
         Returns: number
       }
       can_access_private_messages: {
-        Args: { channel_id: number; user_id: string }
+        Args: {channel_id: number; user_id: string}
         Returns: boolean
       }
-      firebase_uid: { Args: never; Returns: string }
-      get_average_rating: { Args: { user_id: string }; Returns: number }
+      firebase_uid: {Args: never; Returns: string}
+      get_average_rating: {Args: {user_id: string}; Returns: number}
       get_compatibility_questions_with_answer_count: {
         Args: never
         Returns: Record<string, unknown>[]
       }
       get_love_question_answers_and_lovers: {
-        Args: { p_question_id: number }
+        Args: {p_question_id: number}
         Returns: Record<string, unknown>[]
       }
       get_love_question_answers_and_profiles: {
-        Args: { p_question_id: number }
+        Args: {p_question_id: number}
         Returns: Record<string, unknown>[]
       }
       get_votes_with_results: {
-        Args: { order_by?: string }
+        Args: {order_by?: string}
         Returns: {
           created_time: string
           creator_id: string
@@ -1570,22 +1564,20 @@ export type Database = {
           votes_for: number
         }[]
       }
-      is_admin:
-        | { Args: never; Returns: boolean }
-        | { Args: { user_id: string }; Returns: boolean }
+      is_admin: {Args: never; Returns: boolean} | {Args: {user_id: string}; Returns: boolean}
       millis_interval: {
-        Args: { end_millis: number; start_millis: number }
+        Args: {end_millis: number; start_millis: number}
         Returns: unknown
       }
-      millis_to_ts: { Args: { millis: number }; Returns: string }
-      random_alphanumeric: { Args: { length: number }; Returns: string }
+      millis_to_ts: {Args: {millis: number}; Returns: string}
+      random_alphanumeric: {Args: {length: number}; Returns: string}
       rebuild_profile_search: {
-        Args: { profile_id_param: number }
+        Args: {profile_id_param: number}
         Returns: undefined
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { '': string }; Returns: string[] }
-      to_jsonb: { Args: { '': Json }; Returns: Json }
+      show_limit: {Args: never; Returns: number}
+      show_trgm: {Args: {'': string}; Returns: string[]}
+      to_jsonb: {Args: {'': Json}; Returns: Json}
     }
     Enums: {
       lover_visibility: 'public' | 'member'
@@ -1603,7 +1595,7 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    | { schema: keyof DatabaseWithoutInternals },
+    | {schema: keyof DatabaseWithoutInternals},
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1619,10 +1611,8 @@ export type Tables<
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1632,7 +1622,7 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof DatabaseWithoutInternals },
+    | {schema: keyof DatabaseWithoutInternals},
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1657,7 +1647,7 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof DatabaseWithoutInternals },
+    | {schema: keyof DatabaseWithoutInternals},
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1682,7 +1672,7 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema['Enums']
-    | { schema: keyof DatabaseWithoutInternals },
+    | {schema: keyof DatabaseWithoutInternals},
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -1699,7 +1689,7 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema['CompositeTypes']
-    | { schema: keyof DatabaseWithoutInternals },
+    | {schema: keyof DatabaseWithoutInternals},
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }

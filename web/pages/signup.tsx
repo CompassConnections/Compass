@@ -1,10 +1,10 @@
 import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
-import {initialRequiredState, RequiredProfileUserForm,} from 'web/components/required-profile-form'
+import {initialRequiredState, RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {useUser} from 'web/hooks/use-user'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {CACHED_REFERRAL_USERNAME_KEY,} from 'web/lib/firebase/users'
+import {CACHED_REFERRAL_USERNAME_KEY} from 'web/lib/firebase/users'
 import {api} from 'web/lib/api'
 import {useRouter} from 'next/router'
 import {useTracking} from 'web/hooks/use-tracking'
@@ -14,7 +14,7 @@ import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {useLocale} from 'web/lib/locale'
-import {Toaster} from "react-hot-toast";
+import {Toaster} from 'react-hot-toast'
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
@@ -95,17 +95,14 @@ export default function SignupPage() {
 
   if (user === null && !holdLoading) {
     console.log('user === null && !holdLoading')
-    return <CompassLoadingIndicator/>
+    return <CompassLoadingIndicator />
   }
 
   return (
     <Col className="items-center">
-      <Toaster
-        position={'top-center'}
-        containerClassName="!bottom-[70px]"
-      />
+      <Toaster position={'top-center'} containerClassName="!bottom-[70px]" />
       {!user ? (
-        <CompassLoadingIndicator/>
+        <CompassLoadingIndicator />
       ) : (
         <Col className={'w-full max-w-4xl px-6 py-4'}>
           {step === 0 ? (
@@ -120,17 +117,17 @@ export default function SignupPage() {
                   return
                 }
                 const referredByUsername = safeLocalStorage
-                  ? safeLocalStorage.getItem(CACHED_REFERRAL_USERNAME_KEY) ??
-                  undefined
+                  ? (safeLocalStorage.getItem(CACHED_REFERRAL_USERNAME_KEY) ?? undefined)
                   : undefined
 
                 setIsSubmitting(true)
                 console.debug('profileForm', profileForm)
-                const profile = await api('create-profile',
+                const profile = await api(
+                  'create-profile',
                   removeNullOrUndefinedProps({
                     ...profileForm,
                     referred_by_username: referredByUsername,
-                  }) as any
+                  }) as any,
                 ).catch((e: unknown) => {
                   console.error(e)
                   return null
@@ -155,7 +152,7 @@ export default function SignupPage() {
               />
             </Col>
           ) : (
-            <CompassLoadingIndicator/>
+            <CompassLoadingIndicator />
           )}
         </Col>
       )}

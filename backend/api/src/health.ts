@@ -1,4 +1,4 @@
-import { APIHandler } from './helpers/endpoint'
+import {APIHandler} from './helpers/endpoint'
 import {git} from './../metadata.json'
 import {version as pkgVersion} from './../package.json'
 

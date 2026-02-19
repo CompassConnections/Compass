@@ -4,7 +4,7 @@ import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {useHiddenProfiles} from "web/hooks/use-hidden-profiles"
+import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 
 export type HideProfileButtonProps = {
   hiddenUserId: string
@@ -46,7 +46,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
 
     // Optimistically update hidden state
     setOptimisticHidden(!hidden)
-    
+
     try {
       if (hidden) {
         await api('unhide-profile', {hiddenUserId})
@@ -66,21 +66,32 @@ export function HideProfileButton(props: HideProfileButtonProps) {
 
   return (
     <Tooltip
-      text={hidden ? t('profile_grid.unhide_profile', "Show again in search results") : (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results"))}
-      noTap>
+      text={
+        hidden
+          ? t('profile_grid.unhide_profile', 'Show again in search results')
+          : (tooltip ?? t('profile_grid.hide_profile', "Don't show again in search results"))
+      }
+      noTap
+    >
       <button
         className={clsx(
           'rounded-full p-1 hover:bg-canvas-200 shadow focus:outline-none',
-          className
+          className,
         )}
         disabled={submitting}
         onClick={onClick}
         aria-label={
-          ariaLabel ?? (hidden ? t('profile_grid.unhide_profile', 'Unhide this profile') : t('profile_grid.hide_profile', 'Hide this profile'))
+          ariaLabel ??
+          (hidden
+            ? t('profile_grid.unhide_profile', 'Unhide this profile')
+            : t('profile_grid.hide_profile', 'Hide this profile'))
         }
       >
-        {(hidden || eyeOff) ? <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)}/> :
-          <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)}/>}
+        {hidden || eyeOff ? (
+          <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
+        ) : (
+          <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
+        )}
       </button>
     </Tooltip>
   )

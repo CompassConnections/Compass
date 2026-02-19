@@ -3,10 +3,10 @@ import {MdNoStroller, MdOutlineStroller, MdStroller} from 'react-icons/md'
 import {Row} from 'web/components/layout/row'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import clsx from 'clsx'
-import {FilterFields} from "common/filters";
+import {FilterFields} from 'common/filters'
 
-import {generateChoicesMap, KidLabel, wantsKidsLabels} from "common/wants-kids"
-import {useT} from "web/lib/locale";
+import {generateChoicesMap, KidLabel, wantsKidsLabels} from 'common/wants-kids'
+import {useT} from 'web/lib/locale'
 
 interface KidLabelWithIcon extends KidLabel {
   icon: ReactNode
@@ -23,28 +23,27 @@ export const useWantsKidsLabelsWithIcon = () => {
       ...wantsKidsLabels.no_preference,
       name: t('filter.wants_kids.any_preference', 'Any preference'),
       shortName: t('filter.wants_kids.either', 'Either'),
-      icon: <MdOutlineStroller className="h-4 w-4"/>,
+      icon: <MdOutlineStroller className="h-4 w-4" />,
     },
     wants_kids: {
       ...wantsKidsLabels.wants_kids,
       name: t('filter.wants_kids.wants_kids', 'Wants kids'),
       shortName: t('common.yes', 'Yes'),
-      icon: <MdStroller className="h-4 w-4"/>,
+      icon: <MdStroller className="h-4 w-4" />,
     },
     doesnt_want_kids: {
       ...wantsKidsLabels.doesnt_want_kids,
       name: t('filter.wants_kids.doesnt_want_kids', "Doesn't want kids"),
       shortName: t('common.no', 'No'),
-      icon: <MdNoStroller className="h-4 w-4"/>,
+      icon: <MdNoStroller className="h-4 w-4" />,
     },
   } as KidsLabelsMapWithIcon
 }
 
-
-export function WantsKidsIcon(props: { strength: number; className?: string }) {
+export function WantsKidsIcon(props: {strength: number; className?: string}) {
   const {strength, className} = props
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
-  
+
   return (
     <span className={className}>
       {strength == wantsKidsLabelsWithIcon.no_preference.strength
@@ -56,21 +55,17 @@ export function WantsKidsIcon(props: { strength: number; className?: string }) {
   )
 }
 
-export function KidsLabel(props: {
-  strength: number
-  highlightedClass?: string
-  mobile?: boolean
-}) {
+export function KidsLabel(props: {strength: number; highlightedClass?: string; mobile?: boolean}) {
   const {strength, highlightedClass} = props
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
     <Row className="items-center gap-0.5">
-      <WantsKidsIcon strength={strength} className={clsx('')}/>
+      <WantsKidsIcon strength={strength} className={clsx('')} />
       <span
         className={clsx(
           strength != wantsKidsLabelsWithIcon.no_preference.strength && 'font-semibold',
-          highlightedClass
+          highlightedClass,
         )}
       >
         {strength == wantsKidsLabelsWithIcon.no_preference.strength

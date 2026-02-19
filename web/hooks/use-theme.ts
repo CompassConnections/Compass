@@ -1,16 +1,13 @@
 'use client'
 import {useEffect} from 'react'
 import {usePersistentLocalState} from './use-persistent-local-state'
-import {Capacitor} from "@capacitor/core";
-import {StatusBar, Style} from "@capacitor/status-bar";
+import {Capacitor} from '@capacitor/core'
+import {StatusBar, Style} from '@capacitor/status-bar'
 
 type theme_option = 'light' | 'dark' | 'auto'
 
 export const useTheme = () => {
-  const [themeState, setThemeState] = usePersistentLocalState<theme_option>(
-    'auto',
-    'theme'
-  )
+  const [themeState, setThemeState] = usePersistentLocalState<theme_option>('auto', 'theme')
 
   const setTheme = (theme: theme_option) => {
     setThemeState(theme)
@@ -55,9 +52,11 @@ function getTheme() {
 }
 
 function isDark(theme: theme_option | null) {
-  return theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  return (
+    theme === 'dark' ||
+    (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  )
 }
-
 
 export const updateStatusBar = async () => {
   // Update status bar on native platforms
@@ -66,14 +65,14 @@ export const updateStatusBar = async () => {
     const theme = getTheme()
     if (isDark(theme)) {
       // Dark theme: light text on dark background
-      await StatusBar.setStyle({style: Style.Dark});
-      await StatusBar.setBackgroundColor({color: '#141414'}); // dark bg color (canvas-0)
+      await StatusBar.setStyle({style: Style.Dark})
+      await StatusBar.setBackgroundColor({color: '#141414'}) // dark bg color (canvas-0)
     } else {
       // Light theme: dark text on light background
-      await StatusBar.setStyle({style: Style.Light});
-      await StatusBar.setBackgroundColor({color: '#ffffff'}); // light bg color (canvas-0)
+      await StatusBar.setStyle({style: Style.Light})
+      await StatusBar.setBackgroundColor({color: '#ffffff'}) // light bg color (canvas-0)
     }
   } catch (error) {
-    console.error('Failed to update status bar:', error);
+    console.error('Failed to update status bar:', error)
   }
 }

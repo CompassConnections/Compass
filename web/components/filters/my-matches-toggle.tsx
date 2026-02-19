@@ -1,7 +1,7 @@
 import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 export function MyMatchesToggle(props: {
   setYourFilters: (checked: boolean) => void

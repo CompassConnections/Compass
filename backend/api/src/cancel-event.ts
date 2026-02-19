@@ -15,7 +15,7 @@ export const cancelEvent: APIHandler<'cancel-event'> = async (body, auth) => {
     `SELECT id, creator_id, status
      FROM events
      WHERE id = $1`,
-    [body.eventId]
+    [body.eventId],
   )
 
   if (!event) {
@@ -35,7 +35,7 @@ export const cancelEvent: APIHandler<'cancel-event'> = async (body, auth) => {
     update(pg, 'events', 'id', {
       status: 'cancelled',
       id: body.eventId,
-    })
+    }),
   )
 
   if (error) {

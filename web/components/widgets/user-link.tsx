@@ -9,8 +9,7 @@ import {Avatar} from './avatar'
 import {DAY_MS} from 'common/util/time'
 import {linkClass} from './site-link'
 
-export const isFresh = (createdTime: number) =>
-  createdTime > Date.now() - DAY_MS * 14
+export const isFresh = (createdTime: number) => createdTime > Date.now() - DAY_MS * 14
 
 export function shortenName(name: string) {
   const firstName = name.split(' ')[0]
@@ -25,7 +24,7 @@ export function shortenName(name: string) {
 }
 
 export function UserAvatarAndBadge(props: {
-  user: { id: string; name: string; username: string; avatarUrl?: string }
+  user: {id: string; name: string; username: string; avatarUrl?: string}
   noLink?: boolean
   className?: string
 }) {
@@ -34,19 +33,14 @@ export function UserAvatarAndBadge(props: {
 
   return (
     <Row className={clsx('items-center gap-2', className)}>
-      <Avatar
-        avatarUrl={avatarUrl}
-        username={username}
-        size={'sm'}
-        noLink={noLink}
-      />
-      <UserLink user={user} noLink={noLink}/>
+      <Avatar avatarUrl={avatarUrl} username={username} size={'sm'} noLink={noLink} />
+      <UserLink user={user} noLink={noLink} />
     </Row>
   )
 }
 
 export function UserLink(props: {
-  user: { id: string; name: string; username: string }
+  user: {id: string; name: string; username: string}
   className?: string
   short?: boolean
   noLink?: boolean
@@ -66,28 +60,18 @@ export function UserLink(props: {
   const children = (
     <>
       <span className="max-w-[200px] truncate">{shortName}</span>
-      {!hideBadge && (
-        <UserBadge userId={id} username={username} fresh={fresh}/>
-      )}
+      {!hideBadge && <UserBadge userId={id} username={username} fresh={fresh} />}
     </>
   )
   if (noLink) {
     return (
-      <div
-        className={clsx('inline-flex flex-row items-center gap-1', className)}
-      >
-        {children}
-      </div>
+      <div className={clsx('inline-flex flex-row items-center gap-1', className)}>{children}</div>
     )
   }
   return (
     <Link
       href={`/${username}`}
-      className={clsx(
-        linkClass,
-        'inline-flex flex-row items-center gap-1',
-        className
-      )}
+      className={clsx(linkClass, 'inline-flex flex-row items-center gap-1', className)}
       onClick={(e) => e.stopPropagation()}
     >
       {children}
@@ -105,33 +89,25 @@ export function UserLink(props: {
 
 export function BannedBadge() {
   return (
-    <Tooltip
-      text="Can't create comments, messages, or questions"
-      placement="bottom"
-    >
-      <span
-        className="ml-1.5 rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100">
+    <Tooltip text="Can't create comments, messages, or questions" placement="bottom">
+      <span className="ml-1.5 rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100">
         Banned
       </span>
     </Tooltip>
   )
 }
 
-export function UserBadge(props: {
-  userId: string
-  username: string
-  fresh?: boolean
-}) {
+export function UserBadge(props: {userId: string; username: string; fresh?: boolean}) {
   const {username, fresh} = props
   const badges = []
 
   if (MOD_USERNAMES.includes(username)) {
-    badges.push(<ModBadge key="mod"/>)
+    badges.push(<ModBadge key="mod" />)
   } else if (VERIFIED_USERNAMES.includes(username)) {
-    badges.push(<VerifiedBadge key="check"/>)
+    badges.push(<VerifiedBadge key="check" />)
   }
   if (fresh) {
-    badges.push(<FreshBadge key="fresh"/>)
+    badges.push(<FreshBadge key="fresh" />)
   }
   return <>{badges}</>
 }
@@ -152,7 +128,7 @@ function ModBadge() {
 function VerifiedBadge() {
   return (
     <Tooltip text="Verified" placement="right">
-      <BadgeCheckIcon className="text-primary-700 h-4 w-4" aria-hidden/>
+      <BadgeCheckIcon className="text-primary-700 h-4 w-4" aria-hidden />
     </Tooltip>
   )
 }
@@ -161,7 +137,7 @@ function VerifiedBadge() {
 function FreshBadge() {
   return (
     <Tooltip text="I'm new here!" placement="right">
-      <SparklesIcon className="h-4 w-4 text-green-500" aria-hidden="true"/>
+      <SparklesIcon className="h-4 w-4 text-green-500" aria-hidden="true" />
     </Tooltip>
   )
 }

@@ -28,7 +28,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
 
   useApiSubscription({
     topics: [`user/${userId ?? '_'}`],
-    onBroadcast: ({ data }) => {
+    onBroadcast: ({data}) => {
       console.debug('User broadcast', {data})
       setUser((user) => {
         if (!user || !data.user) {
@@ -47,9 +47,10 @@ export const useWebsocketUser = (userId: string | undefined) => {
     if (!isPageVisible) return
 
     if (userId) {
-      getFullUserById(userId).then((result) => {
-        setUser(result)
-      })
+      getFullUserById(userId)
+        .then((result) => {
+          setUser(result)
+        })
         .catch(() => {
           console.log('Failed to fetch user')
           setUser(null)
@@ -63,9 +64,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
 }
 
 export const useWebsocketPrivateUser = (userId: string | undefined) => {
-  const [privateUser, setPrivateUser] = useState<
-    PrivateUser | null | undefined
-  >()
+  const [privateUser, setPrivateUser] = useState<PrivateUser | null | undefined>()
 
   useApiSubscription({
     topics: [`private-user/${userId ?? '_'}`],
@@ -97,4 +96,3 @@ export const useWebsocketPrivateUser = (userId: string | undefined) => {
 //     privateUser?.blockedByUserIds.includes(otherUserId)
 //   )
 // }
-

@@ -1,10 +1,10 @@
-import React from 'react';
-import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
+import React from 'react'
+import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
 import {type User} from 'common/user'
 import {type ProfileRow} from 'common/profiles/profile'
-import {jamesProfile, jamesUser, mockUser,} from './functions/mock'
+import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
-import {button, container, content, Footer, imageContainer, main, paragraph} from "email/utils";
+import {button, container, content, Footer, imageContainer, main, paragraph} from 'email/utils'
 
 interface NewMessageEmailProps {
   fromUser: User
@@ -16,13 +16,13 @@ interface NewMessageEmailProps {
 }
 
 export const NewMessageEmail = ({
-                                  fromUser,
-                                  // fromUserProfile,
-                                  toUser,
-                                  channelId,
-                                  unsubscribeUrl,
-                                  email,
-                                }: NewMessageEmailProps) => {
+  fromUser,
+  // fromUserProfile,
+  toUser,
+  channelId,
+  unsubscribeUrl,
+  email,
+}: NewMessageEmailProps) => {
   const name = toUser.name.split(' ')[0]
   const creatorName = fromUser.name
   const messagesUrl = `https://${DOMAIN}/messages/${channelId}`
@@ -30,7 +30,7 @@ export const NewMessageEmail = ({
 
   return (
     <Html>
-      <Head/>
+      <Head />
       <Preview>New message from {creatorName}</Preview>
       <Body style={main}>
         <Container style={container}>
@@ -65,7 +65,7 @@ export const NewMessageEmail = ({
             </Section>
           </Section>
 
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name}/>
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
         </Container>
       </Body>
     </Html>
@@ -80,6 +80,5 @@ NewMessageEmail.PreviewProps = {
   email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMessageEmailProps
-
 
 export default NewMessageEmail

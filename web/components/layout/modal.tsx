@@ -5,8 +5,7 @@ import {Fragment, ReactNode, useEffect, useRef} from 'react'
 
 export const MODAL_CLASS =
   'items-center gap-4 rounded-md bg-canvas-0 sm:px-8 px-4 pt-6 pb-2 text-ink-1000 h-[calc(100dvh-var(--hloss)-120px)] sm:h-[calc(95dvh-var(--hloss)-120px)] '
-export const SCROLLABLE_MODAL_CLASS =
-  '!overflow-auto'
+export const SCROLLABLE_MODAL_CLASS = '!overflow-auto'
 
 // From https://tailwindui.com/components/application-ui/overlays/modals
 export function Modal(props: {
@@ -18,15 +17,7 @@ export function Modal(props: {
   className?: string
   onClose?: () => void
 }) {
-  const {
-    children,
-    position = 'center',
-    open,
-    setOpen,
-    size = 'md',
-    className,
-    onClose,
-  } = props
+  const {children, position = 'center', open, setOpen, size = 'md', className, onClose} = props
 
   const sizeClass = {
     sm: 'sm:max-w-sm',
@@ -81,19 +72,14 @@ export function Modal(props: {
           leaveTo="opacity-0 sm:scale-95"
         >
           <div className="fixed inset-0 overflow-y-auto pt-20 sm:p-0">
-            <div
-              className={clsx(
-                'flex min-h-full items-end justify-center',
-                positionClass
-              )}
-            >
+            <div className={clsx('flex min-h-full items-end justify-center', positionClass)}>
               <div
                 className={clsx(
                   'relative w-full transform transition-all',
                   'lg:mx-6 lg:my-8 mb-[var(--bnh)]',
                   'max-h-[90vh] min-h-[60vh]', // 👈 add this
                   sizeClass,
-                  className
+                  className,
                 )}
               >
                 <div className="sr-only" tabIndex={0}>
@@ -105,8 +91,7 @@ export function Modal(props: {
                     onClick={() => setOpen(false)}
                     className={clsx(
                       'text-ink-700 bottom-50 hover:text-primary-400 focus:text-primary-400 absolute -top-4 right-4 -translate-y-full cursor-pointer outline-none sm:right-0',
-                      position === 'top' &&
-                        'sm:-bottom-4 sm:top-auto sm:translate-y-full'
+                      position === 'top' && 'sm:-bottom-4 sm:top-auto sm:translate-y-full',
                     )}
                   >
                     <XIcon className="h-8 w-8" />

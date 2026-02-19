@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import {RangeSlider} from 'web/components/widgets/slider'
-import {FilterFields} from "common/filters"
+import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
 
 export const PREF_AGE_MIN = 18
@@ -8,7 +8,7 @@ export const PREF_AGE_MAX = 100
 
 export function getNoMinMaxAge(
   pref_age_min: number | null | undefined,
-  pref_age_max: number | null | undefined
+  pref_age_max: number | null | undefined,
 ) {
   const noMinAge = !pref_age_min || pref_age_min <= PREF_AGE_MIN
   const noMaxAge = !pref_age_max || pref_age_max >= PREF_AGE_MAX
@@ -20,14 +20,16 @@ export function AgeFilterText(props: {
   pref_age_max: number | null | undefined
   highlightedClass?: string
 }) {
-  const { pref_age_min, pref_age_max, highlightedClass } = props
+  const {pref_age_min, pref_age_max, highlightedClass} = props
   const [noMinAge, noMaxAge] = getNoMinMaxAge(pref_age_min, pref_age_max)
 
   const t = useT()
   if (noMinAge && noMaxAge) {
     return (
       <span>
-        <span className={clsx('text-semibold', highlightedClass)}>{t('filter.age.any', 'Any')}</span>{' '}
+        <span className={clsx('text-semibold', highlightedClass)}>
+          {t('filter.age.any', 'Any')}
+        </span>{' '}
         <span className="">{t('filter.age.age', 'age')}</span>
       </span>
     )
@@ -66,13 +68,13 @@ export function AgeFilterText(props: {
   )
 }
 
-const FILTER_MAX = 60;
+const FILTER_MAX = 60
 
 export function AgeFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
-  const { filters, updateFilter } = props
+  const {filters, updateFilter} = props
   return (
     <RangeSlider
       lowValue={filters.pref_age_min ?? PREF_AGE_MIN}
@@ -86,7 +88,7 @@ export function AgeFilter(props: {
       min={PREF_AGE_MIN}
       max={FILTER_MAX}
       marks={[
-        { value: 0, label: `${PREF_AGE_MIN}` },
+        {value: 0, label: `${PREF_AGE_MIN}`},
         {
           value: ((30 - PREF_AGE_MIN) / (FILTER_MAX - PREF_AGE_MIN)) * 100,
           label: `30`,
@@ -99,7 +101,7 @@ export function AgeFilter(props: {
           value: ((50 - PREF_AGE_MIN) / (FILTER_MAX - PREF_AGE_MIN)) * 100,
           label: `50`,
         },
-        { value: 100, label: `${FILTER_MAX}+` },
+        {value: 100, label: `${FILTER_MAX}+`},
       ]}
     />
   )

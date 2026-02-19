@@ -12,7 +12,7 @@ const colors = {
   indigo: ['bg-primary-300', 'focus:outline-primary-500/30 bg-primary-500'],
   // light: ['primary-200', 'primary-300']
 } as const
-export type Mark = { value: number; label: string }
+export type Mark = {value: number; label: string}
 
 export function Slider(props: {
   amount: number
@@ -46,7 +46,7 @@ export function Slider(props: {
       className={clsx(
         className,
         'relative flex touch-none select-none items-center',
-        marks ? 'h-[42px]' : 'h-5'
+        marks ? 'h-[42px]' : 'h-5',
       )}
       value={[amount]}
       onValueChange={([val]) => onChange(val)}
@@ -67,7 +67,7 @@ export function Slider(props: {
               <div
                 className={clsx(
                   amount >= value ? trackClasses : 'bg-ink-400',
-                  'h-2 w-2 rounded-full'
+                  'h-2 w-2 rounded-full',
                 )}
               />
               <span className="text-ink-400 absolute left-1/2 top-4 -translate-x-1/2 text-xs">
@@ -77,7 +77,7 @@ export function Slider(props: {
           ))}
         </div>
       </Track>
-      <Thumb className={thumbClasses}/>
+      <Thumb className={thumbClasses} />
     </RxSlider.Root>
   )
 }
@@ -127,10 +127,7 @@ export function RangeSlider(props: {
 
   return (
     <RxSlider.Root
-      className={clsx(
-        className,
-        'relative flex h-7 touch-none select-none items-center'
-      )}
+      className={clsx(className, 'relative flex h-7 touch-none select-none items-center')}
       value={dragValues}
       step={step ?? 1}
       onValueChange={(vals: number[]) => setDragValues([vals[0], vals[1]])} // update continuously for UI feedback
@@ -146,36 +143,34 @@ export function RangeSlider(props: {
               style={{left: `${value}%`}}
               key={value}
             >
-          <span className="text-ink-400 absolute left-1/2 top-4 -translate-x-1/2 text-xs">
-            {label}
-          </span>
+              <span className="text-ink-400 absolute left-1/2 top-4 -translate-x-1/2 text-xs">
+                {label}
+              </span>
             </div>
           ))}
         </div>
       </Track>
-      <Thumb className={thumbClasses}/>
-      <Thumb className={thumbClasses}/>
+      <Thumb className={thumbClasses} />
+      <Thumb className={thumbClasses} />
     </RxSlider.Root>
   )
 }
 
-const Track = (props: { className: string; children?: ReactNode }) => {
+const Track = (props: {className: string; children?: ReactNode}) => {
   const {className, children} = props
   return (
     <RxSlider.Track className="bg-ink-300 relative h-1 grow rounded-full">
       {children}
-      <RxSlider.Range
-        className={clsx(className, 'absolute h-full rounded-full')}
-      />
+      <RxSlider.Range className={clsx(className, 'absolute h-full rounded-full')} />
     </RxSlider.Track>
   )
 }
 
-const Thumb = (props: { className: string }) => (
+const Thumb = (props: {className: string}) => (
   <RxSlider.Thumb
     className={clsx(
       props.className,
-      'block h-5 w-5 cursor-col-resize rounded-full outline outline-4 outline-transparent transition-colors'
+      'block h-5 w-5 cursor-col-resize rounded-full outline outline-4 outline-transparent transition-colors',
     )}
   />
 )

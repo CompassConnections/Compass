@@ -2,13 +2,12 @@ name: CD
 
 # Must select "Read and write permissions" in GitHub → Repo → Settings → Actions → General → Workflow permissions
 
-
 on:
   push:
     branches: [ main, master ]
     paths:
-      - "package.json"
-      - ".github/workflows/cd.yml"
+      - 'package.json'
+      - '.github/workflows/cd.yml'
 
 jobs:
   release:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
         with:
-          fetch-depth: 0  # To fetch all history for tags
+          fetch-depth: 0 # To fetch all history for tags
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

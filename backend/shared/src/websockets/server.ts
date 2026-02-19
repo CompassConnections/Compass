@@ -1,16 +1,16 @@
-import { Server as HttpServer } from 'node:http'
-import { Server as WebSocketServer, RawData, WebSocket } from 'ws'
-import { isError } from 'lodash'
-import { log, metrics } from 'shared/utils'
-import { Switchboard } from './switchboard'
+import {Server as HttpServer} from 'node:http'
+import {RawData, Server as WebSocketServer, WebSocket} from 'ws'
+import {isError} from 'lodash'
+import {log, metrics} from 'shared/utils'
+import {Switchboard} from './switchboard'
 import {
   BroadcastPayload,
+  CLIENT_MESSAGE_SCHEMA,
   ClientMessage,
   ServerMessage,
-  CLIENT_MESSAGE_SCHEMA,
 } from 'common/api/websockets'
-import {IS_LOCAL} from "common/hosting/constants";
-import {getWebsocketUrl} from "common/api/utils";
+import {IS_LOCAL} from 'common/hosting/constants'
+import {getWebsocketUrl} from 'common/api/utils'
 
 // Extend the type definition locally
 interface HeartbeatWebSocket extends WebSocket {
@@ -60,7 +60,7 @@ function parseMessage(data: RawData): ClientMessage {
 function processMessage(ws: HeartbeatWebSocket, data: RawData): ServerMessage<'ack'> {
   try {
     const msg = parseMessage(data)
-    const { type, txid } = msg
+    const {type, txid} = msg
     try {
       switch (type) {
         case 'identify': {
@@ -84,12 +84,12 @@ function processMessage(ws: HeartbeatWebSocket, data: RawData): ServerMessage<'a
       }
     } catch (err) {
       log.error(err)
-      return { type: 'ack', txid, success: false, error: serializeError(err) }
+      return {type: 'ack', txid, success: false, error: serializeError(err)}
     }
-    return { type: 'ack', txid, success: true }
+    return {type: 'ack', txid, success: true}
   } catch (err) {
     log.error(err)
-    return { type: 'ack', success: false, error: serializeError(err) }
+    return {type: 'ack', success: false, error: serializeError(err)}
   }
 }
 
@@ -103,25 +103,25 @@ export function broadcastMulti(topics: string[], data: BroadcastPayload) {
         ([ws, _]) =>
           new Promise<void>((resolve) =>
             ws.send(json, (err) => {
-              if (err) log.error('Broadcast error', { error: err })
+              if (err) log.error('Broadcast error', {error: err})
               resolve()
-            })
-          )
-      )
-    ).catch((err) => log.error('Broadcast failed', { error: err }))
+            }),
+          ),
+      ),
+    ).catch((err) => log.error('Broadcast failed', {error: err}))
   }
 
   // it isn't secure to do this in prod for auth reasons (maybe?)
   // but it's super convenient for testing
   if (IS_LOCAL) {
-    const msg = { type: 'broadcast', topic: '*', topics, data }
+    const msg = {type: 'broadcast', topic: '*', topics, data}
     sendToSubscribers('*', msg)
   }
 
   for (const topic of topics) {
-    const msg = { type: 'broadcast', topic, data }
+    const msg = {type: 'broadcast', topic, data}
     sendToSubscribers(topic, msg)
-    metrics.inc('ws/broadcasts_sent', { topic })
+    metrics.inc('ws/broadcasts_sent', {topic})
   }
 }
 
@@ -130,30 +130,30 @@ export function broadcast(topic: string, data: BroadcastPayload) {
 }
 
 export function listen(server: HttpServer, path: string) {
-  const wss = new WebSocketServer({ server, path })
+  const wss = new WebSocketServer({server, path})
   let deadConnectionCleaner: NodeJS.Timeout | undefined
   wss.on('listening', () => {
     log.info(`Web socket server listening on ${path}. ${getWebsocketUrl()}`)
     deadConnectionCleaner = setInterval(() => {
       for (const ws of wss.clients as Set<HeartbeatWebSocket>) {
         if (ws.isAlive === false) {
-          log.debug('Terminating dead connection');
-          ws.terminate();
-          continue;
+          log.debug('Terminating dead connection')
+          ws.terminate()
+          continue
         }
-        ws.isAlive = false;
+        ws.isAlive = false
         // log.debug('Sending ping to client');
-        ws.ping();
+        ws.ping()
       }
-    }, 25000);
+    }, 25000)
   })
   wss.on('error', (err) => {
-    log.error('Error on websocket server.', { error: err })
+    log.error('Error on websocket server.', {error: err})
   })
   wss.on('connection', (ws: HeartbeatWebSocket) => {
-    ws.isAlive = true;
+    ws.isAlive = true
     // log.debug('Received pong from client');
-    ws.on('pong', () => (ws.isAlive = true));
+    ws.on('pong', () => (ws.isAlive = true))
     metrics.inc('ws/connections_established')
     metrics.set('ws/open_connections', wss.clients.size)
     log.debug('WS client connected.')
@@ -166,11 +166,11 @@ export function listen(server: HttpServer, path: string) {
     ws.on('close', (code, reason) => {
       metrics.inc('ws/connections_terminated')
       metrics.set('ws/open_connections', wss.clients.size)
-      log.debug(`WS client disconnected.`, { code, reason: reason.toString() })
+      log.debug(`WS client disconnected.`, {code, reason: reason.toString()})
       SWITCHBOARD.disconnect(ws)
     })
     ws.on('error', (err) => {
-      log.error('Error on websocket connection.', { error: err })
+      log.error('Error on websocket connection.', {error: err})
     })
   })
   wss.on('close', function close() {

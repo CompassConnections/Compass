@@ -5,27 +5,22 @@ import {Button} from './button'
 import {Col} from '../layout/col'
 import {Row} from 'web/components/layout/row'
 
-import {ButtonHTMLAttributes} from "react"
-import {FcGoogle} from "react-icons/fc"
+import {ButtonHTMLAttributes} from 'react'
+import {FcGoogle} from 'react-icons/fc'
 
-export const SidebarSignUpButton = (props: { className?: string }) => {
+export const SidebarSignUpButton = (props: {className?: string}) => {
   const {className} = props
 
   return (
     <Col className={clsx('mt-4', className)}>
-      <Button
-        color="gradient"
-        size="xl"
-        onClick={firebaseLogin}
-        className="w-full"
-      >
+      <Button color="gradient" size="xl" onClick={firebaseLogin} className="w-full">
         Sign up
       </Button>
     </Col>
   )
 }
 
-export const GoogleSignInButton = (props: { onClick: () => any }) => {
+export const GoogleSignInButton = (props: {onClick: () => any}) => {
   return (
     <Button
       onClick={props.onClick}
@@ -34,13 +29,7 @@ export const GoogleSignInButton = (props: { onClick: () => any }) => {
       className=" whitespace-nowrap  shadow-sm outline-2 "
     >
       <Row className={'items-center gap-2 p-2'}>
-        <img
-          src="/google.svg"
-          alt=""
-          width={24}
-          height={24}
-          className="rounded-full bg-white"
-        />
+        <img src="/google.svg" alt="" width={24} height={24} className="rounded-full bg-white" />
         <span>Sign in with Google</span>
       </Row>
     </Button>
@@ -59,16 +48,15 @@ export function GoogleButton({onClick, isLoading = false, ...props}: GoogleButto
       onClick={onClick}
       disabled={isLoading}
       className={clsx(
-        "w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300",
-        "rounded-full shadow-sm text-sm font-medium",
-        "hover:bg-canvas-25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-        "disabled:opacity-70 disabled:cursor-not-allowed"
+        'w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300',
+        'rounded-full shadow-sm text-sm font-medium',
+        'hover:bg-canvas-25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
+        'disabled:opacity-70 disabled:cursor-not-allowed',
       )}
       {...props}
     >
-      <FcGoogle className="w-5 h-5"/>
-      {isLoading ? "Loading..." : "Google"}
+      <FcGoogle className="w-5 h-5" />
+      {isLoading ? 'Loading...' : 'Google'}
     </button>
   )
 }
-

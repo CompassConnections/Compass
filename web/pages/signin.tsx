@@ -1,27 +1,27 @@
-"use client"
+'use client'
 
-import {useSearchParams} from "next/navigation"
-import React, {Suspense, useEffect, useState} from "react"
-import Link from "next/link"
-import {auth, firebaseLogin} from "web/lib/firebase/users"
+import {useSearchParams} from 'next/navigation'
+import React, {Suspense, useEffect, useState} from 'react'
+import Link from 'next/link'
+import {auth, firebaseLogin} from 'web/lib/firebase/users'
 
-import {signInWithEmailAndPassword} from "firebase/auth"
-import {getProfileRow} from "common/profiles/profile"
-import {sendPasswordReset} from "web/lib/firebase/password"
-import {useUser} from "web/hooks/use-user"
-import {db} from "web/lib/supabase/db"
-import Router from "next/router"
-import {PageBase} from "web/components/page-base"
-import {GoogleButton} from "web/components/buttons/sign-up-button"
-import {SEO} from "web/components/SEO"
-import {logger} from "common/logging";
-import FavIcon from "web/components/FavIcon";
+import {signInWithEmailAndPassword} from 'firebase/auth'
+import {getProfileRow} from 'common/profiles/profile'
+import {sendPasswordReset} from 'web/lib/firebase/password'
+import {useUser} from 'web/hooks/use-user'
+import {db} from 'web/lib/supabase/db'
+import Router from 'next/router'
+import {PageBase} from 'web/components/page-base'
+import {GoogleButton} from 'web/components/buttons/sign-up-button'
+import {SEO} from 'web/components/SEO'
+import {logger} from 'common/logging'
+import FavIcon from 'web/components/FavIcon'
 import {useT} from 'web/lib/locale'
 
 export default function LoginPage() {
   return (
     <Suspense fallback={<div></div>}>
-      <RegisterComponent/>
+      <RegisterComponent />
     </Suspense>
   )
 }
@@ -46,7 +46,7 @@ function RegisterComponent() {
   useEffect(() => {
     const checkAndRedirect = async () => {
       if (user) {
-        console.debug("User signed in:", user)
+        console.debug('User signed in:', user)
         try {
           const profile = await getProfileRow(user.id, db)
           if (profile) {
@@ -55,7 +55,7 @@ function RegisterComponent() {
             await Router.push('/onboarding')
           }
         } catch (error) {
-          console.error("Error fetching profile profile:", error)
+          console.error('Error fetching profile profile:', error)
         }
         setIsLoading(false)
         setIsLoadingGoogle(false)
@@ -68,14 +68,14 @@ function RegisterComponent() {
     setIsLoadingGoogle(true)
     setError(null)
     try {
-      const creds = await firebaseLogin();
+      const creds = await firebaseLogin()
       logger.debug('creds', creds)
       if (creds) {
         setIsLoading(true)
-        setIsLoadingGoogle(true);
+        setIsLoadingGoogle(true)
       }
     } catch (error) {
-      console.error("Error signing in:", error)
+      console.error('Error signing in:', error)
       const message = 'Failed to sign in with Google'
       setError(message)
       setIsLoading(false)
@@ -88,8 +88,11 @@ function RegisterComponent() {
       const creds = await signInWithEmailAndPassword(auth, email, password)
       logger.debug(creds)
     } catch (error) {
-      console.error("Error signing in:", error)
-      const message = t('signin.failed_credentials','Failed to sign in with your email and password')
+      console.error('Error signing in:', error)
+      const message = t(
+        'signin.failed_credentials',
+        'Failed to sign in with your email and password',
+      )
       setError(message)
       setIsLoading(false)
       setIsLoadingGoogle(false)
@@ -103,8 +106,8 @@ function RegisterComponent() {
       setError(null)
 
       const formData = new FormData(event.currentTarget)
-      const email = formData.get("email") as string
-      const password = formData.get("password") as string
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
       await handleEmailPasswordSignIn(email, password)
 
       // if (response?.error) {
@@ -116,7 +119,7 @@ function RegisterComponent() {
       // router.push("/")
       // router.refresh()
     } catch {
-      setError("An error occurred during login")
+      setError('An error occurred during login')
       setIsLoading(false)
     }
   }
@@ -125,24 +128,26 @@ function RegisterComponent() {
   return (
     <PageBase trackPageView={'signin'}>
       <SEO
-        title={t('signin.seo.title','Sign in')}
-        description={t('signin.seo.description','Sign in to your account')}
+        title={t('signin.seo.title', 'Sign in')}
+        description={t('signin.seo.description', 'Sign in to your account')}
         url={`/signin`}
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
             <div className="flex justify-center mb-6">
-              <FavIcon className="dark:invert"/>
+              <FavIcon className="dark:invert" />
             </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold ">
-              {t('signin.title','Sign in')}
+              {t('signin.title', 'Sign in')}
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="email" className="sr-only">Email</label>
+                <label htmlFor="email" className="sr-only">
+                  Email
+                </label>
                 <input
                   id="email"
                   name="email"
@@ -153,42 +158,44 @@ function RegisterComponent() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">Password</label>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   required
                   className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder={t('signin.password_placeholder','Your password')}
+                  placeholder={t('signin.password_placeholder', 'Your password')}
                 />
                 <div className="text-right mt-1 custom-link">
                   <button
                     type="button"
                     onClick={(e) => {
-                      e.preventDefault();
-                      const form = e.currentTarget.closest('form');
+                      e.preventDefault()
+                      const form = e.currentTarget.closest('form')
                       if (form) {
-                        const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
+                        const emailInput = form.querySelector(
+                          'input[type="email"]',
+                        ) as HTMLInputElement
                         if (emailInput?.value) {
-                          sendPasswordReset(emailInput.value);
+                          sendPasswordReset(emailInput.value)
                         } else {
                           // If no email is entered, show an error
-                          setError(t('signin.enter_email','Please enter your email first'));
+                          setError(t('signin.enter_email', 'Please enter your email first'))
                         }
                       }
                     }}
                     className="text-sm focus:outline-none"
                   >
-                    {t('signin.forgot_password','Forgot password?')}
+                    {t('signin.forgot_password', 'Forgot password?')}
                   </button>
                 </div>
               </div>
             </div>
 
-            {error && (
-              <div className="text-red-500 text-sm text-center">{error}</div>
-            )}
+            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
             <div className="space-y-4">
               <button
@@ -204,18 +211,18 @@ function RegisterComponent() {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 body-bg text-gray-500">{t('signin.continue',"Or continue with")}</span>
+                  <span className="px-2 body-bg text-gray-500">
+                    {t('signin.continue', 'Or continue with')}
+                  </span>
                 </div>
               </div>
-              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading}/>
+              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
             </div>
           </form>
           <div className="text-center custom-link">
             <p className="mt-4 text-sm">
-              {t('signin.no_account',"Don't have an account?")}{' '}
-              <Link href="/register">
-                {t('signin.link_sign_up','Register')}
-              </Link>
+              {t('signin.no_account', "Don't have an account?")}{' '}
+              <Link href="/register">{t('signin.link_sign_up', 'Register')}</Link>
             </p>
           </div>
         </div>

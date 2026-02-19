@@ -1,11 +1,11 @@
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { updatePrivateUser } from 'shared/supabase/users'
-import { type APIHandler } from './helpers/endpoint'
-import { broadcastUpdatedPrivateUser } from 'shared/websockets/helpers'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {updatePrivateUser} from 'shared/supabase/users'
+import {type APIHandler} from './helpers/endpoint'
+import {broadcastUpdatedPrivateUser} from 'shared/websockets/helpers'
 
 export const updateNotifSettings: APIHandler<'update-notif-settings'> = async (
-  { type, medium, enabled },
-  auth
+  {type, medium, enabled},
+  auth,
 ) => {
   const pg = createSupabaseDirectClient()
   if (type === 'opt_out_all' && medium === 'mobile') {
@@ -21,7 +21,7 @@ export const updateNotifSettings: APIHandler<'update-notif-settings'> = async (
         ${enabled ? `|| '[$2:name]'::jsonb` : `- $2`}
       )
       where id = $3`,
-      [type, medium, auth.uid]
+      [type, medium, auth.uid],
     )
     broadcastUpdatedPrivateUser(auth.uid)
   }

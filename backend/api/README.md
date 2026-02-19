@@ -28,9 +28,11 @@ gcloud config set project YOUR_PROJECT_ID
 ```
 
 You also need `opentofu` and `docker`. Try running this (from root) on Linux or macOS for a faster install:
+
 ```bash
 ./script/setup.sh
 ```
+
 If it doesn't work, you can install them manually (google how to install `opentofu` and `docker` for your OS).
 
 ### Setup
@@ -105,8 +107,8 @@ gcloud iam service-accounts keys create keyfile.json --iam-account=ci-deployer@c
 
 ##### DNS
 
-* After deployment, Terraform assigns a static external IP to this resource.
-* You can get it manually:
+- After deployment, Terraform assigns a static external IP to this resource.
+- You can get it manually:
 
 ```bash
 gcloud compute addresses describe api-lb-ip-2 --global --format="get(address)"
@@ -123,8 +125,8 @@ Since Vercel manages your domain (`compassmeet.com`):
 |------|------|--------------|-------|
 | A    | api  | 34.123.45.67 | 600 s |
 
-* `Name` is just the subdomain: `api` → `api.compassmeet.com`.
-* `Value` is the **external IP of the LB** from step 1.
+- `Name` is just the subdomain: `api` → `api.compassmeet.com`.
+- `Value` is the **external IP of the LB** from step 1.
 
 Verify connectivity
 From your local machine:
@@ -135,8 +137,8 @@ ping -c 3 api.compassmeet.com
 curl -I https://api.compassmeet.com
 ```
 
-* `nslookup` should return the LB IP (`34.123.45.67`).
-* `curl -I` should return `200 OK` from your service.
+- `nslookup` should return the LB IP (`34.123.45.67`).
+- `curl -I` should return `200 OK` from your service.
 
 If SSL isn’t ready (may take 15 mins), check LB logs:
 
@@ -167,6 +169,7 @@ In root directory, run the local api with hot reload, along with all the other b
 To deploy the backend code, simply increment the version number in [package.json](package.json) and push to the `main` branch.
 
 Or if you have access to the project on google cloud, run in this directory:
+
 ```bash
 ./deploy-api.sh prod
 ```
@@ -195,4 +198,5 @@ docker rmi -f $(docker images -aq)
 The API doc is available at https://api.compassmeet.com. It's dynamically prepared in [app.ts](src/app.ts).
 
 ### Todo (Tests)
+
 - [ ] Finish get-supabase-token unit test when endpoint is implemented

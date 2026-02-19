@@ -2,21 +2,21 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {useUser} from 'web/hooks/use-user'
 import {useGetter} from 'web/hooks/use-getter'
-import {TextEditor, useTextEditor} from "web/components/widgets/editor";
-import {JSONContent} from "@tiptap/core";
-import {getVotes} from "web/lib/supabase/votes";
-import {MAX_DESCRIPTION_LENGTH} from "common/envs/constants";
-import {useEffect, useState} from "react";
-import {Button} from "web/components/buttons/button";
-import {Input} from "web/components/widgets/input";
-import {api} from "web/lib/api";
-import {Title} from "web/components/widgets/title";
-import toast from "react-hot-toast";
+import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
+import {JSONContent} from '@tiptap/core'
+import {getVotes} from 'web/lib/supabase/votes'
+import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
+import {useEffect, useState} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {Input} from 'web/components/widgets/input'
+import {api} from 'web/lib/api'
+import {Title} from 'web/components/widgets/title'
+import toast from 'react-hot-toast'
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
-import Link from "next/link";
-import {formLink} from "common/constants";
-import { ShowMore } from "../widgets/show-more";
-import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from "common/votes/constants";
+import Link from 'next/link'
+import {formLink} from 'common/constants'
+import {ShowMore} from '../widgets/show-more'
+import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from 'common/votes/constants'
 import {useT} from 'web/lib/locale'
 
 export function VoteComponent() {
@@ -24,11 +24,7 @@ export function VoteComponent() {
   const user = useUser()
   const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
-  const {data: votes, refresh: refreshVotes} = useGetter(
-    'votes',
-    {orderBy},
-    getVotes
-  )
+  const {data: votes, refresh: refreshVotes} = useGetter('votes', {orderBy}, getVotes)
 
   const [title, setTitle] = useState<string>('')
   const [editor, setEditor] = useState<any>(null)
@@ -39,9 +35,11 @@ export function VoteComponent() {
   return (
     <Col className="mx-2">
       <Row className="items-center justify-between flex-col xxs:flex-row mb-4 xxs:mb-0 gap-2">
-        <Title className="text-3xl">{t('vote.title','Proposals')}</Title>
+        <Title className="text-3xl">{t('vote.title', 'Proposals')}</Title>
         <div className="flex items-center gap-2 text-sm justify-end">
-          <label htmlFor="orderBy" className="text-ink-700">{t('vote.order.label','Order by:')}</label>
+          <label htmlFor="orderBy" className="text-ink-700">
+            {t('vote.order.label', 'Order by:')}
+          </label>
           <select
             id="orderBy"
             value={orderBy}
@@ -57,75 +55,81 @@ export function VoteComponent() {
         </div>
       </Row>
       <p className={'custom-link'}>
-        {t('vote.discuss.prefix','You can discuss any of those proposals through the ')}
-        <Link href={'/contact'}>{t('vote.discuss.link_contact','contact form')}</Link>
-        {t('vote.discuss.middle',', the ')}
-        <Link href={formLink}>{t('vote.discuss.link_feedback','feedback form')}</Link>
-        {t('vote.discuss.and',', or any of our ')}
-        <Link href={'/social'}>{t('vote.discuss.link_socials','socials')}</Link>
-        {t('vote.discuss.suffix','.')}
+        {t('vote.discuss.prefix', 'You can discuss any of those proposals through the ')}
+        <Link href={'/contact'}>{t('vote.discuss.link_contact', 'contact form')}</Link>
+        {t('vote.discuss.middle', ', the ')}
+        <Link href={formLink}>{t('vote.discuss.link_feedback', 'feedback form')}</Link>
+        {t('vote.discuss.and', ', or any of our ')}
+        <Link href={'/social'}>{t('vote.discuss.link_socials', 'socials')}</Link>
+        {t('vote.discuss.suffix', '.')}
       </p>
 
-      {user && <Col>
-        <ShowMore labelClosed={t('vote.showmore.closed','Add a new proposal')} labelOpen={t('vote.showmore.open','Hide')}>
-          <Input
+      {user && (
+        <Col>
+          <ShowMore
+            labelClosed={t('vote.showmore.closed', 'Add a new proposal')}
+            labelOpen={t('vote.showmore.open', 'Hide')}
+          >
+            <Input
               value={title}
-              placeholder={t('vote.form.title_placeholder','Title')}
+              placeholder={t('vote.form.title_placeholder', 'Title')}
               className={'w-full mb-2'}
               onChange={(e) => {
                 setTitle(e.target.value)
               }}
-          />
-          <VoteCreator
-              onEditor={(e) => setEditor(e)}
-          />
-          <Row className="mx-2 mb-2 items-center gap-2 text-sm">
+            />
+            <VoteCreator onEditor={(e) => setEditor(e)} />
+            <Row className="mx-2 mb-2 items-center gap-2 text-sm">
               <input
-                  type="checkbox"
-                  id="anonymous"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  className="h-4 w-4 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
+                type="checkbox"
+                id="anonymous"
+                checked={isAnonymous}
+                onChange={(e) => setIsAnonymous(e.target.checked)}
+                className="h-4 w-4 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="anonymous">{t('vote.form.anonymous','Anonymous?')}</label>
-          </Row>
-        {!hideButton && (
-          <Row className="right-1 justify-between gap-2">
-            <Button
-              size="xs"
-              onClick={async () => {
-                const data = {
-                  title: title,
-                  description: editor.getJSON() as JSONContent,
-                  isAnonymous: isAnonymous,
-                };
-                const newVote = await api('create-vote', data).catch(() => {
-                  toast.error(t('vote.toast.create_failed','Failed to create vote — try again or contact us...'))
-                })
-                if (!newVote) return
-                setTitle('')
-                editor.commands.clearContent()
-                toast.success(t('vote.toast.created','Vote created'))
-                console.debug('Vote created', newVote)
-                refreshVotes()
-              }}
-            >
-              {t('vote.form.submit','Submit')}
-            </Button>
-          </Row>
-        )}
-      </ShowMore>
-      </Col>
-      }
+              <label htmlFor="anonymous">{t('vote.form.anonymous', 'Anonymous?')}</label>
+            </Row>
+            {!hideButton && (
+              <Row className="right-1 justify-between gap-2">
+                <Button
+                  size="xs"
+                  onClick={async () => {
+                    const data = {
+                      title: title,
+                      description: editor.getJSON() as JSONContent,
+                      isAnonymous: isAnonymous,
+                    }
+                    const newVote = await api('create-vote', data).catch(() => {
+                      toast.error(
+                        t(
+                          'vote.toast.create_failed',
+                          'Failed to create vote — try again or contact us...',
+                        ),
+                      )
+                    })
+                    if (!newVote) return
+                    setTitle('')
+                    editor.commands.clearContent()
+                    toast.success(t('vote.toast.created', 'Vote created'))
+                    console.debug('Vote created', newVote)
+                    refreshVotes()
+                  }}
+                >
+                  {t('vote.form.submit', 'Submit')}
+                </Button>
+              </Row>
+            )}
+          </ShowMore>
+        </Col>
+      )}
 
-      {votes && votes.length > 0 && <Col className={'mt-4'}>
-        {votes.map((vote: Vote) => {
-          return (
-            <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes}/>
-          )
-        })}
-      </Col>}
-
+      {votes && votes.length > 0 && (
+        <Col className={'mt-4'}>
+          {votes.map((vote: Vote) => {
+            return <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes} />
+          })}
+        </Col>
+      )}
     </Col>
   )
 }
@@ -142,7 +146,7 @@ export function VoteCreator({defaultValue, onBlur, onEditor}: VoteCreatorProps) 
     // extensions: [StarterKit],
     max: MAX_DESCRIPTION_LENGTH,
     defaultValue: defaultValue,
-    placeholder: t('vote.creator.placeholder','Please describe your proposal here'),
+    placeholder: t('vote.creator.placeholder', 'Please describe your proposal here'),
   })
 
   useEffect(() => {
@@ -152,10 +156,7 @@ export function VoteCreator({defaultValue, onBlur, onEditor}: VoteCreatorProps) 
   return (
     <div className={'mb-2'}>
       {/*<p>Description</p>*/}
-      <TextEditor
-        editor={editor}
-        onBlur={() => onBlur?.(editor)}
-      />
+      <TextEditor editor={editor} onBlur={() => onBlur?.(editor)} />
     </div>
   )
 }

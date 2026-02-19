@@ -19,7 +19,7 @@ The email module provides React Email components for sending beautiful, responsi
 Import the helper functions from the email module to send emails:
 
 ```typescript
-import { sendNewEndorsementEmail } from 'email/functions/helpers'
+import {sendNewEndorsementEmail} from 'email/functions/helpers'
 
 // Example usage
 await sendNewEndorsementEmail(privateUser, creator, onUser, text)

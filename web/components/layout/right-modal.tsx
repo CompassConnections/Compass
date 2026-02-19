@@ -1,6 +1,6 @@
-import { Dialog, Transition } from '@headlessui/react'
+import {Dialog, Transition} from '@headlessui/react'
 import clsx from 'clsx'
-import { Fragment, ReactNode } from 'react'
+import {Fragment, ReactNode} from 'react'
 // From https://tailwindui.com/components/application-ui/overlays/modals
 export function RightModal(props: {
   children: ReactNode
@@ -10,7 +10,7 @@ export function RightModal(props: {
   noAutoFocus?: boolean
   className?: string
 }) {
-  const { children, open, setOpen, className, noAutoFocus } = props
+  const {children, open, setOpen, className, noAutoFocus} = props
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -43,14 +43,8 @@ export function RightModal(props: {
           leaveTo="opacity-0 sm:scale-95"
         >
           <div className="fixed inset-0 p-0">
-            <div
-              className={clsx(
-                'flex h-full flex-row justify-end overflow-hidden'
-              )}
-            >
-              <Dialog.Panel
-                className={clsx('grow-y transform transition-all ', className)}
-              >
+            <div className={clsx('flex h-full flex-row justify-end overflow-hidden')}>
+              <Dialog.Panel className={clsx('grow-y transform transition-all ', className)}>
                 {/* Hack to capture focus b/c headlessui dialog always focuses first element
                     and we don't want it to.
                 */}

@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 type PollingState =
-  | { state: 'waiting'; version: number; timeout?: undefined }
-  | { state: 'polling'; version: number; timeout: NodeJS.Timeout }
-  | { state: 'error'; version: number; timeout?: NodeJS.Timeout }
+  | {state: 'waiting'; version: number; timeout?: undefined}
+  | {state: 'polling'; version: number; timeout: NodeJS.Timeout}
+  | {state: 'error'; version: number; timeout?: NodeJS.Timeout}
 
 export function useLiveUpdates<T>(
   getRows: () => Promise<T>,
@@ -11,11 +11,11 @@ export function useLiveUpdates<T>(
     frequency?: number
     listen?: boolean
     keys?: any[]
-  }
+  },
 ) {
-  const { frequency = 500, listen = true, keys = [] } = opts ?? {}
+  const {frequency = 500, listen = true, keys = []} = opts ?? {}
 
-  const state = useRef<PollingState>({ state: 'waiting', version: 0 })
+  const state = useRef<PollingState>({state: 'waiting', version: 0})
 
   const [results, setResults] = useState<T | undefined>(undefined)
   const [ms, setMs] = useState(frequency)
@@ -56,7 +56,7 @@ export function useLiveUpdates<T>(
       if (state.current.timeout != null) {
         clearTimeout(state.current.timeout)
       }
-      state.current = { state: 'waiting', version: state.current.version + 1 }
+      state.current = {state: 'waiting', version: state.current.version + 1}
     }
   }, [listen, ...keys])
 

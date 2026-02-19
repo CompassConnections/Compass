@@ -1,9 +1,9 @@
 'use server'
 
-import { Head, Html, Preview, Tailwind, Text } from '@react-email/components'
+import {Head, Html, Preview, Tailwind, Text} from '@react-email/components'
 import React from 'react'
 
-export const Test = (props: { name: string }) => {
+export const Test = (props: {name: string}) => {
   return (
     <Html>
       <Head />

@@ -1,15 +1,23 @@
 import {PageBase} from 'web/components/page-base'
-import {discordLink, githubRepo, instagramLink, redditLink, stoatLink, supportEmail, xLink} from "common/constants"
-import {GeneralButton} from "web/components/buttons/general-button"
-import {SEO} from "web/components/SEO"
-import {useT} from "web/lib/locale"
-import {Row} from "web/components/layout/row";
+import {
+  discordLink,
+  githubRepo,
+  instagramLink,
+  redditLink,
+  stoatLink,
+  supportEmail,
+  xLink,
+} from 'common/constants'
+import {GeneralButton} from 'web/components/buttons/general-button'
+import {SEO} from 'web/components/SEO'
+import {useT} from 'web/lib/locale'
+import {Row} from 'web/components/layout/row'
 
 function Section({
-                   title,
-                   description,
-                   children,
-                 }: {
+  title,
+  description,
+  children,
+}: {
   title: string
   description: string
   children: React.ReactNode
@@ -42,9 +50,9 @@ export default function Social() {
         description={t('social.community.desc', 'Join our community chats and discussions.')}
       >
         <Row className="flex-wrap">
-          <GeneralButton url={discordLink} content={t('social.discord', 'Discord')}/>
-          <GeneralButton url={redditLink} content={t('social.reddit', 'Reddit')}/>
-          <GeneralButton url={stoatLink} content={t('social.stoat', 'Revolt / Stoat')}/>
+          <GeneralButton url={discordLink} content={t('social.discord', 'Discord')} />
+          <GeneralButton url={redditLink} content={t('social.reddit', 'Reddit')} />
+          <GeneralButton url={stoatLink} content={t('social.stoat', 'Revolt / Stoat')} />
         </Row>
       </Section>
 
@@ -54,8 +62,8 @@ export default function Social() {
         description={t('social.follow.desc', 'Stay informed about announcements and news.')}
       >
         <Row className="flex-wrap">
-          <GeneralButton url={xLink} content={t('social.x', 'X')}/>
-          <GeneralButton url={instagramLink} content={t('social.instagram', 'Instagram')}/>
+          <GeneralButton url={xLink} content={t('social.x', 'X')} />
+          <GeneralButton url={instagramLink} content={t('social.instagram', 'Instagram')} />
         </Row>
       </Section>
 
@@ -65,7 +73,7 @@ export default function Social() {
         description={t('social.dev.desc', 'See our source code or contribute.')}
       >
         <Row className="flex-wrap">
-          <GeneralButton url={githubRepo} content={t('social.github', 'GitHub')}/>
+          <GeneralButton url={githubRepo} content={t('social.github', 'GitHub')} />
         </Row>
       </Section>
 
@@ -75,8 +83,10 @@ export default function Social() {
         description={t('social.contact.desc', 'Reach out to us directly for inquiries.')}
       >
         <Row className="flex-wrap">
-          <GeneralButton url={`mailto:${supportEmail}`}
-                         content={`${t('social.email_button', 'Email')} ${supportEmail}`}/>
+          <GeneralButton
+            url={`mailto:${supportEmail}`}
+            content={`${t('social.email_button', 'Email')} ${supportEmail}`}
+          />
         </Row>
       </Section>
     </PageBase>

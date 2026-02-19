@@ -1,5 +1,5 @@
-import { PrivateUser } from './user'
-import { filterDefined } from './util/array'
+import {PrivateUser} from './user'
+import {filterDefined} from './util/array'
 
 export type notification_destination_types = 'email' | 'browser' | 'mobile'
 export type notification_preference = keyof notification_preferences
@@ -22,19 +22,11 @@ export type notification_preferences = {
 }
 
 export const getDefaultNotificationPreferences = (isDev?: boolean) => {
-  const constructPref = (
-    browserIf: boolean,
-    emailIf: boolean,
-    mobileIf: boolean
-  ) => {
+  const constructPref = (browserIf: boolean, emailIf: boolean, mobileIf: boolean) => {
     const browser = browserIf ? 'browser' : undefined
     const email = isDev ? undefined : emailIf ? 'email' : undefined
     const mobile = mobileIf ? 'mobile' : undefined
-    return filterDefined([
-      browser,
-      email,
-      mobile,
-    ]) as notification_destination_types[]
+    return filterDefined([browser, email, mobile]) as notification_destination_types[]
   }
   const defaults: notification_preferences = {
     new_match: constructPref(true, true, true),
@@ -57,10 +49,10 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = 'https://compassmeet.com/notifications';
+export const UNSUBSCRIBE_URL = 'https://compassmeet.com/notifications'
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
-  type: notification_preference
+  type: notification_preference,
 ) => {
   let destinations = privateUser.notificationPreferences[type]
   if (!destinations) destinations = ['email', 'browser', 'mobile']
@@ -69,10 +61,8 @@ export const getNotificationDestinationsForUser = (
 
   return {
     sendToEmail: destinations.includes('email') && !opt_out.includes('email'),
-    sendToBrowser:
-      destinations.includes('browser') && !opt_out.includes('browser'),
-    sendToMobile:
-      destinations.includes('mobile') && !opt_out.includes('mobile'),
+    sendToBrowser: destinations.includes('browser') && !opt_out.includes('browser'),
+    sendToMobile: destinations.includes('mobile') && !opt_out.includes('mobile'),
     unsubscribeUrl: UNSUBSCRIBE_URL,
     urlToManageThisNotification: '/notifications',
   }

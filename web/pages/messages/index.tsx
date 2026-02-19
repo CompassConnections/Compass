@@ -20,11 +20,10 @@ import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars
 import {Avatar} from 'web/components/widgets/avatar'
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
-import {SEO} from "web/components/SEO";
+import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {EmailVerificationPrompt} from "web/components/messaging/email-verification-prompt";
+import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
-
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()
@@ -39,31 +38,28 @@ export default function MessagesPage() {
         description={t('messages.seo.description', 'Your Messages')}
         url={`/messages`}
       />
-      {currentUser && firebaseUser && (
-        firebaseUser?.emailVerified ?
-          <MessagesContent currentUser={currentUser}/>
-          : <EmailVerificationPrompt t={t}/>
-      )}
+      {currentUser &&
+        firebaseUser &&
+        (firebaseUser?.emailVerified ? (
+          <MessagesContent currentUser={currentUser} />
+        ) : (
+          <EmailVerificationPrompt t={t} />
+        ))}
     </PageBase>
   )
 }
 
-export function MessagesContent(props: { currentUser: User }) {
+export function MessagesContent(props: {currentUser: User}) {
   const {currentUser} = props
   const t = useT()
-  const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(
-    currentUser.id
-  )
-  const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(
-    currentUser.id,
-    true
-  )
+  const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(currentUser.id)
+  const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(currentUser.id, true)
 
   return (
     <>
       <Row className="justify-between">
         <Title>{t('messages.title', 'Messages')}</Title>
-        <NewMessageButton/>
+        <NewMessageButton />
       </Row>
       <Col className={'w-full overflow-hidden'}>
         {channels && channels.length === 0 && (
@@ -72,9 +68,7 @@ export function MessagesContent(props: { currentUser: User }) {
           </div>
         )}
         {channels?.map((channel) => {
-          const userIds = memberIdsByChannelId?.[channel.channel_id]?.map(
-            (m) => m
-          ) || []
+          const userIds = memberIdsByChannelId?.[channel.channel_id]?.map((m) => m) || []
           return (
             <MessageChannelRow
               key={channel.channel_id}
@@ -117,7 +111,7 @@ export const MessageChannelRow = (props: {
           className={numOthers > 1 ? '-ml-2' : ''}
         />
       ) : (
-        <Avatar size="md" username="?" noLink/>
+        <Avatar size="md" username="?" noLink />
       )}
       <Link
         className="w-full rounded-md hover:bg-canvas-100 p-2"
@@ -130,7 +124,11 @@ export const MessageChannelRow = (props: {
               {otherUsers && otherUsers.length > 0 ? (
                 <span>
                   {otherUsers
-                    .map((user) => (user.name ? user.name.split(' ')[0].trim() : t('messages.deleted_user', 'Deleted user')))
+                    .map((user) =>
+                      user.name
+                        ? user.name.split(' ')[0].trim()
+                        : t('messages.deleted_user', 'Deleted user'),
+                    )
                     .slice(0, 2)
                     .join(', ')}
                   {otherUsers.length > 2 && (
@@ -141,19 +139,21 @@ export const MessageChannelRow = (props: {
                   )}
                 </span>
               ) : (
-                otherUserIds.length == 0 && <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
+                otherUserIds.length == 0 && (
+                  <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
+                )
               )}
-              {isBanned && <BannedBadge/>}
+              {isBanned && <BannedBadge />}
             </span>
             <span className={'text-ink-400 dark:text-ink-500 text-xs'}>
-              {chat && <RelativeTimestamp time={chat.createdTime}/>}
+              {chat && <RelativeTimestamp time={chat.createdTime} />}
             </span>
           </Row>
           <Row className="items-center justify-between gap-1">
             <span
               className={clsx(
                 'line-clamp-1 h-5 text-sm',
-                unseen ? '' : 'text-ink-500 dark:text-ink-600'
+                unseen ? '' : 'text-ink-500 dark:text-ink-600',
               )}
             >
               {chat && (
@@ -166,7 +166,7 @@ export const MessageChannelRow = (props: {
             {unseen && (
               <div
                 className={clsx(
-                  'text-canvas-0 bg-primary-500 h-4 min-w-[15px] rounded-full p-[2px] text-center text-[10px] '
+                  'text-canvas-0 bg-primary-500 h-4 min-w-[15px] rounded-full p-[2px] text-center text-[10px] ',
                 )}
               />
             )}

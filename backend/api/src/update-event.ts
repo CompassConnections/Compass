@@ -15,7 +15,7 @@ export const updateEvent: APIHandler<'update-event'> = async (body, auth) => {
     `SELECT id, creator_id, status
      FROM events
      WHERE id = $1`,
-    [body.eventId]
+    [body.eventId],
   )
 
   if (!event) {
@@ -42,7 +42,7 @@ export const updateEvent: APIHandler<'update-event'> = async (body, auth) => {
       event_end_time: body.eventEndTime,
       max_participants: body.maxParticipants,
       id: body.eventId,
-    })
+    }),
   )
 
   if (error) {

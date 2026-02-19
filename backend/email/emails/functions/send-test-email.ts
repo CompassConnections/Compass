@@ -1,4 +1,4 @@
-import { sendTestEmail } from './helpers'
+import {sendTestEmail} from './helpers'
 
 if (require.main === module) {
   const email = process.argv[2]

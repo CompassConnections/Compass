@@ -19,11 +19,6 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "references": [
-    { "path": "../../common" },
-    { "path": "../shared" },
-    { "path": "../api" },
-    { "path": "../email" }
-  ],
+  "references": [{"path": "../../common"}, {"path": "../shared"}, {"path": "../api"}, {"path": "../email"}],
   "compileOnSave": true
 }

@@ -1,10 +1,7 @@
-import Link from "next/link";
+import Link from 'next/link'
 
-export const GeneralButton = (props: {
-  url: string
-  content: string
-}) => {
-  const {url, content} = props;
+export const GeneralButton = (props: {url: string; content: string}) => {
+  const {url, content} = props
 
   return (
     <div className="rounded-xl p-3 flex flex-col items-center group">
@@ -17,11 +14,9 @@ export const GeneralButton = (props: {
         rel={url.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
         <div className="flex items-center justify-center w-full h-full flex-col text-center">
-          <div className="flex items-center justify-center">
-            {content}
-          </div>
+          <div className="flex items-center justify-center">{content}</div>
         </div>
       </Link>
     </div>
-  );
+  )
 }

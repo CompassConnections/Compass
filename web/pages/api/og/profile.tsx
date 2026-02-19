@@ -1,11 +1,11 @@
-import { ImageResponse } from '@vercel/og'
-import { ImageResponseOptions } from '@vercel/og/dist/types'
-import { NextRequest } from 'next/server'
-import { classToTw } from 'web/components/og/utils'
-import { Gender, convertGender } from 'common/gender'
-import { ogProps } from 'common/profiles/og-image'
+import {ImageResponse} from '@vercel/og'
+import {ImageResponseOptions} from '@vercel/og/dist/types'
+import {NextRequest} from 'next/server'
+import {classToTw} from 'web/components/og/utils'
+import {convertGender, Gender} from 'common/gender'
+import {ogProps} from 'common/profiles/og-image'
 
-export const config = { runtime: 'edge' }
+export const config = {runtime: 'edge'}
 
 export const getCardOptions = async () => {
   const [light, med] = await Promise.all([figtreeLightData, figtreeMediumData])
@@ -29,13 +29,9 @@ export const getCardOptions = async () => {
 }
 
 const FIGTREE_LIGHT_URL = new URL('Figtree-Light.ttf', import.meta.url)
-const figtreeLightData = fetch(FIGTREE_LIGHT_URL).then((res) =>
-  res.arrayBuffer()
-)
+const figtreeLightData = fetch(FIGTREE_LIGHT_URL).then((res) => res.arrayBuffer())
 const FIGTREE_MED_URL = new URL('Figtree-Medium.ttf', import.meta.url)
-const figtreeMediumData = fetch(FIGTREE_MED_URL).then((res) =>
-  res.arrayBuffer()
-)
+const figtreeMediumData = fetch(FIGTREE_MED_URL).then((res) => res.arrayBuffer())
 
 // Quick replacement for lodash.capitalize since this is an edge function
 function capitalize(str: string) {
@@ -43,7 +39,7 @@ function capitalize(str: string) {
 }
 
 function OgProfile(props: ogProps) {
-  const { avatarUrl, username, name, age, city, gender } = props
+  const {avatarUrl, username, name, age, city, gender} = props
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center"
@@ -63,7 +59,7 @@ function OgProfile(props: ogProps) {
             objectPosition: 'center',
             objectFit: 'cover',
           }}
-          alt='Compass logo'
+          alt="Compass logo"
         />
 
         {/* Details */}
@@ -87,18 +83,16 @@ function OgProfile(props: ogProps) {
       {/* Bottom: Logo + URL */}
       <div
         className="flex items-center pb-1"
-        style={{ fontFamily: 'var(--font-main), Figtree-light' }}
+        style={{fontFamily: 'var(--font-main), Figtree-light'}}
       >
         <img
           className="mr-1.5 h-12 w-12"
           src="https://www.compassmeet.com/favicon.ico"
           width={48}
           height={48}
-          alt='Compass logo'
+          alt="Compass logo"
         />
-        <span className="text-2xl font-thin">
-          compassmeet.com/{username}
-        </span>
+        <span className="text-2xl font-thin">compassmeet.com/{username}</span>
       </div>
     </div>
   )
@@ -106,11 +100,9 @@ function OgProfile(props: ogProps) {
 
 export default async function handler(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
+    const {searchParams} = new URL(req.url)
     const options = await getCardOptions()
-    const ogProps = Object.fromEntries(
-      searchParams.entries()
-    ) as ogProps
+    const ogProps = Object.fromEntries(searchParams.entries()) as ogProps
     const image = OgProfile(ogProps)
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)

@@ -1,17 +1,15 @@
 import * as fs from 'fs/promises'
-import { execSync } from 'child_process'
-import { type SupabaseDirectClient } from 'shared/supabase/init'
-import { runScript } from 'run-script'
+import {execSync} from 'child_process'
+import {type SupabaseDirectClient} from 'shared/supabase/init'
+import {runScript} from 'run-script'
 
 const outputDir = `../supabase/`
 
-runScript(async ({ pg }) => {
+runScript(async ({pg}) => {
   // make the output directory if it doesn't exist
   execSync(`mkdir -p ${outputDir}`)
   // delete all sql files except seed.sql
-  execSync(
-    `cd ${outputDir} && find *.sql -type f ! -name seed.sql -delete || true`
-  )
+  execSync(`cd ${outputDir} && find *.sql -type f ! -name seed.sql -delete || true`)
   await generateSQLFiles(pg)
 })
 
@@ -50,7 +48,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
       AND d.adnum = a.attnum
     WHERE table_schema = 'public' AND table_name = $1
     ORDER BY column_name`,
-    [tableName]
+    [tableName],
   )
 
   const checks = await pg.manyOrNone<{
@@ -68,7 +66,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
     AND NOT cc.check_clause ilike '% IS NOT NULL'
     AND tc.table_schema = 'public'
     AND tc.table_name = $1`,
-    [tableName]
+    [tableName],
   )
 
   const primaryKeys = await pg.map(
@@ -84,7 +82,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
       AND ccu.column_name = c.column_name
     WHERE constraint_type = 'PRIMARY KEY' AND tc.table_schema = 'public' AND tc.table_name = $1`,
     [tableName],
-    (row) => row.column_name as string
+    (row) => row.column_name as string,
   )
 
   const foreignKeys = await pg.manyOrNone<{
@@ -101,7 +99,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
     WHERE
       contype = 'f'
       AND conrelid = $1::regclass`,
-    [tableName]
+    [tableName],
   )
 
   const triggers = await pg.manyOrNone<{
@@ -116,13 +114,13 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
     WHERE
       tgrelid = $1::regclass
       AND NOT tgisinternal`,
-    [tableName]
+    [tableName],
   )
   const rlsEnabled = await pg.one(
     `SELECT relrowsecurity
     FROM pg_class
     WHERE oid = $1::regclass`,
-    [tableName]
+    [tableName],
   )
   const rls = !!rlsEnabled.relrowsecurity
 
@@ -144,7 +142,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
       pg_policy
     WHERE
       polrelid = $1::regclass`,
-    [tableName]
+    [tableName],
   )
 
   const indexes = await pg.manyOrNone<{
@@ -161,7 +159,7 @@ async function getTableInfo(pg: SupabaseDirectClient, tableName: string) {
       AND tablename = $1
     ORDER BY
       indexname`,
-    [tableName]
+    [tableName],
   )
 
   return {
@@ -190,20 +188,20 @@ async function getFunctions(pg: SupabaseDirectClient) {
     WHERE
       pronamespace = 'public'::regnamespace
       and prokind = 'f'
-    ORDER BY proname asc, pronargs asc, oid desc`
+    ORDER BY proname asc, pronargs asc, oid desc`,
   )
   return rows.filter((f) => !f.definition.includes(`'$libdir/`))
 }
 
 async function getViews(pg: SupabaseDirectClient) {
   console.debug('Getting views')
-  return pg.manyOrNone<{ view_name: string; definition: string }>(
+  return pg.manyOrNone<{view_name: string; definition: string}>(
     `SELECT
       table_name AS view_name,
       view_definition AS definition
     FROM information_schema.views
       where table_schema = 'public'
-    ORDER BY table_name asc`
+    ORDER BY table_name asc`,
   )
 }
 
@@ -211,13 +209,11 @@ async function generateSQLFiles(pg: SupabaseDirectClient) {
   const tables = await pg.map(
     "SELECT tablename FROM pg_tables WHERE schemaname = 'public'",
     [],
-    (row) => row.tablename as string
+    (row) => row.tablename as string,
   )
 
   console.debug(`Getting info for ${tables.length} tables`)
-  const tableInfos = await Promise.all(
-    tables.map((table) => getTableInfo(pg, table))
-  )
+  const tableInfos = await Promise.all(tables.map((table) => getTableInfo(pg, table)))
   const functions = await getFunctions(pg)
   const views = await getViews(pg)
 
@@ -228,13 +224,11 @@ async function generateSQLFiles(pg: SupabaseDirectClient) {
 
     // organize check constraints by column
     const checksByColumn: {
-      [col: string]: { name: string; definition: string }
+      [col: string]: {name: string; definition: string}
     } = {}
     const remainingChecks = []
     for (const check of tableInfo.checks) {
-      const matches = tableInfo.columns.filter((c) =>
-        check.definition.includes(c.name)
-      )
+      const matches = tableInfo.columns.filter((c) => check.definition.includes(c.name))
 
       if (matches.length === 1) {
         checksByColumn[matches[0].name] = check
@@ -260,8 +254,7 @@ async function generateSQLFiles(pg: SupabaseDirectClient) {
       }
       if (c.not_null) content += ' NOT NULL'
       const check = checksByColumn[c.name]
-      if (check)
-        content += ` CONSTRAINT ${check.name} CHECK ${check.definition}`
+      if (check) content += ` CONSTRAINT ${check.name} CHECK ${check.definition}`
 
       content += ',\n'
     }
@@ -351,7 +344,5 @@ async function generateSQLFiles(pg: SupabaseDirectClient) {
   await fs.writeFile(`${outputDir}/views.sql`, viewsContent)
 
   console.debug('Prettifying SQL files...')
-  execSync(
-    `prettier --write ${outputDir}/*.sql --ignore-path ../supabase/.gitignore`
-  )
+  execSync(`prettier --write ${outputDir}/*.sql --ignore-path ../supabase/.gitignore`)
 }

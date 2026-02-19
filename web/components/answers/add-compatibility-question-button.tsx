@@ -19,9 +19,7 @@ import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
 import {useT} from 'web/lib/locale'
 
-export function AddCompatibilityQuestionButton(props: {
-  refreshCompatibilityAll: () => void
-}) {
+export function AddCompatibilityQuestionButton(props: {refreshCompatibilityAll: () => void}) {
   const {refreshCompatibilityAll} = props
   const [open, setOpen] = useState(false)
   const t = useT()
@@ -51,8 +49,7 @@ function AddCompatibilityQuestionModal(props: {
   onClose?: () => void
 }) {
   const {open, setOpen, user, onClose} = props
-  const [dbQuestion, setDbQuestion] =
-    useState<rowFor<'compatibility_prompts'> | null>(null)
+  const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(null)
   const afterAddQuestion = (newQuestion: rowFor<'compatibility_prompts'>) => {
     setDbQuestion(newQuestion)
     console.debug('setDbQuestion', newQuestion)
@@ -62,10 +59,7 @@ function AddCompatibilityQuestionModal(props: {
     <Modal open={open} setOpen={setOpen} onClose={onClose}>
       <Col className={MODAL_CLASS}>
         {!dbQuestion ? (
-          <CreateCompatibilityModalContent
-            afterAddQuestion={afterAddQuestion}
-            setOpen={setOpen}
-          />
+          <CreateCompatibilityModalContent afterAddQuestion={afterAddQuestion} setOpen={setOpen} />
         ) : (
           <AnswerCompatibilityQuestionContent
             compatibilityQuestion={dbQuestion as QuestionWithCountType}
@@ -111,8 +105,7 @@ function CreateCompatibilityModalContent(props: {
     setOptions(newOptions)
   }
 
-  const optionsAreValid =
-    options.every((o) => o.trim().length > 0) && options.length >= 2
+  const optionsAreValid = options.every((o) => o.trim().length > 0) && options.length >= 2
 
   const questionIsValid = question.trim().length > 0
 
@@ -127,7 +120,7 @@ function CreateCompatibilityModalContent(props: {
         }
         return obj
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     )
   }
 
@@ -146,10 +139,7 @@ function CreateCompatibilityModalContent(props: {
       track('create compatibility question')
     } catch (_e) {
       toast.error(
-        t(
-          'answers.add.error_create',
-          'Error creating compatibility question. Try again?'
-        )
+        t('answers.add.error_create', 'Error creating compatibility question. Try again?'),
       )
     }
   })
@@ -190,14 +180,14 @@ function CreateCompatibilityModalContent(props: {
                   className="bg-ink-400 text-ink-0 hover:bg-ink-600 transition-color absolute -right-1.5 -top-1.5 rounded-full p-0.5"
                   onClick={() => deleteOption(index)}
                 >
-                  <XIcon className="z-10 h-3 w-3"/>
+                  <XIcon className="z-10 h-3 w-3" />
                 </button>
               )}
             </div>
           ))}
           <Button onClick={addOption} color="gray-outline">
             <Row className="items-center gap-1">
-              <PlusIcon className="h-4 w-4"/>
+              <PlusIcon className="h-4 w-4" />
               {t('answers.add.add_option', 'Add Option')}
             </Row>
           </Button>

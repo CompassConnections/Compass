@@ -2,21 +2,14 @@ import {APIError, APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {tryCatch} from 'common/util/try-catch'
 import {insert} from 'shared/supabase/utils'
-import {sendDiscordMessage} from "common/discord/core";
-import {Row} from "common/supabase/utils";
-import {DOMAIN} from "common/envs/constants";
+import {sendDiscordMessage} from 'common/discord/core'
+import {Row} from 'common/supabase/utils'
+import {DOMAIN} from 'common/envs/constants'
 
 // abusable: people can report the wrong person, that didn't write the comment
 // but in practice we check it manually and nothing bad happens to them automatically
 export const report: APIHandler<'report'> = async (body, auth) => {
-  const {
-    contentOwnerId,
-    contentType,
-    contentId,
-    description,
-    parentId,
-    parentType,
-  } = body
+  const {contentOwnerId, contentType, contentId, description, parentId, parentType} = body
 
   const pg = createSupabaseDirectClient()
 
@@ -29,7 +22,7 @@ export const report: APIHandler<'report'> = async (body, auth) => {
       description,
       parent_id: parentId,
       parent_type: parentType,
-    })
+    }),
   )
 
   if (result.error) {
@@ -39,14 +32,14 @@ export const report: APIHandler<'report'> = async (body, auth) => {
   const continuation = async () => {
     try {
       const {data: reporter, error} = await tryCatch(
-        pg.oneOrNone<Row<'users'>>('select * from users where id = $1', [auth.uid])
+        pg.oneOrNone<Row<'users'>>('select * from users where id = $1', [auth.uid]),
       )
       if (error) {
         console.error('Failed to get user for report', error)
         return
       }
       const {data: reported, error: userError} = await tryCatch(
-        pg.oneOrNone<Row<'users'>>('select * from users where id = $1', [contentOwnerId])
+        pg.oneOrNone<Row<'users'>>('select * from users where id = $1', [contentOwnerId]),
       )
       if (userError) {
         console.error('Failed to get reported user for report', userError)

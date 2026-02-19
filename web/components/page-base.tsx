@@ -1,4 +1,9 @@
-import {CalendarIcon, HomeIcon, NewspaperIcon, QuestionMarkCircleIcon,} from '@heroicons/react/outline'
+import {
+  CalendarIcon,
+  HomeIcon,
+  NewspaperIcon,
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/outline'
 import {
   CogIcon,
   GlobeAltIcon,
@@ -37,14 +42,7 @@ export function PageBase(props: {
   hideSidebar?: boolean
   hideBottomBar?: boolean
 }) {
-  const {
-    trackPageView,
-    trackPageProps,
-    children,
-    className,
-    hideSidebar,
-    hideBottomBar,
-  } = props
+  const {trackPageView, trackPageProps, children, className, hideSidebar, hideBottomBar} = props
   const user = useUser()
   const isMobile = useIsMobile()
   const profile = useProfile()
@@ -55,9 +53,7 @@ export function PageBase(props: {
   // const [isModalOpen, setIsModalOpen] = useState(false)
   const desktopSidebarOptions = getDesktopNavigation(user)
 
-  const mobileSidebarOptions = getMobileSidebar(user, () =>
-    setIsAddFundsModalOpen(true)
-  )
+  const mobileSidebarOptions = getMobileSidebar(user, () => setIsAddFundsModalOpen(true))
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   if (trackPageView) useTracking(`view ${trackPageView}`, trackPageProps)
@@ -66,11 +62,11 @@ export function PageBase(props: {
 
   return (
     <>
-      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]"/>
+      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]" />
       <Col
         className={clsx(
           'pb-page-base lg:pb-0', // bottom bar padding
-          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12'
+          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12',
         )}
       >
         <Toaster
@@ -80,25 +76,18 @@ export function PageBase(props: {
         {/* Maintenance banner */}
         {IS_MAINTENANCE && (
           <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
-            Maintenance in progress: Some features may be broken for the next
-            few hours.
+            Maintenance in progress: Some features may be broken for the next few hours.
           </div>
         )}
         {hideSidebar ? (
-          <div className="lg:col-span-2 lg:flex"/>
+          <div className="lg:col-span-2 lg:flex" />
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
             className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
           />
         )}
-        <main
-          className={clsx(
-            'flex flex-1 flex-col lg:mt-6 xl:px-2',
-            'col-span-8',
-            className
-          )}
-        >
+        <main className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', 'col-span-8', className)}>
           {children}
         </main>
       </Col>
@@ -188,9 +177,7 @@ const Events = {
 }
 
 // Stable component for Messages icon to prevent re-mounting on every render
-const MessagesIconComponent = (props: any) => (
-  <PrivateMessagesIcon solid {...props} />
-)
+const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...props} />
 
 const base = [About, faq, Vote, Events, News, Social, Organization, Contact]
 
@@ -209,7 +196,7 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
       name: 'Messages',
       href: '/messages',
       icon: MessagesIconComponent,
-    }
+    },
   )
 }
 
@@ -227,16 +214,13 @@ const getDesktopNavigation = (user: User | null | undefined) => {
         icon: MessagesIconComponent,
       },
       Settings,
-      ...base
+      ...base,
     )
 
   return buildArray(...base)
 }
 
-const getMobileSidebar = (
-  user: User | null | undefined,
-  _toggleModal: () => void
-) => {
+const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void) => {
   if (user) return buildArray(Settings, ...base)
 
   return buildArray(...base)

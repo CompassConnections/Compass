@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 
 import {track} from 'web/lib/service/analytics'
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 export type Item = {
   name: string
@@ -11,17 +11,16 @@ export type Item = {
   trackingEventName?: string
   href?: string
   onClick?: () => void
-  icon?: React.ComponentType<{ className?: string }>
+  icon?: React.ComponentType<{className?: string}>
 }
 
-export function SidebarItem(props: { item: Item; currentPage?: string }) {
+export function SidebarItem(props: {item: Item; currentPage?: string}) {
   const {item, currentPage} = props
 
   const t = useT()
 
   const currentBasePath = '/' + (currentPage?.split('/')[1] ?? '')
-  const isCurrentPage =
-    item.href != null && currentBasePath === item.href.split('?')[0]
+  const isCurrentPage = item.href != null && currentBasePath === item.href.split('?')[0]
 
   const onClick = () => {
     item.onClick?.()
@@ -33,7 +32,7 @@ export function SidebarItem(props: { item: Item; currentPage?: string }) {
       ? 'bg-ink-100 text-primary-700'
       : 'text-ink-600 hover:bg-ink-100 hover:text-primary-700',
     'group flex items-center rounded-md px-3 py-2 text-sm font-medium',
-    'focus-visible:bg-ink-100 outline-none transition-all'
+    'focus-visible:bg-ink-100 outline-none transition-all',
   )
 
   const sidebarItem = (
@@ -41,10 +40,8 @@ export function SidebarItem(props: { item: Item; currentPage?: string }) {
       {item.icon && (
         <item.icon
           className={clsx(
-            isCurrentPage
-              ? 'text-primary-700'
-              : 'text-ink-500 group-hover:text-primary-700',
-            '-ml-1 mr-3 h-6 w-6 flex-shrink-0 transition-all'
+            isCurrentPage ? 'text-primary-700' : 'text-ink-500 group-hover:text-primary-700',
+            '-ml-1 mr-3 h-6 w-6 flex-shrink-0 transition-all',
           )}
           aria-hidden="true"
         />

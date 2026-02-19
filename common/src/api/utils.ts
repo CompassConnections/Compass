@@ -1,5 +1,5 @@
 import {BACKEND_DOMAIN} from 'common/envs/constants'
-import {IS_LOCAL} from "common/hosting/constants";
+import {IS_LOCAL} from 'common/hosting/constants'
 
 type ErrorCode =
   | 400 // your input is bad (like zod is mad)

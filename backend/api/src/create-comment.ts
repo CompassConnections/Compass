@@ -1,32 +1,25 @@
-import { APIError, APIHandler } from 'api/helpers/endpoint'
-import { type JSONContent } from '@tiptap/core'
-import { getPrivateUser, getUser } from 'shared/utils'
-import {
-  createSupabaseDirectClient,
-  SupabaseDirectClient,
-} from 'shared/supabase/init'
-import { getNotificationDestinationsForUser } from 'common/user-notification-preferences'
-import { Notification } from 'common/notifications'
-import { insertNotificationToSupabase } from 'shared/supabase/notifications'
-import { User } from 'common/user'
-import { richTextToString } from 'common/util/parse'
+import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {type JSONContent} from '@tiptap/core'
+import {getPrivateUser, getUser} from 'shared/utils'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
+import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
+import {Notification} from 'common/notifications'
+import {insertNotificationToSupabase} from 'shared/supabase/notifications'
+import {User} from 'common/user'
+import {richTextToString} from 'common/util/parse'
 import * as crypto from 'crypto'
-import { sendNewEndorsementEmail } from 'email/functions/helpers'
-import { type Row } from 'common/supabase/utils'
-import { broadcastUpdatedComment } from 'shared/websockets/helpers'
-import { convertComment } from 'common/supabase/comment'
+import {sendNewEndorsementEmail} from 'email/functions/helpers'
+import {type Row} from 'common/supabase/utils'
+import {broadcastUpdatedComment} from 'shared/websockets/helpers'
+import {convertComment} from 'common/supabase/comment'
 
 export const MAX_COMMENT_JSON_LENGTH = 20000
 
 export const createComment: APIHandler<'create-comment'> = async (
-  { userId, content: submittedContent, replyToCommentId },
-  auth
+  {userId, content: submittedContent, replyToCommentId},
+  auth,
 ) => {
-  const { creator, content } = await validateComment(
-    userId,
-    auth.uid,
-    submittedContent
-  )
+  const {creator, content} = await validateComment(userId, auth.uid, submittedContent)
 
   const onUser = await getUser(userId)
   if (!onUser) throw new APIError(404, 'User not found')
@@ -43,7 +36,7 @@ export const createComment: APIHandler<'create-comment'> = async (
       userId,
       content,
       replyToCommentId,
-    ]
+    ],
   )
   if (onUser.id !== creator.id)
     await createNewCommentOnProfileNotification(
@@ -51,19 +44,15 @@ export const createComment: APIHandler<'create-comment'> = async (
       creator,
       richTextToString(content),
       comment.id,
-      pg
+      pg,
     )
 
   broadcastUpdatedComment(convertComment(comment))
 
-  return { status: 'success' }
+  return {status: 'success'}
 }
 
-const validateComment = async (
-  userId: string,
-  creatorId: string,
-  content: JSONContent
-) => {
+const validateComment = async (userId: string, creatorId: string, content: JSONContent) => {
   const creator = await getUser(creatorId)
 
   if (!creator) throw new APIError(401, 'Your account was not found')
@@ -78,10 +67,10 @@ const validateComment = async (
   if (JSON.stringify(content).length > MAX_COMMENT_JSON_LENGTH) {
     throw new APIError(
       400,
-      `Comment is too long; should be less than ${MAX_COMMENT_JSON_LENGTH} as a JSON string.`
+      `Comment is too long; should be less than ${MAX_COMMENT_JSON_LENGTH} as a JSON string.`,
     )
   }
-  return { content, creator }
+  return {content, creator}
 }
 
 const createNewCommentOnProfileNotification = async (
@@ -89,14 +78,16 @@ const createNewCommentOnProfileNotification = async (
   creator: User,
   sourceText: string,
   commentId: number,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   const privateUser = await getPrivateUser(onUser.id)
   if (!privateUser) return
   const id = crypto.randomUUID()
   const reason = 'new_endorsement'
-  const { sendToBrowser, sendToMobile, sendToEmail } =
-    getNotificationDestinationsForUser(privateUser, reason)
+  const {sendToBrowser, sendToMobile, sendToEmail} = getNotificationDestinationsForUser(
+    privateUser,
+    reason,
+  )
   const notification: Notification = {
     id,
     userId: privateUser.id,

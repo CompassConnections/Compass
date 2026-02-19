@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
-import { useEvent } from 'web/hooks/use-event'
+import {useEffect, useRef, useState} from 'react'
+import {useEvent} from 'web/hooks/use-event'
 
 export function VisibilityObserver(props: {
   className?: string
   onVisibilityUpdated: (visible: boolean) => void
 }) {
-  const { className } = props
+  const {className} = props
   const [elem, setElem] = useState<HTMLElement | null>(null)
   const onVisibilityUpdated = useEvent(props.onVisibilityUpdated)
 
@@ -26,7 +26,7 @@ export function LoadMoreUntilNotVisible(props: {
   // Returns true if there are more results.
   loadMore: () => Promise<boolean>
 }) {
-  const { loadMore } = props
+  const {loadMore} = props
   const isVisibleRef = useRef(false)
   const loadMoreIfVisible = useEvent(async () => {
     console.log('loadMoreIfVisible called')

@@ -13,7 +13,7 @@ import {trackCallback} from 'web/lib/service/analytics'
 import {User} from 'common/user'
 import {Col} from 'web/components/layout/col'
 import {useProfile} from 'web/hooks/use-profile'
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 const itemClass =
   'sm:hover:bg-ink-200 block w-full py-1 px-3 text-center sm:hover:text-primary-700 transition-colors'
@@ -21,10 +21,7 @@ const selectedItemClass = 'bg-ink-100 text-primary-700'
 const touchItemClass = 'bg-primary-100'
 
 // From https://codepen.io/chris__sev/pen/QWGvYbL
-export function BottomNavBar(props: {
-  navigationOptions: Item[]
-  sidebarNavigationOptions: Item[]
-}) {
+export function BottomNavBar(props: {navigationOptions: Item[]; sidebarNavigationOptions: Item[]}) {
   const {navigationOptions, sidebarNavigationOptions} = props
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -39,10 +36,11 @@ export function BottomNavBar(props: {
     return null
   }
 
-  return (<Col>
+  return (
+    <Col>
       <nav
         className={clsx(
-          "border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav",
+          'border-ink-200 dark:border-ink-300 text-ink-700 bg-canvas-50 fixed inset-x-0 bottom-0 z-50 flex select-none items-center justify-between border-t-2 text-xs lg:hidden sidebar-nav',
           'safe-bottom',
         )}
       >
@@ -55,14 +53,10 @@ export function BottomNavBar(props: {
           />
         ))}
         <div
-          className={clsx(
-            itemClass,
-            'relative',
-            sidebarOpen ? selectedItemClass : ''
-          )}
+          className={clsx(itemClass, 'relative', sidebarOpen ? selectedItemClass : '')}
           onClick={() => setSidebarOpen(true)}
         >
-          <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true"/>
+          <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true" />
           {t('nav.more', 'More')}
         </div>
         <MobileSidebar
@@ -99,7 +93,7 @@ function ProfileItem(props: {
       className={clsx(
         itemClass,
         touched && touchItemClass,
-        currentPage === '/[username]' && selectedItemClass
+        currentPage === '/[username]' && selectedItemClass,
       )}
       onClick={track}
       onTouchStart={() => setTouched(true)}
@@ -143,11 +137,13 @@ function NavBarItem(props: {
     )
   }
 
-  const element = <>
-    {item.icon && <item.icon className="mx-auto my-1 h-6 w-6"/>}
-    {children}
-    {t(item.key, item.name)}
-  </>
+  const element = (
+    <>
+      {item.icon && <item.icon className="mx-auto my-1 h-6 w-6" />}
+      {children}
+      {t(item.key, item.name)}
+    </>
+  )
 
   if (!item.href) {
     return (
@@ -171,11 +167,7 @@ function NavBarItem(props: {
   return (
     <Link
       href={item.href}
-      className={clsx(
-        itemClass,
-        touched && touchItemClass,
-        isCurrentPage && selectedItemClass
-      )}
+      className={clsx(itemClass, touched && touchItemClass, isCurrentPage && selectedItemClass)}
       onClick={track}
       onTouchStart={() => setTouched(true)}
       onTouchEnd={() => setTouched(false)}
@@ -267,11 +259,7 @@ export function MobileSidebar(props: {
   return (
     <div>
       <Transition.Root show={sidebarOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-50 flex"
-          onClose={setSidebarOpen}
-        >
+        <Dialog as="div" className="fixed inset-0 z-50 flex" onClose={setSidebarOpen}>
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -282,7 +270,7 @@ export function MobileSidebar(props: {
             leaveTo="opacity-0"
           >
             {/* background cover */}
-            <Dialog.Overlay className="bg-canvas-100/75 fixed inset-0"/>
+            <Dialog.Overlay className="bg-canvas-100/75 fixed inset-0" />
           </Transition.Child>
           <Transition.Child
             as={Fragment}
@@ -295,10 +283,7 @@ export function MobileSidebar(props: {
           >
             <div className="bg-canvas-25 relative flex w-full max-w-[200px] flex-1 flex-col">
               <div className="mx-2 h-0 flex-1 overflow-y-auto">
-                <Sidebar
-                  navigationOptions={sidebarNavigationOptions}
-                  isMobile
-                />
+                <Sidebar navigationOptions={sidebarNavigationOptions} isMobile />
               </div>
             </div>
           </Transition.Child>

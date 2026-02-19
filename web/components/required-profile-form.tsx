@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
-import { Input } from 'web/components/widgets/input'
+import {Input} from 'web/components/widgets/input'
 import {Row} from 'web/components/layout/row'
 import {Button} from 'web/components/buttons/button'
 import {labelClassName} from 'web/pages/signup'
@@ -10,8 +10,8 @@ import {User} from 'common/user'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
-import {SignupBio} from "web/components/bio/editable-bio"
-import {Editor} from "@tiptap/core"
+import {SignupBio} from 'web/components/bio/editable-bio'
+import {Editor} from '@tiptap/core'
 import {useT} from 'web/lib/locale'
 import {useProfileDraft} from 'web/hooks/use-profile-draft'
 
@@ -43,7 +43,10 @@ export const RequiredProfileUserForm = (props: {
   setEditUsername?: (name: string) => unknown
   setEditDisplayName?: (name: string) => unknown
   profile: ProfileRow
-  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K] | undefined) => void
+  setProfile: <K extends keyof ProfileWithoutUser>(
+    key: K,
+    value: ProfileWithoutUser[K] | undefined,
+  ) => void
   isSubmitting: boolean
   onSubmit?: () => void
   profileCreatedAlready?: boolean
@@ -62,14 +65,7 @@ export const RequiredProfileUserForm = (props: {
     }
   }, [draftLoaded])
 
-  const {
-    name,
-    username,
-    errorUsername,
-    loadingUsername,
-    loadingName,
-    errorName,
-  } = userInfo
+  const {name, username, errorUsername, loadingUsername, loadingName, errorName} = userInfo
 
   useEffect(() => {
     if (props.setEditUsername) props.setEditUsername(username)
@@ -96,68 +92,75 @@ export const RequiredProfileUserForm = (props: {
   return (
     <>
       {!profileCreatedAlready && <Title>{t('profile.basics.title', 'The Basics')}</Title>}
-      {step === 1 && !profileCreatedAlready &&
-          <div className="text-ink-500 mb-6 text-lg">
-            {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
-          </div>}
+      {step === 1 && !profileCreatedAlready && (
+        <div className="text-ink-500 mb-6 text-lg">
+          {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
+        </div>
+      )}
       <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-fit'}>
-        {(step === 0 || profileCreatedAlready) && <Col>
+        {(step === 0 || profileCreatedAlready) && (
+          <Col>
             <label className={clsx(labelClassName)}>
               {t('profile.basics.display_name', 'Display name')}
             </label>
             <Row className={'items-center gap-2'}>
-                <Input
-                    disabled={loadingName}
-                    type="text"
-                    placeholder="Display name"
-                    value={name}
-                    onChange={(e) => {
-                      updateUserState({name: e.target.value || ''})
-                    }}
-                    onBlur={updateDisplayName}
-                />
-              {loadingName && <LoadingIndicator className={'ml-2'}/>}
+              <Input
+                disabled={loadingName}
+                type="text"
+                placeholder="Display name"
+                value={name}
+                onChange={(e) => {
+                  updateUserState({name: e.target.value || ''})
+                }}
+                onBlur={updateDisplayName}
+              />
+              {loadingName && <LoadingIndicator className={'ml-2'} />}
             </Row>
-          {errorName && <span className="text-error text-sm">{errorName}</span>}
-        </Col>}
+            {errorName && <span className="text-error text-sm">{errorName}</span>}
+          </Col>
+        )}
 
-        {!profileCreatedAlready && <>
-          {step === 0 && <Col>
-              <label className={clsx(labelClassName)}>
-                {t('profile.basics.username', 'Username')}
-              </label>
-              <Row className={'items-center gap-2'}>
+        {!profileCreatedAlready && (
+          <>
+            {step === 0 && (
+              <Col>
+                <label className={clsx(labelClassName)}>
+                  {t('profile.basics.username', 'Username')}
+                </label>
+                <Row className={'items-center gap-2'}>
                   <Input
                     // disabled={loadingUsername}
-                      type="text"
-                      placeholder="Username"
-                      value={username}
-                      onChange={(e) => {
-                        updateUserState({username: e.target.value || '', errorUsername: ''})
-                      }}
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => {
+                      updateUserState({
+                        username: e.target.value || '',
+                        errorUsername: '',
+                      })
+                    }}
                   />
-                {loadingUsername && <LoadingIndicator className={'ml-2'}/>}
-              </Row>
-            {errorUsername && (
-              <span className="text-error text-sm">{errorUsername}</span>
+                  {loadingUsername && <LoadingIndicator className={'ml-2'} />}
+                </Row>
+                {errorUsername && <span className="text-error text-sm">{errorUsername}</span>}
+              </Col>
             )}
-          </Col>}
 
-          {step === 1 && <Col>
-              <label className={clsx(labelClassName)}>
-                {t('profile.basics.bio', 'Bio')}
-              </label>
-              <SignupBio
+            {step === 1 && (
+              <Col>
+                <label className={clsx(labelClassName)}>{t('profile.basics.bio', 'Bio')}</label>
+                <SignupBio
                   profile={profile}
                   onChange={(e: Editor) => {
                     console.debug('bio changed', e, profile.bio)
                     setProfile('bio', e.getJSON())
                     setProfile('bio_length', e.getText().length)
                   }}
-              />
-          </Col>}
-        </>
-        }
+                />
+              </Col>
+            )}
+          </>
+        )}
 
         {onSubmit && (
           <Row className={'justify-end'}>

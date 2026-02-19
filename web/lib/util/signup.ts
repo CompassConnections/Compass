@@ -2,7 +2,7 @@ import Router from 'next/router'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {db} from 'web/lib/supabase/db'
 import {getProfileRow} from 'common/profiles/profile'
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast'
 
 export const signupThenMaybeRedirectToSignup = async () => {
   try {

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { MouseEventHandler, forwardRef } from 'react'
+import {forwardRef, MouseEventHandler} from 'react'
 
 /**
  *  A clickable container that can include buttons and links that work like you want.
@@ -12,9 +12,9 @@ export const ClickFrame = forwardRef(
       onClick: MouseEventHandler<HTMLDivElement>
       className?: string
     },
-    ref: React.Ref<HTMLDivElement>
+    ref: React.Ref<HTMLDivElement>,
   ) => {
-    const { children, onClick, className } = props
+    const {children, onClick, className} = props
 
     return (
       <div
@@ -34,5 +34,5 @@ export const ClickFrame = forwardRef(
         </div>
       </div>
     )
-  }
+  },
 )

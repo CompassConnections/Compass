@@ -1,17 +1,20 @@
-import React from 'react';
+import React from 'react'
 import {PrivateUser, User} from 'common/user'
-import {getNotificationDestinationsForUser, UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
+import {
+  getNotificationDestinationsForUser,
+  UNSUBSCRIBE_URL,
+} from 'common/user-notification-preferences'
 import {sendEmail} from './send-email'
 import {NewMessageEmail} from '../new-message'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {Test} from '../test'
 import {getProfile} from 'shared/profiles/supabase'
-import {render} from "@react-email/render"
-import {MatchesType} from "common/profiles/bookmarked_searches";
-import NewSearchAlertsEmail from "email/new-search_alerts";
-import WelcomeEmail from "email/welcome";
-import * as admin from "firebase-admin";
-import {getOptionsIdsToLabels} from "shared/supabase/options";
+import {render} from '@react-email/render'
+import {MatchesType} from 'common/profiles/bookmarked_searches'
+import NewSearchAlertsEmail from 'email/new-search_alerts'
+import WelcomeEmail from 'email/welcome'
+import * as admin from 'firebase-admin'
+import {getOptionsIdsToLabels} from 'shared/supabase/options'
 
 export const fromEmail = 'Compass <compass@compassmeet.com>'
 
@@ -47,11 +50,11 @@ export const sendNewMessageEmail = async (
   privateUser: PrivateUser,
   fromUser: User,
   toUser: User,
-  channelId: number
+  channelId: number,
 ) => {
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
-    'new_message'
+    'new_message',
   )
   if (!privateUser.email || !sendToEmail) return
 
@@ -74,17 +77,14 @@ export const sendNewMessageEmail = async (
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
-      />
+      />,
     ),
   })
 }
 
-export const sendWelcomeEmail = async (
-  toUser: User,
-  privateUser: PrivateUser,
-) => {
+export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) => {
   if (!privateUser.email) return
-  const verificationLink = await admin.auth().generateEmailVerificationLink(privateUser.email);
+  const verificationLink = await admin.auth().generateEmailVerificationLink(privateUser.email)
   return await sendEmail({
     from: fromEmail,
     subject: `Welcome to Compass!`,
@@ -95,7 +95,7 @@ export const sendWelcomeEmail = async (
         unsubscribeUrl={UNSUBSCRIBE_URL}
         email={privateUser.email}
         verificationLink={verificationLink}
-      />
+      />,
     ),
   })
 }
@@ -107,9 +107,9 @@ export const sendSearchAlertsEmail = async (
 ) => {
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
-    'new_search_alerts'
+    'new_search_alerts',
   )
-  const email = privateUser.email;
+  const email = privateUser.email
   if (!email || !sendToEmail) return
 
   // Determine locale (fallback to 'en') and load option labels before rendering
@@ -128,7 +128,7 @@ export const sendSearchAlertsEmail = async (
         unsubscribeUrl={unsubscribeUrl}
         email={email}
         optionIdsToLabels={optionIdsToLabels}
-      />
+      />,
     ),
   })
 }
@@ -137,11 +137,11 @@ export const sendNewEndorsementEmail = async (
   privateUser: PrivateUser,
   fromUser: User,
   onUser: User,
-  text: string
+  text: string,
 ) => {
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
-    'new_endorsement'
+    'new_endorsement',
   )
   if (!privateUser.email || !sendToEmail) return
 
@@ -156,7 +156,7 @@ export const sendNewEndorsementEmail = async (
         endorsementText={text}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
-      />
+      />,
     ),
   })
 }
@@ -166,6 +166,6 @@ export const sendTestEmail = async (toEmail: string) => {
     from: fromEmail,
     subject: 'Test email from Compass',
     to: toEmail,
-    html: await render(<Test name="Test User"/>),
+    html: await render(<Test name="Test User" />),
   })
 }

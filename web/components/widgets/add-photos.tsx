@@ -22,11 +22,18 @@ export const AddPhotosWidget = (props: {
   setPinnedUrl: (url: string) => void
   setDescription: (url: string, description: string) => void
 }) => {
-  const {user, photo_urls, pinned_url, setPhotoUrls, setPinnedUrl, setDescription, image_descriptions} = props
+  const {
+    user,
+    photo_urls,
+    pinned_url,
+    setPhotoUrls,
+    setPinnedUrl,
+    setDescription,
+    image_descriptions,
+  } = props
   const t = useT()
 
   const [uploadingImages, setUploadingImages] = useState(false)
-
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -37,7 +44,7 @@ export const AddPhotosWidget = (props: {
     const selectedFiles = Array.from(files).slice(0, 6)
 
     const urls = await Promise.all(
-      selectedFiles.map((f) => uploadImage(user.username, f, 'love-images'))
+      selectedFiles.map((f) => uploadImage(user.username, f, 'love-images')),
     ).catch((e) => {
       console.error(e)
       return []
@@ -62,14 +69,14 @@ export const AddPhotosWidget = (props: {
           <label
             className={clsx(
               'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center rounded-md transition-colors',
-              uploadingImages && 'opacity-50 cursor-not-allowed'
+              uploadingImages && 'opacity-50 cursor-not-allowed',
             )}
             htmlFor="photo-upload"
           >
             {uploadingImages ? (
               <div className="mx-auto my-auto h-16 w-16 animate-spin rounded-full border-b-2 border-gray-500"></div>
             ) : (
-              <PlusIcon className="mx-auto my-auto h-16 w-16 text-gray-500"/>
+              <PlusIcon className="mx-auto my-auto h-16 w-16 text-gray-500" />
             )}
           </label>
         </div>
@@ -81,7 +88,7 @@ export const AddPhotosWidget = (props: {
               className={clsx(
                 'relative cursor-pointer rounded-md border-2 p-2',
                 isPinned ? 'border-teal-500' : 'border-canvas-100',
-                'hover:border-teal-900'
+                'hover:border-teal-900',
               )}
               onClick={() => {
                 if (isPinned) return
@@ -91,11 +98,7 @@ export const AddPhotosWidget = (props: {
             >
               {isPinned && (
                 <div className={clsx(' absolute left-0 top-0 rounded-full')}>
-                  <CheckCircleIcon
-                    className={
-                      ' bg-canvas-0 h-6 w-6 rounded-full text-teal-500'
-                    }
-                  />
+                  <CheckCircleIcon className={' bg-canvas-0 h-6 w-6 rounded-full text-teal-500'} />
                 </div>
               )}
               <Button
@@ -107,11 +110,9 @@ export const AddPhotosWidget = (props: {
                 }}
                 color={'gray-outline'}
                 size={'2xs'}
-                className={clsx(
-                  'bg-canvas-0 absolute right-0 top-0 !rounded-full !px-1 py-1'
-                )}
+                className={clsx('bg-canvas-0 absolute right-0 top-0 !rounded-full !px-1 py-1')}
               >
-                <XIcon className={'h-4 w-4'}/>
+                <XIcon className={'h-4 w-4'} />
               </Button>
               <Image
                 src={url}

@@ -1,9 +1,9 @@
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
-import { getCountdownString } from 'web/lib/util/time'
+import {useEffect, useState} from 'react'
+import {getCountdownString} from 'web/lib/util/time'
 
-export function Countdown(props: { endDate: Date; className?: string }) {
-  const { endDate, className } = props
+export function Countdown(props: {endDate: Date; className?: string}) {
+  const {endDate, className} = props
 
   const [countdown, setCountdown] = useState('')
   useEffect(() => {

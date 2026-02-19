@@ -11,7 +11,7 @@ import {updateProfile} from 'web/lib/api'
 import {EditableBio} from './editable-bio'
 import {tryCatch} from 'common/util/try-catch'
 import {useT} from 'web/lib/locale'
-import {Tooltip} from "web/components/widgets/tooltip";
+import {Tooltip} from 'web/components/widgets/tooltip'
 
 export function BioBlock(props: {
   isCurrentUser: boolean
@@ -20,14 +20,14 @@ export function BioBlock(props: {
   edit: boolean
   setEdit: (edit: boolean) => void
 }) {
-  const { isCurrentUser, refreshProfile, profile, edit, setEdit } = props
+  const {isCurrentUser, refreshProfile, profile, edit, setEdit} = props
   const t = useT()
 
   return (
     <Col
       className={clsx(
         'bg-canvas-0 flex-grow whitespace-pre-line rounded-md leading-relaxed',
-        !edit && 'px-3 py-2'
+        !edit && 'px-3 py-2',
       )}
     >
       <Row className="w-full">
@@ -48,25 +48,25 @@ export function BioBlock(props: {
         )}
         {isCurrentUser && !edit && (
           <Tooltip text={t('more_options_user.edit_bio', 'Bio options')} noTap>
-          <DropdownMenu
-            items={[
-              {
-                name: t('profile.bio.edit', 'Edit'),
-                icon: <PencilIcon className="h-5 w-5" />,
-                onClick: () => setEdit(true),
-              },
-              {
-                name: t('profile.bio.delete', 'Delete'),
-                icon: <XIcon className="h-5 w-5" />,
-                onClick: async () => {
-                  const { error } = await tryCatch(updateProfile({ bio: null }))
-                  if (error) console.error(error)
-                  else refreshProfile()
+            <DropdownMenu
+              items={[
+                {
+                  name: t('profile.bio.edit', 'Edit'),
+                  icon: <PencilIcon className="h-5 w-5" />,
+                  onClick: () => setEdit(true),
                 },
-              },
-            ]}
-            closeOnClick
-          />
+                {
+                  name: t('profile.bio.delete', 'Delete'),
+                  icon: <XIcon className="h-5 w-5" />,
+                  onClick: async () => {
+                    const {error} = await tryCatch(updateProfile({bio: null}))
+                    if (error) console.error(error)
+                    else refreshProfile()
+                  },
+                },
+              ]}
+              closeOnClick
+            />
           </Tooltip>
         )}
       </Row>

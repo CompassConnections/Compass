@@ -4,7 +4,7 @@ import {User} from 'common/user'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS,} from 'web/components/layout/modal'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {IndividualQuestionRow} from '../questions-form'
 import {TbMessage} from 'react-icons/tb'
@@ -19,16 +19,13 @@ export function AddQuestionButton(props: {
   refreshAnswers: () => void
 }) {
   const {questions, user, refreshAnswers} = props
-  const [openModal, setOpenModal] = usePersistentInMemoryState(
-    false,
-    `add-question-${user.id}`
-  )
+  const [openModal, setOpenModal] = usePersistentInMemoryState(false, `add-question-${user.id}`)
   const t = useT()
   return (
     <>
       <Button color={'gray-outline'} onClick={() => setOpenModal(true)}>
         <Row className="items-center gap-1">
-          <PlusIcon className="h-4 w-4"/>
+          <PlusIcon className="h-4 w-4" />
           {t('answers.free.add_free_response', 'Add Free Response')}
         </Row>
       </Button>
@@ -51,19 +48,17 @@ function AddQuestionModal(props: {
   refreshAnswers: () => void
 }) {
   const {open, setOpen, questions, user, refreshAnswers} = props
-  const addableQuestions = questions.filter(
-    (q) => q.answer_type === 'free_response'
-  )
+  const addableQuestions = questions.filter((q) => q.answer_type === 'free_response')
   const [selectedQuestion, setSelectedQuestion] =
     usePersistentInMemoryState<QuestionWithCountType | null>(
       null,
-      `selected-added-question-${user.id}}`
+      `selected-added-question-${user.id}}`,
     )
 
   const [expandedQuestion, setExpandedQuestion] =
     usePersistentInMemoryState<QuestionWithCountType | null>(
       null,
-      `selected-expanded-question-${user.id}}`
+      `selected-expanded-question-${user.id}}`,
     )
   const t = useT()
 
@@ -81,7 +76,7 @@ function AddQuestionModal(props: {
                   setExpandedQuestion(null)
                 }}
               >
-                <ArrowLeftIcon className={'h-4 w-4'}/>
+                <ArrowLeftIcon className={'h-4 w-4'} />
               </Button>
               <span className="font-semibold">{expandedQuestion.question}</span>
             </Row>
@@ -118,7 +113,7 @@ function AddQuestionModal(props: {
                       }}
                     >
                       {question.answer_count}
-                      <TbMessage className="h-4 w-4"/>
+                      <TbMessage className="h-4 w-4" />
                     </button>
                   </Row>
                 )
@@ -127,9 +122,7 @@ function AddQuestionModal(props: {
           </>
         ) : (
           <Col className="gap-4">
-            <div className="text-semibold text-lg">
-              {selectedQuestion.question}
-            </div>
+            <div className="text-semibold text-lg">{selectedQuestion.question}</div>
             <IndividualQuestionRow
               user={user}
               row={selectedQuestion}

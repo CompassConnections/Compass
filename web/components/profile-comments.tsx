@@ -30,7 +30,7 @@ import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {safeLocalStorage} from 'web/lib/util/local'
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 export function ProfileProfileCommentThread(props: {
   onUser: User
@@ -55,23 +55,20 @@ export function ProfileProfileCommentThread(props: {
   } = props
   const [replyToUserInfo, setReplyToUserInfo] = useState<ReplyToUserInfo>()
 
-  const idInThisThread =
-    idInUrl && threadComments.map((comment) => comment.id).includes(idInUrl)
+  const idInThisThread = idInUrl && threadComments.map((comment) => comment.id).includes(idInUrl)
 
   const [seeReplies, setSeeReplies] = useState(
-    !parentComment.hidden && (showReplies || !!idInThisThread)
+    !parentComment.hidden && (showReplies || !!idInThisThread),
   )
 
   const onSeeRepliesClick = useEvent(() => setSeeReplies(!seeReplies))
   const clearReply = useEvent(() => setReplyToUserInfo(undefined))
   const onReplyClick = useEvent((comment: Comment) => {
     setSeeReplies(true)
-    setReplyToUserInfo({ id: comment.id, username: comment.userUsername })
+    setReplyToUserInfo({id: comment.id, username: comment.userUsername})
   })
   const [collapseToIndex, setCollapseToIndex] = useState<number>(
-    collapseMiddle && threadComments.length > 2
-      ? threadComments.length - 2
-      : Infinity
+    collapseMiddle && threadComments.length > 2 ? threadComments.length - 2 : Infinity,
   )
   return (
     <Col className={clsx('mt-3 items-stretch gap-3', className)}>
@@ -145,17 +142,10 @@ const ProfileComment = memo(function FeedComment(props: {
   children?: ReactNode
   isParent?: boolean
 }) {
-  const {
-    onUser,
-    highlighted,
-    onReplyClick,
-    children,
-    trackingLocation,
-    isParent,
-  } = props
+  const {onUser, highlighted, onReplyClick, children, trackingLocation, isParent} = props
   const ref = useRef<HTMLDivElement>(null)
   const [comment, setComment] = useState(props.comment)
-  const { userUsername, userAvatarUrl, userId, hidden } = comment
+  const {userUsername, userAvatarUrl, userId, hidden} = comment
   const isOwner = onUser.id === userId
   const profile = useProfileByUserId(userId)
 
@@ -181,7 +171,7 @@ const ProfileComment = memo(function FeedComment(props: {
           <div
             className={clsx(
               'bg-ink-100 dark:bg-ink-300 absolute bottom-0 left-4 w-0.5 group-last:hidden ',
-              isParent ? 'top-0' : '-top-1'
+              isParent ? 'top-0' : '-top-1',
             )}
           />
         </Row>
@@ -191,26 +181,20 @@ const ProfileComment = memo(function FeedComment(props: {
             'grow rounded-lg rounded-tl-none px-3 pb-0.5 pt-1 transition-colors',
             highlighted
               ? 'bg-primary-100 border-primary-300 border-2'
-              : 'bg-canvas-0 drop-shadow-sm'
+              : 'bg-canvas-0 drop-shadow-sm',
           )}
         >
           <FeedCommentHeader
             comment={comment}
             onUser={onUser}
             isParent={isParent}
-            onHide={() => setComment({ ...comment, hidden: !comment.hidden })}
+            onHide={() => setComment({...comment, hidden: !comment.hidden})}
           />
 
           {hidden ? (
-            <span className={'text-ink-500 text-sm italic'}>
-              Comment deleted
-            </span>
+            <span className={'text-ink-500 text-sm italic'}>Comment deleted</span>
           ) : (
-            <Content
-              size="sm"
-              className="mt-1 grow"
-              content={comment.content}
-            />
+            <Content size="sm" className="mt-1 grow" content={comment.content} />
           )}
 
           <Row>
@@ -266,12 +250,8 @@ const ParentProfileComment = memo(function ParentFeedComment(props: {
   )
 })
 
-function DotMenu(props: {
-  onUser: User
-  comment: Comment
-  onHide: () => void
-}) {
-  const { comment, onHide, onUser } = props
+function DotMenu(props: {onUser: User; comment: Comment; onHide: () => void}) {
+  const {comment, onHide, onUser} = props
   const [isModalOpen, setIsModalOpen] = useState(false)
   const user = useUser()
   const isCurrentUser = user?.id === comment.userId
@@ -295,12 +275,7 @@ function DotMenu(props: {
       <DropdownMenu
         menuWidth={'w-36'}
         closeOnClick={true}
-        icon={
-          <DotsHorizontalIcon
-            className="mt-[0.12rem] h-4 w-4"
-            aria-hidden="true"
-          />
-        }
+        icon={<DotsHorizontalIcon className="mt-[0.12rem] h-4 w-4" aria-hidden="true" />}
         items={buildArray(
           user &&
             comment.userId !== user.id && {
@@ -322,23 +297,17 @@ function DotMenu(props: {
                   hide: !comment.hidden,
                 }),
                 {
-                  loading: comment.hidden
-                    ? 'Undeleting comment...'
-                    : 'Deleting comment...',
+                  loading: comment.hidden ? 'Undeleting comment...' : 'Deleting comment...',
                   success: () => {
-                    return comment.hidden
-                      ? 'Comment undeleted'
-                      : 'Comment deleted'
+                    return comment.hidden ? 'Comment undeleted' : 'Comment deleted'
                   },
                   error: () => {
-                    return comment.hidden
-                      ? 'Error undeleting comment'
-                      : 'Error deleting comment'
+                    return comment.hidden ? 'Error undeleting comment' : 'Error deleting comment'
                   },
-                }
+                },
               )
             },
-          }
+          },
         )}
       />
     </>
@@ -350,7 +319,7 @@ function CommentActions(props: {
   comment: Comment
   trackingLocation: string
 }) {
-  const { onReplyClick, comment } = props
+  const {onReplyClick, comment} = props
   const user = useUser()
 
   return (
@@ -382,14 +351,8 @@ export function ProfileCommentInput(props: {
   clearReply?: () => void
   trackingLocation: string
 }) {
-  const {
-    parentCommentId,
-    onUserId,
-    replyToUserInfo,
-    className,
-    clearReply,
-    trackingLocation,
-  } = props
+  const {parentCommentId, onUserId, replyToUserInfo, className, clearReply, trackingLocation} =
+    props
   const t = useT()
   const user = useUser()
   const onSubmitComment = useEvent(async (editor: Editor) => {
@@ -461,7 +424,7 @@ function CommentInput(props: {
     if (editor.state.selection.empty) {
       editor.commands.insertContent(' ')
       const endPos = editor.state.selection.from
-      editor.commands.deleteRange({ from: endPos - 1, to: endPos })
+      editor.commands.deleteRange({from: endPos - 1, to: endPos})
     }
 
     try {
@@ -503,8 +466,8 @@ function FeedCommentHeader(props: {
   onHide: () => void
   isParent?: boolean
 }) {
-  const { comment, onUser, onHide } = props
-  const { userUsername, userName, userId } = comment
+  const {comment, onUser, onHide} = props
+  const {userUsername, userName, userId} = comment
 
   return (
     <Col className={clsx('text-ink-600 text-sm ')}>
@@ -512,7 +475,7 @@ function FeedCommentHeader(props: {
         <Row className=" gap-1">
           <span>
             <UserLink
-              user={{ id: userId, username: userUsername, name: userName }}
+              user={{id: userId, username: userUsername, name: userName}}
               className={'font-semibold'}
             />
           </span>

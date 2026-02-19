@@ -1,9 +1,9 @@
 import {useUser} from 'web/hooks/use-user'
 import {Dispatch, SetStateAction, useMemo} from 'react'
-import clsx from "clsx";
-import {handleReaction} from "web/lib/util/message-reactions";
-import {updateReactionUI} from "web/lib/supabase/chat-messages";
-import {PrivateChatMessage} from "common/chat-message";
+import clsx from 'clsx'
+import {handleReaction} from 'web/lib/util/message-reactions'
+import {updateReactionUI} from 'web/lib/supabase/chat-messages'
+import {PrivateChatMessage} from 'common/chat-message'
 
 interface MessageReactionsProps {
   message: {
@@ -11,20 +11,16 @@ interface MessageReactionsProps {
     reactions?: Record<string, string[]>
   }
   className?: string
-  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>,
+  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>
 }
 
-export function MessageReactions({
-                                   message,
-                                   className,
-                                   setMessages,
-                                 }: MessageReactionsProps) {
+export function MessageReactions({message, className, setMessages}: MessageReactionsProps) {
   const user = useUser()
   const reactions = message.reactions || {}
   // console.log(reactions)
 
   const reactionGroups = useMemo(() => {
-    const groups: { emoji: string; users: string[] }[] = []
+    const groups: {emoji: string; users: string[]}[] = []
 
     // Group reactions by emoji
     for (const [emoji, userIds] of Object.entries(reactions)) {
@@ -56,7 +52,7 @@ export function MessageReactions({
               'flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm',
               hasReacted
                 ? 'bg-primary-50 border-primary-200 text-primary-600'
-                : 'bg-canvas-50 border-ink-200 text-ink-600 hover:bg-ink-50'
+                : 'bg-canvas-50 border-ink-200 text-ink-600 hover:bg-ink-50',
             )}
           >
             <span className="text-base">{emoji}</span>

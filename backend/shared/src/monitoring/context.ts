@@ -1,7 +1,7 @@
 // Shared contextual information that metrics and logging can use, e.g.
 // the scheduler job or HTTP request endpoint currently running.
 
-import { AsyncLocalStorage } from 'node:async_hooks'
+import {AsyncLocalStorage} from 'node:async_hooks'
 
 export type ContextDetails = Record<string, string>
 

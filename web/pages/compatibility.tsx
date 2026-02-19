@@ -1,5 +1,8 @@
 import {useUser} from 'web/hooks/use-user'
-import {useCompatibilityQuestionsWithAnswerCount, useUserCompatibilityAnswers,} from 'web/hooks/use-questions'
+import {
+  useCompatibilityQuestionsWithAnswerCount,
+  useUserCompatibilityAnswers,
+} from 'web/hooks/use-questions'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Row} from 'common/supabase/utils'
 import {Question} from 'web/lib/supabase/questions'
@@ -15,8 +18,8 @@ import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observe
 import {useT} from 'web/lib/locale'
 import {Input} from 'web/components/widgets/input'
 import {debounce} from 'lodash'
-import clsx from "clsx";
-import {SEO} from "web/components/SEO";
+import clsx from 'clsx'
+import {SEO} from 'web/components/SEO'
 
 type QuestionWithAnswer = Question & {
   answer?: Row<'compatibility_answers'>
@@ -31,8 +34,7 @@ export default function CompatibilityPage() {
   const [keyword, setKeyword] = useState('')
   const [debouncedKeyword, setDebouncedKeyword] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const {compatibilityAnswers, refreshCompatibilityAnswers} =
-    useUserCompatibilityAnswers(user?.id)
+  const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
   const {compatibilityQuestions, refreshCompatibilityQuestions, isLoading} =
     useCompatibilityQuestionsWithAnswerCount(debouncedKeyword || undefined)
   const t = useT()
@@ -40,7 +42,7 @@ export default function CompatibilityPage() {
   // Debounce keyword changes
   const debouncedSetKeyword = useMemo(
     () => debounce((value: string) => setDebouncedKeyword(value), 500),
-    []
+    [],
   )
 
   useEffect(() => {
@@ -52,18 +54,14 @@ export default function CompatibilityPage() {
   const questionsWithAnswers = useMemo(() => {
     if (!compatibilityQuestions) return []
 
-    const answerMap = new Map(
-      compatibilityAnswers?.map((a) => [a.question_id, a]) ?? []
-    )
+    const answerMap = new Map(compatibilityAnswers?.map((a) => [a.question_id, a]) ?? [])
 
     return compatibilityQuestions
       .map((q) => ({
         ...q,
         answer: answerMap.get(q.id),
       }))
-      .sort(
-        (a, b) => a.importance_score - b.importance_score
-      ) as QuestionWithAnswer[]
+      .sort((a, b) => a.importance_score - b.importance_score) as QuestionWithAnswer[]
   }, [compatibilityQuestions, compatibilityAnswers])
 
   const {answered, notAnswered, skipped} = useMemo(() => {
@@ -88,10 +86,9 @@ export default function CompatibilityPage() {
 
   useEffect(() => {
     if (user?.id) {
-      Promise.all([
-        refreshCompatibilityAnswers(),
-        refreshCompatibilityQuestions(),
-      ]).finally(() => console.log('refreshed compatibility'))
+      Promise.all([refreshCompatibilityAnswers(), refreshCompatibilityQuestions()]).finally(() =>
+        console.log('refreshed compatibility'),
+      )
     }
   }, [user?.id])
 
@@ -104,21 +101,19 @@ export default function CompatibilityPage() {
     <PageBase trackPageView={'compatibility'}>
       <SEO
         title={t('compatibility.seo.title', 'Compatibility')}
-        description={t('compatibility.seo.description', 'View and manage your compatibility questions')}
+        description={t(
+          'compatibility.seo.description',
+          'View and manage your compatibility questions',
+        )}
         url={`/compatibility`}
       />
       {user ? (
         <Col className="w-full p-4">
-          <Title className="mb-4">
-            {t('compatibility.title', 'Your Compatibility Questions')}
-          </Title>
+          <Title className="mb-4">{t('compatibility.title', 'Your Compatibility Questions')}</Title>
           <Input
             ref={searchInputRef}
             value={keyword}
-            placeholder={t(
-              'compatibility.search_placeholder',
-              'Search questions and answers...'
-            )}
+            placeholder={t('compatibility.search_placeholder', 'Search questions and answers...')}
             className={'w-full max-w-xs mb-4'}
             onChange={(e) => {
               setKeyword(e.target.value)
@@ -175,7 +170,7 @@ export default function CompatibilityPage() {
           <div className="text-xl">
             {t(
               'compatibility.sign_in_prompt',
-              'Please sign in to view your compatibility questions'
+              'Please sign in to view your compatibility questions',
             )}
           </div>
         </div>
@@ -185,13 +180,13 @@ export default function CompatibilityPage() {
 }
 
 function QuestionList({
-                        questions,
-                        status,
-                        isLoading,
-                        user,
-                        refreshCompatibilityAll,
-                        keyword,
-                      }: {
+  questions,
+  status,
+  isLoading,
+  user,
+  refreshCompatibilityAll,
+  keyword,
+}: {
   questions: QuestionWithAnswer[]
   status: 'answered' | 'not-answered' | 'skipped'
   isLoading: boolean
@@ -219,7 +214,7 @@ function QuestionList({
   }, [visibleCount, questions.length])
 
   if (isLoading && questions.length === 0) {
-    return <CompassLoadingIndicator/>
+    return <CompassLoadingIndicator />
   }
 
   if (!isLoading && questions.length === 0) {
@@ -232,20 +227,11 @@ function QuestionList({
         ) : (
           <>
             {status === 'answered' &&
-              t(
-                'compatibility.empty.answered',
-                "You haven't answered any questions yet."
-              )}
+              t('compatibility.empty.answered', "You haven't answered any questions yet.")}
             {status === 'not-answered' &&
-              t(
-                'compatibility.empty.not_answered',
-                'All questions have been answered!'
-              )}
+              t('compatibility.empty.not_answered', 'All questions have been answered!')}
             {status === 'skipped' &&
-              t(
-                'compatibility.empty.skipped',
-                "You haven't skipped any questions."
-              )}
+              t('compatibility.empty.skipped', "You haven't skipped any questions.")}
           </>
         )}
       </div>
@@ -260,8 +246,8 @@ function QuestionList({
         <div
           key={q.id}
           className={clsx(
-            "bg-canvas-0 border-canvas-100 rounded-lg border px-2 pt-2 shadow-sm transition-colors",
-            isLoading && 'animate-pulse opacity-80'
+            'bg-canvas-0 border-canvas-100 rounded-lg border px-2 pt-2 shadow-sm transition-colors',
+            isLoading && 'animate-pulse opacity-80',
           )}
         >
           <CompatibilityAnswerBlock
@@ -275,7 +261,7 @@ function QuestionList({
           />
         </div>
       ))}
-      <LoadMoreUntilNotVisible loadMore={loadMore}/>
+      <LoadMoreUntilNotVisible loadMore={loadMore} />
     </div>
   )
 }

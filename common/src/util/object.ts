@@ -1,4 +1,4 @@
-import { isEqual, mapValues, union } from 'lodash'
+import {isEqual, mapValues, union} from 'lodash'
 
 export const removeUndefinedProps = <T extends object>(obj: T): T => {
   const newObj: any = {}
@@ -9,10 +9,7 @@ export const removeUndefinedProps = <T extends object>(obj: T): T => {
 
   return newObj
 }
-export const removeNullOrUndefinedProps = <T extends object>(
-  obj: T,
-  exceptions?: string[]
-): T => {
+export const removeNullOrUndefinedProps = <T extends object>(obj: T, exceptions?: string[]): T => {
   const newObj: any = {}
 
   for (const key of Object.keys(obj)) {
@@ -25,10 +22,7 @@ export const removeNullOrUndefinedProps = <T extends object>(
   return newObj
 }
 
-export const addObjects = <T extends { [key: string]: number }>(
-  obj1: T,
-  obj2: T
-) => {
+export const addObjects = <T extends {[key: string]: number}>(obj1: T, obj2: T) => {
   const keys = union(Object.keys(obj1), Object.keys(obj2))
   const newObj = {} as any
 
@@ -39,10 +33,7 @@ export const addObjects = <T extends { [key: string]: number }>(
   return newObj as T
 }
 
-export const subtractObjects = <T extends { [key: string]: number }>(
-  obj1: T,
-  obj2: T
-) => {
+export const subtractObjects = <T extends {[key: string]: number}>(obj1: T, obj2: T) => {
   const keys = union(Object.keys(obj1), Object.keys(obj2))
   const newObj = {} as any
 
@@ -61,18 +52,14 @@ export const hasChanges = <T extends object>(obj: T, partial: Partial<T>) => {
 export const hasSignificantDeepChanges = <T extends object>(
   obj: T,
   partial: Partial<T>,
-  epsilonForNumbers: number
+  epsilonForNumbers: number,
 ): boolean => {
   const compareValues = (currValue: any, partialValue: any): boolean => {
     if (typeof currValue === 'number' && typeof partialValue === 'number') {
       return Math.abs(currValue - partialValue) > epsilonForNumbers
     }
     if (typeof currValue === 'object' && typeof partialValue === 'object') {
-      return hasSignificantDeepChanges(
-        currValue,
-        partialValue,
-        epsilonForNumbers
-      )
+      return hasSignificantDeepChanges(currValue, partialValue, epsilonForNumbers)
     }
     return !isEqual(currValue, partialValue)
   }

@@ -1,5 +1,5 @@
 import {constructPrefixTsQuery} from 'shared/helpers/search'
-import {from, limit, orderBy, renderSql, select, where,} from 'shared/supabase/sql-builder'
+import {from, limit, orderBy, renderSql, select, where} from 'shared/supabase/sql-builder'
 import {type APIHandler} from './helpers/endpoint'
 import {convertUser} from 'common/supabase/users'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -45,19 +45,19 @@ function getSearchUserSQL(props: {
     [select('*'), from('users')],
     term
       ? [
-        where(
-          `name_username_vector @@ websearch_to_tsquery('english', $1)
+          where(
+            `name_username_vector @@ websearch_to_tsquery('english', $1)
              or name_username_vector @@ to_tsquery('english', $2)`,
-          [term, constructPrefixTsQuery(term)]
-        ),
+            [term, constructPrefixTsQuery(term)],
+          ),
 
-        orderBy(
-          `ts_rank(name_username_vector, websearch_to_tsquery($1)) desc,
+          orderBy(
+            `ts_rank(name_username_vector, websearch_to_tsquery($1)) desc,
              data->>'lastBetTime' desc nulls last`,
-          [term]
-        ),
-      ]
+            [term],
+          ),
+        ]
       : orderBy(`data->'creatorTraders'->'allTime' desc nulls last`),
-    limit(props.limit, props.offset)
+    limit(props.limit, props.offset),
   )
 }

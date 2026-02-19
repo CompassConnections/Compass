@@ -1,22 +1,22 @@
-import { SparklesIcon } from '@heroicons/react/solid'
+import {SparklesIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { Notification } from 'common/notifications'
+import {Notification} from 'common/notifications'
 import Link from 'next/link'
-import { ReactNode, useState } from 'react'
-import { useIsMobile } from 'web/hooks/use-is-mobile'
-import { Col } from './layout/col'
-import { Row } from './layout/row'
-import { RelativeTimestampNoTooltip } from './relative-timestamp'
-import { Linkify } from './widgets/linkify'
-import { UserLink } from './widgets/user-link'
-import { Avatar } from './widgets/avatar'
-import { MultiUserReactionModal } from './multi-user-reaction-link'
-import { sortBy } from 'lodash'
-import { ENV_CONFIG } from 'common/envs/constants'
+import {ReactNode, useState} from 'react'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {Col} from './layout/col'
+import {Row} from './layout/row'
+import {RelativeTimestampNoTooltip} from './relative-timestamp'
+import {Linkify} from './widgets/linkify'
+import {UserLink} from './widgets/user-link'
+import {Avatar} from './widgets/avatar'
+import {MultiUserReactionModal} from './multi-user-reaction-link'
+import {sortBy} from 'lodash'
+import {ENV_CONFIG} from 'common/envs/constants'
 
-export function NotificationItem(props: { notification: Notification }) {
-  const { notification } = props
-  const { sourceType, reason } = notification
+export function NotificationItem(props: {notification: Notification}) {
+  const {notification} = props
+  const {sourceType, reason} = notification
 
   const [highlighted, setHighlighted] = useState(!notification.isSeen)
 
@@ -35,7 +35,7 @@ export function NotificationItem(props: { notification: Notification }) {
   } else if (reason === 'new_profile_ship') {
     return <ProfileShipNotification {...params} />
   } else {
-    return <BaseNotification {...params}/>
+    return <BaseNotification {...params} />
   }
 }
 
@@ -44,15 +44,13 @@ export function BaseNotification(props: {
   highlighted: boolean
   setHighlighted: (highlighted: boolean) => void
 }) {
-  const { notification, highlighted, setHighlighted } = props
+  const {notification, highlighted, setHighlighted} = props
   return (
     <NotificationFrame
       notification={notification}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={
-        <AvatarNotificationIcon notification={notification} />
-      }
+      icon={<AvatarNotificationIcon notification={notification} />}
       subtitle={
         <div className="line-clamp-5">
           <Linkify text={notification.sourceText} />
@@ -73,8 +71,8 @@ export function CommentOnProfileNotification(props: {
   setHighlighted: (highlighted: boolean) => void
   isChildOfGroup?: boolean
 }) {
-  const { notification, isChildOfGroup, highlighted, setHighlighted } = props
-  const { sourceUserName, sourceUserUsername, sourceText } = notification
+  const {notification, isChildOfGroup, highlighted, setHighlighted} = props
+  const {sourceUserName, sourceUserUsername, sourceText} = notification
   const reasonText = `commented `
   return (
     <NotificationFrame
@@ -82,9 +80,7 @@ export function CommentOnProfileNotification(props: {
       isChildOfGroup={isChildOfGroup}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={
-        <AvatarNotificationIcon notification={notification} symbol={'💬'} />
-      }
+      icon={<AvatarNotificationIcon notification={notification} symbol={'💬'} />}
       subtitle={
         <div className="line-clamp-2">
           <Linkify text={sourceText} />
@@ -93,11 +89,7 @@ export function CommentOnProfileNotification(props: {
       link={notification.sourceSlug}
     >
       <div className="line-clamp-3">
-        <NotificationUserLink
-          name={sourceUserName}
-          username={sourceUserUsername}
-        />{' '}
-        {reasonText}
+        <NotificationUserLink name={sourceUserName} username={sourceUserUsername} /> {reasonText}
         {!isChildOfGroup && <span>on your profile</span>}
       </div>
     </NotificationFrame>
@@ -110,22 +102,15 @@ export function NewMatchNotification(props: {
   setHighlighted: (highlighted: boolean) => void
   isChildOfGroup?: boolean
 }) {
-  const { notification, isChildOfGroup, highlighted, setHighlighted } = props
-  const {
-    sourceContractTitle,
-    sourceText,
-    sourceUserName,
-    sourceUserUsername,
-  } = notification
+  const {notification, isChildOfGroup, highlighted, setHighlighted} = props
+  const {sourceContractTitle, sourceText, sourceUserName, sourceUserUsername} = notification
   return (
     <NotificationFrame
       notification={notification}
       isChildOfGroup={isChildOfGroup}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={
-        <AvatarNotificationIcon notification={notification} symbol={'🌟'} />
-      }
+      icon={<AvatarNotificationIcon notification={notification} symbol={'🌟'} />}
       link={getSourceUrl(notification)}
       subtitle={
         <div className="line-clamp-2">
@@ -134,13 +119,9 @@ export function NewMatchNotification(props: {
       }
     >
       <div className="line-clamp-3">
-        <NotificationUserLink
-          name={sourceUserName}
-          username={sourceUserUsername}
-        />{' '}
+        <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
         <span>
-          proposed a new match:{' '}
-          <PrimaryNotificationLink text={sourceContractTitle} />
+          proposed a new match: <PrimaryNotificationLink text={sourceContractTitle} />
         </span>
       </div>
     </NotificationFrame>
@@ -153,11 +134,12 @@ function ProfileLikeNotification(props: {
   setHighlighted: (highlighted: boolean) => void
   isChildOfGroup?: boolean
 }) {
-  const { notification, highlighted, setHighlighted, isChildOfGroup } = props
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
   const [open, setOpen] = useState(false)
-  const { sourceUserName, sourceUserUsername } = notification
-  const relatedNotifications: Notification[] = notification.data
-    ?.relatedNotifications ?? [notification]
+  const {sourceUserName, sourceUserUsername} = notification
+  const relatedNotifications: Notification[] = notification.data?.relatedNotifications ?? [
+    notification,
+  ]
   const reactorsText =
     relatedNotifications.length > 1
       ? `${sourceUserName} & ${relatedNotifications.length - 1} other${
@@ -170,18 +152,11 @@ function ProfileLikeNotification(props: {
       isChildOfGroup={isChildOfGroup}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={
-        <MultipleAvatarIcons
-          notification={notification}
-          symbol={'💖'}
-          setOpen={setOpen}
-        />
-      }
+      icon={<MultipleAvatarIcons notification={notification} symbol={'💖'} setOpen={setOpen} />}
       link={`https://${ENV_CONFIG.domain}/${sourceUserUsername}`}
       subtitle={<></>}
     >
-      {reactorsText && <PrimaryNotificationLink text={reactorsText} />} liked
-      you!
+      {reactorsText && <PrimaryNotificationLink text={reactorsText} />} liked you!
       <MultiUserReactionModal
         similarNotifications={relatedNotifications}
         modalLabel={'Who liked it?'}
@@ -198,18 +173,19 @@ function ProfileShipNotification(props: {
   setHighlighted: (highlighted: boolean) => void
   isChildOfGroup?: boolean
 }) {
-  const { notification, highlighted, setHighlighted, isChildOfGroup } = props
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
   const [open, setOpen] = useState(false)
-  const { sourceUserName, sourceUserUsername } = notification
-  const relatedNotifications: Notification[] = notification.data
-    ?.relatedNotifications ?? [notification]
+  const {sourceUserName, sourceUserUsername} = notification
+  const relatedNotifications: Notification[] = notification.data?.relatedNotifications ?? [
+    notification,
+  ]
   const reactorsText =
     relatedNotifications.length > 1
       ? `${sourceUserName} & ${relatedNotifications.length - 1} other${
           relatedNotifications.length > 2 ? 's' : ''
         }`
       : sourceUserName
-  const { creatorId, creatorName, creatorUsername } = notification.data ?? {}
+  const {creatorId, creatorName, creatorUsername} = notification.data ?? {}
 
   return (
     <NotificationFrame
@@ -217,18 +193,11 @@ function ProfileShipNotification(props: {
       isChildOfGroup={isChildOfGroup}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={
-        <MultipleAvatarIcons
-          notification={notification}
-          symbol={'💖'}
-          setOpen={setOpen}
-        />
-      }
+      icon={<MultipleAvatarIcons notification={notification} symbol={'💖'} setOpen={setOpen} />}
       link={`https://${ENV_CONFIG.domain}/${sourceUserUsername}`}
       subtitle={<></>}
     >
-      You and {reactorsText && <PrimaryNotificationLink text={reactorsText} />}{' '}
-      are being shipped by{' '}
+      You and {reactorsText && <PrimaryNotificationLink text={reactorsText} />} are being shipped by{' '}
       <NotificationUserLink
         name={creatorName}
         username={creatorUsername}
@@ -247,11 +216,9 @@ function ProfileShipNotification(props: {
 }
 
 const getSourceUrl = (notification: Notification) => {
-  const { sourceSlug, sourceId } = notification
+  const {sourceSlug, sourceId} = notification
   if (sourceSlug) {
-    return `${
-      sourceSlug.startsWith('/') ? sourceSlug : '/' + sourceSlug
-    }#${sourceId}`
+    return `${sourceSlug.startsWith('/') ? sourceSlug : '/' + sourceSlug}#${sourceId}`
   }
   return ''
 }
@@ -264,13 +231,11 @@ export function NotificationUserLink(props: {
   className?: string
   hideBadge?: boolean
 }) {
-  const { userId, name, username, className, hideBadge } = props
+  const {userId, name, username, className, hideBadge} = props
   return (
     <UserLink
-      user={{ id: userId || '', name: name || '', username: username || '' }}
-      className={clsx(
-        className ?? 'hover:text-primary-500 relative flex-shrink-0'
-      )}
+      user={{id: userId || '', name: name || '', username: username || ''}}
+      className={clsx(className ?? 'hover:text-primary-500 relative flex-shrink-0')}
       hideBadge={hideBadge}
     />
   )
@@ -280,9 +245,9 @@ export function AvatarNotificationIcon(props: {
   notification: Notification
   symbol?: string | ReactNode
 }) {
-  const { notification, symbol } = props
-  const { sourceUserName, sourceUserAvatarUrl, sourceUserUsername, sourceSlug } = notification
-  const href = !!sourceUserUsername ? `/${sourceUserUsername}` : sourceSlug ?? '/'
+  const {notification, symbol} = props
+  const {sourceUserName, sourceUserAvatarUrl, sourceUserUsername, sourceSlug} = notification
+  const href = !!sourceUserUsername ? `/${sourceUserUsername}` : (sourceSlug ?? '/')
   return (
     <div className="relative">
       <Link
@@ -307,19 +272,16 @@ export function MultipleAvatarIcons(props: {
   symbol: string
   setOpen: (open: boolean) => void
 }) {
-  const { notification, symbol, setOpen } = props
+  const {notification, symbol, setOpen} = props
   const relatedNotifications: Notification[] = sortBy(
     notification.data?.relatedNotifications ?? [notification],
-    (n) => n.createdTime
+    (n) => n.createdTime,
   )
 
   const combineAvatars = (notifications: Notification[]) => {
     const totalAvatars = notifications.length
     const maxToShow = Math.min(totalAvatars, 3)
-    const avatarsToCombine = notifications.slice(
-      totalAvatars - maxToShow,
-      totalAvatars
-    )
+    const avatarsToCombine = notifications.slice(totalAvatars - maxToShow, totalAvatars)
     const max = avatarsToCombine.length
     const startLeft = -0.35 * (max - 1)
     return avatarsToCombine.map((n, index) => (
@@ -336,10 +298,7 @@ export function MultipleAvatarIcons(props: {
               }
         }
       >
-        <AvatarNotificationIcon
-          notification={n}
-          symbol={index === max - 1 ? symbol : ''}
-        />
+        <AvatarNotificationIcon notification={n} symbol={index === max - 1 ? symbol : ''} />
       </div>
     ))
   }
@@ -353,9 +312,7 @@ export function MultipleAvatarIcons(props: {
       }}
     >
       {relatedNotifications.length > 1 ? (
-        <Col
-          className={`pointer-events-none relative items-center justify-center`}
-        >
+        <Col className={`pointer-events-none relative items-center justify-center`}>
           {/* placeholder avatar to set the proper size*/}
           <Avatar size="md" />
           {combineAvatars(relatedNotifications)}
@@ -367,16 +324,12 @@ export function MultipleAvatarIcons(props: {
   )
 }
 
-export function PrimaryNotificationLink(props: { text: string | undefined }) {
-  const { text } = props
+export function PrimaryNotificationLink(props: {text: string | undefined}) {
+  const {text} = props
   if (!text) {
     return <></>
   }
-  return (
-    <span className="hover:text-primary-500 font-semibold transition-colors">
-      {text}
-    </span>
-  )
+  return <span className="hover:text-primary-500 font-semibold transition-colors">{text}</span>
 }
 
 // the primary skeleton for notifications
@@ -415,16 +368,11 @@ export function NotificationFrame(props: {
         </Col>
 
         <Row className="mt-1 items-center justify-end gap-1 pr-1 sm:w-36">
-          {highlighted && !isMobile && (
-            <SparklesIcon className="text-primary-600 h-4 w-4" />
-          )}
+          {highlighted && !isMobile && <SparklesIcon className="text-primary-600 h-4 w-4" />}
           <RelativeTimestampNoTooltip
             time={notification.createdTime}
             shortened={isMobile}
-            className={clsx(
-              'text-xs',
-              highlighted ? 'text-primary-600' : 'text-ink-700'
-            )}
+            className={clsx('text-xs', highlighted ? 'text-primary-600' : 'text-ink-700')}
           />
         </Row>
       </Row>

@@ -7,7 +7,7 @@ export function genHash(str: string) {
   // xmur3
 
   // Route around compiler bug by using object?
-  const o = { h: 1779033703 ^ str.length }
+  const o = {h: 1779033703 ^ str.length}
 
   for (let i = 0; i < str.length; i++) {
     let h = o.h

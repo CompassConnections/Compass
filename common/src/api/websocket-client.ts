@@ -1,4 +1,4 @@
-import { ClientMessage, ClientMessageType, ServerMessage } from './websockets'
+import {ClientMessage, ClientMessageType, ServerMessage} from './websockets'
 
 // mqp: useful for debugging
 const VERBOSE_LOGGING = false
@@ -13,11 +13,7 @@ type OpenState = typeof WebSocket.OPEN
 type ClosingState = typeof WebSocket.CLOSING
 type ClosedState = typeof WebSocket.CLOSED
 
-export type ReadyState =
-  | OpenState
-  | ConnectingState
-  | ClosedState
-  | ClosingState
+export type ReadyState = OpenState | ConnectingState | ClosedState | ClosingState
 
 export function formatState(state: ReadyState) {
   switch (state) {
@@ -54,7 +50,7 @@ export class APIRealtimeClient {
   // subscribers by the topic they are subscribed to
   subscriptions: Map<string, BroadcastHandler[]>
   connectTimeout?: NodeJS.Timeout
-  heartbeat?: number | undefined;
+  heartbeat?: number | undefined
 
   constructor(url: string) {
     this.url = url
@@ -93,9 +89,9 @@ export class APIRealtimeClient {
       // Send a heartbeat ping every 25s
       this.heartbeat = window.setInterval(() => {
         if (this.ws.readyState === WebSocket.OPEN) {
-          this.sendMessage('ping', {}).catch(console.error);
+          this.sendMessage('ping', {}).catch(console.error)
         }
-      }, 25000);
+      }, 25000)
       if (this.subscriptions.size > 0) {
         this.sendMessage('subscribe', {
           topics: Array.from(this.subscriptions.keys()),
@@ -176,7 +172,7 @@ export class APIRealtimeClient {
 
   async sendMessage<T extends ClientMessageType>(
     type: T,
-    data: Omit<ClientMessage<T>, 'type' | 'txid'>
+    data: Omit<ClientMessage<T>, 'type' | 'txid'>,
   ) {
     if (VERBOSE_LOGGING) {
       console.info(`> Outgoing API websocket ${type} message: `, data)
@@ -188,8 +184,8 @@ export class APIRealtimeClient {
           this.txns.delete(txid)
           reject(new Error(`Websocket message with txid ${txid} timed out.`))
         }, TIMEOUT_MS)
-        this.txns.set(txid, { resolve, reject, timeout })
-        this.ws.send(JSON.stringify({ type, txid, ...data }))
+        this.txns.set(txid, {resolve, reject, timeout})
+        this.ws.send(JSON.stringify({type, txid, ...data}))
       })
     } else {
       // expected if components in the code try to subscribe or unsubscribe
@@ -199,7 +195,7 @@ export class APIRealtimeClient {
   }
 
   async identify(uid: string) {
-    return await this.sendMessage('identify', { uid })
+    return await this.sendMessage('identify', {uid})
   }
 
   async subscribe(topics: string[], handler: BroadcastHandler) {
@@ -207,7 +203,7 @@ export class APIRealtimeClient {
       let existingHandlers = this.subscriptions.get(topic)
       if (existingHandlers == null) {
         this.subscriptions.set(topic, (existingHandlers = [handler]))
-        return await this.sendMessage('subscribe', { topics: [topic] })
+        return await this.sendMessage('subscribe', {topics: [topic]})
       } else {
         existingHandlers.push(handler)
       }
@@ -225,7 +221,7 @@ export class APIRealtimeClient {
           this.subscriptions.set(topic, remainingHandlers)
         } else {
           this.subscriptions.delete(topic)
-          return await this.sendMessage('unsubscribe', { topics: [topic] })
+          return await this.sendMessage('unsubscribe', {topics: [topic]})
         }
       }
     }

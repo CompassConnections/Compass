@@ -1,33 +1,31 @@
 import clsx from 'clsx'
-import { Row as rowFor, run } from 'common/supabase/utils'
-import { User } from 'common/user'
-import { useQuestions } from 'web/hooks/use-questions'
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import { Button } from 'web/components/buttons/button'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { ExpandingInput } from 'web/components/widgets/expanding-input'
-import { Input } from 'web/components/widgets/input'
-import { RadioToggleGroup } from 'web/components/widgets/radio-toggle-group'
-import { Title } from 'web/components/widgets/title'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
-import { useUser } from 'web/hooks/use-user'
-import { track } from 'web/lib/service/analytics'
-import { db } from 'web/lib/supabase/db'
+import {Row as rowFor, run} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {useQuestions} from 'web/hooks/use-questions'
+import {useRouter} from 'next/router'
+import {useEffect} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {ExpandingInput} from 'web/components/widgets/expanding-input'
+import {Input} from 'web/components/widgets/input'
+import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
+import {Title} from 'web/components/widgets/title'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {useUser} from 'web/hooks/use-user'
+import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
 
 export type QuestionType = 'multiple_choice' | 'free_response'
 
-export const QuestionsForm = (props: { questionType: QuestionType }) => {
-  const { questionType } = props
+export const QuestionsForm = (props: {questionType: QuestionType}) => {
+  const {questionType} = props
   const questions = useQuestions()
   const user = useUser()
   const router = useRouter()
   return (
     <Col className={'w-full items-center'}>
-      <Col
-        className={' bg-canvas-0 w-full max-w-2xl justify-between px-6 py-4'}
-      >
+      <Col className={' bg-canvas-0 w-full max-w-2xl justify-between px-6 py-4'}>
         <Title>Questions</Title>
         <Col className={'gap-2'}>
           {user &&
@@ -35,7 +33,7 @@ export const QuestionsForm = (props: { questionType: QuestionType }) => {
               .filter((q) =>
                 questionType !== 'multiple_choice'
                   ? q.answer_type !== 'multiple_choice'
-                  : q.answer_type === 'multiple_choice'
+                  : q.answer_type === 'multiple_choice',
               )
               .map((row) => <QuestionRow user={user} key={row.id} row={row} />)}
         </Col>
@@ -68,7 +66,7 @@ const fetchPrevious = async (id: number, userId: string) => {
       .from('compatibility_answers_free')
       .select('*')
       .eq('question_id', id)
-      .eq('creator_id', userId)
+      .eq('creator_id', userId),
   )
   if (res.data.length) {
     return res.data[0]
@@ -88,11 +86,9 @@ function getInitialForm(userId: string, id: number) {
 
 export const filterKeys = (
   obj: Record<string, any>,
-  predicate: (key: string, value: any) => boolean
+  predicate: (key: string, value: any) => boolean,
 ): Record<string, any> => {
-  const filteredEntries = Object.entries(obj).filter(([key, value]) =>
-    predicate(key, value)
-  )
+  const filteredEntries = Object.entries(obj).filter(([key, value]) => predicate(key, value))
   return Object.fromEntries(filteredEntries)
 }
 
@@ -102,19 +98,17 @@ const submitAnswer = async (newForm: compatibilityAnswerState) => {
     ...filterKeys(newForm, (key, _) => !['id', 'created_time'].includes(key)),
   } as compatibilityAnswerState
   await run(
-    db
-      .from('compatibility_answers_free')
-      .upsert(input, { onConflict: 'question_id,creator_id' })
+    db.from('compatibility_answers_free').upsert(input, {onConflict: 'question_id,creator_id'}),
   )
 }
 
-const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }) => {
-  const { row, user } = props
-  const { question, id, answer_type, multiple_choice_options } = row
+const QuestionRow = (props: {row: rowFor<'compatibility_prompts'>; user: User}) => {
+  const {row, user} = props
+  const {question, id, answer_type, multiple_choice_options} = row
   const options = multiple_choice_options as Record<string, number>
   const [form, setForm] = usePersistentLocalState<compatibilityAnswerState>(
     getInitialForm(user.id, id),
-    `compatibility_answer_${id}_user_${user.id}`
+    `compatibility_answer_${id}_user_${user.id}`,
   )
 
   useEffect(() => {
@@ -133,7 +127,7 @@ const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }
           className={'w-full max-w-xl'}
           rows={3}
           value={form.free_response ?? ''}
-          onChange={(e) => setForm({ ...form, free_response: e.target.value })}
+          onChange={(e) => setForm({...form, free_response: e.target.value})}
           onBlur={() => submitAnswer(form)}
         />
       ) : answer_type === 'multiple_choice' && row.multiple_choice_options ? (
@@ -142,7 +136,7 @@ const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }
           choicesMap={options}
           setChoice={(choice) => {
             // console.debug(choice)
-            const updatedForm = { ...form, multiple_choice: choice }
+            const updatedForm = {...form, multiple_choice: choice}
             setForm(updatedForm)
             submitAnswer(updatedForm)
           }}
@@ -154,9 +148,7 @@ const QuestionRow = (props: { row: rowFor<'compatibility_prompts'>; user: User }
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e) =>
-            setForm({ ...form, integer: Number(e.target.value) })
-          }
+          onChange={(e) => setForm({...form, integer: Number(e.target.value)})}
           value={form.integer ?? undefined}
           onBlur={() => submitAnswer(form)}
         />
@@ -173,12 +165,12 @@ export const IndividualQuestionRow = (props: {
   onSubmit?: () => void
   className?: string
 }) => {
-  const { row, user, onCancel, onSubmit, initialAnswer, className } = props
-  const { id, answer_type, multiple_choice_options } = row
+  const {row, user, onCancel, onSubmit, initialAnswer, className} = props
+  const {id, answer_type, multiple_choice_options} = row
   const options = multiple_choice_options as Record<string, number>
   const [form, setForm] = usePersistentLocalState<compatibilityAnswerState>(
     initialAnswer ?? getInitialForm(user.id, id),
-    `compatibility_answer_${id}_user_${user.id}`
+    `compatibility_answer_${id}_user_${user.id}`,
   )
 
   useEffect(() => {
@@ -196,14 +188,14 @@ export const IndividualQuestionRow = (props: {
           className={'w-full'}
           rows={3}
           value={form.free_response ?? ''}
-          onChange={(e) => setForm({ ...form, free_response: e.target.value })}
+          onChange={(e) => setForm({...form, free_response: e.target.value})}
         />
       ) : answer_type === 'multiple_choice' && row.multiple_choice_options ? (
         <RadioToggleGroup
           className={'w-44'}
           choicesMap={options}
           setChoice={(choice) => {
-            setForm({ ...form, multiple_choice: choice })
+            setForm({...form, multiple_choice: choice})
           }}
           currentChoice={form.multiple_choice ?? -1}
         />
@@ -213,9 +205,7 @@ export const IndividualQuestionRow = (props: {
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e) =>
-            setForm({ ...form, integer: Number(e.target.value) })
-          }
+          onChange={(e) => setForm({...form, integer: Number(e.target.value)})}
           value={form.integer ?? undefined}
         />
       ) : null}

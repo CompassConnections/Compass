@@ -1,15 +1,21 @@
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup, connectAuthEmulator} from 'firebase/auth'
+import {
+  connectAuthEmulator,
+  getAuth,
+  GoogleAuthProvider,
+  signInWithCredential,
+  signInWithPopup,
+} from 'firebase/auth'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
-import {GOOGLE_CLIENT_ID} from "common/constants"
-import {isAndroidApp} from "web/lib/util/webview"
-import {SocialLogin} from "@capgo/capacitor-social-login"
-import {Capacitor} from "@capacitor/core"
-import {IS_FIREBASE_EMULATOR} from "common/envs/constants"
+import {GOOGLE_CLIENT_ID} from 'common/constants'
+import {isAndroidApp} from 'web/lib/util/webview'
+import {SocialLogin} from '@capgo/capacitor-social-login'
+import {Capacitor} from '@capacitor/core'
+import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
 
 dayjs.extend(utc)
 
@@ -18,7 +24,7 @@ export type {User}
 export const auth = getAuth(app)
 
 if (IS_FIREBASE_EMULATOR) {
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', {disableWarnings: true})
 }
 
 // console.log('auth:', auth)
@@ -34,7 +40,7 @@ export function writeReferralInfo(
   otherOptions?: {
     contractId?: string
     explicitReferrer?: string
-  }
+  },
 ) {
   const local = safeLocalStorage
   const cachedReferralUser = local?.getItem(CACHED_REFERRAL_USERNAME_KEY)
@@ -42,10 +48,7 @@ export function writeReferralInfo(
 
   // Write the first referral username we see.
   if (!cachedReferralUser) {
-    local?.setItem(
-      CACHED_REFERRAL_USERNAME_KEY,
-      explicitReferrer || defaultReferrerUsername
-    )
+    local?.setItem(CACHED_REFERRAL_USERNAME_KEY, explicitReferrer || defaultReferrerUsername)
   }
 
   // Overwrite all referral info if we see an explicit referrer.
@@ -89,7 +92,10 @@ export async function googleNativeLogin() {
   await SocialLogin.initialize({google: {webClientId: GOOGLE_CLIENT_ID}})
 
   // Run the native Google OAuth
-  const {result}: any = await SocialLogin.login({provider: 'google', options: {}})
+  const {result}: any = await SocialLogin.login({
+    provider: 'google',
+    options: {},
+  })
 
   console.log('SocialLogin.login result:', JSON.stringify(result))
 

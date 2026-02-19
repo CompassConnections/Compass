@@ -36,15 +36,15 @@ jobs:
           NEXT_PUBLIC_FIREBASE_ENV: DEV
         run: |
           yarn test:coverage
-#          npm install -g lcov-result-merger
-#          mkdir coverage
-#          lcov-result-merger \
-#          "backend/api/coverage/lcov.info" \
-#          "backend/shared/coverage/lcov.info" \
-#          "backend/email/coverage/lcov.info" \
-#          "common/coverage/lcov.info" \
-#          "web/coverage/lcov.info" \
-#          > coverage/lcov.info
+      #          npm install -g lcov-result-merger
+      #          mkdir coverage
+      #          lcov-result-merger \
+      #          "backend/api/coverage/lcov.info" \
+      #          "backend/shared/coverage/lcov.info" \
+      #          "backend/email/coverage/lcov.info" \
+      #          "common/coverage/lcov.info" \
+      #          "web/coverage/lcov.info" \
+      #          > coverage/lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

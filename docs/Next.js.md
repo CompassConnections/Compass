@@ -21,10 +21,12 @@ On Compass, it can be any browser (Chrome, Firefox, etc.).
 
 Any remote infrastructure, i.e., not running in the user's environment / OS. The back-end is the code that runs in that environment.
 On Compass, there are two servers:
+
 - Web server: hosted on Vercel at `compassmeet.com`, which mostly provides the web pages to the client. That's the server we are talking about in the rest of the document.
 - Core server: hosted on Google Cloud at `api.compassmeet.com`, a server with more resources and permissions to update the database. It's in charge of any operation related to non-web data (i.e., no HTML or CSS) such as accounts, profiles, messages, and votes.
 
 ---
+
 ### React
 
 React is a client-side UI library.  
@@ -38,6 +40,7 @@ React itself **does not** define routing, data fetching conventions, or server r
 - React uses a Virtual DOM to compute minimal changes, then applies them to the real DOM.
 
 ---
+
 ### Hydration
 
 When a framework pre-renders HTML on the server, the browser receives static markup (HTML, JS and CSS). React then runs on the client and attaches event listeners and internal state to that markup.  
@@ -54,17 +57,13 @@ React re-renders a component **whenever its state or props change**. Hooks don�
 1. **A state updater runs**
     - `setState(...)` from `useState`
     - `dispatch(...)` from `useReducer`
-        
 2. **Parent props change**
     - Any parent re-render that produces new props for the child
-    
 3. **Context value changes**
     - When a context provider updates its value, all consumers re-render
-        
 4. **External stores change** (in React 18+ “use sync external store” pattern)
     - `useSyncExternalStore`
     - Custom store hooks subscribing to something (auth store, Zustand, Redux, etc.)
-        
 5. **Server → Client hydration mismatch forces a re-render**
     - Rare; usually an error condition
 
@@ -98,8 +97,8 @@ Hydration is **startup initialization**.
 - Variables inside components do **not** persist across renders.
 - Only state, context, memoized values, refs, and hooks preserve information.
 
-
 ---
+
 ### Next.js: What it adds
 
 Next.js is a React framework that controls **where** code runs (server vs client), **when** it runs (build vs request time), and how HTML is generated. It adds routing, rendering strategies, data fetching conventions, and server infrastructure.
@@ -162,6 +161,7 @@ Notes:
 - Runs server logic each time a user requests the page.
 
 Can be dynamic or edge.
+
 ###### λ (Dynamic)
 
 - **Server-rendered on demand using Node.js**
@@ -417,20 +417,15 @@ Fallback generation effectively behaves like **ISR** for pages not pre-rendered.
 ### How to Think About It When Architecting
 
 1. **Default to Server Components** whenever no browser interactivity is needed.  
-    Reduces bundle size and avoids unnecessary hydration.
-    
+   Reduces bundle size and avoids unnecessary hydration.
 2. **Use Client Components** only where interaction happens (buttons, forms, animations, local state).
-    
 3. **Choose a rendering model based on data volatility**:
     - Rarely changing: SSG
     - Somewhat changing and OK with slightly stale: ISR
     - Must always be fresh or personalized: SSR
-        
 4. **Remember:** Hydration cost scales with the amount of Client Components. Keep them narrow.
-    
 5. **Consider caching**:  
-    Next.js can automatically cache server component results; knowing what is cached impacts performance heavily.
-
+   Next.js can automatically cache server component results; knowing what is cached impacts performance heavily.
 
 ### Backend vs Frontend on Next.js
 

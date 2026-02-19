@@ -1,70 +1,63 @@
-import { sortBy } from 'lodash'
-import { pgp, SupabaseDirectClient } from './init'
-import { DataFor, Tables, TableName, Column, Row } from 'common/supabase/utils'
+import {sortBy} from 'lodash'
+import {pgp, SupabaseDirectClient} from './init'
+import {Column, DataFor, Row, TableName, Tables} from 'common/supabase/utils'
 
-export async function insert<
-  T extends TableName,
-  ColumnValues extends Tables[T]['Insert']
->(db: SupabaseDirectClient, table: T, values: ColumnValues) {
+export async function insert<T extends TableName, ColumnValues extends Tables[T]['Insert']>(
+  db: SupabaseDirectClient,
+  table: T,
+  values: ColumnValues,
+) {
   const columnNames = Object.keys(values)
-  const cs = new pgp.helpers.ColumnSet(columnNames, { table })
+  const cs = new pgp.helpers.ColumnSet(columnNames, {table})
   const query = pgp.helpers.insert(values, cs)
   // Hack to properly cast values.
   const q = query.replace(/::(\w*)'/g, "'::$1")
   return await db.one<Row<T>>(q + ` returning *`)
 }
 
-export async function bulkInsert<
-  T extends TableName,
-  ColumnValues extends Tables[T]['Insert']
->(db: SupabaseDirectClient, table: T, values: ColumnValues[]) {
+export async function bulkInsert<T extends TableName, ColumnValues extends Tables[T]['Insert']>(
+  db: SupabaseDirectClient,
+  table: T,
+  values: ColumnValues[],
+) {
   if (values.length == 0) {
     return []
   }
   const columnNames = Object.keys(values[0])
-  const cs = new pgp.helpers.ColumnSet(columnNames, { table })
+  const cs = new pgp.helpers.ColumnSet(columnNames, {table})
   const query = pgp.helpers.insert(values, cs)
   // Hack to properly cast values.
   const q = query.replace(/::(\w*)'/g, "'::$1")
   return await db.many<Row<T>>(q + ` returning *`)
 }
 
-export async function update<
-  T extends TableName,
-  ColumnValues extends Tables[T]['Update']
->(
+export async function update<T extends TableName, ColumnValues extends Tables[T]['Update']>(
   db: SupabaseDirectClient,
   table: T,
   idField: Column<T>,
-  values: ColumnValues
+  values: ColumnValues,
 ) {
   const columnNames = Object.keys(values)
-  const cs = new pgp.helpers.ColumnSet(columnNames, { table })
+  const cs = new pgp.helpers.ColumnSet(columnNames, {table})
   if (!(idField in values)) {
     throw new Error(`missing ${idField} in values for ${columnNames}`)
   }
-  const clause = pgp.as.format(
-    `${idField} = $1`,
-    values[idField as keyof ColumnValues]
-  )
+  const clause = pgp.as.format(`${idField} = $1`, values[idField as keyof ColumnValues])
   const query = pgp.helpers.update(values, cs) + ` WHERE ${clause}`
   // Hack to properly cast values.
   const q = query.replace(/::(\w*)'/g, "'::$1")
   return await db.one<Row<T>>(q + ` returning *`)
 }
 
-export async function bulkUpdate<
-  T extends TableName,
-  ColumnValues extends Tables[T]['Update']
->(
+export async function bulkUpdate<T extends TableName, ColumnValues extends Tables[T]['Update']>(
   db: SupabaseDirectClient,
   table: T,
   idFields: Column<T>[],
-  values: ColumnValues[]
+  values: ColumnValues[],
 ) {
   if (values.length) {
     const columnNames = Object.keys(values[0])
-    const cs = new pgp.helpers.ColumnSet(columnNames, { table })
+    const cs = new pgp.helpers.ColumnSet(columnNames, {table})
     const clause = idFields.map((f) => `v.${f} = t.${f}`).join(' and ')
     const query = pgp.helpers.update(values, cs) + ` WHERE ${clause}`
     // Hack to properly cast values.
@@ -76,24 +69,24 @@ export async function bulkUpdate<
 export async function bulkUpsert<
   T extends TableName,
   ColumnValues extends Tables[T]['Insert'],
-  Col extends Column<T>
+  Col extends Column<T>,
 >(
   db: SupabaseDirectClient,
   table: T,
   idField: Col | Col[],
   values: ColumnValues[],
-  onConflict?: string
+  onConflict?: string,
 ) {
   if (!values.length) return
 
   const columnNames = Object.keys(values[0])
-  const cs = new pgp.helpers.ColumnSet(columnNames, { table })
+  const cs = new pgp.helpers.ColumnSet(columnNames, {table})
   const baseQuery = pgp.helpers.insert(values, cs)
   // Hack to properly cast values.
   const baseQueryReplaced = baseQuery.replace(/::(\w*)'/g, "'::$1")
 
   const primaryKey = Array.isArray(idField) ? idField.join(', ') : idField
-  const upsertAssigns = cs.assignColumns({ from: 'excluded', skip: idField })
+  const upsertAssigns = cs.assignColumns({from: 'excluded', skip: idField})
   const query =
     `${baseQueryReplaced} on ` +
     (onConflict ? onConflict : `conflict(${primaryKey})`) +
@@ -108,21 +101,18 @@ export async function bulkUpdateData<T extends TableName>(
   db: SupabaseDirectClient,
   table: T,
   // TODO: explicit id field
-  updates: (Partial<DataFor<T>> & { id: string })[]
+  updates: (Partial<DataFor<T>> & {id: string})[],
 ) {
   if (updates.length > 0) {
     const values = updates
-      .map(
-        ({ id, ...update }) =>
-          `('${id}', '${JSON.stringify(update).replace("'", "''")}'::jsonb)`
-      )
+      .map(({id, ...update}) => `('${id}', '${JSON.stringify(update).replace("'", "''")}'::jsonb)`)
       .join(',\n')
 
     await db.none(
       `update ${table} as c
         set data = data || v.update
       from (values ${values}) as v(id, update)
-      where c.id = v.id`
+      where c.id = v.id`,
     )
   }
 }
@@ -132,9 +122,9 @@ export async function updateData<T extends TableName>(
   db: SupabaseDirectClient,
   table: T,
   idField: Column<T>,
-  data: DataUpdate<T>
+  data: DataUpdate<T>,
 ) {
-  const { [idField]: id, ...rest } = data
+  const {[idField]: id, ...rest} = data
   if (!id) throw new Error(`Missing id field ${idField} in data`)
 
   const basic: Partial<DataFor<T>> = {}
@@ -147,16 +137,14 @@ export async function updateData<T extends TableName>(
       basic[key as keyof typeof rest] = val
     }
   }
-  const sortedExtraOperations = sortBy(extras, (statement) =>
-    statement.startsWith('-') ? -1 : 1
-  )
+  const sortedExtraOperations = sortBy(extras, (statement) => (statement.startsWith('-') ? -1 : 1))
 
   return await db.one<Row<T>>(
     `update ${table} set data = data
     ${sortedExtraOperations.join('\n')}
     || $1
     where ${idField} = '${id}' returning *`,
-    [JSON.stringify(basic)]
+    [JSON.stringify(basic)],
   )
 }
 
@@ -175,7 +163,7 @@ export const FieldVal = {
     (fieldName: string) => {
       return pgp.as.format(
         `|| jsonb_build_object($1, coalesce(data->$1, '[]'::jsonb) || $2:json)`,
-        [fieldName, values]
+        [fieldName, values],
       )
     },
 
@@ -184,7 +172,7 @@ export const FieldVal = {
     (fieldName: string) => {
       return pgp.as.format(
         `|| jsonb_build_object($1, coalesce(data->$1,'[]'::jsonb) - '{$2:raw}'::text[])`,
-        [fieldName, values.join(',')]
+        [fieldName, values.join(',')],
       )
     },
 }

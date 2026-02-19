@@ -1,9 +1,9 @@
 import {initAdmin} from 'shared/init-admin'
-import {createSupabaseDirectClient, type SupabaseDirectClient,} from 'shared/supabase/init'
-import {refreshConfig} from "common/envs/prod";
+import {createSupabaseDirectClient, type SupabaseDirectClient} from 'shared/supabase/init'
+import {refreshConfig} from 'common/envs/prod'
 
 export const runScript = async (
-  main: (services: { pg: SupabaseDirectClient }) => Promise<any> | any
+  main: (services: {pg: SupabaseDirectClient}) => Promise<any> | any,
 ) => {
   initAdmin()
   await initEnvVariables()
@@ -16,9 +16,8 @@ export const runScript = async (
   await main({pg})
 }
 
-
 export async function initEnvVariables() {
   const {config} = await import('dotenv')
-  config({ path: __dirname + '/../../.env' })
+  config({path: __dirname + '/../../.env'})
   refreshConfig()
 }

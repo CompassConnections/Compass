@@ -1,9 +1,9 @@
-import { Popover } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import {Popover} from '@headlessui/react'
+import {ChevronDownIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { useState } from 'react'
-import { usePopper } from 'react-popper'
-import { Input } from './input'
+import {useState} from 'react'
+import {usePopper} from 'react-popper'
+import {Input} from './input'
 
 export type Suggestion = {
   id: string
@@ -20,45 +20,35 @@ export function SearchableSelect(props: {
   className?: string
   allowCustom?: boolean
 }) {
-  const {
-    value,
-    onChange,
-    suggestions,
-    placeholder,
-    parentClassName,
-    className,
-    allowCustom,
-  } = props
+  const {value, onChange, suggestions, placeholder, parentClassName, className, allowCustom} = props
   const [query, setQuery] = useState('')
 
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>()
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>()
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>()
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+  const {styles, attributes} = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
   })
 
   // Filter suggestions based on search
   const filteredSuggestions = suggestions.filter((s) =>
-    s.label.toLowerCase().includes(query.toLowerCase())
+    s.label.toLowerCase().includes(query.toLowerCase()),
   )
 
   // Show custom option if allowed and no matches
-  const showCustom =
-    allowCustom && query.length > 0 && filteredSuggestions.length === 0
+  const showCustom = allowCustom && query.length > 0 && filteredSuggestions.length === 0
 
   // Find the current suggestion for display
   const currentSuggestion = suggestions.find((s) => s.id === value)
 
   return (
     <Popover className={clsx('relative', parentClassName)}>
-      {({ open: _open, close }) => (
+      {({open: _open, close}) => (
         <>
           <Popover.Button
             ref={setReferenceElement}
             className={clsx(
               'bg-canvas-0 border-ink-300 flex w-32 items-center justify-between rounded-md border px-3 py-2 text-left text-sm shadow-sm focus:outline-none',
-              className
+              className,
             )}
           >
             <span className="truncate">
@@ -88,7 +78,7 @@ export function SearchableSelect(props: {
                     key={suggestion.id}
                     className={clsx(
                       'hover:bg-primary-100 flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm',
-                      value === suggestion.id && 'bg-primary-50'
+                      value === suggestion.id && 'bg-primary-50',
                     )}
                     onClick={() => {
                       onChange(suggestion.id)

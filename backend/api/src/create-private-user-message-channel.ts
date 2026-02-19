@@ -13,10 +13,7 @@ export const createPrivateUserMessageChannel: APIHandler<
   const user = await admin.auth().getUser(auth.uid)
   // console.log(JSON.stringify(user, null, 2))
   if (!user?.emailVerified) {
-    throw new APIError(
-      403,
-      'You must verify your email to contact people.'
-    )
+    throw new APIError(403, 'You must verify your email to contact people.')
   }
 
   const userIds = uniq(body.userIds.concat(auth.uid))
@@ -27,27 +24,22 @@ export const createPrivateUserMessageChannel: APIHandler<
   const creator = await getUser(creatorId)
   if (!creator) throw new APIError(401, 'Your account was not found')
   if (creator.isBannedFromPosting) throw new APIError(403, 'You are banned')
-  const toPrivateUsers = filterDefined(
-    await Promise.all(userIds.map((id) => getPrivateUser(id)))
-  )
+  const toPrivateUsers = filterDefined(await Promise.all(userIds.map((id) => getPrivateUser(id))))
 
   if (toPrivateUsers.length !== userIds.length)
     throw new APIError(
       404,
       `Private user ${userIds.find(
-        (uid) => !toPrivateUsers.map((p) => p.id).includes(uid)
-      )} not found`
+        (uid) => !toPrivateUsers.map((p) => p.id).includes(uid),
+      )} not found`,
     )
 
   if (
     toPrivateUsers.some((user) =>
-      user.blockedUserIds.some((blockedId) => userIds.includes(blockedId))
+      user.blockedUserIds.some((blockedId) => userIds.includes(blockedId)),
     )
   ) {
-    throw new APIError(
-      403,
-      'One of the users has blocked another user in the list'
-    )
+    throw new APIError(403, 'One of the users has blocked another user in the list')
   }
 
   const currentChannel = await pg.oneOrNone(
@@ -58,7 +50,7 @@ export const createPrivateUserMessageChannel: APIHandler<
         having array_agg(user_id::text) @> array [$1]::text[]
            and array_agg(user_id::text) <@ array [$1]::text[]
     `,
-    [userIds]
+    [userIds],
   )
   if (currentChannel)
     return {
@@ -69,14 +61,14 @@ export const createPrivateUserMessageChannel: APIHandler<
   const channel = await pg.one(
     `insert into private_user_message_channels default
      values
-     returning id`
+     returning id`,
   )
 
   await pg.none(
     `insert into private_user_message_channel_members (channel_id, user_id, role, status)
      values ($1, $2, 'creator', 'joined')
     `,
-    [channel.id, creatorId]
+    [channel.id, creatorId],
   )
 
   const memberIds = userIds.filter((id) => id !== creatorId)

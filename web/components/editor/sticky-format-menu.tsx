@@ -24,7 +24,7 @@ export function StickyFormatMenu(props: {
 
   return (
     <Row className="text-ink-600 h-8 items-center">
-      <UploadButton key={'upload-button'} upload={upload}/>
+      <UploadButton key={'upload-button'} upload={upload} />
       {!hideEmbed && (
         <ToolbarButton
           key={'embed-button'}
@@ -35,7 +35,7 @@ export function StickyFormatMenu(props: {
             setIframeOpen(true)
           }}
         >
-          <CodeIcon className="h-5 w-5" aria-hidden="true"/>
+          <CodeIcon className="h-5 w-5" aria-hidden="true" />
         </ToolbarButton>
       )}
       <ToolbarButton
@@ -43,17 +43,17 @@ export function StickyFormatMenu(props: {
         label={t('sticky_format_menu.add_emoji', 'Add emoji')}
         onClick={() => insertEmoji(editor)}
       >
-        <EmojiHappyIcon className="h-5 w-5"/>
+        <EmojiHappyIcon className="h-5 w-5" />
       </ToolbarButton>
 
-      <EmbedModal editor={editor} open={iframeOpen} setOpen={setIframeOpen}/>
-      <div className="grow"/>
+      <EmbedModal editor={editor} open={iframeOpen} setOpen={setIframeOpen} />
+      <div className="grow" />
       {children}
     </Row>
   )
 }
 
-function UploadButton(props: { upload: UploadMutation }) {
+function UploadButton(props: {upload: UploadMutation}) {
   const {upload} = props
   const t = useT()
 
@@ -68,7 +68,7 @@ function UploadButton(props: { upload: UploadMutation }) {
         className="hover:text-ink-700 disabled:text-ink-300 active:text-ink-800 text-ink-400 relative flex rounded px-3 py-1 pl-4 transition-colors"
       >
         <Row className={'items-center justify-start gap-2'}>
-          <PhotographIcon className="h-5 w-5" aria-hidden="true"/>
+          <PhotographIcon className="h-5 w-5" aria-hidden="true" />
           {upload?.isLoading && (
             <LoadingIndicator
               className="absolute bottom-0 left-0 right-0 top-0"

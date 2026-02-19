@@ -1,8 +1,8 @@
-import { RefObject, useEffect } from 'react'
+import {RefObject, useEffect} from 'react'
 
 export function useClickOutside<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>,
-  callback: (event: MouseEvent | TouchEvent) => void
+  callback: (event: MouseEvent | TouchEvent) => void,
 ) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {

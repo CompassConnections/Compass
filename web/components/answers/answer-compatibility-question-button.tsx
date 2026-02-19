@@ -5,11 +5,11 @@ import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
-import router from "next/router";
-import Link from "next/link";
+import router from 'next/router'
+import Link from 'next/link'
 import {useT} from 'web/lib/locale'
-import clsx from "clsx";
-import toast from "react-hot-toast";
+import clsx from 'clsx'
+import toast from 'react-hot-toast'
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
@@ -18,27 +18,29 @@ export function AnswerCompatibilityQuestionButton(props: {
   fromSignup?: boolean
   size?: 'sm' | 'md'
 }) {
-  const {
-    user,
-    otherQuestions,
-    refreshCompatibilityAll,
-    fromSignup,
-    size = 'md',
-  } = props
+  const {user, otherQuestions, refreshCompatibilityAll, fromSignup, size = 'md'} = props
   const [open, setOpen] = useState(fromSignup ?? false)
   const t = useT()
   if (!user) return null
   if (!fromSignup && otherQuestions.length === 0) return null
   const isCore = otherQuestions.some((q) => q.importance_score === 0)
-  const questionsToAnswer = isCore ? otherQuestions.filter((q) => q.importance_score === 0) : otherQuestions
+  const questionsToAnswer = isCore
+    ? otherQuestions.filter((q) => q.importance_score === 0)
+    : otherQuestions
   return (
     <>
       {size === 'md' ? (
-        <Button onClick={() => setOpen(true)} color="none" className={'px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 hover:text-ink-900'}>
-          {t('answers.answer.cta', 'Answer{core} Questions', { core: isCore ? ' Core' : '' })}{' '}
-          <span className="text-primary-600 ml-2">
-            +{questionsToAnswer.length}
-          </span>
+        <Button
+          onClick={() => setOpen(true)}
+          color="none"
+          className={
+            'px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 hover:text-ink-900'
+          }
+        >
+          {t('answers.answer.cta', 'Answer{core} Questions', {
+            core: isCore ? ' Core' : '',
+          })}{' '}
+          <span className="text-primary-600 ml-2">+{questionsToAnswer.length}</span>
         </Button>
       ) : (
         <button
@@ -69,7 +71,9 @@ export function CompatibilityPageButton() {
     <Link
       href="/compatibility"
       className="px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 flex items-center justify-center text-center"
-    >{t('answers.answer.view_list', 'View List of Questions')}</Link>
+    >
+      {t('answers.answer.view_list', 'View List of Questions')}
+    </Link>
   )
 }
 
@@ -85,11 +89,10 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
   if (!user) return null
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="text-ink-500 text-sm hover:underline"
-      >
-        {t('answers.answer.answer_skipped', 'Answer {n} skipped questions', { n: String(skippedQuestions.length) })}{' '}
+      <button onClick={() => setOpen(true)} className="text-ink-500 text-sm hover:underline">
+        {t('answers.answer.answer_skipped', 'Answer {n} skipped questions', {
+          n: String(skippedQuestions.length),
+        })}{' '}
       </button>
       <AnswerCompatibilityQuestionModal
         open={open}
@@ -103,42 +106,44 @@ export function AnswerSkippedCompatibilityQuestionsButton(props: {
   )
 }
 
-function CompatibilityOnboardingScreen({onNext, onSkip}: { onNext: () => void; onSkip: () => void }) {
+function CompatibilityOnboardingScreen({onNext, onSkip}: {onNext: () => void; onSkip: () => void}) {
   const t = useT()
 
   return (
-    <Col className={clsx(SCROLLABLE_MODAL_CLASS, "max-w-2xl mx-auto text-center px-6")}>
+    <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'max-w-2xl mx-auto text-center px-6')}>
       <h1 className="text-4xl font-bold text-ink-900 mb-6">
-        {t('compatibility.onboarding.title', 'See who you\'ll actually align with')}
+        {t('compatibility.onboarding.title', "See who you'll actually align with")}
       </h1>
 
       <div className="text-lg text-ink-700 leading-relaxed mb-8 space-y-4">
         <p>
-          {t('compatibility.onboarding.body1', 'Answer a few short questions to calculate compatibility based on values and preferences — not photos or swipes.')}
+          {t(
+            'compatibility.onboarding.body1',
+            'Answer a few short questions to calculate compatibility based on values and preferences — not photos or swipes.',
+          )}
         </p>
         <p>
-          {t('compatibility.onboarding.body2', 'Your answers directly affect who matches with you and how strongly.')}
+          {t(
+            'compatibility.onboarding.body2',
+            'Your answers directly affect who matches with you and how strongly.',
+          )}
         </p>
       </div>
 
       <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-8">
         <p className="text-primary-800 font-medium">
-          {t('compatibility.onboarding.impact', 'Most people who answer at least 5 questions see far more relevant matches.')}
+          {t(
+            'compatibility.onboarding.impact',
+            'Most people who answer at least 5 questions see far more relevant matches.',
+          )}
         </p>
       </div>
 
       <Col className="gap-4">
-        <Button
-          onClick={onNext}
-          size="lg"
-          className="w-full max-w-xs mx-auto"
-        >
+        <Button onClick={onNext} size="lg" className="w-full max-w-xs mx-auto">
           {t('compatibility.onboarding.start', 'Start answering')}
         </Button>
-        <button
-          onClick={onSkip}
-          className="text-sm text-ink-500 hover:text-ink-700 underline"
-        >
+        <button onClick={onSkip} className="text-sm text-ink-500 hover:text-ink-700 underline">
           {t('compatibility.onboarding.later', 'Do this later')}
         </button>
       </Col>
@@ -172,7 +177,7 @@ function AnswerCompatibilityQuestionModal(props: {
     setShowOnboarding(false)
     setOpen(false)
   }
-  
+
   return (
     <Modal
       open={open}

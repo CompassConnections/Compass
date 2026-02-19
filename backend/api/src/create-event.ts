@@ -38,7 +38,7 @@ export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
       event_start_time: body.eventStartTime,
       event_end_time: body.eventEndTime,
       max_participants: body.maxParticipants,
-    })
+    }),
   )
 
   if (error) {

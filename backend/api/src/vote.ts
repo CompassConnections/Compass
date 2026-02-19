@@ -1,8 +1,8 @@
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { getUser } from 'shared/utils'
-import { APIHandler, APIError } from './helpers/endpoint'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser} from 'shared/utils'
+import {APIError, APIHandler} from './helpers/endpoint'
 
-export const vote: APIHandler<'vote'> = async ({ voteId, choice, priority }, auth) => {
+export const vote: APIHandler<'vote'> = async ({voteId, choice, priority}, auth) => {
   const user = await getUser(auth.uid)
   if (!user) throw new APIError(401, 'Your account was not found')
 
@@ -10,9 +10,9 @@ export const vote: APIHandler<'vote'> = async ({ voteId, choice, priority }, aut
 
   // Map string choice to smallint (-1, 0, 1)
   const choiceMap: Record<string, number> = {
-    'for': 1,
-    'abstain': 0,
-    'against': -1,
+    for: 1,
+    abstain: 0,
+    against: -1,
   }
   const choiceVal = choiceMap[choice]
   if (choiceVal === undefined) {
@@ -32,7 +32,7 @@ export const vote: APIHandler<'vote'> = async ({ voteId, choice, priority }, aut
 
   try {
     const result = await pg.one(query, [user.id, voteId, choiceVal, priority])
-    return { data: result }
+    return {data: result}
   } catch (e) {
     throw new APIError(500, 'Error recording vote', e as any)
   }

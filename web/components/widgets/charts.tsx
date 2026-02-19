@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react";
-import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {getCompletedProfilesCreations, getProfilesCreations} from "web/lib/supabase/users";
-import {useT} from "web/lib/locale";
+import {useEffect, useState} from 'react'
+import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
+import {getCompletedProfilesCreations, getProfilesCreations} from 'web/lib/supabase/users'
+import {useT} from 'web/lib/locale'
 
 // Helper to convert rows into date -> count map
 function buildCounts(rows: any[]) {
@@ -24,7 +24,6 @@ function cumulativeFromCounts(counts: Record<string, number>, sortedDates: strin
   }
   return out
 }
-
 
 export default function ChartMembers() {
   const [data, setData] = useState<any[]>([])
@@ -59,14 +58,8 @@ export default function ChartMembers() {
       // Build a full daily date range from min to max date for equidistant time axis
       const allDates = Object.keys(countsAll)
       const completedDates = Object.keys(countsCompleted)
-      const minDateStr = [
-        ...allDates,
-        ...completedDates,
-      ].sort((a, b) => a.localeCompare(b))[0]
-      const maxDateStr = [
-        ...allDates,
-        ...completedDates,
-      ].sort((a, b) => b.localeCompare(a))[0]
+      const minDateStr = [...allDates, ...completedDates].sort((a, b) => a.localeCompare(b))[0]
+      const maxDateStr = [...allDates, ...completedDates].sort((a, b) => b.localeCompare(a))[0]
 
       function toISODate(d: Date) {
         return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
@@ -119,36 +112,43 @@ export default function ChartMembers() {
             textAnchor="middle"
             dominantBaseline="middle"
             style={{
-              fontSize: "16px",
+              fontSize: '16px',
               fontWeight: 600,
-              fill: "rgb(var(--color-primary-900))",
+              fill: 'rgb(var(--color-primary-900))',
             }}
           >
-            {t("stats.number_members", "Number of Members")}
+            {t('stats.number_members', 'Number of Members')}
           </text>
           {/*<CartesianGrid strokeDasharray="3 3"/>*/}
           <XAxis
             dataKey="dateTs"
             type="number"
             scale="time"
-            domain={["dataMin", "dataMax"]}
-            tickFormatter={(ts) => new Date(ts).toISOString().split("T")[0]}
-            label={{value: t('charts.date', 'Date'), position: 'insideBottomRight', offset: -5}}
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={(ts) => new Date(ts).toISOString().split('T')[0]}
+            label={{
+              value: t('charts.date', 'Date'),
+              position: 'insideBottomRight',
+              offset: -5,
+            }}
           />
-          <YAxis/>
+          <YAxis />
           <Tooltip
             contentStyle={{
-              backgroundColor: "rgb(var(--color-canvas-100))",
-              border: "none",
-              borderRadius: "8px",
-              color: "rgb(var(--color-primary-900))",
+              backgroundColor: 'rgb(var(--color-canvas-100))',
+              border: 'none',
+              borderRadius: '8px',
+              color: 'rgb(var(--color-primary-900))',
             }}
             labelStyle={{
-              color: "rgb(var(--color-primary-900))",
+              color: 'rgb(var(--color-primary-900))',
             }}
-            labelFormatter={(value, payload) => (payload && payload[0] && payload[0].payload?.date) || new Date(value as number).toISOString().split("T")[0]}
+            labelFormatter={(value, payload) =>
+              (payload && payload[0] && payload[0].payload?.date) ||
+              new Date(value as number).toISOString().split('T')[0]
+            }
           />
-          <Legend/>
+          <Legend />
           <Line
             type="monotone"
             dataKey="profilesCreations"

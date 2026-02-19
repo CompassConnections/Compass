@@ -1,9 +1,9 @@
-import { Modal } from 'web/components/layout/modal'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Button } from 'web/components/buttons/button'
-import { EyeIcon, LockClosedIcon } from '@heroicons/react/outline'
-import { useT } from 'web/lib/locale'
+import {Modal} from 'web/components/layout/modal'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Button} from 'web/components/buttons/button'
+import {EyeIcon, LockClosedIcon} from '@heroicons/react/outline'
+import {useT} from 'web/lib/locale'
 
 export function VisibilityConfirmationModal(props: {
   open: boolean
@@ -11,7 +11,7 @@ export function VisibilityConfirmationModal(props: {
   currentVisibility: 'public' | 'member'
   onConfirm: () => void
 }) {
-  const { open, setOpen, currentVisibility, onConfirm } = props
+  const {open, setOpen, currentVisibility, onConfirm} = props
   const isMakingPublic = currentVisibility === 'member'
   const t = useT()
 
@@ -26,14 +26,8 @@ export function VisibilityConfirmationModal(props: {
           )}
           <span>
             {isMakingPublic
-              ? t(
-                  'profile.visibility.question.public',
-                  'Make profile visible publicly?'
-                )
-              : t(
-                  'profile.visibility.question.member',
-                  'Limit profile to members only?'
-                )}
+              ? t('profile.visibility.question.public', 'Make profile visible publicly?')
+              : t('profile.visibility.question.member', 'Limit profile to members only?')}
           </span>
         </Row>
 
@@ -41,11 +35,11 @@ export function VisibilityConfirmationModal(props: {
           {isMakingPublic
             ? t(
                 'profile.visibility.desc.public',
-                'Your profile will be visible to any visitor without logging in.'
+                'Your profile will be visible to any visitor without logging in.',
               )
             : t(
                 'profile.visibility.desc.member',
-                'Your profile will only be visible to members. Visitors will have to log in to view your profile.'
+                'Your profile will only be visible to members. Visitors will have to log in to view your profile.',
               )}
         </div>
 

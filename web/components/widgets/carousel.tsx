@@ -1,9 +1,9 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { throttle } from 'lodash'
-import { useState, useEffect, forwardRef, useRef, Ref, ReactNode } from 'react'
-import { Row } from '../layout/row'
-import { VisibilityObserver } from 'web/components/widgets/visibility-observer'
+import {throttle} from 'lodash'
+import {forwardRef, ReactNode, Ref, useEffect, useRef, useState} from 'react'
+import {Row} from '../layout/row'
+import {VisibilityObserver} from 'web/components/widgets/visibility-observer'
 
 export function Carousel(props: {
   children: ReactNode
@@ -11,13 +11,11 @@ export function Carousel(props: {
   className?: string
   labelsParentClassName?: string
 }) {
-  const { children, labelsParentClassName, loadMore, className } = props
+  const {children, labelsParentClassName, loadMore, className} = props
 
   const ref = useRef<HTMLDivElement>(null)
 
-  const { scrollLeft, scrollRight, atFront, atBack, onScroll } = useCarousel(
-    ref.current
-  )
+  const {scrollLeft, scrollRight, atFront, atBack, onScroll} = useCarousel(ref.current)
 
   useEffect(onScroll, [children])
 
@@ -26,7 +24,7 @@ export function Carousel(props: {
       <Row
         className={clsx(
           'scrollbar-hide w-full snap-x overflow-x-auto scroll-smooth',
-          labelsParentClassName ?? 'gap-4'
+          labelsParentClassName ?? 'gap-4',
         )}
         ref={ref}
         onScroll={onScroll}
@@ -72,7 +70,7 @@ export const ControlledCarousel = forwardRef(function (
     atFront: boolean
     atBack: boolean
   },
-  current: Ref<HTMLDivElement>
+  current: Ref<HTMLDivElement>,
 ) {
   const {
     children,
@@ -91,7 +89,7 @@ export const ControlledCarousel = forwardRef(function (
       <Row
         className={clsx(
           'scrollbar-hide w-full snap-x overflow-x-auto scroll-smooth',
-          labelsParentClassName ?? 'gap-4'
+          labelsParentClassName ?? 'gap-4',
         )}
         ref={current}
         onScroll={onScroll}
@@ -126,19 +124,19 @@ export const ControlledCarousel = forwardRef(function (
 })
 
 export const useCarousel = (carouselRef: HTMLDivElement | null) => {
-  const th = (f: () => any) => throttle(f, 500, { trailing: false })
+  const th = (f: () => any) => throttle(f, 500, {trailing: false})
   const scrollLeft = th(() => {
-    carouselRef?.scrollBy({ left: -(carouselRef.clientWidth - 80) })
+    carouselRef?.scrollBy({left: -(carouselRef.clientWidth - 80)})
   })
   const scrollRight = th(() => {
-    carouselRef?.scrollBy({ left: carouselRef.clientWidth - 80 })
+    carouselRef?.scrollBy({left: carouselRef.clientWidth - 80})
   })
 
   const [atFront, setAtFront] = useState(true)
   const [atBack, setAtBack] = useState(true)
   const onScroll = throttle(() => {
     if (carouselRef) {
-      const { scrollLeft, clientWidth, scrollWidth } = carouselRef
+      const {scrollLeft, clientWidth, scrollWidth} = carouselRef
       setAtFront(scrollLeft < 80)
       setAtBack(scrollWidth - (clientWidth + scrollLeft) < 80)
     }

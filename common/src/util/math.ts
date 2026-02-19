@@ -1,4 +1,4 @@
-import { sortBy, sum } from 'lodash'
+import {sortBy, sum} from 'lodash'
 
 export const logInterpolation = (min: number, max: number, value: number) => {
   if (value <= min) return 0

@@ -3,7 +3,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const createBookmarkedSearch: APIHandler<'create-bookmarked-search'> = async (
   props,
-  auth
+  auth,
 ) => {
   const creator_id = auth.uid
   const {search_filters, location = null, search_name = null} = props
@@ -16,7 +16,7 @@ export const createBookmarkedSearch: APIHandler<'create-bookmarked-search'> = as
       VALUES ($1, $2, $3, $4)
       RETURNING *
     `,
-    [creator_id, search_filters, location, search_name]
+    [creator_id, search_filters, location, search_name],
   )
 
   return inserted

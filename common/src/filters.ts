@@ -1,7 +1,7 @@
-import {Profile, ProfileRow} from "common/profiles/profile";
-import {cloneDeep} from "lodash";
-import {filterDefined} from "common/util/array";
-import {OptionTableKey} from "common/profiles/constants";
+import {Profile, ProfileRow} from 'common/profiles/profile'
+import {cloneDeep} from 'lodash'
+import {filterDefined} from 'common/util/array'
+import {OptionTableKey} from 'common/profiles/constants'
 
 // export type TargetArea = {
 //   lat: number
@@ -35,28 +35,24 @@ export type FilterFields = {
   big5_neuroticism_max: number | undefined
 } & {
   [K in OptionTableKey]: string[]
-}
-  & Pick<
-  ProfileRow,
-  | 'wants_kids_strength'
-  | 'pref_relation_styles'
-  | 'pref_romantic_styles'
-  | 'diet'
-  | 'political_beliefs'
-  | 'relationship_status'
-  | 'languages'
-  | 'is_smoker'
-  | 'has_kids'
-  | 'pref_gender'
-  | 'pref_age_min'
-  | 'pref_age_max'
-  | 'religion'
->
+} & Pick<
+    ProfileRow,
+    | 'wants_kids_strength'
+    | 'pref_relation_styles'
+    | 'pref_romantic_styles'
+    | 'diet'
+    | 'political_beliefs'
+    | 'relationship_status'
+    | 'languages'
+    | 'is_smoker'
+    | 'has_kids'
+    | 'pref_gender'
+    | 'pref_age_min'
+    | 'pref_age_max'
+    | 'religion'
+  >
 
-export const orderProfiles = (
-  profiles: Profile[],
-  starredUserIds: string[] | undefined
-) => {
+export const orderProfiles = (profiles: Profile[], starredUserIds: string[] | undefined) => {
   if (!profiles) return
 
   let s = cloneDeep(profiles)
@@ -113,7 +109,6 @@ export const initialFilters: Partial<FilterFields> = {
   orderBy: 'created_time',
 }
 
-
 export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]
 
-export type OriginLocation = { id: string; name: string | null, lat: number, lon: number }
+export type OriginLocation = {id: string; name: string | null; lat: number; lon: number}

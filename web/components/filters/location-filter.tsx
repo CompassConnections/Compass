@@ -3,7 +3,7 @@ import {Col} from 'web/components/layout/col'
 import {Slider} from 'web/components/widgets/slider'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {Row} from 'web/components/layout/row'
-import {City, CityRow, originToCity, profileToCity, useCitySearch,} from '../search-location'
+import {City, CityRow, originToCity, profileToCity, useCitySearch} from '../search-location'
 import {Profile} from 'common/profiles/profile'
 import {useEffect, useState} from 'react'
 import {Input} from 'web/components/widgets/input'
@@ -80,7 +80,7 @@ export function LocationFilter(props: {
 
   const [lastCity, setLastCity] = usePersistentInMemoryState<City>(
     location ? originToCity(location) : youCity || DEFAULT_LAST_CITY,
-    'last-used-city'
+    'last-used-city',
   )
 
   const setCity = (city: City | undefined) => {
@@ -100,10 +100,9 @@ export function LocationFilter(props: {
   // search results
   const {cities, loading, query, setQuery} = useCitySearch()
 
-  const listedCities = uniqBy(
-    buildArray(cities, lastCity, youCity),
-    'geodb_city_id'
-  ).filter((c) => !location || location.id !== c.geodb_city_id)
+  const listedCities = uniqBy(buildArray(cities, lastCity, youCity), 'geodb_city_id').filter(
+    (c) => !location || location.id !== c.geodb_city_id,
+  )
 
   return (
     <Col className={clsx('w-full gap-3')}>
@@ -118,7 +117,7 @@ export function LocationFilter(props: {
         />
       </Row>
 
-      {location && <DistanceSlider radius={radius} setRadius={setRadius}/>}
+      {location && <DistanceSlider radius={radius} setRadius={setRadius} />}
 
       <LocationResults
         showAny={!!location && query === ''}
@@ -134,10 +133,7 @@ export function LocationFilter(props: {
   )
 }
 
-function DistanceSlider(props: {
-  radius: number
-  setRadius: (radius: number) => void
-}) {
+function DistanceSlider(props: {radius: number; setRadius: (radius: number) => void}) {
   const {radius, setRadius} = props
   const {measurementSystem} = useMeasurementSystem()
 
@@ -145,7 +141,7 @@ function DistanceSlider(props: {
 
   const snapToValue = (value: number) => {
     const closest = snapValues.reduce((prev, curr) =>
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev,
     )
     // Convert back to miles if needed for internal storage
     const closestMiles = measurementSystem === 'metric' ? kmToMiles(closest) : closest
@@ -199,10 +195,7 @@ function LocationResults(props: {
           className="hover:bg-primary-200 hover:text-ink-950 cursor-pointer px-4 py-2 transition-colors"
         >
           <Row className="items-center gap-2">
-            <XIcon
-              className="h-4 w-4 text-ink-400"
-              aria-label={t('common.close', 'Close')}
-            />
+            <XIcon className="h-4 w-4 text-ink-400" aria-label={t('common.close', 'Close')} />
             <span>{t('filter.location.set_any_city', 'Set to Any City')}</span>
           </Row>
         </button>
@@ -220,8 +213,8 @@ function LocationResults(props: {
       })}
       {debouncedLoading && (
         <div className="flex flex-col gap-2 px-4 py-2">
-          <div className="bg-ink-600 h-4 w-1/3 animate-pulse rounded-full"/>
-          <div className="bg-ink-400 h-4 w-2/3 animate-pulse rounded-full"/>
+          <div className="bg-ink-600 h-4 w-1/3 animate-pulse rounded-full" />
+          <div className="bg-ink-400 h-4 w-2/3 animate-pulse rounded-full" />
         </div>
       )}
     </Col>

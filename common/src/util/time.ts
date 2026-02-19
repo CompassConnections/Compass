@@ -6,5 +6,4 @@ export const MONTH_MS = 30 * DAY_MS
 export const YEAR_MS = 365 * DAY_MS
 export const HOUR_SECONDS = 60 * 60
 
-export const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms))
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

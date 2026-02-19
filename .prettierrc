@@ -2,9 +2,11 @@
   "tabWidth": 2,
   "useTabs": false,
   "semi": false,
-  "trailingComma": "es5",
   "singleQuote": true,
+  "singleAttributePerLine": false,
   "bracketSpacing": false,
+  "printWidth": 100,
+  "trailingComma": "all",
   "plugins": ["prettier-plugin-sql"],
   "overrides": [
     {

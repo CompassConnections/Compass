@@ -16,12 +16,12 @@ import {ProfileInfo} from 'web/components/profile/profile-info'
 import {User} from 'common/user'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {GetStaticPropsContext} from 'next'
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator"
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import Custom404 from '../404'
-import {sleep} from "common/util/time"
-import {isNativeMobile} from "web/lib/util/webview"
-import {getPixelHeight} from "web/lib/util/css"
-import {getPageData} from "web/lib/util/page-data";
+import {sleep} from 'common/util/time'
+import {isNativeMobile} from 'web/lib/util/webview'
+import {getPixelHeight} from 'web/lib/util/css'
+import {getPageData} from 'web/lib/util/page-data'
 
 async function getUser(username: string) {
   const user = await getUserForStaticProps(db, username)
@@ -67,9 +67,11 @@ async function getProfile(userId: string) {
 
 // SSG: static site generation
 // Next.js will pre-render this page at build time using the props returned by getStaticProps
-export const getStaticProps = async (props: GetStaticPropsContext<{
-  username: string
-}>) => {
+export const getStaticProps = async (
+  props: GetStaticPropsContext<{
+    username: string
+  }>,
+) => {
   const {username} = props.params!
 
   console.log('Starting getStaticProps in /[username]')
@@ -163,7 +165,12 @@ export default function UserPage(props: UserPageProps) {
   const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
 
-  console.log('UserPage state:', {username, fetchedProps, loading, nativeMobile})
+  console.log('UserPage state:', {
+    username,
+    fetchedProps,
+    loading,
+    nativeMobile,
+  })
 
   useEffect(() => {
     if (nativeMobile) {
@@ -176,7 +183,10 @@ export default function UserPage(props: UserPageProps) {
           setFetchedProps(_props)
         } catch (e) {
           console.error('Failed to fetch profile for native mobile', e)
-          setFetchedProps({username, notFoundCustomText: 'Failed to fetch profile.'})
+          setFetchedProps({
+            username,
+            notFoundCustomText: 'Failed to fetch profile.',
+          })
         }
         setLoading(false)
       }
@@ -189,57 +199,54 @@ export default function UserPage(props: UserPageProps) {
   }, [username, nativeMobile])
 
   if (loading) {
-    return <PageBase
-      trackPageView={'user page'}
-    >
-      <CompassLoadingIndicator/>
-    </PageBase>
+    return (
+      <PageBase trackPageView={'user page'}>
+        <CompassLoadingIndicator />
+      </PageBase>
+    )
   }
 
   if (fetchedProps.notFoundCustomText) {
-    return <Custom404 customText={fetchedProps.notFoundCustomText}/>
+    return <Custom404 customText={fetchedProps.notFoundCustomText} />
   }
 
   if (!fetchedProps.user) {
-    return <PageBase
-      trackPageView={'user page'}
-      className={'relative p-2 sm:pt-0'}
-    >
-      <Col className="items-center justify-center h-full">
-        <div className="text-xl font-semibold text-center mt-8">
-          This account has been deleted.
-        </div>
-      </Col>
-    </PageBase>
+    return (
+      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
+        <Col className="items-center justify-center h-full">
+          <div className="text-xl font-semibold text-center mt-8">
+            This account has been deleted.
+          </div>
+        </Col>
+      </PageBase>
+    )
   }
 
   if (fetchedProps.user?.isBannedFromPosting) {
-    return <PageBase
-      trackPageView={'user page'}
-      className={'relative p-2 sm:pt-0'}
-    >
-      <Col className="items-center justify-center h-full">
-        <div className="text-xl font-semibold text-center mt-8">
-          This account has been suspended.
-        </div>
-      </Col>
-    </PageBase>
+    return (
+      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
+        <Col className="items-center justify-center h-full">
+          <div className="text-xl font-semibold text-center mt-8">
+            This account has been suspended.
+          </div>
+        </Col>
+      </PageBase>
+    )
   }
 
   if (!fetchedProps.profile) {
-    return <PageBase
-      trackPageView={'user page'}
-      className={'relative p-2 sm:pt-0'}
-    >
-      <Col className="items-center justify-center h-full">
-        <div className="text-xl font-semibold text-center mt-8">
-          This user hasn't created a profile yet.
-        </div>
-      </Col>
-    </PageBase>
+    return (
+      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
+        <Col className="items-center justify-center h-full">
+          <div className="text-xl font-semibold text-center mt-8">
+            This user hasn't created a profile yet.
+          </div>
+        </Col>
+      </PageBase>
+    )
   }
 
-  return <UserPageInner {...fetchedProps as ActiveUserPageProps}/>
+  return <UserPageInner {...(fetchedProps as ActiveUserPageProps)} />
 }
 
 function UserPageInner(props: ActiveUserPageProps) {
@@ -255,25 +262,22 @@ function UserPageInner(props: ActiveUserPageProps) {
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
   useTracking('view profile', {username: user?.username})
 
-  const [staticProfile] = useState(
-    props.profile && user ? {...props.profile, user: user} : null
-  )
+  const [staticProfile] = useState(props.profile && user ? {...props.profile, user: user} : null)
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
   // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
   // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
 
   if (!isCurrentUser && profile?.disabled) {
-    return <PageBase
-      trackPageView={'user page'}
-      className={'relative p-2 sm:pt-0'}
-    >
-      <Col className="items-center justify-center h-full">
-        <div className="text-xl font-semibold text-center mt-8">
-          The user disabled their profile.
-        </div>
-      </Col>
-    </PageBase>
+    return (
+      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
+        <Col className="items-center justify-center h-full">
+          <div className="text-xl font-semibold text-center mt-8">
+            The user disabled their profile.
+          </div>
+        </Col>
+      </PageBase>
+    )
   }
 
   return (
@@ -290,10 +294,10 @@ function UserPageInner(props: ActiveUserPageProps) {
       />
       {(user.isBannedFromPosting || user.userDeleted) && (
         <Head>
-          <meta name="robots" content="noindex, nofollow"/>
+          <meta name="robots" content="noindex, nofollow" />
         </Head>
       )}
-      <BackButton className="-ml-2 mb-2 self-start"/>
+      <BackButton className="-ml-2 mb-2 self-start" />
 
       {currentUser !== undefined && (
         <Col className={'gap-4'}>
@@ -306,7 +310,7 @@ function UserPageInner(props: ActiveUserPageProps) {
               fromSignup={fromSignup}
             />
           ) : (
-            <CompassLoadingIndicator/>
+            <CompassLoadingIndicator />
           )}
         </Col>
       )}

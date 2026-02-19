@@ -29,15 +29,13 @@ export async function withRetries<T>(q: PromiseLike<T>, policy?: RetryPolicy) {
 export const mapAsyncChunked = async <T, U>(
   items: T[],
   f: (item: T, index: number) => Promise<U>,
-  chunkSize = 100
+  chunkSize = 100,
 ) => {
   const results: U[] = []
 
   for (let i = 0; i < items.length; i += chunkSize) {
     const chunk = items.slice(i, i + chunkSize)
-    const chunkResults = await Promise.all(
-      chunk.map((item, index) => f(item, i + index))
-    )
+    const chunkResults = await Promise.all(chunk.map((item, index) => f(item, i + index)))
     results.push(...chunkResults)
   }
 
@@ -47,7 +45,7 @@ export const mapAsyncChunked = async <T, U>(
 export const mapAsync = <T, U>(
   items: T[],
   f: (item: T, index: number) => Promise<U>,
-  maxConcurrentRequests = 100
+  maxConcurrentRequests = 100,
 ) => {
   let index = 0
   let currRequests = 0

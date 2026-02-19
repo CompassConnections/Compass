@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import {useCallback, useState} from 'react'
 
 // simplified version of react-query useMutation
 export const useMutation = <T extends Array<unknown>, R>(
@@ -6,9 +6,9 @@ export const useMutation = <T extends Array<unknown>, R>(
   options?: {
     onSuccess?: (data: R) => void
     onError?: (error: unknown) => void
-  }
+  },
 ) => {
-  const { onSuccess, onError } = options ?? {}
+  const {onSuccess, onError} = options ?? {}
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState<unknown | null>(null)
   const [data, setData] = useState<R | null>(null)
@@ -29,8 +29,8 @@ export const useMutation = <T extends Array<unknown>, R>(
         setLoading(false)
       }
     },
-    [fn, onError, onSuccess]
+    [fn, onError, onSuccess],
   )
 
-  return { mutate, data, isLoading, error }
+  return {mutate, data, isLoading, error}
 }

@@ -4,29 +4,27 @@ import {APIParams, APIPath, APIResponse} from 'common/api/schema'
 import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
 import {useEvent} from './use-event'
-import {APIError} from "common/api/utils";
+import {APIError} from 'common/api/utils'
 
 const promiseCache: Record<string, Promise<any> | undefined> = {}
 
 export const useAPIGetter = <P extends APIPath>(
   path: P,
   props: APIParams<P> | undefined,
-  ingoreDependencies?: string[]
+  ingoreDependencies?: string[],
 ) => {
   const propsString = JSON.stringify(props)
   const propsStringToTriggerRefresh = JSON.stringify(
-    deepCopyWithoutKeys(props, ingoreDependencies || [])
+    deepCopyWithoutKeys(props, ingoreDependencies || []),
   )
 
-  const [data, setData] = usePersistentInMemoryState<
-    APIResponse<P> | undefined
-  >(undefined, `${path}-${propsString}`)
+  const [data, setData] = usePersistentInMemoryState<APIResponse<P> | undefined>(
+    undefined,
+    `${path}-${propsString}`,
+  )
 
   const key = `${path}-${propsString}-error`
-  const [error, setError] = usePersistentInMemoryState<APIError | undefined>(
-    undefined,
-    key
-  )
+  const [error, setError] = usePersistentInMemoryState<APIError | undefined>(undefined, key)
 
   const refresh = useEvent(async () => {
     if (!props) return

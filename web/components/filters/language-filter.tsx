@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {convertLanguageTypes,} from 'web/lib/util/convert-types'
+import {convertLanguageTypes} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
@@ -37,7 +37,7 @@ export function LanguageFilterText(props: {
 
   const sortedOptions = getSortedOptions(options, LANGUAGE_CHOICES)
   const convertedTypes = sortedOptions.map((r) =>
-    t(`profile.language.${r}`, convertLanguageTypes(r as any))
+    t(`profile.language.${r}`, convertLanguageTypes(r as any)),
   )
 
   return (

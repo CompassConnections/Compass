@@ -1,7 +1,7 @@
 import {Col} from 'web/components/layout/col'
 import {groupBy, orderBy} from 'lodash'
 import {useLiveCommentsOnProfile} from 'web/hooks/use-comments-on-profile'
-import {ProfileCommentInput, ProfileProfileCommentThread,} from 'web/components/profile-comments'
+import {ProfileCommentInput, ProfileProfileCommentThread} from 'web/components/profile-comments'
 import {User} from 'common/user'
 import {Row} from 'web/components/layout/row'
 import ShortToggle from 'web/components/widgets/short-toggle'
@@ -11,7 +11,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {toast} from 'react-hot-toast'
 import {Subtitle} from './widgets/profile-subtitle'
 import {Profile} from 'common/profiles/profile'
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 export const ProfileCommentSection = (props: {
   onUser: User
@@ -27,8 +27,7 @@ export const ProfileCommentSection = (props: {
   const [profile, setProfile] = useState<Profile>(props.profile)
   const isCurrentUser = currentUser?.id === onUser.id
 
-  if (!currentUser && (!profile.comments_enabled || parentComments.length == 0))
-    return null
+  if (!currentUser && (!profile.comments_enabled || parentComments.length == 0)) return null
 
   return (
     <Col className={'mt-4 rounded py-2'}>
@@ -36,10 +35,7 @@ export const ProfileCommentSection = (props: {
         <Subtitle>{t('profile.comments.section_title', 'Endorsements')}</Subtitle>
         {isCurrentUser && !simpleView && (
           <Tooltip
-            text={
-              (profile.comments_enabled ? 'Disable' : 'Enable') +
-              ' endorsements from others'
-            }
+            text={(profile.comments_enabled ? 'Disable' : 'Enable') + ' endorsements from others'}
           >
             <ShortToggle
               on={profile.comments_enabled}
@@ -66,9 +62,19 @@ export const ProfileCommentSection = (props: {
             <>
               <div className="mb-4">
                 {isCurrentUser ? (
-                  <>{t('profile.comments.current_user_hint', 'Other users can write endorsements of you here.')}</>
+                  <>
+                    {t(
+                      'profile.comments.current_user_hint',
+                      'Other users can write endorsements of you here.',
+                    )}
+                  </>
                 ) : (
-                  <>{t('profile.comments.other_user_hint', 'If you know them, write something nice that adds to their profile.')}</>
+                  <>
+                    {t(
+                      'profile.comments.other_user_hint',
+                      'If you know them, write something nice that adds to their profile.',
+                    )}
+                  </>
                 )}
               </div>
               {!isCurrentUser && (
@@ -87,7 +93,11 @@ export const ProfileCommentSection = (props: {
               </span>
             ) : (
               <span className={'text-ink-500 text-sm'}>
-                {t('profile.comments.feature_disabled_other', '{name} has disabled endorsements from others.', {name: onUser.name})}
+                {t(
+                  'profile.comments.feature_disabled_other',
+                  '{name} has disabled endorsements from others.',
+                  {name: onUser.name},
+                )}
               </span>
             ))}
         </>

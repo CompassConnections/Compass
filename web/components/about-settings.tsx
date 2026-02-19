@@ -1,14 +1,14 @@
-import {WithPrivateUser} from "web/components/user/with-user"
-import {PrivateUser} from "common/user"
-import {Col} from "web/components/layout/col"
-import {HOSTING_ENV, IS_VERCEL} from "common/hosting/constants"
-import {Capacitor} from "@capacitor/core"
-import {useEffect, useState} from "react"
-import {App} from "@capacitor/app"
-import {api} from "web/lib/api"
-import {githubRepo} from "common/constants"
-import {CustomLink} from "web/components/links"
-import {Button} from "web/components/buttons/button"
+import {WithPrivateUser} from 'web/components/user/with-user'
+import {PrivateUser} from 'common/user'
+import {Col} from 'web/components/layout/col'
+import {HOSTING_ENV, IS_VERCEL} from 'common/hosting/constants'
+import {Capacitor} from '@capacitor/core'
+import {useEffect, useState} from 'react'
+import {App} from '@capacitor/app'
+import {api} from 'web/lib/api'
+import {githubRepo} from 'common/constants'
+import {CustomLink} from 'web/components/links'
+import {Button} from 'web/components/buttons/button'
 import {useT} from 'web/lib/locale'
 
 export type WebBuild = {
@@ -43,7 +43,7 @@ export type Runtime = {
 }
 
 export type Diagnostics = {
-  web?: WebBuild,
+  web?: WebBuild
   android?: Android
   backend?: Backend
   runtime: Runtime
@@ -56,12 +56,8 @@ function useDiagnostics() {
     const load = async () => {
       const diagnostics: Diagnostics = {
         runtime: {
-          platform: IS_VERCEL
-            ? 'web'
-            : Capacitor.isNativePlatform()
-              ? 'android'
-              : HOSTING_ENV
-        }
+          platform: IS_VERCEL ? 'web' : Capacitor.isNativePlatform() ? 'android' : HOSTING_ENV,
+        },
       }
 
       if (IS_VERCEL) {
@@ -97,7 +93,7 @@ function useDiagnostics() {
           version: backend.version,
           gitSha: backend.git?.revision,
           gitMessage: backend.git?.message,
-          commitDate: backend.git?.commitDate
+          commitDate: backend.git?.commitDate,
         }
       }
 
@@ -125,16 +121,11 @@ function diagnosticsToText(d: Diagnostics): string {
     .trim()
 }
 
-
 export const AboutSettings = () => (
-  <WithPrivateUser>
-    {user => <LoadedAboutSettings privateUser={user}/>}
-  </WithPrivateUser>
+  <WithPrivateUser>{(user) => <LoadedAboutSettings privateUser={user} />}</WithPrivateUser>
 )
 
-const LoadedAboutSettings = (props: {
-  privateUser: PrivateUser,
-}) => {
+const LoadedAboutSettings = (props: {privateUser: PrivateUser}) => {
   const {} = props
 
   const [copyFeedback, setCopyFeedback] = useState('')
@@ -152,21 +143,20 @@ const LoadedAboutSettings = (props: {
     }, 2000)
   }
 
-  return <Col className={''}>
-    <RuntimeInfo info={diagnostics.runtime}/>
-    <WebBuildInfo info={diagnostics.web}/>
-    <AndroidInfo info={diagnostics.android}/>
-    <BackendInfo info={diagnostics.backend}/>
-    <Button
-      onClick={handleCopy}
-      className="w-fit mt-4"
-    >
-      {copyFeedback || t('about.settings.copy_info', 'Copy Info')}
-    </Button>
-  </Col>
+  return (
+    <Col className={''}>
+      <RuntimeInfo info={diagnostics.runtime} />
+      <WebBuildInfo info={diagnostics.web} />
+      <AndroidInfo info={diagnostics.android} />
+      <BackendInfo info={diagnostics.backend} />
+      <Button onClick={handleCopy} className="w-fit mt-4">
+        {copyFeedback || t('about.settings.copy_info', 'Copy Info')}
+      </Button>
+    </Col>
+  )
 }
 
-const WebBuildInfo = (props: { info?: WebBuild }) => {
+const WebBuildInfo = (props: {info?: WebBuild}) => {
   const {info} = props
   if (!info) return
   const env = info.environment
@@ -174,56 +164,72 @@ const WebBuildInfo = (props: { info?: WebBuild }) => {
   const sha = info.gitSha
   const deploymentId = info.deploymentId
   const url = `${githubRepo}/commit/${sha}`
-  return <Col className={'custom-link'}>
-    <h3>Web build (Vercel)</h3>
-    <p>Commit SHA: <CustomLink href={url}>{sha}</CustomLink></p>
-    <p>Commit message: {gitMessage}</p>
-    <p>Vercel deployment ID: {deploymentId}</p>
-    <p>Environment: {env}</p>
-  </Col>
+  return (
+    <Col className={'custom-link'}>
+      <h3>Web build (Vercel)</h3>
+      <p>
+        Commit SHA: <CustomLink href={url}>{sha}</CustomLink>
+      </p>
+      <p>Commit message: {gitMessage}</p>
+      <p>Vercel deployment ID: {deploymentId}</p>
+      <p>Environment: {env}</p>
+    </Col>
+  )
 }
 
-const AndroidInfo = (props: { info?: Android }) => {
+const AndroidInfo = (props: {info?: Android}) => {
   const {info} = props
   if (!info) return
   const sha = info.liveUpdate?.commitSha
   const url = `${githubRepo}/commit/${sha}`
-  return <Col className={'custom-link'}>
-    <h3>Android (Capacitor)</h3>
-    <p>App version (Android): {info.appVersion}</p>
-    <p>Native build number (Android): {info.buildNumber}</p>
-    {info.liveUpdate &&
+  return (
+    <Col className={'custom-link'}>
+      <h3>Android (Capacitor)</h3>
+      <p>App version (Android): {info.appVersion}</p>
+      <p>Native build number (Android): {info.buildNumber}</p>
+      {info.liveUpdate && (
         <>
-            <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
-            <p>Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink></p>
-            <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
-            <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
+          <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
+          <p>
+            Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink>
+          </p>
+          <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
+          <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
         </>
-    }
-  </Col>
+      )}
+    </Col>
+  )
 }
 
-const BackendInfo = (props: { info?: Backend }) => {
+const BackendInfo = (props: {info?: Backend}) => {
   const {info} = props
   if (!info) return
   const sha = info.gitSha
   const commitDate = info.commitDate
   const commitMessage = info.gitMessage
   const url = `${githubRepo}/commit/${sha}`
-  return <Col className={'custom-link'}>
-    <h3>Backend</h3>
-    <p>API version: {info.version}</p>
-    {sha && <p>API commit SHA: <CustomLink href={url}>{sha}</CustomLink></p>}
-    {commitMessage && <p>API commit message: {commitMessage}</p>}
-    {commitDate && <p>API commit date: {commitDate}</p>}
-  </Col>
+  return (
+    <Col className={'custom-link'}>
+      <h3>Backend</h3>
+      <p>API version: {info.version}</p>
+      {sha && (
+        <p>
+          API commit SHA: <CustomLink href={url}>{sha}</CustomLink>
+        </p>
+      )}
+      {commitMessage && <p>API commit message: {commitMessage}</p>}
+      {commitDate && <p>API commit date: {commitDate}</p>}
+    </Col>
+  )
 }
 
-const RuntimeInfo = (props: { info?: Runtime }) => {
+const RuntimeInfo = (props: {info?: Runtime}) => {
   const {info} = props
   if (!info) return
-  return <Col className={'custom-link'}>
-    <h3>Runtime</h3>
-    <p>Platform: {info.platform}</p>
-  </Col>
+  return (
+    <Col className={'custom-link'}>
+      <h3>Runtime</h3>
+      <p>Platform: {info.platform}</p>
+    </Col>
+  )
 }

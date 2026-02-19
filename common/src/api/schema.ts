@@ -1,7 +1,13 @@
-import {arraybeSchema, baseProfilesSchema, combinedProfileSchema, contentSchema, zBoolean,} from 'common/api/zod-types'
+import {
+  arraybeSchema,
+  baseProfilesSchema,
+  combinedProfileSchema,
+  contentSchema,
+  zBoolean,
+} from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
-import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES,} from 'common/profiles/constants'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
@@ -15,8 +21,7 @@ import {notification_preference} from 'common/user-notification-preferences'
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
-export const DEFAULT_CACHE_STRATEGY =
-  'public, max-age=5, stale-while-revalidate=10'
+export const DEFAULT_CACHE_STRATEGY = 'public, max-age=5, stale-while-revalidate=10'
 
 type APIGenericSchema = {
   // GET is for retrieval, POST is to mutate something, PUT is idempotent mutation (can be repeated safely)
@@ -37,7 +42,7 @@ type APIGenericSchema = {
   tag?: string
 }
 
-let _apiTypeCheck: { [x: string]: APIGenericSchema }
+let _apiTypeCheck: {[x: string]: APIGenericSchema}
 
 export const API = (_apiTypeCheck = {
   health: {
@@ -64,7 +69,7 @@ export const API = (_apiTypeCheck = {
     authed: true,
     rateLimited: false,
     props: z.object({}),
-    returns: {} as { jwt: string },
+    returns: {} as {jwt: string},
     summary: 'Return a Supabase JWT for authenticated clients',
     tag: 'Tokens',
   },
@@ -146,7 +151,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    returns: {} as { user: User; privateUser: PrivateUser },
+    returns: {} as {user: User; privateUser: PrivateUser},
     props: z
       .object({
         deviceToken: z.string().optional(),
@@ -624,7 +629,7 @@ export const API = (_apiTypeCheck = {
     }),
     returns: {
       channels: [] as PrivateMessageChannel[],
-      memberIdsByChannelId: {} as { [channelId: string]: string[] },
+      memberIdsByChannelId: {} as {[channelId: string]: string[]},
     },
     summary: 'List private message channel memberships',
     tag: 'Messages',
@@ -647,10 +652,7 @@ export const API = (_apiTypeCheck = {
     authed: true,
     rateLimited: false,
     props: z.object({
-      channelIds: z
-        .array(z.coerce.number())
-        .or(z.coerce.number())
-        .transform(arrify),
+      channelIds: z.array(z.coerce.number()).or(z.coerce.number()).transform(arrify),
     }),
     returns: [] as [number, string][],
     summary: 'Get last seen times for one or more channels',
@@ -850,7 +852,7 @@ export const API = (_apiTypeCheck = {
     authed: false,
     rateLimited: false,
     props: z.object({}),
-    returns: {} as { count: number },
+    returns: {} as {count: number},
     summary: 'Get the total number of messages (public endpoint)',
     tag: 'Messages',
   },
@@ -904,7 +906,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    returns: {} as { success: boolean },
+    returns: {} as {success: boolean},
     props: z.object({
       eventId: z.string(),
     }),
@@ -915,7 +917,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    returns: {} as { success: boolean },
+    returns: {} as {success: boolean},
     props: z.object({
       eventId: z.string(),
       status: z.enum(['going', 'maybe', 'not_going']),
@@ -927,7 +929,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    returns: {} as { success: boolean },
+    returns: {} as {success: boolean},
     props: z.object({
       eventId: z.string(),
     }),
@@ -968,7 +970,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: false,
-    returns: {} as { success: boolean },
+    returns: {} as {success: boolean},
     props: z
       .object({
         eventId: z.string(),
@@ -991,17 +993,15 @@ export type APIPath = keyof typeof API
 export type APISchema<N extends APIPath> = (typeof API)[N]
 
 export type APIParams<N extends APIPath> = z.input<APISchema<N>['props']>
-export type ValidatedAPIParams<N extends APIPath> = z.output<
-  APISchema<N>['props']
->
+export type ValidatedAPIParams<N extends APIPath> = z.output<APISchema<N>['props']>
 
 export type APIResponse<N extends APIPath> =
   APISchema<N> extends {
-      returns: Record<string, any>
-    }
+    returns: Record<string, any>
+  }
     ? APISchema<N>['returns']
     : void
 
 export type APIResponseOptionalContinue<N extends APIPath> =
-  | { continue: () => Promise<void>; result: APIResponse<N> }
+  | {continue: () => Promise<void>; result: APIResponse<N>}
   | APIResponse<N>

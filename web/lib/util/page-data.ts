@@ -1,12 +1,12 @@
-import {DEPLOYED_WEB_URL} from "common/envs/constants";
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 
-const buildIdKey = 'vercel-buildId';
+const buildIdKey = 'vercel-buildId'
 
 export const getBuildId = async () => {
   const res = await fetch(`${DEPLOYED_WEB_URL}/api/build-id`)
   if (!res.ok) throw new Error('Failed to fetch build manifest')
   const data = await res.json()
-  const buildId = data.buildId;
+  const buildId = data.buildId
   if (!buildId) throw new Error('No buildId found in build manifest')
   localStorage.setItem(buildIdKey, buildId)
   return buildId

@@ -3,10 +3,10 @@ import {useEffect, useRef, useState} from 'react'
 import {api} from 'web/lib/api'
 import {countryCodeToFlag} from 'web/lib/util/location'
 import {ProfileRow} from 'common/profiles/profile'
-import {OriginLocation} from "common/filters";
+import {OriginLocation} from 'common/filters'
 
 function isDigitString(value: string): boolean {
-  return /^\d+$/.test(value);
+  return /^\d+$/.test(value)
 }
 
 export type City = {
@@ -43,11 +43,7 @@ export function originToCity(origin: OriginLocation): City {
   }
 }
 
-export function CityRow(props: {
-  city: City
-  onSelect: (city: City) => void
-  className?: string
-}) {
+export function CityRow(props: {city: City; onSelect: (city: City) => void; className?: string}) {
   const {city, onSelect, className} = props
   return (
     <button
@@ -55,7 +51,7 @@ export function CityRow(props: {
       onClick={() => onSelect(city)}
       className={clsx(
         'group flex cursor-pointer flex-row flex-wrap justify-between gap-x-4',
-        className
+        className,
       )}
     >
       <div className="group-hover:text-ink-950 font-semibold transition-colors">
@@ -96,7 +92,7 @@ export const useCitySearch = () => {
               country_code: city.countryCode,
               latitude: city.latitude,
               longitude: city.longitude,
-            }))
+            })),
           )
         }
       } catch (error) {

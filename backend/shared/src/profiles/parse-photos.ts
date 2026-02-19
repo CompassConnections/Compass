@@ -4,7 +4,7 @@ export const removePinnedUrlFromPhotoUrls = async (parsedBody: {
 }) => {
   if (parsedBody.photo_urls && parsedBody.pinned_url) {
     parsedBody.photo_urls = parsedBody.photo_urls.filter(
-      (url: string) => url !== parsedBody.pinned_url
+      (url: string) => url !== parsedBody.pinned_url,
     )
   }
 }

@@ -81,7 +81,7 @@ export function formatFilters(
   location: locationType | null,
   choicesIdsToLabels: Record<string, any>,
   measurementSystem?: 'metric' | 'imperial',
-  t?: (key: string, fallback: string) => string
+  t?: (key: string, fallback: string) => string,
 ): string[] | null {
   const entries: string[] = []
 
@@ -130,19 +130,13 @@ export function formatFilters(
     // console.log(key, value)
     let stringValue = value
     if (key === 'has_kids')
-      stringValue = translate(
-        `profile.has_kids.${value}`,
-        hasKidsNames[value as number]
-      )
+      stringValue = translate(`profile.has_kids.${value}`, hasKidsNames[value as number])
     else if (key === 'wants_kids_strength')
-      stringValue = translate(
-        `profile.wants_kids_${value}`,
-        wantsKidsNames[value as number]
-      )
+      stringValue = translate(`profile.wants_kids_${value}`, wantsKidsNames[value as number])
     else if (key === 'is_smoker')
       stringValue = translate(
         `profile.smoker.${value ? 'yes' : 'no'}`,
-        value ? 'Smoker' : 'Non-smoker'
+        value ? 'Smoker' : 'Non-smoker',
       )
     if (Array.isArray(value)) {
       if (choicesIdsToLabels[key]) {
@@ -150,51 +144,29 @@ export function formatFilters(
       } else if (key === 'mbti') {
         value = value.map((s) => INVERTED_MBTI_CHOICES[s])
       } else if (key === 'pref_romantic_styles') {
-        value = value.map((s) =>
-          translate(`profile.romantic.${s}`, INVERTED_ROMANTIC_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.romantic.${s}`, INVERTED_ROMANTIC_CHOICES[s]))
       } else if (key === 'pref_relation_styles') {
         value = value.map((s) =>
-          translate(
-            `profile.relationship.${s}`,
-            INVERTED_RELATIONSHIP_CHOICES[s]
-          )
+          translate(`profile.relationship.${s}`, INVERTED_RELATIONSHIP_CHOICES[s]),
         )
       } else if (key === 'relationship_status') {
         value = value.map((s) =>
-          translate(
-            `profile.relationship_status.${s}`,
-            INVERTED_RELATIONSHIP_STATUS_CHOICES[s]
-          )
+          translate(`profile.relationship_status.${s}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[s]),
         )
       } else if (key === 'political_beliefs') {
-        value = value.map((s) =>
-          translate(`profile.political.${s}`, INVERTED_POLITICAL_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.political.${s}`, INVERTED_POLITICAL_CHOICES[s]))
       } else if (key === 'diet') {
-        value = value.map((s) =>
-          translate(`profile.diet.${s}`, INVERTED_DIET_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.diet.${s}`, INVERTED_DIET_CHOICES[s]))
       } else if (key === 'education_levels') {
-        value = value.map((s) =>
-          translate(`profile.education.${s}`, INVERTED_EDUCATION_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.education.${s}`, INVERTED_EDUCATION_CHOICES[s]))
       } else if (key === 'religion') {
-        value = value.map((s) =>
-          translate(`profile.religion.${s}`, INVERTED_RELIGION_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.religion.${s}`, INVERTED_RELIGION_CHOICES[s]))
       } else if (key === 'languages') {
-        value = value.map((s) =>
-          translate(`profile.language.${s}`, INVERTED_LANGUAGE_CHOICES[s])
-        )
+        value = value.map((s) => translate(`profile.language.${s}`, INVERTED_LANGUAGE_CHOICES[s]))
       } else if (key === 'pref_gender') {
-        value = value.map((s) =>
-          translate(`profile.gender.${s}`, INVERTED_GENDERS[s])
-        )
+        value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
       } else if (key === 'genders') {
-        value = value.map((s) =>
-          translate(`profile.gender.${s}`, INVERTED_GENDERS[s])
-        )
+        value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
       }
       stringValue = value.join(', ')
     }
@@ -293,8 +265,7 @@ export function formatFilters(
     entries.push(locString)
   }
 
-  if (entries.length === 0)
-    return [translate('filter.any_new_users', 'Any new user')]
+  if (entries.length === 0) return [translate('filter.any_new_users', 'Any new user')]
 
   return entries
 }

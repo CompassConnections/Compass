@@ -1,23 +1,22 @@
-import { PaperAirplaneIcon } from '@heroicons/react/solid'
-import { Editor } from '@tiptap/react'
+import {PaperAirplaneIcon} from '@heroicons/react/solid'
+import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
-import { User } from 'common/user'
-import { useEffect, useState } from 'react'
-import { useUser } from 'web/hooks/use-user'
-import { MAX_COMMENT_LENGTH } from 'common/comment'
-import { Avatar } from '../widgets/avatar'
-import { TextEditor, useTextEditor } from '../widgets/editor'
-import { ReplyToUserInfo } from 'common/comment'
-import { Row } from '../layout/row'
-import { LoadingIndicator } from '../widgets/loading-indicator'
-import { safeLocalStorage } from 'web/lib/util/local'
+import {User} from 'common/user'
+import {useEffect, useState} from 'react'
+import {useUser} from 'web/hooks/use-user'
+import {MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
+import {Avatar} from '../widgets/avatar'
+import {TextEditor, useTextEditor} from '../widgets/editor'
+import {Row} from '../layout/row'
+import {LoadingIndicator} from '../widgets/loading-indicator'
+import {safeLocalStorage} from 'web/lib/util/local'
 import toast from 'react-hot-toast'
-import { BiRepost } from 'react-icons/bi'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { track } from 'web/lib/service/analytics'
-import { firebaseLogin } from 'web/lib/firebase/users'
-import { useEvent } from 'web/hooks/use-event'
-import {useT} from "web/lib/locale";
+import {BiRepost} from 'react-icons/bi'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {track} from 'web/lib/service/analytics'
+import {firebaseLogin} from 'web/lib/firebase/users'
+import {useEvent} from 'web/hooks/use-event'
+import {useT} from 'web/lib/locale'
 
 export function CommentInput(props: {
   replyToUserInfo?: ReplyToUserInfo
@@ -70,7 +69,7 @@ export function CommentInput(props: {
     if (editor.state.selection.empty) {
       editor.commands.insertContent(' ')
       const endPos = editor.state.selection.from
-      editor.commands.deleteRange({ from: endPos - 1, to: endPos })
+      editor.commands.deleteRange({from: endPos - 1, to: endPos})
     }
 
     try {
@@ -108,7 +107,7 @@ export function CommentInput(props: {
   )
 }
 
-const emojiMenuActive = (view: { state: any }) => {
+const emojiMenuActive = (view: {state: any}) => {
   const regex = /^emoji\$.*$/ // emoji$ can have random numbers following it....❤️ tiptap
   let active = false
 
@@ -125,7 +124,7 @@ const emojiMenuActive = (view: { state: any }) => {
 export type CommentType = 'comment' | 'repost'
 export function CommentInputTextArea(props: {
   user: User | undefined | null
-  replyTo?: { id: string; username: string }
+  replyTo?: {id: string; username: string}
   editor: Editor | null
   submit?: (type: CommentType) => void
   cancelEditing?: () => void
@@ -186,10 +185,10 @@ export function CommentInputTextArea(props: {
         .chain()
         .setContent({
           type: 'mention',
-          attrs: { label: replyTo.username, id: replyTo.id },
+          attrs: {label: replyTo.username, id: replyTo.id},
         })
         .insertContent(' ')
-        .focus(undefined, { scrollIntoView: false })
+        .focus(undefined, {scrollIntoView: false})
         .run()
     }
   }, [replyTo, editor])
@@ -198,10 +197,7 @@ export function CommentInputTextArea(props: {
     <TextEditor editor={editor} simple hideEmbed>
       <Row className={''}>
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
-          <Tooltip
-            text={'Post question & comment to your followers'}
-            className={'mt-2'}
-          >
+          <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>
             <button
               disabled={!editor || editor.isEmpty}
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-2 transition-colors"
@@ -219,7 +215,7 @@ export function CommentInputTextArea(props: {
               className="text-primary-600 hover:underline"
               onClick={cancelEditing}
             >
-              {t("comment.cancel", "Cancel")}
+              {t('comment.cancel', 'Cancel')}
             </button>
           </Row>
         )}
@@ -234,11 +230,7 @@ export function CommentInputTextArea(props: {
         )}
 
         {submit && isSubmitting && (
-          <LoadingIndicator
-            size={'md'}
-            className={'px-4'}
-            spinnerClassName="border-ink-500"
-          />
+          <LoadingIndicator size={'md'} className={'px-4'} spinnerClassName="border-ink-500" />
         )}
       </Row>
     </TextEditor>

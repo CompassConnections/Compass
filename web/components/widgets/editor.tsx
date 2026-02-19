@@ -2,7 +2,7 @@ import CharacterCount from '@tiptap/extension-character-count'
 import {Link} from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import type {Content, JSONContent} from '@tiptap/react'
-import {Editor, EditorContent, Extensions, mergeAttributes, useEditor,} from '@tiptap/react'
+import {Editor, EditorContent, Extensions, mergeAttributes, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import {ReactNode, useCallback, useEffect, useMemo} from 'react'
@@ -24,15 +24,9 @@ import {safeLocalStorage} from 'web/lib/util/local'
 
 const DisplayLink = Link.extend({
   renderHTML({HTMLAttributes}) {
-    HTMLAttributes.target = HTMLAttributes.href.includes('manifold.markets')
-      ? '_self'
-      : '_blank'
+    HTMLAttributes.target = HTMLAttributes.href.includes('manifold.markets') ? '_self' : '_blank'
     delete HTMLAttributes.class // only use our classes (don't duplicate on paste)
-    return [
-      'a',
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-      0,
-    ]
+    return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
   },
 }).configure({
   openOnClick: false, // stop link opening twice (browser still opens)
@@ -64,7 +58,7 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
     size !== 'lg' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
     '[&>p]:prose-li:my-0',
     'text-ink-900 prose-blockquote:text-teal-700',
-    'break-anywhere'
+    'break-anywhere',
   )
 
 export const getEditorLocalStorageKey = (key: string) => `text ${key}`
@@ -81,9 +75,10 @@ export function useTextEditor(props: {
   const {placeholder, className, max, defaultValue, size = 'md', key} = props
   const simple = size === 'sm'
 
-  const [content, setContent] = usePersistentLocalState<
-    JSONContent | undefined
-  >(undefined, getEditorLocalStorageKey(key ?? ''))
+  const [content, setContent] = usePersistentLocalState<JSONContent | undefined>(
+    undefined,
+    getEditorLocalStorageKey(key ?? ''),
+  )
 
   const save = useCallback(
     debounce((newContent: JSONContent) => {
@@ -95,7 +90,7 @@ export function useTextEditor(props: {
         setContent(newContent)
       }
     }, 500),
-    []
+    [],
   )
 
   const getEditorProps = () => ({
@@ -106,7 +101,7 @@ export function useTextEditor(props: {
         'prose-img:select-auto',
         '[&_.ProseMirror-selectednode]:outline-dotted [&_*]:outline-primary-300', // selected img, embeds
         'dark:[&_.ProseMirror-gapcursor]:after:border-white', // gap cursor
-        className
+        className,
       ),
       style: `min-height: ${1 + 1.625 * (simple ? 2 : 3)}em`, // 1em padding + 1.625 lines per row
     },
@@ -117,8 +112,8 @@ export function useTextEditor(props: {
     onUpdate: !key
       ? noop
       : ({editor}) => {
-        save(editor.getJSON())
-      },
+          save(editor.getJSON())
+        },
     extensions: [
       ...editorExtensions(simple),
       Placeholder.configure({
@@ -187,12 +182,12 @@ export function TextEditor(props: {
     <div
       className={clsx(
         'border-ink-300 bg-canvas-0 focus-within:border-primary-500 focus-within:ring-primary-500 w-full overflow-hidden rounded-lg border shadow-sm transition-colors focus-within:ring-1',
-        className
+        className,
       )}
     >
-      <FloatingFormatMenu editor={editor} advanced={!simple}/>
+      <FloatingFormatMenu editor={editor} advanced={!simple} />
       <div className={clsx('max-h-[69vh] overflow-auto')}>
-        <EditorContent editor={editor} onBlur={onBlur} onChange={onChange}/>
+        <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 
       <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>
@@ -202,22 +197,14 @@ export function TextEditor(props: {
   )
 }
 
-function RichContent(props: {
-  content: JSONContent
-  className?: string
-  size?: 'sm' | 'md' | 'lg'
-}) {
+function RichContent(props: {content: JSONContent; className?: string; size?: 'sm' | 'md' | 'lg'}) {
   const {className, content, size = 'md'} = props
 
   const jsxContent = useMemo(() => {
     try {
       return generateReact(content, [
         StarterKit as any,
-        size === 'sm'
-          ? DisplayImage
-          : size === 'md'
-            ? MediumDisplayImage
-            : BasicImage,
+        size === 'sm' ? DisplayImage : size === 'md' ? MediumDisplayImage : BasicImage,
         DisplayLink,
         DisplayMention,
         Iframe,
@@ -236,7 +223,7 @@ function RichContent(props: {
         'ProseMirror',
         className,
         proseClass(size),
-        String.raw`empty:prose-p:after:content-["\00a0"]` // make empty paragraphs have height
+        String.raw`empty:prose-p:after:content-["\00a0"]`, // make empty paragraphs have height
       )}
     >
       {jsxContent}

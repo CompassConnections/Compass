@@ -1,8 +1,7 @@
 import {APIError, APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {encryptMessage} from "shared/encryption";
-import {broadcastPrivateMessages} from "api/helpers/private-messages";
-
+import {encryptMessage} from 'shared/encryption'
+import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 
 export const editMessage: APIHandler<'edit-message'> = async ({messageId, content}, auth) => {
   const pg = createSupabaseDirectClient()
@@ -15,7 +14,7 @@ export const editMessage: APIHandler<'edit-message'> = async ({messageId, conten
        AND user_id = $2
 --        AND created_time > NOW() - INTERVAL '1 day'
        AND deleted = FALSE`,
-    [messageId, auth.uid]
+    [messageId, auth.uid],
   )
 
   if (!message) {
@@ -32,13 +31,12 @@ export const editMessage: APIHandler<'edit-message'> = async ({messageId, conten
          is_edited = TRUE,
          edited_at = NOW()
      WHERE id = $4`,
-    [ciphertext, iv, tag, messageId]
+    [ciphertext, iv, tag, messageId],
   )
 
-  void broadcastPrivateMessages(pg, message.channel_id, auth.uid)
-    .catch((err) => {
-      console.error('broadcastPrivateMessages failed', err)
-    })
+  void broadcastPrivateMessages(pg, message.channel_id, auth.uid).catch((err) => {
+    console.error('broadcastPrivateMessages failed', err)
+  })
 
   return {success: true}
 }

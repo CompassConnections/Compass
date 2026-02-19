@@ -1,10 +1,5 @@
-export function QRCode(props: {
-  url: string
-  className?: string
-  width?: number
-  height?: number
-}) {
-  const { url, className, width = 200, height = 200 } = props
+export function QRCode(props: {url: string; className?: string; width?: number; height?: number}) {
+  const {url, className, width = 200, height = 200} = props
 
   // url-encode the url
   const urlEncoded = encodeURIComponent(url)

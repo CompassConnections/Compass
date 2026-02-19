@@ -1,10 +1,10 @@
-import { SuggestionOptions } from '@tiptap/suggestion'
-import { beginsWith, searchInAny } from 'common/util/parse'
-import { EmojiList } from './emoji-list'
-import { invertBy, orderBy } from 'lodash'
+import {SuggestionOptions} from '@tiptap/suggestion'
+import {beginsWith, searchInAny} from 'common/util/parse'
+import {EmojiList} from './emoji-list'
+import {invertBy, orderBy} from 'lodash'
 import shortcodes from './github-shortcodes.json' // from https://api.github.com/emojis
-import { PluginKey } from '@tiptap/pm/state'
-import { makeMentionRender } from '../user-mention/mention-suggestion'
+import {PluginKey} from '@tiptap/pm/state'
+import {makeMentionRender} from '../user-mention/mention-suggestion'
 
 type Suggestion = Omit<SuggestionOptions, 'editor'>
 
@@ -23,40 +23,33 @@ const rank = (c: string) => {
   return r < 0 ? 101 : r
 }
 
-const emojiArr = Object.entries(invertBy(shortcodes)).map(
-  ([codePoint, shortcodes]) => ({
-    codePoint,
-    shortcodes,
-    character: String.fromCodePoint(
-      ...codePoint
-        .split(' ')
-        .flatMap((s) => [Number(`0x${s}`), 0x200d]) // interleave zero-width joiner
-        .slice(0, -1) // remove last joiner
-    ),
-  })
-)
+const emojiArr = Object.entries(invertBy(shortcodes)).map(([codePoint, shortcodes]) => ({
+  codePoint,
+  shortcodes,
+  character: String.fromCodePoint(
+    ...codePoint
+      .split(' ')
+      .flatMap((s) => [Number(`0x${s}`), 0x200d]) // interleave zero-width joiner
+      .slice(0, -1), // remove last joiner
+  ),
+}))
 
 // copied from mention-suggestion.ts, which is copied from https://tiptap.dev/api/nodes/mention#usage
 export const emojiSuggestion: Suggestion = {
   char: ':',
   pluginKey: new PluginKey('emoji'),
   allowedPrefixes: [' '],
-  items: async ({ query }) => {
-    const items = emojiArr.filter((item) =>
-      searchInAny(query, ...item.shortcodes)
-    )
+  items: async ({query}) => {
+    const items = emojiArr.filter((item) => searchInAny(query, ...item.shortcodes))
     return orderBy(
       items,
-      [
-        (item) => item.shortcodes.some((s) => beginsWith(s, query)),
-        (item) => rank(item.character),
-      ],
-      ['desc', 'asc']
+      [(item) => item.shortcodes.some((s) => beginsWith(s, query)), (item) => rank(item.character)],
+      ['desc', 'asc'],
     ).slice(0, 5)
   },
 
   render: makeMentionRender(EmojiList),
-  command: ({ editor, range, props }) => {
+  command: ({editor, range, props}) => {
     editor
       .chain()
       .focus()

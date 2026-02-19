@@ -1,5 +1,36 @@
-# Ignore Next artifacts
-.next/
-out/
 public/**/*.json
 public/**/*.html
+
+# Dependencies
+node_modules
+.yarn
+
+# Build outputs
+dist
+build
+.next
+out
+
+# Generated files
+coverage
+*.min.js
+*.min.css
+
+# Database / migrations
+**/*.sql
+
+# Config / lock files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Android / iOS
+android
+ios
+capacitor.config.ts
+
+# Playwright
+tests/reports
+playwright-report
+
+coverage

@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'   # Required for firebase-tools@15+
+          java-version: '21' # Required for firebase-tools@15+
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -41,8 +41,8 @@ jobs:
 
       - name: Run E2E tests
         env:
-          SKIP_DB_CLEANUP: true   # Don't try to stop Docker in CI
-          FIREBASE_TOKEN: "dummy" # Suppresses auth warning
+          SKIP_DB_CLEANUP: true # Don't try to stop Docker in CI
+          FIREBASE_TOKEN: 'dummy' # Suppresses auth warning
         # or
         run: |
           yarn test:e2e

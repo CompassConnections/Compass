@@ -1,9 +1,20 @@
-import React from 'react';
-import {Body, Button, Column, Container, Head, Html, Preview, Row, Section, Text,} from '@react-email/components'
+import React from 'react'
+import {
+  Body,
+  Button,
+  Column,
+  Container,
+  Head,
+  Html,
+  Preview,
+  Row,
+  Section,
+  Text,
+} from '@react-email/components'
 import {type User} from 'common/user'
 import {DOMAIN} from 'common/envs/constants'
 import {jamesUser, mockUser} from './functions/mock'
-import {button, container, content, Footer, main, paragraph} from "email/utils";
+import {button, container, content, Footer, main, paragraph} from 'email/utils'
 
 interface NewEndorsementEmailProps {
   fromUser: User
@@ -14,19 +25,19 @@ interface NewEndorsementEmailProps {
 }
 
 export const NewEndorsementEmail = ({
-                                      fromUser,
-                                      onUser,
-                                      endorsementText,
-                                      unsubscribeUrl,
-                                      email,
-                                    }: NewEndorsementEmailProps) => {
+  fromUser,
+  onUser,
+  endorsementText,
+  unsubscribeUrl,
+  email,
+}: NewEndorsementEmailProps) => {
   const name = onUser.name.split(' ')[0]
 
   const endorsementUrl = `https://${DOMAIN}/${onUser.username}`
 
   return (
     <Html>
-      <Head/>
+      <Head />
       <Preview>New endorsement from {fromUser.name}</Preview>
       <Body style={main}>
         <Container style={container}>
@@ -66,7 +77,7 @@ export const NewEndorsementEmail = ({
             </Section>
           </Section>
 
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name}/>
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
         </Container>
       </Body>
     </Html>
@@ -81,7 +92,6 @@ NewEndorsementEmail.PreviewProps = {
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
   email: 'someone@gmail.com',
 } as NewEndorsementEmailProps
-
 
 const endorsementContainer = {
   margin: '20px 0',

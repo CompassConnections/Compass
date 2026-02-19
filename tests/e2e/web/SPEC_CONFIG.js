@@ -1,6 +1,6 @@
 export const config = {
   BASE_URL: 'http://localhost:3000',
-  
+
   USERS: {
     DEV_1: {
       EMAIL: 'dev_1@compass.com',
@@ -18,6 +18,6 @@ export const config = {
       EMAIL: 'compass.connections.test@gmail.com',
       //unsure if gmail password should be public
       PASSWORD: '',
-    }
+    },
   },
-};
+}

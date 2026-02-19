@@ -1,11 +1,9 @@
-import { Image } from '@tiptap/extension-image'
+import {Image} from '@tiptap/extension-image'
 import clsx from 'clsx'
-import { useState } from 'react'
+import {useState} from 'react'
 
 export const BasicImage = Image.extend({
-  renderReact: (attrs: any) => (
-    <img loading="lazy" {...attrs} alt={attrs.alt ?? ''} />
-  ),
+  renderReact: (attrs: any) => <img loading="lazy" {...attrs} alt={attrs.alt ?? ''} />,
 })
 
 export const DisplayImage = Image.extend({
@@ -16,14 +14,9 @@ export const MediumDisplayImage = Image.extend({
   renderReact: (attrs: any) => <ExpandingImage size={'md'} {...attrs} />,
 })
 
-function ExpandingImage(props: {
-  src: string
-  alt?: string
-  title?: string
-  size?: 'md'
-}) {
+function ExpandingImage(props: {src: string; alt?: string; title?: string; size?: 'md'}) {
   const [expanded, setExpanded] = useState(false)
-  const { size, alt, ...rest } = props
+  const {size, alt, ...rest} = props
 
   return (
     <>
@@ -34,7 +27,7 @@ function ExpandingImage(props: {
         onClick={() => setExpanded(true)}
         className={clsx(
           'cursor-pointer object-contain',
-          size === 'md' ? 'max-h-[400px]' : 'h-[128px]'
+          size === 'md' ? 'max-h-[400px]' : 'h-[128px]',
         )}
         height={size === 'md' ? 400 : 128}
       />
@@ -43,11 +36,7 @@ function ExpandingImage(props: {
           className="bg-opacity fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
           onClick={() => setExpanded(false)}
         >
-          <img
-            alt={alt ?? ''}
-            {...rest}
-            className="max-h-full cursor-pointer object-contain"
-          />
+          <img alt={alt ?? ''} {...rest} className="max-h-full cursor-pointer object-contain" />
         </div>
       )}
     </>

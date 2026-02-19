@@ -1,4 +1,4 @@
-import { createElement, ReactElement, ReactNode } from 'react'
+import {createElement, ReactElement, ReactNode} from 'react'
 
 // new function for type reasons
 export function classToTw(element: ReactElement) {
@@ -24,7 +24,7 @@ function replaceTw(element: ReactNode): ReactNode {
   if (typeof element.type === 'function') {
     if (element.type.prototype?.isReactComponent) {
       throw Error(
-        'React class component not supported in classname to tw middleware because Sinclair is lazy.'
+        'React class component not supported in classname to tw middleware because Sinclair is lazy.',
       )
     }
 
@@ -38,15 +38,15 @@ function replaceTw(element: ReactNode): ReactNode {
   // pure element
 
   // Replace `className` with `tw` for this element
-  const { props } = element
-  const newProps = { ...props }
+  const {props} = element
+  const newProps = {...props}
   if (props.className) {
     newProps.tw = props.className
     delete newProps.className
   }
 
   // Recursively replace children, whether we have many, one, or no children
-  const { children } = props
+  const {children} = props
   const newChildren = children
     ? Array.isArray(children)
       ? children.map(replaceTw)

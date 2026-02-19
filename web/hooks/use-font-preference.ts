@@ -5,7 +5,8 @@ export type FontOption = 'atkinson' | 'system-sans' | 'classic-serif'
 
 const FONT_VARIABLES: Record<FontOption, string> = {
   atkinson: '"Atkinson Hyperlegible Next", Georgia, "Times New Roman", Times, serif',
-  'system-sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+  'system-sans':
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
   'classic-serif': 'Georgia, "Times New Roman", Times, serif',
 }
 

@@ -1,11 +1,11 @@
 import clsx from 'clsx'
-import {convertRelationshipStatusTypes,} from 'web/lib/util/convert-types'
+import {convertRelationshipStatusTypes} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {RELATIONSHIP_STATUS_CHOICES} from "common/choices"
-import {FilterFields} from "common/filters"
-import {getSortedOptions} from "common/util/sorting"
+import {RELATIONSHIP_STATUS_CHOICES} from 'common/choices'
+import {FilterFields} from 'common/filters'
+import {getSortedOptions} from 'common/util/sorting'
 import {useT} from 'web/lib/locale'
 
 export function RelationshipStatusFilterText(props: {
@@ -20,9 +20,7 @@ export function RelationshipStatusFilterText(props: {
   const label = defaultLabel || t('filter.any', 'Any')
 
   if (!options || length < 1) {
-    return (
-      <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
-    )
+    return <span className={clsx('text-semibold', highlightedClass)}>{label}</span>
   }
 
   if (length > 2) {
@@ -37,7 +35,7 @@ export function RelationshipStatusFilterText(props: {
 
   const sortedOptions = getSortedOptions(options, RELATIONSHIP_STATUS_CHOICES)
   const convertedTypes = sortedOptions.map((r) =>
-    t(`profile.relationship_status.${r}`, convertRelationshipStatusTypes(r))
+    t(`profile.relationship_status.${r}`, convertRelationshipStatusTypes(r)),
   )
 
   return (

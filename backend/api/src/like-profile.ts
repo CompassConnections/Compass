@@ -1,42 +1,42 @@
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { APIError, APIHandler } from './helpers/endpoint'
-import { createProfileLikeNotification } from 'shared/create-profile-notification'
-import { getHasFreeLike } from './has-free-like'
-import { log } from 'shared/utils'
-import { tryCatch } from 'common/util/try-catch'
-import { Row } from 'common/supabase/utils'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {APIError, APIHandler} from './helpers/endpoint'
+import {createProfileLikeNotification} from 'shared/create-profile-notification'
+import {getHasFreeLike} from './has-free-like'
+import {log} from 'shared/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {Row} from 'common/supabase/utils'
 
 export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
-  const { targetUserId, remove } = props
+  const {targetUserId, remove} = props
   const creatorId = auth.uid
 
   const pg = createSupabaseDirectClient()
 
   if (remove) {
-    const { error } = await tryCatch(
-      pg.none(
-        'delete from profile_likes where creator_id = $1 and target_id = $2',
-        [creatorId, targetUserId]
-      )
+    const {error} = await tryCatch(
+      pg.none('delete from profile_likes where creator_id = $1 and target_id = $2', [
+        creatorId,
+        targetUserId,
+      ]),
     )
 
     if (error) {
       throw new APIError(500, 'Failed to remove like: ' + error.message)
     }
-    return { status: 'success' }
+    return {status: 'success'}
   }
 
   // Check if like already exists
-  const { data: existing } = await tryCatch(
+  const {data: existing} = await tryCatch(
     pg.oneOrNone<Row<'profile_likes'>>(
       'select * from profile_likes where creator_id = $1 and target_id = $2',
-      [creatorId, targetUserId]
-    )
+      [creatorId, targetUserId],
+    ),
   )
 
   if (existing) {
     log('Like already exists, do nothing')
-    return { status: 'success' }
+    return {status: 'success'}
   }
 
   const hasFreeLike = await getHasFreeLike(creatorId)
@@ -47,11 +47,11 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   }
 
   // Insert the new like
-  const { data, error } = await tryCatch(
+  const {data, error} = await tryCatch(
     pg.one<Row<'profile_likes'>>(
       'insert into profile_likes (creator_id, target_id) values ($1, $2) returning *',
-      [creatorId, targetUserId]
-    )
+      [creatorId, targetUserId],
+    ),
   )
 
   if (error) {
@@ -63,7 +63,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   }
 
   return {
-    result: { status: 'success' },
+    result: {status: 'success'},
     continue: continuation,
   }
 }

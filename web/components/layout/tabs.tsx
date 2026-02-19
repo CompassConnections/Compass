@@ -1,16 +1,16 @@
 import clsx from 'clsx'
-import { usePathname, ReadonlyURLSearchParams } from 'next/navigation'
-import { useRouter } from 'next/router'
+import {ReadonlyURLSearchParams, usePathname} from 'next/navigation'
+import {useRouter} from 'next/router'
 
-import { ReactNode, useEffect, useRef } from 'react'
-import { track } from 'web/lib/service/analytics'
-import { Col } from './col'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { Row } from 'web/components/layout/row'
-import { Carousel } from 'web/components/widgets/carousel'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { useDefinedSearchParams } from 'web/hooks/use-defined-search-params'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
+import {ReactNode, useEffect, useRef} from 'react'
+import {track} from 'web/lib/service/analytics'
+import {Col} from './col'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {Row} from 'web/components/layout/row'
+import {Carousel} from 'web/components/widgets/carousel'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useDefinedSearchParams} from 'web/hooks/use-defined-search-params'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 
 export type Tab = {
   title: string
@@ -35,36 +35,22 @@ type TabProps = {
   name?: string // a unique identifier for the tabs, used for caching
 }
 
-export function MinimalistTabs(props: TabProps & { activeIndex: number }) {
-  const {
-    tabs,
-    activeIndex,
-    labelClassName,
-    onClick,
-    className,
-    renderAllTabs,
-    trackingName,
-  } = props
+export function MinimalistTabs(props: TabProps & {activeIndex: number}) {
+  const {tabs, activeIndex, labelClassName, onClick, className, renderAllTabs, trackingName} = props
 
   const hasRenderedIndexRef = useRef(new Set<number>())
   hasRenderedIndexRef.current.add(activeIndex)
 
   return (
     <>
-      <Carousel
-        className={clsx('border-ink-200 border-b pb-1', className)}
-        aria-label="Tabs"
-      >
+      <Carousel className={clsx('border-ink-200 border-b pb-1', className)} aria-label="Tabs">
         {tabs.map((tab, i) => (
           <a
             href="#"
             key={tab.queryString ?? tab.title}
             onClick={(e) => {
               e.preventDefault()
-              onClick?.(
-                tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(),
-                i
-              )
+              onClick?.(tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(), i)
               if (trackingName) {
                 track(trackingName, {
                   tab: tab.title,
@@ -73,11 +59,9 @@ export function MinimalistTabs(props: TabProps & { activeIndex: number }) {
             }}
             aria-current={activeIndex === i ? 'page' : undefined}
             className={clsx(
-              activeIndex === i
-                ? 'text-primary-600'
-                : 'text-ink-400 hover:text-ink-700',
+              activeIndex === i ? 'text-primary-600' : 'text-ink-400 hover:text-ink-700',
               'cursor-pointer whitespace-nowrap text-lg ',
-              labelClassName
+              labelClassName,
             )}
           >
             <Tooltip text={tab.tooltip}>
@@ -87,19 +71,10 @@ export function MinimalistTabs(props: TabProps & { activeIndex: number }) {
         ))}
       </Carousel>
       {tabs
-        .map((tab, i) => ({ tab, i }))
-        .filter(
-          ({ tab, i }) =>
-            renderAllTabs || tab.prerender || hasRenderedIndexRef.current.has(i)
-        )
-        .map(({ tab, i }) => (
-          <div
-            key={i}
-            className={clsx(
-              i === activeIndex ? 'contents' : 'hidden',
-              tab.className
-            )}
-          >
+        .map((tab, i) => ({tab, i}))
+        .filter(({tab, i}) => renderAllTabs || tab.prerender || hasRenderedIndexRef.current.has(i))
+        .map(({tab, i}) => (
+          <div key={i} className={clsx(i === activeIndex ? 'contents' : 'hidden', tab.className)}>
             {tab.content}
           </div>
         ))}
@@ -107,7 +82,7 @@ export function MinimalistTabs(props: TabProps & { activeIndex: number }) {
   )
 }
 
-export function ControlledTabs(props: TabProps & { activeIndex: number }) {
+export function ControlledTabs(props: TabProps & {activeIndex: number}) {
   const {
     tabs,
     activeIndex,
@@ -136,10 +111,7 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
             onClick={(e) => {
               e.preventDefault()
 
-              onClick?.(
-                tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(),
-                i
-              )
+              onClick?.(tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(), i)
 
               if (trackingName) {
                 track(trackingName, {
@@ -153,23 +125,24 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
                 : 'text-ink-500 hover:border-ink-300 hover:text-ink-700 border-transparent',
               'mr-4 inline-flex cursor-pointer flex-row gap-1 whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium ',
               labelClassName,
-              'flex-shrink-0'
+              'flex-shrink-0',
             )}
             aria-current={activeIndex === i ? 'page' : undefined}
           >
             <Col
-              className={clsx()
-              // tab.stackedTabIcon && (activeIndex !== i) && 'opacity-85'
+              className={
+                clsx()
+                // tab.stackedTabIcon && (activeIndex !== i) && 'opacity-85'
               }
             >
               <Tooltip text={tab.tooltip}>
-                {tab.stackedTabIcon && (
-                  <Row className="justify-center">{tab.stackedTabIcon}</Row>
-                )}
+                {tab.stackedTabIcon && <Row className="justify-center">{tab.stackedTabIcon}</Row>}
                 <Row className={'items-center'}>
                   <Col>
                     {tab.title.split('\n').map((line, i) => (
-                      <Row className={'items-center justify-center'} key={i}>{line}</Row>
+                      <Row className={'items-center justify-center'} key={i}>
+                        {line}
+                      </Row>
                     ))}
                   </Col>
                   {tab.inlineTabIcon}
@@ -180,19 +153,10 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
         ))}
       </Carousel>
       {tabs
-        .map((tab, i) => ({ tab, i }))
-        .filter(
-          ({ tab, i }) =>
-            renderAllTabs || tab.prerender || hasRenderedIndexRef.current.has(i)
-        )
-        .map(({ tab, i }) => (
-          <div
-            key={i}
-            className={clsx(
-              i === activeIndex ? 'contents' : 'hidden',
-              tab.className
-            )}
-          >
+        .map((tab, i) => ({tab, i}))
+        .filter(({tab, i}) => renderAllTabs || tab.prerender || hasRenderedIndexRef.current.has(i))
+        .map(({tab, i}) => (
+          <div key={i} className={clsx(i === activeIndex ? 'contents' : 'hidden', tab.className)}>
             {tab.content}
           </div>
         ))}
@@ -200,11 +164,11 @@ export function ControlledTabs(props: TabProps & { activeIndex: number }) {
   )
 }
 
-export function UncontrolledTabs(props: TabProps & { defaultIndex?: number }) {
-  const { defaultIndex, onClick, ...rest } = props
+export function UncontrolledTabs(props: TabProps & {defaultIndex?: number}) {
+  const {defaultIndex, onClick, ...rest} = props
   const [activeIndex, setActiveIndex] = usePersistentInMemoryState(
     defaultIndex ?? 0,
-    `tab-${props.trackingName}-${props.name ?? props.tabs[0]?.title}`
+    `tab-${props.trackingName}-${props.name ?? props.tabs[0]?.title}`,
   )
   if ((defaultIndex ?? 0) > props.tabs.length - 1) {
     console.error('default index greater than tabs length')
@@ -222,16 +186,10 @@ export function UncontrolledTabs(props: TabProps & { defaultIndex?: number }) {
   )
 }
 
-const isTabSelected = (
-  params: ReadonlyURLSearchParams,
-  queryParam: string,
-  tab: Tab
-) => {
+const isTabSelected = (params: ReadonlyURLSearchParams, queryParam: string, tab: Tab) => {
   const selected = params.get(queryParam)
   if (typeof selected === 'string') {
-    return (
-      (tab.queryString?.toLowerCase() ?? tab.title.toLowerCase()) === selected
-    )
+    return (tab.queryString?.toLowerCase() ?? tab.title.toLowerCase()) === selected
   } else {
     return false
   }
@@ -243,37 +201,24 @@ export function QueryUncontrolledTabs(
     scrollToTop?: boolean
     minimalist?: boolean
     saveTabInLocalStorageKey?: string
-  }
+  },
 ) {
-  const {
-    tabs,
-    minimalist,
-    onClick,
-    scrollToTop,
-    saveTabInLocalStorageKey,
-    ...rest
-  } = props
+  const {tabs, minimalist, onClick, scrollToTop, saveTabInLocalStorageKey, ...rest} = props
   const router = useRouter()
   const pathName = usePathname()
-  const { searchParams, createQueryString } = useDefinedSearchParams()
-  const selectedIdx = tabs.findIndex((t) =>
-    isTabSelected(searchParams, 'tab', t)
+  const {searchParams, createQueryString} = useDefinedSearchParams()
+  const selectedIdx = tabs.findIndex((t) => isTabSelected(searchParams, 'tab', t))
+  const [savedTabIndex, setSavedTabIndex] = usePersistentLocalState<number | undefined>(
+    undefined,
+    saveTabInLocalStorageKey ?? '',
   )
-  const [savedTabIndex, setSavedTabIndex] = usePersistentLocalState<
-    number | undefined
-  >(undefined, saveTabInLocalStorageKey ?? '')
   const defaultIndex =
-    (saveTabInLocalStorageKey ? savedTabIndex : undefined) ??
-    props.defaultIndex ??
-    0
+    (saveTabInLocalStorageKey ? savedTabIndex : undefined) ?? props.defaultIndex ?? 0
   const activeIndex = selectedIdx !== -1 ? selectedIdx : defaultIndex
 
   useEffect(() => {
     if (onClick) {
-      onClick(
-        tabs[activeIndex].queryString ?? tabs[activeIndex].title,
-        activeIndex
-      )
+      onClick(tabs[activeIndex].queryString ?? tabs[activeIndex].title, activeIndex)
     }
     if (saveTabInLocalStorageKey) setSavedTabIndex(activeIndex)
   }, [activeIndex])
@@ -284,12 +229,10 @@ export function QueryUncontrolledTabs(
         tabs={tabs}
         activeIndex={activeIndex}
         onClick={(title) => {
-          if (scrollToTop) window.scrollTo({ top: 0 })
-          router.replace(
-            pathName + '?' + createQueryString('tab', title),
-            undefined,
-            { shallow: true }
-          )
+          if (scrollToTop) window.scrollTo({top: 0})
+          router.replace(pathName + '?' + createQueryString('tab', title), undefined, {
+            shallow: true,
+          })
         }}
       />
     )
@@ -300,12 +243,8 @@ export function QueryUncontrolledTabs(
       tabs={tabs}
       activeIndex={activeIndex}
       onClick={(title) => {
-        if (scrollToTop) window.scrollTo({ top: 0 })
-        router.replace(
-          pathName + '?' + createQueryString('tab', title),
-          undefined,
-          { shallow: true }
-        )
+        if (scrollToTop) window.scrollTo({top: 0})
+        router.replace(pathName + '?' + createQueryString('tab', title), undefined, {shallow: true})
       }}
     />
   )

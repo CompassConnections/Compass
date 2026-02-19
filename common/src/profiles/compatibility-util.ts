@@ -1,5 +1,5 @@
-import { ProfileRow } from 'common/profiles/profile'
-import {MAX_INT, MIN_INT} from "common/constants";
+import {ProfileRow} from 'common/profiles/profile'
+import {MAX_INT, MIN_INT} from 'common/constants'
 
 const isPreferredGender = (
   preferredGenders: string[] | undefined | null,
@@ -27,14 +27,14 @@ export const areGenderCompatible = (profile1: ProfileRow, profile2: ProfileRow) 
 }
 
 const satisfiesAgeRange = (profile: ProfileRow, age: number | null | undefined) => {
-  return (age ?? MAX_INT) >= (profile.pref_age_min ?? MIN_INT) && (age ?? MIN_INT) <= (profile.pref_age_max ?? MAX_INT)
+  return (
+    (age ?? MAX_INT) >= (profile.pref_age_min ?? MIN_INT) &&
+    (age ?? MIN_INT) <= (profile.pref_age_max ?? MAX_INT)
+  )
 }
 
 export const areAgeCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
-  return (
-    satisfiesAgeRange(profile1, profile2.age) &&
-    satisfiesAgeRange(profile2, profile1.age)
-  )
+  return satisfiesAgeRange(profile1, profile2.age) && satisfiesAgeRange(profile2, profile1.age)
 }
 
 export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
@@ -55,19 +55,16 @@ export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow
   return root < 2.5
 }
 
-export const areRelationshipStyleCompatible = (
-  profile1: ProfileRow,
-  profile2: ProfileRow
-) => {
+export const areRelationshipStyleCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
   if (!profile1.pref_relation_styles?.length || !profile2.pref_relation_styles) return true
   return profile1.pref_relation_styles.some((style) =>
-    profile2.pref_relation_styles?.includes(style)
+    profile2.pref_relation_styles?.includes(style),
   )
 }
 
 export const areWantKidsCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
-  const { wants_kids_strength: kids1 } = profile1
-  const { wants_kids_strength: kids2 } = profile2
+  const {wants_kids_strength: kids1} = profile1
+  const {wants_kids_strength: kids2} = profile2
 
   if (kids1 == null || kids2 == null) return true
 

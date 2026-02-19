@@ -1,10 +1,15 @@
-import { Avatar, AvatarSizeType } from 'web/components/widgets/avatar'
-import { Col } from 'web/components/layout/col'
-import { Row } from './layout/row'
+import {Avatar, AvatarSizeType} from 'web/components/widgets/avatar'
+import {Col} from 'web/components/layout/col'
+import {Row} from './layout/row'
 import clsx from 'clsx'
 
 export const MultipleOrSingleAvatars = (props: {
-  avatars: Array<{ avatarUrl: string; id: string; name: string; username: string }>
+  avatars: Array<{
+    avatarUrl: string
+    id: string
+    name: string
+    username: string
+  }>
   onClick?: () => void
   size: AvatarSizeType
   // TODO: standardize these numbers so they are calculated from the size
@@ -12,7 +17,7 @@ export const MultipleOrSingleAvatars = (props: {
   startLeft?: number
   className?: string
 }) => {
-  const { avatars, className, onClick, size } = props
+  const {avatars, className, onClick, size} = props
 
   if (avatars.length === 0) return null
 
@@ -28,10 +33,7 @@ export const MultipleOrSingleAvatars = (props: {
   const spacing = props.spacing ?? 0.3
 
   return (
-    <Col
-      onClick={onClick}
-      className={clsx(`relative cursor-pointer items-center`, className)}
-    >
+    <Col onClick={onClick} className={clsx(`relative cursor-pointer items-center`, className)}>
       <Row>
         {avatarsToCombine.map((n, index) => (
           <div

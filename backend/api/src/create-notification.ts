@@ -1,6 +1,6 @@
-import {createSupabaseDirectClient, SupabaseDirectClient,} from 'shared/supabase/init'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {Notification} from 'common/notifications'
-import {createBulkNotification, insertNotificationToSupabase,} from 'shared/supabase/notifications'
+import {createBulkNotification, insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {tryCatch} from 'common/util/try-catch'
 import {Row} from 'common/supabase/utils'
 import {ANDROID_APP_URL} from 'common/constants'
@@ -38,8 +38,7 @@ export const createAndroidTestNotifications = async () => {
     sourceSlug: '/contact',
     sourceUserAvatarUrl:
       'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
-    title:
-      'Android App Ready for Review — Help Us Unlock the Google Play Release',
+    title: 'Android App Ready for Review — Help Us Unlock the Google Play Release',
     sourceText:
       'To release our app, Google requires a closed test with at least 12 testers for 14 days. Please share your Google Play–registered email address so we can add you as a tester and complete the review process.',
   }
@@ -60,8 +59,7 @@ export const createShareNotifications = async () => {
     sourceUserAvatarUrl:
       'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Ficon-outreach-outstrip-outreach-272151502.jpg?alt=media&token=6d6fcecb-818c-4fca-a8e0-d2d0069b9445',
     title: 'Give us tips to reach more people',
-    sourceText:
-      '250 members already! Tell us where and how we can best share Compass.',
+    sourceText: '250 members already! Tell us where and how we can best share Compass.',
   }
   return await createNotifications(notification)
 }
@@ -87,9 +85,7 @@ export const createVoteNotifications = async () => {
 
 export const createNotifications = async (notification: Notification) => {
   const pg = createSupabaseDirectClient()
-  const {data: users, error} = await tryCatch(
-    pg.many<Row<'users'>>('select * from users')
-  )
+  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select * from users'))
 
   if (error) {
     console.error('Error fetching users', error)
@@ -117,7 +113,7 @@ export const createNotifications = async (notification: Notification) => {
 export const createNotification = async (
   user: Row<'users'>,
   notification: Notification,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   notification.userId = user.id
   console.log('notification', user.username)
@@ -132,9 +128,7 @@ export const createEventsAvailableNotifications = async () => {
   const pg = createSupabaseDirectClient()
 
   // Fetch all users
-  const {data: users, error} = await tryCatch(
-    pg.many<Row<'users'>>('select id from users')
-  )
+  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select id from users'))
 
   if (error) {
     console.error('Error fetching users', error)
@@ -161,12 +155,10 @@ export const createEventsAvailableNotifications = async () => {
       sourceUpdateType: 'created',
     },
     userIds,
-    pg
+    pg,
   )
 
-  console.log(
-    `Created events notification template ${templateId} for ${count} users`
-  )
+  console.log(`Created events notification template ${templateId} for ${count} users`)
 
   return {
     success: true,

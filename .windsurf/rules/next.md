@@ -1,16 +1,16 @@
 ---
 trigger: manual
 description:
-globs: 
+globs:
 ---
 
 ### Translations
 
 ```typescript
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 const t = useT()
-t("common.key", "English translations")
+t('common.key', 'English translations')
 ```
 
 Translations should go to the JSON files in `web/messages` (`de.json` and `fr.json`, as of now).

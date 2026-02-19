@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
-import { Modal, MODAL_CLASS } from 'web/components/layout/modal'
-import { Col } from 'web/components/layout/col'
+import {useEffect, useState} from 'react'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Col} from 'web/components/layout/col'
 import Image from 'next/image'
-import { Row } from 'web/components/layout/row'
-import { Button } from 'web/components/buttons/button'
+import {Row} from 'web/components/layout/row'
+import {Button} from 'web/components/buttons/button'
 
 export const PhotosModal = (props: {
   open: boolean
   setOpen: (open: boolean) => void
   photos: string[]
 }) => {
-  const { open, setOpen, photos } = props
+  const {open, setOpen, photos} = props
   const [index, setIndex] = useState(0)
   useEffect(() => {
     if (!open) setTimeout(() => setIndex(0), 100)
@@ -29,10 +29,7 @@ export const PhotosModal = (props: {
           <Button onClick={() => setIndex(index - 1)} disabled={index === 0}>
             Previous
           </Button>
-          <Button
-            onClick={() => setIndex(index + 1)}
-            disabled={index === photos.length - 1}
-          >
+          <Button onClick={() => setIndex(index + 1)} disabled={index === photos.length - 1}>
             Next
           </Button>
         </Row>

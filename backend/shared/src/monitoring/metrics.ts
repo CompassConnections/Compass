@@ -1,4 +1,4 @@
-import { isEqual, flatten } from 'lodash'
+import {flatten, isEqual} from 'lodash'
 
 // see https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.metricDescriptors#MetricKind
 export type MetricKind = 'GAUGE' | 'CUMULATIVE'
@@ -83,7 +83,7 @@ export const CUSTOM_METRICS = {
     metricKind: 'CUMULATIVE',
     valueKind: 'int64Value',
   },
-} as const satisfies { [k: string]: MetricDescriptor }
+} as const satisfies {[k: string]: MetricDescriptor}
 
 // the typing for all this could be way fancier, but seems overkill
 
@@ -135,16 +135,14 @@ export class MetricStore {
   }
 
   freshEntries() {
-    return flatten(
-      Array.from(this.data.entries(), ([_, vs]) => vs.filter((e) => e.fresh))
-    )
+    return flatten(Array.from(this.data.entries(), ([_, vs]) => vs.filter((e) => e.fresh)))
   }
 
   // mqp: we could clear all gauges but then we should centralize the process for polling
   // them in order to not have weird gaps.
   clearDistributionGauges() {
     for (const k of this.data.keys()) {
-      const { metricKind, valueKind } = CUSTOM_METRICS[k]
+      const {metricKind, valueKind} = CUSTOM_METRICS[k]
       if (metricKind === 'GAUGE' && valueKind === 'distributionValue') {
         this.data.delete(k)
       }
@@ -162,7 +160,7 @@ export class MetricStore {
       }
     }
     // none exists, so create it
-    const entry = { type, labels, startTime: Date.now(), fresh: true, value: 0 }
+    const entry = {type, labels, startTime: Date.now(), fresh: true, value: 0}
     entries.push(entry)
     return entry as MetricStoreEntry
   }

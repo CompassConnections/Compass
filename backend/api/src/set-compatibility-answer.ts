@@ -5,7 +5,7 @@ import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-
 
 export const setCompatibilityAnswer: APIHandler<'set-compatibility-answer'> = async (
   {questionId, multipleChoice, prefChoices, importance, explanation},
-  auth
+  auth,
 ) => {
   const pg = createSupabaseDirectClient()
 
@@ -21,14 +21,7 @@ export const setCompatibilityAnswer: APIHandler<'set-compatibility-answer'> = as
                           explanation     = EXCLUDED.explanation
         RETURNING *
     `,
-    values: [
-      auth.uid,
-      questionId,
-      multipleChoice,
-      prefChoices,
-      importance,
-      explanation ?? null,
-    ],
+    values: [auth.uid, questionId, multipleChoice, prefChoices, importance, explanation ?? null],
   })
 
   const continuation = async () => {

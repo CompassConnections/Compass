@@ -27,11 +27,8 @@ export default function NewMessageButton() {
   )
 }
 
-function MessageModal(props: {
-  open: boolean
-  setOpen: (open: boolean) => void
-}) {
-  const { open, setOpen } = props
+function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) {
+  const {open, setOpen} = props
   const privateUser = usePrivateUser()
   const router = useRouter()
   const t = useT()

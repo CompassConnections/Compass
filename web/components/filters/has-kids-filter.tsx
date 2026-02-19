@@ -6,7 +6,6 @@ import {FilterFields} from 'common/filters'
 import {generateChoicesMap, hasKidsLabels} from 'common/has-kids'
 import {useT} from 'web/lib/locale'
 
-
 export function HasKidsLabel(props: {
   has_kids: number
   highlightedClass?: string
@@ -28,10 +27,8 @@ export function HasKidsLabel(props: {
   }
   return (
     <Row className="items-center gap-0.5">
-      <FaChild className="h-4 w-4"/>
-      <span
-        className={clsx(highlightedClass, has_kids !== -1 && 'font-semibold')}
-      >
+      <FaChild className="h-4 w-4" />
+      <span className={clsx(highlightedClass, has_kids !== -1 && 'font-semibold')}>
         {t(`profile.has_kids.${labelKey}`, labelValue)}
       </span>
     </Row>

@@ -86,5 +86,5 @@ export function identifyUser(userId: string | null) {
 }
 
 export async function setUserProperty(property: string, value: string) {
-  posthog.setPersonProperties({ property: value })
+  posthog.setPersonProperties({property: value})
 }

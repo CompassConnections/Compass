@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {convertPoliticalTypes,} from 'web/lib/util/convert-types'
+import {convertPoliticalTypes} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
@@ -38,7 +38,7 @@ export function PoliticalFilterText(props: {
 
   const sortedOptions = getSortedOptions(options, POLITICAL_CHOICES)
   const convertedTypes = sortedOptions.map((r) =>
-    t(`profile.political.${toKey(r)}`, convertPoliticalTypes(r as any))
+    t(`profile.political.${toKey(r)}`, convertPoliticalTypes(r as any)),
   )
 
   return (

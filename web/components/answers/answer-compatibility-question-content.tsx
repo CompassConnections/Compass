@@ -17,7 +17,7 @@ import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {track} from 'web/lib/service/analytics'
 import {api} from 'web/lib/api'
 import {filterKeys} from '../questions-form'
-import toast from "react-hot-toast"
+import toast from 'react-hot-toast'
 import {useT} from 'web/lib/locale'
 
 export type CompatibilityAnswerSubmitType = Omit<
@@ -28,7 +28,7 @@ export type CompatibilityAnswerSubmitType = Omit<
 export const IMPORTANCE_CHOICES = {
   'Not Important': 0,
   'Somewhat Important': 1,
-  'Important': 2,
+  Important: 2,
   'Very Important': 3,
 }
 
@@ -50,9 +50,7 @@ export const IMPORTANCE_DISPLAY_COLORS: ImportanceColorsType = {
   3: `bg-yellow-400/80`,
 }
 
-export const submitCompatibilityAnswer = async (
-  newAnswer: CompatibilityAnswerSubmitType
-) => {
+export const submitCompatibilityAnswer = async (newAnswer: CompatibilityAnswerSubmitType) => {
   if (!newAnswer) return
   const input = {
     ...filterKeys(newAnswer, (key, _) => !['id', 'created_time'].includes(key)),
@@ -78,10 +76,7 @@ export const submitCompatibilityAnswer = async (
   }
 }
 
-export const deleteCompatibilityAnswer = async (
-  id: number,
-  userId: string
-) => {
+export const deleteCompatibilityAnswer = async (id: number, userId: string) => {
   if (!userId || !id) return
   try {
     await api('delete-compatibility-answer', {id})
@@ -115,20 +110,12 @@ export function AnswerCompatibilityQuestionContent(props: {
   isLastQuestion: boolean
   noSkip?: boolean
 }) {
-  const {
-    compatibilityQuestion,
-    user,
-    onSubmit,
-    isLastQuestion,
-    onNext,
-    noSkip,
-    index,
-    total,
-  } = props
+  const {compatibilityQuestion, user, onSubmit, isLastQuestion, onNext, noSkip, index, total} =
+    props
   const t = useT()
   const [answer, setAnswer] = useState<CompatibilityAnswerSubmitType>(
     (props.answer as CompatibilityAnswerSubmitType) ??
-    getEmptyAnswer(user.id, compatibilityQuestion.id)
+      getEmptyAnswer(user.id, compatibilityQuestion.id),
   )
 
   const [loading, setLoading] = useState(false)
@@ -140,13 +127,11 @@ export function AnswerCompatibilityQuestionContent(props: {
     return null
   }
 
-  const optionOrder = sortBy(
-    Object.entries(compatibilityQuestion.multiple_choice_options),
-    1
-  ).map(([label]) => label)
+  const optionOrder = sortBy(Object.entries(compatibilityQuestion.multiple_choice_options), 1).map(
+    ([label]) => label,
+  )
 
-  const multipleChoiceValid =
-    answer.multiple_choice != null && answer.multiple_choice !== -1
+  const multipleChoiceValid = answer.multiple_choice != null && answer.multiple_choice !== -1
 
   const prefChoicesValid = answer.pref_choices && answer.pref_choices.length > 0
 
@@ -170,8 +155,7 @@ export function AnswerCompatibilityQuestionContent(props: {
           total > 1 && (
             <Row className="text-ink-500 -mt-4 w-full justify-end text-sm">
               <span>
-                <span className="text-ink-600 font-semibold">{index + 1}</span>{' '}
-                / {total}
+                <span className="text-ink-600 font-semibold">{index + 1}</span> / {total}
               </span>
             </Row>
           )}
@@ -179,49 +163,52 @@ export function AnswerCompatibilityQuestionContent(props: {
         {shortenedPopularity && (
           <Row className="text-ink-500 select-none items-center text-sm">
             <Tooltip
-              text={t('answers.content.people_answered', '{count} people have answered this question', {count: String(shortenedPopularity)})}
+              text={t(
+                'answers.content.people_answered',
+                '{count} people have answered this question',
+                {count: String(shortenedPopularity)},
+              )}
             >
               {shortenedPopularity}
             </Tooltip>
-            <UserIcon className="h-4 w-4"/>
+            <UserIcon className="h-4 w-4" />
           </Row>
         )}
       </Col>
-      <Col
-        className={clsx(
-          SCROLLABLE_MODAL_CLASS,
-          'w-full gap-4 flex-1 min-h-0 pr-2'
-        )}
-      >
+      <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'w-full gap-4 flex-1 min-h-0 pr-2')}>
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">{t('answers.preferred.your_answer', 'Your answer')}</span>
+          <span className="text-ink-500 text-sm">
+            {t('answers.preferred.your_answer', 'Your answer')}
+          </span>
           <SelectAnswer
             value={answer.multiple_choice}
-            setValue={(choice) =>
-              setAnswer({...answer, multiple_choice: choice})
-            }
+            setValue={(choice) => setAnswer({...answer, multiple_choice: choice})}
             options={optionOrder}
           />
         </Col>
         <Col className="gap-2">
-          <span
-            className="text-ink-500 text-sm">{t('answers.content.answers_you_accept', "Answers you'll accept")}</span>
+          <span className="text-ink-500 text-sm">
+            {t('answers.content.answers_you_accept', "Answers you'll accept")}
+          </span>
           <MultiSelectAnswers
             values={answer.pref_choices ?? []}
-            setValue={(choice) =>
-              setAnswer({...answer, pref_choices: choice})
-            }
+            setValue={(choice) => setAnswer({...answer, pref_choices: choice})}
             options={optionOrder}
           />
         </Col>
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">{t('answers.content.importance', 'Importance')}</span>
+          <span className="text-ink-500 text-sm">
+            {t('answers.content.importance', 'Importance')}
+          </span>
           <RadioToggleGroup
             currentChoice={answer.importance ?? -1}
-            choicesMap={Object.fromEntries(Object.entries(IMPORTANCE_CHOICES).map(([k, v]) => [t(`answers.importance.${v}`, k), v]))}
-            setChoice={(choice: number) =>
-              setAnswer({...answer, importance: choice})
-            }
+            choicesMap={Object.fromEntries(
+              Object.entries(IMPORTANCE_CHOICES).map(([k, v]) => [
+                t(`answers.importance.${v}`, k),
+                v,
+              ]),
+            )}
+            setChoice={(choice: number) => setAnswer({...answer, importance: choice})}
             indexColors={IMPORTANCE_RADIO_COLORS}
           />
         </Col>
@@ -233,23 +220,19 @@ export function AnswerCompatibilityQuestionContent(props: {
             className={'w-full'}
             rows={3}
             value={answer.explanation ?? ''}
-            onChange={(e) =>
-              setAnswer({...answer, explanation: e.target.value})
-            }
+            onChange={(e) => setAnswer({...answer, explanation: e.target.value})}
           />
         </Col>
       </Col>
       <Row className="w-full justify-between gap-4 shrink-0">
         {noSkip ? (
-          <div/>
+          <div />
         ) : (
           <button
             disabled={loading || skipLoading}
             onClick={() => {
               setSkipLoading(true)
-              submitCompatibilityAnswer(
-                getEmptyAnswer(user.id, compatibilityQuestion.id)
-              )
+              submitCompatibilityAnswer(getEmptyAnswer(user.id, compatibilityQuestion.id))
                 .then(() => {
                   if (isLastQuestion) {
                     onSubmit()
@@ -261,7 +244,7 @@ export function AnswerCompatibilityQuestionContent(props: {
             }}
             className={clsx(
               'text-ink-500 disabled:text-ink-300 text-sm hover:underline disabled:cursor-not-allowed',
-              skipLoading && 'animate-pulse'
+              skipLoading && 'animate-pulse',
             )}
           >
             {t('answers.menu.skip', 'Skip')}
@@ -269,11 +252,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         )}
         <Button
           disabled={
-            !multipleChoiceValid ||
-            !prefChoicesValid ||
-            !importanceValid ||
-            loading ||
-            skipLoading
+            !multipleChoiceValid || !prefChoicesValid || !importanceValid || loading || skipLoading
           }
           loading={loading}
           onClick={() => {
@@ -319,7 +298,7 @@ export const SelectAnswer = (props: {
               disabled
                 ? 'text-ink-300 aria-checked:bg-ink-300 aria-checked:text-ink-0 cursor-not-allowed'
                 : 'text-ink-700 hover:bg-ink-50 aria-checked:bg-primary-100 aria-checked:text-primary-900 aria-checked:hover:bg-primary-50 cursor-pointer',
-              'ring-primary-500 flex items-center rounded-md p-2 outline-none transition-all focus-visible:ring-2 sm:px-3'
+              'ring-primary-500 flex items-center rounded-md p-2 outline-none transition-all focus-visible:ring-2 sm:px-3',
             )
           }
         >
@@ -351,14 +330,10 @@ export const MultiSelectAnswers = (props: {
             values.includes(i)
               ? 'text-primary-700 bg-primary-100 hover:bg-primary-50'
               : 'text-ink-700 hover:bg-ink-50',
-            'ring-primary-500 flex cursor-pointer items-center rounded-md p-2 outline-none transition-all focus-visible:ring-2 disabled:cursor-not-allowed sm:px-3'
+            'ring-primary-500 flex cursor-pointer items-center rounded-md p-2 outline-none transition-all focus-visible:ring-2 disabled:cursor-not-allowed sm:px-3',
           )}
           onClick={() =>
-            setValue(
-              values.includes(i)
-                ? values.filter((v) => v !== i)
-                : [...values, i]
-            )
+            setValue(values.includes(i) ? values.filter((v) => v !== i) : [...values, i])
           }
         >
           {label}

@@ -1,5 +1,5 @@
 import {getSocialUrl, strip} from 'common/socials'
-import {discordLink} from "common/src/constants";
+import {discordLink} from "common/constants"
 
 describe('strip', () => {
   describe('x/twitter', () => {

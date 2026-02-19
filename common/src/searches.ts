@@ -127,7 +127,7 @@ export function formatFilters(
       translatedLabel = t(labelKey, label)
     }
 
-    console.log(key, value)
+    // console.log(key, value)
     let stringValue = value
     if (key === 'has_kids')
       stringValue = translate(

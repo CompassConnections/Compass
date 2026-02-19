@@ -190,7 +190,7 @@ export function AnswerCompatibilityQuestionContent(props: {
       <Col
         className={clsx(
           SCROLLABLE_MODAL_CLASS,
-          'w-full gap-4 flex-1 min-h-0'
+          'w-full gap-4 flex-1 min-h-0 pr-2'
         )}
       >
         <Col className="gap-2">

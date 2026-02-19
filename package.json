@@ -45,19 +45,23 @@
     "prepare": "npx husky"
   },
   "lint-staged": {
-    "web/**/*.{ts,tsx,js,jsx}": [
+    "web/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
       "next lint --fix --file",
       "next lint --max-warnings 0 --file"
     ],
-    "common/**/*.{ts,tsx,js,jsx}": [
+    "common/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
       "eslint --fix",
       "eslint --max-warnings 0"
     ],
-    "backend/api/**/*.{ts,tsx,js,jsx}": [
+    "backend/api/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
       "eslint --fix",
       "eslint --max-warnings 0"
     ],
-    "backend/shared/**/*.{ts,tsx,js,jsx}": [
+    "backend/shared/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
       "eslint --fix",
       "eslint --max-warnings 0"
     ]

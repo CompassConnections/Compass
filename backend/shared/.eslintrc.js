@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['lodash', 'unused-imports', "simple-import-sort"],
+  plugins: ['lodash', 'unused-imports', 'simple-import-sort'],
   extends: ['eslint:recommended'],
   ignorePatterns: ['dist', 'lib', 'coverage'],
   env: {

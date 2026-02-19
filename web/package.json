@@ -49,6 +49,7 @@
     "heic2any": "0.0.4",
     "link-preview-js": "3.0.4",
     "lodash": "4.17.23",
+    "lucide-react": "0.575.0",
     "nanoid": "5.0.9",
     "next": "14.1.0",
     "posthog-js": "1.234.1",

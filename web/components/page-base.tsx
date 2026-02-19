@@ -60,7 +60,7 @@ export function PageBase(props: {
   )
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  trackPageView && useTracking(`view ${trackPageView}`, trackPageProps)
+  if (trackPageView) useTracking(`view ${trackPageView}`, trackPageProps)
   useOnline()
   const [_, setIsAddFundsModalOpen] = useState(false)
 

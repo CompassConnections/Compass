@@ -45,7 +45,19 @@
     "prepare": "npx husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
+    "web/**/*.{ts,tsx,js,jsx}": [
+      "next lint --fix --file",
+      "next lint --max-warnings 0 --file"
+    ],
+    "common/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "eslint --max-warnings 0"
+    ],
+    "backend/api/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "eslint --max-warnings 0"
+    ],
+    "backend/shared/**/*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "eslint --max-warnings 0"
     ]

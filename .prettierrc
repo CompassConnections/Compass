@@ -4,6 +4,7 @@
   "semi": false,
   "trailingComma": "es5",
   "singleQuote": true,
+  "bracketSpacing": false,
   "plugins": ["prettier-plugin-sql"],
   "overrides": [
     {

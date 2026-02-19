@@ -201,7 +201,9 @@ export const OptionalProfileUserForm = (props: {
         return
       }
     }
-    onSubmit && (await onSubmit())
+    if (onSubmit) {
+      await onSubmit()
+    }
     track('submit optional profile')
     if (user) {
       let profile

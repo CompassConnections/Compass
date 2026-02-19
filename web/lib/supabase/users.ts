@@ -2,8 +2,8 @@ import {db} from './db'
 import {run} from 'common/supabase/utils'
 import {api} from 'web/lib/api'
 import type {DisplayUser} from 'common/api/user-types'
-import {MONTH_MS} from "common/util/time";
-import {APIError} from "common/api/utils";
+import {MONTH_MS} from 'common/util/time'
+import {APIError} from 'common/api/utils'
 
 export type {DisplayUser}
 
@@ -21,7 +21,7 @@ export async function getUserSafe(userId: string) {
 export async function getPrivateUserSafe() {
   try {
     return await api('me/private')
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }
@@ -59,9 +59,7 @@ export async function getDisplayUsers(userIds: string[]) {
 
 export async function getProfilesCreations() {
   const {data} = await run(
-    db.from('profiles')
-      .select(`id, created_time`)
-      .order('created_time')
+    db.from('profiles').select(`id, created_time`).order('created_time')
   )
   return data
 }
@@ -89,14 +87,12 @@ export async function getCount(table: string) {
         .select('*', {count: 'exact', head: true})
         .gt('last_online_time', new Date(Date.now() - MONTH_MS).toISOString()) // last month
     )
-    return count;
+    return count
   }
   const {count} = await run(
-    db
-      .from(table)
-      .select('*', {count: 'exact', head: true})
+    db.from(table).select('*', {count: 'exact', head: true})
   )
-  return count;
+  return count
 }
 
 // export async function getNumberProfiles() {

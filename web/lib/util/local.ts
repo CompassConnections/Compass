@@ -18,7 +18,7 @@ function getStorageProxy(store: Storage): Store | undefined {
     setItem: (key: string, value: string) => {
       try {
         store.setItem(key, value)
-      } catch (e) {
+      } catch {
         store.clear()
         // try again
         store.setItem(key, value)

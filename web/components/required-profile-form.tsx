@@ -72,10 +72,10 @@ export const RequiredProfileUserForm = (props: {
   } = userInfo
 
   useEffect(() => {
-    props.setEditUsername && props.setEditUsername(username)
+    if (props.setEditUsername) props.setEditUsername(username)
   }, [username])
   useEffect(() => {
-    props.setEditDisplayName && props.setEditDisplayName(name)
+    if (props.setEditDisplayName) props.setEditDisplayName(name)
   }, [name])
 
   const canContinue = true

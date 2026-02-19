@@ -36,5 +36,6 @@
     }
   ],
   "compileOnSave": true,
-  "include": ["src/**/*.ts", "package.json", "backend/api/package.json"]
+  "include": ["src/**/*.ts", "package.json", "backend/api/package.json"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

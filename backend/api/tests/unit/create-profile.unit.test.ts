@@ -133,9 +133,8 @@ describe('createProfile', () => {
 
       const results: any = await createProfile(mockBody, mockAuth, mockReq)
 
-      expect(results.result)
-        .toEqual(mockData)(mockPg.one as jest.Mock)
-        .mockReturnValue(mockNProfiles)
+      expect(results.result).toEqual(mockData)
+      ;(mockPg.one as jest.Mock).mockReturnValue(mockNProfiles)
 
       await results.continue()
 
@@ -277,8 +276,8 @@ describe('createProfile', () => {
 
       ;(sendDiscordMessage as jest.Mock)
         .mockResolvedValueOnce(null)
-        .mockRejectedValueOnce(new Error('Discord error'))(mockPg.one as jest.Mock)
-        .mockReturnValue(mockNProfiles)
+        .mockRejectedValueOnce(new Error('Discord error'))
+      ;(mockPg.one as jest.Mock).mockReturnValue(mockNProfiles)
 
       await results.continue()
 

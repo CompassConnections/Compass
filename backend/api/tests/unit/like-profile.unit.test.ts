@@ -56,12 +56,11 @@ describe('likeProfile', () => {
       )
       expect(tryCatch).toBeCalledTimes(2)
       expect(mockPg.one).toBeCalledTimes(1)
-      expect(mockPg.one)
-        .toBeCalledWith(
-          sqlMatch('insert into profile_likes (creator_id, target_id) values ($1, $2) returning *'),
-          [mockAuth.uid, mockProps.targetUserId],
-        )(profileNotifiction.createProfileLikeNotification as jest.Mock)
-        .mockResolvedValue(null)
+      expect(mockPg.one).toBeCalledWith(
+        sqlMatch('insert into profile_likes (creator_id, target_id) values ($1, $2) returning *'),
+        [mockAuth.uid, mockProps.targetUserId],
+      )
+      ;(profileNotifiction.createProfileLikeNotification as jest.Mock).mockResolvedValue(null)
 
       await result.continue()
 

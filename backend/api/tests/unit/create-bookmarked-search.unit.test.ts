@@ -11,7 +11,8 @@ describe('createBookmarkedSearch', () => {
     jest.resetAllMocks()
     mockPg = {
       one: jest.fn(),
-    }(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+    }
+    ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
   })
   afterEach(() => {
     jest.restoreAllMocks()

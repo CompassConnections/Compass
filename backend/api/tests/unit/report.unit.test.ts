@@ -57,12 +57,11 @@ describe('report', () => {
 
       expect(result.success).toBeTruthy()
       expect(result.result).toStrictEqual({})
-      ;(mockPg.oneOrNone as jest.Mock)
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(null)(tryCatch as jest.Mock)
+      ;(mockPg.oneOrNone as jest.Mock).mockReturnValueOnce(null).mockReturnValueOnce(null)
+      ;(tryCatch as jest.Mock)
         .mockResolvedValueOnce({data: mockReporter, error: null})
-        .mockResolvedValueOnce({data: mockReported, error: null})
-      ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
+        .mockResolvedValueOnce({data: mockReported, error: null})(sendDiscordMessage as jest.Mock)
+        .mockResolvedValue(null)
 
       await result.continue()
 
@@ -114,9 +113,8 @@ describe('report', () => {
 
       const result = await report(mockBody, mockAuth, mockReq)
 
-      ;(mockPg.oneOrNone as jest.Mock)
-        .mockReturnValueOnce(null)(tryCatch as jest.Mock)
-        .mockResolvedValueOnce({data: null, error: Error})
+      ;(mockPg.oneOrNone as jest.Mock).mockReturnValueOnce(null)
+      ;(tryCatch as jest.Mock).mockResolvedValueOnce({data: null, error: Error})
 
       const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -150,9 +148,8 @@ describe('report', () => {
 
       const result = await report(mockBody, mockAuth, mockReq)
 
-      ;(mockPg.oneOrNone as jest.Mock)
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(null)(tryCatch as jest.Mock)
+      ;(mockPg.oneOrNone as jest.Mock).mockReturnValueOnce(null).mockReturnValueOnce(null)
+      ;(tryCatch as jest.Mock)
         .mockResolvedValueOnce({data: mockReporter, error: null})
         .mockResolvedValueOnce({data: null, error: Error})
 
@@ -196,9 +193,8 @@ describe('report', () => {
 
       const result = await report(mockBody, mockAuth, mockReq)
 
-      ;(mockPg.oneOrNone as jest.Mock)
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(null)(tryCatch as jest.Mock)
+      ;(mockPg.oneOrNone as jest.Mock).mockReturnValueOnce(null).mockReturnValueOnce(null)
+      ;(tryCatch as jest.Mock)
         .mockResolvedValueOnce({data: mockReporter, error: null})
         .mockResolvedValueOnce({data: mockReported, error: null})
       ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('Discord error'))

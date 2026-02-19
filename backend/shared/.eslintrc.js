@@ -1,7 +1,7 @@
 module.exports = {
   plugins: ['lodash', 'unused-imports'],
   extends: ['eslint:recommended'],
-  ignorePatterns: ['dist', 'lib', 'coverage', 'tests'],
+  ignorePatterns: ['dist', 'lib', 'coverage'],
   env: {
     node: true,
   },

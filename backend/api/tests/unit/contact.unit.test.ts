@@ -17,7 +17,8 @@ describe('contact', () => {
     jest.resetAllMocks()
     mockPg = {
       oneOrNone: jest.fn(),
-    }(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+    }
+    ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
   })
   afterEach(() => {
     jest.restoreAllMocks()
@@ -139,9 +140,8 @@ describe('contact', () => {
         user_id: mockProps.userId,
         content: JSON.stringify(mockProps.content),
       })
-      ;(mockPg.oneOrNone as jest.Mock)
-        .mockResolvedValue(mockDbUser)(sendDiscordMessage as jest.Mock)
-        .mockRejectedValue(new Error('Unable to send message'))
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockDbUser)
+      ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('Unable to send message'))
       const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       await results.continue()

@@ -67,7 +67,7 @@ export const submitCompatibilityAnswer = async (
       explanation: input.explanation ?? null,
     })
 
-    // Track only if upsert succeeds
+    // Track only if the upsert succeeds
     track('answer compatibility question', {
       ...newAnswer,
     })

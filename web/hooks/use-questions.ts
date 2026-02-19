@@ -10,7 +10,7 @@ import {
 } from 'web/lib/supabase/questions'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
-import {useLocale} from "web/lib/locale";
+import {useLocale} from 'web/lib/locale'
 
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
@@ -44,7 +44,7 @@ export const useUserAnswers = (userId: string | undefined) => {
     getUserAnswers(userId).then(setAnswers)
   }
 
-  return { refreshAnswers, answers }
+  return {refreshAnswers, answers}
 }
 
 export const useUserCompatibilityAnswers = (userId: string | undefined) => {
@@ -72,7 +72,7 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
     getUserCompatibilityAnswers(userId).then(setCompatibilityAnswers)
   }
 
-  return { refreshCompatibilityAnswers, compatibilityAnswers }
+  return {refreshCompatibilityAnswers, compatibilityAnswers}
 }
 
 export type QuestionWithCountType = Row<'compatibility_prompts'> & {
@@ -93,26 +93,32 @@ export const useFRQuestionsWithAnswerCount = () => {
   return FRquestionsWithCount as QuestionWithCountType[]
 }
 
-export const useCompatibilityQuestionsWithAnswerCount = () => {
+export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
   const {locale} = useLocale()
   const [compatibilityQuestions, setCompatibilityQuestions] =
     usePersistentInMemoryState<QuestionWithCountType[]>(
       [],
       `compatibility-questions-with-count`
     )
+  const [isLoading, setIsLoading] = useState(true)
 
   async function refreshCompatibilityQuestions() {
-    return api('get-compatibility-questions', {locale}).then((res) => {
-      setCompatibilityQuestions(res.questions)
-    })
+    setIsLoading(true)
+    return api('get-compatibility-questions', {locale, keyword}).then(
+      (res) => {
+        setCompatibilityQuestions(res.questions)
+        setIsLoading(false)
+      }
+    )
   }
 
   useEffect(() => {
     refreshCompatibilityQuestions()
-  }, [locale])
+  }, [locale, keyword])
 
   return {
     refreshCompatibilityQuestions,
     compatibilityQuestions,
+    isLoading,
   }
 }

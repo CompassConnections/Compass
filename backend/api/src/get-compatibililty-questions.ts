@@ -3,19 +3,41 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
 
 export function shuffle<T>(array: T[]): T[] {
-  const arr = [...array]; // copy to avoid mutating the original
+  const arr = [...array] // copy to avoid mutating the original
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return arr;
+  return arr
 }
 
 export const getCompatibilityQuestions: APIHandler<
   'get-compatibility-questions'
 > = async (props, _auth) => {
-  const {locale = 'en'} = props
+  const {locale = 'en', keyword} = props
   const pg = createSupabaseDirectClient()
+
+  // Build query parameters
+  const params: (string | number)[] = [locale]
+  const paramIndex = 2
+
+  // Build keyword filter condition - search in question text and multiple_choice_options keys
+  const keywordFilter = keyword
+    ? `AND (
+        COALESCE(cpt.question, cp.question) ILIKE $${paramIndex}
+        OR EXISTS (
+          SELECT 1 
+          FROM jsonb_object_keys(
+            COALESCE(cpt.multiple_choice_options, cp.multiple_choice_options)
+          ) AS option_key
+          WHERE option_key ILIKE $${paramIndex}
+        )
+      )`
+    : ''
+
+  if (keyword) {
+    params.push(`%${keyword}%`)
+  }
 
   const questions = await pg.manyOrNone<
     Row<'compatibility_prompts'> & { answer_count: number; score: number }
@@ -52,6 +74,7 @@ export const getCompatibilityQuestions: APIHandler<
                                AND $1 <> 'en'
 
         WHERE cp.answer_type = 'compatibility_multiple_choice'
+            ${keywordFilter}
 
         GROUP BY cp.id,
                  cpt.question,
@@ -59,7 +82,7 @@ export const getCompatibilityQuestions: APIHandler<
 
         ORDER BY cp.importance_score
     `,
-    [locale]
+    params
   )
 
   // console.debug({questions})

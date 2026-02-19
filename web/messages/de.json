@@ -149,6 +149,9 @@
   "compatibility.tabs.to_answer": "Zu beantworten",
   "compatibility.title": "Ihre Kompatibilitätsfragen",
   "compatibility.tooltip": "Kompatibilitätswert zwischen Ihnen beiden",
+  "compatibility.empty.no_results": "Keine Ergebnisse für \"{keyword}\"",
+  "compatibility.seo.title": "Kompatibilität",
+  "compatibility.seo.description": "Ihre Kompatibilitätsfragen anzeigen und verwalten",
   "contact.editor.placeholder": "Kontaktieren Sie uns hier...",
   "contact.form_link": "Feedback-Formular",
   "contact.intro_middle": " oder über unsere ",
@@ -1136,5 +1139,6 @@
   "filter.label.diet": "Ernährung",
   "filter.label.political_beliefs": "Politische Ansichten",
   "filter.label.mbti": "MBTI",
-  "filter.drinks.per_month": "pro Monat"
+  "filter.drinks.per_month": "pro Monat",
+  "compatibility.search_placeholder": "Fragen und Antworten durchsuchen..."
 }

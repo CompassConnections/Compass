@@ -1,7 +1,7 @@
 import {arraybeSchema, baseProfilesSchema, combinedProfileSchema, contentSchema, zBoolean,} from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
-import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES,} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
@@ -49,7 +49,12 @@ export const API = (_apiTypeCheck = {
       message: 'Server is working.'
       uid?: string
       version?: string
-      git?: { revision?: string; commitDate?: string; author?: string, message?: string }
+      git?: {
+        revision?: string
+        commitDate?: string
+        author?: string
+        message?: string
+      }
     },
     summary: 'Check whether the API server is running',
     tag: 'General',
@@ -342,7 +347,8 @@ export const API = (_apiTypeCheck = {
     authed: true,
     rateLimited: false,
     props: z.object({
-      locale: z.string().optional()
+      locale: z.string().optional(),
+      keyword: z.string().optional(),
     }),
     returns: {} as {
       status: 'success'
@@ -470,10 +476,12 @@ export const API = (_apiTypeCheck = {
     method: 'GET',
     authed: true,
     rateLimited: true,
-    props: z.object({
-      limit: z.coerce.number().min(1).max(200).optional(),
-      offset: z.coerce.number().min(0).optional(),
-    }).strict(),
+    props: z
+      .object({
+        limit: z.coerce.number().min(1).max(200).optional(),
+        offset: z.coerce.number().min(0).optional(),
+      })
+      .strict(),
     returns: {} as {
       status: 'success'
       hidden: {
@@ -545,8 +553,8 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {
       status: 'success' | 'fail'
-      profiles: Profile[],
-      count: number,
+      profiles: Profile[]
+      count: number
     },
     summary: 'List profiles with filters, pagination and ordering',
     tag: 'Profiles',
@@ -788,7 +796,7 @@ export const API = (_apiTypeCheck = {
     summary: 'Create a new vote/poll',
     tag: 'Votes',
   },
-  'vote': {
+  vote: {
     method: 'POST',
     authed: true,
     rateLimited: true,
@@ -825,7 +833,7 @@ export const API = (_apiTypeCheck = {
     summary: 'Find places near a GeoDB city ID within a radius',
     tag: 'Locations',
   },
-  'contact': {
+  contact: {
     method: 'POST',
     authed: false,
     rateLimited: true,
@@ -852,7 +860,7 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     returns: {} as any,
     props: z.object({
-      subscription: z.record(z.any())
+      subscription: z.record(z.any()),
     }),
     summary: 'Save a push/browser subscription for the user',
     tag: 'Notifications',
@@ -873,12 +881,11 @@ export const API = (_apiTypeCheck = {
     authed: true,
     rateLimited: true,
     returns: {} as Row<'bookmarked_searches'>,
-    props: z
-      .object({
-        search_filters: z.any().optional(),
-        location: z.any().optional(),
-        search_name: z.string().nullable().optional(),
-      }),
+    props: z.object({
+      search_filters: z.any().optional(),
+      location: z.any().optional(),
+      search_name: z.string().nullable().optional(),
+    }),
     summary: 'Create a bookmarked search for quick reuse',
     tag: 'Searches',
   },
@@ -988,11 +995,12 @@ export type ValidatedAPIParams<N extends APIPath> = z.output<
   APISchema<N>['props']
 >
 
-export type APIResponse<N extends APIPath> = APISchema<N> extends {
-    returns: Record<string, any>
-  }
-  ? APISchema<N>['returns']
-  : void
+export type APIResponse<N extends APIPath> =
+  APISchema<N> extends {
+      returns: Record<string, any>
+    }
+    ? APISchema<N>['returns']
+    : void
 
 export type APIResponseOptionalContinue<N extends APIPath> =
   | { continue: () => Promise<void>; result: APIResponse<N> }

@@ -1136,5 +1136,9 @@
   "filter.label.diet": "Régime",
   "filter.label.political_beliefs": "Opinions politiques",
   "filter.label.mbti": "MBTI",
-  "filter.drinks.per_month": "par mois"
+  "filter.drinks.per_month": "par mois",
+  "compatibility.search_placeholder": "Rechercher des questions et réponses...",
+  "compatibility.seo.title": "Compatibilité",
+  "compatibility.seo.description": "Afficher et gérer vos questions de compatibilité",
+  "compatibility.empty.no_results": "Aucun résultat pour \"{keyword}\""
 }

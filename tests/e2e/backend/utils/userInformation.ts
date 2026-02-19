@@ -1,12 +1,12 @@
-import { faker } from "@faker-js/faker";
+import {faker} from "@faker-js/faker";
 import {
-  RELATIONSHIP_CHOICES,
-  POLITICAL_CHOICES,
-  RELIGION_CHOICES,
-  DIET_CHOICES,
-  EDUCATION_CHOICES,
-  RACE_CHOICES,
-} from "web/components/filters/choices";
+    DIET_CHOICES,
+    EDUCATION_CHOICES,
+    POLITICAL_CHOICES,
+    RACE_CHOICES,
+    RELATIONSHIP_CHOICES,
+    RELIGION_CHOICES,
+} from "common/lib/choices";
 
 class UserAccountInformation {
 

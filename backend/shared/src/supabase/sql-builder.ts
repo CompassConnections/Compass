@@ -1,5 +1,6 @@
-import {last} from 'lodash'
 import {buildArray} from 'common/util/array'
+import {last} from 'lodash'
+
 import {pgp} from './init'
 
 export type SqlBuilder = {

@@ -1,135 +1,135 @@
 @media (prefers-color-scheme: dark) {
-    body {
-        background-color: #1e1e1e !important;
-        color: #ffffff !important;
-    }
+  body {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+  }
 
-    .swagger-ui p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    label,
-    .btn,
-    .parameter__name,
-    .parameter__type,
-    .parameter__in,
-    .response-control-media-type__title,
-    table thead tr td,
-    table thead tr th,
-    .tab li,
-    .response-col_links,
-    .opblock-summary-description {
-        color: #ffffff !important;
-    }
+  .swagger-ui p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  .btn,
+  .parameter__name,
+  .parameter__type,
+  .parameter__in,
+  .response-control-media-type__title,
+  table thead tr td,
+  table thead tr th,
+  .tab li,
+  .response-col_links,
+  .opblock-summary-description {
+    color: #ffffff !important;
+  }
 
-    .swagger-ui .topbar,
-    .opblock-body select,
-    textarea {
-        background-color: #2b2b2b !important;
-        color: #ffffff !important;
-    }
+  .swagger-ui .topbar,
+  .opblock-body select,
+  textarea {
+    background-color: #2b2b2b !important;
+    color: #ffffff !important;
+  }
 
-    .swagger-ui .opblock {
-        background-color: #2c2c2c !important;
-        border-color: #fff !important;
-    }
+  .swagger-ui .opblock {
+    background-color: #2c2c2c !important;
+    border-color: #fff !important;
+  }
 
-    .swagger-ui .opblock .opblock-summary-method {
-        background-color: #1f1f1f !important;
-        color: #fff !important;
-    }
+  .swagger-ui .opblock .opblock-summary-method {
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+  }
 
-    .swagger-ui .opblock .opblock-section-header {
-        background: #1f1f1f !important;
-        color: #fff !important;
-    }
+  .swagger-ui .opblock .opblock-section-header {
+    background: #1f1f1f !important;
+    color: #fff !important;
+  }
 
-    .swagger-ui .responses-wrapper {
-        background-color: #1f1f1f !important;
-    }
+  .swagger-ui .responses-wrapper {
+    background-color: #1f1f1f !important;
+  }
 
-    .swagger-ui .response-col_status {
-        color: #fff !important;
-    }
+  .swagger-ui .response-col_status {
+    color: #fff !important;
+  }
 
-    .swagger-ui .scheme-container {
-        background-color: #1f1f1f !important;
-    }
+  .swagger-ui .scheme-container {
+    background-color: #1f1f1f !important;
+  }
 
-    .swagger-ui .modal-ux,
-    input {
-        background-color: #1f1f1f !important;
-        color: #fff !important;
-    }
+  .swagger-ui .modal-ux,
+  input {
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+  }
 
-    .swagger-ui svg path {
-        fill: white !important;
-    }
+  .swagger-ui svg path {
+    fill: white !important;
+  }
 
-    .swagger-ui .close-modal svg {
-        color: #1e90ff !important;
-    }
+  .swagger-ui .close-modal svg {
+    color: #1e90ff !important;
+  }
 
-    a {
-        color: #1e90ff !important;
-    }
+  a {
+    color: #1e90ff !important;
+  }
 }
 
 /* Increase font sizes on mobile for better readability */
 /* Still not working though */
 @media (max-width: 640px) {
-    html,
-    body,
-    .swagger-ui {
-        font-size: 32px !important;
-        line-height: 1.5 !important;
-    }
+  html,
+  body,
+  .swagger-ui {
+    font-size: 32px !important;
+    line-height: 1.5 !important;
+  }
 
-    .swagger-ui {
-        -webkit-text-size-adjust: 100%;
-        text-size-adjust: 100%;
-    }
+  .swagger-ui {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
-    /* Common text elements */
-    .swagger-ui p,
-    .swagger-ui label,
-    .swagger-ui .btn,
-    .swagger-ui .parameter__name,
-    .swagger-ui .parameter__type,
-    .swagger-ui .parameter__in,
-    .swagger-ui .response-control-media-type__title,
-    .swagger-ui table thead tr td,
-    .swagger-ui table thead tr th,
-    .swagger-ui table tbody tr td,
-    .swagger-ui .tab li,
-    .swagger-ui .response-col_links,
-    .swagger-ui .opblock-summary-path,
-    .swagger-ui .opblock-summary-description {
-        font-size: 32px !important;
-    }
+  /* Common text elements */
+  .swagger-ui p,
+  .swagger-ui label,
+  .swagger-ui .btn,
+  .swagger-ui .parameter__name,
+  .swagger-ui .parameter__type,
+  .swagger-ui .parameter__in,
+  .swagger-ui .response-control-media-type__title,
+  .swagger-ui table thead tr td,
+  .swagger-ui table thead tr th,
+  .swagger-ui table tbody tr td,
+  .swagger-ui .tab li,
+  .swagger-ui .response-col_links,
+  .swagger-ui .opblock-summary-path,
+  .swagger-ui .opblock-summary-description {
+    font-size: 32px !important;
+  }
 
-    /* Headings scale */
-    .swagger-ui h1 {
-        font-size: 1.75rem !important;
-    }
+  /* Headings scale */
+  .swagger-ui h1 {
+    font-size: 1.75rem !important;
+  }
 
-    .swagger-ui h2 {
-        font-size: 1.5rem !important;
-    }
+  .swagger-ui h2 {
+    font-size: 1.5rem !important;
+  }
 
-    .swagger-ui h3 {
-        font-size: 1.25rem !important;
-    }
+  .swagger-ui h3 {
+    font-size: 1.25rem !important;
+  }
 
-    .swagger-ui h4 {
-        font-size: 1.125rem !important;
-    }
+  .swagger-ui h4 {
+    font-size: 1.125rem !important;
+  }
 
-    .swagger-ui h5,
-    .swagger-ui h6 {
-        font-size: 1rem !important;
-    }
+  .swagger-ui h5,
+  .swagger-ui h6 {
+    font-size: 1rem !important;
+  }
 }

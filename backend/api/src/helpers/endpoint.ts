@@ -1,9 +1,3 @@
-import * as admin from 'firebase-admin'
-import {z} from 'zod'
-import {NextFunction, Request, Response} from 'express'
-
-import {PrivateUser} from 'common/user'
-import {APIError} from 'common/api/utils'
 import {
   API,
   APIPath,
@@ -11,7 +5,12 @@ import {
   APISchema,
   ValidatedAPIParams,
 } from 'common/api/schema'
+import {APIError} from 'common/api/utils'
+import {PrivateUser} from 'common/user'
+import {NextFunction, Request, Response} from 'express'
+import * as admin from 'firebase-admin'
 import {getPrivateUserByKey, log} from 'shared/utils'
+import {z} from 'zod'
 
 export {APIError} from 'common/api/utils'
 

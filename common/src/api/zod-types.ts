@@ -1,6 +1,6 @@
-import {z} from 'zod'
 import {type JSONContent} from '@tiptap/core'
 import {arrify} from 'common/util/array'
+import {z} from 'zod'
 
 /* GET request array can be like ?a=1 or ?a=1&a=2  */
 export const arraybeSchema = z.array(z.string()).or(z.string()).transform(arrify)

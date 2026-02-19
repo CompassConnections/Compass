@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import {Switch} from '@headlessui/react'
+import clsx from 'clsx'
 
 export type ToggleColorMode = 'primary' | 'warning'
 

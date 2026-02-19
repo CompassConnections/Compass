@@ -6,8 +6,8 @@ import {
   SupabaseClientOptions as SupabaseClientOptionsGeneric,
 } from '@supabase/supabase-js'
 
-import {Database} from './schema'
 import {User} from '../user'
+import {Database} from './schema'
 
 export type Schema = Database['public']
 export type Tables = Schema['Tables']

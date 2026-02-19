@@ -1,20 +1,20 @@
+import {UserIcon} from '@heroicons/react/solid'
+import {LikeData, ShipData} from 'common/api/profile-types'
+import {Profile} from 'common/profiles/profile'
 import {keyBy, orderBy} from 'lodash'
 import Image from 'next/image'
 import Link from 'next/link'
-import {UserIcon} from '@heroicons/react/solid'
-
-import {Profile} from 'common/profiles/profile'
-import {useProfileByUserId} from 'web/hooks/use-profile'
 import {Col} from 'web/components/layout/col'
+import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {Avatar, EmptyAvatar} from 'web/components/widgets/avatar'
 import {Carousel} from 'web/components/widgets/carousel'
 import {UserLink} from 'web/components/widgets/user-link'
+import {useProfileByUserId} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {useUserById} from 'web/hooks/use-user-supabase'
-import {SendMessageButton} from 'web/components/messaging/send-message-button'
-import {ShipsList} from './ships-display'
+
 import {Subtitle} from './profile-subtitle'
-import {LikeData, ShipData} from 'common/api/profile-types'
+import {ShipsList} from './ships-display'
 
 export const LikesDisplay = (props: {
   likesGiven: LikeData[]

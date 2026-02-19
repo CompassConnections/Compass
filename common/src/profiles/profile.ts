@@ -1,6 +1,6 @@
+import {OptionTableKey} from 'common/profiles/constants'
 import {Row, run, SupabaseClient} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {OptionTableKey} from 'common/profiles/constants'
 
 export type ProfileRow = Row<'profiles'>
 export type ProfileWithoutUser = ProfileRow & {[K in OptionTableKey]?: string[]}

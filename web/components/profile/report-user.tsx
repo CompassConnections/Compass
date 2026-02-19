@@ -1,13 +1,13 @@
-import {useState} from 'react'
 import {User} from 'common/user'
+import {randomString} from 'common/util/random'
+import {useState} from 'react'
+import Textarea from 'react-expanding-textarea'
+import {toast} from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {Checkbox} from 'web/components/widgets/checkbox'
-import {Button} from 'web/components/buttons/button'
-import Textarea from 'react-expanding-textarea'
-import {toast} from 'react-hot-toast'
 import {api} from 'web/lib/api'
-import {randomString} from 'common/util/random'
 import {useT} from 'web/lib/locale'
 
 export const ReportUser = (props: {user: User; closeModal: () => void}) => {

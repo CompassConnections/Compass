@@ -1,9 +1,9 @@
-import {useRouter} from 'next/router'
-import clsx from 'clsx'
-import {memo, MouseEvent, useEffect, useState} from 'react'
 import {UserIcon, UsersIcon} from '@heroicons/react/solid'
-import Image from 'next/image'
+import clsx from 'clsx'
 import {floor} from 'lodash'
+import Image from 'next/image'
+import {useRouter} from 'next/router'
+import {memo, MouseEvent, useEffect, useState} from 'react'
 
 export type AvatarSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export const Avatar = memo(

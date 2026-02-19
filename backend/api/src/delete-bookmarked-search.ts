@@ -1,5 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIHandler} from './helpers/endpoint'
 
 export const deleteBookmarkedSearch: APIHandler<'delete-bookmarked-search'> = async (
   props,

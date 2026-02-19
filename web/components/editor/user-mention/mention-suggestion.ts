@@ -4,6 +4,7 @@ import {beginsWith} from 'common/util/parse'
 import {sortBy} from 'lodash'
 import tippy from 'tippy.js'
 import {searchUsers} from 'web/lib/supabase/users'
+
 import {MentionList} from './mention-list'
 type Render = Suggestion['render']
 

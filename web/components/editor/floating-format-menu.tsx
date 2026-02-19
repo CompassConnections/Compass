@@ -3,8 +3,8 @@ import {Editor} from '@tiptap/core'
 import {BubbleMenu} from '@tiptap/react'
 import clsx from 'clsx'
 import {getUrl} from 'common/util/parse'
-import {useState} from 'react'
 import {Bold, Italic, Type} from 'lucide-react'
+import {useState} from 'react'
 
 // see https://tiptap.dev/guide/menus
 

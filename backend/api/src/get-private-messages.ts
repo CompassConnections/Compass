@@ -1,9 +1,10 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
-import {groupBy, mapValues} from 'lodash'
-import {convertPrivateChatMessage} from 'shared/supabase/messages'
 import {tryCatch} from 'common/util/try-catch'
+import {groupBy, mapValues} from 'lodash'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {convertPrivateChatMessage} from 'shared/supabase/messages'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const getChannelMemberships: APIHandler<'get-channel-memberships'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()

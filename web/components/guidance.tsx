@@ -1,5 +1,5 @@
-import {useRouter} from 'next/router'
 import clsx from 'clsx'
+import {useRouter} from 'next/router'
 import {useT} from 'web/lib/locale'
 
 export function FilterGuide(props: {className?: string}) {

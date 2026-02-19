@@ -3,6 +3,7 @@ import {ChevronDownIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {useState} from 'react'
 import {usePopper} from 'react-popper'
+
 import {Input} from './input'
 
 export type Suggestion = {

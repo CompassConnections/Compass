@@ -1,7 +1,8 @@
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {encryptMessage} from 'shared/encryption'
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
+import {encryptMessage} from 'shared/encryption'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const editMessage: APIHandler<'edit-message'> = async ({messageId, content}, auth) => {
   const pg = createSupabaseDirectClient()

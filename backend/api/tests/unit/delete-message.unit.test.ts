@@ -1,11 +1,11 @@
 jest.mock('shared/supabase/init')
 jest.mock('api/helpers/private-messages')
 
-import {sqlMatch} from 'common/test-utils'
 import {deleteMessage} from 'api/delete-message'
-import * as supabaseInit from 'shared/supabase/init'
-import * as messageHelpers from 'api/helpers/private-messages'
 import {AuthedUser} from 'api/helpers/endpoint'
+import * as messageHelpers from 'api/helpers/private-messages'
+import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('deleteMessage', () => {
   let mockPg = {} as any

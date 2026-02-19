@@ -1,11 +1,11 @@
-import {Row} from 'web/components/layout/row'
-import {usePrivateUser} from 'web/hooks/use-user'
-import {PrivateUser} from 'common/user'
-import {useUnseenPrivateMessageChannels} from 'web/hooks/use-private-messages'
-import {BiEnvelope, BiSolidEnvelope} from 'react-icons/bi'
 import clsx from 'clsx'
-import {usePathname} from 'next/navigation'
+import {PrivateUser} from 'common/user'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
+import {usePathname} from 'next/navigation'
+import {BiEnvelope, BiSolidEnvelope} from 'react-icons/bi'
+import {Row} from 'web/components/layout/row'
+import {useUnseenPrivateMessageChannels} from 'web/hooks/use-private-messages'
+import {usePrivateUser} from 'web/hooks/use-user'
 
 export function UnseenMessagesBubble(props: {className?: string}) {
   const {className} = props

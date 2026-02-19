@@ -14,25 +14,26 @@ import {
   UsersIcon,
 } from '@heroicons/react/solid'
 import clsx from 'clsx'
+import {IS_MAINTENANCE} from 'common/constants'
+import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
-import {useOnline} from 'web/hooks/use-online'
 import {ReactNode, useState} from 'react'
 import {Toaster} from 'react-hot-toast'
+import {FaEnvelope} from 'react-icons/fa'
+import {MdThumbUp} from 'react-icons/md'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useOnline} from 'web/hooks/use-online'
+import {useProfile} from 'web/hooks/use-profile'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
+
 import Sidebar from './nav/sidebar'
-import {useProfile} from 'web/hooks/use-profile'
-import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
-import {IS_MAINTENANCE} from 'common/constants'
-import {MdThumbUp} from 'react-icons/md'
-import {FaEnvelope} from 'react-icons/fa'
 
 export function PageBase(props: {
   trackPageView?: string | false

@@ -1,14 +1,14 @@
-import {sqlMatch} from 'common/test-utils'
-import * as supabaseInit from 'shared/supabase/init'
-import {AuthedUser} from 'api/helpers/endpoint'
-import * as sharedUtils from 'shared/utils'
 import {createComment} from 'api/create-comment'
-import * as notificationPrefs from 'common/user-notification-preferences'
-import * as supabaseNotifications from 'shared/supabase/notifications'
-import * as emailHelpers from 'email/functions/helpers'
-import * as websocketHelpers from 'shared/websockets/helpers'
+import {AuthedUser} from 'api/helpers/endpoint'
 import {convertComment} from 'common/supabase/comment'
+import {sqlMatch} from 'common/test-utils'
+import * as notificationPrefs from 'common/user-notification-preferences'
 import {richTextToString} from 'common/util/parse'
+import * as emailHelpers from 'email/functions/helpers'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseNotifications from 'shared/supabase/notifications'
+import * as sharedUtils from 'shared/utils'
+import * as websocketHelpers from 'shared/websockets/helpers'
 
 jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/notifications')

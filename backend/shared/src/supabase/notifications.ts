@@ -1,7 +1,7 @@
 import {Notification, NotificationTemplate} from 'common/notifications'
 import {SupabaseDirectClient} from 'shared/supabase/init'
-import {broadcast} from 'shared/websockets/server'
 import {bulkInsert} from 'shared/supabase/utils'
+import {broadcast} from 'shared/websockets/server'
 
 /**
  * Insert a single notification to a single user.
@@ -43,7 +43,10 @@ export const insertNotificationToSupabase = async (
 /**
  * Bulk insert notifications - for backwards compatibility
  */
-export const bulkInsertNotifications = async (notifications: Notification[], pg: SupabaseDirectClient) => {
+export const bulkInsertNotifications = async (
+  notifications: Notification[],
+  pg: SupabaseDirectClient,
+) => {
   await bulkInsert(
     pg,
     'user_notifications',

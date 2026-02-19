@@ -1,5 +1,5 @@
-import {PageBase} from 'web/components/page-base'
 import {supportEmail} from 'common/constants'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
 

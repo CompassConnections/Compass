@@ -1,29 +1,29 @@
 import clsx from 'clsx'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
-import {PageBase} from 'web/components/page-base'
 import {Row} from 'web/components/layout/row'
+import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import NewMessageButton from 'web/components/messaging/new-message-button'
+import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {PageBase} from 'web/components/page-base'
 import {RelativeTimestamp} from 'web/components/relative-timestamp'
+import {SEO} from 'web/components/SEO'
+import {Avatar} from 'web/components/widgets/avatar'
 import {Title} from 'web/components/widgets/title'
+import {BannedBadge} from 'web/components/widgets/user-link'
+import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {
   usePrivateMessages,
   useSortedPrivateMessageMemberships,
   useUnseenPrivateMessageChannels,
 } from 'web/hooks/use-private-messages'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
-import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
-import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
-import {Avatar} from 'web/components/widgets/avatar'
-import {BannedBadge} from 'web/components/widgets/user-link'
-import {PrivateMessageChannel} from 'common/supabase/private-messages'
-import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
-import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()

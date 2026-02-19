@@ -1,10 +1,10 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {filterDefined} from 'common/util/array'
+import * as admin from 'firebase-admin'
 import {uniq} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {getPrivateUser, getUser} from 'shared/utils'
-import * as admin from 'firebase-admin'
 
 export const createPrivateUserMessageChannel: APIHandler<
   'create-private-user-message-channel'

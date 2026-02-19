@@ -2,12 +2,12 @@ jest.mock('shared/supabase/init')
 jest.mock('shared/utils')
 jest.mock('api/helpers/private-messages')
 
+import {AuthedUser} from 'api/helpers/endpoint'
+import * as messageHelpers from 'api/helpers/private-messages'
 import {leavePrivateUserMessageChannel} from 'api/leave-private-user-message-channel'
+import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
-import * as messageHelpers from 'api/helpers/private-messages'
-import {AuthedUser} from 'api/helpers/endpoint'
-import {sqlMatch} from 'common/test-utils'
 
 describe('leavePrivateUserMessageChannel', () => {
   let mockPg = {} as any

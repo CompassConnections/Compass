@@ -1,10 +1,10 @@
+import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
 import {useMemo, useState} from 'react'
-import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
 import {Tooltip} from 'web/components/widgets/tooltip'
+import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 
 export type HideProfileButtonProps = {
   hiddenUserId: string

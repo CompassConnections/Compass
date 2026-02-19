@@ -2,12 +2,12 @@ jest.mock('shared/supabase/init')
 jest.mock('common/envs/constants')
 jest.mock('common/util/try-catch')
 
-import {removePinnedPhoto} from 'api/remove-pinned-photo'
-import * as supabaseInit from 'shared/supabase/init'
-import * as envConstants from 'common/envs/constants'
-import {tryCatch} from 'common/util/try-catch'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {removePinnedPhoto} from 'api/remove-pinned-photo'
+import * as envConstants from 'common/envs/constants'
 import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('removePinnedPhoto', () => {
   let mockPg = {} as any

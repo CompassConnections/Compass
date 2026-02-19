@@ -1,12 +1,11 @@
+import {HeartIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
 import {useState} from 'react'
-import {HeartIcon} from '@heroicons/react/outline'
-
-import {api} from 'web/lib/api'
 import {baseButtonClasses} from 'web/components/buttons/button'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from 'web/components/widgets/tooltip'
 import {Col} from 'web/components/layout/col'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {api} from 'web/lib/api'
+import {track} from 'web/lib/service/analytics'
 
 export const ShipButton = (props: {
   targetId1: string

@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-restricted-imports
 import {ENV_CONFIG} from 'common/envs/constants'
-import {db} from 'web/lib/supabase/db'
-import {removeUndefinedProps} from 'common/util/object'
-import {run, SupabaseClient} from 'common/supabase/utils'
 import {Json} from 'common/supabase/schema'
+import {run, SupabaseClient} from 'common/supabase/utils'
+import {removeUndefinedProps} from 'common/util/object'
 import posthog from 'posthog-js'
+import {db} from 'web/lib/supabase/db'
 
 type EventIds = {
   contractId?: string | null

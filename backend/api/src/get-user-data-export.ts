@@ -1,9 +1,10 @@
-import {APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
-import {getLikesAndShipsMain} from './get-likes-and-ships'
 import {parseJsonContentToText} from 'common/util/parse'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {parseMessageObject} from 'shared/supabase/messages'
+
+import {getLikesAndShipsMain} from './get-likes-and-ships'
+import {APIHandler} from './helpers/endpoint'
 
 export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
   const userId = auth.uid

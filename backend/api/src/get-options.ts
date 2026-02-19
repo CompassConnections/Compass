@@ -1,8 +1,8 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {OPTION_TABLES} from 'common/profiles/constants'
+import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
-import {tryCatch} from 'common/util/try-catch'
-import {OPTION_TABLES} from 'common/profiles/constants'
 
 export const getOptions: APIHandler<'get-options'> = async ({table}, _auth) => {
   if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')

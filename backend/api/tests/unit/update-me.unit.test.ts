@@ -2,23 +2,32 @@ jest.mock('common/api/user-types')
 jest.mock('common/util/clean-username')
 jest.mock('shared/supabase/init')
 jest.mock('common/util/object')
-jest.mock('lodash')
+jest.mock('lodash/cloneDeep')
+jest.mock('lodash/mapValues')
 jest.mock('shared/utils')
 jest.mock('shared/supabase/users')
 jest.mock('shared/websockets/helpers')
 jest.mock('common/envs/constants')
 
+import {AuthedUser} from 'api/helpers/endpoint'
 import {updateMe} from 'api/update-me'
 import {toUserAPIResponse} from 'common/api/user-types'
-import * as cleanUsernameModules from 'common/util/clean-username'
-import * as supabaseInit from 'shared/supabase/init'
-import * as objectUtils from 'common/util/object'
-import * as lodashModules from 'lodash'
-import * as sharedUtils from 'shared/utils'
-import * as supabaseUsers from 'shared/supabase/users'
-import * as websocketHelperModules from 'shared/websockets/helpers'
-import {AuthedUser} from 'api/helpers/endpoint'
 import {sqlMatch} from 'common/test-utils'
+import * as cleanUsernameModules from 'common/util/clean-username'
+import * as objectUtils from 'common/util/object'
+// eslint-disable-next-line lodash/import-scope
+import cloneDeep from 'lodash/cloneDeep'
+// eslint-disable-next-line lodash/import-scope
+import mapValues from 'lodash/mapValues'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUsers from 'shared/supabase/users'
+import * as sharedUtils from 'shared/utils'
+import * as websocketHelperModules from 'shared/websockets/helpers'
+
+const lodashModules = {
+  cloneDeep,
+  mapValues,
+}
 
 describe('updateMe', () => {
   let mockPg = {} as any

@@ -1,13 +1,14 @@
-import Link from 'next/link'
+import {BadgeCheckIcon, ShieldCheckIcon} from '@heroicons/react/outline'
+import {SparklesIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
-import {SparklesIcon} from '@heroicons/react/solid'
-import {Tooltip} from './tooltip'
-import {BadgeCheckIcon, ShieldCheckIcon} from '@heroicons/react/outline'
+import {DAY_MS} from 'common/util/time'
+import Link from 'next/link'
+
 import {Row} from '../layout/row'
 import {Avatar} from './avatar'
-import {DAY_MS} from 'common/util/time'
 import {linkClass} from './site-link'
+import {Tooltip} from './tooltip'
 
 export const isFresh = (createdTime: number) => createdTime > Date.now() - DAY_MS * 14
 

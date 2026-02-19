@@ -1,6 +1,6 @@
-import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
 import {EmailVerificationButton} from 'web/components/email-verification-button'
+import {Col} from 'web/components/layout/col'
 
 interface EmailVerificationPromptProps {
   t: any

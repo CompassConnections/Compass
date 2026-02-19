@@ -1,13 +1,14 @@
-import clsx from 'clsx'
-import {Spacer} from '../layout/spacer'
-import {Row} from '../layout/row'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
-import {useEffect} from 'react'
+import clsx from 'clsx'
 import {range} from 'lodash'
 import {usePathname, useRouter} from 'next/navigation'
-import {useDefinedSearchParams} from 'web/hooks/use-defined-search-params'
-import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {useEffect} from 'react'
 import {buttonClass} from 'web/components/buttons/button'
+import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {useDefinedSearchParams} from 'web/hooks/use-defined-search-params'
+
+import {Row} from '../layout/row'
+import {Spacer} from '../layout/spacer'
 export const PAGE_ELLIPSES = '...'
 
 export function PaginationNextPrev(props: {

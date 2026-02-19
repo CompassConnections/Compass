@@ -101,10 +101,10 @@ When opening a pull request:
 - **Title**: Describe what the PR does, clearly and specifically.
 - **Description**: Explain the context. Link related issues (use `Fixes #123` if applicable).
 - **Checklist**:
-    - [ ] My code is clean and follows the style guide
-    - [ ] I’ve added or updated tests
-    - [ ] I’ve run all tests and they pass
-    - [ ] I’ve documented my changes (if necessary)
+  - [ ] My code is clean and follows the style guide
+  - [ ] I’ve added or updated tests
+  - [ ] I’ve run all tests and they pass
+  - [ ] I’ve documented my changes (if necessary)
 
 ## Code Review Process
 

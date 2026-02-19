@@ -1,6 +1,5 @@
 import {BadgeCheckIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {formatPercent} from 'common/util/format'
 import {Row} from 'web/components/layout/row'

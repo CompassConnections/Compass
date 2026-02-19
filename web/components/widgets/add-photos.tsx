@@ -1,17 +1,16 @@
 import {CheckCircleIcon} from '@heroicons/react/outline'
 import {PlusIcon, XIcon} from '@heroicons/react/solid'
-import Image from 'next/image'
-import {uniq} from 'lodash'
-import {useState} from 'react'
-import {useT} from 'web/lib/locale'
 import clsx from 'clsx'
-
-import {Col} from 'web/components/layout/col'
-import {Button} from 'web/components/buttons/button'
-import {uploadImage} from 'web/lib/firebase/storage'
-import {buildArray} from 'common/util/array'
-import {Row} from 'web/components/layout/row'
 import {User} from 'common/user'
+import {buildArray} from 'common/util/array'
+import {uniq} from 'lodash'
+import Image from 'next/image'
+import {useState} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {uploadImage} from 'web/lib/firebase/storage'
+import {useT} from 'web/lib/locale'
 
 export const AddPhotosWidget = (props: {
   user: User

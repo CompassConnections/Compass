@@ -1,6 +1,7 @@
+import {Notification} from 'common/notifications'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
-import {Notification} from 'common/notifications'
+
 import {UserAvatarAndBadge} from './widgets/user-link'
 
 export function MultiUserReactionModal(props: {

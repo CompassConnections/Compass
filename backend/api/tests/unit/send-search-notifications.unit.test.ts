@@ -2,14 +2,19 @@ jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/sql-builder')
 jest.mock('api/get-profiles')
 jest.mock('email/functions/helpers')
-jest.mock('lodash')
+jest.mock('lodash/keyBy')
 
+import * as profileModules from 'api/get-profiles'
 import * as searchNotificationModules from 'api/send-search-notifications'
+import * as helperModules from 'email/functions/helpers'
+// eslint-disable-next-line lodash/import-scope
+import keyBy from 'lodash/keyBy'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sqlBuilderModules from 'shared/supabase/sql-builder'
-import * as profileModules from 'api/get-profiles'
-import * as helperModules from 'email/functions/helpers'
-import * as lodashModules from 'lodash'
+
+const lodashModules = {
+  keyBy,
+}
 
 describe('sendSearchNotification', () => {
   let mockPg = {} as any

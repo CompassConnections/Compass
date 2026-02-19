@@ -1,6 +1,7 @@
 import {type JSONContent} from '@tiptap/core'
-import {type Row, tsToMillis} from './utils'
 import {type Comment} from 'common/comment'
+
+import {type Row, tsToMillis} from './utils'
 
 export const convertComment = (row: Row<'profile_comments'>): Comment => ({
   id: row.id + '',

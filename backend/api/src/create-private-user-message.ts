@@ -1,8 +1,8 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {getUser} from 'shared/utils'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {MAX_COMMENT_JSON_LENGTH} from 'api/create-comment'
+import {APIError, APIHandler} from 'api/helpers/endpoint'
 import {createPrivateUserMessageMain} from 'api/helpers/private-messages'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser} from 'shared/utils'
 
 export const createPrivateUserMessage: APIHandler<'create-private-user-message'> = async (
   body,

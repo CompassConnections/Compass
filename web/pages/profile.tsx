@@ -1,17 +1,17 @@
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {User} from 'common/user'
-import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
-import {RequiredProfileUserForm} from 'web/components/required-profile-form'
-import {useProfileByUser} from 'web/hooks/use-profile'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
+import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
+import {PageBase} from 'web/components/page-base'
+import {RequiredProfileUserForm} from 'web/components/required-profile-form'
+import {SEO} from 'web/components/SEO'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {useProfileByUser} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {PageBase} from 'web/components/page-base'
-import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export default function ProfilePage() {
   const user = useUser()

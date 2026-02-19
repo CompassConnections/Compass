@@ -1,5 +1,6 @@
-import {APIError, APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const saveSubscription: APIHandler<'save-subscription'> = async (body, auth) => {
   const {subscription} = body

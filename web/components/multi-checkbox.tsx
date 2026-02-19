@@ -1,11 +1,11 @@
+import clsx from 'clsx'
+import {toKey} from 'common/parsing'
+import {useEffect, useMemo, useState} from 'react'
+import {Button} from 'web/components/buttons/button'
 import {Row} from 'web/components/layout/row'
 import {Checkbox} from 'web/components/widgets/checkbox'
 import {Input} from 'web/components/widgets/input'
-import {Button} from 'web/components/buttons/button'
-import clsx from 'clsx'
-import {useEffect, useMemo, useState} from 'react'
 import {useT} from 'web/lib/locale'
-import {toKey} from 'common/parsing'
 
 export const MultiCheckbox = (props: {
   // Map of label -> value

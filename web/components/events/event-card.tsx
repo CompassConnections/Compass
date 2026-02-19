@@ -1,13 +1,14 @@
 import clsx from 'clsx'
+import {HOUR_MS} from 'common/util/time'
+import dayjs from 'dayjs'
+import {capitalize} from 'lodash'
+import Link from 'next/link'
 import {Event} from 'web/hooks/use-events'
 import {useUser} from 'web/hooks/use-user'
 import {useLocale, useT} from 'web/lib/locale'
-import Link from 'next/link'
-import dayjs from 'dayjs'
-import {UserLink, UserLinkFromId} from './user-link'
 import {formatTimeShort, fromNow} from 'web/lib/util/time'
-import {capitalize} from 'lodash'
-import {HOUR_MS} from 'common/util/time'
+
+import {UserLink, UserLinkFromId} from './user-link'
 
 export function EventCard(props: {
   event: Event

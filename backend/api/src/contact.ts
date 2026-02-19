@@ -1,9 +1,10 @@
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {insert} from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
 import {sendDiscordMessage} from 'common/discord/core'
 import {jsonToMarkdown} from 'common/md'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 // Stores a contact message into the `contact` table
 // Web sends TipTap JSON in `content`; we store it as string in `description`.

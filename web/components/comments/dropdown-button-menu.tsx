@@ -1,10 +1,10 @@
-import {DotsHorizontalIcon} from '@heroicons/react/solid'
-import {ReactNode, useState} from 'react'
 import {Popover} from '@headlessui/react'
+import {DotsHorizontalIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
+import {ReactNode, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Col} from 'web/components/layout/col'
 import {AnimationOrNothing} from 'web/components/comments/dropdown-menu'
+import {Col} from 'web/components/layout/col'
 
 export default function DropdownMenu(props: {
   items: ReactNode[]

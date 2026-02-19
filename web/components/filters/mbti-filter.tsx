@@ -3,8 +3,8 @@ import {MBTI_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {getSortedOptions} from 'common/util/sorting'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
-import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {useT} from 'web/lib/locale'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
 export function MbtiFilterText(props: {
   options: string[] | undefined

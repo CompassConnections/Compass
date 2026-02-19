@@ -2,8 +2,9 @@ import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {throttle} from 'lodash'
 import {forwardRef, ReactNode, Ref, useEffect, useRef, useState} from 'react'
-import {Row} from '../layout/row'
 import {VisibilityObserver} from 'web/components/widgets/visibility-observer'
+
+import {Row} from '../layout/row'
 
 export function Carousel(props: {
   children: ReactNode

@@ -1,8 +1,4 @@
 // Define nice labels for each key
-import {FilterFields, initialFilters} from 'common/filters'
-import {wantsKidsNames} from 'common/wants-kids'
-import {hasKidsNames} from 'common/has-kids'
-import {milesToKm} from 'common/measurement-utils'
 import {
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
@@ -15,6 +11,10 @@ import {
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES,
 } from 'common/choices'
+import {FilterFields, initialFilters} from 'common/filters'
+import {hasKidsNames} from 'common/has-kids'
+import {milesToKm} from 'common/measurement-utils'
+import {wantsKidsNames} from 'common/wants-kids'
 import {capitalize} from 'lodash'
 
 const filterLabels: Record<string, string> = {

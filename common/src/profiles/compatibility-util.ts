@@ -1,5 +1,5 @@
-import {ProfileRow} from 'common/profiles/profile'
 import {MAX_INT, MIN_INT} from 'common/constants'
+import {ProfileRow} from 'common/profiles/profile'
 
 const isPreferredGender = (
   preferredGenders: string[] | undefined | null,

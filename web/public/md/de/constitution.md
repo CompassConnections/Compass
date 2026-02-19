@@ -15,27 +15,27 @@ faire Beteiligung zu gewährleisten.
 ## Artikel II: Mitgliedschaftsstufen
 
 1. **Definition** —
-    1. Ein _Mitglied_ ist jede Person mit einem Konto.
-    2. Ein _Freiwilliger_ ist ein Mitglied mit Stimmrecht (auch **stimmberechtigtes Mitglied** genannt).
-    3. Ein _Administrator_ ist eine besondere Art von _Freiwilligem_ mit erweiterten Befugnissen und Schreibzugriff auf
-       den Code.
+   1. Ein _Mitglied_ ist jede Person mit einem Konto.
+   2. Ein _Freiwilliger_ ist ein Mitglied mit Stimmrecht (auch **stimmberechtigtes Mitglied** genannt).
+   3. Ein _Administrator_ ist eine besondere Art von _Freiwilligem_ mit erweiterten Befugnissen und Schreibzugriff auf
+      den Code.
 
 2. **Voraussetzungen** —
-    1. Um Freiwilliger zu werden, muss eine Person:
-        - ein 1:1-Gespräch mit einem aktuellen Freiwilligen geführt haben;
-        - einen sinnvollen Beitrag zum Projekt (Code, Dokumentation, Design, Öffentlichkeitsarbeit,
-          Community-Moderation) von mindestens 5 Stunden geleistet haben;
-        - vom Mitgliedschaftsausschuss (siehe Artikel IV) mit **qualifizierter Mehrheit** genehmigt worden sein.
-        - Um Administrator zu werden, müssen alle aktuellen Administratoren einstimmig für die Vergabe dieser Rolle
-          stimmen.
+   1. Um Freiwilliger zu werden, muss eine Person:
+      - ein 1:1-Gespräch mit einem aktuellen Freiwilligen geführt haben;
+      - einen sinnvollen Beitrag zum Projekt (Code, Dokumentation, Design, Öffentlichkeitsarbeit,
+        Community-Moderation) von mindestens 5 Stunden geleistet haben;
+      - vom Mitgliedschaftsausschuss (siehe Artikel IV) mit **qualifizierter Mehrheit** genehmigt worden sein.
+      - Um Administrator zu werden, müssen alle aktuellen Administratoren einstimmig für die Vergabe dieser Rolle
+        stimmen.
 
 3. **Vorläufige Freiwillige** — Neue Teilnehmende können an Diskussionen teilnehmen, haben jedoch kein Stimmrecht, bis
    sie die Kriterien erfüllen.
 4. **Verlust der Mitgliedschaft** — Freiwillige können entfernt werden bei:
-    - anhaltender Inaktivität (z. B. weniger als 10 Stunden Beitrag innerhalb von 12 Monaten);
-    - nachgewiesenem Handeln in bösem Glauben (Wahlmanipulation, Belästigung, Sabotage). Die Entfernung erfordert
-      eine \*
-      \*2/3-Mehrheit\*\* der Freiwilligen.
+   - anhaltender Inaktivität (z. B. weniger als 10 Stunden Beitrag innerhalb von 12 Monaten);
+   - nachgewiesenem Handeln in bösem Glauben (Wahlmanipulation, Belästigung, Sabotage). Die Entfernung erfordert
+     eine \*
+     \*2/3-Mehrheit\*\* der Freiwilligen.
 
 [Aktuelle Freiwillige und Administratoren](/members)
 
@@ -54,9 +54,9 @@ faire Beteiligung zu gewährleisten.
 1. **Stimmrecht** — Ein Freiwilliger = eine Stimme.
 2. **Quorum** — Mindestens **40 %** der aktiven Freiwilligen müssen teilnehmen, damit eine Abstimmung gültig ist.
 3. **Entscheidungsschwellen**:
-    - **Einfache Mehrheit (50 % + 1)** — Laufende operative Entscheidungen.
-    - **Qualifizierte Mehrheit (2/3)** — Verfassungsänderungen, Aufnahme oder Entfernung von Mitgliedern, wesentliche
-      Finanzentscheidungen und Änderungen des Projektumfangs.
+   - **Einfache Mehrheit (50 % + 1)** — Laufende operative Entscheidungen.
+   - **Qualifizierte Mehrheit (2/3)** — Verfassungsänderungen, Aufnahme oder Entfernung von Mitgliedern, wesentliche
+     Finanzentscheidungen und Änderungen des Projektumfangs.
 
 4. **Beratungsfrist** — Alle Vorschläge müssen mindestens **7 Tage** zur Diskussion offenstehen, bevor die Abstimmung
    beginnt.

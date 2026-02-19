@@ -1,7 +1,7 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {getUser, log} from 'shared/utils'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insertPrivateMessage, leaveChatContent} from 'api/helpers/private-messages'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser, log} from 'shared/utils'
 
 export const leavePrivateUserMessageChannel: APIHandler<
   'leave-private-user-message-channel'

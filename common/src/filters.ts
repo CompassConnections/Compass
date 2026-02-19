@@ -1,7 +1,7 @@
-import {Profile, ProfileRow} from 'common/profiles/profile'
-import {cloneDeep} from 'lodash'
-import {filterDefined} from 'common/util/array'
 import {OptionTableKey} from 'common/profiles/constants'
+import {Profile, ProfileRow} from 'common/profiles/profile'
+import {filterDefined} from 'common/util/array'
+import {cloneDeep} from 'lodash'
 
 // export type TargetArea = {
 //   lat: number

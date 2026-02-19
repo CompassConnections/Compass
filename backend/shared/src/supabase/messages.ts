@@ -1,5 +1,5 @@
-import {convertSQLtoTS, Row, tsToMillis} from 'common/supabase/utils'
 import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {convertSQLtoTS, Row, tsToMillis} from 'common/supabase/utils'
 import {decryptMessage} from 'shared/encryption'
 
 export type DbPrivateChatMessage = PrivateChatMessage & {

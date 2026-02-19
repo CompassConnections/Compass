@@ -1,14 +1,15 @@
-import {XIcon} from '@heroicons/react/outline'
-import {Fragment, useEffect, useRef, useState} from 'react'
-import clsx from 'clsx'
 import {Menu, Transition} from '@headlessui/react'
-import {Avatar} from 'web/components/widgets/avatar'
-import {Row} from 'web/components/layout/row'
-import {UserLink} from 'web/components/widgets/user-link'
-import {Input} from './widgets/input'
-import {DisplayUser, searchUsers} from 'web/lib/supabase/users'
-import {Col} from 'web/components/layout/col'
+import {XIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
+import {Fragment, useEffect, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {Avatar} from 'web/components/widgets/avatar'
+import {UserLink} from 'web/components/widgets/user-link'
+import {DisplayUser, searchUsers} from 'web/lib/supabase/users'
+
+import {Input} from './widgets/input'
 
 export function SelectUsers(props: {
   setSelectedUsers: (users: DisplayUser[]) => void

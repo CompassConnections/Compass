@@ -83,13 +83,13 @@ Beispiel:
 - Nur relevant, wenn du romantische Verbindungen suchst.
 
 - Beispiele für mögliche Inhalte:
-    - Liebessprachen (geben und empfangen)
-    - Zeitlicher Horizont für Beziehungsziele
-    - Romantische Orientierung und Präferenzen
-    - Familienplanung (Kinder, Haustiere)
-    - Work-Life-Balance und finanzielle Gewohnheiten
-    - Wohnsituation (Miete vs. Eigentum)
-    - Offenheit für Partner:innen mit Kindern
+  - Liebessprachen (geben und empfangen)
+  - Zeitlicher Horizont für Beziehungsziele
+  - Romantische Orientierung und Präferenzen
+  - Familienplanung (Kinder, Haustiere)
+  - Work-Life-Balance und finanzielle Gewohnheiten
+  - Wohnsituation (Miete vs. Eigentum)
+  - Offenheit für Partner:innen mit Kindern
 
 Beispiel:
 

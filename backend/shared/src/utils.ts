@@ -1,7 +1,7 @@
-import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {log, type Logger} from 'shared/monitoring/log'
 import {metrics} from 'shared/monitoring/metrics'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
 export {metrics}
 export {log, type Logger}

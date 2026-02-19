@@ -1,5 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIHandler} from './helpers/endpoint'
 
 // Unhide a profile for the requesting user by deleting from hidden_profiles.
 // Idempotent: if the pair does not exist, succeed silently.

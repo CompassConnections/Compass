@@ -2,13 +2,14 @@ import {EmojiHappyIcon} from '@heroicons/react/outline'
 import {CodeIcon, PhotographIcon} from '@heroicons/react/solid'
 import {Editor} from '@tiptap/react'
 import {MouseEventHandler, useState} from 'react'
+import {Row} from 'web/components/layout/row'
+import {useT} from 'web/lib/locale'
+
 import {FileUploadButton} from '../buttons/file-upload-button'
 import {LoadingIndicator} from '../widgets/loading-indicator'
+import {Tooltip} from '../widgets/tooltip'
 import {EmbedModal} from './embed-modal'
 import type {UploadMutation} from './upload-extension'
-import {Row} from 'web/components/layout/row'
-import {Tooltip} from '../widgets/tooltip'
-import {useT} from 'web/lib/locale'
 
 /* Toolbar, with buttons for images and embeds */
 export function StickyFormatMenu(props: {

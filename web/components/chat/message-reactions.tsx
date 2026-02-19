@@ -1,9 +1,9 @@
-import {useUser} from 'web/hooks/use-user'
-import {Dispatch, SetStateAction, useMemo} from 'react'
 import clsx from 'clsx'
-import {handleReaction} from 'web/lib/util/message-reactions'
-import {updateReactionUI} from 'web/lib/supabase/chat-messages'
 import {PrivateChatMessage} from 'common/chat-message'
+import {Dispatch, SetStateAction, useMemo} from 'react'
+import {useUser} from 'web/hooks/use-user'
+import {updateReactionUI} from 'web/lib/supabase/chat-messages'
+import {handleReaction} from 'web/lib/util/message-reactions'
 
 interface MessageReactionsProps {
   message: {

@@ -1,8 +1,9 @@
 import {ExclamationIcon} from '@heroicons/react/solid'
-import {Col} from '../layout/col'
-import {Row} from '../layout/row'
 import clsx from 'clsx'
 import {ReactNode} from 'react'
+
+import {Col} from '../layout/col'
+import {Row} from '../layout/row'
 
 export function AlertBox(props: {title: string; className?: string; children?: ReactNode}) {
   const {title, children, className} = props

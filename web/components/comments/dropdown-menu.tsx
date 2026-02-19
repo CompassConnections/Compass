@@ -1,8 +1,8 @@
+import {Popover, Transition} from '@headlessui/react'
 import {DotsHorizontalIcon} from '@heroicons/react/solid'
+import clsx from 'clsx'
 import {Fragment, ReactNode, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Popover, Transition} from '@headlessui/react'
-import clsx from 'clsx'
 
 export type DropdownItem = {
   name: string

@@ -1,11 +1,11 @@
+import {PrivateUser, User} from 'common/user'
+import {toast} from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {Button} from 'web/components/buttons/button'
-import {withTracking} from 'web/lib/service/analytics'
-import {toast} from 'react-hot-toast'
-import {PrivateUser, User} from 'common/user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {withTracking} from 'web/lib/service/analytics'
 
 export const BlockUser = (props: {
   user: User

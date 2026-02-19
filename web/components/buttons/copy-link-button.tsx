@@ -1,13 +1,14 @@
-import {ComponentProps, useState} from 'react'
-import {copyToClipboard} from 'web/lib/util/copy'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from '../widgets/tooltip'
-import clsx from 'clsx'
-import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
-import toast from 'react-hot-toast'
-import LinkIcon from 'web/lib/icons/link-icon.svg'
 import {CheckIcon, ClipboardCopyIcon, DuplicateIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
+import {ComponentProps, useState} from 'react'
+import toast from 'react-hot-toast'
+import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
+import LinkIcon from 'web/lib/icons/link-icon.svg'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+import {copyToClipboard} from 'web/lib/util/copy'
+
+import {Tooltip} from '../widgets/tooltip'
 
 export function CopyLinkOrShareButton(props: {
   url: string

@@ -1,8 +1,9 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {PrivateUser} from 'common/user'
 import {Row} from 'common/supabase/utils'
+import {PrivateUser} from 'common/user'
 import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const getCurrentPrivateUser: APIHandler<'me/private'> = async (_, auth) => {
   const pg = createSupabaseDirectClient()

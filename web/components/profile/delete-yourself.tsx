@@ -2,12 +2,13 @@ import {TrashIcon} from '@heroicons/react/solid'
 import router from 'next/router'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
+import {useT} from 'web/lib/locale'
+import {deleteAccount} from 'web/lib/util/delete'
+
 import {ConfirmationButton} from '../buttons/confirmation-button'
 import {Col} from '../layout/col'
 import {Input} from '../widgets/input'
 import {Title} from '../widgets/title'
-import {deleteAccount} from 'web/lib/util/delete'
-import {useT} from 'web/lib/locale'
 
 export function DeleteYourselfButton() {
   const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState('')

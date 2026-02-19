@@ -17,21 +17,21 @@ jest.mock('shared/monitoring/log')
 jest.mock('common/hosting/constants')
 
 import {createUser} from 'api/create-user'
-import * as supabaseInit from 'shared/supabase/init'
-import * as supabaseUtils from 'shared/supabase/utils'
-import * as supabaseUsers from 'common/supabase/users'
-import * as emailHelpers from 'email/functions/helpers'
+import {AuthedUser} from 'api/helpers/endpoint'
 import * as apiSetLastTimeOnline from 'api/set-last-online-time'
+import * as hostingConstants from 'common/hosting/constants'
+import * as supabaseUsers from 'common/supabase/users'
+import * as userNotificationPref from 'common/user-notification-preferences'
+import * as usernameUtils from 'common/util/clean-username'
+import * as objectUtils from 'common/util/object'
+import * as emailHelpers from 'email/functions/helpers'
 import * as firebaseAdmin from 'firebase-admin'
-import * as sharedUtils from 'shared/utils'
 import * as sharedAnalytics from 'shared/analytics'
 import * as firebaseUtils from 'shared/firebase-utils'
 import * as avatarHelpers from 'shared/helpers/generate-and-update-avatar-urls'
-import * as objectUtils from 'common/util/object'
-import * as userNotificationPref from 'common/user-notification-preferences'
-import * as usernameUtils from 'common/util/clean-username'
-import * as hostingConstants from 'common/hosting/constants'
-import {AuthedUser} from 'api/helpers/endpoint'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUtils from 'shared/supabase/utils'
+import * as sharedUtils from 'shared/utils'
 
 describe('createUser', () => {
   const originalIsLocal = (hostingConstants as any).IS_LOCAL

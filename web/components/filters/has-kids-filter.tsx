@@ -1,9 +1,9 @@
 import clsx from 'clsx'
-import {Row} from 'web/components/layout/row'
-import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
-import {FaChild} from 'react-icons/fa6'
 import {FilterFields} from 'common/filters'
 import {generateChoicesMap, hasKidsLabels} from 'common/has-kids'
+import {FaChild} from 'react-icons/fa6'
+import {Row} from 'web/components/layout/row'
+import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {useT} from 'web/lib/locale'
 
 export function HasKidsLabel(props: {

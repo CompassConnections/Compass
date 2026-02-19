@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import {RangeSlider} from 'web/components/widgets/slider'
 import {FilterFields} from 'common/filters'
+import {RangeSlider} from 'web/components/widgets/slider'
 import {useT} from 'web/lib/locale'
 
 export const DRINKS_MIN = 0

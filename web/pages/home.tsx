@@ -1,6 +1,6 @@
-import {PageBase} from 'web/components/page-base'
-import {Col} from 'web/components/layout/col'
 import {LoggedOutHome} from 'web/components/home/home'
+import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
 
 export default function Home() {
   return (

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
+import {FilterFields} from 'common/filters'
 import {Row} from 'web/components/layout/row'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
-import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
 
 export function SmokerFilterText(props: {

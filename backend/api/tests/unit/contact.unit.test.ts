@@ -4,12 +4,12 @@ jest.mock('shared/supabase/init')
 jest.mock('common/util/try-catch')
 
 import {contact} from 'api/contact'
+import {AuthedUser} from 'api/helpers/endpoint'
+import {sendDiscordMessage} from 'common/discord/core'
+import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUtils from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
-import {sendDiscordMessage} from 'common/discord/core'
-import {AuthedUser} from 'api/helpers/endpoint'
-import {sqlMatch} from 'common/test-utils'
 
 describe('contact', () => {
   let mockPg: any

@@ -1,8 +1,8 @@
-import {sqlMatch} from 'common/test-utils'
 import * as getPrivateMessages from 'api/get-private-messages'
-import * as supabaseInit from 'shared/supabase/init'
-import {tryCatch} from 'common/util/try-catch'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
 jest.mock('common/util/try-catch')
@@ -212,7 +212,7 @@ describe('getChannelMessagesEndpoint', () => {
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockData = ['mockResult'] as any
+      const _mockData = ['mockResult'] as any
 
       ;(mockPg.map as jest.Mock).mockResolvedValue(null)
       ;(tryCatch as jest.Mock).mockResolvedValue({data: null, error: Error})

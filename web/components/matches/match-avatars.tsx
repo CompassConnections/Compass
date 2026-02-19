@@ -1,9 +1,9 @@
-import {Row} from 'web/components/layout/row'
 import {HeartIcon, UserIcon} from '@heroicons/react/solid'
+import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import Image from 'next/image'
 import {Col} from 'web/components/layout/col'
-import clsx from 'clsx'
+import {Row} from 'web/components/layout/row'
 
 export function MatchAvatars(props: {
   profileProfile: Profile

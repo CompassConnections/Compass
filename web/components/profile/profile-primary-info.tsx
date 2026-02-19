@@ -1,14 +1,15 @@
-import {ReactNode} from 'react'
+import {convertGender, Gender} from 'common/gender'
+import {Profile} from 'common/profiles/profile'
 import {capitalize} from 'lodash'
+import {ReactNode} from 'react'
 import {IoLocationOutline} from 'react-icons/io5'
 import {MdHeight} from 'react-icons/md'
 import {Row} from 'web/components/layout/row'
-import GenderIcon from '../gender-icon'
-import {convertGender, Gender} from 'common/gender'
-import {formatProfileValue} from '../profile-about'
-import {Profile} from 'common/profiles/profile'
-import {useT} from 'web/lib/locale'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
+import {useT} from 'web/lib/locale'
+
+import GenderIcon from '../gender-icon'
+import {formatProfileValue} from '../profile-about'
 
 export default function ProfilePrimaryInfo(props: {profile: Profile}) {
   const {profile} = props

@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-
-import {track} from 'web/lib/service/analytics'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
 
 export type Item = {
   name: string

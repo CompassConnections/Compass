@@ -1,5 +1,6 @@
-import dayjs from 'dayjs'
 import 'web/lib/dayjs'
+
+import dayjs from 'dayjs'
 
 export function fromNow(
   time: number | string | Date,

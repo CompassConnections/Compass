@@ -1,15 +1,15 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {getUser, log} from 'shared/utils'
-import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
-import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
-import {track} from 'shared/analytics'
-import {updateUser} from 'shared/supabase/users'
-import {tryCatch} from 'common/util/try-catch'
-import {insert} from 'shared/supabase/utils'
 import {sendDiscordMessage} from 'common/discord/core'
 import {jsonToMarkdown} from 'common/md'
 import {trimStrings} from 'common/parsing'
+import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
+import {tryCatch} from 'common/util/try-catch'
+import {track} from 'shared/analytics'
+import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {updateUser} from 'shared/supabase/users'
+import {insert} from 'shared/supabase/utils'
+import {getUser, log} from 'shared/utils'
 
 export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()

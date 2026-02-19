@@ -1,4 +1,6 @@
 import {type APIHandler} from 'api/helpers/endpoint'
+import {OptionTableKey} from 'common/profiles/constants'
+import {compact} from 'lodash'
 import {convertRow} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
 import {
@@ -11,8 +13,6 @@ import {
   select,
   where,
 } from 'shared/supabase/sql-builder'
-import {compact} from 'lodash'
-import {OptionTableKey} from 'common/profiles/constants'
 
 export type profileQueryType = {
   limit?: number | undefined

@@ -2,10 +2,11 @@ import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/solid'
 import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
 import {MouseEventHandler, useEffect, useRef, useState} from 'react'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useSafeLayoutEffect} from 'web/hooks/use-safe-layout-effect'
+
 import {Row} from '../layout/row'
 import {Content} from './editor'
-import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 
 export const COLLAPSIBLE_HEIGHT = 26 * 3 // line height is 26px
 export const SHOW_COLLAPSE_TRESHOLD = 180

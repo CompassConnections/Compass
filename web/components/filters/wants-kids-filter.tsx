@@ -1,11 +1,10 @@
+import clsx from 'clsx'
+import {FilterFields} from 'common/filters'
+import {generateChoicesMap, KidLabel, wantsKidsLabels} from 'common/wants-kids'
 import {ReactNode} from 'react'
 import {MdNoStroller, MdOutlineStroller, MdStroller} from 'react-icons/md'
 import {Row} from 'web/components/layout/row'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
-import clsx from 'clsx'
-import {FilterFields} from 'common/filters'
-
-import {generateChoicesMap, KidLabel, wantsKidsLabels} from 'common/wants-kids'
 import {useT} from 'web/lib/locale'
 
 interface KidLabelWithIcon extends KidLabel {

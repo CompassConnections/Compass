@@ -1,9 +1,9 @@
 import {PushNotifications} from '@capacitor/push-notifications'
-import {useEffect} from 'react'
-import {api} from 'web/lib/api'
-import {useUser} from 'web/hooks/use-user'
-import {isAndroidApp} from 'web/lib/util/webview'
 import {useRouter} from 'next/router'
+import {useEffect} from 'react'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {isAndroidApp} from 'web/lib/util/webview'
 
 export default function AndroidPush() {
   const user = useUser() // authenticated user

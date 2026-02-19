@@ -1,10 +1,11 @@
 import {Placement} from '@floating-ui/react'
-import {useIsClient} from 'web/hooks/use-is-client'
-import {fromNow} from 'web/lib/util/time'
-import {DateTimeTooltip} from './widgets/datetime-tooltip'
-import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import {useIsClient} from 'web/hooks/use-is-client'
+import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
+import {fromNow} from 'web/lib/util/time'
+
+import {DateTimeTooltip} from './widgets/datetime-tooltip'
 
 export function RelativeTimestamp(props: {
   time: number

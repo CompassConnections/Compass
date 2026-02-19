@@ -1,9 +1,10 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {log} from 'shared/utils'
-import {tryCatch} from 'common/util/try-catch'
 import {Row} from 'common/supabase/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
+import {log} from 'shared/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
   const {targetUserId, remove} = props

@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import {Card} from './card'
 import {ReactNode} from 'react'
+
+import {Card} from './card'
 
 export type StatBoxProps = {
   // The main numeric/stat value to display large and centered

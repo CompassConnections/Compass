@@ -1,8 +1,9 @@
 import {SuggestionProps} from '@tiptap/suggestion'
 import clsx from 'clsx'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
-import {Avatar} from '../../widgets/avatar'
 import {DisplayUser} from 'web/lib/supabase/users'
+
+import {Avatar} from '../../widgets/avatar'
 
 // copied from https://tiptap.dev/api/nodes/mention#usage
 export const MentionList = forwardRef((props: SuggestionProps<DisplayUser>, ref) => {

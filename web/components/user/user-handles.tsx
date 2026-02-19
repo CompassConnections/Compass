@@ -1,7 +1,8 @@
-import {Row} from '../layout/row'
 import clsx from 'clsx'
 import {getSocialUrl, PLATFORM_LABELS, Site, SITE_ORDER, Socials} from 'common/socials'
 import {sortBy} from 'lodash'
+
+import {Row} from '../layout/row'
 import {SocialIcon} from './social'
 
 const LABELS_TO_RENDER = [

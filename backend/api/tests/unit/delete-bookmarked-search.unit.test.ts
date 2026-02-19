@@ -1,6 +1,6 @@
-import {sqlMatch} from 'common/test-utils'
 import {deleteBookmarkedSearch} from 'api/delete-bookmarked-search'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')

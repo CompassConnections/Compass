@@ -1,10 +1,10 @@
-import {sqlMatch} from 'common/test-utils'
 import {deleteMe} from 'api/delete-me'
-import * as supabaseInit from 'shared/supabase/init'
-import * as sharedUtils from 'shared/utils'
+import {AuthedUser} from 'api/helpers/endpoint'
+import {sqlMatch} from 'common/test-utils'
 import * as firebaseAdmin from 'firebase-admin'
 import * as firebaseUtils from 'shared/firebase-utils'
-import {AuthedUser} from 'api/helpers/endpoint'
+import * as supabaseInit from 'shared/supabase/init'
+import * as sharedUtils from 'shared/utils'
 
 jest.mock('shared/supabase/init')
 jest.mock('shared/utils')
@@ -60,7 +60,7 @@ describe('deleteMe', () => {
   })
   describe('when an error occurs', () => {
     it('should throw if the user account was not found', async () => {
-      const mockUser = {
+      const _mockUser = {
         id: 'mockId',
         username: 'mockUsername',
       }

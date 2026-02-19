@@ -1,9 +1,8 @@
-import {PageBase} from 'web/components/page-base'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
-
-import {Title} from 'web/components/widgets/title'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {Title} from 'web/components/widgets/title'
 import {useT} from 'web/lib/locale'
 
 export default function Custom404(props: {customText?: string}) {

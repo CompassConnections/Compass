@@ -1,7 +1,6 @@
-import {readFileSync} from 'fs'
-import {getStorage, Storage} from 'firebase-admin/storage'
-
 import {ENV_CONFIG, getStorageBucketId} from 'common/envs/constants'
+import {getStorage, Storage} from 'firebase-admin/storage'
+import {readFileSync} from 'fs'
 
 export const getServiceAccountCredentials = () => {
   let keyPath = ENV_CONFIG.googleApplicationCredentials

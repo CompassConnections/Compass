@@ -1,5 +1,6 @@
-import {APIError, APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 // Hide a profile for the requesting user by inserting a row into hidden_profiles.
 // Idempotent: if the pair already exists, succeed silently.

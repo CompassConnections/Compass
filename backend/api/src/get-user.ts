@@ -1,7 +1,7 @@
 import {toUserAPIResponse} from 'common/api/user-types'
+import {APIError} from 'common/api/utils'
 import {convertUser} from 'common/supabase/users'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError} from 'common/api/utils'
 
 export const getUser = async (props: {id: string} | {username: string}) => {
   const pg = createSupabaseDirectClient()

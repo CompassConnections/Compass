@@ -1,6 +1,6 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const getNotifications: APIHandler<'get-notifications'> = async (props, auth) => {
   const {limit, after} = props

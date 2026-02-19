@@ -1,8 +1,8 @@
-import {PageBase} from 'web/components/page-base'
-import {Col} from 'web/components/layout/col'
-import {useUser} from 'web/hooks/use-user'
 import {LoggedOutHome} from 'web/components/home/home'
+import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
 import {ProfilesHome} from 'web/components/profiles/profiles-home'
+import {useUser} from 'web/hooks/use-user'
 
 // To simulate downtime, you need the error to happen at runtime, not at build time.
 // That means the page must be server-rendered, not statically generated.

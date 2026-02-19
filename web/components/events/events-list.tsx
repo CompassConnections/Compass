@@ -1,4 +1,5 @@
 import {Event} from 'web/hooks/use-events'
+
 import {EventCard} from './event-card'
 
 export function EventsList(props: {

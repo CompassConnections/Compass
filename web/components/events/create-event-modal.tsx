@@ -1,16 +1,16 @@
 'use client'
 
+import 'react-datepicker/dist/react-datepicker.css'
+
+import clsx from 'clsx'
+import {APIError} from 'common/api/utils'
 import {useEffect, useState} from 'react'
 import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {api} from 'web/lib/api'
-import {APIError} from 'common/api/utils'
-import clsx from 'clsx'
 import {Col} from 'web/components/layout/col'
-import {useLocale, useT} from 'web/lib/locale'
-
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Event} from 'web/hooks/use-events'
+import {api} from 'web/lib/api'
+import {useLocale, useT} from 'web/lib/locale'
 
 export function CreateEventModal(props: {
   open: boolean

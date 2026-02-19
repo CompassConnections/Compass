@@ -1,7 +1,7 @@
 import {ArrowLeftIcon} from '@heroicons/react/solid'
-import {useEffect, useState} from 'react'
-import {useRouter} from 'next/navigation'
 import clsx from 'clsx'
+import {useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 
 export function BackButton(props: {className?: string}) {

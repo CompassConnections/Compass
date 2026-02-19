@@ -1,6 +1,6 @@
-import {area, curveLinear, curveStepBefore, line} from 'd3-shape'
-import {scaleLinear, scaleTime} from 'd3-scale'
 import {Point} from 'common/edge/og'
+import {scaleLinear, scaleTime} from 'd3-scale'
+import {area, curveLinear, curveStepBefore, line} from 'd3-shape'
 
 export function ProfitLossGraph(props: {
   data: Point[]

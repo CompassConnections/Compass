@@ -1,9 +1,9 @@
+import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {sendVerificationEmail} from 'web/lib/firebase/email-verification'
 import {useT} from 'web/lib/locale'
-import {Col} from 'web/components/layout/col'
-import toast from 'react-hot-toast'
-import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 
 export function EmailVerificationButton() {
   const user = useFirebaseUser()

@@ -101,7 +101,7 @@ describe('loadProfiles', () => {
 
         await profilesModule.loadProfiles(mockProps)
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain('select')
@@ -133,7 +133,7 @@ describe('loadProfiles', () => {
           genders: ['Electrical_gender'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`gender`)
@@ -145,7 +145,7 @@ describe('loadProfiles', () => {
           education_levels: ['High School'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`education_level`)
@@ -157,7 +157,7 @@ describe('loadProfiles', () => {
           pref_gender: ['female'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
         console.log(query)
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
@@ -170,7 +170,7 @@ describe('loadProfiles', () => {
           pref_age_min: 20,
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`age`)
@@ -182,7 +182,7 @@ describe('loadProfiles', () => {
           pref_age_max: 40,
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`age`)
@@ -194,7 +194,7 @@ describe('loadProfiles', () => {
           drinks_min: 4,
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`drinks_per_month`)
@@ -206,7 +206,7 @@ describe('loadProfiles', () => {
           drinks_max: 20,
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`drinks_per_month`)
@@ -218,7 +218,7 @@ describe('loadProfiles', () => {
           pref_relation_styles: ['Chill and relaxing'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`pref_relation_styles`)
@@ -230,7 +230,7 @@ describe('loadProfiles', () => {
           pref_romantic_styles: ['Sexy'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`pref_romantic_styles`)
@@ -242,7 +242,7 @@ describe('loadProfiles', () => {
           diet: ['Glutton'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`diet`)
@@ -254,7 +254,7 @@ describe('loadProfiles', () => {
           political_beliefs: ['For the people'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`political_beliefs`)
@@ -266,7 +266,7 @@ describe('loadProfiles', () => {
           religion: ['The blood god'],
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`religion`)
@@ -278,7 +278,7 @@ describe('loadProfiles', () => {
           has_kids: 3,
         })
 
-        const [query, values, cb] = mockPg.map.mock.calls[0]
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
         expect(mockPg.map.mock.calls).toHaveLength(1)
         expect(query).toContain(`has_kids`)

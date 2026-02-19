@@ -1,14 +1,15 @@
 import {toUserAPIResponse} from 'common/api/user-types'
 import {RESERVED_PATHS} from 'common/envs/constants'
+import {strip} from 'common/socials'
 import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
 import {cloneDeep, mapValues} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {getUser, getUserByUsername} from 'shared/utils'
-import {APIError, APIHandler} from './helpers/endpoint'
 import {updateUser} from 'shared/supabase/users'
+import {getUser, getUserByUsername} from 'shared/utils'
 import {broadcastUpdatedUser} from 'shared/websockets/helpers'
-import {strip} from 'common/socials'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   const update = cloneDeep(props)

@@ -1,7 +1,7 @@
-import {useEffect} from 'react'
 import {urlBase64ToUint8Array} from 'common/util/parse'
-import {api} from 'web/lib/api'
+import {useEffect} from 'react'
 import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
 import {isNativeMobile} from 'web/lib/util/webview'
 
 const vapidPublicKey =

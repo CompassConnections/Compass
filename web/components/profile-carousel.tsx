@@ -1,12 +1,13 @@
-import {useState} from 'react'
-import Image from 'next/image'
-import {buildArray} from 'common/util/array'
-import {Carousel} from 'web/components/widgets/carousel'
-import {Modal} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
-import {SignUpButton} from './nav/sidebar'
 import {Profile} from 'common/profiles/profile'
+import {buildArray} from 'common/util/array'
+import Image from 'next/image'
+import {useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {Modal} from 'web/components/layout/modal'
+import {Carousel} from 'web/components/widgets/carousel'
 import {useUser} from 'web/hooks/use-user'
+
+import {SignUpButton} from './nav/sidebar'
 
 export default function ProfileCarousel(props: {profile: Profile; refreshProfile: () => void}) {
   const {profile} = props

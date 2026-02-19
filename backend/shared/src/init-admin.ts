@@ -1,7 +1,7 @@
+import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
+import {IS_LOCAL} from 'common/hosting/constants'
 import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
-import {IS_LOCAL} from 'common/hosting/constants'
-import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
 
 export const initAdmin = () => {
   if (IS_LOCAL && IS_FIREBASE_EMULATOR) {

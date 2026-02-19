@@ -1,8 +1,8 @@
 jest.mock('common/geodb')
 
+import {AuthedUser} from 'api/helpers/endpoint'
 import * as citySearchModules from 'api/search-near-city'
 import * as geoDbModules from 'common/geodb'
-import {AuthedUser} from 'api/helpers/endpoint'
 
 describe('searchNearCity', () => {
   beforeEach(() => {

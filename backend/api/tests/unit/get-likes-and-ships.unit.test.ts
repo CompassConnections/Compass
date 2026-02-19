@@ -46,9 +46,9 @@ describe('getLikesAndShips', () => {
         .mockResolvedValueOnce(mockShips)
 
       const result: any = await likesAndShips.getLikesAndShips(mockProps, mockAuth, mockReq)
-      const [sql1, params1, fn1] = (mockPg.map as jest.Mock).mock.calls[0]
-      const [sql2, params2, fn2] = (mockPg.map as jest.Mock).mock.calls[1]
-      const [sql3, params3, fn3] = (mockPg.map as jest.Mock).mock.calls[2]
+      const [sql1, _params1, _fn1] = (mockPg.map as jest.Mock).mock.calls[0]
+      const [sql2, _params2, _fn2] = (mockPg.map as jest.Mock).mock.calls[1]
+      const [sql3, _params3, _fn3] = (mockPg.map as jest.Mock).mock.calls[2]
 
       expect(result.status).toBe('success')
       expect(result.likesGiven).toBe(mockLikesGiven)

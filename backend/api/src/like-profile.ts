@@ -1,10 +1,11 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createProfileLikeNotification} from 'shared/create-profile-notification'
-import {getHasFreeLike} from './has-free-like'
-import {log} from 'shared/utils'
-import {tryCatch} from 'common/util/try-catch'
 import {Row} from 'common/supabase/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {createProfileLikeNotification} from 'shared/create-profile-notification'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {log} from 'shared/utils'
+
+import {getHasFreeLike} from './has-free-like'
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   const {targetUserId, remove} = props

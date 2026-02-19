@@ -1,5 +1,5 @@
-import {User} from 'common/user'
 import {ProfileRow} from 'common/profiles/profile'
+import {User} from 'common/user'
 import {buildOgUrl} from 'common/util/og'
 
 // TODO: handle age, gender undefined better

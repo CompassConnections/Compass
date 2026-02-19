@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react'
-import {Col} from 'web/components/layout/col'
 import Router from 'next/router'
+import {useEffect, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useT} from 'web/lib/locale'
 

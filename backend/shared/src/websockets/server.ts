@@ -1,8 +1,6 @@
 import {Server as HttpServer} from 'node:http'
-import {RawData, Server as WebSocketServer, WebSocket} from 'ws'
-import {isError} from 'lodash'
-import {log, metrics} from 'shared/utils'
-import {Switchboard} from './switchboard'
+
+import {getWebsocketUrl} from 'common/api/utils'
 import {
   BroadcastPayload,
   CLIENT_MESSAGE_SCHEMA,
@@ -10,7 +8,11 @@ import {
   ServerMessage,
 } from 'common/api/websockets'
 import {IS_LOCAL} from 'common/hosting/constants'
-import {getWebsocketUrl} from 'common/api/utils'
+import {isError} from 'lodash'
+import {log, metrics} from 'shared/utils'
+import {RawData, Server as WebSocketServer, WebSocket} from 'ws'
+
+import {Switchboard} from './switchboard'
 
 // Extend the type definition locally
 interface HeartbeatWebSocket extends WebSocket {

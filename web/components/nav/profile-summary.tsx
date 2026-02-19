@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import {useProfile} from 'web/hooks/use-profile'
 import Link from 'next/link'
 import {Avatar} from 'web/components/widgets/avatar'
+import {useProfile} from 'web/hooks/use-profile'
 import {User} from 'web/lib/firebase/users'
 import {trackCallback} from 'web/lib/service/analytics'
 

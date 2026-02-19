@@ -1,10 +1,11 @@
 import {MetricServiceClient} from '@google-cloud/monitoring'
-import {average, sumOfSquaredError} from 'common/util/math'
-import {log} from './log'
-import {getInstanceInfo, InstanceInfo} from './instance-info'
-import {chunk} from 'lodash'
-import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry} from './metrics'
 import {IS_GOOGLE_CLOUD} from 'common/hosting/constants'
+import {average, sumOfSquaredError} from 'common/util/math'
+import {chunk} from 'lodash'
+
+import {getInstanceInfo, InstanceInfo} from './instance-info'
+import {log} from './log'
+import {CUSTOM_METRICS, metrics, MetricStore, MetricStoreEntry} from './metrics'
 
 // how often metrics are written. GCP says don't write for a single time series
 // more than once per 5 seconds.

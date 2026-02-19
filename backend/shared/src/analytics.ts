@@ -1,8 +1,8 @@
-import {Request} from 'express'
-import {trackAuditEvent} from 'shared/audit-events'
-import {PostHog} from 'posthog-node'
-import {log} from 'shared/utils'
 import {ENV_CONFIG} from 'common/envs/constants'
+import {Request} from 'express'
+import {PostHog} from 'posthog-node'
+import {trackAuditEvent} from 'shared/audit-events'
+import {log} from 'shared/utils'
 
 const key = ENV_CONFIG.posthogKey
 

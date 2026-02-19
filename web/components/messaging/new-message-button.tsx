@@ -1,17 +1,18 @@
 import {PlusIcon} from '@heroicons/react/solid'
-import {Button} from '../buttons/button'
-import {useState} from 'react'
-import {Modal, MODAL_CLASS} from '../layout/modal'
-import {Col} from '../layout/col'
-import {api} from 'web/lib/api'
-import {useRouter} from 'next/router'
 import clsx from 'clsx'
+import {DisplayUser} from 'common/api/user-types'
+import {buildArray} from 'common/util/array'
+import {useRouter} from 'next/router'
+import {useState} from 'react'
 import {Row} from 'web/components/layout/row'
 import {SelectUsers} from 'web/components/select-users'
-import {DisplayUser} from 'common/api/user-types'
 import {usePrivateUser} from 'web/hooks/use-user'
-import {buildArray} from 'common/util/array'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+
+import {Button} from '../buttons/button'
+import {Col} from '../layout/col'
+import {Modal, MODAL_CLASS} from '../layout/modal'
 
 export default function NewMessageButton() {
   const [open, setOpen] = useState(false)

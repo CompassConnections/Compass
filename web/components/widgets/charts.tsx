@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
-import {getCompletedProfilesCreations, getProfilesCreations} from 'web/lib/supabase/users'
 import {useT} from 'web/lib/locale'
+import {getCompletedProfilesCreations, getProfilesCreations} from 'web/lib/supabase/users'
 
 // Helper to convert rows into date -> count map
 function buildCounts(rows: any[]) {

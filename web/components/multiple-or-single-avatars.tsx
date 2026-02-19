@@ -1,7 +1,8 @@
-import {Avatar, AvatarSizeType} from 'web/components/widgets/avatar'
-import {Col} from 'web/components/layout/col'
-import {Row} from './layout/row'
 import clsx from 'clsx'
+import {Col} from 'web/components/layout/col'
+import {Avatar, AvatarSizeType} from 'web/components/widgets/avatar'
+
+import {Row} from './layout/row'
 
 export const MultipleOrSingleAvatars = (props: {
   avatars: Array<{

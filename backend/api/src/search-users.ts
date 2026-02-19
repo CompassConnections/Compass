@@ -1,10 +1,11 @@
-import {constructPrefixTsQuery} from 'shared/helpers/search'
-import {from, limit, orderBy, renderSql, select, where} from 'shared/supabase/sql-builder'
-import {type APIHandler} from './helpers/endpoint'
-import {convertUser} from 'common/supabase/users'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {toUserAPIResponse} from 'common/api/user-types'
+import {convertUser} from 'common/supabase/users'
 import {uniqBy} from 'lodash'
+import {constructPrefixTsQuery} from 'shared/helpers/search'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {from, limit, orderBy, renderSql, select, where} from 'shared/supabase/sql-builder'
+
+import {type APIHandler} from './helpers/endpoint'
 
 export const searchUsers: APIHandler<'search-users'> = async (props, _auth) => {
   const {term, page, limit} = props

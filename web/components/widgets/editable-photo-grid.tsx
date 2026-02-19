@@ -1,11 +1,12 @@
 import {XIcon} from '@heroicons/react/solid'
+import clsx from 'clsx'
 import Image from 'next/image'
 import {useState} from 'react'
-import clsx from 'clsx'
-import {Row} from '../layout/row'
+
+import {Button} from '../buttons/button'
 import {Col} from '../layout/col'
 import {Modal} from '../layout/modal'
-import {Button} from '../buttons/button'
+import {Row} from '../layout/row'
 
 export function EditablePhotoGrid(props: {
   photos: string[]

@@ -1,8 +1,8 @@
 'use client'
 
-import {useLocale} from 'web/lib/locale'
-import {LOCALES} from 'common/constants'
 import clsx from 'clsx'
+import {LOCALES} from 'common/constants'
+import {useLocale} from 'web/lib/locale'
 
 export function LanguagePicker(props: {className?: string} = {}) {
   const {className} = props

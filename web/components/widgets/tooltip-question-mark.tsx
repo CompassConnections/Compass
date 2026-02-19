@@ -1,6 +1,6 @@
-import {useState} from 'react'
 import {flip, offset, shift, useFloating} from '@floating-ui/react-dom'
 import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {useState} from 'react'
 
 export function QuestionMarkTooltip(props: {text: string | any}) {
   // Work like Tooltip but also gets triggered upon click and not just highlight (which is necessary for mobile)

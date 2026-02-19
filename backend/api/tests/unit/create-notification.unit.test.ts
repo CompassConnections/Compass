@@ -2,11 +2,11 @@ jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/notifications')
 
-import * as supabaseInit from 'shared/supabase/init'
 import * as createNotificationModules from 'api/create-notification'
-import {tryCatch} from 'common/util/try-catch'
-import * as supabaseNotifications from 'shared/supabase/notifications'
 import {Notification} from 'common/notifications'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseNotifications from 'shared/supabase/notifications'
 
 describe('createNotifications', () => {
   let mockPg = {} as any
@@ -42,7 +42,7 @@ describe('createNotifications', () => {
 
       const results = await createNotificationModules.createNotifications(mockNotification)
 
-      expect(results?.success).toBeTruthy
+      expect(results?.success).toBeTruthy()
       expect(tryCatch).toBeCalledTimes(1)
       expect(mockPg.many).toBeCalledTimes(1)
       expect(mockPg.many).toBeCalledWith('select * from users')

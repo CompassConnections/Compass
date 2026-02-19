@@ -1,13 +1,14 @@
 import {getSchema, getText, getTextSerializersFromSchema, JSONContent} from '@tiptap/core'
-import {Node as ProseMirrorNode} from '@tiptap/pm/model'
-import {StarterKit} from '@tiptap/starter-kit'
 import {Image} from '@tiptap/extension-image'
 import {Link} from '@tiptap/extension-link'
 import {Mention} from '@tiptap/extension-mention'
-import Iframe from './tiptap-iframe'
+import {Node as ProseMirrorNode} from '@tiptap/pm/model'
+import {StarterKit} from '@tiptap/starter-kit'
 import {find} from 'linkifyjs'
 import {uniq} from 'lodash'
 import {compareTwoStrings} from 'string-similarity'
+
+import Iframe from './tiptap-iframe'
 
 /** get first url in text. like "notion.so " -> "http://notion.so" "notion" -> null */
 export function getUrl(text: string) {

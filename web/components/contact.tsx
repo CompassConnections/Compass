@@ -1,15 +1,15 @@
+import {JSONContent} from '@tiptap/core'
+import {formLink} from 'common/constants'
+import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {useUser} from 'web/hooks/use-user'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
-import {JSONContent} from '@tiptap/core'
-import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
-import {Button} from 'web/components/buttons/button'
-import {api} from 'web/lib/api'
 import {Title} from 'web/components/widgets/title'
-import toast from 'react-hot-toast'
-import Link from 'next/link'
-import {formLink} from 'common/constants'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale' // added
 
 export function ContactComponent() {

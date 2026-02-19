@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {type Gender} from 'common/gender'
 import {BsFillPersonFill} from 'react-icons/bs'
 import {
   PiGenderFemaleBold,
@@ -6,7 +7,6 @@ import {
   PiGenderNonbinaryBold,
   PiGenderTransgenderBold,
 } from 'react-icons/pi'
-import {type Gender} from 'common/gender'
 
 export default function GenderIcon(props: {gender: Gender; className: string; hasColor?: boolean}) {
   const {gender, className, hasColor} = props

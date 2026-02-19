@@ -1,15 +1,16 @@
+import clsx from 'clsx'
 import {User} from 'common/user'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
+import Link from 'next/link'
+import router from 'next/router'
 import {useState} from 'react'
+import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
-import router from 'next/router'
-import Link from 'next/link'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
-import clsx from 'clsx'
-import toast from 'react-hot-toast'
+
+import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined

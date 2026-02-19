@@ -1,11 +1,12 @@
 import clsx from 'clsx'
-import GenderIcon from '../gender-icon'
+import {GENDERS_PLURAL} from 'common/choices'
+import {FilterFields} from 'common/filters'
 import {Gender} from 'common/gender'
 import {Row} from 'web/components/layout/row'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
-import {GENDERS_PLURAL} from 'common/choices'
+
+import GenderIcon from '../gender-icon'
 
 export function PrefGenderFilterText(props: {
   pref_gender: Gender[] | undefined

@@ -1,5 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {geodbFetch} from 'common/geodb'
+
+import {APIHandler} from './helpers/endpoint'
 
 const searchNearCityMain = async (cityId: string, radius: number) => {
   const endpoint = `/cities/${cityId}/nearbyCities?radius=${radius}&offset=0&sort=-population&limit=100`

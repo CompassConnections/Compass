@@ -1,8 +1,8 @@
-import {Head, Html, Main, NextScript} from 'next/document'
-import {ENV_CONFIG} from 'common/envs/constants'
-import Script from 'next/script'
 import clsx from 'clsx'
+import {ENV_CONFIG} from 'common/envs/constants'
 import {IS_DEPLOYED} from 'common/hosting/constants'
+import {Head, Html, Main, NextScript} from 'next/document'
+import Script from 'next/script'
 
 declare global {
   interface Window {

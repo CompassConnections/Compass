@@ -1,16 +1,16 @@
 import clsx from 'clsx'
 import {ReadonlyURLSearchParams, usePathname} from 'next/navigation'
 import {useRouter} from 'next/router'
-
 import {ReactNode, useEffect, useRef} from 'react'
-import {track} from 'web/lib/service/analytics'
-import {Col} from './col'
-import {Tooltip} from 'web/components/widgets/tooltip'
 import {Row} from 'web/components/layout/row'
 import {Carousel} from 'web/components/widgets/carousel'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {Tooltip} from 'web/components/widgets/tooltip'
 import {useDefinedSearchParams} from 'web/hooks/use-defined-search-params'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {track} from 'web/lib/service/analytics'
+
+import {Col} from './col'
 
 export type Tab = {
   title: string

@@ -1,9 +1,9 @@
-import {Col} from 'web/components/layout/col'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
-import {useUser} from 'web/hooks/use-user'
+import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 export default function SoftGatePage() {

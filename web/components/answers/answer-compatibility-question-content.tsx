@@ -6,6 +6,7 @@ import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
 import {sortBy} from 'lodash'
 import {useState} from 'react'
+import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
@@ -14,11 +15,11 @@ import {ExpandingInput} from 'web/components/widgets/expanding-input'
 import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
-import {track} from 'web/lib/service/analytics'
 import {api} from 'web/lib/api'
-import {filterKeys} from '../questions-form'
-import toast from 'react-hot-toast'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+
+import {filterKeys} from '../questions-form'
 
 export type CompatibilityAnswerSubmitType = Omit<
   rowFor<'compatibility_answers'>,

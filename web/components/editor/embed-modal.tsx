@@ -1,12 +1,13 @@
 import {Editor} from '@tiptap/react'
 import {DOMAIN} from 'common/envs/constants'
 import {useState} from 'react'
+import toast from 'react-hot-toast'
+
 import {Button} from '../buttons/button'
 import {Col} from '../layout/col'
 import {Modal} from '../layout/modal'
 import {Row} from '../layout/row'
 import {Spacer} from '../layout/spacer'
-import toast from 'react-hot-toast'
 
 type EmbedPattern = {
   // Regex should have a single capture group.

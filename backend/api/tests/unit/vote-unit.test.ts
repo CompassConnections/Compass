@@ -3,9 +3,9 @@ jest.mock('shared/utils')
 
 import {AuthedUser} from 'api/helpers/endpoint'
 import {vote} from 'api/vote'
+import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
-import {sqlMatch} from 'common/test-utils'
 
 describe('vote', () => {
   let mockPg = {} as any

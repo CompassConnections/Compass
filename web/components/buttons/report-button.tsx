@@ -1,15 +1,15 @@
-import {useUser} from 'web/hooks/use-user'
-import {Button} from 'web/components/buttons/button'
-import {withTracking} from 'web/lib/service/analytics'
+import {ReportProps} from 'common/report'
+import {capitalize} from 'lodash'
+import {useState} from 'react'
 import {toast} from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
-import {useState} from 'react'
-import {Col} from 'web/components/layout/col'
 import {Title} from 'web/components/widgets/title'
-import {capitalize} from 'lodash'
-import {ReportProps} from 'common/report'
+import {useUser} from 'web/hooks/use-user'
 import {report as reportContent} from 'web/lib/api'
+import {withTracking} from 'web/lib/service/analytics'
 
 export function ReportButton(props: {report: ReportProps}) {
   const {report} = props

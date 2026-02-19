@@ -1,13 +1,13 @@
 'use client'
 import {BellIcon} from '@heroicons/react/outline'
 import {BellIcon as SolidBellIcon} from '@heroicons/react/solid'
-import {Row} from 'web/components/layout/row'
-import {useEffect, useState} from 'react'
-import {usePrivateUser} from 'web/hooks/use-user'
-import {useGroupedUnseenNotifications} from 'web/hooks/use-notifications'
-import {PrivateUser} from 'common/user'
 import {NOTIFICATIONS_PER_PAGE} from 'common/notifications'
+import {PrivateUser} from 'common/user'
 import {usePathname} from 'next/navigation'
+import {useEffect, useState} from 'react'
+import {Row} from 'web/components/layout/row'
+import {useGroupedUnseenNotifications} from 'web/hooks/use-notifications'
+import {usePrivateUser} from 'web/hooks/use-user'
 
 export function NotificationsIcon(props: {className?: string}) {
   const privateUser = usePrivateUser()

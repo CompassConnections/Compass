@@ -1,9 +1,9 @@
-import {useEffect, useState} from 'react'
-import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
 import Image from 'next/image'
-import {Row} from 'web/components/layout/row'
+import {useEffect, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
 
 export const PhotosModal = (props: {
   open: boolean

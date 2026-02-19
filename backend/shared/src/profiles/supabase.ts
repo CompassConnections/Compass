@@ -1,7 +1,7 @@
 import {areGenderCompatible} from 'common/profiles/compatibility-util'
 import {type Profile, type ProfileRow} from 'common/profiles/profile'
-import {type User} from 'common/user'
 import {Row} from 'common/supabase/utils'
+import {type User} from 'common/user'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export type ProfileAndUserRow = ProfileRow & {

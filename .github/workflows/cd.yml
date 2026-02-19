@@ -4,7 +4,7 @@ name: CD
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'package.json'
       - '.github/workflows/cd.yml'

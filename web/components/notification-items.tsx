@@ -1,18 +1,19 @@
 import {SparklesIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
+import {ENV_CONFIG} from 'common/envs/constants'
 import {Notification} from 'common/notifications'
+import {sortBy} from 'lodash'
 import Link from 'next/link'
 import {ReactNode, useState} from 'react'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+
 import {Col} from './layout/col'
 import {Row} from './layout/row'
+import {MultiUserReactionModal} from './multi-user-reaction-link'
 import {RelativeTimestampNoTooltip} from './relative-timestamp'
+import {Avatar} from './widgets/avatar'
 import {Linkify} from './widgets/linkify'
 import {UserLink} from './widgets/user-link'
-import {Avatar} from './widgets/avatar'
-import {MultiUserReactionModal} from './multi-user-reaction-link'
-import {sortBy} from 'lodash'
-import {ENV_CONFIG} from 'common/envs/constants'
 
 export function NotificationItem(props: {notification: Notification}) {
   const {notification} = props

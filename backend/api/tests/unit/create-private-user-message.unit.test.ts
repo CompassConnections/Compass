@@ -2,12 +2,12 @@ jest.mock('shared/utils')
 jest.mock('shared/supabase/init')
 jest.mock('api/helpers/private-messages')
 
-import {createPrivateUserMessage} from 'api/create-private-user-message'
-import * as sharedUtils from 'shared/utils'
-import * as supabaseInit from 'shared/supabase/init'
-import * as helpersPrivateMessagesModules from 'api/helpers/private-messages'
-import {AuthedUser} from 'api/helpers/endpoint'
 import {MAX_COMMENT_JSON_LENGTH} from 'api/create-comment'
+import {createPrivateUserMessage} from 'api/create-private-user-message'
+import {AuthedUser} from 'api/helpers/endpoint'
+import * as helpersPrivateMessagesModules from 'api/helpers/private-messages'
+import * as supabaseInit from 'shared/supabase/init'
+import * as sharedUtils from 'shared/utils'
 
 describe('createPrivateUserMessage', () => {
   beforeEach(() => {

@@ -1,9 +1,9 @@
-import {sqlMatch} from 'common/test-utils'
+import {AuthedUser} from 'api/helpers/endpoint'
 import {updatePrivateUserMessageChannel} from 'api/update-private-user-message-channel'
+import * as supabaseUtils from 'common/supabase/utils'
+import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
-import * as supabaseUtils from 'common/supabase/utils'
-import {AuthedUser} from 'api/helpers/endpoint'
 
 jest.mock('shared/supabase/init')
 jest.mock('shared/utils')

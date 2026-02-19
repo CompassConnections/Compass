@@ -1,7 +1,8 @@
+import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {Col} from 'web/components/layout/col'
+
 import {CompatibilityQuestionsDisplay} from './compatibility-questions-display'
-import {Profile} from 'common/profiles/profile'
 
 export function ProfileAnswers(props: {
   isCurrentUser: boolean

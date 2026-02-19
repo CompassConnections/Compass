@@ -1,11 +1,11 @@
-import {sqlMatch} from 'common/test-utils'
 import {createPrivateUserMessageChannel} from 'api/create-private-user-message-channel'
+import {AuthedUser} from 'api/helpers/endpoint'
+import * as privateMessageModules from 'api/helpers/private-messages'
+import {sqlMatch} from 'common/test-utils'
+import * as utilArrayModules from 'common/util/array'
+import * as admin from 'firebase-admin'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
-import * as utilArrayModules from 'common/util/array'
-import * as privateMessageModules from 'api/helpers/private-messages'
-import * as admin from 'firebase-admin'
-import {AuthedUser} from 'api/helpers/endpoint'
 
 jest.mock('shared/supabase/init')
 jest.mock('common/util/array')

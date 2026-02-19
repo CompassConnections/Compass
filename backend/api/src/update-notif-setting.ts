@@ -1,7 +1,8 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {updatePrivateUser} from 'shared/supabase/users'
-import {type APIHandler} from './helpers/endpoint'
 import {broadcastUpdatedPrivateUser} from 'shared/websockets/helpers'
+
+import {type APIHandler} from './helpers/endpoint'
 
 export const updateNotifSettings: APIHandler<'update-notif-settings'> = async (
   {type, medium, enabled},

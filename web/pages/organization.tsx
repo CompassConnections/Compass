@@ -1,8 +1,8 @@
-import {PageBase} from 'web/components/page-base'
 import {GeneralButton} from 'web/components/buttons/general-button'
+import {Row} from 'web/components/layout/row'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {Row} from 'web/components/layout/row'
 
 function Section({
   title,

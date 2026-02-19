@@ -1,7 +1,7 @@
 import {MoonIcon, SunIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import {useTheme} from 'web/hooks/use-theme'
 import {Row} from 'web/components/layout/row'
+import {useTheme} from 'web/hooks/use-theme'
 import {useT} from 'web/lib/locale'
 
 export default function ThemeIcon(props: {className?: string}) {

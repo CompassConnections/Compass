@@ -1,6 +1,6 @@
+import {Button} from 'web/components/buttons/button'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {Button} from 'web/components/buttons/button'
 import {useT} from 'web/lib/locale'
 
 export default function DeleteAccountPage() {

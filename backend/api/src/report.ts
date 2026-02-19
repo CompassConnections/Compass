@@ -1,10 +1,11 @@
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {tryCatch} from 'common/util/try-catch'
-import {insert} from 'shared/supabase/utils'
 import {sendDiscordMessage} from 'common/discord/core'
-import {Row} from 'common/supabase/utils'
 import {DOMAIN} from 'common/envs/constants'
+import {Row} from 'common/supabase/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 // abusable: people can report the wrong person, that didn't write the comment
 // but in practice we check it manually and nothing bad happens to them automatically

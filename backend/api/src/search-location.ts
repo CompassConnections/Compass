@@ -1,5 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {geodbFetch} from 'common/geodb'
+
+import {APIHandler} from './helpers/endpoint'
 
 export const searchLocation: APIHandler<'search-location'> = async (body) => {
   const {term, limit} = body

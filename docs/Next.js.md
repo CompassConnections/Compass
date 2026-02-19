@@ -55,17 +55,17 @@ React re-renders a component **whenever its state or props change**. Hooks don�
 ### React re-renders when:
 
 1. **A state updater runs**
-    - `setState(...)` from `useState`
-    - `dispatch(...)` from `useReducer`
+   - `setState(...)` from `useState`
+   - `dispatch(...)` from `useReducer`
 2. **Parent props change**
-    - Any parent re-render that produces new props for the child
+   - Any parent re-render that produces new props for the child
 3. **Context value changes**
-    - When a context provider updates its value, all consumers re-render
+   - When a context provider updates its value, all consumers re-render
 4. **External stores change** (in React 18+ “use sync external store” pattern)
-    - `useSyncExternalStore`
-    - Custom store hooks subscribing to something (auth store, Zustand, Redux, etc.)
+   - `useSyncExternalStore`
+   - Custom store hooks subscribing to something (auth store, Zustand, Redux, etc.)
 5. **Server → Client hydration mismatch forces a re-render**
-    - Rare; usually an error condition
+   - Rare; usually an error condition
 
 Re-rendering **does NOT happen** simply because:
 
@@ -278,10 +278,10 @@ export async function getServerSideProps(context) { ... }
 - Runs **on the server for every request**.
 - Provides props to the page component.
 - Has access to:
-    - database
-    - filesystem
-    - environment variables
-    - cookies, headers, auth context
+  - database
+  - filesystem
+  - environment variables
+  - cookies, headers, auth context
 
 ### What it implies:
 
@@ -420,9 +420,9 @@ Fallback generation effectively behaves like **ISR** for pages not pre-rendered.
    Reduces bundle size and avoids unnecessary hydration.
 2. **Use Client Components** only where interaction happens (buttons, forms, animations, local state).
 3. **Choose a rendering model based on data volatility**:
-    - Rarely changing: SSG
-    - Somewhat changing and OK with slightly stale: ISR
-    - Must always be fresh or personalized: SSR
+   - Rarely changing: SSG
+   - Somewhat changing and OK with slightly stale: ISR
+   - Must always be fresh or personalized: SSR
 4. **Remember:** Hydration cost scales with the amount of Client Components. Keep them narrow.
 5. **Consider caching**:  
    Next.js can automatically cache server component results; knowing what is cached impacts performance heavily.

@@ -1,10 +1,10 @@
-import {Row, run} from 'common/supabase/utils'
-import {db} from 'web/lib/supabase/db'
-import {filterKeys} from 'web/components/questions-form'
-import {track} from 'web/lib/service/analytics'
-import {removeNullOrUndefinedProps} from 'common/util/object'
 import {FilterFields} from 'common/filters'
+import {Row, run} from 'common/supabase/utils'
+import {removeNullOrUndefinedProps} from 'common/util/object'
+import {filterKeys} from 'web/components/questions-form'
 import {api} from 'web/lib/api'
+import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
 
 export const getUserBookmarkedSearches = async (userId: string) => {
   const {data} = await run(

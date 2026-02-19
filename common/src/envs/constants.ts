@@ -1,5 +1,3 @@
-import {DEV_CONFIG} from './dev'
-import {PROD_CONFIG} from './prod'
 import {isProd} from 'common/envs/is-prod'
 import {
   HOSTING_ENV,
@@ -7,6 +5,9 @@ import {
   IS_LOCAL_ANDROID,
   IS_WEBVIEW_DEV_PHONE,
 } from 'common/hosting/constants'
+
+import {DEV_CONFIG} from './dev'
+import {PROD_CONFIG} from './prod'
 
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240

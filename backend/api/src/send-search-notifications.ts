@@ -1,10 +1,10 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {from, renderSql, select} from 'shared/supabase/sql-builder'
 import {loadProfiles, profileQueryType} from 'api/get-profiles'
+import {MatchesByUserType} from 'common/profiles/bookmarked_searches'
 import {Row} from 'common/supabase/utils'
 import {sendSearchAlertsEmail} from 'email/functions/helpers'
-import {MatchesByUserType} from 'common/profiles/bookmarked_searches'
 import {keyBy} from 'lodash'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {from, renderSql, select} from 'shared/supabase/sql-builder'
 
 export function convertSearchRow(row: any): any {
   return row

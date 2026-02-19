@@ -1,5 +1,5 @@
-import {createContext, useContext, useEffect, useState} from 'react'
 import {defaultLocale} from 'common/constants'
+import {createContext, useContext, useEffect, useState} from 'react'
 
 export type I18nContextType = {
   locale: string

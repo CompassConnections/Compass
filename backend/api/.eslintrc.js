@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['lodash', 'unused-imports'],
+  plugins: ['lodash', 'unused-imports', 'simple-import-sort'],
   extends: ['eslint:recommended'],
   ignorePatterns: ['dist', 'lib', 'coverage'],
   env: {
@@ -37,5 +37,7 @@ module.exports = {
   rules: {
     'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],
     'lodash/import-scope': [2, 'member'],
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
   },
 }

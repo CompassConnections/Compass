@@ -1,7 +1,7 @@
-import {sqlMatch} from 'common/test-utils'
 import {getUser} from 'api/get-user'
-import * as supabaseInit from 'shared/supabase/init'
 import {toUserAPIResponse} from 'common/api/user-types'
+import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
 jest.mock('common/supabase/users')

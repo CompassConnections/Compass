@@ -1,11 +1,11 @@
 import clsx from 'clsx'
-import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {FilterFields} from 'common/filters'
 import {OptionTableKey} from 'common/profiles/constants'
-import {useLocale, useT} from 'web/lib/locale'
-import {useChoices} from 'web/hooks/use-choices'
 import {invert} from 'lodash'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {useChoices} from 'web/hooks/use-choices'
+import {useLocale, useT} from 'web/lib/locale'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
 export function InterestFilterText(props: {
   options: string[] | undefined

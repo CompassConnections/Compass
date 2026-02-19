@@ -1,7 +1,7 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {getUser, log} from 'shared/utils'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {millisToTs} from 'common/supabase/utils'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {getUser, log} from 'shared/utils'
 
 export const updatePrivateUserMessageChannel: APIHandler<
   'update-private-user-message-channel'

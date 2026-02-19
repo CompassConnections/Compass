@@ -1,6 +1,6 @@
-import {sqlMatch} from 'common/test-utils'
 import {AuthedUser} from 'api/helpers/endpoint'
 import {starProfile} from 'api/star-profile'
+import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUtils from 'shared/supabase/utils'

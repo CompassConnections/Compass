@@ -1,7 +1,7 @@
 import {SecretManagerServiceClient} from '@google-cloud/secret-manager'
-import {zip} from 'lodash'
 import {refreshConfig} from 'common/envs/prod'
 import {IS_LOCAL} from 'common/hosting/constants'
+import {zip} from 'lodash'
 
 // List of secrets that are available to backend (api, functions, scripts, etc.)
 // Edit them at:

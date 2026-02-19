@@ -4,14 +4,14 @@ jest.mock('common/util/try-catch')
 jest.mock('shared/profiles/parse-photos')
 jest.mock('shared/supabase/users')
 
-import {updateProfile} from 'api/update-profile'
 import {AuthedUser} from 'api/helpers/endpoint'
-import * as supabaseInit from 'shared/supabase/init'
-import * as supabaseUtils from 'shared/supabase/utils'
-import * as supabaseUsers from 'shared/supabase/users'
+import {updateProfile} from 'api/update-profile'
+import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
-import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUsers from 'shared/supabase/users'
+import * as supabaseUtils from 'shared/supabase/utils'
 
 describe('updateProfiles', () => {
   let mockPg: any

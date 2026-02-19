@@ -1,6 +1,7 @@
-import {keyBy, sumBy} from 'lodash'
 import {ProfileRow} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
+import {keyBy, sumBy} from 'lodash'
+
 import {
   areAgeCompatible,
   areLocationCompatible,

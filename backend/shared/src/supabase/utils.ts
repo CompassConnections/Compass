@@ -1,6 +1,7 @@
-import {sortBy} from 'lodash'
-import {pgp, SupabaseDirectClient} from './init'
 import {Column, DataFor, Row, TableName, Tables} from 'common/supabase/utils'
+import {sortBy} from 'lodash'
+
+import {pgp, SupabaseDirectClient} from './init'
 
 export async function insert<T extends TableName, ColumnValues extends Tables[T]['Insert']>(
   db: SupabaseDirectClient,

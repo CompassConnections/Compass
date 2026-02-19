@@ -1,9 +1,9 @@
 import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {richTextToString} from 'common/util/parse'
+import {HOUR_MS, MINUTE_MS} from 'common/util/time'
+import {forEach, last, uniq} from 'lodash'
 import {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from 'react'
 import {useIsVisible} from 'web/hooks/use-is-visible'
-import {forEach, last, uniq} from 'lodash'
-import {HOUR_MS, MINUTE_MS} from 'common/util/time'
-import {richTextToString} from 'common/util/parse'
 
 // export const getMessagesKey = (messages: ChatMessage[] | undefined) => {
 //   return messages

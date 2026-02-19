@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import clsx from 'clsx'
-import {Row} from 'web/components/layout/row'
-import FavIcon from 'web/components/FavIcon'
 import {isProd} from 'common/envs/is-prod'
+import Link from 'next/link'
+import FavIcon from 'web/components/FavIcon'
+import {Row} from 'web/components/layout/row'
 
 export default function SiteLogo(props: {noLink?: boolean; className?: string}) {
   const {noLink, className} = props

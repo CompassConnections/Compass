@@ -1,6 +1,6 @@
-import {connectStorageEmulator, getStorage} from 'firebase/storage'
-import {getApp, getApps, initializeApp} from 'firebase/app'
 import {FIREBASE_CONFIG, IS_FIREBASE_EMULATOR} from 'common/envs/constants'
+import {getApp, getApps, initializeApp} from 'firebase/app'
+import {connectStorageEmulator, getStorage} from 'firebase/storage'
 
 // Initialize Firebase
 export const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG)

@@ -1,13 +1,15 @@
 import 'tsconfig-paths/register'
-import * as admin from 'firebase-admin'
-import {initAdmin} from 'shared/init-admin'
-import {loadSecretsToEnv} from 'common/secrets'
-import {log} from 'shared/utils'
+
 import {IS_LOCAL} from 'common/hosting/constants'
-import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
-import {listen as webSocketListen} from 'shared/websockets/server'
-import {app} from './app'
+import {loadSecretsToEnv} from 'common/secrets'
+import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
+import {initAdmin} from 'shared/init-admin'
+import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
+import {log} from 'shared/utils'
+import {listen as webSocketListen} from 'shared/websockets/server'
+
+import {app} from './app'
 
 log('Api server starting up....')
 

@@ -1,6 +1,7 @@
 import {Switch} from '@headlessui/react'
 import clsx from 'clsx'
 import {Tooltip} from 'web/components/widgets/tooltip'
+
 import ShortToggle, {ToggleColorMode} from './widgets/short-toggle'
 
 export const SwitchSetting = (props: {

@@ -1,8 +1,8 @@
-import {track} from 'web/lib/service/analytics'
-import {api} from 'web/lib/api'
-import {firebaseLogout} from 'web/lib/firebase/users'
 import posthog from 'posthog-js'
 import {clearUserCookie} from 'web/components/auth-context'
+import {api} from 'web/lib/api'
+import {firebaseLogout} from 'web/lib/firebase/users'
+import {track} from 'web/lib/service/analytics'
 
 export async function deleteAccount() {
   track('delete account')

@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import * as RxSlider from '@radix-ui/react-slider'
+import clsx from 'clsx'
 import {ReactNode, useEffect, useState} from 'react'
 
 const colors = {

@@ -13,17 +13,17 @@ globs:
 ## Project Structure
 
 - next.js react tailwind frontend `/web`
-    - broken down into pages, components, hooks, lib
+  - broken down into pages, components, hooks, lib
 - express node api server `/backend/api`
 - one off scripts, like migrations `/backend/scripts`
 - supabase postgres. schema in `/backend/supabase`
-    - supabase-generated types in `/backend/supabase/schema.ts`
+  - supabase-generated types in `/backend/supabase/schema.ts`
 - files shared between backend directories `/backend/shared`
-    - anything in `/backend` can import from `shared`, but not vice versa
+  - anything in `/backend` can import from `shared`, but not vice versa
 - files shared between the frontend and backend in `/common`
-    - `/common` has lots of type definitions for our data structures, like User. It also contains many useful utility
-      functions. We try not to add package dependencies to common. `/web` and `/backend` are allowed to import from
-      `/common`, but not vice versa.
+  - `/common` has lots of type definitions for our data structures, like User. It also contains many useful utility
+    functions. We try not to add package dependencies to common. `/web` and `/backend` are allowed to import from
+    `/common`, but not vice versa.
 
 ## Deployment
 
@@ -528,28 +528,28 @@ How we apply it here
 This project uses three complementary test types. Use the right level for the job:
 
 - Unit tests
-    - Purpose: Verify a single function/module in isolation; fast, deterministic.
-    - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
-      etc.).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
+  - Purpose: Verify a single function/module in isolation; fast, deterministic.
+  - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
+    etc.).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
 
 - Integration tests
-    - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
-      spinning up the full app.
-    - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
-      component trees with providers.
+  - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
+    spinning up the full app.
+  - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
+    component trees with providers.
 
 - End-to-End (E2E) tests
-    - Purpose: Validate real user flows across the full stack.
-    - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
-    - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
-    - Naming: `*.e2e.spec.ts`.
-    - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
+  - Purpose: Validate real user flows across the full stack.
+  - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
+  - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
+  - Naming: `*.e2e.spec.ts`.
+  - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
 
 Quick commands
 
@@ -619,9 +619,9 @@ web/
 - Unit and integration tests live in each package’s `tests` folder and are executed by Jest via the root
   `jest.config.js` projects array.
 - Naming:
-    - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
-    - Integration: `*.integration.test.ts`
-    - E2E (Playwright): `*.e2e.spec.ts`
+  - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
+  - Integration: `*.integration.test.ts`
+  - E2E (Playwright): `*.e2e.spec.ts`
 
 ### Best Practices
 
@@ -663,14 +663,14 @@ yarn test path/to/test.unit.test.ts
 #### Test Standards
 
 - Test file names should convey what to expect
-    - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
-        - filename.unit.test.ts
-        - filename.integration.test.ts
+  - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
+    - filename.unit.test.ts
+    - filename.integration.test.ts
 - Group related tests using describe blocks
 - Use descriptive test names that explain the expected behavior.
-    - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
-        - should `ban user` [with matching user id]
-        - should `ban user` [with matching user name]
+  - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
+    - should `ban user` [with matching user id]
+    - should `ban user` [with matching user name]
 
 #### Mocking
 
@@ -859,7 +859,7 @@ When mocking modules, you can use `jest.spyOn()` instead of `jest.mock()`.
 - `jest.mock()` mocks the entire module, which is ideal for external dependencies like Axios or database clients.
 - `jest.spyOn()` mocks specific methods while keeping the real implementation for others. It can also be used to observe
   how a real method is called without changing its behavior.
-    - also replaces the need to have `jest.mock()` at the top of the file.
+  - also replaces the need to have `jest.mock()` at the top of the file.
 
 ```tsx
 //testFile.unit.test.ts

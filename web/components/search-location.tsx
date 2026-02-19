@@ -1,9 +1,9 @@
 import clsx from 'clsx'
+import {OriginLocation} from 'common/filters'
+import {ProfileRow} from 'common/profiles/profile'
 import {useEffect, useRef, useState} from 'react'
 import {api} from 'web/lib/api'
 import {countryCodeToFlag} from 'web/lib/util/location'
-import {ProfileRow} from 'common/profiles/profile'
-import {OriginLocation} from 'common/filters'
 
 function isDigitString(value: string): boolean {
   return /^\d+$/.test(value)

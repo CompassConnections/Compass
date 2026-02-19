@@ -1,11 +1,11 @@
 jest.mock('shared/supabase/init')
 jest.mock('common/util/try-catch')
 
-import {sqlMatch} from 'common/test-utils'
 import {getOptions} from 'api/get-options'
-import * as supabaseInit from 'shared/supabase/init'
-import {tryCatch} from 'common/util/try-catch'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('getOptions', () => {
   let mockPg = {} as any

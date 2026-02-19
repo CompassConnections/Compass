@@ -1,22 +1,21 @@
 'use client'
 
-import React, {Suspense, useEffect, useState} from 'react'
+import {getProfileRow} from 'common/profiles/profile'
+import {createUserWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {signupThenMaybeRedirectToSignup} from 'web/lib/util/signup'
-import {useT} from 'web/lib/locale'
-
-import {createUserWithEmailAndPassword} from 'firebase/auth'
-import {auth} from 'web/lib/firebase/users'
+import Router from 'next/router'
+import React, {Suspense, useEffect, useState} from 'react'
+import toast from 'react-hot-toast'
+import {GoogleButton} from 'web/components/buttons/sign-up-button'
 import FavIcon from 'web/components/FavIcon'
 import {PageBase} from 'web/components/page-base'
-import {getProfileRow} from 'common/profiles/profile'
-import {db} from 'web/lib/supabase/db'
-import Router from 'next/router'
-import {useUser} from 'web/hooks/use-user'
-import {GoogleButton} from 'web/components/buttons/sign-up-button'
 import {SEO} from 'web/components/SEO'
-import toast from 'react-hot-toast'
+import {useUser} from 'web/hooks/use-user'
+import {auth} from 'web/lib/firebase/users'
+import {useT} from 'web/lib/locale'
+import {db} from 'web/lib/supabase/db'
+import {signupThenMaybeRedirectToSignup} from 'web/lib/util/signup'
 
 export default function RegisterPage() {
   return (

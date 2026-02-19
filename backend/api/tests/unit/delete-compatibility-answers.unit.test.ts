@@ -1,11 +1,11 @@
 jest.mock('shared/supabase/init')
 jest.mock('shared/compatibility/compute-scores')
 
-import {sqlMatch} from 'common/test-utils'
 import {deleteCompatibilityAnswer} from 'api/delete-compatibility-answer'
-import * as supabaseInit from 'shared/supabase/init'
-import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {sqlMatch} from 'common/test-utils'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('deleteCompatibilityAnswers', () => {
   let mockPg = {} as any

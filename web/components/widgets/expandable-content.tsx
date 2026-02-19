@@ -3,12 +3,13 @@ import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
 import {MouseEventHandler, ReactNode, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
+import {SHOW_COLLAPSE_TRESHOLD} from 'web/components/widgets/collapsible-content'
+import {useSafeLayoutEffect} from 'web/hooks/use-safe-layout-effect'
+
 import {Col} from '../layout/col'
 import {Modal} from '../layout/modal'
 import {Row} from '../layout/row'
 import {Content} from './editor'
-import {useSafeLayoutEffect} from 'web/hooks/use-safe-layout-effect'
-import {SHOW_COLLAPSE_TRESHOLD} from 'web/components/widgets/collapsible-content'
 
 export function ExpandButton(props: {
   onClick?: MouseEventHandler<any> | undefined

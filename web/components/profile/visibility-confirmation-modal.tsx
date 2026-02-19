@@ -1,8 +1,8 @@
-import {Modal} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
-import {Button} from 'web/components/buttons/button'
 import {EyeIcon, LockClosedIcon} from '@heroicons/react/outline'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 export function VisibilityConfirmationModal(props: {

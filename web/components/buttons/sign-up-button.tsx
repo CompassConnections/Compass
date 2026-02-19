@@ -1,12 +1,11 @@
 import clsx from 'clsx'
-
-import {firebaseLogin} from 'web/lib/firebase/users'
-import {Button} from './button'
-import {Col} from '../layout/col'
-import {Row} from 'web/components/layout/row'
-
 import {ButtonHTMLAttributes} from 'react'
 import {FcGoogle} from 'react-icons/fc'
+import {Row} from 'web/components/layout/row'
+import {firebaseLogin} from 'web/lib/firebase/users'
+
+import {Col} from '../layout/col'
+import {Button} from './button'
 
 export const SidebarSignUpButton = (props: {className?: string}) => {
   const {className} = props

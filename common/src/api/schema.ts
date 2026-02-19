@@ -6,18 +6,19 @@ import {
   zBoolean,
 } from 'common/api/zod-types'
 import {PrivateChatMessage} from 'common/chat-message'
+import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
+import {notification_preference} from 'common/user-notification-preferences'
+import {arrify} from 'common/util/array'
 import {z} from 'zod'
+
 import {LikeData, ShipData} from './profile-types'
 import {FullUser} from './user-types'
-import {PrivateMessageChannel} from 'common/supabase/private-messages'
-import {Notification} from 'common/notifications'
-import {arrify} from 'common/util/array'
-import {notification_preference} from 'common/user-notification-preferences'
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data

@@ -1,8 +1,8 @@
 import {Switch} from '@headlessui/react'
-import {useT} from 'web/lib/locale'
-import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import clsx from 'clsx'
 import {Row} from 'web/components/layout/row'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
+import {useT} from 'web/lib/locale'
 
 export default function MeasurementSystemToggle(props: {className?: string}) {
   const {className} = props

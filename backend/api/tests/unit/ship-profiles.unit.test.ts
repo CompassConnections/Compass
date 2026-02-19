@@ -3,13 +3,13 @@ jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/utils')
 jest.mock('shared/create-profile-notification')
 
-import {shipProfiles} from 'api/ship-profiles'
-import * as supabaseInit from 'shared/supabase/init'
-import {tryCatch} from 'common/util/try-catch'
-import * as supabaseUtils from 'shared/supabase/utils'
-import * as profileNotificationModules from 'shared/create-profile-notification'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {shipProfiles} from 'api/ship-profiles'
 import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
+import * as profileNotificationModules from 'shared/create-profile-notification'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUtils from 'shared/supabase/utils'
 
 describe('shipProfiles', () => {
   let mockPg = {} as any

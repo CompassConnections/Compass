@@ -1,13 +1,14 @@
-import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
+import {hrtime} from 'node:process'
+
 import {getCompatibilityScore, hasAnsweredQuestions} from 'common/profiles/compatibility-score'
+import {groupBy} from 'lodash'
 import {
   getAnswersForUser,
   getCompatibilityAnswers,
   getGenderCompatibleProfiles,
   getProfile,
 } from 'shared/profiles/supabase'
-import {groupBy} from 'lodash'
-import {hrtime} from 'node:process'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
 // Canonicalize pair ordering (user_id_1 < user_id_2 lexicographically)
 function canonicalPair(a: string, b: string) {

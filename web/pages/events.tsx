@@ -1,19 +1,19 @@
 'use client'
 
-import {useState} from 'react'
-import {Event, useEvents} from 'web/hooks/use-events'
-import {useUser} from 'web/hooks/use-user'
-import {EventsList} from 'web/components/events/events-list'
-import {CreateEventModal} from 'web/components/events/create-event-modal'
-import {api} from 'web/lib/api'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {APIError} from 'common/api/utils'
+import {useState} from 'react'
 import toast from 'react-hot-toast'
-import {PageBase} from 'web/components/page-base'
-import {useT} from 'web/lib/locale'
 import {Button} from 'web/components/buttons/button'
+import {CreateEventModal} from 'web/components/events/create-event-modal'
+import {EventsList} from 'web/components/events/events-list'
 import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {Event, useEvents} from 'web/hooks/use-events'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {useT} from 'web/lib/locale'
 
 export default function EventsPage() {
   const user = useUser()

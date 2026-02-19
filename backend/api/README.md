@@ -122,7 +122,7 @@ Since Vercel manages your domain (`compassmeet.com`):
 3. Add an **A record** for your API subdomain:
 
 | Type | Name | Value        | TTL   |
-|------|------|--------------|-------|
+| ---- | ---- | ------------ | ----- |
 | A    | api  | 34.123.45.67 | 600 s |
 
 - `Name` is just the subdomain: `api` → `api.compassmeet.com`.

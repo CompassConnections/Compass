@@ -1,4 +1,5 @@
 import {PencilIcon, TrashIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
 import {
   getAnswerCompatibility,
   getScoredAnswerCompatibility,
@@ -6,21 +7,32 @@ import {
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
+import {buildArray} from 'common/util/array'
 import {keyBy, partition, sortBy} from 'lodash'
+import {useEffect, useState} from 'react'
+import toast from 'react-hot-toast'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
+import {Linkify} from 'web/components/widgets/linkify'
+import {Pagination} from 'web/components/widgets/pagination'
+import {shortenName} from 'web/components/widgets/user-link'
+import {useIsLooking} from 'web/hooks/use-is-looking'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useProfile} from 'web/hooks/use-profile'
+import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {
   QuestionWithCountType,
   useCompatibilityQuestionsWithAnswerCount,
   useUserCompatibilityAnswers,
 } from 'web/hooks/use-questions'
-import {useEffect, useState} from 'react'
-import DropdownMenu from 'web/components/comments/dropdown-menu'
-import {Col} from 'web/components/layout/col'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {Row} from 'web/components/layout/row'
-import {Linkify} from 'web/components/widgets/linkify'
-import {Pagination} from 'web/components/widgets/pagination'
+import {useUser} from 'web/hooks/use-user'
+import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
+
+import {DropdownButton} from '../filters/desktop-filters'
 import {Subtitle} from '../widgets/profile-subtitle'
 import {AddCompatibilityQuestionButton} from './add-compatibility-question-button'
 import {
@@ -37,18 +49,7 @@ import {
   IMPORTANCE_DISPLAY_COLORS,
   submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
-import clsx from 'clsx'
-import {shortenName} from 'web/components/widgets/user-link'
 import {PreferredList, PreferredListNoComparison} from './compatibility-question-preferred-list'
-import {useUser} from 'web/hooks/use-user'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {useIsLooking} from 'web/hooks/use-is-looking'
-import {DropdownButton} from '../filters/desktop-filters'
-import {buildArray} from 'common/util/array'
-import toast from 'react-hot-toast'
-import {useCompatibleProfiles} from 'web/hooks/use-profiles'
-import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
-import {useT} from 'web/lib/locale'
 
 const NUM_QUESTIONS_TO_SHOW = 8
 

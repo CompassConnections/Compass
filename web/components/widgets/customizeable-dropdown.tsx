@@ -1,9 +1,10 @@
 import {Popover} from '@headlessui/react'
 import clsx from 'clsx'
-import {AnimationOrNothing} from '../comments/dropdown-menu'
 import {useState} from 'react'
 import {usePopper} from 'react-popper'
 import {NewBadge} from 'web/components/new-badge'
+
+import {AnimationOrNothing} from '../comments/dropdown-menu'
 
 export function CustomizeableDropdown(props: {
   menuWidth?: string

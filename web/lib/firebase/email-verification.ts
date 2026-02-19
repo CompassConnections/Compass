@@ -1,5 +1,5 @@
-import toast from 'react-hot-toast'
 import {sendEmailVerification, User} from 'firebase/auth'
+import toast from 'react-hot-toast'
 
 export const sendVerificationEmail = async (user: User | null | undefined, t: any) => {
   // if (!privateUser?.email) {

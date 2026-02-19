@@ -6,12 +6,12 @@ jest.mock('shared/analytics')
 jest.mock('shared/utils')
 
 import {banUser} from 'api/ban-user'
-import * as supabaseInit from 'shared/supabase/init'
-import {throwErrorIfNotMod} from 'shared/helpers/auth'
-import * as constants from 'common/envs/constants'
-import * as supabaseUsers from 'shared/supabase/users'
-import * as sharedAnalytics from 'shared/analytics'
 import {AuthedUser} from 'api/helpers/endpoint'
+import * as constants from 'common/envs/constants'
+import * as sharedAnalytics from 'shared/analytics'
+import {throwErrorIfNotMod} from 'shared/helpers/auth'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUsers from 'shared/supabase/users'
 
 describe('banUser', () => {
   const mockPg = {} as any

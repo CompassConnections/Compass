@@ -1,5 +1,5 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {OPTION_TABLES, OptionTableKey} from 'common/profiles/constants'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 interface CacheEntry {
   data: Record<OptionTableKey, Record<string, string>>

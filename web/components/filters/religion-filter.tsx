@@ -1,13 +1,12 @@
 import clsx from 'clsx'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
-
-import {FilterFields} from 'common/filters'
 import {RELIGION_CHOICES} from 'common/choices'
+import {FilterFields} from 'common/filters'
+import {toKey} from 'common/parsing'
+import {getSortedOptions} from 'common/util/sorting'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {useT} from 'web/lib/locale'
 import {convertReligionTypes} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {getSortedOptions} from 'common/util/sorting'
-import {useT} from 'web/lib/locale'
-import {toKey} from 'common/parsing'
 
 export function ReligionFilterText(props: {
   options: string[] | undefined

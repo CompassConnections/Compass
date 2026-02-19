@@ -1,11 +1,11 @@
-import {sqlMatch} from 'common/test-utils'
-import {searchUsers} from 'api/search-users'
-import * as supabaseInit from 'shared/supabase/init'
-import * as searchHelpers from 'shared/helpers/search'
-import * as sqlBuilderModules from 'shared/supabase/sql-builder'
-import * as supabaseUsers from 'common/supabase/users'
-import {toUserAPIResponse} from 'common/api/user-types'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {searchUsers} from 'api/search-users'
+import {toUserAPIResponse} from 'common/api/user-types'
+import * as supabaseUsers from 'common/supabase/users'
+import {sqlMatch} from 'common/test-utils'
+import * as searchHelpers from 'shared/helpers/search'
+import * as supabaseInit from 'shared/supabase/init'
+import * as sqlBuilderModules from 'shared/supabase/sql-builder'
 
 jest.mock('shared/supabase/init')
 jest.mock('shared/helpers/search')

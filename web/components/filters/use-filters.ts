@@ -1,16 +1,16 @@
+import {MAX_INT, MIN_INT} from 'common/constants'
+import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
+import {logger} from 'common/logging'
 import {Profile} from 'common/profiles/profile'
-import {useIsLooking} from 'web/hooks/use-is-looking'
-import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {useCallback, useEffect} from 'react'
-import {debounce, isEqual} from 'lodash'
 import {
   wantsKidsDatabase,
   wantsKidsDatabaseToWantsKidsFilter,
   wantsKidsToHasKidsFilter,
 } from 'common/wants-kids'
-import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
-import {MAX_INT, MIN_INT} from 'common/constants'
-import {logger} from 'common/logging'
+import {debounce, isEqual} from 'lodash'
+import {useCallback, useEffect} from 'react'
+import {useIsLooking} from 'web/hooks/use-is-looking'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 
 export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()

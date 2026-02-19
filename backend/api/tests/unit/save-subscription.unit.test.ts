@@ -2,8 +2,8 @@ jest.mock('shared/supabase/init')
 
 import {AuthedUser} from 'api/helpers/endpoint'
 import {saveSubscription} from 'api/save-subscription'
-import * as supabaseInit from 'shared/supabase/init'
 import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('saveSubscription', () => {
   let mockPg = {} as any
@@ -101,7 +101,7 @@ describe('saveSubscription', () => {
 
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockExists)
       ;(mockPg.none as jest.Mock).mockRejectedValue(new Error('Saving error'))
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      const _errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       expect(saveSubscription(mockBody, mockAuth, mockReq)).rejects.toThrow(
         'Failed to save subscription',

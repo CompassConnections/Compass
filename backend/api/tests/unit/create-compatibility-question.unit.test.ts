@@ -4,11 +4,11 @@ jest.mock('shared/supabase/utils')
 jest.mock('common/util/try-catch')
 
 import {createCompatibilityQuestion} from 'api/create-compatibility-question'
-import * as supabaseInit from 'shared/supabase/init'
-import * as shareUtils from 'shared/utils'
-import {tryCatch} from 'common/util/try-catch'
-import * as supabaseUtils from 'shared/supabase/utils'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUtils from 'shared/supabase/utils'
+import * as shareUtils from 'shared/utils'
 
 describe('createCompatibilityQuestion', () => {
   const mockPg = {} as any

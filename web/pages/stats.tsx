@@ -1,12 +1,12 @@
-import {PageBase} from 'web/components/page-base'
-import ChartMembers from 'web/components/widgets/charts'
-import {getCount} from 'web/lib/supabase/users'
-import {useEffect, useState} from 'react'
-import StatBox from 'web/components/widgets/stat-box'
 import clsx from 'clsx'
+import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import ChartMembers from 'web/components/widgets/charts'
+import StatBox from 'web/components/widgets/stat-box'
 import {useT} from 'web/lib/locale'
+import {getCount} from 'web/lib/supabase/users'
 
 export default function Stats() {
   const t = useT()

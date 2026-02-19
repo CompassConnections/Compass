@@ -1,6 +1,7 @@
 import {Extensions} from '@tiptap/core'
 import {NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
 import clsx from 'clsx'
+
 import {getField} from './utils'
 
 export const nodeViewMiddleware = (extensions: Extensions) => {

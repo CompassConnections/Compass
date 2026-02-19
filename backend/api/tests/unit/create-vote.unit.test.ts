@@ -4,11 +4,11 @@ jest.mock('shared/supabase/utils')
 jest.mock('common/util/try-catch')
 
 import {createVote} from 'api/create-vote'
-import * as supabaseInit from 'shared/supabase/init'
-import * as sharedUtils from 'shared/utils'
-import * as supabaseUtils from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {tryCatch} from 'common/util/try-catch'
+import * as supabaseInit from 'shared/supabase/init'
+import * as supabaseUtils from 'shared/supabase/utils'
+import * as sharedUtils from 'shared/utils'
 
 describe('createVote', () => {
   beforeEach(() => {

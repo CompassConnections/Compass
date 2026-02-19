@@ -1,6 +1,6 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const cancelRsvp: APIHandler<'cancel-rsvp'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()

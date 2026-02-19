@@ -1,9 +1,9 @@
 jest.mock('shared/supabase/init')
 
-import {markAllNotifsRead} from 'api/mark-all-notifications-read'
 import {AuthedUser} from 'api/helpers/endpoint'
-import * as supabaseInit from 'shared/supabase/init'
+import {markAllNotifsRead} from 'api/mark-all-notifications-read'
 import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('markAllNotifsRead', () => {
   let mockPg = {} as any

@@ -1,9 +1,9 @@
 import {ImageResponse} from '@vercel/og'
 import {ImageResponseOptions} from '@vercel/og/dist/types'
-import {NextRequest} from 'next/server'
-import {classToTw} from 'web/components/og/utils'
 import {convertGender, Gender} from 'common/gender'
 import {ogProps} from 'common/profiles/og-image'
+import {NextRequest} from 'next/server'
+import {classToTw} from 'web/components/og/utils'
 
 export const config = {runtime: 'edge'}
 

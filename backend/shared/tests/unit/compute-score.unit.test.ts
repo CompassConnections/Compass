@@ -1,8 +1,8 @@
-import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
-import * as supabaseInit from 'shared/supabase/init'
-import * as profilesSupabaseModules from 'shared/profiles/supabase'
 import * as compatibilityScoreModules from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import * as profilesSupabaseModules from 'shared/profiles/supabase'
+import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/profiles/supabase')
 jest.mock('shared/supabase/init')

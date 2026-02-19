@@ -1,7 +1,7 @@
+import Link from 'next/link'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useLocale, useT} from 'web/lib/locale'
-import Link from 'next/link'
 
 type PressItem = {
   id: number

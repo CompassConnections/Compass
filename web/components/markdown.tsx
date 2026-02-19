@@ -1,11 +1,11 @@
-import {PageBase} from 'web/components/page-base'
-import {Col} from 'web/components/layout/col'
-import ReactMarkdown from 'react-markdown'
-import {SEO} from 'web/components/SEO'
 import {capitalize} from 'lodash'
-import {CustomLink} from 'web/components/links'
-import {BackButton} from 'web/components/back-button'
 import {useRouter} from 'next/router'
+import ReactMarkdown from 'react-markdown'
+import {BackButton} from 'web/components/back-button'
+import {Col} from 'web/components/layout/col'
+import {CustomLink} from 'web/components/links'
+import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
 
 export const MD_PATHS = [
   'constitution',

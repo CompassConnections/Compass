@@ -1,5 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIHandler} from './helpers/endpoint'
 
 export const setLastOnlineTime: APIHandler<'set-last-online-time'> = async (_, auth) => {
   if (!auth || !auth.uid) return

@@ -1,5 +1,6 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser} from 'shared/utils'
+
 import {APIError, APIHandler} from './helpers/endpoint'
 
 export const vote: APIHandler<'vote'> = async ({voteId, choice, priority}, auth) => {

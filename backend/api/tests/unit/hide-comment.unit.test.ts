@@ -1,10 +1,10 @@
-import {sqlMatch} from 'common/test-utils'
+import {AuthedUser} from 'api/helpers/endpoint'
 import {hideComment} from 'api/hide-comment'
-import * as supabaseInit from 'shared/supabase/init'
 import * as envConsts from 'common/envs/constants'
 import {convertComment} from 'common/supabase/comment'
+import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 import * as websocketHelpers from 'shared/websockets/helpers'
-import {AuthedUser} from 'api/helpers/endpoint'
 
 jest.mock('shared/supabase/init')
 jest.mock('common/supabase/comment')

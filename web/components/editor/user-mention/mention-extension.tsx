@@ -1,5 +1,6 @@
 import Mention from '@tiptap/extension-mention'
 import {mergeAttributes} from '@tiptap/react'
+
 import {mentionSuggestion} from './mention-suggestion'
 import {UserMention} from './user-mention'
 

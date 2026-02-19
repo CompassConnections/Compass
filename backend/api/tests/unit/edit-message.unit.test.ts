@@ -2,12 +2,12 @@ jest.mock('shared/supabase/init')
 jest.mock('shared/encryption')
 jest.mock('api/helpers/private-messages')
 
-import {sqlMatch} from 'common/test-utils'
 import {editMessage} from 'api/edit-message'
-import * as supabaseInit from 'shared/supabase/init'
-import * as encryptionModules from 'shared/encryption'
-import * as messageHelpers from 'api/helpers/private-messages'
 import {AuthedUser} from 'api/helpers/endpoint'
+import * as messageHelpers from 'api/helpers/private-messages'
+import {sqlMatch} from 'common/test-utils'
+import * as encryptionModules from 'shared/encryption'
+import * as supabaseInit from 'shared/supabase/init'
 
 describe('editMessage', () => {
   let mockPg = {} as any

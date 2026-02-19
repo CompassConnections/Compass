@@ -1,15 +1,16 @@
 import {Comment} from 'common/comment'
 import {run} from 'common/supabase/utils'
-import {db} from 'web/lib/supabase/db'
 import {useEffect, useState} from 'react'
-import {Modal} from 'web/components/layout/modal'
 import {Col} from 'web/components/layout/col'
-import {Title} from 'web/components/widgets/title'
+import {Modal} from 'web/components/layout/modal'
 import {Content} from 'web/components/widgets/editor'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {formatTimeShort} from 'web/lib/util/time'
-import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
+import {Title} from 'web/components/widgets/title'
 import {useIsClient} from 'web/hooks/use-is-client'
+import {db} from 'web/lib/supabase/db'
+import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
+import {formatTimeShort} from 'web/lib/util/time'
+
 import {DateTimeTooltip} from '../widgets/datetime-tooltip'
 
 type EditHistory = Comment & {

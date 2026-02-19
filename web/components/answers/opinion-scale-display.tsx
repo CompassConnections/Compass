@@ -1,16 +1,16 @@
-import {track} from 'web/lib/service/analytics'
 import {PencilIcon} from '@heroicons/react/outline'
-import Router from 'next/router'
-
 import clsx from 'clsx'
 import {Row as rowFor} from 'common/supabase/utils'
 import {capitalize, orderBy} from 'lodash'
+import Router from 'next/router'
+import {BiTachometer} from 'react-icons/bi'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {Subtitle} from '../widgets/profile-subtitle'
-import {BiTachometer} from 'react-icons/bi'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+
+import {Subtitle} from '../widgets/profile-subtitle'
 
 export function OpinionScale(props: {
   multiChoiceAnswers: rowFor<'compatibility_answers_free'>[]

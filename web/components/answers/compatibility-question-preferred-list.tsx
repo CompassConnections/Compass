@@ -1,11 +1,11 @@
-import {QuestionWithCountType} from 'web/hooks/use-questions'
-import {Row as rowFor} from 'common/supabase/utils'
-import {Row} from 'web/components/layout/row'
-import {Col} from 'web/components/layout/col'
-import clsx from 'clsx'
-import {User} from 'common/user'
-import {shortenName} from 'web/components/widgets/user-link'
 import {CheckCircleIcon, XCircleIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
+import {Row as rowFor} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {shortenName} from 'web/components/widgets/user-link'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 
 export function PreferredList(props: {

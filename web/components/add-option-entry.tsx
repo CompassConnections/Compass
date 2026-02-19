@@ -1,11 +1,11 @@
-import {ProfileWithoutUser} from 'common/profiles/profile'
-import {OptionTableKey} from 'common/profiles/constants'
-import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
-import {colClassName, labelClassName} from 'web/pages/signup'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {OptionTableKey} from 'common/profiles/constants'
+import {ProfileWithoutUser} from 'common/profiles/profile'
 import {invert} from 'lodash'
+import {Col} from 'web/components/layout/col'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useLocale} from 'web/lib/locale'
+import {colClassName, labelClassName} from 'web/pages/signup'
 
 export function AddOptionEntry(props: {
   title?: string

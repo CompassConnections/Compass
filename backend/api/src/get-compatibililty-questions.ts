@@ -1,6 +1,6 @@
 import {type APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export function shuffle<T>(array: T[]): T[] {
   const arr = [...array] // copy to avoid mutating the original

@@ -1,13 +1,12 @@
 import clsx from 'clsx'
-import {convertPoliticalTypes} from 'web/lib/util/convert-types'
-import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
-
 import {POLITICAL_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
-import {getSortedOptions} from 'common/util/sorting'
-import {useT} from 'web/lib/locale'
 import {toKey} from 'common/parsing'
+import {getSortedOptions} from 'common/util/sorting'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {useT} from 'web/lib/locale'
+import {convertPoliticalTypes} from 'web/lib/util/convert-types'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
 export function PoliticalFilterText(props: {
   options: string[] | undefined

@@ -1,10 +1,10 @@
-import {sqlMatch} from 'common/test-utils'
-import {likeProfile} from 'api/like-profile'
-import * as supabaseInit from 'shared/supabase/init'
-import * as profileNotifiction from 'shared/create-profile-notification'
 import * as likeModules from 'api/has-free-like'
-import {tryCatch} from 'common/util/try-catch'
 import {AuthedUser} from 'api/helpers/endpoint'
+import {likeProfile} from 'api/like-profile'
+import {sqlMatch} from 'common/test-utils'
+import {tryCatch} from 'common/util/try-catch'
+import * as profileNotifiction from 'shared/create-profile-notification'
+import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
 jest.mock('shared/create-profile-notification')

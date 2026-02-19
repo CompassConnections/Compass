@@ -1,6 +1,7 @@
 import {User} from 'common/user'
 import {SupabaseDirectClient} from 'shared/supabase/init'
 import {broadcastUpdatedPrivateUser, broadcastUpdatedUser} from 'shared/websockets/helpers'
+
 import {DataUpdate, updateData} from './utils'
 
 /** only updates data column. do not use for name, username */

@@ -78,13 +78,13 @@ Example:
 - Only include if seeking romantic connections.
 
 - Examples of what to share:
-    - Love languages (giving and receiving)
-    - Timeline for relationship goals
-    - Romantic orientation and preferences
-    - Family goals (children, pets)
-    - Work-life balance and financial habits
-    - Housing situation (renting vs. owning)
-    - Comfort with dating someone with kids
+  - Love languages (giving and receiving)
+  - Timeline for relationship goals
+  - Romantic orientation and preferences
+  - Family goals (children, pets)
+  - Work-life balance and financial habits
+  - Housing situation (renting vs. owning)
+  - Comfort with dating someone with kids
 
 Example:
 

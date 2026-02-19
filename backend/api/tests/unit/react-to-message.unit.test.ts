@@ -1,8 +1,8 @@
-import {sqlMatch} from 'common/test-utils'
-import {reactToMessage} from 'api/react-to-message'
-import * as supabaseInit from 'shared/supabase/init'
-import * as messageHelpers from 'api/helpers/private-messages'
 import {AuthedUser} from 'api/helpers/endpoint'
+import * as messageHelpers from 'api/helpers/private-messages'
+import {reactToMessage} from 'api/react-to-message'
+import {sqlMatch} from 'common/test-utils'
+import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
 jest.mock('api/helpers/private-messages')
@@ -72,7 +72,7 @@ describe('reactToMessage', () => {
       ;(messageHelpers.broadcastPrivateMessages as jest.Mock).mockResolvedValue(null)
 
       const result = await reactToMessage(mockProps, mockAuth, mockReq)
-      const [sql, params] = mockPg.oneOrNone.mock.calls[0]
+      const [_sql, _params] = mockPg.oneOrNone.mock.calls[0]
       const [sql1, params1] = mockPg.none.mock.calls[0]
 
       expect(result.success).toBeTruthy()

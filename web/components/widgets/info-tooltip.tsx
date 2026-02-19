@@ -1,7 +1,8 @@
-import {InformationCircleIcon} from '@heroicons/react/outline'
-import {Tooltip} from './tooltip'
-import clsx from 'clsx'
 import {Placement} from '@floating-ui/react'
+import {InformationCircleIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
+
+import {Tooltip} from './tooltip'
 
 export function InfoTooltip(props: {
   text: string

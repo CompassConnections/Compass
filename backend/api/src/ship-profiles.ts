@@ -1,9 +1,10 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createProfileShipNotification} from 'shared/create-profile-notification'
-import {log} from 'shared/utils'
 import {tryCatch} from 'common/util/try-catch'
+import {createProfileShipNotification} from 'shared/create-profile-notification'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
+import {log} from 'shared/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => {
   const {targetUserId1, targetUserId2, remove} = props

@@ -1,10 +1,10 @@
-import {PageBase} from 'web/components/page-base'
-import {ReactNode} from 'react'
-import Link from 'next/link'
 import {discordLink, formLink, githubRepo} from 'common/constants'
+import Link from 'next/link'
+import {ReactNode} from 'react'
+import {GeneralButton} from 'web/components/buttons/general-button'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
-import {GeneralButton} from 'web/components/buttons/general-button'
 
 export const AboutBlock = (props: {text: ReactNode; title: string}) => {
   const {text, title} = props

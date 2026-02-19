@@ -5,7 +5,7 @@ module.exports = {
       version: 'detect',
     },
   },
-  plugins: ['lodash', 'unused-imports'],
+  plugins: ['lodash', 'unused-imports', 'simple-import-sort'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
@@ -37,6 +37,8 @@ module.exports = {
     'unused-imports/no-unused-imports': 'warn',
     'react-hooks/exhaustive-deps': 'off',
     'no-constant-condition': 'off',
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
   },
   ignorePatterns: ['/public/mtg/*'],
   env: {

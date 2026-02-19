@@ -1,7 +1,7 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
 
 export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()

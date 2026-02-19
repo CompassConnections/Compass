@@ -1,9 +1,9 @@
-import {PageBase} from 'web/components/page-base'
 import {Col} from 'web/components/layout/col'
+import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {useUser} from 'web/hooks/use-user'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {VoteComponent} from 'web/components/votes/vote-info'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 export default function VotePage() {

@@ -1,27 +1,28 @@
 import {PencilIcon, XIcon} from '@heroicons/react/outline'
+import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {deleteAnswer} from 'web/lib/supabase/answers'
+import {partition} from 'lodash'
 import {useState} from 'react'
+import {TbMessage} from 'react-icons/tb'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {Linkify} from 'web/components/widgets/linkify'
-import {IndividualQuestionRow} from '../questions-form'
-import {Subtitle} from '../widgets/profile-subtitle'
+import {shortenName} from 'web/components/widgets/user-link'
 import {
   QuestionWithCountType,
   useFRQuestionsWithAnswerCount,
   useUserAnswers,
 } from 'web/hooks/use-questions'
-import {TbMessage} from 'react-icons/tb'
-import {OtherProfileAnswers} from './other-profile-answers'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {partition} from 'lodash'
-import {shortenName} from 'web/components/widgets/user-link'
-import {AddQuestionButton} from './free-response-add-question'
-import {Profile} from 'common/profiles/profile'
 import {useT} from 'web/lib/locale'
+import {deleteAnswer} from 'web/lib/supabase/answers'
+
+import {IndividualQuestionRow} from '../questions-form'
+import {Subtitle} from '../widgets/profile-subtitle'
+import {AddQuestionButton} from './free-response-add-question'
+import {OtherProfileAnswers} from './other-profile-answers'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean

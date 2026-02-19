@@ -1,15 +1,15 @@
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {PrivateUser} from 'common/user'
 import {
   notification_destination_types,
   notification_preference,
   notification_preferences,
 } from 'common/user-notification-preferences'
-import {useCallback} from 'react'
 import {debounce} from 'lodash'
-import {api} from 'web/lib/api'
+import {useCallback} from 'react'
 import {MultiSelectAnswers} from 'web/components/answers/answer-compatibility-question-content'
-import {PrivateUser} from 'common/user'
 import {WithPrivateUser} from 'web/components/user/with-user'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 export const NotificationSettings = () => (

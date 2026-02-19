@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import {Fragment} from 'react'
 import Link from 'next/link'
+import {Fragment} from 'react'
+
 import {linkClass} from './site-link'
 
 // Return a JSX span, linkifying @username, and https://...

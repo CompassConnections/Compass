@@ -3,6 +3,7 @@ import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth'
 import Script from 'next/script'
 import {useEffect} from 'react'
 import {useUser} from 'web/hooks/use-user'
+
 import {auth} from './users'
 
 async function handleResponse(response: any) {

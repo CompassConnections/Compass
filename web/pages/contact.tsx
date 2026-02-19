@@ -1,6 +1,6 @@
+import {ContactComponent} from 'web/components/contact'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {ContactComponent} from 'web/components/contact'
 import {useT} from 'web/lib/locale'
 
 export default function ContactPage() {

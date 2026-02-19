@@ -25,28 +25,28 @@ How we apply it here
 This project uses three complementary test types. Use the right level for the job:
 
 - Unit tests
-    - Purpose: Verify a single function/module in isolation; fast, deterministic.
-    - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
-      etc.).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
+  - Purpose: Verify a single function/module in isolation; fast, deterministic.
+  - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
+    etc.).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
 
 - Integration tests
-    - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
-      spinning up the full app.
-    - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
-      component trees with providers.
+  - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
+    spinning up the full app.
+  - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
+    component trees with providers.
 
 - End-to-End (E2E) tests
-    - Purpose: Validate real user flows across the full stack.
-    - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
-    - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
-    - Naming: `*.e2e.spec.ts`.
-    - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
+  - Purpose: Validate real user flows across the full stack.
+  - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
+  - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
+  - Naming: `*.e2e.spec.ts`.
+  - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
 
 Quick commands
 
@@ -116,9 +116,9 @@ web/
 - Unit and integration tests live in each package’s `tests` folder and are executed by Jest via the root
   `jest.config.js` projects array.
 - Naming:
-    - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
-    - Integration: `*.integration.test.ts`
-    - E2E (Playwright): `*.e2e.spec.ts`
+  - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
+  - Integration: `*.integration.test.ts`
+  - E2E (Playwright): `*.e2e.spec.ts`
 
 ### Best Practices
 
@@ -160,14 +160,14 @@ yarn test path/to/test.unit.test.ts
 #### Test Standards
 
 - Test file names should convey what to expect
-    - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
-        - filename.unit.test.ts
-        - filename.integration.test.ts
+  - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
+    - filename.unit.test.ts
+    - filename.integration.test.ts
 - Group related tests using describe blocks
 - Use descriptive test names that explain the expected behavior.
-    - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
-        - should `ban user` [with matching user id]
-        - should `ban user` [with matching user name]
+  - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
+    - should `ban user` [with matching user id]
+    - should `ban user` [with matching user name]
 
 #### Mocking
 
@@ -346,7 +346,6 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
-
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
@@ -354,7 +353,7 @@ When mocking modules, you can use `jest.spyOn()` instead of `jest.mock()`.
 
 - `jest.mock()` mocks the entire module, which is ideal for external dependencies like Axios or database clients.
 - `jest.spyOn()` mocks specific methods while keeping the real implementation for others. It can also be used to observe how a real method is called without changing its behavior.
-    - also replaces the need to have `jest.mock()` at the top of the file.
+  - also replaces the need to have `jest.mock()` at the top of the file.
 
 ```tsx
 //testFile.unit.test.ts
@@ -616,7 +615,7 @@ yarn test:db:reset  # Drops and re-applies all migrations + seed
 ## What Needs a Restart vs Not
 
 | Change                        | Action needed                            |
-|-------------------------------|------------------------------------------|
+| ----------------------------- | ---------------------------------------- |
 | Edit test file                | Just re-run in Playwright UI             |
 | Edit app code (Next.js)       | Next.js hot reloads automatically        |
 | Edit API code                 | API dev server hot reloads automatically |
@@ -632,7 +631,7 @@ yarn test:db:reset  # Drops and re-applies all migrations + seed
 E2E tests run against local emulators with these defaults (set in `.env.test`):
 
 | Service          | Local URL                                                 |
-|------------------|-----------------------------------------------------------|
+| ---------------- | --------------------------------------------------------- |
 | Supabase API     | `http://127.0.0.1:54321`                                  |
 | Supabase DB      | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 | Supabase Studio  | `http://127.0.0.1:54323` (browse data visually)           |
@@ -725,7 +724,7 @@ test.describe('Authentication', () => {
 These are seeded automatically by `yarn test:db:seed`:
 
 | Email               | Password      |
-|---------------------|---------------|
+| ------------------- | ------------- |
 | `test1@example.com` | `password123` |
 | `test2@example.com` | `password123` |
 

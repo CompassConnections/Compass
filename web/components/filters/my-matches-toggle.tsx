@@ -1,6 +1,6 @@
-import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
+import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 export function MyMatchesToggle(props: {

@@ -1,7 +1,7 @@
 import {APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {APIError} from 'common/api/utils'
 import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'> = async (
   {id},

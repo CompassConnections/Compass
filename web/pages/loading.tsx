@@ -1,7 +1,7 @@
 'use client'
 
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {PageBase} from 'web/components/page-base'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export default function Loading() {
   return (

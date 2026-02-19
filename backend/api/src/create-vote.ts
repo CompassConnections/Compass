@@ -1,8 +1,9 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {getUser} from 'shared/utils'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {insert} from 'shared/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+import {getUser} from 'shared/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const createVote: APIHandler<'create-vote'> = async (
   {title, description, isAnonymous},

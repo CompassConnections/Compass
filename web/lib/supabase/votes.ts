@@ -1,6 +1,5 @@
-import {db} from 'web/lib/supabase/db'
-
 import {OrderBy} from 'common/votes/constants'
+import {db} from 'web/lib/supabase/db'
 
 export const getVotes = async (params: {orderBy: OrderBy}) => {
   const {orderBy} = params

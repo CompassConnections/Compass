@@ -1,6 +1,7 @@
+import clsx from 'clsx'
 import {ReactNode} from 'react'
 import {Subtitle} from 'web/components/widgets/subtitle'
-import clsx from 'clsx'
+
 import {Col} from '../layout/col'
 
 export const NewsTopicsContentContainer = (props: {

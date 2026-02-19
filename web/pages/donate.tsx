@@ -1,6 +1,6 @@
+import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {Col} from 'web/components/layout/col'
 import {useT} from 'web/lib/locale'
 
 export default function DonatePage() {

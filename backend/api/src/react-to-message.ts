@@ -1,6 +1,7 @@
-import {APIError, APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const reactToMessage: APIHandler<'react-to-message'> = async (
   {messageId, reaction, toDelete},

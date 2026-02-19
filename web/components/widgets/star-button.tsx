@@ -1,13 +1,12 @@
-import clsx from 'clsx'
 import {StarIcon} from '@heroicons/react/outline'
-import {useEffect, useState} from 'react'
-
-import {api} from 'web/lib/api'
-import {buttonClass} from 'web/components/buttons/button'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from 'web/components/widgets/tooltip'
+import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
+import {useEffect, useState} from 'react'
+import {buttonClass} from 'web/components/buttons/button'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
 
 export const StarButton = (props: {
   targetProfile: Profile

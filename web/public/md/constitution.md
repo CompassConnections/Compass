@@ -12,20 +12,20 @@ We, the community of Compass, commit to building and maintaining this project in
 ## Article II: Membership Levels
 
 1. **Definition** —
-    1. A _Member_ is any individual who has an account.
-    2. A _Volunteer_ is a member with voting rights (also known as **voting member**).
-    3. An _Administrator_ is a specific type of _Volunteer_ which has more power and write access to the code.
+   1. A _Member_ is any individual who has an account.
+   2. A _Volunteer_ is a member with voting rights (also known as **voting member**).
+   3. An _Administrator_ is a specific type of _Volunteer_ which has more power and write access to the code.
 2. **Eligibility** —
-    1. To become a Volunteer, an individual must:
-        - Have a 1:1 with a current volunteer.
-        - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a
-          minimum of 5 hours.
-        - Be approved by the Membership Committee (see Article IV) by a **supermajority vote**.
-        - To become an Administrator, all current Administrators must unanimously vote for them to have the role.
+   1. To become a Volunteer, an individual must:
+      - Have a 1:1 with a current volunteer.
+      - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a
+        minimum of 5 hours.
+      - Be approved by the Membership Committee (see Article IV) by a **supermajority vote**.
+      - To become an Administrator, all current Administrators must unanimously vote for them to have the role.
 3. **Provisional Volunteers** — New participants can join discussions but cannot vote until they have met the criteria.
 4. **Loss of Membership** — Volunteers may be removed for:
-    - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
-    - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Volunteers.
+   - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
+   - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Volunteers.
 
 [Current volunteers and administrators](/members)
 
@@ -42,9 +42,9 @@ We, the community of Compass, commit to building and maintaining this project in
 1. **Voting Power** — One Volunteer = one vote.
 2. **Quorum** — At least **40%** of active Volunteers must participate for a vote to be valid.
 3. **Decision Thresholds**:
-    - **Simple majority (50%+1)** — Day-to-day operational decisions.
-    - **Supermajority (2/3)** — Constitutional amendments, membership approvals/removals, major funding decisions, and
-      changes to project scope.
+   - **Simple majority (50%+1)** — Day-to-day operational decisions.
+   - **Supermajority (2/3)** — Constitutional amendments, membership approvals/removals, major funding decisions, and
+     changes to project scope.
 4. **Deliberation Period** — All proposals must be open for discussion for at least **7 days** before voting begins.
 5. All administrators have veto power on votes.
 6. Members can submit feedback and vote on our Feedback Form but this is not an official vote, it is for Volunteers and Administrators to consider.

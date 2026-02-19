@@ -1,17 +1,17 @@
 import {PencilIcon, XIcon} from '@heroicons/react/outline'
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
-
 import {Profile} from 'common/profiles/profile'
+import {tryCatch} from 'common/util/try-catch'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {Content} from 'web/components/widgets/editor'
-import {updateProfile} from 'web/lib/api'
-import {EditableBio} from './editable-bio'
-import {tryCatch} from 'common/util/try-catch'
-import {useT} from 'web/lib/locale'
 import {Tooltip} from 'web/components/widgets/tooltip'
+import {updateProfile} from 'web/lib/api'
+import {useT} from 'web/lib/locale'
+
+import {EditableBio} from './editable-bio'
 
 export function BioBlock(props: {
   isCurrentUser: boolean

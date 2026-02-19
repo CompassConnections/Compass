@@ -1,14 +1,15 @@
+import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {JSONContent} from '@tiptap/core'
+import {MAX_INT, MIN_BIO_LENGTH} from 'common/constants'
 import {Profile} from 'common/profiles/profile'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
+import {useTextEditor} from 'web/components/widgets/editor'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {useT} from 'web/lib/locale'
+
 import {Subtitle} from '../widgets/profile-subtitle'
 import {BioBlock} from './profile-bio-block'
-import {MAX_INT, MIN_BIO_LENGTH} from 'common/constants'
-import {useTextEditor} from 'web/components/widgets/editor'
-import {JSONContent} from '@tiptap/core'
-import {useT} from 'web/lib/locale'
-import {Tooltip} from 'web/components/widgets/tooltip'
-import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
 
 export default function TooShortBio() {
   const t = useT()

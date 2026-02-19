@@ -1,8 +1,8 @@
-import clsx from 'clsx'
 import {InformationCircleIcon} from '@heroicons/react/solid'
+import clsx from 'clsx'
+import {ReactNode} from 'react'
 
 import {Linkify} from './linkify'
-import {ReactNode} from 'react'
 
 export function InfoBox(props: {
   title: string

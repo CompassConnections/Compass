@@ -1,6 +1,6 @@
-import {APIHandler} from './helpers/endpoint'
 import {git} from './../metadata.json'
 import {version as pkgVersion} from './../package.json'
+import {APIHandler} from './helpers/endpoint'
 
 export const health: APIHandler<'health'> = async (_, auth) => {
   return {

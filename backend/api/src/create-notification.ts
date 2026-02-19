@@ -1,9 +1,9 @@
-import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
-import {Notification} from 'common/notifications'
-import {createBulkNotification, insertNotificationToSupabase} from 'shared/supabase/notifications'
-import {tryCatch} from 'common/util/try-catch'
-import {Row} from 'common/supabase/utils'
 import {ANDROID_APP_URL} from 'common/constants'
+import {Notification} from 'common/notifications'
+import {Row} from 'common/supabase/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
+import {createBulkNotification, insertNotificationToSupabase} from 'shared/supabase/notifications'
 
 export const createAndroidReleaseNotifications = async () => {
   const createdTime = Date.now()

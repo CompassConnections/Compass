@@ -1,19 +1,19 @@
-import clsx from 'clsx'
 import {HeartIcon} from '@heroicons/react/outline'
+import clsx from 'clsx'
+import {Profile} from 'common/profiles/profile'
 import {useState} from 'react'
-
-import {api} from 'web/lib/api'
 import {Button, buttonClass} from 'web/components/buttons/button'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from 'web/components/widgets/tooltip'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
-import {Profile} from 'common/profiles/profile'
-import {useUserById} from 'web/hooks/use-user-supabase'
-import {MatchAvatars} from '../matches/match-avatars'
-import {useProfile} from 'web/hooks/use-profile'
+import {Tooltip} from 'web/components/widgets/tooltip'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
+import {useProfile} from 'web/hooks/use-profile'
+import {useUserById} from 'web/hooks/use-user-supabase'
+import {api} from 'web/lib/api'
+import {track} from 'web/lib/service/analytics'
+
+import {MatchAvatars} from '../matches/match-avatars'
 
 export const LikeButton = (props: {
   targetProfile: Profile

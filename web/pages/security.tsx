@@ -1,8 +1,8 @@
-import {PageBase} from 'web/components/page-base'
-import {SEO} from 'web/components/SEO'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
 
 export default function SecurityPage() {

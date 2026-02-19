@@ -1,5 +1,5 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {tryOrLogError} from 'shared/helpers/try-or-log-error'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const trackAuditEvent = async (
   userId: string,

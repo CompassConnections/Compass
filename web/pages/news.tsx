@@ -1,15 +1,15 @@
+import {githubRepoSlug} from 'common/constants'
+import {useEffect, useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {CustomLink} from 'web/components/links'
+import {CustomMarkdown} from 'web/components/markdown'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {Col} from 'web/components/layout/col'
-import {Title} from 'web/components/widgets/title'
-import {githubRepoSlug} from 'common/constants'
-import {CustomMarkdown} from 'web/components/markdown'
-import {CustomLink} from 'web/components/links'
-import {isNativeMobile} from 'web/lib/util/webview'
-import {useEffect, useState} from 'react'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {getPageData} from 'web/lib/util/page-data'
+import {Title} from 'web/components/widgets/title'
 import {useT} from 'web/lib/locale'
+import {getPageData} from 'web/lib/util/page-data'
+import {isNativeMobile} from 'web/lib/util/webview'
 
 async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)

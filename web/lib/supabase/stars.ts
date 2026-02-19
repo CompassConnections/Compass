@@ -1,6 +1,6 @@
+import {DisplayUser} from 'common/api/user-types'
 import {run} from 'common/supabase/utils'
 import {db} from 'web/lib/supabase/db'
-import {DisplayUser} from 'common/api/user-types'
 
 export const getStars = async (creatorId: string) => {
   const {data} = await run(

@@ -1,4 +1,4 @@
-import {getSocialUrl, strip} from '../../src/socials'
+import {getSocialUrl, strip} from 'common/socials'
 import {discordLink} from "common/src/constants";
 
 describe('strip', () => {

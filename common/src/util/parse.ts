@@ -111,7 +111,7 @@ function _cleanDoc(doc: JSONContent) {
   const trimHardBreaks = (paragraph: JSONContent, start: boolean, end: boolean) => {
     if (!paragraph.content) return paragraph;
 
-    let nodes = [...paragraph.content];
+    const nodes = [...paragraph.content];
 
     // Remove hardBreaks at the start
     while (start && nodes.length > 0 && nodes[0].type === "hardBreak") {

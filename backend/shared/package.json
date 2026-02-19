@@ -6,6 +6,8 @@
     "build": "tsc -b && yarn --cwd=../../common tsc-alias && tsc-alias",
     "compile": "tsc -b",
     "verify": "yarn --cwd=../.. verify",
+    "lint": "npx eslint . --max-warnings 0",
+    "lint-fix": "npx eslint . --fix",
     "verify:dir": "npx eslint . --max-warnings 0",
     "test": "jest --config jest.config.js --passWithNoTests"
   },
@@ -19,8 +21,8 @@
     "dayjs": "1.11.4",
     "firebase-admin": "13.5.0",
     "gcp-metadata": "6.1.0",
-    "lodash": "4.17.21",
-    "pg-promise": "11.4.1",
+    "lodash": "4.17.23",
+    "pg-promise": "12.6.1",
     "posthog-node": "4.11.0",
     "string-similarity": "4.0.4"
   }

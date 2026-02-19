@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
-    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix",
+    "lint": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix",
     "dev": "./scripts/run_local.sh dev",
     "dev:isolated": "./scripts/run_local_isolated.sh",
     "prod": "./scripts/run_local.sh prod",

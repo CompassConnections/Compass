@@ -82,8 +82,8 @@ export function formatFilters(
   choicesIdsToLabels: Record<string, any>,
   measurementSystem?: 'metric' | 'imperial',
   t?: (key: string, fallback: string) => string
-): String[] | null {
-  const entries: String[] = []
+): string[] | null {
+  const entries: string[] = []
 
   // Helper function to translate UI text
   const translate = (key: string, fallback: string): string => {

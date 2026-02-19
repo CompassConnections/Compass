@@ -1,7 +1,7 @@
 module.exports = {
     plugins: ['lodash', 'unused-imports'],
     extends: ['eslint:recommended'],
-    ignorePatterns: ['lib', 'coverage', 'tests', 'jest.config.js'],
+    ignorePatterns: ['lib', 'coverage', 'jest.config.js'],
     env: {
         node: true,
     },
@@ -33,6 +33,20 @@ module.exports = {
                 'no-constant-condition': 'off',
             },
         },
+        {
+            "files": ["**/*.test.ts", "**/*.test.tsx", "**/tests/**/*.ts"],
+            "env": {
+                "jest": true  // makes expect, describe, it globals known
+            },
+            "rules": {
+                "@typescript-eslint/no-explicit-any": "off",
+                "@typescript-eslint/no-non-null-assertion": "off"
+            },
+            parserOptions: {
+                tsconfigRootDir: __dirname,
+                project: ['./tsconfig.test.json'],
+            },
+        }
     ],
     rules: {
         'linebreak-style': [

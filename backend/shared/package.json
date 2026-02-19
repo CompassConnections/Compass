@@ -23,6 +23,7 @@
     "gcp-metadata": "6.1.0",
     "lodash": "4.17.23",
     "pg-promise": "12.6.1",
+    "pg-query-stream": "4.12.0",
     "posthog-node": "4.11.0",
     "string-similarity": "4.0.4"
   }

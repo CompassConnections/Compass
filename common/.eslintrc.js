@@ -16,15 +16,9 @@ module.exports = {
                 project: ['./tsconfig.json'],
             },
             rules: {
-                '@typescript-eslint/ban-types': [
-                    'error',
-                    {
-                        extendDefaults: true,
-                        types: {
-                            '{}': false,
-                        },
-                    },
-                ],
+                "@typescript-eslint/no-empty-object-type": "error",  // replaces banning {}
+                "@typescript-eslint/no-unsafe-function-type": "error", // replaces banning Function
+                "@typescript-eslint/no-wrapper-object-types": "error",  // replaces banning String, Number, etc.
                 '@typescript-eslint/no-explicit-any': 'off',
                 '@typescript-eslint/no-extra-semi': 'off',
                 '@typescript-eslint/no-unused-vars': [

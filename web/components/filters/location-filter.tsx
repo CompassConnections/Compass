@@ -13,7 +13,7 @@ import {uniqBy} from 'lodash'
 import {buildArray} from 'common/util/array'
 import {OriginLocation} from 'common/filters'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
-import {formatDistance, kmToMiles, milesToKm} from 'web/lib/measurement-utils'
+import {formatDistance, kmToMiles, milesToKm} from 'common/measurement-utils'
 
 export function LocationFilterText(props: {
   location: OriginLocation | undefined | null

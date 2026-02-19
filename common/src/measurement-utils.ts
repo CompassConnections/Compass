@@ -1,8 +1,8 @@
-import {MeasurementSystem} from 'web/hooks/use-measurement-system'
-
 // Conversion factors
 const INCHES_TO_CM = 2.54
 const MILES_TO_KM = 1.60934
+
+export type MeasurementSystem = 'metric' | 'imperial'
 
 /**
  * Format height in inches according to the specified measurement system

@@ -1,7 +1,6 @@
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getLocale} from "web/lib/locale-cookie";
-
-export type MeasurementSystem = 'metric' | 'imperial'
+import {MeasurementSystem} from "common/measurement-utils";
 
 export const useMeasurementSystem = () => {
   // Get default based on locale

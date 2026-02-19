@@ -10,8 +10,7 @@ import {
   INVERTED_POLITICAL_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
-  RELATIONSHIP_ICONS,
-} from 'web/components/filters/choices'
+} from 'common/choices'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
 import {FaChild} from 'react-icons/fa6'
@@ -30,12 +29,13 @@ import {UserActivity} from 'common/user'
 import {ClockIcon} from '@heroicons/react/solid'
 import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {MAX_INT, MIN_INT} from 'common/constants'
-import {GiFruitBowl} from 'react-icons/gi'
-import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from 'react-icons/fa'
+import {GiFruitBowl, GiRing} from 'react-icons/gi'
+import {FaBriefcase, FaHandsHelping, FaHeart, FaStar, FaUsers} from 'react-icons/fa'
 import {useLocale, useT} from 'web/lib/locale'
 import {useChoices} from 'web/hooks/use-choices'
 import {getSeekingGenderText} from 'web/lib/profile/seeking'
 import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
+import {FiUser} from "react-icons/fi"
 
 export function AboutRow(props: {
   icon: ReactNode
@@ -538,3 +538,12 @@ const capitalizeAndRemoveUnderscores = (str: string) => {
   const withSpaces = str.replace(/_/g, ' ')
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1)
 }
+
+
+export const RELATIONSHIP_ICONS = {
+  single: FiUser,
+  married: GiRing,
+  casual: FaHeart,
+  long_term: FaHeart,
+  open: FaUsers,
+} as const

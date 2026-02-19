@@ -1121,5 +1121,20 @@
   "settings.measurement.metric": "Metrisch",
   "font.atkinson": "Atkinson Hyperlegible",
   "font.system-sans": "System Sans",
-  "font.classic-serif": "Klassische Serifenschrift"
+  "font.classic-serif": "Klassische Serifenschrift",
+  "filter.age.label": "Alter",
+  "filter.age.up_to": "bis zu",
+  "filter.any_new_users": "Jegliche neue Nutzer",
+  "filter.label.name": "Suche",
+  "filter.label.education_levels": "Bildung",
+  "filter.label.pref_age_max": "Max. Alter",
+  "filter.label.pref_age_min": "Min. Alter",
+  "filter.label.drinks": "Getränke",
+  "filter.label.wants_kids_strength": "Kinder",
+  "filter.label.pref_relation_styles": "Suche",
+  "filter.label.pref_gender": "Gesuchtes Geschlecht",
+  "filter.label.diet": "Ernährung",
+  "filter.label.political_beliefs": "Politische Ansichten",
+  "filter.label.mbti": "MBTI",
+  "filter.drinks.per_month": "pro Monat"
 }

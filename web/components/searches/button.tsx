@@ -77,6 +77,7 @@ function ButtonModal(props: {
       onClose={() => {
         refreshBookmarkedSearches()
       }}
+      size={'lg'}
     >
       <Col className={MODAL_CLASS}>
         <h3>{t('saved_searches.title', 'Saved Searches')}</h3>
@@ -89,34 +90,36 @@ function ButtonModal(props: {
               )}
             </p>
             <Col
-              className={
-                'border-ink-300bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 shadow-sm'
-              }
+              className={clsx(
+                'divide-y divide-canvas-300 w-full pr-4',
+                SCROLLABLE_MODAL_CLASS
+              )}
             >
-              <ol className="list-decimal list-inside space-y-2">
-                {(bookmarkedSearches || []).map((search) => (
-                  <li
-                    key={search.id}
-                    className="items-center justify-between gap-2 list-item marker:text-ink-500 marker:font-bold"
-                  >
+              {(bookmarkedSearches || []).map((search) => (
+                <Row
+                  key={search.id}
+                  className="items-center justify-between py-2 gap-2"
+                >
+                  <div className="w-full rounded-md p-2">
                     {formatFilters(
                       search.search_filters as Partial<FilterFields>,
                       search.location as locationType,
                       choicesIdsToLabels,
-                      measurementSystem
+                      measurementSystem,
+                      t
                     )?.join(' • ')}
-                    <button
-                      onClick={async () => {
-                        await deleteBookmarkedSearch(search.id)
-                        refreshBookmarkedSearches()
-                      }}
-                      className="inline-flex text-xl h-5 w-5 items-center justify-center rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                    >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ol>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await deleteBookmarkedSearch(search.id)
+                      refreshBookmarkedSearches()
+                    }}
+                    className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  >
+                    <XIcon className="h-6 w-6"/>
+                  </button>
+                </Row>
+              ))}
             </Col>
           </>
         ) : (

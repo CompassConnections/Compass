@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {MBTI_CHOICES} from 'web/components/filters/choices'
+import {MBTI_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {getSortedOptions} from 'common/util/sorting'
 import {MultiCheckbox} from 'web/components/multi-checkbox'

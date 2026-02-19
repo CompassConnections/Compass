@@ -5,7 +5,7 @@ import {Row} from 'web/components/layout/row'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useT} from 'web/lib/locale'
 import {FilterFields} from "common/filters";
-import {GENDERS_PLURAL} from "web/components/filters/choices";
+import {GENDERS_PLURAL} from "common/choices";
 
 export function GenderFilterText(props: {
   gender: Gender[] | undefined

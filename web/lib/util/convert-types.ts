@@ -8,7 +8,7 @@ import {
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES
-} from "web/components/filters/choices";
+} from "common/choices";
 
 export type RelationshipType = keyof typeof INVERTED_RELATIONSHIP_CHOICES
 

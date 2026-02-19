@@ -40,7 +40,7 @@ import {
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
-} from 'web/components/filters/choices'
+} from 'common/choices'
 import toast from 'react-hot-toast'
 import {db} from 'web/lib/supabase/db'
 import {fetchChoices} from 'web/hooks/use-choices'

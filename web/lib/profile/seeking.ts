@@ -1,7 +1,7 @@
 import {convertRelationshipType, RelationshipType} from "web/lib/util/convert-types";
 import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
 import {Profile} from "common/profiles/profile";
-import {INVERTED_ROMANTIC_CHOICES} from "web/components/filters/choices";
+import {INVERTED_ROMANTIC_CHOICES} from "common/choices";
 
 export function getSeekingGenderText(profile: Profile, t: any) {
   const relationshipTypes = profile.pref_relation_styles

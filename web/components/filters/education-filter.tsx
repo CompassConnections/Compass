@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
 import {FilterFields} from "common/filters";
-import {EDUCATION_CHOICES} from "web/components/filters/choices";
+import {EDUCATION_CHOICES} from "common/choices";
 import {convertEducationTypes} from "web/lib/util/convert-types";
 import stringOrStringArrayToText from "web/lib/util/string-or-string-array-to-text";
 import {getSortedOptions} from 'common/util/sorting'

@@ -3,7 +3,7 @@ import {convertRomanticTypes, RomanticType,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {ROMANTIC_CHOICES} from 'web/components/filters/choices'
+import {ROMANTIC_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
 import {toKey} from "common/parsing";

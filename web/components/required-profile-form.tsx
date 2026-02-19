@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {Title} from 'web/components/widgets/title'
 import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
-import {Input} from 'web/components/widgets/input'
+import { Input } from 'web/components/widgets/input'
 import {Row} from 'web/components/layout/row'
 import {Button} from 'web/components/buttons/button'
 import {labelClassName} from 'web/pages/signup'
@@ -34,7 +34,7 @@ export const initialRequiredState = {
 }
 
 // const requiredKeys = Object.keys(
-//   initialRequiredState
+//     initialRequiredState
 // ) as (keyof typeof initialRequiredState)[]
 
 export const RequiredProfileUserForm = (props: {

@@ -60,8 +60,8 @@ describe('report', () => {
       ;(mockPg.oneOrNone as jest.Mock).mockReturnValueOnce(null).mockReturnValueOnce(null)
       ;(tryCatch as jest.Mock)
         .mockResolvedValueOnce({data: mockReporter, error: null})
-        .mockResolvedValueOnce({data: mockReported, error: null})(sendDiscordMessage as jest.Mock)
-        .mockResolvedValue(null)
+        .mockResolvedValueOnce({data: mockReported, error: null})
+      ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
 
       await result.continue()
 

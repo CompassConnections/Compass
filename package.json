@@ -15,6 +15,7 @@
     "lint-fix": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix",
     "typecheck": "yarn --cwd=web typecheck; yarn --cwd=common typecheck; yarn --cwd=backend/api typecheck; yarn --cwd=backend/shared typecheck",
     "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "dev": "./scripts/run_local.sh dev",
     "dev:isolated": "./scripts/run_local_isolated.sh",
     "prod": "./scripts/run_local.sh prod",

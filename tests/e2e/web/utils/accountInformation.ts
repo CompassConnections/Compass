@@ -103,7 +103,7 @@ export const onboarding: OnboardingConfig = {
         "email": "onboardingOne@compass.com",
         "password": "CompassTest",
         "display_name": "Compass Onboarding",
-        "username": "The great Onboarding",
+        "username": "TheGreatOnboarding",
         "bio": "Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go",
         "gender": "Woman",
         "age": "25",

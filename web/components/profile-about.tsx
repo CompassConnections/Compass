@@ -517,7 +517,13 @@ function HasKids(props: { profile: Profile }) {
     ) : (
       faChild
     )
-  return <AboutRow icon={icon} text={hasKidsText}/>
+  return (
+    <AboutRow
+      icon={icon}
+      text={hasKidsText}
+      testId={'profile-about-has-kids'}
+    />
+  )
 }
 
 export const formatProfileValue = (

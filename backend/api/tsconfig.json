@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
+    "composite": true,
     "module": "commonjs",
     "noImplicitReturns": true,
     "outDir": "./lib",
+    "tsBuildInfoFile": "lib/tsconfig.tsbuildinfo",
     "sourceMap": true,
     "strict": true,
     "resolveJsonModule": true,
@@ -21,6 +24,17 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
+  "references": [
+    {
+      "path": "../../common"
+    },
+    {
+      "path": "../shared"
+    },
+    {
+      "path": "../email"
+    }
+  ],
   "compileOnSave": true,
   "include": ["src/**/*.ts", "package.json", "backend/api/package.json"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]

@@ -1,5 +1,6 @@
 import axios from 'axios'
-import {config} from '../tests/e2e/web/SPEC_CONFIG.js'
+
+import {config} from '../web/SPEC_CONFIG'
 
 async function createAuth() {
   // const base = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';

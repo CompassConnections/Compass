@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "composite": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitReturns": true,
     "outDir": "lib",
-    "tsBuildInfoFile": "lib/tsconfig.tsbuildinfo",
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
@@ -22,11 +19,6 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "references": [
-    {
-      "path": "../../common"
-    }
-  ],
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

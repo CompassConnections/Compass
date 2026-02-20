@@ -7,7 +7,7 @@ export const isProd = () => {
     return process.env.NEXT_PUBLIC_FIREBASE_ENV?.toUpperCase() == 'PROD'
   } else {
     // For local scripts and cloud functions
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const admin = require('firebase-admin')
     return admin.app().options.projectId === 'compass-130ba'
   }

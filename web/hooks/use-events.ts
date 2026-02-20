@@ -2,7 +2,6 @@
 
 import {useEffect, useState} from 'react'
 import {api} from 'web/lib/api'
-import {useIsPageVisible} from './use-page-visible'
 
 export type Event = {
   id: string
@@ -37,7 +36,6 @@ export const useEvents = () => {
   const [events, setEvents] = useState<EventsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const isPageVisible = useIsPageVisible()
 
   const fetchEvents = async (showLoading = true) => {
     try {
@@ -54,11 +52,9 @@ export const useEvents = () => {
   }
 
   useEffect(() => {
-    // console.debug({isPageVisible})
-    if (isPageVisible) {
-      fetchEvents()
-    }
-  }, [isPageVisible])
+    // Only fetch on initial mount, not on page visibility changes
+    fetchEvents()
+  }, [])
 
   const refetch = () => fetchEvents(false)
 

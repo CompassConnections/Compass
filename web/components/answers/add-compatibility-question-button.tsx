@@ -29,11 +29,7 @@ export function AddCompatibilityQuestionButton(props: {
   if (!user) return null
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-sm"
-      >
+      <button type="button" onClick={() => setOpen(true)} className="text-sm">
         {t('answers.add.submit_own', 'submit your own!')}
       </button>
       <AddCompatibilityQuestionModal
@@ -55,9 +51,8 @@ function AddCompatibilityQuestionModal(props: {
   onClose?: () => void
 }) {
   const {open, setOpen, user, onClose} = props
-  const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(
-    null
-  )
+  const [dbQuestion, setDbQuestion] =
+    useState<rowFor<'compatibility_prompts'> | null>(null)
   const afterAddQuestion = (newQuestion: rowFor<'compatibility_prompts'>) => {
     setDbQuestion(newQuestion)
     console.debug('setDbQuestion', newQuestion)
@@ -125,12 +120,15 @@ function CreateCompatibilityModalContent(props: {
 
   const generateJson = () => {
     // Note the change in the generic type
-    return options.reduce((obj, item, index) => {
-      if (item.trim() !== '') {
-        obj[item] = index // Mapping each option to its index
-      }
-      return obj
-    }, {} as Record<string, number>)
+    return options.reduce(
+      (obj, item, index) => {
+        if (item.trim() !== '') {
+          obj[item] = index // Mapping each option to its index
+        }
+        return obj
+      },
+      {} as Record<string, number>
+    )
   }
 
   const onAddQuestion = useEvent(async () => {
@@ -138,7 +136,7 @@ function CreateCompatibilityModalContent(props: {
       const data = {
         question: question,
         options: generateJson(),
-      };
+      }
       const newQuestion = await api('create-compatibility-question', data)
       console.debug('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question
@@ -146,8 +144,13 @@ function CreateCompatibilityModalContent(props: {
         afterAddQuestion(q as rowFor<'compatibility_prompts'>)
       }
       track('create compatibility question')
-    } catch (e) {
-      toast.error(t('answers.add.error_create', 'Error creating compatibility question. Try again?'))
+    } catch (_e) {
+      toast.error(
+        t(
+          'answers.add.error_create',
+          'Error creating compatibility question. Try again?'
+        )
+      )
     }
   })
 
@@ -176,7 +179,9 @@ function CreateCompatibilityModalContent(props: {
                 value={options[index]}
                 onChange={(e) => onOptionChange(index, e.target.value)}
                 className="w-full"
-                placeholder={t('answers.add.option_placeholder', 'Option {n}', {n: String(index + 1)})}
+                placeholder={t('answers.add.option_placeholder', 'Option {n}', {
+                  n: String(index + 1),
+                })}
                 rows={1}
                 maxLength={MAX_ANSWER_LENGTH}
               />

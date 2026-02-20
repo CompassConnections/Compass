@@ -3,7 +3,7 @@ import {convertLanguageTypes,} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 
-import {LANGUAGE_CHOICES} from 'web/components/filters/choices'
+import {LANGUAGE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {getSortedOptions} from 'common/util/sorting'
 import {useT} from 'web/lib/locale'

@@ -14,6 +14,10 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

@@ -1,10 +1,10 @@
 import pgPromise, {IDatabase, ITask} from 'pg-promise'
 import {log, metrics} from '../utils'
-import {IClient, type IConnectionParameters} from 'pg-promise/typescript/pg-subset'
+import {IClient, type IConnectionParameters,} from 'pg-promise/typescript/pg-subset'
 import {HOUR_MS} from 'common/util/time'
 import {METRICS_INTERVAL_MS} from 'shared/monitoring/metric-writer'
 import {getMonitoringContext} from 'shared/monitoring/context'
-import {ENV_CONFIG} from "common/envs/constants";
+import {ENV_CONFIG} from 'common/envs/constants'
 
 export {SupabaseClient} from 'common/supabase/utils'
 
@@ -32,8 +32,10 @@ export const pgp = pgPromise({
 pgp.pg.types.setTypeParser(20, (value: any) => parseInt(value, 10))
 pgp.pg.types.setTypeParser(1700, parseFloat) // Type Id 1700 = NUMERIC
 
-export type SupabaseTransaction = ITask<{}>
-export type SupabaseDirectClient = IDatabase<{}, IClient> | SupabaseTransaction
+export type SupabaseTransaction = ITask<object>
+export type SupabaseDirectClient =
+  | IDatabase<object, IClient>
+  | SupabaseTransaction
 
 export function getInstanceId() {
   return ENV_CONFIG.supabaseInstanceId
@@ -87,7 +89,7 @@ const newClient = (
 }
 
 // Use one connection to avoid WARNING: Creating a duplicate database object for the same connection.
-let pgpDirect: IDatabase<{}, IClient> | null = null
+let pgpDirect: IDatabase<object, IClient> | null = null
 
 export function createSupabaseDirectClient(
   instanceId?: string,
@@ -128,7 +130,7 @@ export function createSupabaseDirectClient(
   return (pgpDirect = client)
 }
 
-let shortTimeoutPgpClient: IDatabase<{}, IClient> | null = null
+let shortTimeoutPgpClient: IDatabase<object, IClient> | null = null
 export const createShortTimeoutDirectClient = () => {
   if (shortTimeoutPgpClient) return shortTimeoutPgpClient
   shortTimeoutPgpClient = newClient({

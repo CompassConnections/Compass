@@ -32,10 +32,9 @@ export function UserLink({user, className = ""}: {
 }
 
 export function UserLinkFromId({userId, className = ""}: {
-  userId: string | null | undefined
+  userId: string
   className?: string
 }) {
-  if (!userId) return null
   const user = useUserInStore(userId)
   return <UserLink user={user} className={className}/>
 }

@@ -1,4 +1,4 @@
-import {CalendarIcon, HomeIcon, NewspaperIcon, QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {CalendarIcon, HomeIcon, NewspaperIcon, QuestionMarkCircleIcon,} from '@heroicons/react/outline'
 import {
   CogIcon,
   GlobeAltIcon,
@@ -25,9 +25,9 @@ import Sidebar from './nav/sidebar'
 import {useProfile} from 'web/hooks/use-profile'
 import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
-import {IS_MAINTENANCE} from "common/constants"
-import {MdThumbUp} from "react-icons/md"
-import {FaEnvelope} from "react-icons/fa"
+import {IS_MAINTENANCE} from 'common/constants'
+import {MdThumbUp} from 'react-icons/md'
+import {FaEnvelope} from 'react-icons/fa'
 
 export function PageBase(props: {
   trackPageView?: string | false
@@ -55,10 +55,12 @@ export function PageBase(props: {
   // const [isModalOpen, setIsModalOpen] = useState(false)
   const desktopSidebarOptions = getDesktopNavigation(user)
 
-  const mobileSidebarOptions = getMobileSidebar(user, () => setIsAddFundsModalOpen(true))
+  const mobileSidebarOptions = getMobileSidebar(user, () =>
+    setIsAddFundsModalOpen(true)
+  )
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  trackPageView && useTracking(`view ${trackPageView}`, trackPageProps)
+  if (trackPageView) useTracking(`view ${trackPageView}`, trackPageProps)
   useOnline()
   const [_, setIsAddFundsModalOpen] = useState(false)
 
@@ -76,10 +78,12 @@ export function PageBase(props: {
           containerClassName="!bottom-[70px]"
         />
         {/* Maintenance banner */}
-        {IS_MAINTENANCE &&
-            <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
-                Maintenance in progress: Some features may be broken for the next few hours.
-            </div>}
+        {IS_MAINTENANCE && (
+          <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
+            Maintenance in progress: Some features may be broken for the next
+            few hours.
+          </div>
+        )}
         {hideSidebar ? (
           <div className="lg:col-span-2 lg:flex"/>
         ) : (
@@ -108,32 +112,87 @@ export function PageBase(props: {
   )
 }
 
-const Profiles = {key: 'nav.people', name: 'People', href: '/', icon: UsersIcon}
+const Profiles = {
+  key: 'nav.people',
+  name: 'People',
+  href: '/',
+  icon: UsersIcon,
+}
 const Home = {key: 'nav.home', name: 'Home', href: '/', icon: HomeIcon}
-const faq = {key: 'nav.faq', name: 'FAQ', href: '/faq', icon: SolidQuestionIcon}
-const About = {key: 'nav.about', name: 'About', href: '/about', icon: QuestionMarkCircleIcon}
-const Signin = {key: 'nav.sign_in', name: 'Sign in', href: '/signin', icon: UserCircleIcon}
-const Notifs = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: NotificationsIcon}
-const NotifsSolid = {key: 'nav.notifs', name: 'Notifs', href: `/notifications`, icon: SolidNotificationsIcon}
-const Messages = {key: 'nav.messages', name: 'Messages', href: '/messages', icon: PrivateMessagesIcon}
-const Social = {key: 'nav.social', name: 'Socials', href: '/social', icon: LinkIcon}
-const Organization = {key: 'nav.organization', name: 'Organization', href: '/organization', icon: GlobeAltIcon}
+const faq = {
+  key: 'nav.faq',
+  name: 'FAQ',
+  href: '/faq',
+  icon: SolidQuestionIcon,
+}
+const About = {
+  key: 'nav.about',
+  name: 'About',
+  href: '/about',
+  icon: QuestionMarkCircleIcon,
+}
+const Signin = {
+  key: 'nav.sign_in',
+  name: 'Sign in',
+  href: '/signin',
+  icon: UserCircleIcon,
+}
+const Notifs = {
+  key: 'nav.notifs',
+  name: 'Notifs',
+  href: `/notifications`,
+  icon: NotificationsIcon,
+}
+const NotifsSolid = {
+  key: 'nav.notifs',
+  name: 'Notifs',
+  href: `/notifications`,
+  icon: SolidNotificationsIcon,
+}
+const Social = {
+  key: 'nav.social',
+  name: 'Socials',
+  href: '/social',
+  icon: LinkIcon,
+}
+const Organization = {
+  key: 'nav.organization',
+  name: 'Organization',
+  href: '/organization',
+  icon: GlobeAltIcon,
+}
 const Vote = {key: 'nav.vote', name: 'Vote', href: '/vote', icon: MdThumbUp}
-const Contact = {key: 'nav.contact', name: 'Contact', href: '/contact', icon: FaEnvelope}
-const News = {key: 'nav.news', name: "What's new", href: '/news', icon: NewspaperIcon}
-const Settings = {key: 'nav.settings', name: "Settings", href: '/settings', icon: CogIcon}
-const Events = {key: 'nav.events', name: "Events", href: '/events', icon: CalendarIcon}
+const Contact = {
+  key: 'nav.contact',
+  name: 'Contact',
+  href: '/contact',
+  icon: FaEnvelope,
+}
+const News = {
+  key: 'nav.news',
+  name: "What's new",
+  href: '/news',
+  icon: NewspaperIcon,
+}
+const Settings = {
+  key: 'nav.settings',
+  name: 'Settings',
+  href: '/settings',
+  icon: CogIcon,
+}
+const Events = {
+  key: 'nav.events',
+  name: 'Events',
+  href: '/events',
+  icon: CalendarIcon,
+}
 
-const base = [
-  About,
-  faq,
-  Vote,
-  Events,
-  News,
-  Social,
-  Organization,
-  Contact,
-]
+// Stable component for Messages icon to prevent re-mounting on every render
+const MessagesIconComponent = (props: any) => (
+  <PrivateMessagesIcon solid {...props} />
+)
+
+const base = [About, faq, Vote, Events, News, Social, Organization, Contact]
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   return buildArray(
@@ -149,45 +208,36 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
       key: 'nav.messages',
       name: 'Messages',
       href: '/messages',
-      icon: (props) => (
-        <PrivateMessagesIcon bubbleClassName={'-mr-5'} solid {...props} />
-      ),
-    },
+      icon: MessagesIconComponent,
+    }
   )
 }
 
-const getBottomSignedOutNavigation = () => [
-  Home,
-  About,
-  Signin,
-]
+const getBottomSignedOutNavigation = () => [Home, About, Signin]
 
 const getDesktopNavigation = (user: User | null | undefined) => {
   if (user)
     return buildArray(
       Profiles,
       Notifs,
-      Messages,
+      {
+        key: 'nav.messages',
+        name: 'Messages',
+        href: '/messages',
+        icon: MessagesIconComponent,
+      },
       Settings,
-      ...base,
+      ...base
     )
 
-  return buildArray(
-    ...base
-  )
+  return buildArray(...base)
 }
 
 const getMobileSidebar = (
   user: User | null | undefined,
-  _toggleModal: () => void,
+  _toggleModal: () => void
 ) => {
-  if (user)
-    return buildArray(
-      Settings,
-      ...base,
-    )
+  if (user) return buildArray(Settings, ...base)
 
-  return buildArray(
-    ...base,
-  )
+  return buildArray(...base)
 }

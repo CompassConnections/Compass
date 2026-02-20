@@ -23,10 +23,10 @@ import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
 import {PlusIcon, XIcon} from '@heroicons/react/solid'
 import {SocialIcon} from './user/social'
 import {Select} from 'web/components/widgets/select'
-import {City, CityRow, profileToCity, useCitySearch} from "web/components/search-location";
+import {City, CityRow, profileToCity, useCitySearch,} from 'web/components/search-location'
 import {AddPhotosWidget} from './widgets/add-photos'
-import {RadioToggleGroup} from "web/components/widgets/radio-toggle-group";
-import {MultipleChoiceOptions} from "common/profiles/multiple-choice";
+import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
+import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {useProfileDraft} from 'web/hooks/use-profile-draft'
 import {
   DIET_CHOICES,
@@ -39,31 +39,43 @@ import {
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
-  ROMANTIC_CHOICES
-} from "web/components/filters/choices";
-import toast from "react-hot-toast";
-import {db} from "web/lib/supabase/db";
-import {fetchChoices} from "web/hooks/use-choices";
-import {AddOptionEntry} from "web/components/add-option-entry";
-import {sleep} from "common/util/time"
-import {SignupBio} from "web/components/bio/editable-bio";
-import {Editor} from "@tiptap/core";
-import {Slider} from "web/components/widgets/slider";
-
+  ROMANTIC_CHOICES,
+} from 'common/choices'
+import toast from 'react-hot-toast'
+import {db} from 'web/lib/supabase/db'
+import {fetchChoices} from 'web/hooks/use-choices'
+import {AddOptionEntry} from 'web/components/add-option-entry'
+import {sleep} from 'common/util/time'
+import {SignupBio} from 'web/components/bio/editable-bio'
+import {Editor} from '@tiptap/core'
+import {Slider} from 'web/components/widgets/slider'
 
 export const OptionalProfileUserForm = (props: {
   profile: ProfileWithoutUser
-  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
+  setProfile: <K extends keyof ProfileWithoutUser>(
+    key: K,
+    value: ProfileWithoutUser[K]
+  ) => void
   user: User
   buttonLabel?: string
   bottomNavBarVisible?: boolean
   fromSignup?: boolean
   onSubmit?: () => Promise<void>
 }) => {
-  const {profile, user, buttonLabel, setProfile, fromSignup, onSubmit, bottomNavBarVisible = true} = props
+  const {
+    profile,
+    user,
+    buttonLabel,
+    setProfile,
+    fromSignup,
+    onSubmit,
+    bottomNavBarVisible = true,
+  } = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lookingRelationship, setLookingRelationship] = useState((profile.pref_relation_styles || []).includes('relationship'))
+  const [lookingRelationship, setLookingRelationship] = useState(
+    (profile.pref_relation_styles || []).includes('relationship')
+  )
   const [ageError, setAgeError] = useState<string | null>(null)
   const router = useRouter()
   const t = useT()
@@ -90,7 +102,9 @@ export const OptionalProfileUserForm = (props: {
     setHeightInches(Math.round(h % 12))
   }
 
-  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(user.link)
+  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(
+    user.link
+  )
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
@@ -99,7 +113,12 @@ export const OptionalProfileUserForm = (props: {
   const [workChoices, setWorkChoices] = useState({})
   const {locale} = useLocale()
 
-  const {clearProfileDraft} = useProfileDraft(user.id, profile, setProfile, updateHeight)
+  const {clearProfileDraft} = useProfileDraft(
+    user.id,
+    profile,
+    setProfile,
+    updateHeight
+  )
 
   useEffect(() => {
     fetchChoices('interests', locale).then(setInterestChoices)
@@ -109,10 +128,7 @@ export const OptionalProfileUserForm = (props: {
 
   const errorToast = () => {
     toast.error(
-      t(
-        'profile.optional.error.invalid_fields',
-        'Some fields are incorrect...'
-      )
+      t('profile.optional.error.invalid_fields', 'Some fields are incorrect...')
     )
   }
 
@@ -153,10 +169,12 @@ export const OptionalProfileUserForm = (props: {
     } = profile
     console.debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
     const promises: Promise<any>[] = [
-      tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any))
+      tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any)),
     ]
     if (interests) {
-      promises.push(api('update-options', {table: 'interests', values: interests}))
+      promises.push(
+        api('update-options', {table: 'interests', values: interests})
+      )
     }
     if (causes) {
       promises.push(api('update-options', {table: 'causes', values: causes}))
@@ -183,7 +201,9 @@ export const OptionalProfileUserForm = (props: {
         return
       }
     }
-    onSubmit && (await onSubmit())
+    if (onSubmit) {
+      await onSubmit()
+    }
     track('submit optional profile')
     if (user) {
       let profile
@@ -192,7 +212,9 @@ export const OptionalProfileUserForm = (props: {
       while (Date.now() - start < 10000) {
         profile = await getProfileRow(user.id, db)
         if (profile) {
-          console.log(`Found profile after ${Date.now() - start} ms, ${i} attempts`)
+          console.log(
+            `Found profile after ${Date.now() - start} ms, ${i} attempts`
+          )
           break
         }
         await sleep(500)
@@ -202,7 +224,7 @@ export const OptionalProfileUserForm = (props: {
         await sleep(5000) // attempt to mitigate profile not found at /${username} upon creation
         router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
       } else {
-        console.log("Profile not found after fetching, going back home...")
+        console.log('Profile not found after fetching, going back home...')
         router.push('/')
       }
     } else router.push('/')
@@ -262,22 +284,30 @@ export const OptionalProfileUserForm = (props: {
       <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
+        {!fromSignup && (
+          <>
+            <Category
+              title={t('profile.basics.bio', 'Bio')}
+              className={'mt-0'}
+            />
+            <SignupBio
+              profile={profile}
+              onChange={(e: Editor) => {
+                console.debug('bio changed', e, profile.bio)
+                setProfile('bio', e.getJSON())
+                setProfile('bio_length', e.getText().length)
+              }}
+            />
+          </>
+        )}
 
-        {!fromSignup &&
-            <>
-                <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'}/>
-                <SignupBio
-                    profile={profile}
-                    onChange={(e: Editor) => {
-                      console.debug('bio changed', e, profile.bio)
-                      setProfile('bio', e.getJSON())
-                      setProfile('bio_length', e.getText().length)
-                    }}
-                />
-            </>
-        }
-
-        <Category title={t('profile.optional.category.personal_info', 'Personal Information')} className={'mt-0'}/>
+        <Category
+          title={t(
+            'profile.optional.category.personal_info',
+            'Personal Information'
+          )}
+          className={'mt-0'}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -316,7 +346,12 @@ export const OptionalProfileUserForm = (props: {
             </label>
             <ChoicesToggleGroup
               currentChoice={profile['gender']}
-              choicesMap={Object.fromEntries(Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]))}
+              choicesMap={Object.fromEntries(
+                Object.entries(GENDERS).map(([k, v]) => [
+                  t(`profile.gender.${v}`, k),
+                  v,
+                ])
+              )}
               setChoice={(c) => setProfile('gender', c)}
             />
           </Col>
@@ -344,7 +379,10 @@ export const OptionalProfileUserForm = (props: {
                 )
               } else if (value !== null && value > 100) {
                 setAgeError(
-                  t('profile.optional.age.error_max', 'Please enter a valid age')
+                  t(
+                    'profile.optional.age.error_max',
+                    'Please enter a valid age'
+                  )
                 )
               } else {
                 setAgeError(null)
@@ -370,12 +408,15 @@ export const OptionalProfileUserForm = (props: {
                     setHeightFeet(undefined)
                   } else {
                     setHeightFeet(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
+                    const heightInInches =
+                      Number(e.target.value) * 12 + (heightInches ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
+                value={
+                  typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''
+                }
                 min={0}
               />
             </Col>
@@ -389,12 +430,17 @@ export const OptionalProfileUserForm = (props: {
                     setHeightInches(undefined)
                   } else {
                     setHeightInches(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
+                    const heightInInches =
+                      Number(e.target.value) + 12 * (heightFeet ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
+                value={
+                  typeof heightInches === 'number'
+                    ? Math.floor(heightInches)
+                    : ''
+                }
                 min={0}
               />
             </Col>
@@ -420,9 +466,11 @@ export const OptionalProfileUserForm = (props: {
                   }
                 }}
                 className={'w-20'}
-                value={heightFeet !== undefined && profile['height_in_inches']
-                  ? Math.round(profile['height_in_inches'] * 2.54)
-                  : ''}
+                value={
+                  heightFeet !== undefined && profile['height_in_inches']
+                    ? Math.round(profile['height_in_inches'] * 2.54)
+                    : ''
+                }
                 min={0}
               />
             </Col>
@@ -441,11 +489,19 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")}/>
+        <Category
+          title={t(
+            'profile.optional.category.interested_in',
+            "Who I'm looking for"
+          )}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t('profile.optional.interested_in', 'Interested in connecting with')}
+            {t(
+              'profile.optional.interested_in',
+              'Interested in connecting with'
+            )}
           </label>
           <MultiCheckbox
             choices={{
@@ -476,8 +532,8 @@ export const OptionalProfileUserForm = (props: {
                 }}
                 className={'w-18 border-ink-300 rounded-md'}
               >
-                <option key={""} value={""}></option>
-                {range(18, 100).map((m) => (
+                <option key={''} value={''}></option>
+                {range(18, (profile['pref_age_max'] ?? 100) + 1).map((m) => (
                   <option key={m} value={m}>
                     {m}
                   </option>
@@ -496,8 +552,8 @@ export const OptionalProfileUserForm = (props: {
                 }}
                 className={'w-18 border-ink-300 rounded-md'}
               >
-                <option key={""} value={""}></option>
-                {range(18, 100).map((m) => (
+                <option key={''} value={''}></option>
+                {range(profile['pref_age_min'] ?? 18, 100).map((m) => (
                   <option key={m} value={m}>
                     {m}
                   </option>
@@ -522,7 +578,9 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.relationships', "Relationships")}/>
+        <Category
+          title={t('profile.optional.category.relationships', 'Relationships')}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -536,55 +594,62 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        {lookingRelationship && <>
+        {lookingRelationship && (
+          <>
             <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>
-                  {t('profile.optional.relationship_style', 'Relationship style')}
-                </label>
-                <MultiCheckbox
-                    choices={ROMANTIC_CHOICES}
-                    translationPrefix={'profile.romantic'}
-                    selected={profile['pref_romantic_styles'] || []}
-                    onChange={(selected) => {
-                      setProfile('pref_romantic_styles', selected)
-                    }}
-                />
+              <label className={clsx(labelClassName)}>
+                {t('profile.optional.relationship_style', 'Relationship style')}
+              </label>
+              <MultiCheckbox
+                choices={ROMANTIC_CHOICES}
+                translationPrefix={'profile.romantic'}
+                selected={profile['pref_romantic_styles'] || []}
+                onChange={(selected) => {
+                  setProfile('pref_romantic_styles', selected)
+                }}
+              />
             </Col>
 
-            <Category title={t('profile.optional.category.family', "Family")}/>
+            <Category title={t('profile.optional.category.family', 'Family')}/>
+
+          <Col className={clsx(colClassName)}>
+            <label className={clsx(labelClassName)}>
+              {t('profile.optional.num_kids', 'Current number of kids')}
+            </label>
+            <Input
+              data-testid='current-number-of-kids'
+              type="number"
+              onChange={(e) => {
+                const value =
+                  e.target.value === '' ? null : Number(e.target.value)
+                setProfile('has_kids', value)
+              }}
+              className={'w-20'}
+              min={0}
+              value={profile['has_kids'] ?? undefined}
+            />
+          </Col>
 
             <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>
-                  {t('profile.optional.num_kids', 'Current number of kids')}
-                </label>
-                <Input
-                    data-testid='current-number-of-kids'
-                    type="number"
-                    onChange={(e) => {
-                      const value =
-                        e.target.value === '' ? null : Number(e.target.value)
-                      setProfile('has_kids', value)
-                    }}
-                    className={'w-20'}
-                    min={0}
-                    value={profile['has_kids'] ?? undefined}
-                />
+              <label className={clsx(labelClassName)}>
+                {t('profile.optional.want_kids', 'I would like to have kids')}
+              </label>
+              <RadioToggleGroup
+                className={'w-44'}
+                choicesMap={Object.fromEntries(
+                  Object.entries(MultipleChoiceOptions).map(([k, v]) => [
+                    t(`profile.wants_kids_${v}`, k),
+                    v,
+                  ])
+                )}
+                setChoice={(choice) => {
+                  setProfile('wants_kids_strength', choice)
+                }}
+                currentChoice={profile.wants_kids_strength ?? -1}
+              />
             </Col>
-
-            <Col className={clsx(colClassName)}>
-                <label className={clsx(labelClassName)}>
-                  {t('profile.optional.want_kids', 'I would like to have kids')}
-                </label>
-                <RadioToggleGroup
-                    className={'w-44'}
-                    choicesMap={Object.fromEntries(Object.entries(MultipleChoiceOptions).map(([k, v]) => [t(`profile.wants_kids_${v}`, k), v]))}
-                    setChoice={(choice) => {
-                      setProfile('wants_kids_strength', choice)
-                    }}
-                    currentChoice={profile.wants_kids_strength ?? -1}
-                />
-            </Col>
-        </>}
+          </>
+        )}
 
         <Category title={t('profile.optional.interests', 'Interests')}/>
         <AddOptionEntry
@@ -606,16 +671,26 @@ export const OptionalProfileUserForm = (props: {
           label={'causes'}
         />
 
-        <Category title={t('profile.optional.category.education', 'Education')}/>
+        <Category
+          title={t('profile.optional.category.education', 'Education')}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t('profile.optional.education_level', 'Highest completed education level')}
+            {t(
+              'profile.optional.education_level',
+              'Highest completed education level'
+            )}
           </label>
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
               currentChoice={profile['education_level'] ?? ''}
-              choicesMap={Object.fromEntries(Object.entries(EDUCATION_CHOICES).map(([k, v]) => [t(`profile.education.${v}`, k), v]))}
+              choicesMap={Object.fromEntries(
+                Object.entries(EDUCATION_CHOICES).map(([k, v]) => [
+                  t(`profile.education.${v}`, k),
+                  v,
+                ])
+              )}
               setChoice={(c) => setProfile('education_level', c)}
             />
           </Carousel>
@@ -639,7 +714,11 @@ export const OptionalProfileUserForm = (props: {
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {profile['company']
-              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {company: profile['company']})
+              ? t(
+                'profile.optional.job_title_at_company',
+                'Job title at {company}',
+                {company: profile['company']}
+              )
               : t('profile.optional.job_title', 'Job title')}
           </label>
           <Input
@@ -673,7 +752,9 @@ export const OptionalProfileUserForm = (props: {
           label={'work'}
         />
 
-        <Category title={t('profile.optional.political_beliefs', 'Political beliefs')}/>
+        <Category
+          title={t('profile.optional.political_beliefs', 'Political beliefs')}
+        />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -695,7 +776,9 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.religious_beliefs', 'Religious beliefs')}/>
+        <Category
+          title={t('profile.optional.religious_beliefs', 'Religious beliefs')}
+        />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -717,7 +800,9 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.psychology', 'Psychology')}/>
+        <Category
+          title={t('profile.optional.category.psychology', 'Psychology')}
+        />
         <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>
             {t('profile.optional.mbti', 'MBTI Personality Type')}
@@ -742,10 +827,7 @@ export const OptionalProfileUserForm = (props: {
               onChange={(v) => setProfile('big5_openness', v)}
             />
             <Big5Slider
-              label={t(
-                'profile.big5_conscientiousness',
-                'Conscientiousness'
-              )}
+              label={t('profile.big5_conscientiousness', 'Conscientiousness')}
               value={profile.big5_conscientiousness ?? 50}
               onChange={(v) => setProfile('big5_conscientiousness', v)}
             />
@@ -755,18 +837,12 @@ export const OptionalProfileUserForm = (props: {
               onChange={(v) => setProfile('big5_extraversion', v)}
             />
             <Big5Slider
-              label={t(
-                'profile.big5_agreeableness',
-                'Agreeableness'
-              )}
+              label={t('profile.big5_agreeableness', 'Agreeableness')}
               value={profile.big5_agreeableness ?? 50}
               onChange={(v) => setProfile('big5_agreeableness', v)}
             />
             <Big5Slider
-              label={t(
-                'profile.big5_neuroticism',
-                'Neuroticism'
-              )}
+              label={t('profile.big5_neuroticism', 'Neuroticism')}
               value={profile.big5_neuroticism ?? 50}
               onChange={(v) => setProfile('big5_neuroticism', v)}
             />
@@ -793,7 +869,9 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.substances', 'Substances')}/>
+        <Category
+          title={t('profile.optional.category.substances', 'Substances')}
+        />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -801,17 +879,22 @@ export const OptionalProfileUserForm = (props: {
           </label>
           <ChoicesToggleGroup
             currentChoice={profile['is_smoker'] ?? undefined}
-            choicesMap={Object.fromEntries(Object.entries({
-              Yes: true,
-              No: false
-            }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v]))}
+            choicesMap={Object.fromEntries(
+              Object.entries({
+                Yes: true,
+                No: false,
+              }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v])
+            )}
             setChoice={(c) => setProfile('is_smoker', c)}
           />
         </Col>
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
+            {t(
+              'profile.optional.drinks_per_month',
+              'Alcoholic beverages consumed per month'
+            )}
           </label>
           <Input
             data-testid='alcohol-consumed-per-month'
@@ -932,9 +1015,7 @@ export const OptionalProfileUserForm = (props: {
               disabled={!newLinkPlatform || !newLinkValue}
             >
               <PlusIcon className="h-6 w-6"/>
-              <div className="sr-only">
-                {t('common.add', 'Add')}
-              </div>
+              <div className="sr-only">{t('common.add', 'Add')}</div>
             </Button>
           </div>
         </Col>
@@ -957,21 +1038,25 @@ export const OptionalProfileUserForm = (props: {
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
             setPinnedUrl={(url) => setProfile('pinned_url', url)}
             setDescription={(url, description) =>
-              setProfile("image_descriptions", {
-                ...(profile?.image_descriptions as Record<string, string> ?? {}),
+              setProfile('image_descriptions', {
+                ...((profile?.image_descriptions as Record<string, string>) ??
+                  {}),
                 [url]: description,
               })
             }
-            image_descriptions={profile.image_descriptions as Record<string, string>}
+            image_descriptions={
+              profile.image_descriptions as Record<string, string>
+            }
           />
         </Col>
-
 
         <Row className={'justify-end'}>
           <Button
             className={clsx(
-              "fixed lg:bottom-6 right-4 lg:right-32 z-50 text-xl",
-              bottomNavBarVisible ? "bottom-[calc(90px+var(--bnh))]" : "bottom-[calc(30px+var(--bnh))]"
+              'fixed lg:bottom-6 right-4 lg:right-32 z-50 text-xl',
+              bottomNavBarVisible
+                ? 'bottom-[calc(90px+var(--bnh))]'
+                : 'bottom-[calc(30px+var(--bnh))]'
             )}
             disabled={isSubmitting}
             loading={isSubmitting}
@@ -1032,8 +1117,12 @@ const CitySearchBox = (props: {
   )
 }
 
-function Category({title, className}: { title: string, className?: string }) {
-  return <h3 className={clsx("text-xl font-semibold mb-[-8px]", className)}>{title}</h3>;
+function Category({title, className}: { title: string; className?: string }) {
+  return (
+    <h3 className={clsx('text-xl font-semibold mb-[-8px]', className)}>
+      {title}
+    </h3>
+  )
 }
 
 const Big5Slider = (props: {
@@ -1064,4 +1153,3 @@ const Big5Slider = (props: {
     </div>
   )
 }
-

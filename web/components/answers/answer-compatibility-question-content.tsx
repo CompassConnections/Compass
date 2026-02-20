@@ -179,7 +179,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         {shortenedPopularity && (
           <Row className="text-ink-500 select-none items-center text-sm">
             <Tooltip
-              text={t('answers.content.people_answered', '{count} people have answered this question', { count: String(shortenedPopularity) })}
+              text={t('answers.content.people_answered', '{count} people have answered this question', {count: String(shortenedPopularity)})}
             >
               {shortenedPopularity}
             </Tooltip>
@@ -190,7 +190,7 @@ export function AnswerCompatibilityQuestionContent(props: {
       <Col
         className={clsx(
           SCROLLABLE_MODAL_CLASS,
-          'w-full gap-4 flex-1 min-h-0'
+          'w-full gap-4 flex-1 min-h-0 pr-2'
         )}
       >
         <Col className="gap-2">
@@ -204,7 +204,8 @@ export function AnswerCompatibilityQuestionContent(props: {
           />
         </Col>
         <Col className="gap-2">
-          <span className="text-ink-500 text-sm">{t('answers.content.answers_you_accept', "Answers you'll accept")}</span>
+          <span
+            className="text-ink-500 text-sm">{t('answers.content.answers_you_accept', "Answers you'll accept")}</span>
           <MultiSelectAnswers
             values={answer.pref_choices ?? []}
             setValue={(choice) =>

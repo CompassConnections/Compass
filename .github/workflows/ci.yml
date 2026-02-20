@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Type check
-        run: echo skipping #npx tsc --noEmit
-
       - name: Lint
-        run: npm run lint
+        run: yarn lint
+
+      - name: Type check
+        run: npx tsc --noEmit
 
       - name: Run Jest tests
         env:

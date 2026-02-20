@@ -20,7 +20,7 @@ describe('getNotifications', () => {
     });
 
     describe('when given valid input', () => {
-        it('should user notifications', async () => {
+        it('should send user notifications', async () => {
             const mockProps = {
                 limit: 10,
                 after: 2
@@ -36,7 +36,7 @@ describe('getNotifications', () => {
             expect(result).toBe(mockNotifications);
             expect(mockPg.map).toBeCalledTimes(1);
             expect(mockPg.map).toBeCalledWith(
-              sqlMatch('select data from user_notifications'),
+              sqlMatch('from user_notifications un left join notification_templates nt on un.template_id = nt.id'),
                 [mockAuth.uid, mockProps.limit, mockProps.after],
                 expect.any(Function)
             );

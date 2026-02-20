@@ -4,7 +4,7 @@ import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-te
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useT} from 'web/lib/locale'
 
-import {RELATIONSHIP_CHOICES} from "web/components/filters/choices";
+import {RELATIONSHIP_CHOICES} from "common/choices";
 import {FilterFields} from "common/filters";
 
 export function RelationshipFilterText(props: {

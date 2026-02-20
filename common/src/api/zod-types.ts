@@ -8,7 +8,6 @@ export const arraybeSchema = z
   .or(z.string())
   .transform(arrify)
 
-// @ts-ignore
 export const contentSchema: z.ZodType<JSONContent> = z.lazy(() =>
   z.intersection(
     z.record(z.any()),
@@ -44,7 +43,7 @@ const genderTypes = z.array(genderType)
 
 export const zBoolean = z
   .union([z.boolean(), z.string()])
-  .transform((val) => val === true || val === "true");
+  .transform((val) => val === true || val === 'true')
 
 export const baseProfilesSchema = z.object({
   age: z.number().min(18).max(100).optional().nullable(),
@@ -111,4 +110,6 @@ const optionalProfilesSchema = z.object({
   work: z.array(z.string()).optional().nullable(),
 })
 
-export const combinedProfileSchema = baseProfilesSchema.merge(optionalProfilesSchema)
+export const combinedProfileSchema = baseProfilesSchema.merge(
+  optionalProfilesSchema
+)

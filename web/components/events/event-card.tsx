@@ -107,7 +107,7 @@ export function EventCard(props: {
         </p>
         {event.participants.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {event.participants.map((participantId: any) => (
+            {event.participants.map((participantId: string) => (
               <span key={participantId} className="bg-canvas-100 text-ink-700 px-2 py-1 rounded text-xs">
                 <UserLinkFromId userId={participantId}/>
               </span>
@@ -194,7 +194,11 @@ export function EventCard(props: {
       {user && isCreator && event.status === 'active' && (
         <div className="mt-3 pt-3 border-t border-canvas-200 flex gap-2">
           <button
-            onClick={() => onCancelEvent?.(event.id)}
+            onClick={() => {
+              if (confirm(t('events.cancel_event_confirmation', 'Are you sure you want to cancel this event? This action cannot be undone.'))) {
+                onCancelEvent?.(event.id)
+              }
+            }}
             className="text-red-600 hover:text-red-700 text-sm font-medium"
           >
             {t('events.cancel_event', 'Cancel Event')}

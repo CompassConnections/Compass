@@ -8,7 +8,7 @@ import {api} from 'web/lib/api'
 import {APIError} from "common/api/utils";
 import clsx from "clsx";
 import {Col} from "web/components/layout/col";
-import {useT} from 'web/lib/locale';
+import {useLocale, useT} from 'web/lib/locale';
 
 import {Event} from 'web/hooks/use-events'
 
@@ -22,6 +22,7 @@ export function CreateEventModal(props: {
   const {open, setOpen, onClose, onSuccess, event} = props
   const isEditing = !!event
   const t = useT()
+  const {locale} = useLocale()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -76,8 +77,8 @@ export function CreateEventModal(props: {
           title: formData.title,
           description: formData.description || undefined,
           locationType: formData.locationType,
-          locationAddress: formData.locationAddress || undefined,
-          locationUrl: formData.locationUrl || undefined,
+          locationAddress: formData.locationType === 'in_person' && formData.locationAddress || undefined,
+          locationUrl: formData.locationType === 'online' && formData.locationUrl || undefined,
           eventStartTime: formData.eventStartTime!.toISOString(),
           eventEndTime: formData.eventEndTime
             ? formData.eventEndTime.toISOString()
@@ -91,8 +92,8 @@ export function CreateEventModal(props: {
           title: formData.title,
           description: formData.description || undefined,
           locationType: formData.locationType,
-          locationAddress: formData.locationAddress || undefined,
-          locationUrl: formData.locationUrl || undefined,
+          locationAddress: formData.locationType === 'in_person' && formData.locationAddress || undefined,
+          locationUrl: formData.locationType === 'online' && formData.locationUrl || undefined,
           eventStartTime: formData.eventStartTime!.toISOString(),
           eventEndTime: formData.eventEndTime
             ? formData.eventEndTime.toISOString()
@@ -135,6 +136,9 @@ export function CreateEventModal(props: {
     const {name, value} = e.target
     setFormData((prev) => ({...prev, [name]: value}))
   }
+
+  const dateFormat = locale === 'en' ? "MMM d, yyyy h:mm aa" : "dd MMM yyyy, HH:mm"
+  const timeFormat = "HH:mm"
 
   return (
     <Modal open={open} setOpen={setOpen} onClose={onClose} size="lg">
@@ -231,10 +235,11 @@ export function CreateEventModal(props: {
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-sm font-medium">
-                {t('events.start_time', 'Start Time')} *
+                {t('events.start_time', 'Start')} *
               </label>
               <DatePicker
                 selected={formData.eventStartTime}
+                locale={locale}
                 onChange={(date: Date | null) => {
                   if (!date) return
                   setFormData((prev) => {
@@ -245,21 +250,22 @@ export function CreateEventModal(props: {
                   })
                 }}
                 showTimeSelect
-                timeFormat="HH:mm"
+                timeFormat={timeFormat}
                 timeIntervals={15}
-                dateFormat="MMM d, yyyy h:mm aa"
+                dateFormat={dateFormat}
                 minDate={new Date()}
                 required
-                placeholderText="Select date and time"
+                placeholderText={t('events.select_start_datetime', 'Select date and time')}
                 className="bg-canvas-50 border-canvas-300 focus:border-primary-500 focus:ring-primary-500 w-full rounded-md border px-3 py-2"
               />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">
-                {t('events.end_time', 'End Time')}
+                {t('events.end_time', 'End')}
               </label>
               <DatePicker
                 selected={formData.eventEndTime}
+                locale={locale}
                 onChange={(date: Date | null) => {
                   setFormData((prev) => {
                     const startTime = prev.eventStartTime
@@ -271,11 +277,11 @@ export function CreateEventModal(props: {
                   })
                 }}
                 showTimeSelect
-                timeFormat="HH:mm"
+                timeFormat={timeFormat}
                 timeIntervals={15}
-                dateFormat="MMM d, yyyy h:mm aa"
+                dateFormat={dateFormat}
                 minDate={formData.eventStartTime || new Date()}
-                placeholderText="Select end time (optional)"
+                placeholderText={t('events.select_end_datetime', 'Select end time (optional)')}
                 className="bg-canvas-50 border-canvas-300 focus:border-primary-500 focus:ring-primary-500 w-full rounded-md border px-3 py-2"
               />
             </div>

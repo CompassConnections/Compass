@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
-    "lint": "yarn --cwd=web lint-fix; eslint common --fix ; eslint backend/api --fix ; eslint backend/shared --fix",
+    "lint": "yarn --cwd=web lint; yarn --cwd=common lint; yarn --cwd=backend/api lint; yarn --cwd=backend/shared lint",
+    "lint-fix": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix",
     "dev": "./scripts/run_local.sh dev",
     "dev:isolated": "./scripts/run_local_isolated.sh",
     "prod": "./scripts/run_local.sh prod",
@@ -40,7 +41,30 @@
     "playwright:debug": "playwright test --debug",
     "playwright:report": "npx playwright show-report tests/reports/playwright-report",
     "postinstall": "./scripts/post_install.sh",
-    "emulate": "firebase emulators:start --only auth,storage --project compass-57c3c"
+    "emulate": "firebase emulators:start --only auth,storage --project compass-57c3c",
+    "prepare": "npx husky"
+  },
+  "lint-staged": {
+    "web/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
+      "next lint --fix --file",
+      "next lint --max-warnings 0 --file"
+    ],
+    "common/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint --max-warnings 0"
+    ],
+    "backend/api/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint --max-warnings 0"
+    ],
+    "backend/shared/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint --max-warnings 0"
+    ]
   },
   "dependencies": {
     "@capacitor/app": "7.1.0",
@@ -70,8 +94,8 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "29.2.4",
     "@types/node": "20.12.11",
-    "@typescript-eslint/eslint-plugin": "7.4.0",
-    "@typescript-eslint/parser": "7.4.0",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
     "chalk": "5.6.2",
     "concurrently": "8.2.2",
     "dotenv-cli": "10.0.0",
@@ -79,6 +103,7 @@
     "eslint-plugin-lodash": "7.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "firebase-tools": "14.27.0",
+    "husky": "9.1.7",
     "jest": "29.3.1",
     "nodemon": "2.0.20",
     "prettier": "3.6.2",

@@ -1,5 +1,28 @@
-import { Row, SupabaseClient } from 'common/supabase/utils'
+import {Row, SupabaseClient} from 'common/supabase/utils'
 
+// Notification template - stores the shared content for notifications sent to multiple users
+export type NotificationTemplate = {
+  id: string
+  sourceType: string
+  title?: string
+  sourceText: string
+  sourceSlug?: string
+  sourceUserAvatarUrl?: string
+  sourceUpdateType?: 'created' | 'updated' | 'deleted'
+  createdTime: number
+  data?: { [key: string]: any }
+}
+
+// User-specific notification data (lightweight - references template)
+export type UserNotification = {
+  notificationId: string
+  userId: string
+  templateId: string
+  isSeen: boolean
+  viewTime?: number
+}
+
+// Full notification (combines template + user data) - for backwards compatibility
 export type Notification = {
   id: string
   userId: string
@@ -28,6 +51,9 @@ export type Notification = {
   sourceTitle?: string
 
   isSeenOnHref?: string
+
+  // New field for template-based notifications
+  templateId?: string
 }
 
 // export const NOTIFICATION_TYPES_TO_SELECT = [

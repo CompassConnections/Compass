@@ -19,7 +19,7 @@ export function usePrivateMessages(
   userId: string
 ) {
   // console.debug('getWebsocketUrl', getWebsocketUrl())
-  const key = `private-messages-${channelId}-${limit}-v1`;
+  const key = `private-messages-${channelId}-${limit}-v1`
   const [messages, setMessages] = usePersistentLocalState<
     PrivateChatMessage[] | undefined
   >(undefined, key)
@@ -36,7 +36,10 @@ export function usePrivateMessages(
     // console.debug(key, {newMessages, messages, data})
     setMessages((prevMessages) =>
       orderBy(
-        uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
+        uniqBy(
+          [...newMessages, ...(prevMessages && id ? prevMessages : [])],
+          (m) => m.id
+        ),
         'createdTime',
         'desc'
       )
@@ -67,12 +70,16 @@ export const useUnseenPrivateMessageChannels = (
   const [lastSeenChatTimeByChannelId, setLastSeenChatTimeByChannelId] =
     useState<Record<number, string> | undefined>(undefined)
 
-  const {data, refresh} = useAPIGetter('get-channel-memberships', {
-    lastUpdatedTime: ignorePageSeenTime
-      ? new Date(0).toISOString()
-      : millisToTs(lastSeenMessagesPageTime),
-    limit: 100,
-  })
+  const {data, refresh} = useAPIGetter(
+    'get-channel-memberships',
+    {
+      lastUpdatedTime: ignorePageSeenTime
+        ? new Date(0).toISOString()
+        : millisToTs(lastSeenMessagesPageTime),
+      limit: 100,
+    },
+    ['lastUpdatedTime']
+  )
   const {channels} = data ?? {
     channels: [] as PrivateMessageChannel[],
     memberIdsByChannelId: {},
@@ -127,7 +134,7 @@ export const useUnseenPrivateMessageChannels = (
 
     const lastSeenTime = lastSeenChatTimeByChannelId[channelId] ?? 0
     const lastSeenChatTime =
-      notifyAfterTime > lastSeenTime ? notifyAfterTime : lastSeenTime ?? 0
+      notifyAfterTime > lastSeenTime ? notifyAfterTime : (lastSeenTime ?? 0)
     return (
       channel.last_updated_time > lastSeenChatTime &&
       (ignorePageSeenTime ||

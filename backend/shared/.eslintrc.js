@@ -1,7 +1,7 @@
 module.exports = {
   plugins: ['lodash', 'unused-imports'],
   extends: ['eslint:recommended'],
-  ignorePatterns: ['dist', 'lib', 'coverage'],
+  ignorePatterns: ['dist', 'lib', 'coverage', 'tests'],
   env: {
     node: true,
   },
@@ -16,15 +16,9 @@ module.exports = {
         project: ['./tsconfig.json', './tsconfig.test.json'],
       },
       rules: {
-        '@typescript-eslint/ban-types': [
-          'error',
-          {
-            extendDefaults: true,
-            types: {
-              '{}': false,
-            },
-          },
-        ],
+        "@typescript-eslint/no-empty-object-type": "error",  // replaces banning {}
+        "@typescript-eslint/no-unsafe-function-type": "error", // replaces banning Function
+        "@typescript-eslint/no-wrapper-object-types": "error",  // replaces banning String, Number, etc.
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-extra-semi': 'off',
         '@typescript-eslint/no-unused-vars': [

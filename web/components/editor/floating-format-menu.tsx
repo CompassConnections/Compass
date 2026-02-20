@@ -1,12 +1,10 @@
-import { LinkIcon, CheckIcon, TrashIcon } from '@heroicons/react/solid'
-import { Editor } from '@tiptap/core'
-import { BubbleMenu } from '@tiptap/react'
+import {CheckIcon, LinkIcon, TrashIcon} from '@heroicons/react/solid'
+import {Editor} from '@tiptap/core'
+import {BubbleMenu} from '@tiptap/react'
 import clsx from 'clsx'
-import { getUrl } from 'common/util/parse'
-import { useState } from 'react'
-import BoldIcon from 'web/lib/icons/bold-icon.svg'
-import ItalicIcon from 'web/lib/icons/italic-icon.svg'
-import TypeIcon from 'web/lib/icons/type-icon.svg'
+import {getUrl} from 'common/util/parse'
+import {useState} from 'react'
+import {Bold, Italic, Type} from 'lucide-react'
 
 // see https://tiptap.dev/guide/menus
 
@@ -40,14 +38,14 @@ export function FloatingFormatMenu(props: {
           {advanced && (
             <>
               <IconButton
-                icon={TypeIcon}
+                icon={Type}
                 onClick={() =>
                   editor.chain().focus().toggleHeading({ level: 1 }).run()
                 }
                 isActive={editor.isActive('heading', { level: 1 })}
               />
               <IconButton
-                icon={TypeIcon}
+                icon={Type}
                 onClick={() =>
                   editor.chain().focus().toggleHeading({ level: 2 }).run()
                 }
@@ -58,12 +56,12 @@ export function FloatingFormatMenu(props: {
             </>
           )}
           <IconButton
-            icon={BoldIcon}
+            icon={Bold}
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
           />
           <IconButton
-            icon={ItalicIcon}
+            icon={Italic}
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive('italic')}
           />

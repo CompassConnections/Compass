@@ -64,7 +64,7 @@ export const AddPhotosWidget = (props: {
         disabled={uploadingImages}
       />
       <Row className="flex-wrap gap-2">
-        <div className="relative">
+        <div className="relative" data-testid="profile-upload-photo">
           <label
             className={clsx(
               'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center rounded-md transition-colors',

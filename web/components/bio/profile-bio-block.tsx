@@ -30,7 +30,7 @@ export function BioBlock(props: {
         !edit && 'px-3 py-2',
       )}
     >
-      <Row className="w-full">
+      <Row className="w-full" data-testid="profile-bio">
         {!edit && profile.bio && (
           <Col className="flex w-full flex-grow">
             <Content className="w-full" content={profile.bio as JSONContent} />
@@ -47,7 +47,11 @@ export function BioBlock(props: {
           />
         )}
         {isCurrentUser && !edit && (
-          <Tooltip text={t('more_options_user.edit_bio', 'Bio options')} noTap>
+          <Tooltip
+            text={t('more_options_user.edit_bio', 'Bio options')}
+            noTap
+            testId="profile-bio-options"
+          >
             <DropdownMenu
               items={[
                 {

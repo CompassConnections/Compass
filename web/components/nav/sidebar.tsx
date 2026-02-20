@@ -119,6 +119,7 @@ export const SignUpButton = (props: {
 
   return (
     <Button
+      data-testid="side-bar-sign-up-button"
       color={color ?? 'gradient'}
       size={size ?? 'xl'}
       onClick={signupRedirect}

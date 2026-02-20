@@ -352,6 +352,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.feet', 'Feet')}</span>
               <Input
                 type="number"
+                data-testid="height-feet"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
@@ -370,6 +371,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.inches', 'Inches')}</span>
               <Input
                 type="number"
+                data-testid="height-inches"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightInches(undefined)
@@ -391,6 +393,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
               <Input
                 type="number"
+                data-testid="height-centimeters"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
@@ -454,6 +457,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.min', 'Min')}</span>
               <Select
+                data-testid="pref-age-min"
                 value={profile['pref_age_min'] ?? ''}
                 onChange={(e) => {
                   const newMin = e.target.value ? Number(e.target.value) : 18
@@ -473,6 +477,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.max', 'Max')}</span>
               <Select
+                data-testid="pref-age-max"
                 value={profile['pref_age_max'] ?? ''}
                 onChange={(e) => {
                   const newMax = e.target.value ? Number(e.target.value) : 100
@@ -544,6 +549,7 @@ export const OptionalProfileUserForm = (props: {
                 {t('profile.optional.num_kids', 'Current number of kids')}
               </label>
               <Input
+                data-testid="current-number-of-kids"
                 type="number"
                 onChange={(e) => {
                   const value = e.target.value === '' ? null : Number(e.target.value)
@@ -621,6 +627,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.university', 'University')}
           </label>
           <Input
+            data-testid="university"
             type="text"
             onChange={(e) => setProfile('university', e.target.value)}
             className={'w-52'}
@@ -639,6 +646,7 @@ export const OptionalProfileUserForm = (props: {
               : t('profile.optional.job_title', 'Job title')}
           </label>
           <Input
+            data-testid="job-title"
             type="text"
             onChange={(e) => setProfile('occupation_title', e.target.value)}
             className={'w-52'}
@@ -649,6 +657,7 @@ export const OptionalProfileUserForm = (props: {
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>{t('profile.optional.company', 'Company')}</label>
           <Input
+            data-testid="company"
             type="text"
             onChange={(e) => setProfile('company', e.target.value)}
             className={'w-52'}
@@ -679,6 +688,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
+            data-testid="political-belief-details"
             type="text"
             onChange={(e) => setProfile('political_details', e.target.value)}
             className={'w-full sm:w-96'}
@@ -700,6 +710,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
+            data-testid="religious-belief-details"
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
@@ -797,6 +808,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
           </label>
           <Input
+            data-testid="alcohol-consumed-per-month"
             type="number"
             onChange={(e) => {
               const value = e.target.value === '' ? null : Number(e.target.value)
@@ -1011,7 +1023,9 @@ const Big5Slider = (props: {label: string; value: number; onChange: (v: number) 
     <div>
       <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
         <span>{label}</span>
-        <span className="font-semibold text-ink-700">{Math.round(value)}</span>
+        <span className="font-semibold text-ink-700" data-testid={`${label.toLowerCase()}-value`}>
+          {Math.round(value)}
+        </span>
       </div>
       <Slider
         amount={value}

@@ -42,8 +42,9 @@ export function AboutRow(props: {
   text?: string | null | string[]
   preText?: string
   suffix?: string | null
+  testId?: string
 }) {
-  const {icon, text, preText, suffix} = props
+  const {icon, text, preText, suffix, testId} = props
   const t = useT()
   if (!text?.length && !preText && !suffix) {
     return <></>
@@ -65,7 +66,7 @@ export function AboutRow(props: {
     formattedText += formattedText ? ` (${suffix})` : suffix
   }
   return (
-    <Row className="items-center gap-2">
+    <Row className="items-center gap-2" data-testid={testId}>
       <div className="text-ink-600 w-5">{icon}</div>
       <div>{formattedText}</div>
     </Row>
@@ -99,6 +100,7 @@ export default function ProfileAbout(props: {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }
+        testId="profile-about-work-area"
       />
       <AboutRow
         icon={<RiScales3Line className="h-5 w-5" />}
@@ -106,6 +108,7 @@ export default function ProfileAbout(props: {
           t(`profile.political.${belief}`, INVERTED_POLITICAL_CHOICES[belief]),
         )}
         suffix={profile.political_details}
+        testId="profile-about-political"
       />
       <AboutRow
         icon={<PiHandsPrayingBold className="h-5 w-5" />}
@@ -113,6 +116,7 @@ export default function ProfileAbout(props: {
           t(`profile.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]),
         )}
         suffix={profile.religious_beliefs}
+        testId="profile-about-religious"
       />
       <AboutRow
         icon={<FaStar className="h-5 w-5" />}
@@ -122,6 +126,7 @@ export default function ProfileAbout(props: {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }
+        testId="profile-about-interests"
       />
       <AboutRow
         icon={<FaHandsHelping className="h-5 w-5" />}
@@ -131,10 +136,12 @@ export default function ProfileAbout(props: {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }
+        testId="profile-about-causes"
       />
       <AboutRow
         icon={<BsPersonVcard className="h-5 w-5" />}
         text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
+        testId="profile-about-personality"
       />
       <Big5Traits profile={profile} />
       <AboutRow
@@ -142,18 +149,21 @@ export default function ProfileAbout(props: {
         text={profile.ethnicity
           ?.filter((r) => r !== 'other')
           ?.map((r: any) => t(`profile.race.${r}`, convertRace(r)))}
+        testId="profile-about-ethnicity"
       />
       <Smoker profile={profile} />
       <Drinks profile={profile} />
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5" />}
         text={profile.diet?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))}
+        testId="profile-about-diet"
       />
       <AboutRow
         icon={<MdLanguage className="h-5 w-5" />}
         text={profile.languages?.map((v) =>
           t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]),
         )}
+        testId="profile-about-languages"
       />
       <HasKids profile={profile} />
       <WantsKids profile={profile} />
@@ -209,6 +219,7 @@ function Seeking(props: {profile: Profile}) {
     <AboutRow
       icon={<PiMagnifyingGlassBold className="h-5 w-5" />}
       text={`${seekingGenderText} ${ageRangeText}`}
+      testId="profile-about-seeking"
     />
   )
 }
@@ -217,7 +228,13 @@ function RelationshipType(props: {profile: Profile}) {
   const t = useT()
   const {profile} = props
   const seekingGenderText = getSeekingGenderText(profile, t)
-  return <AboutRow icon={<BsPersonHeart className="h-5 w-5" />} text={seekingGenderText} />
+  return (
+    <AboutRow
+      icon={<BsPersonHeart className="h-5 w-5" />}
+      text={seekingGenderText}
+      testId="profile-about-relationship-type"
+    />
+  )
 }
 
 function RelationshipStatus(props: {profile: Profile}) {
@@ -233,6 +250,7 @@ function RelationshipStatus(props: {profile: Profile}) {
       text={relationship_status?.map((v) =>
         t(`profile.relationship_status.${v}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[v]),
       )}
+      testId="profile-about-relationship-status"
     />
   )
 }
@@ -257,7 +275,13 @@ function Education(props: {profile: Profile}) {
   if (text.length === 0) {
     return <></>
   }
-  return <AboutRow icon={<LuGraduationCap className="h-5 w-5" />} text={text} />
+  return (
+    <AboutRow
+      icon={<LuGraduationCap className="h-5 w-5" />}
+      text={text}
+      testId="profile-about-education"
+    />
+  )
 }
 
 function Occupation(props: {profile: Profile}) {
@@ -274,7 +298,13 @@ function Occupation(props: {profile: Profile}) {
   }${occupation_title && company ? ` ${t('profile.at', 'at')} ` : ''}${
     company ? capitalizeAndRemoveUnderscores(company) : ''
   }`
-  return <AboutRow icon={<LuBriefcase className="h-5 w-5" />} text={occupationText} />
+  return (
+    <AboutRow
+      icon={<LuBriefcase className="h-5 w-5" />}
+      text={occupationText}
+      testId="profile-about-occupation"
+    />
+  )
 }
 
 function Smoker(props: {profile: Profile}) {
@@ -291,6 +321,7 @@ function Smoker(props: {profile: Profile}) {
     <AboutRow
       icon={<LuCigaretteOff className="h-5 w-5" />}
       text={t('profile.doesnt_smoke', "Doesn't smoke")}
+      testId="profile-about-smoker"
     />
   )
 }
@@ -305,6 +336,7 @@ function Drinks(props: {profile: Profile}) {
       <AboutRow
         icon={<MdNoDrinks className="h-5 w-5" />}
         text={t('profile.doesnt_drink', "Doesn't drink")}
+        testId="profile-about-not-drink"
       />
     )
   }
@@ -318,6 +350,7 @@ function Drinks(props: {profile: Profile}) {
               count: drinksPerMonth,
             })
       }
+      testId="profile-about-drinker"
     />
   )
 }
@@ -338,7 +371,13 @@ function WantsKids(props: {profile: Profile}) {
             ? t('profile.wants_kids_3', 'Leaning towards wanting children')
             : t('profile.wants_kids_4', 'Wants children')
 
-  return <AboutRow icon={<MdOutlineChildFriendly className="h-5 w-5" />} text={wantsKidsText} />
+  return (
+    <AboutRow
+      icon={<MdOutlineChildFriendly className="h-5 w-5" />}
+      text={wantsKidsText}
+      testId="profile-about-wants-kids"
+    />
+  )
 }
 
 function LastOnline(props: {lastOnlineTime?: string}) {
@@ -352,6 +391,7 @@ function LastOnline(props: {lastOnlineTime?: string}) {
       text={t('profile.last_online', 'Active {time}', {
         time: fromNow(lastOnlineTime, true, t, locale),
       })}
+      testId="profile-about-last-online"
     />
   )
 }
@@ -400,7 +440,7 @@ function Big5Traits(props: {profile: Profile}) {
   }
 
   return (
-    <Col className="gap-2">
+    <Col className="gap-2" data-testid="profile-about-big-five-personality-traits">
       <div className="text-ink-600 font-medium">
         {t('profile.big5', 'Big Five personality traits')}:
       </div>
@@ -462,7 +502,7 @@ function HasKids(props: {profile: Profile}) {
     ) : (
       faChild
     )
-  return <AboutRow icon={icon} text={hasKidsText} />
+  return <AboutRow icon={icon} text={hasKidsText} testId={'profile-about-has-kids'} />
 }
 
 export const formatProfileValue = (

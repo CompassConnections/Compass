@@ -33,6 +33,12 @@ module.exports = {
         'no-constant-condition': 'off',
       },
     },
+    {
+      files: ['**/fixtures/**/*.ts'],
+      rules: {
+        'no-empty-pattern': 'off',
+      },
+    },
   ],
   rules: {
     'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],

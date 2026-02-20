@@ -32,7 +32,7 @@ type CleanupFixtures = {
 
 export const test = base.extend<CleanupFixtures>({
   cleanupUsers: [
-    async (_, use) => {
+    async ({}, use) => {
       // Run all tests first
       await use()
 

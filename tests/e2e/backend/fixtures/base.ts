@@ -9,7 +9,7 @@ export type TestOptions = {
 }
 
 export const test = base.extend<TestOptions>({
-  backendPage: async (_, use) => {
+  backendPage: async ({}, use) => {
     const apiContext = await request.newContext({
       baseURL: 'https://api.compassmeet.com',
     })

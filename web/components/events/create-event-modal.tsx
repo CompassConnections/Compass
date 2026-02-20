@@ -1,16 +1,16 @@
 'use client'
 
+import 'react-datepicker/dist/react-datepicker.css'
+
+import clsx from 'clsx'
+import {APIError} from 'common/api/utils'
 import {useEffect, useState} from 'react'
 import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
+import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {api} from 'web/lib/api'
-import {APIError} from "common/api/utils";
-import clsx from "clsx";
-import {Col} from "web/components/layout/col";
-import {useLocale, useT} from 'web/lib/locale';
-
 import {Event} from 'web/hooks/use-events'
+import {api} from 'web/lib/api'
+import {useLocale, useT} from 'web/lib/locale'
 
 export function CreateEventModal(props: {
   open: boolean
@@ -43,7 +43,7 @@ export function CreateEventModal(props: {
       setFormData({
         title: event.title || '',
         description: event.description || '',
-        locationType: event.location_type || 'in_person' as 'in_person' | 'online',
+        locationType: event.location_type || ('in_person' as 'in_person' | 'online'),
         locationAddress: event.location_address || '',
         locationUrl: event.location_url || '',
         eventStartTime: event.event_start_time ? new Date(event.event_start_time) : null,
@@ -77,12 +77,11 @@ export function CreateEventModal(props: {
           title: formData.title,
           description: formData.description || undefined,
           locationType: formData.locationType,
-          locationAddress: formData.locationType === 'in_person' && formData.locationAddress || undefined,
-          locationUrl: formData.locationType === 'online' && formData.locationUrl || undefined,
+          locationAddress:
+            (formData.locationType === 'in_person' && formData.locationAddress) || undefined,
+          locationUrl: (formData.locationType === 'online' && formData.locationUrl) || undefined,
           eventStartTime: formData.eventStartTime!.toISOString(),
-          eventEndTime: formData.eventEndTime
-            ? formData.eventEndTime.toISOString()
-            : undefined,
+          eventEndTime: formData.eventEndTime ? formData.eventEndTime.toISOString() : undefined,
           maxParticipants: formData.maxParticipants
             ? parseInt(formData.maxParticipants)
             : undefined,
@@ -92,12 +91,11 @@ export function CreateEventModal(props: {
           title: formData.title,
           description: formData.description || undefined,
           locationType: formData.locationType,
-          locationAddress: formData.locationType === 'in_person' && formData.locationAddress || undefined,
-          locationUrl: formData.locationType === 'online' && formData.locationUrl || undefined,
+          locationAddress:
+            (formData.locationType === 'in_person' && formData.locationAddress) || undefined,
+          locationUrl: (formData.locationType === 'online' && formData.locationUrl) || undefined,
           eventStartTime: formData.eventStartTime!.toISOString(),
-          eventEndTime: formData.eventEndTime
-            ? formData.eventEndTime.toISOString()
-            : undefined,
+          eventEndTime: formData.eventEndTime ? formData.eventEndTime.toISOString() : undefined,
           maxParticipants: formData.maxParticipants
             ? parseInt(formData.maxParticipants)
             : undefined,
@@ -131,21 +129,24 @@ export function CreateEventModal(props: {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const {name, value} = e.target
     setFormData((prev) => ({...prev, [name]: value}))
   }
 
-  const dateFormat = locale === 'en' ? "MMM d, yyyy h:mm aa" : "dd MMM yyyy, HH:mm"
-  const timeFormat = "HH:mm"
+  const dateFormat = locale === 'en' ? 'MMM d, yyyy h:mm aa' : 'dd MMM yyyy, HH:mm'
+  const timeFormat = 'HH:mm'
 
   return (
     <Modal open={open} setOpen={setOpen} onClose={onClose} size="lg">
-      <Col className={clsx("", MODAL_CLASS)}>
-        <form onSubmit={handleSubmit} className={clsx("space-y-4 pr-4", SCROLLABLE_MODAL_CLASS)}>
-
-          <h3>{isEditing ? t('events.edit_event', 'Edit Event') : t('events.create_new_event', 'Create New Event')}</h3>
+      <Col className={clsx('', MODAL_CLASS)}>
+        <form onSubmit={handleSubmit} className={clsx('space-y-4 pr-4', SCROLLABLE_MODAL_CLASS)}>
+          <h3>
+            {isEditing
+              ? t('events.edit_event', 'Edit Event')
+              : t('events.create_new_event', 'Create New Event')}
+          </h3>
           <div>
             <label htmlFor="title" className="mb-1 block text-sm font-medium min-w-[300px]">
               {t('events.event_title', 'Event Title')} *
@@ -243,10 +244,15 @@ export function CreateEventModal(props: {
                 onChange={(date: Date | null) => {
                   if (!date) return
                   setFormData((prev) => {
-                    const newEndTime = (!prev.eventEndTime || prev.eventEndTime < date)
-                      ? new Date(date.getTime() + 60 * 60 * 1000)
-                      : prev.eventEndTime
-                    return {...prev, eventStartTime: date, eventEndTime: newEndTime}
+                    const newEndTime =
+                      !prev.eventEndTime || prev.eventEndTime < date
+                        ? new Date(date.getTime() + 60 * 60 * 1000)
+                        : prev.eventEndTime
+                    return {
+                      ...prev,
+                      eventStartTime: date,
+                      eventEndTime: newEndTime,
+                    }
                   })
                 }}
                 showTimeSelect
@@ -271,7 +277,11 @@ export function CreateEventModal(props: {
                     const startTime = prev.eventStartTime
                     if (startTime && date && date <= startTime) {
                       // If end time is before or equal to start, set start to 1 hour before end
-                      return {...prev, eventStartTime: new Date(date.getTime() - 60 * 60 * 1000), eventEndTime: date}
+                      return {
+                        ...prev,
+                        eventStartTime: new Date(date.getTime() - 60 * 60 * 1000),
+                        eventEndTime: date,
+                      }
                     }
                     return {...prev, eventEndTime: date}
                   })
@@ -303,9 +313,7 @@ export function CreateEventModal(props: {
             />
           </div>
 
-          {error && (
-            <div className="text-red-800 rounded-md p-3 text-sm">{error}</div>
-          )}
+          {error && <div className="text-red-800 rounded-md p-3 text-sm">{error}</div>}
 
           <div className="flex justify-end gap-3 pt-4 pb-4">
             <button
@@ -320,7 +328,13 @@ export function CreateEventModal(props: {
               disabled={loading}
               className="bg-primary-500 hover:bg-primary-600 text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
-              {loading ? (isEditing ? t('events.updating', 'Updating...') : t('events.creating', 'Creating...')) : (isEditing ? t('events.update_event', 'Update Event') : t('events.create_event', 'Create Event'))}
+              {loading
+                ? isEditing
+                  ? t('events.updating', 'Updating...')
+                  : t('events.creating', 'Creating...')
+                : isEditing
+                  ? t('events.update_event', 'Update Event')
+                  : t('events.create_event', 'Create Event')}
             </button>
           </div>
         </form>

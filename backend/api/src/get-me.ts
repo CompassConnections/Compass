@@ -1,6 +1,7 @@
-import { type APIHandler } from './helpers/endpoint'
-import { getUser } from 'api/get-user'
+import {getUser} from 'api/get-user'
+
+import {type APIHandler} from './helpers/endpoint'
 
 export const getMe: APIHandler<'me'> = async (_, auth) => {
-  return getUser({ id: auth.uid })
+  return getUser({id: auth.uid})
 }

@@ -1,55 +1,47 @@
-import { PencilIcon } from '@heroicons/react/outline'
-
-import { XIcon } from '@heroicons/react/outline'
-import { Row as rowFor } from 'common/supabase/utils'
-import { User } from 'common/user'
-import { deleteAnswer } from 'web/lib/supabase/answers'
-import { useState } from 'react'
+import {PencilIcon, XIcon} from '@heroicons/react/outline'
+import {Profile} from 'common/profiles/profile'
+import {Row as rowFor} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {partition} from 'lodash'
+import {useState} from 'react'
+import {TbMessage} from 'react-icons/tb'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import { Col } from 'web/components/layout/col'
-import { Row } from 'web/components/layout/row'
-import { Linkify } from 'web/components/widgets/linkify'
-import { IndividualQuestionRow } from '../questions-form'
-import { Subtitle } from '../widgets/profile-subtitle'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {Linkify} from 'web/components/widgets/linkify'
+import {shortenName} from 'web/components/widgets/user-link'
 import {
   QuestionWithCountType,
   useFRQuestionsWithAnswerCount,
   useUserAnswers,
 } from 'web/hooks/use-questions'
-import { TbMessage } from 'react-icons/tb'
-import { OtherProfileAnswers } from './other-profile-answers'
-import {
-  MODAL_CLASS,
-  Modal,
-  SCROLLABLE_MODAL_CLASS,
-} from 'web/components/layout/modal'
-import { partition } from 'lodash'
-import { shortenName } from 'web/components/widgets/user-link'
-import { AddQuestionButton } from './free-response-add-question'
-import { Profile } from 'common/profiles/profile'
 import {useT} from 'web/lib/locale'
+import {deleteAnswer} from 'web/lib/supabase/answers'
+
+import {IndividualQuestionRow} from '../questions-form'
+import {Subtitle} from '../widgets/profile-subtitle'
+import {AddQuestionButton} from './free-response-add-question'
+import {OtherProfileAnswers} from './other-profile-answers'
 
 export function FreeResponseDisplay(props: {
   isCurrentUser: boolean
   user: User
   fromProfilePage: Profile | undefined
 }) {
-  const { isCurrentUser, user, fromProfilePage } = props
+  const {isCurrentUser, user, fromProfilePage} = props
   const t = useT()
 
-  const { refreshAnswers, answers: allAnswers } = useUserAnswers(user?.id)
+  const {refreshAnswers, answers: allAnswers} = useUserAnswers(user?.id)
 
-  const answers = allAnswers.filter(
-    (a) => a.free_response != null && a.free_response !== ''
-  )
+  const answers = allAnswers.filter((a) => a.free_response != null && a.free_response !== '')
 
   const answerQuestionIds = new Set(answers.map((answer) => answer.question_id))
 
   const FRquestionsWithCount = useFRQuestionsWithAnswerCount()
 
-  const [yourFRQuestions, otherFRQuestions] = partition(
-    FRquestionsWithCount,
-    (question) => answerQuestionIds.has(question.id)
+  const [yourFRQuestions, otherFRQuestions] = partition(FRquestionsWithCount, (question) =>
+    answerQuestionIds.has(question.id),
   )
 
   const noAnswers = answers.length < 1
@@ -64,7 +56,9 @@ export function FreeResponseDisplay(props: {
         <Subtitle>
           {isCurrentUser
             ? t('answers.free.your_title', 'Your Free Response')
-            : t('answers.free.user_title', "{name}'s Free Response", { name: shortenName(user.name) })}
+            : t('answers.free.user_title', "{name}'s Free Response", {
+                name: shortenName(user.name),
+              })}
         </Subtitle>
       </Row>
 
@@ -102,7 +96,7 @@ function AnswerBlock(props: {
   user: User
   refreshAnswers: () => void
 }) {
-  const { answer, questions, isCurrentUser, user, refreshAnswers } = props
+  const {answer, questions, isCurrentUser, user, refreshAnswers} = props
   const question = questions.find((q) => q.id === answer.question_id)
   const [edit, setEdit] = useState(false)
   const t = useT()
@@ -114,9 +108,7 @@ function AnswerBlock(props: {
   return (
     <Col
       key={question.id}
-      className={
-        'bg-canvas-0 flex-grow whitespace-pre-line rounded-md px-3 py-2 leading-relaxed'
-      }
+      className={'bg-canvas-0 flex-grow whitespace-pre-line rounded-md px-3 py-2 leading-relaxed'}
     >
       <Row className="text-ink-600 justify-between text-sm">
         {question.question}
@@ -131,11 +123,12 @@ function AnswerBlock(props: {
               {
                 name: t('answers.menu.delete', 'Delete'),
                 icon: <XIcon className="h-5 w-5" />,
-                onClick: () =>
-                  deleteAnswer(answer, user.id).then(() => refreshAnswers()),
+                onClick: () => deleteAnswer(answer, user.id).then(() => refreshAnswers()),
               },
               {
-                name: t('answers.free.see_others', 'See {count} other answers', { count: String(question.answer_count) }),
+                name: t('answers.free.see_others', 'See {count} other answers', {
+                  count: String(question.answer_count),
+                }),
                 icon: <TbMessage className="h-5 w-5" />,
                 onClick: () => setOtherAnswerModal(true),
               },
@@ -169,11 +162,7 @@ function AnswerBlock(props: {
       <Modal open={otherAnswerModal} setOpen={setOtherAnswerModal}>
         <Col className={MODAL_CLASS}>
           <span className="font-semibold">{question.question}</span>
-          <OtherProfileAnswers
-            question={question}
-            user={user}
-            className={SCROLLABLE_MODAL_CLASS}
-          />
+          <OtherProfileAnswers question={question} user={user} className={SCROLLABLE_MODAL_CLASS} />
         </Col>
       </Modal>
     </Col>

@@ -1,19 +1,19 @@
-import {type Notification, NOTIFICATIONS_PER_PAGE,} from 'common/notifications'
+import {type Notification, NOTIFICATIONS_PER_PAGE} from 'common/notifications'
 import {type User} from 'common/src/user'
 import {Fragment, useEffect, useMemo, useState} from 'react'
-import {NoSEO} from 'web/components/NoSEO'
 import {Col} from 'web/components/layout/col'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
-import {PageBase} from 'web/components/page-base'
+import {NoSEO} from 'web/components/NoSEO'
 import {NotificationItem} from 'web/components/notification-items'
+import {NotificationSettings} from 'web/components/notifications'
+import {PageBase} from 'web/components/page-base'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Pagination} from 'web/components/widgets/pagination'
 import {Title} from 'web/components/widgets/title'
 import {useGroupedNotifications} from 'web/hooks/use-notifications'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {useRedirectIfSignedOut} from "web/hooks/use-redirect-if-signed-out";
-import {NotificationSettings} from "web/components/notifications";
 import {useT} from 'web/lib/locale'
 
 export default function NotificationsPage() {
@@ -21,13 +21,19 @@ export default function NotificationsPage() {
   const t = useT()
   return (
     <PageBase trackPageView={'notifications page'} className={'mx-4'}>
-      <NoSEO/>
-      <Title>{t('notifications.title','Updates')}</Title>
+      <NoSEO />
+      <Title>{t('notifications.title', 'Updates')}</Title>
       <UncontrolledTabs
         name={'notifications-page'}
         tabs={[
-          {title: t('notifications.tabs.notifications','Notifications'), content: <NotificationsContent/>},
-          {title: t('notifications.tabs.settings','Settings'), content: <NotificationSettings/>},
+          {
+            title: t('notifications.tabs.notifications', 'Notifications'),
+            content: <NotificationsContent />,
+          },
+          {
+            title: t('notifications.tabs.settings', 'Settings'),
+            content: <NotificationSettings />,
+          },
         ]}
         trackingName={'notifications page'}
       />
@@ -37,11 +43,11 @@ export default function NotificationsPage() {
 
 const NotificationsContent = () => {
   const user = useUser()
-  if (!user) return <CompassLoadingIndicator/>
-  return <LoadedNotificationsContent user={user}/>
+  if (!user) return <CompassLoadingIndicator />
+  return <LoadedNotificationsContent user={user} />
 }
 
-function LoadedNotificationsContent(props: { user: User }) {
+function LoadedNotificationsContent(props: {user: User}) {
   const {user} = props
   const t = useT()
   const privateUser = usePrivateUser()
@@ -74,11 +80,12 @@ function LoadedNotificationsContent(props: { user: User }) {
   return (
     <div className="relative mt-2 h-full w-full">
       <Col className={'min-h-[100dvh] gap-0 text-sm'}>
-        {groupedNotifications === undefined ||
-        paginatedGroupedNotifications === undefined ? (
-          <CompassLoadingIndicator/>
+        {groupedNotifications === undefined || paginatedGroupedNotifications === undefined ? (
+          <CompassLoadingIndicator />
         ) : paginatedGroupedNotifications.length === 0 ? (
-          <div className={'mt-2'}>{t('notifications.empty',"You don't have any notifications, yet.")}</div>
+          <div className={'mt-2'}>
+            {t('notifications.empty', "You don't have any notifications, yet.")}
+          </div>
         ) : (
           <RenderNotificationGroups
             notificationGroups={paginatedGroupedNotifications}
@@ -111,8 +118,8 @@ function RenderNotificationGroups(props: {
       {notificationGroups.map((notification) => {
         return notification.notifications.map((notification: Notification) => (
           <Fragment key={notification.id}>
-            <NotificationItem notification={notification}/>
-            <div className="bg-ink-300 mx-2 box-border h-[1.5px]"/>
+            <NotificationItem notification={notification} />
+            <div className="bg-ink-300 mx-2 box-border h-[1.5px]" />
           </Fragment>
         ))
       })}

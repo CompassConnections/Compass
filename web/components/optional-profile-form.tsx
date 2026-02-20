@@ -1,33 +1,6 @@
-import {Fragment, useEffect, useRef, useState} from 'react'
-import {Title} from 'web/components/widgets/title'
-import {Col} from 'web/components/layout/col'
-import clsx from 'clsx'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {useLocale, useT} from 'web/lib/locale'
-import {Row} from 'web/components/layout/row'
-import {Input} from 'web/components/widgets/input'
-import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
-import {Button, IconButton} from 'web/components/buttons/button'
-import {colClassName, labelClassName} from 'web/pages/signup'
-import {useRouter} from 'next/router'
-import {api, updateProfile, updateUser} from 'web/lib/api'
-import {User} from 'common/user'
-import {track} from 'web/lib/service/analytics'
-import {Carousel} from 'web/components/widgets/carousel'
-import {tryCatch} from 'common/util/try-catch'
-import {getProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
-import {removeUndefinedProps} from 'common/util/object'
-import {isEqual, range} from 'lodash'
-import {PlatformSelect} from 'web/components/widgets/platform-select'
-import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
 import {PlusIcon, XIcon} from '@heroicons/react/solid'
-import {SocialIcon} from './user/social'
-import {Select} from 'web/components/widgets/select'
-import {City, CityRow, profileToCity, useCitySearch,} from 'web/components/search-location'
-import {AddPhotosWidget} from './widgets/add-photos'
-import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
-import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
-import {useProfileDraft} from 'web/hooks/use-profile-draft'
+import {Editor} from '@tiptap/core'
+import clsx from 'clsx'
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
@@ -41,21 +14,46 @@ import {
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
 } from 'common/choices'
-import toast from 'react-hot-toast'
-import {db} from 'web/lib/supabase/db'
-import {fetchChoices} from 'web/hooks/use-choices'
-import {AddOptionEntry} from 'web/components/add-option-entry'
+import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
+import {getProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
+import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
+import {User} from 'common/user'
+import {removeUndefinedProps} from 'common/util/object'
 import {sleep} from 'common/util/time'
+import {tryCatch} from 'common/util/try-catch'
+import {isEqual, range} from 'lodash'
+import {useRouter} from 'next/router'
+import {Fragment, useEffect, useRef, useState} from 'react'
+import toast from 'react-hot-toast'
+import {AddOptionEntry} from 'web/components/add-option-entry'
 import {SignupBio} from 'web/components/bio/editable-bio'
-import {Editor} from '@tiptap/core'
+import {Button, IconButton} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {City, CityRow, profileToCity, useCitySearch} from 'web/components/search-location'
+import {Carousel} from 'web/components/widgets/carousel'
+import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
+import {Input} from 'web/components/widgets/input'
+import {PlatformSelect} from 'web/components/widgets/platform-select'
+import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
+import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
+import {Title} from 'web/components/widgets/title'
+import {fetchChoices} from 'web/hooks/use-choices'
+import {useProfileDraft} from 'web/hooks/use-profile-draft'
+import {api, updateProfile, updateUser} from 'web/lib/api'
+import {useLocale, useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
+import {colClassName, labelClassName} from 'web/pages/signup'
+
+import {SocialIcon} from './user/social'
+import {AddPhotosWidget} from './widgets/add-photos'
 
 export const OptionalProfileUserForm = (props: {
   profile: ProfileWithoutUser
-  setProfile: <K extends keyof ProfileWithoutUser>(
-    key: K,
-    value: ProfileWithoutUser[K]
-  ) => void
+  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
   user: User
   buttonLabel?: string
   bottomNavBarVisible?: boolean
@@ -74,20 +72,16 @@ export const OptionalProfileUserForm = (props: {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState(
-    (profile.pref_relation_styles || []).includes('relationship')
+    (profile.pref_relation_styles || []).includes('relationship'),
   )
   const [ageError, setAgeError] = useState<string | null>(null)
   const router = useRouter()
   const t = useT()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
-    profile.height_in_inches
-      ? Math.floor((profile['height_in_inches'] ?? 0) / 12)
-      : undefined
+    profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) / 12) : undefined,
   )
   const [heightInches, setHeightInches] = useState<number | undefined>(
-    profile.height_in_inches
-      ? Math.floor((profile['height_in_inches'] ?? 0) % 12)
-      : undefined
+    profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) % 12) : undefined,
   )
 
   // Keep local feet/inches inputs in sync when profile.height_in_inches updates
@@ -102,9 +96,7 @@ export const OptionalProfileUserForm = (props: {
     setHeightInches(Math.round(h % 12))
   }
 
-  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(
-    user.link
-  )
+  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(user.link)
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
@@ -113,12 +105,7 @@ export const OptionalProfileUserForm = (props: {
   const [workChoices, setWorkChoices] = useState({})
   const {locale} = useLocale()
 
-  const {clearProfileDraft} = useProfileDraft(
-    user.id,
-    profile,
-    setProfile,
-    updateHeight
-  )
+  const {clearProfileDraft} = useProfileDraft(user.id, profile, setProfile, updateHeight)
 
   useEffect(() => {
     fetchChoices('interests', locale).then(setInterestChoices)
@@ -127,29 +114,20 @@ export const OptionalProfileUserForm = (props: {
   }, [db])
 
   const errorToast = () => {
-    toast.error(
-      t('profile.optional.error.invalid_fields', 'Some fields are incorrect...')
-    )
+    toast.error(t('profile.optional.error.invalid_fields', 'Some fields are incorrect...'))
   }
 
   const handleSubmit = async () => {
     // Validate age before submitting
     if (profile['age'] !== null && profile['age'] !== undefined) {
       if (profile['age'] < 18) {
-        setAgeError(
-          t(
-            'profile.optional.age.error_min',
-            'You must be at least 18 years old'
-          )
-        )
+        setAgeError(t('profile.optional.age.error_min', 'You must be at least 18 years old'))
         setIsSubmitting(false)
         errorToast()
         return
       }
       if (profile['age'] > 100) {
-        setAgeError(
-          t('profile.optional.age.error_max', 'Please enter a valid age')
-        )
+        setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
         setIsSubmitting(false)
         errorToast()
         return
@@ -172,9 +150,7 @@ export const OptionalProfileUserForm = (props: {
       tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any)),
     ]
     if (interests) {
-      promises.push(
-        api('update-options', {table: 'interests', values: interests})
-      )
+      promises.push(api('update-options', {table: 'interests', values: interests}))
     }
     if (causes) {
       promises.push(api('update-options', {table: 'causes', values: causes}))
@@ -189,7 +165,7 @@ export const OptionalProfileUserForm = (props: {
     } catch (error) {
       console.error(error)
       toast.error(
-        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`
+        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`,
       )
       setIsSubmitting(false)
       return
@@ -212,9 +188,7 @@ export const OptionalProfileUserForm = (props: {
       while (Date.now() - start < 10000) {
         profile = await getProfileRow(user.id, db)
         if (profile) {
-          console.log(
-            `Found profile after ${Date.now() - start} ms, ${i} attempts`
-          )
+          console.log(`Found profile after ${Date.now() - start} ms, ${i} attempts`)
           break
         }
         await sleep(500)
@@ -286,10 +260,7 @@ export const OptionalProfileUserForm = (props: {
       <Col className={'gap-8'}>
         {!fromSignup && (
           <>
-            <Category
-              title={t('profile.basics.bio', 'Bio')}
-              className={'mt-0'}
-            />
+            <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
             <SignupBio
               profile={profile}
               onChange={(e: Editor) => {
@@ -302,10 +273,7 @@ export const OptionalProfileUserForm = (props: {
         )}
 
         <Category
-          title={t(
-            'profile.optional.category.personal_info',
-            'Personal Information'
-          )}
+          title={t('profile.optional.category.personal_info', 'Personal Information')}
           className={'mt-0'}
         />
 
@@ -317,8 +285,7 @@ export const OptionalProfileUserForm = (props: {
             <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
               <CityRow
                 city={profileToCity(profile)}
-                onSelect={() => {
-                }}
+                onSelect={() => {}}
                 className="pointer-events-none"
               />
               <button
@@ -341,16 +308,11 @@ export const OptionalProfileUserForm = (props: {
 
         <Row className={'items-center gap-2'}>
           <Col className={'gap-1'}>
-            <label className={clsx(labelClassName)}>
-              {t('profile.optional.gender', 'Gender')}
-            </label>
+            <label className={clsx(labelClassName)}>{t('profile.optional.gender', 'Gender')}</label>
             <ChoicesToggleGroup
               currentChoice={profile['gender']}
               choicesMap={Object.fromEntries(
-                Object.entries(GENDERS).map(([k, v]) => [
-                  t(`profile.gender.${v}`, k),
-                  v,
-                ])
+                Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]),
               )}
               setChoice={(c) => setProfile('gender', c)}
             />
@@ -358,9 +320,7 @@ export const OptionalProfileUserForm = (props: {
         </Row>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.age', 'Age')}
-          </label>
+          <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
           <Input
             type="number"
             placeholder={t('profile.optional.age', 'Age')}
@@ -372,18 +332,10 @@ export const OptionalProfileUserForm = (props: {
               const value = e.target.value ? Number(e.target.value) : null
               if (value !== null && value < 18) {
                 setAgeError(
-                  t(
-                    'profile.optional.age.error_min',
-                    'You must be at least 18 years old'
-                  )
+                  t('profile.optional.age.error_min', 'You must be at least 18 years old'),
                 )
               } else if (value !== null && value > 100) {
-                setAgeError(
-                  t(
-                    'profile.optional.age.error_max',
-                    'Please enter a valid age'
-                  )
-                )
+                setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
               } else {
                 setAgeError(null)
               }
@@ -394,29 +346,24 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.height', 'Height')}
-          </label>
+          <label className={clsx(labelClassName)}>{t('profile.optional.height', 'Height')}</label>
           <Row className={'gap-2'}>
             <Col>
               <span>{t('profile.optional.feet', 'Feet')}</span>
               <Input
                 type="number"
-                data-testid='height-feet'
+                data-testid="height-feet"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
                   } else {
                     setHeightFeet(Number(e.target.value))
-                    const heightInInches =
-                      Number(e.target.value) * 12 + (heightInches ?? 0)
+                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={
-                  typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''
-                }
+                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
                 min={0}
               />
             </Col>
@@ -424,23 +371,18 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.inches', 'Inches')}</span>
               <Input
                 type="number"
-                data-testid='height-inches'
+                data-testid="height-inches"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightInches(undefined)
                   } else {
                     setHeightInches(Number(e.target.value))
-                    const heightInInches =
-                      Number(e.target.value) + 12 * (heightFeet ?? 0)
+                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
                     setProfile('height_in_inches', heightInInches)
                   }
                 }}
                 className={'w-16'}
-                value={
-                  typeof heightInches === 'number'
-                    ? Math.floor(heightInches)
-                    : ''
-                }
+                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
                 min={0}
               />
             </Col>
@@ -451,7 +393,7 @@ export const OptionalProfileUserForm = (props: {
               <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
               <Input
                 type="number"
-                data-testid='height-centimeters'
+                data-testid="height-centimeters"
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
@@ -489,19 +431,11 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category
-          title={t(
-            'profile.optional.category.interested_in',
-            "Who I'm looking for"
-          )}
-        />
+        <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")} />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t(
-              'profile.optional.interested_in',
-              'Interested in connecting with'
-            )}
+            {t('profile.optional.interested_in', 'Interested in connecting with')}
           </label>
           <MultiCheckbox
             choices={{
@@ -523,7 +457,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.min', 'Min')}</span>
               <Select
-                data-testid='pref-age-min'
+                data-testid="pref-age-min"
                 value={profile['pref_age_min'] ?? ''}
                 onChange={(e) => {
                   const newMin = e.target.value ? Number(e.target.value) : 18
@@ -543,7 +477,7 @@ export const OptionalProfileUserForm = (props: {
             <Col>
               <span>{t('common.max', 'Max')}</span>
               <Select
-                data-testid='pref-age-max'
+                data-testid="pref-age-max"
                 value={profile['pref_age_max'] ?? ''}
                 onChange={(e) => {
                   const newMax = e.target.value ? Number(e.target.value) : 100
@@ -578,9 +512,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category
-          title={t('profile.optional.category.relationships', 'Relationships')}
-        />
+        <Category title={t('profile.optional.category.relationships', 'Relationships')} />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -610,25 +542,24 @@ export const OptionalProfileUserForm = (props: {
               />
             </Col>
 
-            <Category title={t('profile.optional.category.family', 'Family')}/>
+            <Category title={t('profile.optional.category.family', 'Family')} />
 
-          <Col className={clsx(colClassName)}>
-            <label className={clsx(labelClassName)}>
-              {t('profile.optional.num_kids', 'Current number of kids')}
-            </label>
-            <Input
-              data-testid='current-number-of-kids'
-              type="number"
-              onChange={(e) => {
-                const value =
-                  e.target.value === '' ? null : Number(e.target.value)
-                setProfile('has_kids', value)
-              }}
-              className={'w-20'}
-              min={0}
-              value={profile['has_kids'] ?? undefined}
-            />
-          </Col>
+            <Col className={clsx(colClassName)}>
+              <label className={clsx(labelClassName)}>
+                {t('profile.optional.num_kids', 'Current number of kids')}
+              </label>
+              <Input
+                data-testid="current-number-of-kids"
+                type="number"
+                onChange={(e) => {
+                  const value = e.target.value === '' ? null : Number(e.target.value)
+                  setProfile('has_kids', value)
+                }}
+                className={'w-20'}
+                min={0}
+                value={profile['has_kids'] ?? undefined}
+              />
+            </Col>
 
             <Col className={clsx(colClassName)}>
               <label className={clsx(labelClassName)}>
@@ -640,7 +571,7 @@ export const OptionalProfileUserForm = (props: {
                   Object.entries(MultipleChoiceOptions).map(([k, v]) => [
                     t(`profile.wants_kids_${v}`, k),
                     v,
-                  ])
+                  ]),
                 )}
                 setChoice={(choice) => {
                   setProfile('wants_kids_strength', choice)
@@ -651,7 +582,7 @@ export const OptionalProfileUserForm = (props: {
           </>
         )}
 
-        <Category title={t('profile.optional.interests', 'Interests')}/>
+        <Category title={t('profile.optional.interests', 'Interests')} />
         <AddOptionEntry
           // title={t('profile.optional.interests', 'Interests')}
           choices={interestChoices}
@@ -661,7 +592,7 @@ export const OptionalProfileUserForm = (props: {
           label={'interests'}
         />
 
-        <Category title={t('profile.optional.category.morality', 'Morality')}/>
+        <Category title={t('profile.optional.category.morality', 'Morality')} />
         <AddOptionEntry
           title={t('profile.optional.causes', 'Causes')}
           choices={causeChoices}
@@ -671,16 +602,11 @@ export const OptionalProfileUserForm = (props: {
           label={'causes'}
         />
 
-        <Category
-          title={t('profile.optional.category.education', 'Education')}
-        />
+        <Category title={t('profile.optional.category.education', 'Education')} />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t(
-              'profile.optional.education_level',
-              'Highest completed education level'
-            )}
+            {t('profile.optional.education_level', 'Highest completed education level')}
           </label>
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
@@ -689,7 +615,7 @@ export const OptionalProfileUserForm = (props: {
                 Object.entries(EDUCATION_CHOICES).map(([k, v]) => [
                   t(`profile.education.${v}`, k),
                   v,
-                ])
+                ]),
               )}
               setChoice={(c) => setProfile('education_level', c)}
             />
@@ -701,7 +627,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.university', 'University')}
           </label>
           <Input
-            data-testid='university'
+            data-testid="university"
             type="text"
             onChange={(e) => setProfile('university', e.target.value)}
             className={'w-52'}
@@ -709,20 +635,18 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.work', 'Work')}/>
+        <Category title={t('profile.optional.category.work', 'Work')} />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {profile['company']
-              ? t(
-                'profile.optional.job_title_at_company',
-                'Job title at {company}',
-                {company: profile['company']}
-              )
+              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {
+                  company: profile['company'],
+                })
               : t('profile.optional.job_title', 'Job title')}
           </label>
           <Input
-            data-testid='job-title'
+            data-testid="job-title"
             type="text"
             onChange={(e) => setProfile('occupation_title', e.target.value)}
             className={'w-52'}
@@ -731,11 +655,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.company', 'Company')}
-          </label>
+          <label className={clsx(labelClassName)}>{t('profile.optional.company', 'Company')}</label>
           <Input
-            data-testid='company'
+            data-testid="company"
             type="text"
             onChange={(e) => setProfile('company', e.target.value)}
             className={'w-52'}
@@ -752,9 +674,7 @@ export const OptionalProfileUserForm = (props: {
           label={'work'}
         />
 
-        <Category
-          title={t('profile.optional.political_beliefs', 'Political beliefs')}
-        />
+        <Category title={t('profile.optional.political_beliefs', 'Political beliefs')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -768,7 +688,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
-            data-testid='political-belief-details'
+            data-testid="political-belief-details"
             type="text"
             onChange={(e) => setProfile('political_details', e.target.value)}
             className={'w-full sm:w-96'}
@@ -776,9 +696,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category
-          title={t('profile.optional.religious_beliefs', 'Religious beliefs')}
-        />
+        <Category title={t('profile.optional.religious_beliefs', 'Religious beliefs')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -792,7 +710,7 @@ export const OptionalProfileUserForm = (props: {
           />
           <p>{t('profile.optional.details', 'Details')}</p>
           <Input
-            data-testid='religious-belief-details'
+            data-testid="religious-belief-details"
             type="text"
             onChange={(e) => setProfile('religious_beliefs', e.target.value)}
             className={'w-full sm:w-96'}
@@ -800,9 +718,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category
-          title={t('profile.optional.category.psychology', 'Psychology')}
-        />
+        <Category title={t('profile.optional.category.psychology', 'Psychology')} />
         <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>
             {t('profile.optional.mbti', 'MBTI Personality Type')}
@@ -849,13 +765,13 @@ export const OptionalProfileUserForm = (props: {
             <p className="text-sm text-ink-500">
               {t(
                 'profile.big5_hint',
-                'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).'
+                'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
               )}
             </p>
           </div>
         </Col>
 
-        <Category title={t('profile.optional.diet', 'Diet')}/>
+        <Category title={t('profile.optional.diet', 'Diet')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -869,9 +785,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category
-          title={t('profile.optional.category.substances', 'Substances')}
-        />
+        <Category title={t('profile.optional.category.substances', 'Substances')} />
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
@@ -883,7 +797,7 @@ export const OptionalProfileUserForm = (props: {
               Object.entries({
                 Yes: true,
                 No: false,
-              }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v])
+              }).map(([k, v]) => [t(`common.${k.toLowerCase()}`, k), v]),
             )}
             setChoice={(c) => setProfile('is_smoker', c)}
           />
@@ -891,17 +805,13 @@ export const OptionalProfileUserForm = (props: {
 
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
-            {t(
-              'profile.optional.drinks_per_month',
-              'Alcoholic beverages consumed per month'
-            )}
+            {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
           </label>
           <Input
-            data-testid='alcohol-consumed-per-month'
+            data-testid="alcohol-consumed-per-month"
             type="number"
             onChange={(e) => {
-              const value =
-                e.target.value === '' ? null : Number(e.target.value)
+              const value = e.target.value === '' ? null : Number(e.target.value)
               setProfile('drinks_per_month', value)
             }}
             className={'w-20'}
@@ -910,7 +820,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.languages', 'Languages')}/>
+        <Category title={t('profile.optional.languages', 'Languages')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -949,7 +859,7 @@ export const OptionalProfileUserForm = (props: {
         {/*  />*/}
         {/*</Col>*/}
 
-        <Category title={t('profile.optional.socials', 'Socials')}/>
+        <Category title={t('profile.optional.socials', 'Socials')} />
 
         <Col className={clsx(colClassName, 'pb-4')}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -962,10 +872,7 @@ export const OptionalProfileUserForm = (props: {
               .map(([platform, value]) => (
                 <Fragment key={platform}>
                   <div className="col-span-3 mt-2 flex items-center gap-2 self-center sm:col-span-1">
-                    <SocialIcon
-                      site={platform as any}
-                      className="text-primary-700 h-4 w-4"
-                    />
+                    <SocialIcon site={platform as any} className="text-primary-700 h-4 w-4" />
                     {PLATFORM_LABELS[platform as Site] ?? platform}
                   </div>
                   <Input
@@ -975,16 +882,14 @@ export const OptionalProfileUserForm = (props: {
                     className="col-span-2 sm:col-span-1"
                   />
                   <IconButton onClick={() => updateUserLink(platform, null)}>
-                    <XIcon className="h-6 w-6"/>
-                    <div className="sr-only">
-                      {t('common.remove', 'Remove')}
-                    </div>
+                    <XIcon className="h-6 w-6" />
+                    <div className="sr-only">{t('common.remove', 'Remove')}</div>
                   </IconButton>
                 </Fragment>
               ))}
 
             {/* Spacer */}
-            <div className="col-span-3 h-4"/>
+            <div className="col-span-3 h-4" />
 
             <PlatformSelect
               value={newLinkPlatform}
@@ -994,8 +899,7 @@ export const OptionalProfileUserForm = (props: {
             <Input
               type="text"
               placeholder={
-                SITE_ORDER.includes(newLinkPlatform as any) &&
-                newLinkPlatform != 'site'
+                SITE_ORDER.includes(newLinkPlatform as any) && newLinkPlatform != 'site'
                   ? t('profile.optional.username_or_url', 'Username or URL')
                   : t('profile.optional.site_url', 'Site URL')
               }
@@ -1014,13 +918,13 @@ export const OptionalProfileUserForm = (props: {
               onClick={addNewLink}
               disabled={!newLinkPlatform || !newLinkValue}
             >
-              <PlusIcon className="h-6 w-6"/>
+              <PlusIcon className="h-6 w-6" />
               <div className="sr-only">{t('common.add', 'Add')}</div>
             </Button>
           </div>
         </Col>
 
-        <Category title={t('profile.optional.photos', 'Photos')}/>
+        <Category title={t('profile.optional.photos', 'Photos')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -1039,14 +943,11 @@ export const OptionalProfileUserForm = (props: {
             setPinnedUrl={(url) => setProfile('pinned_url', url)}
             setDescription={(url, description) =>
               setProfile('image_descriptions', {
-                ...((profile?.image_descriptions as Record<string, string>) ??
-                  {}),
+                ...((profile?.image_descriptions as Record<string, string>) ?? {}),
                 [url]: description,
               })
             }
-            image_descriptions={
-              profile.image_descriptions as Record<string, string>
-            }
+            image_descriptions={profile.image_descriptions as Record<string, string>}
           />
         </Col>
 
@@ -1056,7 +957,7 @@ export const OptionalProfileUserForm = (props: {
               'fixed lg:bottom-6 right-4 lg:right-32 z-50 text-xl',
               bottomNavBarVisible
                 ? 'bottom-[calc(90px+var(--bnh))]'
-                : 'bottom-[calc(30px+var(--bnh))]'
+                : 'bottom-[calc(30px+var(--bnh))]',
             )}
             disabled={isSubmitting}
             loading={isSubmitting}
@@ -1070,9 +971,7 @@ export const OptionalProfileUserForm = (props: {
   )
 }
 
-const CitySearchBox = (props: {
-  onCitySelected: (city: City | undefined) => void
-}) => {
+const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}) => {
   // search results
   const {cities, query, setQuery} = useCitySearch()
   const [focused, setFocused] = useState(false)
@@ -1089,10 +988,7 @@ const CitySearchBox = (props: {
         onFocus={() => setFocused(true)}
         onBlur={(e) => {
           // Do not hide the dropdown if clicking inside the dropdown
-          if (
-            dropdownRef.current &&
-            !dropdownRef.current.contains(e.relatedTarget)
-          ) {
+          if (dropdownRef.current && !dropdownRef.current.contains(e.relatedTarget)) {
             setFocused(false)
           }
         }}
@@ -1117,25 +1013,19 @@ const CitySearchBox = (props: {
   )
 }
 
-function Category({title, className}: { title: string; className?: string }) {
-  return (
-    <h3 className={clsx('text-xl font-semibold mb-[-8px]', className)}>
-      {title}
-    </h3>
-  )
+function Category({title, className}: {title: string; className?: string}) {
+  return <h3 className={clsx('text-xl font-semibold mb-[-8px]', className)}>{title}</h3>
 }
 
-const Big5Slider = (props: {
-  label: string
-  value: number
-  onChange: (v: number) => void
-}) => {
+const Big5Slider = (props: {label: string; value: number; onChange: (v: number) => void}) => {
   const {label, value, onChange} = props
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
         <span>{label}</span>
-        <span className="font-semibold text-ink-700" data-testid={`${label.toLowerCase()}-value`}>{Math.round(value)}</span>
+        <span className="font-semibold text-ink-700" data-testid={`${label.toLowerCase()}-value`}>
+          {Math.round(value)}
+        </span>
       </div>
       <Slider
         amount={value}

@@ -1,5 +1,5 @@
-import {MarkdownPageLoader} from "web/components/MarkdownPageLoader";
+import {MarkdownPageLoader} from 'web/components/MarkdownPageLoader'
 
 export default function Page() {
-  return <MarkdownPageLoader filename="members"/>
+  return <MarkdownPageLoader filename="members" />
 }

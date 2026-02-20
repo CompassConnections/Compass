@@ -1,29 +1,30 @@
 import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import Router from 'next/router'
-import Link from 'next/link'
+import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
+import Link from 'next/link'
+import Router from 'next/router'
+import {useState} from 'react'
+import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
-import ProfilePrimaryInfo from './profile-primary-info'
-import {track} from 'web/lib/service/analytics'
-import DropdownMenu from 'web/components/comments/dropdown-menu'
-import {ShareProfileButton} from '../widgets/share-profile-button'
-import {Profile} from 'common/profiles/profile'
-import {useUser} from 'web/hooks/use-user'
-import {linkClass} from 'web/components/widgets/site-link'
-import {updateProfile} from 'web/lib/api'
-import {useState} from 'react'
-import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
-import toast from "react-hot-toast";
-import {StarButton} from "web/components/widgets/star-button";
-import {disableProfile} from "web/lib/util/disable";
-import {useT} from 'web/lib/locale'
-import {Tooltip} from "web/components/widgets/tooltip";
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
+import {linkClass} from 'web/components/widgets/site-link'
+import {StarButton} from 'web/components/widgets/star-button'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {useUser} from 'web/hooks/use-user'
+import {updateProfile} from 'web/lib/api'
+import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+import {disableProfile} from 'web/lib/util/disable'
+
+import {ShareProfileButton} from '../widgets/share-profile-button'
+import ProfilePrimaryInfo from './profile-primary-info'
+import {VisibilityConfirmationModal} from './visibility-confirmation-modal'
 
 export default function ProfileHeader(props: {
   user: User
@@ -53,18 +54,31 @@ export default function ProfileHeader(props: {
   const disabled = profile.disabled
   const t = useT()
 
-  console.debug('ProfileProfileHeader', {user, profile, userActivity, currentUser})
+  console.debug('ProfileProfileHeader', {
+    user,
+    profile,
+    userActivity,
+    currentUser,
+  })
 
   return (
     <Col className="w-full">
-      {currentUser && !isCurrentUser && isHiddenFromMe &&
-          <div className="guidance">
-            {t('profile_grid.hidden_notice', "You hid this person, so they don't appear in your search results.")}
-          </div>}
-      {currentUser && isCurrentUser && disabled &&
-          <div className="text-red-500">
-            {t('profile.header.disabled_notice', 'You disabled your profile, so no one else can access it.')}
-          </div>}
+      {currentUser && !isCurrentUser && isHiddenFromMe && (
+        <div className="guidance">
+          {t(
+            'profile_grid.hidden_notice',
+            "You hid this person, so they don't appear in your search results.",
+          )}
+        </div>
+      )}
+      {currentUser && isCurrentUser && disabled && (
+        <div className="text-red-500">
+          {t(
+            'profile.header.disabled_notice',
+            'You disabled your profile, so no one else can access it.',
+          )}
+        </div>
+      )}
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
         <Row className="items-center gap-1">
           <Col className="gap-1">
@@ -81,15 +95,12 @@ export default function ProfileHeader(props: {
                 {profile.age ? `, ${profile.age}` : ''}
               </span>
             </Row>
-            <ProfilePrimaryInfo profile={profile}/>
+            <ProfilePrimaryInfo profile={profile} />
           </Col>
         </Row>
         {currentUser && isCurrentUser ? (
           <Row className={'items-center gap-1 sm:gap-2'}>
-            <ShareProfileButton
-              className="hidden sm:flex"
-              username={user.username}
-            />
+            <ShareProfileButton className="hidden sm:flex" username={user.username} />
             <Tooltip text={t('more_options_user.edit_profile', 'Edit profile')} noTap>
               <Button
                 data-testid="profile-edit"
@@ -100,16 +111,18 @@ export default function ProfileHeader(props: {
                 }}
                 size="sm"
               >
-                <PencilIcon className=" h-4 w-4"/>
+                <PencilIcon className=" h-4 w-4" />
               </Button>
             </Tooltip>
 
-            <Tooltip text={t('more_options_user.profile_options', 'Profile options')} noTap testId='profile-options'>
+            <Tooltip
+              text={t('more_options_user.profile_options', 'Profile options')}
+              noTap
+              testId="profile-options"
+            >
               <DropdownMenu
                 menuWidth={'w-52'}
-                icon={
-                  <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true"/>
-                }
+                icon={<DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />}
                 items={[
                   {
                     name:
@@ -118,14 +131,16 @@ export default function ProfileHeader(props: {
                         : t('profile.header.menu.limit_members', 'Limit to Members Only'),
                     icon:
                       profile.visibility === 'member' ? (
-                        <EyeIcon className="h-4 w-4"/>
+                        <EyeIcon className="h-4 w-4" />
                       ) : (
-                        <LockClosedIcon className="h-4 w-4"/>
+                        <LockClosedIcon className="h-4 w-4" />
                       ),
                     onClick: () => setShowVisibilityModal(true),
                   },
                   {
-                    name: disabled ? t('profile.header.menu.enable_profile', 'Enable profile') : t('profile.header.menu.disable_profile', 'Disable profile'),
+                    name: disabled
+                      ? t('profile.header.menu.enable_profile', 'Enable profile')
+                      : t('profile.header.menu.disable_profile', 'Disable profile'),
                     icon: null,
                     onClick: async () => {
                       const confirmed = true // confirm(
@@ -144,8 +159,14 @@ export default function ProfileHeader(props: {
                             },
                             error: () => {
                               return disabled
-                                ? t('profile.header.toast.failed_enable', 'Failed to enable profile')
-                                : t('profile.header.toast.failed_disable', 'Failed to disable profile')
+                                ? t(
+                                    'profile.header.toast.failed_enable',
+                                    'Failed to enable profile',
+                                  )
+                                : t(
+                                    'profile.header.toast.failed_disable',
+                                    'Failed to disable profile',
+                                  )
                             },
                           })
                           .then(() => {
@@ -163,13 +184,8 @@ export default function ProfileHeader(props: {
           </Row>
         ) : (
           <Row className="items-center gap-1 sm:gap-2">
-            {currentUser && !isCurrentUser && (
-              <HideProfileButton hiddenUserId={user.id}/>
-            )}
-            <ShareProfileButton
-              className="sm:flex"
-              username={user.username}
-            />
+            {currentUser && !isCurrentUser && <HideProfileButton hiddenUserId={user.id} />}
+            <ShareProfileButton className="sm:flex" username={user.username} />
             {currentUser && (
               <StarButton
                 targetProfile={profile}
@@ -178,9 +194,9 @@ export default function ProfileHeader(props: {
               />
             )}
             {currentUser && showMessageButton && (
-              <SendMessageButton toUser={user} currentUser={currentUser}/>
+              <SendMessageButton toUser={user} currentUser={currentUser} />
             )}
-            <MoreOptionsUserButton user={user}/>
+            <MoreOptionsUserButton user={user} />
           </Row>
         )}
       </Row>
@@ -194,8 +210,7 @@ export default function ProfileHeader(props: {
         setOpen={setShowVisibilityModal}
         currentVisibility={profile.visibility}
         onConfirm={async () => {
-          const newVisibility =
-            profile.visibility === 'member' ? 'public' : 'member'
+          const newVisibility = profile.visibility === 'member' ? 'public' : 'member'
           await updateProfile({visibility: newVisibility})
           refreshProfile()
         }}

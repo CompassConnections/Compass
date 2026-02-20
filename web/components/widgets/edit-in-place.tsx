@@ -1,5 +1,6 @@
-import { ReactNode, useState } from 'react'
-import { ExpandingInput } from './expanding-input'
+import {ReactNode, useState} from 'react'
+
+import {ExpandingInput} from './expanding-input'
 
 export const EditInPlaceInput = (props: {
   className?: string
@@ -9,7 +10,7 @@ export const EditInPlaceInput = (props: {
   /** The text to show when input is not focused. Required. */
   children: (value: string) => ReactNode
 }) => {
-  const { className, disabled, initialValue = '', onSave, children } = props
+  const {className, disabled, initialValue = '', onSave, children} = props
   const [value, setValue] = useState(initialValue)
   const [editing, setEditing] = useState(false)
 

@@ -1,4 +1,9 @@
-import {CalendarIcon, HomeIcon, NewspaperIcon, QuestionMarkCircleIcon,} from '@heroicons/react/outline'
+import {
+  CalendarIcon,
+  HomeIcon,
+  NewspaperIcon,
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/outline'
 import {
   CogIcon,
   GlobeAltIcon,
@@ -9,25 +14,26 @@ import {
   UsersIcon,
 } from '@heroicons/react/solid'
 import clsx from 'clsx'
+import {IS_MAINTENANCE} from 'common/constants'
+import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
-import {useOnline} from 'web/hooks/use-online'
 import {ReactNode, useState} from 'react'
 import {Toaster} from 'react-hot-toast'
+import {FaEnvelope} from 'react-icons/fa'
+import {MdThumbUp} from 'react-icons/md'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useOnline} from 'web/hooks/use-online'
+import {useProfile} from 'web/hooks/use-profile'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
+
 import Sidebar from './nav/sidebar'
-import {useProfile} from 'web/hooks/use-profile'
-import {Profile} from 'common/profiles/profile'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
-import {IS_MAINTENANCE} from 'common/constants'
-import {MdThumbUp} from 'react-icons/md'
-import {FaEnvelope} from 'react-icons/fa'
 
 export function PageBase(props: {
   trackPageView?: string | false
@@ -37,14 +43,7 @@ export function PageBase(props: {
   hideSidebar?: boolean
   hideBottomBar?: boolean
 }) {
-  const {
-    trackPageView,
-    trackPageProps,
-    children,
-    className,
-    hideSidebar,
-    hideBottomBar,
-  } = props
+  const {trackPageView, trackPageProps, children, className, hideSidebar, hideBottomBar} = props
   const user = useUser()
   const isMobile = useIsMobile()
   const profile = useProfile()
@@ -55,9 +54,7 @@ export function PageBase(props: {
   // const [isModalOpen, setIsModalOpen] = useState(false)
   const desktopSidebarOptions = getDesktopNavigation(user)
 
-  const mobileSidebarOptions = getMobileSidebar(user, () =>
-    setIsAddFundsModalOpen(true)
-  )
+  const mobileSidebarOptions = getMobileSidebar(user, () => setIsAddFundsModalOpen(true))
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   if (trackPageView) useTracking(`view ${trackPageView}`, trackPageProps)
@@ -66,11 +63,11 @@ export function PageBase(props: {
 
   return (
     <>
-      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]"/>
+      <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]" />
       <Col
         className={clsx(
           'pb-page-base lg:pb-0', // bottom bar padding
-          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12'
+          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12',
         )}
       >
         <Toaster
@@ -80,25 +77,18 @@ export function PageBase(props: {
         {/* Maintenance banner */}
         {IS_MAINTENANCE && (
           <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
-            Maintenance in progress: Some features may be broken for the next
-            few hours.
+            Maintenance in progress: Some features may be broken for the next few hours.
           </div>
         )}
         {hideSidebar ? (
-          <div className="lg:col-span-2 lg:flex"/>
+          <div className="lg:col-span-2 lg:flex" />
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
             className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
           />
         )}
-        <main
-          className={clsx(
-            'flex flex-1 flex-col lg:mt-6 xl:px-2',
-            'col-span-8',
-            className
-          )}
-        >
+        <main className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', 'col-span-8', className)}>
           {children}
         </main>
       </Col>
@@ -188,9 +178,7 @@ const Events = {
 }
 
 // Stable component for Messages icon to prevent re-mounting on every render
-const MessagesIconComponent = (props: any) => (
-  <PrivateMessagesIcon solid {...props} />
-)
+const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...props} />
 
 const base = [About, faq, Vote, Events, News, Social, Organization, Contact]
 
@@ -209,7 +197,7 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
       name: 'Messages',
       href: '/messages',
       icon: MessagesIconComponent,
-    }
+    },
   )
 }
 
@@ -227,16 +215,13 @@ const getDesktopNavigation = (user: User | null | undefined) => {
         icon: MessagesIconComponent,
       },
       Settings,
-      ...base
+      ...base,
     )
 
   return buildArray(...base)
 }
 
-const getMobileSidebar = (
-  user: User | null | undefined,
-  _toggleModal: () => void
-) => {
+const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void) => {
   if (user) return buildArray(Settings, ...base)
 
   return buildArray(...base)

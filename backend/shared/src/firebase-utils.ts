@@ -1,7 +1,6 @@
-import {readFileSync} from "fs";
+import {ENV_CONFIG, getStorageBucketId} from 'common/envs/constants'
 import {getStorage, Storage} from 'firebase-admin/storage'
-
-import {ENV_CONFIG, getStorageBucketId} from "common/envs/constants";
+import {readFileSync} from 'fs'
 
 export const getServiceAccountCredentials = () => {
   let keyPath = ENV_CONFIG.googleApplicationCredentials
@@ -30,7 +29,6 @@ export function getBucket() {
   return getStorage().bucket(getStorageBucketId())
 }
 
-
 export type Bucket = ReturnType<InstanceType<typeof Storage>['bucket']>
 
 export async function deleteUserFiles(username: string) {
@@ -38,14 +36,13 @@ export async function deleteUserFiles(username: string) {
 
   // Delete all files in the directory
   const bucket = getBucket()
-  const [files] = await bucket.getFiles({prefix: path});
+  const [files] = await bucket.getFiles({prefix: path})
 
   if (files.length === 0) {
-    console.debug(`No files found in bucket for user ${username}`);
-    return;
+    console.debug(`No files found in bucket for user ${username}`)
+    return
   }
 
-  await Promise.all(files.map(file => file.delete()));
-  console.debug(`Deleted ${files.length} files for user ${username}`);
-
+  await Promise.all(files.map((file) => file.delete()))
+  console.debug(`Deleted ${files.length} files for user ${username}`)
 }

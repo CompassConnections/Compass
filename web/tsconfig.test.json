@@ -7,8 +7,9 @@
     "rootDir": "..",
     "baseUrl": ".",
     "paths": {
-      "common/*": ["../../common/src/*"],
+      "common/*": ["../../common/src/*"]
     }
   },
-  "include": ["tests/**/*.ts", "src/**/*.ts"]
+  "include": ["tests/**/*.ts", "src/**/*.ts"],
+  "exclude": []
 }

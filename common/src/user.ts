@@ -1,5 +1,5 @@
-import { Socials } from './socials'
-import { notification_preferences } from './user-notification-preferences'
+import {Socials} from './socials'
+import {notification_preferences} from './user-notification-preferences'
 
 export type User = {
   id: string
@@ -48,7 +48,7 @@ export type UserActivity = {
   last_online_time: string
 }
 
-export type UserAndPrivateUser = { user: User; privateUser: PrivateUser }
+export type UserAndPrivateUser = {user: User; privateUser: PrivateUser}
 
 export function getCurrentUtcTime(): Date {
   const currentDate = new Date()

@@ -7,12 +7,16 @@ export function Checkbox(props: {
   className?: string
   disabled?: boolean
 }) {
-  const { label, checked, toggle, className, disabled } = props
+  const {label, checked, toggle, className, disabled} = props
 
   return (
     <div className={clsx(className, 'space-y-5 px-2 py-1')}>
       <label
-        className={clsx('relative flex items-center cursor-pointer select-none hover-bold', disabled && 'cursor-not-allowed')}>
+        className={clsx(
+          'relative flex items-center cursor-pointer select-none hover-bold',
+          disabled && 'cursor-not-allowed',
+        )}
+      >
         <input
           id={label}
           type="checkbox"
@@ -24,7 +28,7 @@ export function Checkbox(props: {
         <span
           className={clsx(
             'ml-3 whitespace-nowrap font-medium',
-            disabled ? 'text-ink-300' : 'text-ink-700'
+            disabled ? 'text-ink-300' : 'text-ink-700',
           )}
         >
           {label}

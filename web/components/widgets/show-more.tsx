@@ -1,4 +1,4 @@
-import {useState, ReactNode} from 'react'
+import {ReactNode, useState} from 'react'
 
 interface ShowMoreProps {
   labelClosed?: string
@@ -25,14 +25,10 @@ export function ShowMore(props: ShowMoreProps) {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {showMoreInfo && (
-        <div className="mt-2 p-3 rounded-md">
-          {children}
-        </div>
-      )}
+      {showMoreInfo && <div className="mt-2 p-3 rounded-md">{children}</div>}
     </div>
   )
 }

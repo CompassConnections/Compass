@@ -13,6 +13,8 @@ export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status --output json | jq -r '.A
 export DATABASE_URL=$(supabase status --output json | jq -r '.DB_URL')
 
 # Build backend (required?)
-./scripts/build_api.sh
+#./scripts/build_api.sh
 
-npx tsx scripts/seed-test-data.ts
+cd tests/e2e/utils
+
+npx tsx seed-test-data.ts

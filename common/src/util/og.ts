@@ -5,10 +5,9 @@ import {DOMAIN} from 'common/envs/constants'
 export function buildOgUrl<P extends Record<string, string>>(
   props: P,
   endpoint: string,
-  domain?: string
+  domain?: string,
 ) {
-  const generateUrlParams = (params: P) =>
-    new URLSearchParams(params).toString()
+  const generateUrlParams = (params: P) => new URLSearchParams(params).toString()
 
   return `https://${domain ?? DOMAIN}/api/og/${endpoint}?` + generateUrlParams(props)
 }

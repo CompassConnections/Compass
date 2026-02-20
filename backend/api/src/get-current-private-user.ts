@@ -1,27 +1,19 @@
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { APIError, APIHandler } from './helpers/endpoint'
-import { PrivateUser } from 'common/user'
-import { Row } from 'common/supabase/utils'
-import { tryCatch } from 'common/util/try-catch'
+import {Row} from 'common/supabase/utils'
+import {PrivateUser} from 'common/user'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getCurrentPrivateUser: APIHandler<'me/private'> = async (
-  _,
-  auth
-) => {
+import {APIError, APIHandler} from './helpers/endpoint'
+
+export const getCurrentPrivateUser: APIHandler<'me/private'> = async (_, auth) => {
   const pg = createSupabaseDirectClient()
 
-  const { data, error } = await tryCatch(
-    pg.oneOrNone<Row<'private_users'>>(
-      'select * from private_users where id = $1',
-      [auth.uid]
-    )
+  const {data, error} = await tryCatch(
+    pg.oneOrNone<Row<'private_users'>>('select * from private_users where id = $1', [auth.uid]),
   )
 
   if (error) {
-    throw new APIError(
-      500,
-      'Error fetching private user data: ' + error.message
-    )
+    throw new APIError(500, 'Error fetching private user data: ' + error.message)
   }
 
   if (!data) {

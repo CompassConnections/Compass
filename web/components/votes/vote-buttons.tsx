@@ -1,11 +1,11 @@
-import {Row} from 'web/components/layout/row'
-import {Button} from 'web/components/buttons/button'
 import clsx from 'clsx'
+import {useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
+import {Row} from 'web/components/layout/row'
+import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {useState, useEffect, useRef} from 'react'
-import {useUser} from "web/hooks/use-user";
-import {useT} from "web/lib/locale";
+import {useT} from 'web/lib/locale'
 
 export type VoteChoice = 'for' | 'abstain' | 'against'
 
@@ -32,15 +32,15 @@ function VoteButton(props: {
 }
 
 const priorities = [
-  {key: "vote.urgent", label: 'Urgent', value: 3},
-  {key: "vote.high", label: 'High', value: 2},
-  {key: "vote.medium", label: 'Medium', value: 1},
-  {key: "vote.low", label: 'Low', value: 0},
+  {key: 'vote.urgent', label: 'Urgent', value: 3},
+  {key: 'vote.high', label: 'High', value: 2},
+  {key: 'vote.medium', label: 'Medium', value: 1},
+  {key: 'vote.low', label: 'Low', value: 0},
 ] as const
 
 export function VoteButtons(props: {
   voteId: number
-  counts: { for: number; abstain: number; against: number }
+  counts: {for: number; abstain: number; against: number}
   onVoted?: () => void | Promise<void>
   className?: string
   disabled?: boolean
@@ -86,7 +86,7 @@ export function VoteButtons(props: {
       await api('vote', {voteId, choice, priority})
       const choiceLabel = t(
         `vote.${choice}`,
-        choice === 'for' ? 'For' : choice === 'abstain' ? 'Abstain' : 'Against'
+        choice === 'for' ? 'For' : choice === 'abstain' ? 'Abstain' : 'Against',
       )
       let votedMsg = `${t('vote.voted', 'Voted')} ${choiceLabel}`
       if (choice === 'for') {
@@ -123,17 +123,21 @@ export function VoteButtons(props: {
           onClick={() => handleVote('for')}
         />
         {showPriority && (
-          <div className={clsx(
-            'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
-            'dark:bg-ink-900'
-          )}>
-            <div className="px-3 py-2 text-sm font-semibold bg-canvas-25">{t("vote.priority", "Priority")}</div>
+          <div
+            className={clsx(
+              'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
+              'dark:bg-ink-900',
+            )}
+          >
+            <div className="px-3 py-2 text-sm font-semibold bg-canvas-25">
+              {t('vote.priority', 'Priority')}
+            </div>
             {priorities.map((p) => (
               <button
                 key={p.value}
                 className={clsx(
                   'w-full text-left px-3 py-2 text-sm hover:bg-ink-100 bg-canvas-50',
-                  'dark:hover:bg-canvas-100'
+                  'dark:hover:bg-canvas-100',
                 )}
                 onClick={async () => {
                   setShowPriority(false)

@@ -1,13 +1,14 @@
-import {getSchema, getText, getTextSerializersFromSchema, JSONContent,} from '@tiptap/core'
-import {Node as ProseMirrorNode} from '@tiptap/pm/model'
-import {StarterKit} from '@tiptap/starter-kit'
+import {getSchema, getText, getTextSerializersFromSchema, JSONContent} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 import {Link} from '@tiptap/extension-link'
 import {Mention} from '@tiptap/extension-mention'
-import Iframe from './tiptap-iframe'
+import {Node as ProseMirrorNode} from '@tiptap/pm/model'
+import {StarterKit} from '@tiptap/starter-kit'
 import {find} from 'linkifyjs'
 import {uniq} from 'lodash'
 import {compareTwoStrings} from 'string-similarity'
+
+import Iframe from './tiptap-iframe'
 
 /** get first url in text. like "notion.so " -> "http://notion.so" "notion" -> null */
 export function getUrl(text: string) {
@@ -46,8 +47,7 @@ export const extensions = [
   Image.extend({renderText: () => '[image]'}),
   Mention, // user @mention
   Iframe.extend({
-    renderText: ({node}) =>
-      '[embed]' + node.attrs.src ? `(${node.attrs.src})` : '',
+    renderText: ({node}) => ('[embed]' + node.attrs.src ? `(${node.attrs.src})` : ''),
   }),
 ]
 
@@ -76,7 +76,7 @@ export function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
   const rawData = window.atob(base64)
-  return new Uint8Array([...rawData].map(c => c.charCodeAt(0)))
+  return new Uint8Array([...rawData].map((c) => c.charCodeAt(0)))
 }
 
 export function cleanDoc(doc: JSONContent) {
@@ -89,52 +89,53 @@ export function cleanDoc(doc: JSONContent) {
 }
 
 function _cleanDoc(doc: JSONContent) {
-  if (!doc || !Array.isArray(doc.content)) return doc;
+  if (!doc || !Array.isArray(doc.content)) return doc
 
-  let content = [...doc.content];
+  let content = [...doc.content]
 
   const isEmptyParagraph = (node: JSONContent) =>
-    node.type === "paragraph" &&
-    (!node.content || node.content.length === 0);
+    node.type === 'paragraph' && (!node.content || node.content.length === 0)
 
   // Remove empty paragraphs at the start
   while (content.length > 0 && isEmptyParagraph(content[0])) {
-    content.shift();
+    content.shift()
   }
 
   // Remove empty paragraphs at the end
   while (content.length > 0 && isEmptyParagraph(content[content.length - 1])) {
-    content.pop();
+    content.pop()
   }
 
   // Trim leading/trailing hardBreaks within first and last paragraphs
   const trimHardBreaks = (paragraph: JSONContent, start: boolean, end: boolean) => {
-    if (!paragraph.content) return paragraph;
+    if (!paragraph.content) return paragraph
 
-    const nodes = [...paragraph.content];
+    const nodes = [...paragraph.content]
 
     // Remove hardBreaks at the start
-    while (start && nodes.length > 0 && nodes[0].type === "hardBreak") {
-      nodes.shift();
+    while (start && nodes.length > 0 && nodes[0].type === 'hardBreak') {
+      nodes.shift()
     }
 
     // Remove hardBreaks at the end
-    while (end && nodes.length > 0 && nodes[nodes.length - 1].type === "hardBreak") {
-      nodes.pop();
+    while (end && nodes.length > 0 && nodes[nodes.length - 1].type === 'hardBreak') {
+      nodes.pop()
     }
 
-    return { ...paragraph, content: nodes };
-  };
+    return {...paragraph, content: nodes}
+  }
 
   if (content.length > 0) {
-    content[0] = trimHardBreaks(content[0], true, false);
+    content[0] = trimHardBreaks(content[0], true, false)
     if (content.length > 1) {
-      content[content.length - 1] = trimHardBreaks(content[content.length - 1], false, true);
+      content[content.length - 1] = trimHardBreaks(content[content.length - 1], false, true)
     }
   }
 
   // Remove any now-empty paragraphs created by hardBreak trimming
-  content = content.filter(node => !(node.type === "paragraph" && (!node.content || node.content.length === 0)));
+  content = content.filter(
+    (node) => !(node.type === 'paragraph' && (!node.content || node.content.length === 0)),
+  )
 
-  return { ...doc, content };
+  return {...doc, content}
 }

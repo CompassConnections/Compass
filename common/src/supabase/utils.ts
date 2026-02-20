@@ -6,8 +6,8 @@ import {
   SupabaseClientOptions as SupabaseClientOptionsGeneric,
 } from '@supabase/supabase-js'
 
-import {Database} from './schema'
 import {User} from '../user'
+import {Database} from './schema'
 
 export type Schema = Database['public']
 export type Tables = Schema['Tables']
@@ -27,15 +27,17 @@ export type SupabaseClient = SupabaseClientGeneric<Database, 'public', Schema>
 export function createClient(
   instanceIdOrUrl: string,
   key: string,
-  opts?: SupabaseClientOptionsGeneric<'public'>
+  opts?: SupabaseClientOptionsGeneric<'public'>,
 ) {
   // Allow passing a full Supabase URL directly (e.g., http://localhost:54321)
-  const url = /:\/\//.test(instanceIdOrUrl) ? instanceIdOrUrl : `https://${instanceIdOrUrl}.supabase.co`
+  const url = /:\/\//.test(instanceIdOrUrl)
+    ? instanceIdOrUrl
+    : `https://${instanceIdOrUrl}.supabase.co`
   // console.debug('createClient', instanceId, key, opts)
   return createClientGeneric(
     url,
     key,
-    opts
+    opts,
     // {
     //   auth: {
     //     persistSession: false,    // ✅ No localStorage
@@ -51,18 +53,16 @@ export function createClient(
 }
 
 export type QueryResponse<T> = PostgrestResponse<T> | PostgrestSingleResponse<T>
-export type QueryMultiSuccessResponse<T> = { data: T[]; count: number }
-export type QuerySingleSuccessResponse<T> = { data: T; count: number }
+export type QueryMultiSuccessResponse<T> = {data: T[]; count: number}
+export type QuerySingleSuccessResponse<T> = {data: T; count: number}
 
 export async function run<T>(
-  q: PromiseLike<PostgrestResponse<T>>
+  q: PromiseLike<PostgrestResponse<T>>,
 ): Promise<QueryMultiSuccessResponse<T>>
 export async function run<T>(
-  q: PromiseLike<PostgrestSingleResponse<T>>
+  q: PromiseLike<PostgrestSingleResponse<T>>,
 ): Promise<QuerySingleSuccessResponse<T>>
-export async function run<T>(
-  q: PromiseLike<PostgrestSingleResponse<T> | PostgrestResponse<T>>
-) {
+export async function run<T>(q: PromiseLike<PostgrestSingleResponse<T> | PostgrestResponse<T>>) {
   const {data, count, error} = await q
   if (error != null) {
     throw error
@@ -75,22 +75,17 @@ type JsonTypes = {
   users: User
 }
 
-export type DataFor<T extends Selectable> = T extends keyof JsonTypes
-  ? JsonTypes[T]
-  : any
+export type DataFor<T extends Selectable> = T extends keyof JsonTypes ? JsonTypes[T] : any
 
-export function selectJson<T extends TableName | ViewName>(
-  db: SupabaseClient,
-  table: T
-) {
-  return db.from(table).select<string, { data: DataFor<T> }>('data')
+export function selectJson<T extends TableName | ViewName>(db: SupabaseClient, table: T) {
+  return db.from(table).select<string, {data: DataFor<T>}>('data')
 }
 
 export function selectFrom<
   T extends TableName,
   TData extends DataFor<T>,
   TFields extends (string & keyof TData)[],
-  TResult = Pick<TData, TFields[number]>
+  TResult = Pick<TData, TFields[number]>,
 >(db: SupabaseClient, table: T, ...fields: TFields) {
   const query = fields.map((f) => `data->${f}`).join(', ')
   return db.from(table).select<string, TResult>(query)
@@ -123,14 +118,11 @@ type TypeConverter<R extends Selectable, T extends Record<string, any>> = {
  * Changes snake_case to camelCase.
  * You can also specify conversion functions for each column, or set it to false to filter it.
  */
-export const convertSQLtoTS = <
-  R extends Selectable,
-  T extends Record<string, any>
->(
-  sqlData: Partial<Row<R> & { data: any }>,
+export const convertSQLtoTS = <R extends Selectable, T extends Record<string, any>>(
+  sqlData: Partial<Row<R> & {data: any}>,
   converters: TypeConverter<R, T>,
   expandData = true,
-  shouldCamelize = true
+  shouldCamelize = true,
 ) => {
   const {data = {}, ...rows} = sqlData
 
@@ -153,11 +145,8 @@ export const convertSQLtoTS = <
   else return {...newRows} as T
 }
 
-export const convertObjectToSQLRow = <
-  T extends Record<string, any>,
-  R extends Selectable
->(
-  objData: Partial<T>
+export const convertObjectToSQLRow = <T extends Record<string, any>, R extends Selectable>(
+  objData: Partial<T>,
 ) => {
   const entries = Object.entries(objData)
 
@@ -173,5 +162,5 @@ export const convertObjectToSQLRow = <
 
   const newRows = Object.fromEntries(m as any)
 
-  return newRows as Partial<Row<R> & { data: any }>
+  return newRows as Partial<Row<R> & {data: any}>
 }

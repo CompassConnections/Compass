@@ -1,6 +1,6 @@
 // Adopted from https://github.com/ueberdosis/tiptap/blob/main/demos/src/Experiments/Embeds/Vue/iframe.ts
 
-import { Node, mergeAttributes } from '@tiptap/core'
+import {mergeAttributes, Node} from '@tiptap/core'
 
 export interface IframeOptions {
   HTMLAttributes: {
@@ -11,7 +11,7 @@ export interface IframeOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     iframe: {
-      setIframe: (options: { src: string }) => ReturnType
+      setIframe: (options: {src: string}) => ReturnType
     }
   }
 }
@@ -46,15 +46,12 @@ export default Node.create<IframeOptions>({
   },
 
   parseHTML() {
-    return [{ tag: 'iframe' }]
+    return [{tag: 'iframe'}]
   },
 
-  renderHTML({ HTMLAttributes }) {
-    const iframeAttributes = mergeAttributes(
-      this.options.HTMLAttributes,
-      HTMLAttributes
-    )
-    const { src } = HTMLAttributes
+  renderHTML({HTMLAttributes}) {
+    const iframeAttributes = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)
+    const {src} = HTMLAttributes
 
     // This is a hack to prevent native from opening the iframe in an in-app browser
     // and mobile in another tab. In native, links with target='_blank' open in the in-app browser.
@@ -93,9 +90,9 @@ export default Node.create<IframeOptions>({
   addCommands() {
     return {
       setIframe:
-        (options: { src: string }) =>
-        ({ tr, dispatch }) => {
-          const { selection } = tr
+        (options: {src: string}) =>
+        ({tr, dispatch}) => {
+          const {selection} = tr
           const node = this.type.create(options)
 
           if (dispatch) {

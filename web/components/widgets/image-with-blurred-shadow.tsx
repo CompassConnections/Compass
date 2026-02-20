@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
+import {ReactNode} from 'react'
 
-export default function ImageWithBlurredShadow(props: { image: ReactNode }) {
-  const { image } = props
+export default function ImageWithBlurredShadow(props: {image: ReactNode}) {
+  const {image} = props
   return (
     <div className="relative">
       {image}

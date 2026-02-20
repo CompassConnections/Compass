@@ -1,7 +1,7 @@
-import { User } from 'common/user'
-import { usePersistentInMemoryState } from 'web/hooks/use-persistent-in-memory-state'
-import { useEffect } from 'react'
-import { getOtherAnswers } from 'web/lib/supabase/answers'
+import {User} from 'common/user'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useEffect} from 'react'
+import {getOtherAnswers} from 'web/lib/supabase/answers'
 
 export type OtherAnswersType = {
   question_id: number

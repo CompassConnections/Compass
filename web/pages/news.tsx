@@ -1,24 +1,24 @@
-import {PageBase} from "web/components/page-base"
-import {SEO} from "web/components/SEO"
-import {Col} from "web/components/layout/col"
-import {Title} from "web/components/widgets/title"
-import {githubRepoSlug} from "common/constants";
-import {CustomMarkdown} from "web/components/markdown";
-import {CustomLink} from "web/components/links";
-import {isNativeMobile} from "web/lib/util/webview";
-import {useEffect, useState} from "react";
-import {CompassLoadingIndicator} from "web/components/widgets/loading-indicator";
-import {getPageData} from "web/lib/util/page-data";
-import {useT} from "web/lib/locale";
+import {githubRepoSlug} from 'common/constants'
+import {useEffect, useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {CustomLink} from 'web/components/links'
+import {CustomMarkdown} from 'web/components/markdown'
+import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {Title} from 'web/components/widgets/title'
+import {useT} from 'web/lib/locale'
+import {getPageData} from 'web/lib/util/page-data'
+import {isNativeMobile} from 'web/lib/util/webview'
 
 async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)
-    .then(r => r.json())
-    .catch(e => {
-      console.error("Failed to fetch releases", e)
+    .then((r) => r.json())
+    .catch((e) => {
+      console.error('Failed to fetch releases', e)
       return []
     })
-  return releases;
+  return releases
 }
 
 // Use SSR for SEO and better performance / caching
@@ -31,7 +31,7 @@ export async function getStaticProps() {
   return {
     props: {releases},
     revalidate: 3600, // refresh every hour
-  };
+  }
 }
 
 type Release = {
@@ -43,7 +43,7 @@ type Release = {
   html_url: string
 }
 
-export default function WhatsNew(props: { releases?: Release[] }) {
+export default function WhatsNew(props: {releases?: Release[]}) {
   const nativeMobile = isNativeMobile()
   const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
@@ -75,48 +75,55 @@ export default function WhatsNew(props: { releases?: Release[] }) {
   return (
     <PageBase trackPageView={'news'} className={'mx-4'}>
       <SEO
-        title={t("news.title", "What's New")}
+        title={t('news.title', "What's New")}
         description={
           releases.length
-            ? `${t("news.seo.description", "See the latest updates and features")}: ${releases[0].name}`
-            : t("news.seo.description_general", 'All news and code updates for Compass')
+            ? `${t('news.seo.description', 'See the latest updates and features')}: ${releases[0].name}`
+            : t('news.seo.description_general', 'All news and code updates for Compass')
         }
         url={`/news`}
       />
-      <Title className="text-3xl">{t("news.title", "What's New")}</Title>
-      {loading && <CompassLoadingIndicator/>}
-      {!loading && !releases.length ? <p>{t("news.failed", "Failed to fetch releases.")}</p> :
+      <Title className="text-3xl">{t('news.title', "What's New")}</Title>
+      {loading && <CompassLoadingIndicator />}
+      {!loading && !releases.length ? (
+        <p>{t('news.failed', 'Failed to fetch releases.')}</p>
+      ) : (
         <Col className="max-w-3xl mx-auto py-10 px-4 custom-link">
           {releases.map((release: Release) => (
             <div key={release.id} className="mb-10 border-b pb-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">{release.name || release.tag_name}</h2>
                 <span className="text-sm text-gray-500">
-                    {new Date(release.published_at).toISOString().split('T')[0]}
-                  </span>
+                  {new Date(release.published_at).toISOString().split('T')[0]}
+                </span>
               </div>
               <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
                 <CustomMarkdown>
-                  {formatPullLinks(release.body || t("news.no_release_notes", "_No release notes provided._"))}
+                  {formatPullLinks(
+                    release.body || t('news.no_release_notes', '_No release notes provided._'),
+                  )}
                 </CustomMarkdown>
               </div>
-              <CustomLink href={release.html_url}>{t("news.view_on_github", "View on GitHub")}</CustomLink>
+              <CustomLink href={release.html_url}>
+                {t('news.view_on_github', 'View on GitHub')}
+              </CustomLink>
             </div>
           ))}
         </Col>
-      }
+      )}
     </PageBase>
   )
 }
 
-function formatPullLinks(text = "") {
+function formatPullLinks(text = '') {
   return text
     .replace('CompassMeet', 'CompassConnections')
     .replace(
       /https:\/\/github\.com\/CompassConnections\/Compass\/pull\/(\d+)/g,
-      (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`)
+      (_, num) => `[#${num}](https://github.com/CompassConnections/Compass/pull/${num})`,
+    )
     .replace(
       /\**Full Changelog\**: https:\/\/github\.com\/CompassConnections\/Compass\/compare\/([\w.-]+\.\.\.[\w.-]+)/g,
-      '')
+      '',
+    )
 }
-

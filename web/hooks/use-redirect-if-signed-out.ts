@@ -1,6 +1,6 @@
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { useUser } from './use-user'
+import {useRouter} from 'next/navigation'
+import {useEffect} from 'react'
+import {useUser} from './use-user'
 
 export const useRedirectIfSignedOut = () => {
   const user = useUser()

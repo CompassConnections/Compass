@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react'
-import { useEvent } from 'web/hooks/use-event'
+import {useEffect, useRef} from 'react'
+import {useEvent} from 'web/hooks/use-event'
 
 export function useIsVisible(
   onSeenStart: () => void,
   triggerOnce = false,
   isLoaded = true,
-  onSeenEnd?: () => void
+  onSeenEnd?: () => void,
 ) {
   const ref = useRef<HTMLDivElement | null>(null)
   const seenOnce = useRef(false)
@@ -33,16 +33,15 @@ export function useIsVisible(
           }
         })
       },
-      { threshold }
+      {threshold},
     )
 
-    if (!triggerOnce || (triggerOnce && !seenOnce.current))
-      observer.observe(element)
+    if (!triggerOnce || (triggerOnce && !seenOnce.current)) observer.observe(element)
 
     return () => {
       observer.unobserve(element)
     }
   }, [ref, triggerOnce, eventOnVisible, eventOnInvisible, isLoaded])
 
-  return { ref }
+  return {ref}
 }

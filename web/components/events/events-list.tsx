@@ -1,4 +1,5 @@
 import {Event} from 'web/hooks/use-events'
+
 import {EventCard} from './event-card'
 
 export function EventsList(props: {
@@ -11,7 +12,8 @@ export function EventsList(props: {
   onEdit?: (event: Event) => void
   className?: string
 }) {
-  const {events, title, emptyMessage, onRsvp, onCancelRsvp, onCancelEvent, onEdit, className} = props
+  const {events, title, emptyMessage, onRsvp, onCancelRsvp, onCancelEvent, onEdit, className} =
+    props
 
   return (
     <div className={className}>

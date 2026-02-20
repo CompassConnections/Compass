@@ -7,7 +7,7 @@ describe('translation', () => {
     // expect(Object.keys(de).length).toBe(Object.keys(fr).length)
 
     // Check if all keys in de exist in fr and log any missing ones
-    const missingKeys = Object.keys(fr).filter(key => !de.hasOwnProperty(key))
+    const missingKeys = Object.keys(fr).filter((key) => !de.hasOwnProperty(key))
     if (missingKeys.length > 0) {
       console.log('Missing keys in de.json:', missingKeys)
     }

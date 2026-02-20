@@ -1,9 +1,10 @@
 'use client'
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
+import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth'
 import Script from 'next/script'
-import { useEffect } from 'react'
-import { useUser } from 'web/hooks/use-user'
-import { auth } from './users'
+import {useEffect} from 'react'
+import {useUser} from 'web/hooks/use-user'
+
+import {auth} from './users'
 
 async function handleResponse(response: any) {
   const idToken = response.credential
@@ -18,8 +19,7 @@ async function handleResponse(response: any) {
 
 const initGSI = () => {
   ;(window as any).google?.accounts.id.initialize({
-    client_id:
-      '128925704902-bpcbnlp2gt73au3rrjjtnup6cskr89p0.apps.googleusercontent.com',
+    client_id: '128925704902-bpcbnlp2gt73au3rrjjtnup6cskr89p0.apps.googleusercontent.com',
     callback: handleResponse,
     // auto_select: true,
     // cancel_on_tap_outside: false,
@@ -36,7 +36,7 @@ export const GoogleOneTapSetup = () => {
   return <Script src="https://accounts.google.com/gsi/client" />
 }
 
-export const GoogleOneTapLogin = (props: { className?: string }) => {
+export const GoogleOneTapLogin = (props: {className?: string}) => {
   const user = useUser()
 
   useEffect(() => {

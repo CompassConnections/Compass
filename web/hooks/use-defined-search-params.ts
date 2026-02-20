@@ -1,5 +1,5 @@
-import { useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import {useSearchParams} from 'next/navigation'
+import {useCallback} from 'react'
 export const useDefinedSearchParams = () => {
   // Note: useSearchParams() must be used inside a <Suspense> component if page is SSR
   const searchParams = useSearchParams()!
@@ -10,7 +10,7 @@ export const useDefinedSearchParams = () => {
 
       return params.toString()
     },
-    [searchParams]
+    [searchParams],
   )
   return {
     searchParams,

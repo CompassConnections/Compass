@@ -1,12 +1,9 @@
-import {z} from 'zod'
 import {type JSONContent} from '@tiptap/core'
 import {arrify} from 'common/util/array'
+import {z} from 'zod'
 
 /* GET request array can be like ?a=1 or ?a=1&a=2  */
-export const arraybeSchema = z
-  .array(z.string())
-  .or(z.string())
-  .transform(arrify)
+export const arraybeSchema = z.array(z.string()).or(z.string()).transform(arrify)
 
 export const contentSchema: z.ZodType<JSONContent> = z.lazy(() =>
   z.intersection(
@@ -22,13 +19,13 @@ export const contentSchema: z.ZodType<JSONContent> = z.lazy(() =>
             z.object({
               type: z.string(),
               attrs: z.record(z.any()).optional(),
-            })
-          )
+            }),
+          ),
         )
         .optional(),
       text: z.string().optional(),
-    })
-  )
+    }),
+  ),
 )
 
 const genderType = z.string()
@@ -110,6 +107,4 @@ const optionalProfilesSchema = z.object({
   work: z.array(z.string()).optional().nullable(),
 })
 
-export const combinedProfileSchema = baseProfilesSchema.merge(
-  optionalProfilesSchema
-)
+export const combinedProfileSchema = baseProfilesSchema.merge(optionalProfilesSchema)

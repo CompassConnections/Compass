@@ -1,5 +1,5 @@
-import {forwardRef, MouseEventHandler, ReactNode, Ref} from 'react'
 import clsx from 'clsx'
+import {forwardRef, MouseEventHandler, ReactNode, Ref} from 'react'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export type SizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
@@ -47,22 +47,13 @@ export function buttonClass(size: SizeType, color: ColorType) {
     color === 'green' && [solid, 'bg-teal-500 hover:bg-teal-600'],
     color === 'green-outline' && [outline, 'text-teal-500 hover:bg-teal-500'],
     color === 'red' && [solid, 'bg-red-500 hover:bg-red-600'],
-    color === 'red-outline' && [
-      outline,
-      'text-scarlet-500 hover:bg-scarlet-500',
-    ],
+    color === 'red-outline' && [outline, 'text-scarlet-500 hover:bg-scarlet-500'],
     color === 'yellow' && [solid, 'bg-yellow-400 hover:bg-yellow-500'],
-    color === 'yellow-outline' && [
-      outline,
-      'text-yellow-500 hover:bg-yellow-500',
-    ],
+    color === 'yellow-outline' && [outline, 'text-yellow-500 hover:bg-yellow-500'],
     color === 'blue' && [solid, 'bg-blue-400 hover:bg-blue-500'],
     color === 'sky-outline' && [outline, 'text-sky-500 hover:bg-sky-500'],
     color === 'indigo' && [solid, 'bg-primary-500 hover:bg-primary-600'],
-    color === 'indigo-outline' && [
-      outline,
-      'text-primary-500 hover:bg-primary-500',
-    ],
+    color === 'indigo-outline' && [outline, 'text-primary-500 hover:bg-primary-500'],
     color === 'gray' &&
       'bg-ink-300 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-ink-200 dark:enabled:hover:bg-ink-400 hover:text-ink-1000',
     color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-100'],
@@ -73,7 +64,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
     color === 'gold' && [
       gradient,
       'enabled:!bg-gradient-to-br from-yellow-400 via-yellow-100 to-yellow-300 dark:from-yellow-600 dark:via-yellow-200 dark:to-yellow-400 !text-gray-900',
-    ]
+    ],
   )
 }
 
@@ -85,7 +76,7 @@ export const Button = forwardRef(function Button(
     type?: 'button' | 'reset' | 'submit'
     loading?: boolean
   } & JSX.IntrinsicElements['button'],
-  ref: Ref<HTMLButtonElement>
+  ref: Ref<HTMLButtonElement>,
 ) {
   const {
     children,
@@ -126,14 +117,7 @@ export function IconButton(props: {
   type?: 'button' | 'reset' | 'submit'
   disabled?: boolean
 }) {
-  const {
-    children,
-    className,
-    onClick,
-    size = 'md',
-    type = 'button',
-    disabled = false,
-  } = props
+  const {children, className, onClick, size = 'md', type = 'button', disabled = false} = props
 
   return (
     <Button

@@ -1,11 +1,9 @@
+import {ENV_CONFIG} from 'common/envs/constants'
 import {sign} from 'jsonwebtoken'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {ENV_CONFIG} from "common/envs/constants";
 
-export const getSupabaseToken: APIHandler<'get-supabase-token'> = async (
-  _,
-  auth
-) => {
+import {APIError, APIHandler} from './helpers/endpoint'
+
+export const getSupabaseToken: APIHandler<'get-supabase-token'> = async (_, auth) => {
   const jwtSecret = process.env.SUPABASE_JWT_SECRET
   if (jwtSecret == null) {
     throw new APIError(500, "No SUPABASE_JWT_SECRET; couldn't sign token.")

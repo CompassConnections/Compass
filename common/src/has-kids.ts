@@ -30,20 +30,14 @@ export const hasKidsNames = Object.values(hasKidsLabels).reduce<Record<number, s
     acc[value] = name
     return acc
   },
-  {}
+  {},
 )
 
-
-export const generateChoicesMap = (
-  labels: HasKidsLabelsMap
-): Record<string, number> => {
-  return Object.values(labels).reduce(
-    (acc: Record<string, number>, label: HasKidLabel) => {
-      acc[label.name] = label.value
-      return acc
-    },
-    {}
-  )
+export const generateChoicesMap = (labels: HasKidsLabelsMap): Record<string, number> => {
+  return Object.values(labels).reduce((acc: Record<string, number>, label: HasKidLabel) => {
+    acc[label.name] = label.value
+    return acc
+  }, {})
 }
 
 // export const NO_PREFERENCE_STRENGTH = -1

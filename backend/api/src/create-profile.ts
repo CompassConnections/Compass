@@ -1,23 +1,21 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {getUser, log} from 'shared/utils'
+import {sendDiscordMessage} from 'common/discord/core'
+import {jsonToMarkdown} from 'common/md'
+import {trimStrings} from 'common/parsing'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
-import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
-import {track} from 'shared/analytics'
-import {updateUser} from 'shared/supabase/users'
 import {tryCatch} from 'common/util/try-catch'
+import {track} from 'shared/analytics'
+import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {updateUser} from 'shared/supabase/users'
 import {insert} from 'shared/supabase/utils'
-import {sendDiscordMessage} from "common/discord/core";
-import {jsonToMarkdown} from "common/md";
-import {trimStrings} from "common/parsing";
+import {getUser, log} from 'shared/utils'
 
 export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
 
-  const { data: existingUser } = await tryCatch(
-    pg.oneOrNone<{ id: string }>('select id from profiles where user_id = $1', [
-      auth.uid,
-    ])
+  const {data: existingUser} = await tryCatch(
+    pg.oneOrNone<{id: string}>('select id from profiles where user_id = $1', [auth.uid]),
   )
   if (existingUser) {
     throw new APIError(400, 'User already exists')
@@ -30,14 +28,12 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
   if (!user) throw new APIError(401, 'Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {
     // If they just signed up, set their avatar to be their pinned photo
-    updateUser(pg, auth.uid, { avatarUrl: body.pinned_url })
+    updateUser(pg, auth.uid, {avatarUrl: body.pinned_url})
   }
 
   console.debug('body', body)
 
-  const { data, error } = await tryCatch(
-    insert(pg, 'profiles', { user_id: auth.uid, ...body })
-  )
+  const {data, error} = await tryCatch(insert(pg, 'profiles', {user_id: auth.uid, ...body}))
 
   if (error) {
     log.error('Error creating user: ' + error.message)
@@ -67,10 +63,8 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       console.error('Failed to send discord new profile', e)
     }
     try {
-      const nProfiles = await pg.one<number>(
-        `SELECT count(*) FROM profiles`,
-        [],
-        (r) => Number(r.count)
+      const nProfiles = await pg.one<number>(`SELECT count(*) FROM profiles`, [], (r) =>
+        Number(r.count),
       )
 
       const isMilestone = (n: number) => {
@@ -81,12 +75,8 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       }
       console.debug(nProfiles, isMilestone(nProfiles))
       if (isMilestone(nProfiles)) {
-        await sendDiscordMessage(
-          `We just reached **${nProfiles}** total profiles! 🎉`,
-          'general',
-        )
+        await sendDiscordMessage(`We just reached **${nProfiles}** total profiles! 🎉`, 'general')
       }
-
     } catch (e) {
       console.error('Failed to send discord user milestone', e)
     }

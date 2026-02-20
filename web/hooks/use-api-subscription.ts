@@ -1,12 +1,9 @@
-import { useEffect } from 'react'
-import { getWebsocketUrl } from 'common/api/utils'
-import { ServerMessage } from 'common/api/websockets'
-import { APIRealtimeClient } from 'common/api/websocket-client'
+import {useEffect} from 'react'
+import {getWebsocketUrl} from 'common/api/utils'
+import {ServerMessage} from 'common/api/websockets'
+import {APIRealtimeClient} from 'common/api/websocket-client'
 
-const client =
-  typeof window !== 'undefined'
-    ? new APIRealtimeClient(getWebsocketUrl())
-    : undefined
+const client = typeof window !== 'undefined' ? new APIRealtimeClient(getWebsocketUrl()) : undefined
 
 export type SubscriptionOptions = {
   topics: string[]

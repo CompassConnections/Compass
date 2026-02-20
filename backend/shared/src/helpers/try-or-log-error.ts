@@ -1,4 +1,4 @@
-import { log } from 'shared/utils'
+import {log} from 'shared/utils'
 
 export const tryOrLogError = async <T>(task: Promise<T>) => {
   try {

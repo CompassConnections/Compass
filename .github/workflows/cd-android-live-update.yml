@@ -1,10 +1,10 @@
 name: CD Android Live Update
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
-      - "android/capawesome.json"
-      - ".github/workflows/cd-android-live-update.yml"
+      - 'android/capawesome.json'
+      - '.github/workflows/cd-android-live-update.yml'
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # we need full history for git log
+          fetch-depth: 0 # we need full history for git log
 
       - name: Install jq
         run: sudo apt-get install -y jq

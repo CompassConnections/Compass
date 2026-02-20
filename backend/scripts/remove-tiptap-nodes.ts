@@ -1,16 +1,8 @@
-import { runScript } from './run-script'
-import {
-  renderSql,
-  select,
-  from,
-  where,
-} from 'shared/supabase/sql-builder'
-import { type JSONContent } from '@tiptap/core'
+import {runScript} from './run-script'
+import {from, renderSql, select, where} from 'shared/supabase/sql-builder'
+import {type JSONContent} from '@tiptap/core'
 
-const removeNodesOfType = (
-  content: JSONContent,
-  typeToRemove: string
-): JSONContent | null => {
+const removeNodesOfType = (content: JSONContent, typeToRemove: string): JSONContent | null => {
   if (content.type === typeToRemove) {
     return null
   }
@@ -20,21 +12,21 @@ const removeNodesOfType = (
       .map((node) => removeNodesOfType(node, typeToRemove))
       .filter((node) => node != null)
 
-    return { ...content, content: newContent }
+    return {...content, content: newContent}
   }
 
   // No content to process, return node as is
   return content
 }
 
-runScript(async ({ pg }) => {
+runScript(async ({pg}) => {
   const nodeType = 'linkPreview'
 
   console.debug('\nSearching comments for linkPreviews...')
   const commentQuery = renderSql(
     select('id, content'),
     from('profile_comments'),
-    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeType}")')`)
+    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeType}")')`),
   )
   const comments = await pg.manyOrNone(commentQuery)
 
@@ -56,7 +48,7 @@ runScript(async ({ pg }) => {
   const messageQuery = renderSql(
     select('id, content'),
     from('private_user_messages'),
-    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeType}")')`)
+    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeType}")')`),
   )
   const messages = await pg.manyOrNone(messageQuery)
 
@@ -67,10 +59,10 @@ runScript(async ({ pg }) => {
     console.debug('before', JSON.stringify(msg.content, null, 2))
     console.debug('after', JSON.stringify(newContent, null, 2))
 
-    await pg.none(
-      'update private_user_messages set content = $1 where id = $2',
-      [newContent, msg.id]
-    )
+    await pg.none('update private_user_messages set content = $1 where id = $2', [
+      newContent,
+      msg.id,
+    ])
     console.debug('Updated message:', msg.id)
   }
 })

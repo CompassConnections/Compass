@@ -1,6 +1,6 @@
-import Link from "next/link";
+import Link from 'next/link'
 
-export const CustomLink = ({href, children}: { href?: string; children: React.ReactNode }) => {
+export const CustomLink = ({href, children}: {href?: string; children: React.ReactNode}) => {
   if (!href) return <>{children}</>
 
   // If href is internal, use Next.js Link

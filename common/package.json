@@ -5,10 +5,9 @@
   "scripts": {
     "build": "tsc -b && tsc-alias",
     "compile": "tsc -b",
-    "verify": "yarn --cwd=.. verify",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
-    "verify:dir": "npx eslint . --max-warnings 0",
+    "typecheck": "npx tsc --noEmit",
     "test": "jest --config jest.config.js --passWithNoTests"
   },
   "sideEffects": false,
@@ -32,6 +31,6 @@
     "@types/string-similarity": "4.0.0",
     "jest": "29.3.1",
     "supabase": "2.15.8",
-    "ts-jest": "29.0.3"
+    "ts-jest": "29.4.6"
   }
 }

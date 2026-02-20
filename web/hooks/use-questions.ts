@@ -29,9 +29,10 @@ export const useFreeResponseQuestions = () => {
 }
 
 export const useUserAnswers = (userId: string | undefined) => {
-  const [answers, setAnswers] = usePersistentInMemoryState<
-    Row<'compatibility_answers_free'>[]
-  >([], `answers-${userId}`)
+  const [answers, setAnswers] = usePersistentInMemoryState<Row<'compatibility_answers_free'>[]>(
+    [],
+    `answers-${userId}`,
+  )
 
   useEffect(() => {
     if (userId) {
@@ -48,11 +49,9 @@ export const useUserAnswers = (userId: string | undefined) => {
 }
 
 export const useUserCompatibilityAnswers = (userId: string | undefined) => {
-  const [compatibilityAnswers, setCompatibilityAnswers] =
-    usePersistentInMemoryState<Row<'compatibility_answers'>[]>(
-      [],
-      `compatibility-answers-${userId}`
-    )
+  const [compatibilityAnswers, setCompatibilityAnswers] = usePersistentInMemoryState<
+    Row<'compatibility_answers'>[]
+  >([], `compatibility-answers-${userId}`)
 
   useEffect(() => {
     if (userId) {
@@ -60,7 +59,7 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
         const sortedAnswers = sortBy(
           answers,
           (a) => -a.importance,
-          (a) => (a.explanation ? 0 : 1)
+          (a) => (a.explanation ? 0 : 1),
         )
         setCompatibilityAnswers(sortedAnswers)
       })
@@ -81,8 +80,10 @@ export type QuestionWithCountType = Row<'compatibility_prompts'> & {
 }
 
 export const useFRQuestionsWithAnswerCount = () => {
-  const [FRquestionsWithCount, setFRQuestionsWithCount] =
-    usePersistentInMemoryState<any>([], `fr-questions-with-count`)
+  const [FRquestionsWithCount, setFRQuestionsWithCount] = usePersistentInMemoryState<any>(
+    [],
+    `fr-questions-with-count`,
+  )
 
   useEffect(() => {
     getFRQuestionsWithAnswerCount().then((questions) => {
@@ -95,21 +96,17 @@ export const useFRQuestionsWithAnswerCount = () => {
 
 export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
   const {locale} = useLocale()
-  const [compatibilityQuestions, setCompatibilityQuestions] =
-    usePersistentInMemoryState<QuestionWithCountType[]>(
-      [],
-      `compatibility-questions-with-count`
-    )
+  const [compatibilityQuestions, setCompatibilityQuestions] = usePersistentInMemoryState<
+    QuestionWithCountType[]
+  >([], `compatibility-questions-with-count`)
   const [isLoading, setIsLoading] = useState(true)
 
   async function refreshCompatibilityQuestions() {
     setIsLoading(true)
-    return api('get-compatibility-questions', {locale, keyword}).then(
-      (res) => {
-        setCompatibilityQuestions(res.questions)
-        setIsLoading(false)
-      }
-    )
+    return api('get-compatibility-questions', {locale, keyword}).then((res) => {
+      setCompatibilityQuestions(res.questions)
+      setIsLoading(false)
+    })
   }
 
   useEffect(() => {

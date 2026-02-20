@@ -1,24 +1,24 @@
-import {User} from 'common/user'
-import {Button} from 'web/components/buttons/button'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS,} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
-import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useUser} from 'web/hooks/use-user'
-import {deleteBookmarkedSearch} from 'web/lib/supabase/searches'
-import {formatFilters, locationType} from 'common/searches'
-import {FilterFields} from 'common/filters'
-import {api} from 'web/lib/api'
 import {XIcon} from '@heroicons/react/outline'
-import {DisplayUser} from 'common/api/user-types'
-import {useState} from 'react'
-import {useT} from 'web/lib/locale'
-import toast from 'react-hot-toast'
-import Link from 'next/link'
-import {useAllChoices} from 'web/hooks/use-choices'
 import clsx from 'clsx'
+import {DisplayUser} from 'common/api/user-types'
+import {FilterFields} from 'common/filters'
+import {formatFilters, locationType} from 'common/searches'
+import {User} from 'common/user'
+import Link from 'next/link'
+import {useState} from 'react'
+import toast from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {Avatar} from 'web/components/widgets/avatar'
+import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
+import {useAllChoices} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {useT} from 'web/lib/locale'
+import {deleteBookmarkedSearch} from 'web/lib/supabase/searches'
 
 export function BookmarkSearchButton(props: {
   bookmarkedSearches: BookmarkedSearchesType[]
@@ -47,7 +47,7 @@ export function BookmarkSearchButton(props: {
   )
 }
 
-export function ResetFiltersButton(props: { clearFilters: () => void }) {
+export function ResetFiltersButton(props: {clearFilters: () => void}) {
   const {clearFilters} = props
   const t = useT()
   return (
@@ -86,27 +86,19 @@ function ButtonModal(props: {
             <p>
               {t(
                 'saved_searches.notification_note',
-                "We'll notify you daily when new people match your searches below."
+                "We'll notify you daily when new people match your searches below.",
               )}
             </p>
-            <Col
-              className={clsx(
-                'divide-y divide-canvas-300 w-full pr-4',
-                SCROLLABLE_MODAL_CLASS
-              )}
-            >
+            <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
               {(bookmarkedSearches || []).map((search) => (
-                <Row
-                  key={search.id}
-                  className="items-center justify-between py-2 gap-2"
-                >
+                <Row key={search.id} className="items-center justify-between py-2 gap-2">
                   <div className="w-full rounded-md p-2">
                     {formatFilters(
                       search.search_filters as Partial<FilterFields>,
                       search.location as locationType,
                       choicesIdsToLabels,
                       measurementSystem,
-                      t
+                      t,
                     )?.join(' • ')}
                   </div>
                   <button
@@ -116,7 +108,7 @@ function ButtonModal(props: {
                     }}
                     className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
-                    <XIcon className="h-6 w-6"/>
+                    <XIcon className="h-6 w-6" />
                   </button>
                 </Row>
               ))}
@@ -126,7 +118,7 @@ function ButtonModal(props: {
           <p>
             {t(
               'saved_searches.empty_state',
-              "You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people match it."
+              "You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people match it.",
             )}
           </p>
         )}
@@ -190,9 +182,7 @@ function StarModal(props: {
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
 
   const t = useT()
-  const visibleUsers = (starredUsers || []).filter(
-    (u) => !removingIds.has(u.id)
-  )
+  const visibleUsers = (starredUsers || []).filter((u) => !removingIds.has(u.id))
 
   return (
     <Modal
@@ -206,20 +196,10 @@ function StarModal(props: {
         <h3>{t('saved_people.title', 'Saved People')}</h3>
         {visibleUsers?.length ? (
           <>
-            <p>
-              {t('saved_people.list_header', 'Here are the people you saved:')}
-            </p>
-            <Col
-              className={clsx(
-                'divide-y divide-canvas-300 w-full pr-4',
-                SCROLLABLE_MODAL_CLASS
-              )}
-            >
+            <p>{t('saved_people.list_header', 'Here are the people you saved:')}</p>
+            <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
               {visibleUsers.map((u) => (
-                <Row
-                  key={u.id}
-                  className="items-center justify-between py-2 gap-2"
-                >
+                <Row key={u.id} className="items-center justify-between py-2 gap-2">
                   <Link
                     className="w-full rounded-md hover:bg-canvas-100 p-2"
                     href={'/' + u.username}
@@ -232,9 +212,7 @@ function StarModal(props: {
                       />
                       <Col>
                         <div className="font-medium">{u.name}</div>
-                        <div className="text-ink-500 text-sm">
-                          @{u.username}
-                        </div>
+                        <div className="text-ink-500 text-sm">@{u.username}</div>
                       </Col>
                     </Row>
                   </Link>
@@ -252,9 +230,7 @@ function StarModal(props: {
                           refreshStars()
                         })
                         .catch(() => {
-                          toast.error(
-                            "Couldn't remove saved profile. Please try again."
-                          )
+                          toast.error("Couldn't remove saved profile. Please try again.")
                           // Revert optimistic removal on failure
                           setRemovingIds((prev) => {
                             const next = new Set(prev)
@@ -265,7 +241,7 @@ function StarModal(props: {
                     }}
                     className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
-                    <XIcon className="h-6 w-6"/>
+                    <XIcon className="h-6 w-6" />
                   </button>
                 </Row>
               ))}
@@ -273,8 +249,7 @@ function StarModal(props: {
           </>
         ) : (
           <p>
-            You haven't saved any profile. To save one, click on the star on
-            their profile page.
+            You haven't saved any profile. To save one, click on the star on their profile page.
           </p>
         )}
         {/*<BookmarkSearchContent*/}

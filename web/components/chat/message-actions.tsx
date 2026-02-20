@@ -1,18 +1,18 @@
 import {DotsHorizontalIcon, PencilIcon, TrashIcon} from '@heroicons/react/outline'
 import {EmojiHappyIcon} from '@heroicons/react/solid'
+import {JSONContent} from '@tiptap/react'
+import clsx from 'clsx'
+import {PrivateChatMessage} from 'common/chat-message'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
-import {useUser} from 'web/hooks/use-user'
 import {toast} from 'react-hot-toast'
-import {api} from "web/lib/api"
-import clsx from "clsx"
-import DropdownMenu, {DropdownItem} from "web/components/comments/dropdown-menu"
-import {JSONContent} from "@tiptap/react"
-import {handleReaction} from "web/lib/util/message-reactions"
-import {useClickOutside} from "web/hooks/use-click-outside"
-import {PrivateChatMessage} from "common/chat-message";
-import {updateReactionUI} from "web/lib/supabase/chat-messages";
-import {useIsMobile} from "web/hooks/use-is-mobile";
+import DropdownMenu, {DropdownItem} from 'web/components/comments/dropdown-menu'
+import {useClickOutside} from 'web/hooks/use-click-outside'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {updateReactionUI} from 'web/lib/supabase/chat-messages'
+import {handleReaction} from 'web/lib/util/message-reactions'
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '👎']
 
@@ -52,7 +52,8 @@ export function MessageActions(props: {
   }, [openEmojiPickerKey])
 
   const handleDelete = async () => {
-    if (!confirm(t('messages.delete_confirm', 'Are you sure you want to delete this message?'))) return
+    if (!confirm(t('messages.delete_confirm', 'Are you sure you want to delete this message?')))
+      return
     const messageId = message.id
     try {
       await api('delete-message', {messageId})
@@ -74,8 +75,7 @@ export function MessageActions(props: {
           ref={emojiPickerRef}
           className={clsx(
             'absolute mb-2 rounded-lg bg-canvas-100 p-2 shadow-lg pr-10 z-10 max-w-[250px]',
-            isMobile ? 'left-1/2 transform -translate-x-1/2'
-              : isOwner ? 'right-20' : 'left-20'
+            isMobile ? 'left-1/2 transform -translate-x-1/2' : isOwner ? 'right-20' : 'left-20',
           )}
         >
           <div className="grid grid-cols-6 gap-8">
@@ -97,27 +97,29 @@ export function MessageActions(props: {
       )}
       {!hideTrigger && (
         <DropdownMenu
-          items={[
-            isOwner && {
-              name: t('messages.action.edit', 'Edit'),
-              icon: <PencilIcon className="h-4 w-4"/>,
-              onClick: onRequestEdit,
-            },
-            isOwner && {
-              name: t('messages.action.delete', 'Delete'),
-              icon: <TrashIcon className="h-4 w-4"/>,
-              onClick: handleDelete,
-            },
-            {
-              name: t('messages.action.add_reaction', 'Add Reaction'),
-              icon: <EmojiHappyIcon className="h-4 w-4"/>,
-              onClick: () => {
-                setShowEmojiPicker(!showEmojiPicker)
+          items={
+            [
+              isOwner && {
+                name: t('messages.action.edit', 'Edit'),
+                icon: <PencilIcon className="h-4 w-4" />,
+                onClick: onRequestEdit,
               },
-            },
-          ].filter(Boolean) as DropdownItem[]}
+              isOwner && {
+                name: t('messages.action.delete', 'Delete'),
+                icon: <TrashIcon className="h-4 w-4" />,
+                onClick: handleDelete,
+              },
+              {
+                name: t('messages.action.add_reaction', 'Add Reaction'),
+                icon: <EmojiHappyIcon className="h-4 w-4" />,
+                onClick: () => {
+                  setShowEmojiPicker(!showEmojiPicker)
+                },
+              },
+            ].filter(Boolean) as DropdownItem[]
+          }
           closeOnClick={true}
-          icon={<DotsHorizontalIcon className="h-5 w-5 text-gray-500"/>}
+          icon={<DotsHorizontalIcon className="h-5 w-5 text-gray-500" />}
           menuWidth="w-40"
           className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-canvas-50"
         />

@@ -1,23 +1,23 @@
-import {Json} from 'common/supabase/schema'
-import {SupabaseDirectClient} from 'shared/supabase/init'
-import {ChatVisibility} from 'common/chat-message'
-import {User} from 'common/user'
-import {first} from 'lodash'
-import {log} from 'shared/monitoring/log'
-import {getPrivateUser, getUser} from 'shared/utils'
 import {type JSONContent} from '@tiptap/core'
 import {APIError} from 'common/api/utils'
-import {broadcast} from 'shared/websockets/server'
-import {track} from 'shared/analytics'
-import {sendNewMessageEmail} from 'email/functions/helpers'
+import {ChatVisibility} from 'common/chat-message'
+import {Json} from 'common/supabase/schema'
+import {User} from 'common/user'
+import {parseJsonContentToText} from 'common/util/parse'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import webPush from 'web-push'
-import {parseJsonContentToText} from "common/util/parse"
-import {encryptMessage} from "shared/encryption"
+import utc from 'dayjs/plugin/utc'
+import {sendNewMessageEmail} from 'email/functions/helpers'
 import * as admin from 'firebase-admin'
-import {TokenMessage} from "firebase-admin/lib/messaging/messaging-api";
+import {TokenMessage} from 'firebase-admin/lib/messaging/messaging-api'
+import {first} from 'lodash'
+import {track} from 'shared/analytics'
+import {encryptMessage} from 'shared/encryption'
+import {log} from 'shared/monitoring/log'
+import {SupabaseDirectClient} from 'shared/supabase/init'
+import {getPrivateUser, getUser} from 'shared/utils'
+import {broadcast} from 'shared/websockets/server'
+import webPush from 'web-push'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -48,7 +48,7 @@ export const insertPrivateMessage = async (
   channelId: number,
   userId: string,
   visibility: ChatVisibility,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   const plaintext = JSON.stringify(content)
   const {ciphertext, iv, tag} = encryptMessage(plaintext)
@@ -56,20 +56,20 @@ export const insertPrivateMessage = async (
     `insert into private_user_messages (ciphertext, iv, tag, channel_id, user_id, visibility)
      values ($1, $2, $3, $4, $5, $6)
      returning created_time`,
-    [ciphertext, iv, tag, channelId, userId, visibility]
+    [ciphertext, iv, tag, channelId, userId, visibility],
   )
   await pg.none(
     `update private_user_message_channels
      set last_updated_time = $1
      where id = $2`,
-    [lastMessage.created_time, channelId]
+    [lastMessage.created_time, channelId],
   )
 }
 
 export const addUsersToPrivateMessageChannel = async (
   userIds: string[],
   channelId: number,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
   await Promise.all(
     userIds.map((id) =>
@@ -78,15 +78,15 @@ export const addUsersToPrivateMessageChannel = async (
          values ($1, $2, 'member', 'proposed')
          on conflict do nothing
         `,
-        [channelId, id]
-      )
-    )
+        [channelId, id],
+      ),
+    ),
   )
   await pg.none(
     `update private_user_message_channels
      set last_updated_time = now()
      where id = $1`,
-    [channelId]
+    [channelId],
   )
 }
 
@@ -103,12 +103,12 @@ export async function broadcastPrivateMessages(
        and status != 'left'
     `,
     [channelId, userId],
-    (r) => r.user_id
+    (r) => r.user_id,
   )
   otherUserIds.concat(userId).forEach((otherUserId) => {
     broadcast(`private-user-messages/${otherUserId}`, {})
   })
-  return otherUserIds;
+  return otherUserIds
 }
 
 export const createPrivateUserMessageMain = async (
@@ -116,7 +116,7 @@ export const createPrivateUserMessageMain = async (
   channelId: number,
   content: JSONContent,
   pg: SupabaseDirectClient,
-  visibility: ChatVisibility
+  visibility: ChatVisibility,
 ) => {
   log('createPrivateUserMessageMain', creator, channelId, content)
 
@@ -126,10 +126,9 @@ export const createPrivateUserMessageMain = async (
      from private_user_message_channel_members
      where channel_id = $1
        and user_id = $2`,
-    [channelId, creator.id]
+    [channelId, creator.id],
   )
-  if (!authorized)
-    throw new APIError(403, 'You are not authorized to post to this channel')
+  if (!authorized) throw new APIError(403, 'You are not authorized to post to this channel')
 
   await insertPrivateMessage(content, channelId, creator.id, visibility, pg)
 
@@ -138,13 +137,12 @@ export const createPrivateUserMessageMain = async (
     channel_id: channelId,
     user_id: creator.id,
   }
-  const otherUserIds = await broadcastPrivateMessages(pg, channelId, creator.id);
+  const otherUserIds = await broadcastPrivateMessages(pg, channelId, creator.id)
 
   // Fire and forget safely
-  void notifyOtherUserInChannelIfInactive(channelId, creator, content, pg)
-    .catch((err) => {
-      console.error('notifyOtherUserInChannelIfInactive failed', err)
-    })
+  void notifyOtherUserInChannelIfInactive(channelId, creator, content, pg).catch((err) => {
+    console.error('notifyOtherUserInChannelIfInactive failed', err)
+  })
 
   track(creator.id, 'send private message', {
     channelId,
@@ -158,16 +156,16 @@ const notifyOtherUserInChannelIfInactive = async (
   channelId: number,
   creator: User,
   content: JSONContent,
-  pg: SupabaseDirectClient
+  pg: SupabaseDirectClient,
 ) => {
-  const otherUserIds = await pg.manyOrNone<{ user_id: string }>(
+  const otherUserIds = await pg.manyOrNone<{user_id: string}>(
     `select user_id
      from private_user_message_channel_members
      where channel_id = $1
        and user_id != $2
        and status != 'left'
     `,
-    [channelId, creator.id]
+    [channelId, creator.id],
   )
   // We're only sending notifs for 1:1 channels
   if (!otherUserIds || otherUserIds.length > 1) return
@@ -191,10 +189,7 @@ const notifyOtherUserInChannelIfInactive = async (
   await sendWebNotifications(pg, receiverId, JSON.stringify(payload))
   await sendMobileNotifications(pg, receiverId, payload)
 
-  const startOfDay = dayjs()
-    .tz('America/Los_Angeles')
-    .startOf('day')
-    .toISOString()
+  const startOfDay = dayjs().tz('America/Los_Angeles').startOf('day').toISOString()
   const previousMessagesThisDayBetweenTheseUsers = await pg.one(
     `select count(*)
      from private_user_messages
@@ -202,7 +197,7 @@ const notifyOtherUserInChannelIfInactive = async (
        and user_id = $2
        and created_time > $3
     `,
-    [channelId, creator.id, startOfDay]
+    [channelId, creator.id, startOfDay],
   )
   log('previous messages this day', previousMessagesThisDayBetweenTheseUsers)
   if (previousMessagesThisDayBetweenTheseUsers.count > 1) return
@@ -210,27 +205,18 @@ const notifyOtherUserInChannelIfInactive = async (
   await createNewMessageNotification(creator, receiver, channelId)
 }
 
-const createNewMessageNotification = async (
-  fromUser: User,
-  toUser: User,
-  channelId: number,
-) => {
+const createNewMessageNotification = async (fromUser: User, toUser: User, channelId: number) => {
   const privateUser = await getPrivateUser(toUser.id)
   console.debug('privateUser:', privateUser)
   if (!privateUser) return
   await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
 }
 
-
-async function sendWebNotifications(
-  pg: SupabaseDirectClient,
-  userId: string,
-  payload: string,
-) {
+async function sendWebNotifications(pg: SupabaseDirectClient, userId: string, payload: string) {
   webPush.setVapidDetails(
     'mailto:hello@compassmeet.com',
     process.env.VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
+    process.env.VAPID_PRIVATE_KEY!,
   )
   // Retrieve subscription from the database
   const subscriptions = await getSubscriptionsFromDB(pg, userId)
@@ -250,20 +236,18 @@ async function sendWebNotifications(
   }
 }
 
-
-export async function getSubscriptionsFromDB(
-  pg: SupabaseDirectClient,
-  userId: string,
-) {
+export async function getSubscriptionsFromDB(pg: SupabaseDirectClient, userId: string) {
   try {
-    const subscriptions = await pg.manyOrNone(`
+    const subscriptions = await pg.manyOrNone(
+      `
                 select endpoint, keys
                 from push_subscriptions
                 where user_id = $1
-      `, [userId]
+      `,
+      [userId],
     )
 
-    return subscriptions.map(sub => ({
+    return subscriptions.map((sub) => ({
       endpoint: sub.endpoint,
       keys: sub.keys,
     }))
@@ -273,34 +257,25 @@ export async function getSubscriptionsFromDB(
   }
 }
 
-async function removeSubscription(
-  pg: SupabaseDirectClient,
-  endpoint: any,
-  userId: string,
-) {
+async function removeSubscription(pg: SupabaseDirectClient, endpoint: any, userId: string) {
   await pg.none(
     `DELETE
      FROM push_subscriptions
      WHERE endpoint = $1
        AND user_id = $2`,
-    [endpoint, userId]
+    [endpoint, userId],
   )
 }
 
-async function removeMobileSubscription(
-  pg: SupabaseDirectClient,
-  token: any,
-  userId: string,
-) {
+async function removeMobileSubscription(pg: SupabaseDirectClient, token: any, userId: string) {
   await pg.none(
     `DELETE
      FROM push_subscriptions_mobile
      WHERE token = $1
        AND user_id = $2`,
-    [token, userId]
+    [token, userId],
   )
 }
-
 
 async function sendMobileNotifications(
   pg: SupabaseDirectClient,
@@ -349,13 +324,15 @@ export async function sendPushToToken(
   } catch (err: unknown) {
     // Check if it's a Firebase Messaging error
     if (err instanceof Error && 'code' in err) {
-      const firebaseError = err as { code: string; message: string }
+      const firebaseError = err as {code: string; message: string}
       console.warn('Firebase error:', firebaseError.code, firebaseError.message)
 
       // Handle specific error cases here if needed
       // For example, if token is no longer valid:
-      if (firebaseError.code === 'messaging/registration-token-not-registered' ||
-        firebaseError.code === 'messaging/invalid-argument') {
+      if (
+        firebaseError.code === 'messaging/registration-token-not-registered' ||
+        firebaseError.code === 'messaging/invalid-argument'
+      ) {
         console.warn('Removing invalid FCM token')
         await removeMobileSubscription(pg, token, userId)
       }
@@ -366,17 +343,15 @@ export async function sendPushToToken(
   return
 }
 
-
-export async function getMobileSubscriptionsFromDB(
-  pg: SupabaseDirectClient,
-  userId: string,
-) {
+export async function getMobileSubscriptionsFromDB(pg: SupabaseDirectClient, userId: string) {
   try {
-    const subscriptions = await pg.manyOrNone(`
+    const subscriptions = await pg.manyOrNone(
+      `
                 select token
                 from push_subscriptions_mobile
                 where user_id = $1
-      `, [userId]
+      `,
+      [userId],
     )
 
     return subscriptions

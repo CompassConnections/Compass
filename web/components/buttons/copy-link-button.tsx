@@ -1,13 +1,14 @@
-import {ComponentProps, useState} from 'react'
-import {copyToClipboard} from 'web/lib/util/copy'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from '../widgets/tooltip'
+import {CheckIcon, ClipboardCopyIcon, DuplicateIcon} from '@heroicons/react/outline'
+import {LinkIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import {Button, ColorType, IconButton, SizeType,} from 'web/components/buttons/button'
+import {ComponentProps, useState} from 'react'
 import toast from 'react-hot-toast'
-import LinkIcon from 'web/lib/icons/link-icon.svg'
-import {CheckIcon, ClipboardCopyIcon, DuplicateIcon,} from '@heroicons/react/outline'
-import {useT} from "web/lib/locale";
+import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
+import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
+import {copyToClipboard} from 'web/lib/util/copy'
+
+import {Tooltip} from '../widgets/tooltip'
 
 export function CopyLinkOrShareButton(props: {
   url: string
@@ -22,8 +23,7 @@ export function CopyLinkOrShareButton(props: {
     contractId: string
   }
 }) {
-  const { url, size, children, className, iconClassName, tooltip, color } =
-    props
+  const {url, size, children, className, iconClassName, tooltip, color} = props
   const [isSuccess, setIsSuccess] = useState(false)
   const t = useT()
 
@@ -48,7 +48,7 @@ export function CopyLinkOrShareButton(props: {
         className={clsx(
           className,
           'active:text-white',
-          isSuccess && 'text-green-500 duration-[25ms] hover:text-green-200'
+          isSuccess && 'text-green-500 duration-[25ms] hover:text-green-200',
         )}
         disabled={!url}
         size={size}
@@ -73,9 +73,7 @@ export function CopyLinkOrShareButton(props: {
   )
 }
 
-const ToolTipOrDiv = (
-  props: { hasChildren: boolean } & ComponentProps<typeof Tooltip>
-) =>
+const ToolTipOrDiv = (props: {hasChildren: boolean} & ComponentProps<typeof Tooltip>) =>
   props.hasChildren ? (
     <>{props.children}</>
   ) : (
@@ -91,7 +89,7 @@ export const CopyLinkRow = (props: {
   linkBoxClassName?: string
   linkButtonClassName?: string
 }) => {
-  const { url, linkBoxClassName, linkButtonClassName } = props
+  const {url, linkBoxClassName, linkButtonClassName} = props
 
   // "copied" success state animations
   const [bgPressed, setBgPressed] = useState(false)
@@ -116,11 +114,9 @@ export const CopyLinkRow = (props: {
     <button
       className={clsx(
         'border-ink-300 flex select-none items-center justify-between rounded border px-4 py-2 text-sm transition-colors duration-700',
-        bgPressed
-          ? 'bg-primary-50 text-primary-500 transition-none'
-          : 'bg-canvas-50 text-ink-500',
+        bgPressed ? 'bg-primary-50 text-primary-500 transition-none' : 'bg-canvas-50 text-ink-500',
         'disabled:h-9 disabled:animate-pulse',
-        linkBoxClassName
+        linkBoxClassName,
       )}
       disabled={!url}
       onClick={onClick}
@@ -128,11 +124,7 @@ export const CopyLinkRow = (props: {
       <div className={'select-all truncate'}>{displayUrl}</div>
       {url && (
         <div className={linkButtonClassName}>
-          {!iconPressed ? (
-            <DuplicateIcon className="h-5 w-5" />
-          ) : (
-            <CheckIcon className="h-5 w-5" />
-          )}
+          {!iconPressed ? <DuplicateIcon className="h-5 w-5" /> : <CheckIcon className="h-5 w-5" />}
         </div>
       )}
     </button>
@@ -145,7 +137,7 @@ export function SimpleCopyTextButton(props: {
   tooltip?: string
   className?: string
 }) {
-  const { text, eventTrackingName, className, tooltip } = props
+  const {text, eventTrackingName, className, tooltip} = props
   const t = useT()
 
   const onClick = () => {
@@ -153,12 +145,16 @@ export function SimpleCopyTextButton(props: {
 
     copyToClipboard(text)
     toast.success(t('copy_link_button.link_copied', 'Link copied!'))
-    track(eventTrackingName, { text })
+    track(eventTrackingName, {text})
   }
 
   return (
     <IconButton onClick={onClick} className={className} disabled={!text}>
-      <Tooltip text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')} noTap placement="bottom">
+      <Tooltip
+        text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')}
+        noTap
+        placement="bottom"
+      >
         <ClipboardCopyIcon className={'h-5'} aria-hidden="true" />
       </Tooltip>
     </IconButton>

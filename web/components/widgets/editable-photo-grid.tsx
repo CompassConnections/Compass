@@ -1,11 +1,12 @@
-import { XIcon } from '@heroicons/react/solid'
-import Image from 'next/image'
-import { useState } from 'react'
+import {XIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
-import { Row } from '../layout/row'
-import { Col } from '../layout/col'
-import { Modal } from '../layout/modal'
-import { Button } from '../buttons/button'
+import Image from 'next/image'
+import {useState} from 'react'
+
+import {Button} from '../buttons/button'
+import {Col} from '../layout/col'
+import {Modal} from '../layout/modal'
+import {Row} from '../layout/row'
 
 export function EditablePhotoGrid(props: {
   photos: string[]
@@ -13,7 +14,7 @@ export function EditablePhotoGrid(props: {
   onDelete: (url: string) => void
   onSetProfilePic: (url: string) => void
 }) {
-  const { photos, onReorder, onDelete, onSetProfilePic } = props
+  const {photos, onReorder, onDelete, onSetProfilePic} = props
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [fullscreenPhoto, setFullscreenPhoto] = useState<string | null>(null)
 
@@ -76,11 +77,7 @@ export function EditablePhotoGrid(props: {
       </Col>
 
       {/* Fullscreen view modal */}
-      <Modal
-        open={fullscreenPhoto !== null}
-        setOpen={() => setFullscreenPhoto(null)}
-        size="xl"
-      >
+      <Modal open={fullscreenPhoto !== null} setOpen={() => setFullscreenPhoto(null)} size="xl">
         <Col className="gap-6">
           <Image
             src={fullscreenPhoto ?? ''}
@@ -150,7 +147,7 @@ const PhotoItem = ({
               'after:bg-canvas-50/75 after:absolute after:inset-0 after:[mask-image:radial-gradient(transparent_32px,black_32px)]',
           ]
         : ['h-[300px] w-[300px]'],
-      isDragging && 'opacity-50'
+      isDragging && 'opacity-50',
     )}
     draggable
     onDragStart={() => handleDragStart(index)}

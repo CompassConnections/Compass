@@ -1,17 +1,15 @@
-import {useState} from 'react'
-import Image from 'next/image'
-import {buildArray} from 'common/util/array'
-import {Carousel} from 'web/components/widgets/carousel'
-import {Modal} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
-import {SignUpButton} from './nav/sidebar'
 import {Profile} from 'common/profiles/profile'
+import {buildArray} from 'common/util/array'
+import Image from 'next/image'
+import {useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {Modal} from 'web/components/layout/modal'
+import {Carousel} from 'web/components/widgets/carousel'
 import {useUser} from 'web/hooks/use-user'
 
-export default function ProfileCarousel(props: {
-  profile: Profile,
-  refreshProfile: () => void,
-}) {
+import {SignUpButton} from './nav/sidebar'
+
+export default function ProfileCarousel(props: {profile: Profile; refreshProfile: () => void}) {
   const {profile} = props
   const photoNums = profile.photo_urls ? profile.photo_urls.length : 0
 
@@ -54,8 +52,7 @@ export default function ProfileCarousel(props: {
           </div>
         )}
         {photoNums > 0 && (
-          <Col
-            className="bg-canvas-100 dark:bg-canvas-0 text-ink-500 relative h-[300px] w-[300px] flex-none items-center rounded text-6xl ">
+          <Col className="bg-canvas-100 dark:bg-canvas-0 text-ink-500 relative h-[300px] w-[300px] flex-none items-center rounded text-6xl ">
             <Col className=" m-auto items-center gap-1">
               <div className="select-none font-semibold">+{photoNums}</div>
               <SignUpButton
@@ -181,7 +178,7 @@ export default function ProfileCarousel(props: {
       {/* )}*/}
 
       <Modal open={lightboxOpen} setOpen={setLightboxOpen}>
-        <Image src={lightboxUrl} width={1000} height={1000} alt=""/>
+        <Image src={lightboxUrl} width={1000} height={1000} alt="" />
       </Modal>
 
       {/*{isCurrentUser && (*/}

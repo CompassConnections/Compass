@@ -7,7 +7,7 @@ export const useProfileDraft = (
   userId: string,
   profile: ProfileWithoutUser,
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void,
-  updateHeight?: (value: number | undefined) => void
+  updateHeight?: (value: number | undefined) => void,
 ) => {
   const KEY = `draft-profile-${userId}`
   const [draftLoaded, setDraftLoaded] = useState(false)
@@ -28,17 +28,20 @@ export const useProfileDraft = (
         clearTimeout(timeoutId)
         timeoutId = setTimeout(() => {
           try {
-            safeLocalStorage?.setItem(KEY, JSON.stringify({
-              profile: profileToSave,
-              timestamp: Date.now().toString(),
-            }))
+            safeLocalStorage?.setItem(
+              KEY,
+              JSON.stringify({
+                profile: profileToSave,
+                timestamp: Date.now().toString(),
+              }),
+            )
           } catch (error) {
             console.warn('Failed to save profile to store:', error)
           }
         }, 500) // 500ms debounce delay
       }
     })(),
-    [KEY]
+    [KEY],
   )
 
   useEffect(() => {

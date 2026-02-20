@@ -1,13 +1,11 @@
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { memo } from 'react'
-import { Tooltip } from 'web/components/widgets/tooltip'
-import { fromNow } from 'web/lib/util/time'
+import {memo} from 'react'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {fromNow} from 'web/lib/util/time'
 
-export const OnlineIcon = memo(function OnlineIcon(props: {
-  last_online_time?: string
-}) {
-  const { last_online_time } = props
+export const OnlineIcon = memo(function OnlineIcon(props: {last_online_time?: string}) {
+  const {last_online_time} = props
 
   if (!last_online_time) return <></>
 
@@ -30,12 +28,7 @@ export const OnlineIcon = memo(function OnlineIcon(props: {
 
   return (
     <Tooltip text={'Last online: ' + fromNow(last_online_time)}>
-      <div
-        className={clsx(
-          'h-2 w-2 rounded-full',
-          isStalled ? 'bg-yellow-500' : 'bg-green-500'
-        )}
-      />
+      <div className={clsx('h-2 w-2 rounded-full', isStalled ? 'bg-yellow-500' : 'bg-green-500')} />
     </Tooltip>
   )
 })

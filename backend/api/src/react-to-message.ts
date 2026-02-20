@@ -1,9 +1,12 @@
-import {APIError, APIHandler} from './helpers/endpoint'
+import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {broadcastPrivateMessages} from "api/helpers/private-messages";
 
+import {APIError, APIHandler} from './helpers/endpoint'
 
-export const reactToMessage: APIHandler<'react-to-message'> = async ({messageId, reaction, toDelete}, auth) => {
+export const reactToMessage: APIHandler<'react-to-message'> = async (
+  {messageId, reaction, toDelete},
+  auth,
+) => {
   const pg = createSupabaseDirectClient()
 
   // Verify user is a member of the channel
@@ -13,7 +16,7 @@ export const reactToMessage: APIHandler<'react-to-message'> = async ({messageId,
               JOIN private_user_messages msg ON msg.channel_id = m.channel_id
      WHERE m.user_id = $1
        AND msg.id = $2`,
-    [auth.uid, messageId]
+    [auth.uid, messageId],
   )
 
   if (!message) {
@@ -27,7 +30,7 @@ export const reactToMessage: APIHandler<'react-to-message'> = async ({messageId,
        SET reactions = reactions - $1
        WHERE id = $2
        AND reactions -> $1 ? $3`,
-      [reaction, messageId, auth.uid]
+      [reaction, messageId, auth.uid],
     )
   } else {
     // Toggle reaction
@@ -47,14 +50,13 @@ export const reactToMessage: APIHandler<'react-to-message'> = async ({messageId,
                         )
                    END
        WHERE id = $3`,
-      [reaction, auth.uid, messageId]
+      [reaction, auth.uid, messageId],
     )
   }
 
-  void broadcastPrivateMessages(pg, message.channel_id, auth.uid)
-    .catch((err) => {
-      console.error('broadcastPrivateMessages failed', err)
-    })
+  void broadcastPrivateMessages(pg, message.channel_id, auth.uid).catch((err) => {
+    console.error('broadcastPrivateMessages failed', err)
+  })
 
   return {success: true}
 }

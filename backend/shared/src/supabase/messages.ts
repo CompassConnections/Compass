@@ -1,6 +1,6 @@
-import {convertSQLtoTS, Row, tsToMillis} from "common/supabase/utils";
-import {ChatMessage, PrivateChatMessage} from "common/chat-message";
-import {decryptMessage} from "shared/encryption";
+import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {convertSQLtoTS, Row, tsToMillis} from 'common/supabase/utils'
+import {decryptMessage} from 'shared/encryption'
 
 export type DbPrivateChatMessage = PrivateChatMessage & {
   ciphertext: string
@@ -14,17 +14,16 @@ export const convertChatMessage = (row: Row<'private_user_messages'>) =>
   })
 
 export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => {
-  const message = convertSQLtoTS<'private_user_messages', DbPrivateChatMessage>(
-    row,
-    {created_time: tsToMillis as any,}
-  );
-  parseMessageObject(message);
+  const message = convertSQLtoTS<'private_user_messages', DbPrivateChatMessage>(row, {
+    created_time: tsToMillis as any,
+  })
+  parseMessageObject(message)
   return message
 }
 
 type MessageObject = {
-  ciphertext: string | null;
-  iv: string | null;
+  ciphertext: string | null
+  iv: string | null
   tag: string | null
   content?: any
 }
@@ -35,7 +34,7 @@ export function parseMessageObject(message: MessageObject) {
       ciphertext: message.ciphertext,
       iv: message.iv,
       tag: message.tag,
-    });
+    })
     message.content = JSON.parse(plaintText)
     delete (message as any).ciphertext
     delete (message as any).iv

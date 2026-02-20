@@ -1,11 +1,11 @@
 import clsx from 'clsx'
-import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {FilterFields} from "common/filters";
+import {FilterFields} from 'common/filters'
 import {OptionTableKey} from 'common/profiles/constants'
+import {invert} from 'lodash'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {useChoices} from 'web/hooks/use-choices'
 import {useLocale, useT} from 'web/lib/locale'
-import {useChoices} from "web/hooks/use-choices";
-import {invert} from "lodash";
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
 export function InterestFilterText(props: {
   options: string[] | undefined
@@ -39,7 +39,7 @@ export function InterestFilterText(props: {
     <div>
       <span className={clsx('font-semibold', highlightedClass)}>
         {stringOrStringArrayToText({
-          text: options.map(id => choices[id]),
+          text: options.map((id) => choices[id]),
           capitalizeFirstLetterOption: true,
           t: t,
         })}{' '}
@@ -57,9 +57,7 @@ export function InterestFilter(props: {
   const {filters, updateFilter, choices, label} = props
   const {locale} = useLocale()
   const sortedChoices = Object.fromEntries(
-    Object.entries(invert(choices)).sort((a, b) =>
-      a[0].localeCompare(b[0], locale)
-    )
+    Object.entries(invert(choices)).sort((a, b) => a[0].localeCompare(b[0], locale)),
   )
   return (
     <MultiCheckbox

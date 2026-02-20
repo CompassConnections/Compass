@@ -12,9 +12,9 @@ body:
     attributes:
       label: Info
       description: |
-       - Browser: [e.g. chrome, safari]
-       - Device (if mobile): [e.g. iPhone6]
-       - Build info
+        - Browser: [e.g. chrome, safari]
+        - Device (if mobile): [e.g. iPhone6]
+        - Build info
       placeholder: |
         Build info from `Settings` -> `About`
     validations:

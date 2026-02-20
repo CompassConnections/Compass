@@ -3,8 +3,8 @@ import {Editor} from '@tiptap/core'
 import {BubbleMenu} from '@tiptap/react'
 import clsx from 'clsx'
 import {getUrl} from 'common/util/parse'
-import {useState} from 'react'
 import {Bold, Italic, Type} from 'lucide-react'
+import {useState} from 'react'
 
 // see https://tiptap.dev/guide/menus
 
@@ -13,7 +13,7 @@ export function FloatingFormatMenu(props: {
   /** show more formatting options */
   advanced?: boolean
 }) {
-  const { editor, advanced } = props
+  const {editor, advanced} = props
 
   const [url, setUrl] = useState<string | null>(null)
 
@@ -22,34 +22,27 @@ export function FloatingFormatMenu(props: {
   const setLink = () => {
     const href = url && getUrl(url)
     if (href) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href }).run()
+      editor.chain().focus().extendMarkRange('link').setLink({href}).run()
     }
   }
 
   const unsetLink = () => editor.chain().focus().unsetLink().run()
 
   return (
-    <BubbleMenu
-      editor={editor}
-      className="text-ink-0 bg-ink-700 flex gap-2 rounded-sm p-1"
-    >
+    <BubbleMenu editor={editor} className="text-ink-0 bg-ink-700 flex gap-2 rounded-sm p-1">
       {url === null ? (
         <>
           {advanced && (
             <>
               <IconButton
                 icon={Type}
-                onClick={() =>
-                  editor.chain().focus().toggleHeading({ level: 1 }).run()
-                }
-                isActive={editor.isActive('heading', { level: 1 })}
+                onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
+                isActive={editor.isActive('heading', {level: 1})}
               />
               <IconButton
                 icon={Type}
-                onClick={() =>
-                  editor.chain().focus().toggleHeading({ level: 2 }).run()
-                }
-                isActive={editor.isActive('heading', { level: 2 })}
+                onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
+                isActive={editor.isActive('heading', {level: 2})}
                 className="!h-4"
               />
               <Divider />
@@ -98,12 +91,10 @@ const IconButton = (props: {
   isActive?: boolean
   className?: string
 }) => {
-  const { icon: Icon, onClick, isActive, className } = props
+  const {icon: Icon, onClick, isActive, className} = props
   return (
     <button onClick={onClick} type="button">
-      <Icon
-        className={clsx('h-5', isActive && 'text-primary-200', className)}
-      />
+      <Icon className={clsx('h-5', isActive && 'text-primary-200', className)} />
     </button>
   )
 }

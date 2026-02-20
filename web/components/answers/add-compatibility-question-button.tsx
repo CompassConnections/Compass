@@ -1,27 +1,26 @@
+import {PlusIcon, XIcon} from '@heroicons/react/outline'
+import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
+import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
+import {Row as rowFor} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {uniq} from 'lodash'
 import {useState} from 'react'
+import {toast} from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {ExpandingInput} from 'web/components/widgets/expanding-input'
-import {PlusIcon, XIcon} from '@heroicons/react/outline'
-import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
-import {useUser} from 'web/hooks/use-user'
-import {User} from 'common/user'
 import {useEvent} from 'web/hooks/use-event'
-import {track} from 'web/lib/service/analytics'
-import {toast} from 'react-hot-toast'
-import {api} from 'web/lib/api'
-import {Row as rowFor} from 'common/supabase/utils'
-import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
-import {uniq} from 'lodash'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
-import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
 
-export function AddCompatibilityQuestionButton(props: {
-  refreshCompatibilityAll: () => void
-}) {
+import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
+
+export function AddCompatibilityQuestionButton(props: {refreshCompatibilityAll: () => void}) {
   const {refreshCompatibilityAll} = props
   const [open, setOpen] = useState(false)
   const t = useT()
@@ -51,8 +50,7 @@ function AddCompatibilityQuestionModal(props: {
   onClose?: () => void
 }) {
   const {open, setOpen, user, onClose} = props
-  const [dbQuestion, setDbQuestion] =
-    useState<rowFor<'compatibility_prompts'> | null>(null)
+  const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(null)
   const afterAddQuestion = (newQuestion: rowFor<'compatibility_prompts'>) => {
     setDbQuestion(newQuestion)
     console.debug('setDbQuestion', newQuestion)
@@ -62,10 +60,7 @@ function AddCompatibilityQuestionModal(props: {
     <Modal open={open} setOpen={setOpen} onClose={onClose}>
       <Col className={MODAL_CLASS}>
         {!dbQuestion ? (
-          <CreateCompatibilityModalContent
-            afterAddQuestion={afterAddQuestion}
-            setOpen={setOpen}
-          />
+          <CreateCompatibilityModalContent afterAddQuestion={afterAddQuestion} setOpen={setOpen} />
         ) : (
           <AnswerCompatibilityQuestionContent
             compatibilityQuestion={dbQuestion as QuestionWithCountType}
@@ -111,8 +106,7 @@ function CreateCompatibilityModalContent(props: {
     setOptions(newOptions)
   }
 
-  const optionsAreValid =
-    options.every((o) => o.trim().length > 0) && options.length >= 2
+  const optionsAreValid = options.every((o) => o.trim().length > 0) && options.length >= 2
 
   const questionIsValid = question.trim().length > 0
 
@@ -127,7 +121,7 @@ function CreateCompatibilityModalContent(props: {
         }
         return obj
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     )
   }
 
@@ -146,10 +140,7 @@ function CreateCompatibilityModalContent(props: {
       track('create compatibility question')
     } catch (_e) {
       toast.error(
-        t(
-          'answers.add.error_create',
-          'Error creating compatibility question. Try again?'
-        )
+        t('answers.add.error_create', 'Error creating compatibility question. Try again?'),
       )
     }
   })
@@ -190,14 +181,14 @@ function CreateCompatibilityModalContent(props: {
                   className="bg-ink-400 text-ink-0 hover:bg-ink-600 transition-color absolute -right-1.5 -top-1.5 rounded-full p-0.5"
                   onClick={() => deleteOption(index)}
                 >
-                  <XIcon className="z-10 h-3 w-3"/>
+                  <XIcon className="z-10 h-3 w-3" />
                 </button>
               )}
             </div>
           ))}
           <Button onClick={addOption} color="gray-outline">
             <Row className="items-center gap-1">
-              <PlusIcon className="h-4 w-4"/>
+              <PlusIcon className="h-4 w-4" />
               {t('answers.add.add_option', 'Add Option')}
             </Row>
           </Button>

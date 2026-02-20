@@ -1,21 +1,22 @@
-import { expect } from '@playwright/test';
-import { test } from '../fixtures/deleteUserFixture';
-import { AuthPage } from '../pages/AuthPage';
-import { config } from '../SPEC_CONFIG';
+import {expect} from '@playwright/test'
 
-test('user can sign up with email + password', async ({ page }) => {
-  const auth = new AuthPage(page);
+import {test} from '../fixtures/deleteUserFixture'
+import {AuthPage} from '../pages/AuthPage'
+import {config} from '../SPEC_CONFIG'
 
-  await page.goto('/');
+test('user can sign up with email + password', async ({page}) => {
+  const auth = new AuthPage(page)
 
-  await auth.clickSignUpButton();
+  await page.goto('/')
 
-  await auth.fillEmailField(config.USERS.SPEC.EMAIL);
-  await auth.fillPasswordField(config.USERS.SPEC.PASSWORD);
+  await auth.clickSignUpButton()
 
-  await auth.clickSignUpWithEmailButton();
+  await auth.fillEmailField(config.USERS.SPEC.EMAIL)
+  await auth.fillPasswordField(config.USERS.SPEC.PASSWORD)
 
-  await page.waitForURL(/^(?!.*\/signup).*$/);
+  await auth.clickSignUpWithEmailButton()
 
-  expect(page.url()).not.toContain('/signup');
-});
+  await page.waitForURL(/^(?!.*\/signup).*$/)
+
+  expect(page.url()).not.toContain('/signup')
+})

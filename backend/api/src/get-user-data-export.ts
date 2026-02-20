@@ -1,22 +1,20 @@
-import {APIHandler} from './helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
-import {getLikesAndShipsMain} from './get-likes-and-ships'
 import {parseJsonContentToText} from 'common/util/parse'
-import {parseMessageObject} from "shared/supabase/messages";
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {parseMessageObject} from 'shared/supabase/messages'
+
+import {getLikesAndShipsMain} from './get-likes-and-ships'
+import {APIHandler} from './helpers/endpoint'
 
 export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
   const userId = auth.uid
   const pg = createSupabaseDirectClient()
 
-  const user = await pg.oneOrNone<Row<'users'>>(
-    'select * from users where id = $1',
-    [userId]
-  )
+  const user = await pg.oneOrNone<Row<'users'>>('select * from users where id = $1', [userId])
 
   const privateUser = await pg.oneOrNone<Row<'private_users'>>(
     'select * from private_users where id = $1',
-    [userId]
+    [userId],
   )
 
   const profile = await pg.oneOrNone(
@@ -47,7 +45,7 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
                             group by pw.profile_id) as profile_work on profile_work.profile_id = profiles.id
         where profiles.user_id = $1
     `,
-    [userId]
+    [userId],
   )
 
   if (profile.bio) {
@@ -68,17 +66,17 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
         where a.creator_id = $1
         order by a.created_time desc
     `,
-    [userId]
+    [userId],
   )
 
   const userActivity = await pg.oneOrNone<Row<'user_activity'>>(
     'select * from user_activity where user_id = $1',
-    [userId]
+    [userId],
   )
 
   const searchBookmarks = await pg.manyOrNone<Row<'bookmarked_searches'>>(
     'select * from bookmarked_searches where creator_id = $1 order by id desc',
-    [userId]
+    [userId],
   )
 
   const hiddenProfiles = await pg.manyOrNone(
@@ -87,41 +85,36 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
               join users u on u.id = hp.hidden_user_id
      where hp.hider_user_id = $1
      order by hp.id desc`,
-    [userId]
+    [userId],
   )
 
   const messageChannelMemberships = await pg.manyOrNone<
     Row<'private_user_message_channel_members'>
-  >(
-    'select * from private_user_message_channel_members where user_id = $1',
-    [userId]
-  )
+  >('select * from private_user_message_channel_members where user_id = $1', [userId])
 
-  const channelIds = Array.from(
-    new Set(messageChannelMemberships.map((m) => m.channel_id))
-  )
+  const channelIds = Array.from(new Set(messageChannelMemberships.map((m) => m.channel_id)))
 
   const messageChannels = channelIds.length
     ? await pg.manyOrNone<Row<'private_user_message_channels'>>(
-      'select * from private_user_message_channels where id = any($1)',
-      [channelIds]
-    )
+        'select * from private_user_message_channels where id = any($1)',
+        [channelIds],
+      )
     : []
 
   const messages = channelIds.length
     ? await pg.manyOrNone<Row<'private_user_messages'>>(
-      `select *
+        `select *
        from private_user_messages
        where channel_id = any ($1)
        order by created_time`,
-      [channelIds]
-    )
+        [channelIds],
+      )
     : []
   for (const message of messages) parseMessageObject(message)
 
   const membershipsWithUsernames = channelIds.length
     ? await pg.manyOrNone(
-      `
+        `
           select m.*,
                  u.username
           from private_user_message_channel_members m
@@ -129,8 +122,8 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
           where m.channel_id = any ($1)
             and m.user_id != $2
       `,
-      [channelIds, userId]
-    )
+        [channelIds, userId],
+      )
     : []
 
   const endorsements = await getLikesAndShipsMain(userId)
@@ -153,17 +146,17 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
         where r.user_id = $1
         order by v.created_time desc
     `,
-    [userId]
+    [userId],
   )
 
   const reports = await pg.manyOrNone<Row<'reports'>>(
     'select * from reports where user_id = $1 order by created_time desc nulls last',
-    [userId]
+    [userId],
   )
 
   const contactMessages = await pg.manyOrNone<Row<'contact'>>(
     'select * from contact where user_id = $1 order by created_time desc nulls last',
-    [userId]
+    [userId],
   )
 
   return {
@@ -185,4 +178,3 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
     accountMetadata,
   }
 }
-

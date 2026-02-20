@@ -1,4 +1,3 @@
-
 export const geodbHost = 'wft-geo-db.p.rapidapi.com'
 
 export const geodbFetch = async (endpoint: string) => {

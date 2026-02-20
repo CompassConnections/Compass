@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useEffect, useMemo} from 'react'
 import {useUser} from 'web/hooks/use-user'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {api} from "web/lib/api";
+import {api} from 'web/lib/api'
 
 type HiddenUser = {
   id: string
@@ -18,7 +18,7 @@ type HiddenProfilesContextType = {
 
 const HiddenProfilesContext = createContext<HiddenProfilesContextType | undefined>(undefined)
 
-export function HiddenProfilesProvider({children}: { children: React.ReactNode }) {
+export function HiddenProfilesProvider({children}: {children: React.ReactNode}) {
   const user = useUser()
   const storageKey = useMemo(() => `hidden-ids-${user?.id ?? 'anon'}`, [user?.id])
   const [hiddenProfiles, setHiddenProfiles] = usePersistentLocalState<

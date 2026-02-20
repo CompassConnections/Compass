@@ -1,11 +1,10 @@
 import clsx from 'clsx'
-import {convertDietTypes, DietType,} from 'web/lib/util/convert-types'
-import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
-import {MultiCheckbox} from 'web/components/multi-checkbox'
-
 import {DIET_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
+import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useT} from 'web/lib/locale'
+import {convertDietTypes, DietType} from 'web/lib/util/convert-types'
+import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
 export function DietFilterText(props: {
   options: DietType[] | undefined
@@ -24,9 +23,7 @@ export function DietFilterText(props: {
     )
   }
 
-  const convertedTypes = options.map((r) =>
-    convertDietTypes(r)
-  )
+  const convertedTypes = options.map((r) => convertDietTypes(r))
 
   if (length > 1) {
     return (

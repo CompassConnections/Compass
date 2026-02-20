@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import {useEffect, useRef} from 'react'
-import FavIcon from "web/components/FavIcon";
+import FavIcon from 'web/components/FavIcon'
 
 export type SpinnerSize = 'sm' | 'md' | 'lg'
 
@@ -21,22 +21,20 @@ export function LoadingIndicator(props: {
   spinnerClassName?: string
   size?: SpinnerSize
 }) {
-  const { className, spinnerClassName, size = 'lg' } = props
+  const {className, spinnerClassName, size = 'lg'} = props
   return (
     <div className={clsx('flex items-center justify-center', className)}>
       <div
         className={clsx(
           'border-primary-500 inline-block animate-spin rounded-full border-solid border-r-transparent',
           getSizeClass(size),
-          spinnerClassName
+          spinnerClassName,
         )}
         role="status"
       />
     </div>
   )
 }
-
-
 
 export function CompassLoadingIndicator(props: {
   className?: string
@@ -77,13 +75,12 @@ export function CompassLoadingIndicator(props: {
         className={clsx(
           'inline-block transition-transform duration-700 ease-in-out',
           // getSizeClass(size),
-          spinnerClassName
+          spinnerClassName,
         )}
         role="status"
       >
-        <FavIcon className="dark:invert w-20 h-20"/>
+        <FavIcon className="dark:invert w-20 h-20" />
       </div>
     </div>
   )
 }
-

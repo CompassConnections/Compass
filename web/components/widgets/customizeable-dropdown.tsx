@@ -1,16 +1,15 @@
 import {Popover} from '@headlessui/react'
 import clsx from 'clsx'
-import {AnimationOrNothing} from '../comments/dropdown-menu'
 import {useState} from 'react'
 import {usePopper} from 'react-popper'
-import {NewBadge} from "web/components/new-badge";
+import {NewBadge} from 'web/components/new-badge'
+
+import {AnimationOrNothing} from '../comments/dropdown-menu'
 
 export function CustomizeableDropdown(props: {
   menuWidth?: string
   buttonContent: (open: boolean) => React.ReactNode
-  dropdownMenuContent:
-    | React.ReactNode
-    | ((close: () => void) => React.ReactNode)
+  dropdownMenuContent: React.ReactNode | ((close: () => void) => React.ReactNode)
   buttonClass?: string
   className?: string
   buttonDisabled?: boolean
@@ -34,8 +33,7 @@ export function CustomizeableDropdown(props: {
     showNewBadge,
     newBadgeClassName,
   } = props
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>()
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>()
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>()
   const {styles, attributes} = usePopper(referenceElement, popperElement, {
     strategy: withinOverflowContainer ? 'fixed' : 'absolute',
@@ -52,7 +50,7 @@ export function CustomizeableDropdown(props: {
             }}
             disabled={buttonDisabled}
           >
-            {showNewBadge && <NewBadge classes={newBadgeClassName}/>}
+            {showNewBadge && <NewBadge classes={newBadgeClassName} />}
             {buttonContent(open)}
           </Popover.Button>
 
@@ -64,7 +62,7 @@ export function CustomizeableDropdown(props: {
               className={clsx(
                 'bg-canvas-0 ring-ink-1000 z-30 rounded-md px-2 py-2 shadow-lg ring-1 ring-opacity-5 focus:outline-none',
                 menuWidth ?? 'w-36',
-                popoverClassName
+                popoverClassName,
               )}
             >
               {typeof dropdownMenuContent === 'function'

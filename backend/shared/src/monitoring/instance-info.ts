@@ -1,5 +1,5 @@
-import { last } from 'lodash'
 import * as metadata from 'gcp-metadata'
+import {last} from 'lodash'
 
 export type InstanceInfo = {
   projectId: string
@@ -16,5 +16,5 @@ export async function getInstanceInfo() {
   ])
   // GCP returns zone as `projects/${id}/zones/${zone}
   const zone = last(fqZone.split('/'))
-  return { projectId, instanceId, zone } as InstanceInfo
+  return {projectId, instanceId, zone} as InstanceInfo
 }

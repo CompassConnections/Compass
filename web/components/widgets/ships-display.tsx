@@ -1,23 +1,23 @@
-import { useState } from 'react'
-import { orderBy, groupBy, max } from 'lodash'
 import clsx from 'clsx'
+import {ShipData} from 'common/api/profile-types'
+import {Profile} from 'common/profiles/profile'
+import {User} from 'common/user'
+import {groupBy, max, orderBy} from 'lodash'
+import {useState} from 'react'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {Avatar, EmptyAvatar} from 'web/components/widgets/avatar'
+import {Carousel} from 'web/components/widgets/carousel'
+import {UserLink} from 'web/components/widgets/user-link'
+import {useProfileByUserId} from 'web/hooks/use-profile'
+import {useUser} from 'web/hooks/use-user'
+import {useUserById} from 'web/hooks/use-user-supabase'
+import {hasShipped} from 'web/lib/util/ship-util'
 
-import { MODAL_CLASS, Modal } from 'web/components/layout/modal'
-import { MatchAvatars } from '../matches/match-avatars'
-import { Row } from 'web/components/layout/row'
-import { Profile } from 'common/profiles/profile'
-import { useProfileByUserId } from 'web/hooks/use-profile'
-import { Col } from 'web/components/layout/col'
-import { EmptyAvatar, Avatar } from 'web/components/widgets/avatar'
-import { Carousel } from 'web/components/widgets/carousel'
-import { UserLink } from 'web/components/widgets/user-link'
-import { useUser } from 'web/hooks/use-user'
-import { Subtitle } from './profile-subtitle'
-import { ShipButton } from './ship-button'
-import { hasShipped } from 'web/lib/util/ship-util'
-import { ShipData } from 'common/api/profile-types'
-import { useUserById } from 'web/hooks/use-user-supabase'
-import { User } from 'common/user'
+import {MatchAvatars} from '../matches/match-avatars'
+import {Subtitle} from './profile-subtitle'
+import {ShipButton} from './ship-button'
 
 export const ShipsList = (props: {
   label: string
@@ -25,21 +25,19 @@ export const ShipsList = (props: {
   profileProfile: Profile
   refreshShips: () => Promise<void>
 }) => {
-  const { label, ships, profileProfile, refreshShips } = props
+  const {label, ships, profileProfile, refreshShips} = props
 
-  const shipsWithTargetId = ships.map(
-    ({ target1_id, target2_id, ...other }) => ({
-      ...other,
-      target1_id,
-      target2_id,
-      targetId: target1_id === profileProfile.user_id ? target2_id : target1_id,
-    })
-  )
+  const shipsWithTargetId = ships.map(({target1_id, target2_id, ...other}) => ({
+    ...other,
+    target1_id,
+    target2_id,
+    targetId: target1_id === profileProfile.user_id ? target2_id : target1_id,
+  }))
   const shipsByTargetId = groupBy(shipsWithTargetId, (s) => s.targetId)
   const sortedTargetIds = orderBy(
     Object.keys(shipsByTargetId),
     (targetId) => max(shipsByTargetId[targetId].map((s) => s.created_time)),
-    'desc'
+    'desc',
   )
 
   return (
@@ -66,13 +64,13 @@ export const ShipsList = (props: {
 }
 
 const ShipsTargetDisplay = (props: {
-  ships: (ShipData & { targetId: string })[]
+  ships: (ShipData & {targetId: string})[]
   refreshShips: () => Promise<void>
   profileProfile: Profile
   className?: string
 }) => {
-  const { ships, refreshShips, profileProfile, className } = props
-  const { targetId } = ships[0]
+  const {ships, refreshShips, profileProfile, className} = props
+  const {targetId} = ships[0]
 
   const targetProfile = useProfileByUserId(targetId)
   const targetUser = useUserById(targetId) as User | null | undefined
@@ -100,7 +98,7 @@ const ShipsTargetDisplay = (props: {
               <>
                 <MatchAvatars
                   profileProfile={profileProfile}
-                  matchedProfile={{ ...targetProfile, user: targetUser }}
+                  matchedProfile={{...targetProfile, user: targetUser}}
                 />
                 <Row className="w-full items-baseline justify-stretch gap-2 text-lg font-semibold">
                   <Row className="flex-1 justify-end">
@@ -142,25 +140,19 @@ const ShipsTargetDisplay = (props: {
   )
 }
 
-const UserAvatar = (props: { userId: string; className?: string }) => {
-  const { userId, className } = props
+const UserAvatar = (props: {userId: string; className?: string}) => {
+  const {userId, className} = props
   const profile = useProfileByUserId(userId)
   const user = useUserById(userId)
 
-  if (!profile || !profile.pinned_url)
-    return <EmptyAvatar className={className} size={10} />
+  if (!profile || !profile.pinned_url) return <EmptyAvatar className={className} size={10} />
   return (
-    <Avatar
-      className={className}
-      avatarUrl={profile.pinned_url}
-      username={user?.username}
-      noLink
-    />
+    <Avatar className={className} avatarUrl={profile.pinned_url} username={user?.username} noLink />
   )
 }
 
-const UserInfoRow = (props: { userId: string; className?: string }) => {
-  const { userId, className } = props
+const UserInfoRow = (props: {userId: string; className?: string}) => {
+  const {userId, className} = props
   const user = useUserById(userId)
   const profile = useProfileByUserId(userId)
 

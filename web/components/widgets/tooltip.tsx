@@ -35,7 +35,7 @@ export function Tooltip(props: {
     noFade,
     hasSafePolygon,
     suppressHydrationWarning,
-    testId
+    testId,
   } = props
 
   const arrowRef = useRef(null)
@@ -51,7 +51,7 @@ export function Tooltip(props: {
   const SUPPRESS_MS = 900
   // Module-level shared state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const g: any = (globalThis as any)
+  const g: any = globalThis as any
   if (g.__tooltipLastTapTs === undefined) g.__tooltipLastTapTs = 0 as number
   if (g.__tooltipListenersSetup === undefined) g.__tooltipListenersSetup = false as boolean
 
@@ -62,12 +62,12 @@ export function Tooltip(props: {
     const nav: any = navigator as any
     const hasMP = !!nav && typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 0
     const hasTP = !!nav && typeof nav.msMaxTouchPoints === 'number' && nav.msMaxTouchPoints > 0
-    const mm = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(hover: none) and (pointer: coarse)')
-      : null
-    const mm2 = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(any-hover: none)')
-      : null
+    const mm =
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(hover: none) and (pointer: coarse)')
+        : null
+    const mm2 =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(any-hover: none)') : null
     const hasOntouch = 'ontouchstart' in window
     return hasMP || hasTP || !!mm?.matches || !!mm2?.matches || hasOntouch
   }
@@ -93,16 +93,7 @@ export function Tooltip(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const {
-    x,
-    y,
-    reference,
-    floating,
-    strategy,
-    middlewareData,
-    context,
-    placement,
-  } = useFloating({
+  const {x, y, reference, floating, strategy, middlewareData, context, placement} = useFloating({
     open: open,
     onOpenChange: (next) => {
       if (next) {
@@ -114,23 +105,18 @@ export function Tooltip(props: {
     },
     whileElementsMounted: autoUpdate,
     placement: props.placement ?? 'top',
-    middleware: [
-      offset(8),
-      flip(),
-      shift({ padding: 4 }),
-      arrow({ element: arrowRef }),
-    ],
+    middleware: [offset(8), flip(), shift({padding: 4}), arrow({element: arrowRef})],
   })
 
-  const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {}
+  const {x: arrowX, y: arrowY} = middlewareData.arrow ?? {}
 
-  const { getReferenceProps, getFloatingProps } = useInteractions([
+  const {getReferenceProps, getFloatingProps} = useInteractions([
     useHover(context, {
       // On touch-capable devices, default to mouse-only hover unless explicitly overridden via noTap=false
       mouseOnly: noTap ?? isTouchCapable(),
-      handleClose: hasSafePolygon ? safePolygon({ buffer: -0.5 }) : null,
+      handleClose: hasSafePolygon ? safePolygon({buffer: -0.5}) : null,
     }),
-    useRole(context, { role: 'tooltip' }),
+    useRole(context, {role: 'tooltip'}),
   ])
   // which side of tooltip arrow is on. like: if tooltip is top-left, arrow is on bottom of tooltip
   const arrowSide = {
@@ -163,7 +149,7 @@ export function Tooltip(props: {
         // div attributes
         role="tooltip"
         ref={floating}
-        style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}
+        style={{position: strategy, top: y ?? 0, left: x ?? 0}}
         className="text-ink-1000 bg-canvas-50 z-20 w-max max-w-xs whitespace-normal rounded px-2 py-1 text-center text-sm font-medium"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}

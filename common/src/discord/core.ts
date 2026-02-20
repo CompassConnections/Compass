@@ -1,4 +1,4 @@
-import {IS_DEV} from "common/envs/constants";
+import {IS_DEV} from 'common/envs/constants'
 
 export const sendDiscordMessage = async (content: string, channel: string) => {
   let webhookUrl = {

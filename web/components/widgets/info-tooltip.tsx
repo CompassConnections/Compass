@@ -1,7 +1,8 @@
-import { InformationCircleIcon } from '@heroicons/react/outline'
-import { Tooltip } from './tooltip'
+import {Placement} from '@floating-ui/react'
+import {InformationCircleIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
-import { Placement } from '@floating-ui/react'
+
+import {Tooltip} from './tooltip'
 
 export function InfoTooltip(props: {
   text: string
@@ -13,7 +14,7 @@ export function InfoTooltip(props: {
     placement?: Placement
   }
 }) {
-  const { text, className, children, size, tooltipParams } = props
+  const {text, className, children, size, tooltipParams} = props
   return (
     <Tooltip
       className={clsx('inline-block', tooltipParams?.className)}
@@ -21,12 +22,7 @@ export function InfoTooltip(props: {
       placement={tooltipParams?.placement}
     >
       {children ? (
-        <span
-          className={clsx(
-            'border-ink-600 cursor-help border-b border-dotted',
-            className
-          )}
-        >
+        <span className={clsx('border-ink-600 cursor-help border-b border-dotted', className)}>
           {children}
         </span>
       ) : (
@@ -37,7 +33,7 @@ export function InfoTooltip(props: {
             size === 'sm' && 'h-4 w-4',
             size === 'md' && 'h-5 w-5',
             size === 'lg' && 'h-6 w-6',
-            !size && 'h-5 w-5'
+            !size && 'h-5 w-5',
           )}
         />
       )}

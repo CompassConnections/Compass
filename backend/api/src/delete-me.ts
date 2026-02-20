@@ -1,8 +1,9 @@
-import {getUser} from 'shared/utils'
-import {APIError, APIHandler} from './helpers/endpoint'
+import * as admin from 'firebase-admin'
+import {deleteUserFiles} from 'shared/firebase-utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import * as admin from "firebase-admin";
-import {deleteUserFiles} from "shared/firebase-utils";
+import {getUser} from 'shared/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 export const deleteMe: APIHandler<'me/delete'> = async (_, auth) => {
   const user = await getUser(auth.uid)

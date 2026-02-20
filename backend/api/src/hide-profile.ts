@@ -1,14 +1,11 @@
-import {APIError, APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 // Hide a profile for the requesting user by inserting a row into hidden_profiles.
 // Idempotent: if the pair already exists, succeed silently.
-export const hideProfile: APIHandler<'hide-profile'> = async (
-  {hiddenUserId},
-  auth
-) => {
-  if (auth.uid === hiddenUserId)
-    throw new APIError(400, 'You cannot hide yourself')
+export const hideProfile: APIHandler<'hide-profile'> = async ({hiddenUserId}, auth) => {
+  if (auth.uid === hiddenUserId) throw new APIError(400, 'You cannot hide yourself')
 
   const pg = createSupabaseDirectClient()
 
@@ -17,7 +14,7 @@ export const hideProfile: APIHandler<'hide-profile'> = async (
     `insert into hidden_profiles (hider_user_id, hidden_user_id)
      values ($1, $2)
      on conflict (hider_user_id, hidden_user_id) do nothing`,
-    [auth.uid, hiddenUserId]
+    [auth.uid, hiddenUserId],
   )
 
   return {status: 'success'}

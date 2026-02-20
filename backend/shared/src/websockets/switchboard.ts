@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws'
+import {WebSocket} from 'ws'
 
 export type ClientState = {
   uid?: string
@@ -31,7 +31,7 @@ export class Switchboard {
     if (existing != null) {
       throw new Error("Client already connected! Shouldn't happen.")
     }
-    this.clients.set(ws, { lastSeen: Date.now(), subscriptions: new Set() })
+    this.clients.set(ws, {lastSeen: Date.now(), subscriptions: new Set()})
   }
   disconnect(ws: WebSocket) {
     this.getClient(ws)

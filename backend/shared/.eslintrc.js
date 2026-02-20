@@ -1,7 +1,7 @@
 module.exports = {
-  plugins: ['lodash', 'unused-imports'],
+  plugins: ['lodash', 'unused-imports', 'simple-import-sort'],
   extends: ['eslint:recommended'],
-  ignorePatterns: ['dist', 'lib', 'coverage', 'tests'],
+  ignorePatterns: ['dist', 'lib', 'coverage'],
   env: {
     node: true,
   },
@@ -16,9 +16,9 @@ module.exports = {
         project: ['./tsconfig.json', './tsconfig.test.json'],
       },
       rules: {
-        "@typescript-eslint/no-empty-object-type": "error",  // replaces banning {}
-        "@typescript-eslint/no-unsafe-function-type": "error", // replaces banning Function
-        "@typescript-eslint/no-wrapper-object-types": "error",  // replaces banning String, Number, etc.
+        '@typescript-eslint/no-empty-object-type': 'error', // replaces banning {}
+        '@typescript-eslint/no-unsafe-function-type': 'error', // replaces banning Function
+        '@typescript-eslint/no-wrapper-object-types': 'error', // replaces banning String, Number, etc.
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-extra-semi': 'off',
         '@typescript-eslint/no-unused-vars': [
@@ -35,10 +35,9 @@ module.exports = {
     },
   ],
   rules: {
-    'linebreak-style': [
-      'error',
-      process.platform === 'win32' ? 'windows' : 'unix',
-    ],
+    'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],
     'lodash/import-scope': [2, 'member'],
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
   },
 }

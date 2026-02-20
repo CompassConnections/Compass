@@ -7,7 +7,7 @@ export const useTracking = (
   eventName: string,
   eventProperties?: any,
   excludeIframe?: boolean,
-  extraDeps?: any[]
+  extraDeps?: any[],
 ) => {
   const isAuthed = useIsAuthorized()
   const user = useUser()

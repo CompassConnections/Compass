@@ -1,10 +1,10 @@
-import React from 'react';
-import {Body, Button, Container, Head, Html, Preview, Section, Text,} from '@react-email/components'
+import React from 'react'
+import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
 import {jamesProfile, jamesUser, mockUser} from './functions/mock'
-import {Footer} from "email/utils";
+import {Footer} from 'email/utils'
 
 interface NewMatchEmailProps {
   onUser: User
@@ -15,23 +15,22 @@ interface NewMatchEmailProps {
 }
 
 export const NewMatchEmail = ({
-                                onUser,
-                                matchedWithUser,
-                                // matchedProfile,
-                                unsubscribeUrl,
-                                email
-                              }: NewMatchEmailProps) => {
+  onUser,
+  matchedWithUser,
+  // matchedProfile,
+  unsubscribeUrl,
+  email,
+}: NewMatchEmailProps) => {
   const name = onUser.name.split(' ')[0]
   // const userImgSrc = getOgImageUrl(matchedWithUser, matchedProfile)
   const userUrl = `https://${DOMAIN}/${matchedWithUser.username}`
 
   return (
     <Html>
-      <Head/>
+      <Head />
       <Preview>You have a new match!</Preview>
       <Body style={main}>
         <Container style={container}>
-
           {/*<Section style={logoContainer}>*/}
           {/*<Img*/}
           {/*  src="..."*/}
@@ -44,9 +43,7 @@ export const NewMatchEmail = ({
           <Section style={content}>
             <Text style={paragraph}>Hi {name},</Text>
 
-            <Text style={paragraph}>
-              {matchedWithUser.name} just matched with you!
-            </Text>
+            <Text style={paragraph}>{matchedWithUser.name} just matched with you!</Text>
 
             <Section style={imageContainer}>
               {/*<Link href={userUrl}>*/}
@@ -63,7 +60,7 @@ export const NewMatchEmail = ({
               </Button>
             </Section>
           </Section>
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name}/>
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
         </Container>
       </Body>
     </Html>

@@ -1,9 +1,9 @@
 import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {richTextToString} from 'common/util/parse'
+import {HOUR_MS, MINUTE_MS} from 'common/util/time'
+import {forEach, last, uniq} from 'lodash'
 import {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from 'react'
 import {useIsVisible} from 'web/hooks/use-is-visible'
-import {forEach, last, uniq} from 'lodash'
-import {HOUR_MS, MINUTE_MS} from 'common/util/time'
-import {richTextToString} from 'common/util/parse'
 
 // export const getMessagesKey = (messages: ChatMessage[] | undefined) => {
 //   return messages
@@ -24,25 +24,23 @@ export function updateReactionUI(
     prevMessages?.map((m) =>
       m.id === message.id && user?.id
         ? {
-          ...m,
-          reactions: {
-            ...m.reactions,
-            [reaction]: toDelete ?
-              m.reactions?.[reaction]?.filter((id: string) => id !== user.id) || []
-              : uniq([
-                ...(m.reactions?.[reaction] || []),
-                user.id
-              ])
+            ...m,
+            reactions: {
+              ...m.reactions,
+              [reaction]: toDelete
+                ? m.reactions?.[reaction]?.filter((id: string) => id !== user.id) || []
+                : uniq([...(m.reactions?.[reaction] || []), user.id]),
+            },
           }
-        }
-        : m
-    ))
+        : m,
+    ),
+  )
 }
 
 export const usePaginatedScrollingMessages = (
   realtimeMessages: ChatMessage[] | undefined,
   heightFromTop: number,
-  userId: string | undefined
+  userId: string | undefined,
 ) => {
   const messagesPerPage = 50
   const initialScroll = useRef(realtimeMessages === undefined)
@@ -59,7 +57,7 @@ export const usePaginatedScrollingMessages = (
   const [showMessages, setShowMessages] = useState(false)
   const messages = useMemo(
     () => (realtimeMessages ?? []).slice(0, messagesPerPage * page).reverse(),
-    [JSON.stringify(realtimeMessages), page]
+    [JSON.stringify(realtimeMessages), page],
   )
   useEffect(() => {
     const outerDivHeight = outerDiv?.current?.clientHeight ?? 0
@@ -71,10 +69,7 @@ export const usePaginatedScrollingMessages = (
       ? prevInnerDivHeight - outerDivHeight - outerDivScrollTop
       : 0
     const isScrolledToBottom = difference <= tolerance
-    if (
-      (!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) &&
-      realtimeMessages
-    ) {
+    if ((!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) && realtimeMessages) {
       outerDiv?.current?.scrollTo({
         top: innerDivHeight! - outerDivHeight!,
         left: 0,
@@ -124,13 +119,10 @@ export const useGroupedMessages = (messages: ChatMessage[]) => {
         else tempGrouped.push([message])
       } else {
         const prevMessage = messages[i - 1]
-        const timeDifference = Math.abs(
-          message.createdTime - prevMessage.createdTime
-        )
+        const timeDifference = Math.abs(message.createdTime - prevMessage.createdTime)
         const creatorsMatch = message.userId === prevMessage.userId
         const isMatchingPrevSystemStatus =
-          prevMessage.visibility === 'system_status' &&
-          systemStatusType(prevMessage) === systemType
+          prevMessage.visibility === 'system_status' && systemStatusType(prevMessage) === systemType
 
         if (isSystemStatus) {
           // Check if the current message should be grouped with the previous system_status message(s)
@@ -143,11 +135,7 @@ export const useGroupedMessages = (messages: ChatMessage[]) => {
             }
             systemStatusGroup.push(message)
           }
-        } else if (
-          timeDifference < 2 * MINUTE_MS &&
-          creatorsMatch &&
-          !isMatchingPrevSystemStatus
-        ) {
+        } else if (timeDifference < 2 * MINUTE_MS && creatorsMatch && !isMatchingPrevSystemStatus) {
           last(tempGrouped)?.push(message)
         } else {
           if (systemStatusGroup.length > 0) {

@@ -1,27 +1,27 @@
+import clsx from 'clsx'
+import Link from 'next/link'
 import {useEffect, useMemo, useState} from 'react'
-import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
-import {Title} from 'web/components/widgets/title'
-import {Avatar} from 'web/components/widgets/avatar'
-import {Button} from 'web/components/buttons/button'
-import {api} from 'web/lib/api'
 import toast from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {Avatar} from 'web/components/widgets/avatar'
+import {Title} from 'web/components/widgets/title'
+import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import clsx from "clsx";
-import Link from "next/link";
-import {useHiddenProfiles} from "web/hooks/use-hidden-profiles";
 
-export function HiddenProfilesModal(props: {
-  open: boolean
-  setOpen: (open: boolean) => void
-}) {
+export function HiddenProfilesModal(props: {open: boolean; setOpen: (open: boolean) => void}) {
   const {open, setOpen} = props
   const t = useT()
   const [busyIds, setBusyIds] = useState<Record<string, boolean>>({})
   const {hiddenProfiles, refreshHiddenProfiles} = useHiddenProfiles()
 
-  const empty = useMemo(() => (hiddenProfiles ? hiddenProfiles.length === 0 : false), [hiddenProfiles])
+  const empty = useMemo(
+    () => (hiddenProfiles ? hiddenProfiles.length === 0 : false),
+    [hiddenProfiles],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -49,15 +49,12 @@ export function HiddenProfilesModal(props: {
           {t('settings.hidden_profiles.title', "Profiles you've hidden")}
         </Title>
         {hiddenProfiles && hiddenProfiles.length > 0 && (
-          <Col className={clsx("divide-y divide-canvas-300 w-full pr-4", SCROLLABLE_MODAL_CLASS)}>
+          <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
             {hiddenProfiles.map((u) => (
               <Row key={u.id} className="items-center justify-between py-2 gap-2">
-                <Link
-                  className="w-full rounded-md hover:bg-canvas-100 p-2"
-                  href={'/' + u.username}
-                >
+                <Link className="w-full rounded-md hover:bg-canvas-100 p-2" href={'/' + u.username}>
                   <Row className="items-center gap-3">
-                    <Avatar size="md" username={u.username} avatarUrl={u.avatarUrl ?? undefined}/>
+                    <Avatar size="md" username={u.username} avatarUrl={u.avatarUrl ?? undefined} />
                     <Col>
                       <div className="font-medium">{u.name}</div>
                       <div className="text-ink-500 text-sm">@{u.username}</div>
@@ -80,10 +77,7 @@ export function HiddenProfilesModal(props: {
         )}
         {empty && (
           <div className="text-ink-500 py-6 text-center">
-            {t(
-              'settings.hidden_profiles.empty',
-              "You haven't hidden any profiles."
-            )}
+            {t('settings.hidden_profiles.empty', "You haven't hidden any profiles.")}
           </div>
         )}
       </Col>

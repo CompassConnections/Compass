@@ -25,28 +25,28 @@ How we apply it here
 This project uses three complementary test types. Use the right level for the job:
 
 - Unit tests
-    - Purpose: Verify a single function/module in isolation; fast, deterministic.
-    - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
-      etc.).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
+  - Purpose: Verify a single function/module in isolation; fast, deterministic.
+  - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
+    etc.).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
 
 - Integration tests
-    - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
-      spinning up the full app.
-    - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
-    - Runner: Jest (configured via root `jest.config.js`).
-    - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
-    - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
-      component trees with providers.
+  - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
+    spinning up the full app.
+  - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
+  - Runner: Jest (configured via root `jest.config.js`).
+  - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
+  - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
+    component trees with providers.
 
 - End-to-End (E2E) tests
-    - Purpose: Validate real user flows across the full stack.
-    - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
-    - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
-    - Naming: `*.e2e.spec.ts`.
-    - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
+  - Purpose: Validate real user flows across the full stack.
+  - Where: Top-level `tests/e2e` with separate areas for `web` and `backend`.
+  - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
+  - Naming: `*.e2e.spec.ts`.
+  - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
 
 Quick commands
 
@@ -116,23 +116,23 @@ web/
 - Unit and integration tests live in each package’s `tests` folder and are executed by Jest via the root
   `jest.config.js` projects array.
 - Naming:
-    - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
-    - Integration: `*.integration.test.ts`
-    - E2E (Playwright): `*.e2e.spec.ts`
+  - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
+  - Integration: `*.integration.test.ts`
+  - E2E (Playwright): `*.e2e.spec.ts`
 
 ### Best Practices
 
-* Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very
+- Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very
   critical behavior.
-* Use msw to Mock APIs. Don't manually mock fetch—use msw to simulate realistic behavior, including network delays and
+- Use msw to Mock APIs. Don't manually mock fetch—use msw to simulate realistic behavior, including network delays and
   errors.
-* Don’t Overuse Snapshots. Snapshots are fragile and often meaningless unless used sparingly (e.g., for JSON response
+- Don’t Overuse Snapshots. Snapshots are fragile and often meaningless unless used sparingly (e.g., for JSON response
   schemas).
-* Prefer userEvent Over fireEvent. It simulates real user interactions more accurately.
-* Avoid Testing Next.js Internals . You don’t need to test getStaticProps, getServerSideProps themselves-test what they
+- Prefer userEvent Over fireEvent. It simulates real user interactions more accurately.
+- Avoid Testing Next.js Internals . You don’t need to test getStaticProps, getServerSideProps themselves-test what they
   render.
-* Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
-* Don't write end-to-end tests for features that change frequently unless absolutely necessary.
+- Don't test just for coverage. Test to prevent regressions, document intent, and handle edge cases.
+- Don't write end-to-end tests for features that change frequently unless absolutely necessary.
 
 ### Jest Unit Testing Guide
 
@@ -141,13 +141,14 @@ standards ensures consistency, maintainability, and comprehensive test coverage.
 
 #### Best Practices
 
-1. Isolate a function route  - Each test should focus on one thing that can affect the function outcome
+1. Isolate a function route - Each test should focus on one thing that can affect the function outcome
 2. Keep tests independent - Tests should not rely on the execution order
 3. Use meaningful assertions - Assert that functions are called, what they are called with and the results
 4. Avoid testing implementation details - Focus on behavior and outputs
 5. Mock external dependencies - Isolate the unit being tested
 
 #### Running Tests
+
 ```bash
 # Run all tests
 yarn test
@@ -155,16 +156,18 @@ yarn test
 # Run specific test file
 yarn test path/to/test.unit.test.ts
 ```
+
 #### Test Standards
+
 - Test file names should convey what to expect
-    - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
-        - filename.unit.test.ts
-        - filename.integration.test.ts
+  - Follow the pattern: `<exact-filename>.[unit,integration].test.ts`. Examples:
+    - filename.unit.test.ts
+    - filename.integration.test.ts
 - Group related tests using describe blocks
 - Use descriptive test names that explain the expected behavior.
-    - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
-        - should `ban user` [with matching user id]
-        - should `ban user` [with matching user name]
+  - Follow the pattern: "should `expected behavior` [relevant modifier]". Examples:
+    - should `ban user` [with matching user id]
+    - should `ban user` [with matching user name]
 
 #### Mocking
 
@@ -207,11 +210,17 @@ When writing mocks, assert both outcome and interaction:
 - Interaction: that dependencies were called the expected number of times and with the right arguments.
 
 Why mocking is important?
-- *Isolation* - Test your code independently of databases, APIs, and external systems. Tests only fail when your code breaks, not when a server is down.
-- *Speed* - Mocked tests run in milliseconds vs. seconds for real network/database calls. Run your suite constantly without waiting.
-- *Control* - Easily simulate edge cases like API errors, timeouts, or rare conditions that are difficult to reproduce with real systems.
-- *Reliability* - Eliminate unpredictable failures from network issues, rate limits, or changing external data. Same inputs = same results, every time.
-- *Focus* - Verify your function's logic and how it uses its dependencies, without requiring those dependencies to actually work yet.
+
+- _Isolation_ - Test your code independently of databases, APIs, and external systems. Tests only fail when your code
+  breaks, not when a server is down.
+- _Speed_ - Mocked tests run in milliseconds vs. seconds for real network/database calls. Run your suite constantly
+  without waiting.
+- _Control_ - Easily simulate edge cases like API errors, timeouts, or rare conditions that are difficult to reproduce
+  with real systems.
+- _Reliability_ - Eliminate unpredictable failures from network issues, rate limits, or changing external data. Same
+  inputs = same results, every time.
+- _Focus_ - Verify your function's logic and how it uses its dependencies, without requiring those dependencies to
+  actually work yet.
 
 ###### Use `jest.mock()`
 
@@ -223,40 +232,40 @@ function’s return value isn’t used, there’s no need to mock it further.
 
 ```tsx
 //Function and module mocks
-jest.mock('path/to/module');
+jest.mock('path/to/module')
 
 //Function and module imports
-import {functionUnderTest} from "path/to/function"
-import {module} from "path/to/module"
+import {functionUnderTest} from 'path/to/function'
+import {module} from 'path/to/module'
 
 describe('functionUnderTest', () => {
   //Setup
   beforeEach(() => {
     //Run before each test
-    jest.resetAllMocks(); // Resets any mocks from previous tests
-  });
+    jest.resetAllMocks() // Resets any mocks from previous tests
+  })
   afterEach(() => {
     //Run after each test
-    jest.restoreAllMocks(); // Cleans up between tests
-  });
+    jest.restoreAllMocks() // Cleans up between tests
+  })
 
   describe('when given valid input', () => {
     it('should describe what is being tested', async () => {
       //Arrange: Setup test data
-      const mockData = 'test';
+      const mockData = 'test'
 
       //Act: Execute the function under test
-      const result = myFunction(mockData);
+      const result = myFunction(mockData)
 
       //Assert: Verify the result
-      expect(result).toBe('expected');
-    });
-  });
+      expect(result).toBe('expected')
+    })
+  })
 
   describe('when an error occurs', () => {
     //Test cases for errors
-  });
-});
+  })
+})
 ```
 
 ###### Modules
@@ -265,26 +274,26 @@ When mocking modules it's important to verify what was returned if applicable, t
 
 ```tsx
 //functionFile.ts
-import { module as mockedDep } from "path/to/module"
+import {module as mockedDep} from 'path/to/module'
 
 export const functionUnderTest = async (param) => {
-    return await mockedDep(param);
-};
+  return await mockedDep(param)
+}
 ```
 
 ```tsx
 //testFile.unit.test.ts
-import { functionUnderTest } from "path/to/function";
-import { module as mockedDep } from "path/to/module";
-jest.mock('path/to/module');
+import {functionUnderTest} from 'path/to/function'
+import {module as mockedDep} from 'path/to/module'
+jest.mock('path/to/module')
 
 /**
  * Inside the test case
  * We create a mock for any information passed into the function that is being tested
  * and if the function returns a result we create a mock to test the result
  */
-const mockParam = "mockParam";
-const mockReturnValue = "mockModuleValue";
+const mockParam = 'mockParam'
+const mockReturnValue = 'mockModuleValue'
 
 /**
  * use .mockResolvedValue when handling async/await modules that return values
@@ -292,15 +301,15 @@ const mockReturnValue = "mockModuleValue";
  */
 describe('functionUnderTest', () => {
   it('returns mocked module value and calls dependency correctly', async () => {
-    (mockedDep as jest.Mock).mockResolvedValue(mockReturnValue);
+    ;(mockedDep as jest.Mock).mockResolvedValue(mockReturnValue)
 
-    const result = await functionUnderTest(mockParam);
+    const result = await functionUnderTest(mockParam)
 
-    expect(result).toBe(mockReturnValue);
-    expect(mockedDep).toHaveBeenCalledTimes(1);
-    expect(mockedDep).toHaveBeenCalledWith(mockParam);
-  });
-});
+    expect(result).toBe(mockReturnValue)
+    expect(mockedDep).toHaveBeenCalledTimes(1)
+    expect(mockedDep).toHaveBeenCalledWith(mockParam)
+  })
+})
 ```
 
 Use namespace imports when you want to import everything a module exports under a single name.
@@ -308,172 +317,173 @@ Use namespace imports when you want to import everything a module exports under 
 ```tsx
 //moduleFile.ts
 export const module = async (param) => {
-    const value = "module"
-    return value
-};
+  const value = 'module'
+  return value
+}
 
 export const moduleTwo = async (param) => {
-    const value = "moduleTwo"
-    return value
-};
+  const value = 'moduleTwo'
+  return value
+}
 ```
+
 ```tsx
 //functionFile.ts
-import { module, moduleTwo } from "path/to/module"
+import {module, moduleTwo} from 'path/to/module'
 
 export const functionUnderTest = async (param) => {
-    const mockValue = await moduleTwo(param)
-    const returnValue = await module(mockValue)
-    return returnValue;
-};
+  const mockValue = await moduleTwo(param)
+  const returnValue = await module(mockValue)
+  return returnValue
+}
 ```
+
 ```tsx
 //testFile.unit.test.ts
-jest.mock('path/to/module');
+jest.mock('path/to/module')
 
 /**
  * This creates an object containing all named exports from ./path/to/module
  */
-import * as mockModule from "path/to/module"
-
-(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue);
+import * as mockModule from 'path/to/module'
+;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
+
 When mocking modules, you can use `jest.spyOn()` instead of `jest.mock()`.
 
 - `jest.mock()` mocks the entire module, which is ideal for external dependencies like Axios or database clients.
 - `jest.spyOn()` mocks specific methods while keeping the real implementation for others. It can also be used to observe how a real method is called without changing its behavior.
-    - also replaces the need to have `jest.mock()` at the top of the file.
+  - also replaces the need to have `jest.mock()` at the top of the file.
 
 ```tsx
 //testFile.unit.test.ts
-import * as mockModule from "path/to/module"
+import * as mockModule from 'path/to/module'
 
 //Mocking the return value of the module
-jest.spyOn(mockModule, 'module').mockResolvedValue(mockReturnValue);
+jest.spyOn(mockModule, 'module').mockResolvedValue(mockReturnValue)
 
 //Spying on the module to check functionality
-jest.spyOn(mockModule, 'module');
+jest.spyOn(mockModule, 'module')
 
 //You can assert the module functionality with both of the above exactly like you would if you used jest.mock()
-expect(mockModule.module).toBeCalledTimes(1);
-expect(mockModule.module).toBeCalledWith(mockParam);
+expect(mockModule.module).toBeCalledTimes(1)
+expect(mockModule.module).toBeCalledWith(mockParam)
 ```
+
 ###### Dependencies
 
 Mocking dependencies allows you to test `your code’s` logic in isolation, without relying on third-party services or external functionality.
 
 ```tsx
 //functionFile.ts
-import { dependency } from "path/to/dependency"
+import {dependency} from 'path/to/dependency'
 
 export const functionUnderTest = async (param) => {
-    const depen = await dependency();
-    const value = depen.module();
+  const depen = await dependency()
+  const value = depen.module()
 
-    return value;
-};
+  return value
+}
 ```
+
 ```tsx
 //testFile.unit.test.ts
-jest.mock('path/to/dependency');
+jest.mock('path/to/dependency')
 
-import { dependency } from "path/to/dependency"
+import {dependency} from 'path/to/dependency'
 
 describe('functionUnderTest', () => {
-    /**
-     * Because the dependency has modules that are used we need to 
-     * create a variable outside of scope that can be asserted on
-     */
-    let mockDependency = {} as any;
-    beforeEach(() => {
-        mockDependency = {
-            module: jest.fn(),
-        };
-        jest.resetAllMocks(); // Resets any mocks from previous tests
-    });
-    afterEach(() => {
-        //Run after each test
-        jest.restoreAllMocks(); // Cleans up between tests
-    });
+  /**
+   * Because the dependency has modules that are used we need to
+   * create a variable outside of scope that can be asserted on
+   */
+  let mockDependency = {} as any
+  beforeEach(() => {
+    mockDependency = {
+      module: jest.fn(),
+    }
+    jest.resetAllMocks() // Resets any mocks from previous tests
+  })
+  afterEach(() => {
+    //Run after each test
+    jest.restoreAllMocks() // Cleans up between tests
+  })
 
-    //Inside the test case
-    (mockDependency.module as jest.Mock).mockResolvedValue(mockReturnValue);
+  //Inside the test case
+  ;(mockDependency.module as jest.Mock).mockResolvedValue(mockReturnValue)
 
-    expect(mockDependency.module).toBeCalledTimes(1);
-    expect(mockDependency.module).toBeCalledWith(mockParam);
-});
+  expect(mockDependency.module).toBeCalledTimes(1)
+  expect(mockDependency.module).toBeCalledWith(mockParam)
+})
 ```
 
 ###### Error checking
 
 ```tsx
 //function.ts
-const result = await functionName(param);
+const result = await functionName(param)
 
 if (!result) {
-    throw new Error (403, 'Error text', error);
-};
+  throw new Error(403, 'Error text', error)
+}
 ```
 
 ```tsx
 //testFile.unit.test.ts
-const mockParam = {} as any;
+const mockParam = {} as any
 
 //This will check only the error message
-expect(functionName(mockParam))
-    .rejects
-    .toThrowError('Error text');
+expect(functionName(mockParam)).rejects.toThrowError('Error text')
 
 //This will check the complete error
 try {
-    await functionName(mockParam);
-    fail('Should have thrown');
+  await functionName(mockParam)
+  fail('Should have thrown')
 } catch (error) {
-    const functionError = error as Error;
-    expect(functionError.code).toBe(403);
-  expect(functionError.message).toBe('Error text');
-    expect(functionError.details).toBe(mockParam);
-    expect(functionError.name).toBe('Error');
+  const functionError = error as Error
+  expect(functionError.code).toBe(403)
+  expect(functionError.message).toBe('Error text')
+  expect(functionError.details).toBe(mockParam)
+  expect(functionError.name).toBe('Error')
 }
 ```
 
 ```tsx
 //For console.error types
-console.error('Error message', error);
+console.error('Error message', error)
 
 //Use spyOn to mock
-const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
 expect(errorSpy).toHaveBeenCalledWith(
-    'Error message',
-    expect.objectContaining({name: 'Error'}) //The error 'name' refers to the error type
-);
-
+  'Error message',
+  expect.objectContaining({name: 'Error'}), //The error 'name' refers to the error type
+)
 ```
 
 ###### Mocking array return value
 
 ```tsx
 //arrayFile.ts
-const exampleArray = [ 1, 2, 3, 4, 5 ];
+const exampleArray = [1, 2, 3, 4, 5]
 
-const arrayResult = exampleArray.includes(2);
+const arrayResult = exampleArray.includes(2)
 ```
 
 ```tsx
 //testFile.unit.test.ts
 
 //This will mock 'includes' for all arrays and force the return value to be true
-jest.spyOn(Array.prototype, 'includes').mockReturnValue(true);
+jest.spyOn(Array.prototype, 'includes').mockReturnValue(true)
 
 // ---
 //This will specify which 'includes' array to mock based on the args passed into the .includes()
-jest.spyOn(Array.prototype, 'includes').mockImplementation(function(value) {
+jest.spyOn(Array.prototype, 'includes').mockImplementation(function (value) {
   if (value === 2) {
-    return true;
+    return true
   }
-  return false;
-});
+  return false
+})
 ```
 
 # Playwright (E2E) Testing Guide
@@ -605,7 +615,7 @@ yarn test:db:reset  # Drops and re-applies all migrations + seed
 ## What Needs a Restart vs Not
 
 | Change                        | Action needed                            |
-|-------------------------------|------------------------------------------|
+| ----------------------------- | ---------------------------------------- |
 | Edit test file                | Just re-run in Playwright UI             |
 | Edit app code (Next.js)       | Next.js hot reloads automatically        |
 | Edit API code                 | API dev server hot reloads automatically |
@@ -621,7 +631,7 @@ yarn test:db:reset  # Drops and re-applies all migrations + seed
 E2E tests run against local emulators with these defaults (set in `.env.test`):
 
 | Service          | Local URL                                                 |
-|------------------|-----------------------------------------------------------|
+| ---------------- | --------------------------------------------------------- |
 | Supabase API     | `http://127.0.0.1:54321`                                  |
 | Supabase DB      | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 | Supabase Studio  | `http://127.0.0.1:54323` (browse data visually)           |
@@ -667,23 +677,26 @@ tests/
 Use this priority order for selecting elements in Playwright tests:
 
 1. Prefer `getByRole()` — use semantic roles that reflect how users interact
+
    ```typescript
-   await page.getByRole('button', { name: 'Submit' }).click();
+   await page.getByRole('button', {name: 'Submit'}).click()
    ```
+
    If a meaningful ARIA role is not available, fall back to accessible text selectors (next point).
 
 2. Use accessible text selectors — when roles don't apply, target user-facing text
+
    ```typescript
-   await page.getByLabel('Email').fill('user@example.com');
-   await page.getByPlaceholder('Enter your name').fill('John');
-   await page.getByText('Welcome back').isVisible();
+   await page.getByLabel('Email').fill('user@example.com')
+   await page.getByPlaceholder('Enter your name').fill('John')
+   await page.getByText('Welcome back').isVisible()
    ```
 
 3. Only use `data-testid` — when elements have no stable user-facing text
    ```typescript
    // For icons, toggles, or dynamic content without text
-   await page.getByTestId('menu-toggle').click();
-   await page.getByTestId('loading-spinner').isVisible();
+   await page.getByTestId('menu-toggle').click()
+   await page.getByTestId('loading-spinner').isVisible()
    ```
 
 This hierarchy mirrors how users actually interact with your application, making tests more reliable and meaningful.
@@ -691,15 +704,15 @@ This hierarchy mirrors how users actually interact with your application, making
 ### Example test
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import {test, expect} from '@playwright/test'
 
 test.describe('Authentication', () => {
-  test('should login successfully', async ({ page }) => {
+  test('should login successfully', async ({page}) => {
     await page.goto('/')
-    await page.getByRole('button', { name: 'Sign In' }).click()
+    await page.getByRole('button', {name: 'Sign In'}).click()
     await page.getByLabel('Email').fill('test@example.com')
     await page.getByLabel('Password').fill('password123')
-    await page.getByRole('button', { name: 'Login' }).click()
+    await page.getByRole('button', {name: 'Login'}).click()
 
     await expect(page.getByText('Welcome')).toBeVisible()
   })
@@ -711,7 +724,7 @@ test.describe('Authentication', () => {
 These are seeded automatically by `yarn test:db:seed`:
 
 | Email               | Password      |
-|---------------------|---------------|
+| ------------------- | ------------- |
 | `test1@example.com` | `password123` |
 | `test2@example.com` | `password123` |
 
@@ -799,4 +812,3 @@ To download the Playwright report from a failed CI run:
 2. Click **Artifacts** at the bottom
 3. Download `playwright-report`
 4. Open `index.html` in your browser
-

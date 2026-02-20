@@ -1,12 +1,12 @@
-import { Editor, Extension } from '@tiptap/core'
+import {Editor, Extension} from '@tiptap/core'
 import toast from 'react-hot-toast'
-import { useMutation } from 'web/hooks/use-mutation'
-import { uploadImage } from 'web/lib/firebase/storage'
+import {useMutation} from 'web/hooks/use-mutation'
+import {uploadImage} from 'web/lib/firebase/storage'
 
 export const Upload = Extension.create({
   name: 'upload',
 
-  addStorage: () => ({ mutation: {} }),
+  addStorage: () => ({mutation: {}}),
 })
 
 export const useUploadMutation = (editor: Editor | null) =>
@@ -19,7 +19,7 @@ export const useUploadMutation = (editor: Editor | null) =>
         if (!editor || !urls.length) return
         let trans = editor.chain().focus()
         urls.forEach((src) => {
-          trans = trans.setImage({ src })
+          trans = trans.setImage({src})
           trans = trans.createParagraphNear()
         })
         trans.run()
@@ -27,7 +27,7 @@ export const useUploadMutation = (editor: Editor | null) =>
       onError(error: any) {
         toast.error(error.message ?? error)
       },
-    }
+    },
   )
 
 export type UploadMutation = ReturnType<typeof useUploadMutation>

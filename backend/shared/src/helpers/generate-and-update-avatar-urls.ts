@@ -1,11 +1,7 @@
 import {DOMAIN} from 'common/envs/constants'
-import {Bucket} from "shared/firebase-utils";
+import {Bucket} from 'shared/firebase-utils'
 
-export const generateAvatarUrl = async (
-  userId: string,
-  name: string,
-  bucket: Bucket
-) => {
+export const generateAvatarUrl = async (userId: string, name: string, bucket: Bucket) => {
   const backgroundColors = [
     '#FF8C00',
     '#800080',
@@ -16,9 +12,9 @@ export const generateAvatarUrl = async (
     '#008080',
   ]
   const imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    name
+    name,
   )}&background=${encodeURIComponent(
-    backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
+    backgroundColors[Math.floor(Math.random() * backgroundColors.length)],
   )}&color=fff&size=256&format=png`
   try {
     const res = await fetch(imageUrl)

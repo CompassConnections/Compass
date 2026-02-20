@@ -27,6 +27,6 @@ export const config = {
       EMAIL: 'compass.connections.test@gmail.com',
       //unsure if gmail password should be public
       PASSWORD: '',
-    }
+    },
   },
-};
+}

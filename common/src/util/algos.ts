@@ -1,8 +1,4 @@
-export function binarySearch(
-  min: number,
-  max: number,
-  comparator: (x: number) => number
-) {
+export function binarySearch(min: number, max: number, comparator: (x: number) => number) {
   let mid = 0
   let i = 0
   while (true) {
@@ -22,8 +18,7 @@ export function binarySearch(
     i++
     if (i > 100000) {
       throw new Error(
-        'Binary search exceeded max iterations' +
-          JSON.stringify({ min, max, mid, i }, null, 2)
+        'Binary search exceeded max iterations' + JSON.stringify({min, max, mid, i}, null, 2),
       )
     }
   }

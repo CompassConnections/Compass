@@ -1,7 +1,8 @@
+import Compressor from 'compressorjs'
 import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage'
 import {nanoid} from 'nanoid'
+
 import {storage} from './init'
-import Compressor from 'compressorjs'
 
 const ONE_YEAR_SECS = 60 * 60 * 24 * 365
 

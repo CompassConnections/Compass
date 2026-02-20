@@ -1,8 +1,11 @@
-import { Placement } from '@floating-ui/react'
-import { useIsClient } from 'web/hooks/use-is-client'
-import { fromNow } from 'web/lib/util/time'
-import { DateTimeTooltip } from './widgets/datetime-tooltip'
-import { shortenedFromNow } from 'web/lib/util/shortenedFromNow'
+import {Placement} from '@floating-ui/react'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import {useIsClient} from 'web/hooks/use-is-client'
+import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
+import {fromNow} from 'web/lib/util/time'
+
+import {DateTimeTooltip} from './widgets/datetime-tooltip'
 
 export function RelativeTimestamp(props: {
   time: number
@@ -10,7 +13,7 @@ export function RelativeTimestamp(props: {
   placement?: Placement
   shortened?: boolean
 }) {
-  const { time, className, placement, shortened } = props
+  const {time, className, placement, shortened} = props
   const isClient = useIsClient()
   return (
     <DateTimeTooltip
@@ -30,7 +33,7 @@ export function RelativeTimestampNoTooltip(props: {
   className?: string
   shortened?: boolean
 }) {
-  const { time, className, shortened } = props
+  const {time, className, shortened} = props
   const isClient = useIsClient()
   return (
     <span className={className}>
@@ -38,8 +41,5 @@ export function RelativeTimestampNoTooltip(props: {
     </span>
   )
 }
-
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)

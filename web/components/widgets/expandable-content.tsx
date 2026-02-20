@@ -1,27 +1,28 @@
-import { DocumentTextIcon } from '@heroicons/react/outline'
-import { JSONContent } from '@tiptap/react'
+import {DocumentTextIcon} from '@heroicons/react/outline'
+import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
-import { MouseEventHandler, ReactNode, useRef, useState } from 'react'
-import { Button } from 'web/components/buttons/button'
-import { Col } from '../layout/col'
-import { Modal } from '../layout/modal'
-import { Row } from '../layout/row'
-import { Content } from './editor'
-import { useSafeLayoutEffect } from 'web/hooks/use-safe-layout-effect'
-import { SHOW_COLLAPSE_TRESHOLD } from 'web/components/widgets/collapsible-content'
+import {MouseEventHandler, ReactNode, useRef, useState} from 'react'
+import {Button} from 'web/components/buttons/button'
+import {SHOW_COLLAPSE_TRESHOLD} from 'web/components/widgets/collapsible-content'
+import {useSafeLayoutEffect} from 'web/hooks/use-safe-layout-effect'
+
+import {Col} from '../layout/col'
+import {Modal} from '../layout/modal'
+import {Row} from '../layout/row'
+import {Content} from './editor'
 
 export function ExpandButton(props: {
   onClick?: MouseEventHandler<any> | undefined
   className?: string
   whatToRead?: string
 }) {
-  const { onClick, className, whatToRead } = props
+  const {onClick, className, whatToRead} = props
   return (
     <Button
       color="none"
       className={clsx(
         'text-primary-500 hover:text-primary-700 z-10 select-none bg-inherit text-sm',
-        className
+        className,
       )}
       onClick={onClick}
       size={'xs'}
@@ -40,9 +41,8 @@ export function ExpandableContent(props: {
   whatToRead?: string
   className?: string
 }) {
-  const { content, modalContent, whatToRead, className } = props
-  const [shouldAllowCollapseOfContent, setShouldAllowCollapseOfContent] =
-    useState(false)
+  const {content, modalContent, whatToRead, className} = props
+  const [shouldAllowCollapseOfContent, setShouldAllowCollapseOfContent] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   useSafeLayoutEffect(() => {
@@ -75,7 +75,7 @@ function ExpandsToModalContent(props: {
   modalContent: ReactNode
   whatToRead?: string
 }) {
-  const { content, modalContent, whatToRead } = props
+  const {content, modalContent, whatToRead} = props
   const [open, setOpen] = useState(false)
   return (
     <>

@@ -1,4 +1,4 @@
-import { useProfile } from './use-profile'
+import {useProfile} from './use-profile'
 
 export const useIsLooking = () => {
   const profile = useProfile()

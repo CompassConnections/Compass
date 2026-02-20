@@ -11,6 +11,7 @@ This is the setup for deployment on Vercel, which you only need to do if you cre
 Set up a Vercel account and link it to your GitHub repository.
 
 Add the following environment variables and the ones in `.env` in the Vercel dashboard:
+
 ```bash
 NEXT_PUBLIC_VERCEL=1
 ```
@@ -18,6 +19,7 @@ NEXT_PUBLIC_VERCEL=1
 ##### `next` version
 
 The `next` version is 14.1.0, as we get the following error with 15.1.2 and above when accessing `/[username]` pages on Vercel:
+
 ```
 Cannot find module 'next/dist/compiled/source-map'
 Require stack:
@@ -26,4 +28,5 @@ Require stack:
 Did you forget to add it to "dependencies" in `package.json`?
 Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
 ```
+
 TODO: investigate, find a fix and upgrade.

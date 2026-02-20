@@ -1,12 +1,13 @@
-import { Editor } from '@tiptap/react'
-import { DOMAIN } from 'common/envs/constants'
-import { useState } from 'react'
-import { Button } from '../buttons/button'
-import { Col } from '../layout/col'
-import { Modal } from '../layout/modal'
-import { Row } from '../layout/row'
-import { Spacer } from '../layout/spacer'
+import {Editor} from '@tiptap/react'
+import {DOMAIN} from 'common/envs/constants'
+import {useState} from 'react'
 import toast from 'react-hot-toast'
+
+import {Button} from '../buttons/button'
+import {Col} from '../layout/col'
+import {Modal} from '../layout/modal'
+import {Row} from '../layout/row'
+import {Spacer} from '../layout/spacer'
 
 type EmbedPattern = {
   // Regex should have a single capture group.
@@ -17,19 +18,16 @@ type EmbedPattern = {
 const embedPatterns: EmbedPattern[] = [
   {
     regex: /^https?:\/\/manifold\.markets\/([^\/]+\/[^\/]+)/,
-    rewrite: (slug) =>
-      `<iframe src="https://manifold.markets/embed/${slug}"></iframe>`,
+    rewrite: (slug) => `<iframe src="https://manifold.markets/embed/${slug}"></iframe>`,
   },
   {
     regex: /^https?:\/\/www\.youtube\.com\/watch\?v=([^&]+)/,
-    rewrite: (id) =>
-      `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`,
+    rewrite: (id) => `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`,
   },
   // Also rewrite youtube links like `https://youtu.be/IOlKZDgyQRQ`
   {
     regex: /^https?:\/\/youtu\.be\/([^&]+)/,
-    rewrite: (id) =>
-      `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`,
+    rewrite: (id) => `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`,
   },
   // Twitch is a bit annoying, since it requires the `&parent=DOMAIN` to match
   {
@@ -47,8 +45,7 @@ const embedPatterns: EmbedPattern[] = [
   {
     // Tiktok: https://www.tiktok.com/@tiktok/video/6959980000000000001
     regex: /^https?:\/\/www\.tiktok\.com\/@[^\/]+\/video\/(\d+)/,
-    rewrite: (id) =>
-      `<iframe src="https://www.tiktok.com/embed/v2/${id}"></iframe>`,
+    rewrite: (id) => `<iframe src="https://www.tiktok.com/embed/v2/${id}"></iframe>`,
   },
 ]
 
@@ -68,17 +65,14 @@ export function EmbedModal(props: {
   open: boolean
   setOpen: (open: boolean) => void
 }) {
-  const { editor, open, setOpen } = props
+  const {editor, open, setOpen} = props
   const [input, setInput] = useState('')
   const embed = embedCode(input)
 
   return (
     <Modal open={open} setOpen={setOpen}>
       <Col className="bg-canvas-0 gap-2 rounded p-6">
-        <label
-          htmlFor="embed"
-          className="text-ink-700 block text-sm font-medium"
-        >
+        <label htmlFor="embed" className="text-ink-700 block text-sm font-medium">
           Embed a Youtube video
         </label>
         <input
@@ -91,22 +85,20 @@ export function EmbedModal(props: {
           onChange={(e) => setInput(e.target.value)}
         />
 
-        {embed && <div dangerouslySetInnerHTML={{ __html: embed }}></div>}
+        {embed && <div dangerouslySetInnerHTML={{__html: embed}}></div>}
         <Spacer h={2} />
 
         <Row className="gap-2">
           <Button
             color={embed ? 'indigo' : 'gray'}
-            style={{ cursor: embed ? 'pointer' : 'not-allowed' }}
+            style={{cursor: embed ? 'pointer' : 'not-allowed'}}
             onClick={() => {
               if (editor && embed) {
                 editor.chain().insertContent(embed).run()
                 setInput('')
                 setOpen(false)
               } else {
-                toast.error(
-                  `We only allow embeds from a few sites. Please open a pull request.`
-                )
+                toast.error(`We only allow embeds from a few sites. Please open a pull request.`)
               }
             }}
           >

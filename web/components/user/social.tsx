@@ -18,7 +18,7 @@ import {
 } from 'react-icons/tb'
 
 export const PLATFORM_ICONS: {
-  [key in Site]: (props: { className?: string }) => ReactNode
+  [key in Site]: (props: {className?: string}) => ReactNode
 } = {
   site: LinkIcon,
   x: TbBrandX,
@@ -42,10 +42,10 @@ export const PLATFORM_ICONS: {
 }
 
 export const SocialIcon = (props: {
-  site: string;
-  className?: string;
-  size?: number;
-  color?: string;
+  site: string
+  className?: string
+  size?: number
+  color?: string
 }) => {
   const {site, ...rest} = props
   const Icon = PLATFORM_ICONS[site as Site] || PLATFORM_ICONS.site

@@ -1,12 +1,9 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getNotifications: APIHandler<'get-notifications'> = async (
-  props,
-  auth
-) => {
-  const { limit, after } = props
+export const getNotifications: APIHandler<'get-notifications'> = async (props, auth) => {
+  const {limit, after} = props
   const pg = createSupabaseDirectClient()
   const query = `
       select case
@@ -47,6 +44,6 @@ export const getNotifications: APIHandler<'get-notifications'> = async (
   return await pg.map(
     query,
     [auth.uid, limit, after],
-    (row) => row.notification_data as Notification
+    (row) => row.notification_data as Notification,
   )
 }

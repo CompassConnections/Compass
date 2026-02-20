@@ -1,9 +1,13 @@
 {
   "files": [],
   "references": [
-    { "path": "./backend/api" },
-    { "path": "./backend/api/tsconfig.test.json" },
-    { "path": "./backend/shared" },
-    { "path": "./backend/shared/tsconfig.test.json" }
+    {"path": "./backend/api"},
+    {"path": "./backend/api/tsconfig.test.json"},
+    {"path": "./backend/shared"},
+    {"path": "./backend/shared/tsconfig.test.json"},
+    {"path": "./common"},
+    {"path": "./common/tsconfig.test.json"},
+    {"path": "./web"},
+    {"path": "./web/tsconfig.test.json"}
   ]
 }

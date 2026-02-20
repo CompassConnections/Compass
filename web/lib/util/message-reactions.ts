@@ -1,12 +1,7 @@
-import {api} from "web/lib/api";
-import {toast} from "react-hot-toast";
+import {toast} from 'react-hot-toast'
+import {api} from 'web/lib/api'
 
-
-export const handleReaction = async (
-  reaction: string,
-  id: number,
-  toDelete?: boolean,
-) => {
+export const handleReaction = async (reaction: string, id: number, toDelete?: boolean) => {
   // console.log('handleReaction', {reaction, id, toDelete})
   try {
     await api('react-to-message', {

@@ -1,5 +1,5 @@
-import {createClient} from 'common/supabase/utils'
 import {ENV_CONFIG} from 'common/envs/constants'
+import {createClient} from 'common/supabase/utils'
 
 let currentToken: string | undefined
 

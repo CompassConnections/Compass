@@ -1,7 +1,7 @@
 import clsx from 'clsx'
+import {FilterFields} from 'common/filters'
 import {Row} from 'web/components/layout/row'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
-import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
 
 export function SmokerFilterText(props: {
@@ -17,8 +17,12 @@ export function SmokerFilterText(props: {
         {is_smoker == null
           ? t('common.either', 'Either')
           : is_smoker
-            ? mobile ? t('common.yes', 'Yes') : t('profile.smoker.yes', 'Smoker')
-            : mobile ? t('common.no', 'No') : t('profile.smoker.no', 'Non-smoker')}
+            ? mobile
+              ? t('common.yes', 'Yes')
+              : t('profile.smoker.yes', 'Smoker')
+            : mobile
+              ? t('common.no', 'No')
+              : t('profile.smoker.no', 'Non-smoker')}
       </span>
     </Row>
   )

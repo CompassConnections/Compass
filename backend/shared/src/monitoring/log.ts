@@ -1,8 +1,10 @@
-import { format } from 'node:util'
-import { isError, pick, omit } from 'lodash'
-import { dim, red, yellow } from 'colors/safe'
-import { getMonitoringContext } from './context'
-import {IS_GOOGLE_CLOUD} from "common/hosting/constants";
+import {format} from 'node:util'
+
+import {dim, red, yellow} from 'colors/safe'
+import {IS_GOOGLE_CLOUD} from 'common/hosting/constants'
+import {isError, omit, pick} from 'lodash'
+
+import {getMonitoringContext} from './context'
 
 // mapping JS log levels (e.g. functions on console object) to GCP log levels
 const JS_TO_GCP_LEVELS = {
@@ -62,19 +64,15 @@ function ts() {
 // handles both the cases where someone wants to write unstructured
 // stream-of-consciousness console logging like log('count:', 1, 'user': u)
 // and also structured key/value logging with severity
-function writeLog(
-  level: LogLevel,
-  msg: unknown,
-  opts?: { props?: LogDetails; rest?: unknown[] }
-) {
+function writeLog(level: LogLevel, msg: unknown, opts?: {props?: LogDetails; rest?: unknown[]}) {
   try {
-    const { props, rest } = opts ?? {}
+    const {props, rest} = opts ?? {}
     const contextData = getMonitoringContext()
     const message = format(toString(msg), ...(rest ?? []))
-    const data = { ...(contextData ?? {}), ...(props ?? {}) }
+    const data = {...(contextData ?? {}), ...(props ?? {})}
     if (IS_GOOGLE_CLOUD) {
       const severity = JS_TO_GCP_LEVELS[level]
-      const output: LogDetails = { severity, message, ...data }
+      const output: LogDetails = {severity, message, ...data}
       if (msg instanceof Error) {
         // record error properties in GCP if you just do log(err)
         output['error'] = msg
@@ -84,7 +82,7 @@ function writeLog(
       const category = Object.values(pick(data, DISPLAY_CATEGORY_KEYS)).join()
       const categoryLabel = category ? dim(category) + ' ' : ''
       const details = Object.entries(
-        omit(data, [...DISPLAY_CATEGORY_KEYS, ...DISPLAY_EXCLUDED_KEYS])
+        omit(data, [...DISPLAY_CATEGORY_KEYS, ...DISPLAY_EXCLUDED_KEYS]),
       ).map(([key, value]) => `\n  ${key}: ${JSON.stringify(value)}`)
       const result = `${dim(ts())} ${categoryLabel}${message}${details}`
       if (level === 'error') {
@@ -104,10 +102,9 @@ function writeLog(
 
 export function getLogger(): Logger {
   const logger = ((msg: unknown, ...rest: unknown[]) =>
-    writeLog(DEFAULT_LEVEL, msg, { rest })) as Logger
+    writeLog(DEFAULT_LEVEL, msg, {rest})) as Logger
   for (const level of JS_LEVELS) {
-    logger[level] = (msg: unknown, props?: LogDetails) =>
-      writeLog(level, msg, { props })
+    logger[level] = (msg: unknown, props?: LogDetails) => writeLog(level, msg, {props})
   }
   return logger
 }

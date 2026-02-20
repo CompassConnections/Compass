@@ -1,6 +1,5 @@
+import {defaultLocale} from 'common/constants'
 import {createContext, useContext, useEffect, useState} from 'react'
-import {defaultLocale} from "common/constants";
-
 
 export type I18nContextType = {
   locale: string
@@ -9,8 +8,7 @@ export type I18nContextType = {
 
 export const I18nContext = createContext<I18nContextType>({
   locale: defaultLocale,
-  setLocale: () => {
-  }
+  setLocale: () => {},
 })
 
 export function useLocale() {
@@ -29,9 +27,7 @@ const messageCache: Record<string, Record<string, string>> = {}
 
 export function useT() {
   const {locale} = useLocale()
-  const [messages, setMessages] = useState<Record<string, string>>(
-    messageCache[locale] ?? {}
-  )
+  const [messages, setMessages] = useState<Record<string, string>>(messageCache[locale] ?? {})
 
   useEffect(() => {
     if (locale === defaultLocale) return
@@ -41,7 +37,7 @@ export function useT() {
     }
 
     import(`web/messages/${locale}.json`)
-      .then(mod => {
+      .then((mod) => {
         messageCache[locale] = mod.default
         setMessages(mod.default)
       })
@@ -49,7 +45,7 @@ export function useT() {
   }, [locale])
 
   return (key: string, fallback: string, formatter?: any) => {
-    const result = locale === defaultLocale ? fallback : messages[key] ?? fallback
+    const result = locale === defaultLocale ? fallback : (messages[key] ?? fallback)
     if (!formatter) return result
     if (typeof formatter === 'function') return formatter(result)
     if (typeof formatter === 'object') {

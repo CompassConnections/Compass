@@ -7,10 +7,7 @@ export type MeasurementSystem = 'metric' | 'imperial'
 /**
  * Format height in inches according to the specified measurement system
  */
-export function formatHeight(
-  heightInInches: number,
-  measurementSystem: MeasurementSystem
-): string {
+export function formatHeight(heightInInches: number, measurementSystem: MeasurementSystem): string {
   if (measurementSystem === 'metric') {
     // Convert to centimeters
     const cm = Math.round(heightInInches * INCHES_TO_CM)
@@ -28,7 +25,7 @@ export function formatHeight(
  */
 export function formatDistance(
   distanceInMiles: number,
-  measurementSystem: MeasurementSystem
+  measurementSystem: MeasurementSystem,
 ): string {
   if (measurementSystem === 'metric') {
     // Convert to kilometers

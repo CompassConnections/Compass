@@ -3,16 +3,16 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const getHiddenProfiles: APIHandler<'get-hidden-profiles'> = async (
   {limit = 100, offset = 0},
-  auth
+  auth,
 ) => {
   const pg = createSupabaseDirectClient()
 
   // Count total hidden for pagination info
-  const countRes = await pg.one<{ count: string }>(
+  const countRes = await pg.one<{count: string}>(
     `select count(*)::text as count
      from hidden_profiles
      where hider_user_id = $1`,
-    [auth.uid]
+    [auth.uid],
   )
   const count = Number(countRes.count) || 0
 
@@ -31,7 +31,7 @@ export const getHiddenProfiles: APIHandler<'get-hidden-profiles'> = async (
       username: r.username as string,
       avatarUrl: r.avatarUrl as string | null | undefined,
       createdTime: r.createdTime as string | undefined,
-    })
+    }),
   )
 
   return {status: 'success', hidden: rows, count}

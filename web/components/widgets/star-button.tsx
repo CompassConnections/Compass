@@ -1,13 +1,12 @@
-import clsx from 'clsx'
 import {StarIcon} from '@heroicons/react/outline'
-import {useEffect, useState} from 'react'
-
-import {api} from 'web/lib/api'
-import {buttonClass} from 'web/components/buttons/button'
-import {track} from 'web/lib/service/analytics'
-import {Tooltip} from 'web/components/widgets/tooltip'
+import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
+import {useEffect, useState} from 'react'
+import {buttonClass} from 'web/components/buttons/button'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
 
 export const StarButton = (props: {
   targetProfile: Profile
@@ -16,7 +15,7 @@ export const StarButton = (props: {
   hideTooltip?: boolean
   className?: string
 }) => {
-  const { targetProfile, refresh, hideTooltip, className } = props
+  const {targetProfile, refresh, hideTooltip, className} = props
   const targetId = targetProfile.user_id
   const [isStarred, setIsStarred] = useState(props.isStarred)
   const t = useT()
@@ -42,11 +41,7 @@ export const StarButton = (props: {
 
   const button = (
     <button
-      className={clsx(
-        buttonClass('xs', 'none'),
-        'text-ink-500 group !rounded-full',
-        className
-      )}
+      className={clsx(buttonClass('xs', 'none'), 'text-ink-500 group !rounded-full', className)}
       onClick={(e) => {
         e.preventDefault()
         star()
@@ -55,8 +50,7 @@ export const StarButton = (props: {
       <StarIcon
         className={clsx(
           'h-8 w-8 transition-colors group-hover:fill-yellow-400/70',
-          isStarred &&
-            'fill-yellow-400 stroke-yellow-500 dark:stroke-yellow-600'
+          isStarred && 'fill-yellow-400 stroke-yellow-500 dark:stroke-yellow-600',
         )}
       />
     </button>
@@ -65,7 +59,14 @@ export const StarButton = (props: {
   if (hideTooltip) return button
 
   return (
-    <Tooltip text={isStarred ? t('star_button.unsave', 'Unsave Profile') : t('star_button.save', 'Save Profile')} noTap>
+    <Tooltip
+      text={
+        isStarred
+          ? t('star_button.unsave', 'Unsave Profile')
+          : t('star_button.save', 'Save Profile')
+      }
+      noTap
+    >
       {button}
     </Tooltip>
   )

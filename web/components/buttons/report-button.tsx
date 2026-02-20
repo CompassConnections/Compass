@@ -1,19 +1,19 @@
-import { useUser } from 'web/hooks/use-user'
-import { Button } from 'web/components/buttons/button'
-import { withTracking } from 'web/lib/service/analytics'
-import { toast } from 'react-hot-toast'
-import { Modal } from 'web/components/layout/modal'
-import { Row } from 'web/components/layout/row'
-import { useState } from 'react'
-import { Col } from 'web/components/layout/col'
-import { Title } from 'web/components/widgets/title'
-import { capitalize } from 'lodash'
-import { ReportProps } from 'common/report'
-import { report as reportContent } from 'web/lib/api'
+import {ReportProps} from 'common/report'
+import {capitalize} from 'lodash'
+import {useState} from 'react'
+import {toast} from 'react-hot-toast'
+import {Button} from 'web/components/buttons/button'
+import {Col} from 'web/components/layout/col'
+import {Modal} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {Title} from 'web/components/widgets/title'
+import {useUser} from 'web/hooks/use-user'
+import {report as reportContent} from 'web/lib/api'
+import {withTracking} from 'web/lib/service/analytics'
 
-export function ReportButton(props: { report: ReportProps }) {
-  const { report } = props
-  const { contentOwnerId, contentType } = report
+export function ReportButton(props: {report: ReportProps}) {
+  const {report} = props
+  const {contentOwnerId, contentType} = report
   const currentUser = useUser()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const label = contentType === 'contract' ? 'question' : contentType
@@ -46,16 +46,14 @@ export const ReportModal = (props: {
   label: string
   report: ReportProps
 }) => {
-  const { label, report, setIsModalOpen, isModalOpen } = props
+  const {label, report, setIsModalOpen, isModalOpen} = props
 
   const [isReported, setIsReported] = useState(false)
 
   const onReport = async () => {
     await toast.promise(reportContent(report), {
       loading: 'Reporting...',
-      success: `${capitalize(
-        label
-      )} reported! Admins will take a look within 24 hours.`,
+      success: `${capitalize(label)} reported! Admins will take a look within 24 hours.`,
       error: `Error reporting ${label}`,
     })
     setIsReported(true)

@@ -1,6 +1,6 @@
 import {type APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {Row} from 'common/supabase/utils'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export function shuffle<T>(array: T[]): T[] {
   const arr = [...array] // copy to avoid mutating the original
@@ -11,9 +11,10 @@ export function shuffle<T>(array: T[]): T[] {
   return arr
 }
 
-export const getCompatibilityQuestions: APIHandler<
-  'get-compatibility-questions'
-> = async (props, _auth) => {
+export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'> = async (
+  props,
+  _auth,
+) => {
   const {locale = 'en', keyword} = props
   const pg = createSupabaseDirectClient()
 
@@ -40,7 +41,7 @@ export const getCompatibilityQuestions: APIHandler<
   }
 
   const questions = await pg.manyOrNone<
-    Row<'compatibility_prompts'> & { answer_count: number; score: number }
+    Row<'compatibility_prompts'> & {answer_count: number; score: number}
   >(
     `
         SELECT cp.id,
@@ -82,7 +83,7 @@ export const getCompatibilityQuestions: APIHandler<
 
         ORDER BY cp.importance_score
     `,
-    params
+    params,
   )
 
   // console.debug({questions})

@@ -1,9 +1,9 @@
 import {PushNotifications} from '@capacitor/push-notifications'
-import {useEffect} from "react"
-import {api} from "web/lib/api"
-import {useUser} from "web/hooks/use-user"
-import {isAndroidApp} from "web/lib/util/webview";
-import {useRouter} from "next/router";
+import {useRouter} from 'next/router'
+import {useEffect} from 'react'
+import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {isAndroidApp} from 'web/lib/util/webview'
 
 export default function AndroidPush() {
   const user = useUser() // authenticated user
@@ -13,7 +13,7 @@ export default function AndroidPush() {
     if (!user?.id || !isAndroid) return
     console.log('AndroidPush', user)
 
-    PushNotifications.requestPermissions().then(result => {
+    PushNotifications.requestPermissions().then((result) => {
       if (result.receive !== 'granted') {
         console.log('Push notifications not granted')
         return
@@ -22,17 +22,19 @@ export default function AndroidPush() {
       console.log('Push registered')
     })
 
-    PushNotifications.addListener('registration', async token => {
+    PushNotifications.addListener('registration', async (token) => {
       console.log('Device token:', token.value)
       try {
-        const {data} = await api('save-subscription-mobile', {token: token.value})
+        const {data} = await api('save-subscription-mobile', {
+          token: token.value,
+        })
         console.log('Mobile subscription saved:', data)
       } catch (err) {
         console.error('Failed saving android subscription', err)
       }
     })
 
-    PushNotifications.addListener('pushNotificationReceived', notif => {
+    PushNotifications.addListener('pushNotificationReceived', (notif) => {
       console.log('Push received', notif)
       const url = notif?.data?.url
       if (url) {

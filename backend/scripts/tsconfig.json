@@ -20,10 +20,10 @@
     "require": ["tsconfig-paths/register"]
   },
   "references": [
-    { "path": "../../common" },
-    { "path": "../shared" },
-    { "path": "../api" },
-    { "path": "../email" }
+    {"path": "../../common"},
+    {"path": "../shared"},
+    {"path": "../api"},
+    {"path": "../email"}
   ],
   "compileOnSave": true
 }

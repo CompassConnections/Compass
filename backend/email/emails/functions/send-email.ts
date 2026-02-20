@@ -1,36 +1,33 @@
-import {type CreateEmailOptions, CreateEmailRequestOptions, Resend,} from 'resend'
+import {type CreateEmailOptions, CreateEmailRequestOptions, Resend} from 'resend'
 import {log} from 'shared/utils'
-import {sleep} from "common/util/time";
-
+import {sleep} from 'common/util/time'
 
 /*
  * typically: { subject: string, to: string | string[] } & ({ text: string } | { react: ReactNode })
  */
 export const sendEmail = async (
   payload: CreateEmailOptions,
-  options?: CreateEmailRequestOptions
+  options?: CreateEmailRequestOptions,
 ) => {
   const resend = getResend()
   console.debug(resend, payload, options)
 
   const skip = false
   if (skip) {
-    console.warn("Skipping email send")
+    console.warn('Skipping email send')
     return null
   }
 
   if (!resend) return null
 
-  const { data, error } = await resend.emails.send(
-    { replyTo: 'Compass <hello@compassmeet.com>', ...payload },
-    options
+  const {data, error} = await resend.emails.send(
+    {replyTo: 'Compass <hello@compassmeet.com>', ...payload},
+    options,
   )
   console.debug('resend.emails.send', data, error)
 
   if (error) {
-    log.error(
-      `Failed to send email to ${payload.to} with subject ${payload.subject}`
-    )
+    log.error(`Failed to send email to ${payload.to} with subject ${payload.subject}`)
     log.error(error)
     return null
   }

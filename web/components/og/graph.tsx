@@ -1,6 +1,6 @@
-import { area, curveStepBefore, curveLinear, line } from 'd3-shape'
-import { scaleLinear, scaleTime } from 'd3-scale'
-import { Point } from 'common/edge/og'
+import {Point} from 'common/edge/og'
+import {scaleLinear, scaleTime} from 'd3-scale'
+import {area, curveLinear, curveStepBefore, line} from 'd3-shape'
 
 export function ProfitLossGraph(props: {
   data: Point[]
@@ -8,7 +8,7 @@ export function ProfitLossGraph(props: {
   /** scaled width / height */
   aspectRatio?: number
 }) {
-  const { data, height, aspectRatio = 1 } = props
+  const {data, height, aspectRatio = 1} = props
   const w = height * aspectRatio
   const h = height
   const visibleRange = [data[0].x, data[data.length - 1].x]
@@ -42,40 +42,31 @@ export function ProfitLossGraph(props: {
 
       <g>
         <path d={da} fill={`url(#${gradientId})`} opacity={0.2} />
-        <path
-          d={dl}
-          stroke={`url(#${gradientId})`}
-          strokeWidth={4}
-          fill="none"
-        />
+        <path d={dl} stroke={`url(#${gradientId})`} strokeWidth={4} fill="none" />
       </g>
     </svg>
   )
 }
 
-const computeColorStops = (
-  data: Point[],
-  pc: (p: Point) => string,
-  px: (p: Point) => number
-) => {
-  const segments: { x: number; color: string }[] = []
+const computeColorStops = (data: Point[], pc: (p: Point) => string, px: (p: Point) => number) => {
+  const segments: {x: number; color: string}[] = []
   let currOffset = px(data[0])
   let currColor = pc(data[0])
   for (const p of data) {
     const c = pc(p)
     if (c !== currColor) {
-      segments.push({ x: currOffset, color: currColor })
+      segments.push({x: currOffset, color: currColor})
       currOffset = px(p)
       currColor = c
     }
   }
-  segments.push({ x: currOffset, color: currColor })
+  segments.push({x: currOffset, color: currColor})
 
-  const stops: { x: number; color: string }[] = []
-  stops.push({ x: segments[0].x, color: segments[0].color })
+  const stops: {x: number; color: string}[] = []
+  stops.push({x: segments[0].x, color: segments[0].color})
   for (const s of segments.slice(1)) {
-    stops.push({ x: s.x, color: stops[stops.length - 1].color })
-    stops.push({ x: s.x, color: s.color })
+    stops.push({x: s.x, color: stops[stops.length - 1].color})
+    stops.push({x: s.x, color: s.color})
   }
   return stops
 }
@@ -90,7 +81,7 @@ export function Sparkline(props: {
   color?: string
   className?: string
 }) {
-  const { data, height: h, aspectRatio = 1, min, max, color, className } = props
+  const {data, height: h, aspectRatio = 1, min, max, color, className} = props
   const w = h * aspectRatio
   const visibleRange = [data[0].x, data[data.length - 1].x]
   const curve = data.length > 50 ? curveLinear : curveStepBefore
@@ -105,13 +96,7 @@ export function Sparkline(props: {
 
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className={className}>
-      <path
-        d={dl}
-        stroke={color}
-        strokeWidth={4}
-        fill="none"
-        strokeLinejoin="round"
-      />
+      <path d={dl} stroke={color} strokeWidth={4} fill="none" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -123,7 +108,7 @@ export function ProbGraph(props: {
   aspectRatio?: number
   color?: string
 }) {
-  const { data, height, color = '#14b866', aspectRatio = 1 } = props
+  const {data, height, color = '#14b866', aspectRatio = 1} = props
   const w = height * aspectRatio
   const h = height
   const visibleRange = [data[0].x, data[data.length - 1].x]
@@ -161,13 +146,7 @@ export function ProbGraph(props: {
 
       <g>
         <path d={da} fill={`url(#${gradientId})`} opacity={0.1} />
-        <path
-          d={dl}
-          stroke={color}
-          strokeWidth={3}
-          fill="none"
-          strokeLinejoin="round"
-        />
+        <path d={dl} stroke={color} strokeWidth={3} fill="none" strokeLinejoin="round" />
       </g>
     </svg>
   )

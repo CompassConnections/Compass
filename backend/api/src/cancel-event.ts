@@ -1,7 +1,7 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {update} from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
 
 export const cancelEvent: APIHandler<'cancel-event'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
@@ -15,7 +15,7 @@ export const cancelEvent: APIHandler<'cancel-event'> = async (body, auth) => {
     `SELECT id, creator_id, status
      FROM events
      WHERE id = $1`,
-    [body.eventId]
+    [body.eventId],
   )
 
   if (!event) {
@@ -35,7 +35,7 @@ export const cancelEvent: APIHandler<'cancel-event'> = async (body, auth) => {
     update(pg, 'events', 'id', {
       status: 'cancelled',
       id: body.eventId,
-    })
+    }),
   )
 
   if (error) {

@@ -1,9 +1,4 @@
-export type Gender =
-  | 'male'
-  | 'female'
-  | 'non-binary'
-  | 'trans-male'
-  | 'trans-female'
+export type Gender = 'male' | 'female' | 'non-binary' | 'trans-male' | 'trans-female'
 
 export function convertGender(gender: Gender) {
   if (gender == 'male') {

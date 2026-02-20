@@ -1,13 +1,13 @@
 import {
-  Editor,
+  AnyExtension,
   Content,
-  JSONContent,
+  Editor,
   Extensions,
   getExtensionField,
-  AnyExtension,
+  JSONContent,
 } from '@tiptap/react'
-import { keyBy } from 'lodash'
-import { createElement, Fragment, ReactNode } from 'react'
+import {keyBy} from 'lodash'
+import {createElement, Fragment, ReactNode} from 'react'
 
 export function insertContent(editor: Editor | null, ...contents: Content[]) {
   if (!editor) {
@@ -26,22 +26,14 @@ export function insertContent(editor: Editor | null, ...contents: Content[]) {
 type ProsemirrorDOM =
   | 0
   | string
-  | [
-      tag: string,
-      attrs: Record<string, string | number | undefined>,
-      ...content: ProsemirrorDOM[]
-    ]
+  | [tag: string, attrs: Record<string, string | number | undefined>, ...content: ProsemirrorDOM[]]
 
 const pmdToJSX = (dom: ProsemirrorDOM, children: ReactNode): ReactNode => {
   if (Array.isArray(dom)) {
     const [tag, attrs, ...content] = dom
-    const { class: className, ...rest } = attrs
+    const {class: className, ...rest} = attrs
 
-    return createElement(
-      tag,
-      { className, ...rest },
-      ...content.map((c) => pmdToJSX(c, children))
-    )
+    return createElement(tag, {className, ...rest}, ...content.map((c) => pmdToJSX(c, children)))
   } else if (dom === 0) {
     if (Array.isArray(children)) {
       // wrap in fragment to stop missing key warnings
@@ -54,8 +46,8 @@ const pmdToJSX = (dom: ProsemirrorDOM, children: ReactNode): ReactNode => {
 }
 
 export function getField(extension: AnyExtension, field: string) {
-  const { name, options, storage } = extension
-  return getExtensionField(extension, field, { name, options, storage })
+  const {name, options, storage} = extension
+  return getExtensionField(extension, field, {name, options, storage})
 }
 
 /**
@@ -70,7 +62,7 @@ export const generateReact = (doc: JSONContent, extensions: Extensions) => {
   }
 
   const extensionsIncludingStarterKit = extensions.flatMap(
-    (e) => getField(e, 'addExtensions')?.() ?? e
+    (e) => getField(e, 'addExtensions')?.() ?? e,
   )
 
   const exts = keyBy(extensionsIncludingStarterKit, 'name')
@@ -97,7 +89,7 @@ export const generateReact = (doc: JSONContent, extensions: Extensions) => {
           children = renderReact(m.attrs, children)
         } else {
           const renderHTML = getField(e, 'renderHTML')
-          children = pmdToJSX(renderHTML({ HTMLAttributes: m.attrs }), children)
+          children = pmdToJSX(renderHTML({HTMLAttributes: m.attrs}), children)
         }
       })
     }
@@ -111,10 +103,10 @@ export const generateReact = (doc: JSONContent, extensions: Extensions) => {
 
     return pmdToJSX(
       renderHTML?.({
-        node: { attrs: content.attrs },
+        node: {attrs: content.attrs},
         HTMLAttributes: content.attrs,
       }) ?? 0,
-      children
+      children,
     )
   }
 

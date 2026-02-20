@@ -1,5 +1,5 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {OPTION_TABLES, OptionTableKey} from 'common/profiles/constants'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 interface CacheEntry {
   data: Record<OptionTableKey, Record<string, string>>
@@ -14,12 +14,15 @@ export async function getOptionsIdsToLabels(locale: string = 'en') {
   const now = Date.now()
 
   const cached = cache.get(cacheKey)
-  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+  if (cached && now - cached.timestamp < CACHE_TTL) {
     return cached.data
   }
   // console.log("Fetching getOptionsIdsToLabels...")
   const pg = createSupabaseDirectClient()
-  const result: Record<OptionTableKey, Record<string, string>> = {} as Record<OptionTableKey, Record<string, string>>
+  const result: Record<OptionTableKey, Record<string, string>> = {} as Record<
+    OptionTableKey,
+    Record<string, string>
+  >
 
   for (const tableKey of OPTION_TABLES) {
     // const rows = await pg.manyOrNone(`
@@ -33,18 +36,21 @@ export async function getOptionsIdsToLabels(locale: string = 'en') {
     //   LEFT JOIN ${tableKey}_translations ON ${tableKey}.id = ${tableKey}_translations.id
     //   ORDER BY name ASC
     // `, [locale])
-    const rows = await pg.manyOrNone(`SELECT id, name
+    const rows = await pg.manyOrNone(
+      `SELECT id, name
                                       FROM ${tableKey}
-                                      ORDER BY name`, [locale])
+                                      ORDER BY name`,
+      [locale],
+    )
 
     const idToName: Record<string, string> = {}
-    rows.forEach(row => idToName[row.id] = row.name)
+    rows.forEach((row) => (idToName[row.id] = row.name))
     result[tableKey] = idToName
   }
 
   cache.set(cacheKey, {
     data: result,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   })
   // console.log({result})
   return result

@@ -1,9 +1,10 @@
 import clsx from 'clsx'
-import { ReactNode, useState } from 'react'
-import { Col } from '../layout/col'
-import { Modal } from '../layout/modal'
-import { Row } from '../layout/row'
-import { Button, ColorType, SizeType } from './button'
+import {ReactNode, useState} from 'react'
+
+import {Col} from '../layout/col'
+import {Modal} from '../layout/modal'
+import {Row} from '../layout/row'
+import {Button, ColorType, SizeType} from './button'
 
 export function ConfirmationButton(props: {
   openModalBtn: {
@@ -65,10 +66,7 @@ export function ConfirmationButton(props: {
               color={submitBtn?.color ?? 'blue'}
               onClick={
                 onSubmitWithSuccess
-                  ? () =>
-                      onSubmitWithSuccess().then((success) =>
-                        updateOpen(!success)
-                      )
+                  ? () => onSubmitWithSuccess().then((success) => updateOpen(!success))
                   : async () => {
                       await onSubmit?.()
                       updateOpen(false)
@@ -112,15 +110,7 @@ export function ResolveConfirmationButton(props: {
   color: ColorType
   disabled?: boolean
 }) {
-  const {
-    onResolve,
-    isSubmitting,
-    openModalButtonClass,
-    color,
-    marketTitle,
-    label,
-    disabled,
-  } = props
+  const {onResolve, isSubmitting, openModalButtonClass, color, marketTitle, label, disabled} = props
   return (
     <ConfirmationButton
       openModalBtn={{

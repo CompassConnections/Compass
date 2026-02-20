@@ -1,15 +1,20 @@
-import dayjs from 'dayjs'
 import 'web/lib/dayjs'
 
+import dayjs from 'dayjs'
 
-export function fromNow(time: number | string | Date, privacy: boolean = false, t: any = undefined, locale: string | null = null) {
+export function fromNow(
+  time: number | string | Date,
+  privacy: boolean = false,
+  t: any = undefined,
+  locale: string | null = null,
+) {
   let date = dayjs(time)
   if (locale) date = date.locale(locale)
   if (privacy && dayjs().diff(date, 'hour') < 24) {
-    const defaultPastDay = 'in the past day';
+    const defaultPastDay = 'in the past day'
     return t ? t('common.from-now.past_day', defaultPastDay) : defaultPastDay
   }
-  return date.fromNow();
+  return date.fromNow()
 }
 
 const FORMATTER = new Intl.DateTimeFormat('default', {
@@ -19,7 +24,11 @@ const FORMATTER = new Intl.DateTimeFormat('default', {
 
 export const formatTime = FORMATTER.format
 
-export function formatTimeShort(time: number | string | Date, locale: string | null = null, hourOnly: boolean | null = null) {
+export function formatTimeShort(
+  time: number | string | Date,
+  locale: string | null = null,
+  hourOnly: boolean | null = null,
+) {
   let date = dayjs(time)
   let template = hourOnly ? 'h:mm A' : 'MMM D, h:mm A'
   if (locale) {

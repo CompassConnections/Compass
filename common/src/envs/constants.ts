@@ -1,7 +1,13 @@
+import {isProd} from 'common/envs/is-prod'
+import {
+  HOSTING_ENV,
+  IS_LOCAL,
+  IS_LOCAL_ANDROID,
+  IS_WEBVIEW_DEV_PHONE,
+} from 'common/hosting/constants'
+
 import {DEV_CONFIG} from './dev'
 import {PROD_CONFIG} from './prod'
-import {isProd} from "common/envs/is-prod";
-import {HOSTING_ENV, IS_LOCAL, IS_LOCAL_ANDROID, IS_WEBVIEW_DEV_PHONE} from "common/hosting/constants";
 
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
@@ -20,7 +26,7 @@ export const ENV = isProd() ? 'prod' : 'dev'
 // export const IS_PROD = ENV === 'prod'
 export const IS_DEV = ENV === 'dev'
 
-console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
+console.debug(`Running in ${HOSTING_ENV} (${ENV})`)
 
 // class MissingKeyError implements Error {
 //   constructor(key: string) {
@@ -41,7 +47,7 @@ console.debug(`Running in ${HOSTING_ENV} (${ENV})`,);
 //   throw new MissingKeyError('firebaseConfig.apiKey')
 // }
 
-export const IS_FIREBASE_EMULATOR = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === "true"
+export const IS_FIREBASE_EMULATOR = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === 'true'
 // if (IS_FIREBASE_EMULATOR) console.log("Using Firebase emulator.")
 
 export const LOCAL_WEB_DOMAIN = `localhost:3000`
@@ -56,18 +62,11 @@ export const PROJECT_ID = ENV_CONFIG.firebaseConfig.projectId
 
 export const REDIRECT_URI = `${WEB_URL}/auth/callback`
 
-export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(
-  /-/g,
-  '_'
-)}`
+export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(/-/g, '_')}`
 
-export const MOD_USERNAMES = [
-  'Martin',
-]
+export const MOD_USERNAMES = ['Martin']
 
-export const VERIFIED_USERNAMES = [
-  'Martin',
-]
+export const VERIFIED_USERNAMES = ['Martin']
 
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 

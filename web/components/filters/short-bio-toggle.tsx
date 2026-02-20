@@ -1,7 +1,7 @@
-import {Row} from 'web/components/layout/row'
 import clsx from 'clsx'
-import {FilterFields} from "common/filters";
-import {useT} from "web/lib/locale";
+import {FilterFields} from 'common/filters'
+import {Row} from 'web/components/layout/row'
+import {useT} from 'web/lib/locale'
 
 export function ShortBioToggle(props: {
   filters: Partial<FilterFields>

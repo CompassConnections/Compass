@@ -3,9 +3,9 @@
 import {useEffect, useState} from 'react'
 import {useLocale} from 'web/lib/locale'
 import {defaultLocale} from 'common/constants'
-import {MD_PATHS} from "web/components/markdown";
+import {MD_PATHS} from 'web/components/markdown'
 
-export function useMarkdown(filename: typeof MD_PATHS[number]) {
+export function useMarkdown(filename: (typeof MD_PATHS)[number]) {
   const {locale} = useLocale()
   const lang = locale ?? defaultLocale
   const [content, setContent] = useState<string>('')

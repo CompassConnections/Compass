@@ -1,10 +1,12 @@
 import {APIHandler} from 'api/helpers/endpoint'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {APIError} from 'common/api/utils'
 import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'> = async (
-  {id}, auth) => {
+  {id},
+  auth,
+) => {
   const pg = createSupabaseDirectClient()
 
   // Verify user is the answer author
@@ -13,7 +15,7 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
      FROM compatibility_answers
      WHERE id = $1
        AND creator_id = $2`,
-    [id, auth.uid]
+    [id, auth.uid],
   )
 
   if (!item) {
@@ -26,7 +28,7 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
      FROM compatibility_answers
      WHERE id = $1
        AND creator_id = $2`,
-    [id, auth.uid]
+    [id, auth.uid],
   )
 
   const continuation = async () => {

@@ -1,7 +1,7 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
-import {tryCatch} from 'common/util/try-catch'
 
 export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
@@ -38,7 +38,7 @@ export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
       event_start_time: body.eventStartTime,
       event_end_time: body.eventEndTime,
       max_participants: body.maxParticipants,
-    })
+    }),
   )
 
   if (error) {

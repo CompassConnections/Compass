@@ -1,4 +1,4 @@
-import {defaultLocale, Locale, supportedLocales} from "common/constants"
+import {defaultLocale, Locale, supportedLocales} from 'common/constants'
 
 let cachedLocale: string | null | undefined = null
 
@@ -6,9 +6,8 @@ export const resetCachedLocale = () => {
   cachedLocale = null
 }
 
-export function getLocale(
+export function getLocale(): string {
   // req?: IncomingMessage
-): string {
   if (cachedLocale) return cachedLocale
   // console.log('cachedLocale', cachedLocale)
   let cookie = null
@@ -26,10 +25,10 @@ export function getLocale(
     // console.log('Cookie', cookie)
     cachedLocale = cookie
       .split(' ')
-      .find(c => c.startsWith('lang='))
+      .find((c) => c.startsWith('lang='))
       ?.split('=')[1]
       ?.split(' ')[0]
-      ?.replace(";", "")
+      ?.replace(';', '')
     // console.log('Locale cookie', cachedLocale)
   }
 

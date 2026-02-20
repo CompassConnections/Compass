@@ -1,31 +1,32 @@
+import '../styles/globals.css'
+import 'web/lib/dayjs'
+
+import {App} from '@capacitor/app'
+import {Capacitor} from '@capacitor/core'
+import {Keyboard} from '@capacitor/keyboard'
+import {StatusBar} from '@capacitor/status-bar'
+import clsx from 'clsx'
+import {IS_VERCEL} from 'common/hosting/constants'
 import type {AppProps} from 'next/app'
+import {Major_Mono_Display} from 'next/font/google'
 import Head from 'next/head'
-import {useEffect, useState} from 'react'
+import {useRouter} from 'next/navigation'
 import {Router} from 'next/router'
 import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
+import {useEffect, useState} from 'react'
 import {AuthProvider, AuthUser} from 'web/components/auth-context'
+import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
-import '../styles/globals.css'
-import {Major_Mono_Display} from 'next/font/google'
-import clsx from 'clsx'
-import {initTracking} from 'web/lib/service/analytics'
-import WebPush from "web/lib/service/web-push"
-import AndroidPush from "web/lib/service/android-push"
-import {isAndroidApp} from "web/lib/util/webview"
-import {Capacitor} from '@capacitor/core'
-import {StatusBar} from '@capacitor/status-bar'
-import {App} from '@capacitor/app'
-import {useRouter} from "next/navigation"
-import {Keyboard} from "@capacitor/keyboard"
-import {IS_VERCEL} from "common/hosting/constants"
-import {getLocale, resetCachedLocale} from "web/lib/locale-cookie"
-import {I18nContext} from "web/lib/locale"
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
-import {updateStatusBar} from "web/hooks/use-theme"
-import {useFontPreferenceManager} from "web/hooks/use-font-preference"
-import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from "web/lib/dayjs";
-import 'web/lib/dayjs'
+import {updateStatusBar} from 'web/hooks/use-theme'
+import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
+import {I18nContext} from 'web/lib/locale'
+import {getLocale, resetCachedLocale} from 'web/lib/locale-cookie'
+import {initTracking} from 'web/lib/service/analytics'
+import AndroidPush from 'web/lib/service/android-push'
+import WebPush from 'web/lib/service/web-push'
+import {isAndroidApp} from 'web/lib/util/webview'
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -55,7 +56,6 @@ if (Capacitor.isNativePlatform()) {
   //   }
   // })
 }
-
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 // and if you add a font, you must add it to tailwind config as well for it to work.
@@ -89,7 +89,7 @@ function printBuildInfo() {
 }
 
 // specially treated props that may be present in the server/static props
-type PageProps = { auth?: AuthUser }
+type PageProps = {auth?: AuthUser}
 
 function MyApp(props: AppProps<PageProps>) {
   const {Component, pageProps} = props
@@ -152,7 +152,7 @@ function MyApp(props: AppProps<PageProps>) {
       router.push(endpoint)
     }
     // Expose globally for native bridge
-    (window as any).bridgeRedirect = bridgeRedirect
+    ;(window as any).bridgeRedirect = bridgeRedirect
   }, [])
 
   const title = 'Compass'
@@ -163,33 +163,20 @@ function MyApp(props: AppProps<PageProps>) {
       <Head>
         <title>{title}</title>
 
-        <meta
-          property="og:title"
-          name="twitter:title"
-          content={title}
-          key="title"
-        />
-        <meta name="description" content={description} key="description1"/>
+        <meta property="og:title" name="twitter:title" content={title} key="title" />
+        <meta name="description" content={description} key="description1" />
         <meta
           property="og:description"
           name="twitter:description"
           content={description}
           key="description2"
         />
-        <meta property="og:url" content="https://compassmeet.com" key="url"/>
-        <meta property="og:site_name" content="Compass"/>
-        <meta name="twitter:card" content="summary" key="card"/>
+        <meta property="og:url" content="https://compassmeet.com" key="url" />
+        <meta property="og:site_name" content="Compass" />
+        <meta name="twitter:card" content="summary" key="card" />
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
-        <meta
-          name="twitter:image"
-          content="https://www.compassmeet.com/favicon.ico"
-          key="image2"
-        />
-        <meta
-          property="og:image"
-          content="https://www.compassmeet.com/favicon.ico"
-          key="image1"
-        />
+        <meta name="twitter:image" content="https://www.compassmeet.com/favicon.ico" key="image2" />
+        <meta property="og:image" content="https://www.compassmeet.com/favicon.ico" key="image1" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no, viewport-fit=cover"
@@ -205,8 +192,8 @@ function MyApp(props: AppProps<PageProps>) {
         >
           <AuthProvider serverUser={pageProps.auth}>
             <HiddenProfilesProvider>
-              <WebPush/>
-              <AndroidPush/>
+              <WebPush />
+              <AndroidPush />
               <I18nContext.Provider value={{locale, setLocale}}>
                 <Component {...pageProps} />
               </I18nContext.Provider>
@@ -214,7 +201,7 @@ function MyApp(props: AppProps<PageProps>) {
           </AuthProvider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">
-            <div/>
+            <div />
           </div>
         </div>
       </PostHogProvider>

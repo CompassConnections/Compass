@@ -1,328 +1,327 @@
-import * as profilesModule from "api/get-profiles";
-import { Profile } from "common/profiles/profile";
-import * as supabaseInit from "shared/supabase/init";
-import * as sqlBuilder from "shared/supabase/sql-builder";
+import * as profilesModule from 'api/get-profiles'
+import {Profile} from 'common/profiles/profile'
+import * as supabaseInit from 'shared/supabase/init'
+import * as sqlBuilder from 'shared/supabase/sql-builder'
 
 describe('getProfiles', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-    
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
-    describe('when given valid input', () => {
-        it('should successfully return profile information and count', async ()=> {            
-            const mockProfiles = [
-                {
-                diet: ['Jonathon Hammon'],
-                has_kids: 0
-                },
-                {
-                diet: ['Joseph Hammon'],
-                has_kids: 1
-                },
-                {
-                diet: ['Jolene Hammon'],
-                has_kids: 2,
-                }
-            ] as Profile [];
-            const props = {
-                limit: 2,
-                orderBy: "last_online_time" as const,
-            };
-            const mockReq = {} as any;
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
 
-            jest.spyOn(profilesModule, 'loadProfiles').mockResolvedValue({profiles: mockProfiles, count: 3});
-            
-            const results: any = await profilesModule.getProfiles(props, mockReq, mockReq);
+  describe('when given valid input', () => {
+    it('should successfully return profile information and count', async () => {
+      const mockProfiles = [
+        {
+          diet: ['Jonathon Hammon'],
+          has_kids: 0,
+        },
+        {
+          diet: ['Joseph Hammon'],
+          has_kids: 1,
+        },
+        {
+          diet: ['Jolene Hammon'],
+          has_kids: 2,
+        },
+      ] as Profile[]
+      const props = {
+        limit: 2,
+        orderBy: 'last_online_time' as const,
+      }
+      const mockReq = {} as any
 
-            expect(results.status).toEqual('success');
-            expect(results.profiles).toEqual(mockProfiles);            
-            expect(results.profiles[0]).toEqual(mockProfiles[0]);            
-            expect(profilesModule.loadProfiles).toHaveBeenCalledWith(props);
-            expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1);
-        });
-    });
+      jest
+        .spyOn(profilesModule, 'loadProfiles')
+        .mockResolvedValue({profiles: mockProfiles, count: 3})
 
-    describe('when an error occurs', () => {
-        it('should not return profile information', async () => {
-            jest.spyOn(profilesModule, 'loadProfiles').mockRejectedValue(null);
-            
-            const props = {
-                limit: 2,
-                orderBy: "last_online_time" as const,
-            };
-            const mockReq = {} as any;
-            const results: any = await profilesModule.getProfiles(props, mockReq, mockReq);
+      const results: any = await profilesModule.getProfiles(props, mockReq, mockReq)
 
-            expect(results.status).toEqual('fail');
-            expect(results.profiles).toEqual([]);
-            expect(profilesModule.loadProfiles).toHaveBeenCalledWith(props);
-            expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1);
-        });
-    });
-});
+      expect(results.status).toEqual('success')
+      expect(results.profiles).toEqual(mockProfiles)
+      expect(results.profiles[0]).toEqual(mockProfiles[0])
+      expect(profilesModule.loadProfiles).toHaveBeenCalledWith(props)
+      expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('when an error occurs', () => {
+    it('should not return profile information', async () => {
+      jest.spyOn(profilesModule, 'loadProfiles').mockRejectedValue(null)
+
+      const props = {
+        limit: 2,
+        orderBy: 'last_online_time' as const,
+      }
+      const mockReq = {} as any
+      const results: any = await profilesModule.getProfiles(props, mockReq, mockReq)
+
+      expect(results.status).toEqual('fail')
+      expect(results.profiles).toEqual([])
+      expect(profilesModule.loadProfiles).toHaveBeenCalledWith(props)
+      expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1)
+    })
+  })
+})
 
 describe('loadProfiles', () => {
-    let mockPg: any;
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockPg = {
-            map: jest.fn(),
-            one: jest.fn()
-        };
-        
-        jest.spyOn(supabaseInit, 'createSupabaseDirectClient')
-            .mockReturnValue(mockPg);
-    });
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
+  let mockPg: any
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockPg = {
+      map: jest.fn(),
+      one: jest.fn(),
+    }
 
-    describe('when given valid input', () => {
-        describe('should call pg.map with an SQL query', () => {
-            it('successfully', async () => {
-                const mockProps = {
-                    limit: 10,
-                    name: 'John',
-                    is_smoker: true,
-                };
+    jest.spyOn(supabaseInit, 'createSupabaseDirectClient').mockReturnValue(mockPg)
+  })
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
 
-                (mockPg.map as jest.Mock).mockResolvedValue([]);
-                (mockPg.one as jest.Mock).mockResolvedValue(1);
-                jest.spyOn(sqlBuilder, 'renderSql');
-                jest.spyOn(sqlBuilder, 'select');
-                jest.spyOn(sqlBuilder, 'from');
-                jest.spyOn(sqlBuilder, 'where');
-                jest.spyOn(sqlBuilder, 'join');
+  describe('when given valid input', () => {
+    describe('should call pg.map with an SQL query', () => {
+      it('successfully', async () => {
+        const mockProps = {
+          limit: 10,
+          name: 'John',
+          is_smoker: true,
+        }
 
-                await profilesModule.loadProfiles(mockProps);
+        ;(mockPg.map as jest.Mock).mockResolvedValue([])
+        ;(mockPg.one as jest.Mock).mockResolvedValue(1)
+        jest.spyOn(sqlBuilder, 'renderSql')
+        jest.spyOn(sqlBuilder, 'select')
+        jest.spyOn(sqlBuilder, 'from')
+        jest.spyOn(sqlBuilder, 'where')
+        jest.spyOn(sqlBuilder, 'join')
 
-                const [query, values, cb] = mockPg.map.mock.calls[0];
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain('select');
-                expect(query).toContain('from profiles');
-                expect(query).toContain('where');
-                expect(query).toContain('limit 10');
-                expect(query).toContain(`John`);
-                expect(query).toContain(`is_smoker`);
-                expect(query).not.toContain(`gender`);
-                expect(query).not.toContain(`education_level`);
-                expect(query).not.toContain(`pref_gender`);
-                expect(query).not.toContain(`age`);
-                expect(query).not.toContain(`drinks_per_month`);
-                expect(query).not.toContain(`pref_relation_styles`);
-                expect(query).not.toContain(`pref_romantic_styles`);
-                expect(query).not.toContain(`diet`);
-                expect(query).not.toContain(`political_beliefs`);
-                expect(query).not.toContain(`religion`);
-                expect(query).not.toContain(`has_kids`);
-                expect(sqlBuilder.renderSql).toBeCalledTimes(3);
-                expect(sqlBuilder.select).toBeCalledTimes(3);
-                expect(sqlBuilder.from).toBeCalledTimes(2);
-                expect(sqlBuilder.where).toBeCalledTimes(8);
-                expect(sqlBuilder.join).toBeCalledTimes(1);
-            });
-            
-            it('that contains a gender filter', async () => {
-                await profilesModule.loadProfiles({
-                    genders: ['Electrical_gender'],
-                });
+        await profilesModule.loadProfiles(mockProps)
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`gender`);
-                expect(query).toContain(`Electrical_gender`);
-            });
-            
-            it('that contains a education level filter', async () => {
-                await profilesModule.loadProfiles({
-                    education_levels: ['High School'],
-                });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`education_level`);
-                expect(query).toContain(`High School`);
-            });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain('select')
+        expect(query).toContain('from profiles')
+        expect(query).toContain('where')
+        expect(query).toContain('limit 10')
+        expect(query).toContain(`John`)
+        expect(query).toContain(`is_smoker`)
+        expect(query).not.toContain(`gender`)
+        expect(query).not.toContain(`education_level`)
+        expect(query).not.toContain(`pref_gender`)
+        expect(query).not.toContain(`age`)
+        expect(query).not.toContain(`drinks_per_month`)
+        expect(query).not.toContain(`pref_relation_styles`)
+        expect(query).not.toContain(`pref_romantic_styles`)
+        expect(query).not.toContain(`diet`)
+        expect(query).not.toContain(`political_beliefs`)
+        expect(query).not.toContain(`religion`)
+        expect(query).not.toContain(`has_kids`)
+        expect(sqlBuilder.renderSql).toBeCalledTimes(3)
+        expect(sqlBuilder.select).toBeCalledTimes(3)
+        expect(sqlBuilder.from).toBeCalledTimes(2)
+        expect(sqlBuilder.where).toBeCalledTimes(8)
+        expect(sqlBuilder.join).toBeCalledTimes(1)
+      })
 
-            it('that contains a prefer gender filter', async () => {
-                await profilesModule.loadProfiles({
-                    pref_gender: ['female'],
-                });
+      it('that contains a gender filter', async () => {
+        await profilesModule.loadProfiles({
+          genders: ['Electrical_gender'],
+        })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                console.log(query);
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`pref_gender`);
-                expect(query).toContain(`female`);
-            });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-            it('that contains a minimum age filter', async () => {
-                await profilesModule.loadProfiles({
-                    pref_age_min: 20,
-                });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`gender`)
+        expect(query).toContain(`Electrical_gender`)
+      })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`age`);
-                expect(query).toContain(`>= 20`);
-            });
+      it('that contains a education level filter', async () => {
+        await profilesModule.loadProfiles({
+          education_levels: ['High School'],
+        })
 
-            it('that contains a maximum age filter', async () => {
-                await profilesModule.loadProfiles({
-                    pref_age_max: 40,
-                });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`age`);
-                expect(query).toContain(`<= 40`);
-            });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`education_level`)
+        expect(query).toContain(`High School`)
+      })
 
-            it('that contains a minimum drinks per month filter', async () => {
-                await profilesModule.loadProfiles({
-                    drinks_min: 4,
-                });
+      it('that contains a prefer gender filter', async () => {
+        await profilesModule.loadProfiles({
+          pref_gender: ['female'],
+        })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`drinks_per_month`);
-                expect(query).toContain('4');
-            });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+        console.log(query)
 
-            it('that contains a maximum drinks per month filter', async () => {
-                await profilesModule.loadProfiles({
-                    drinks_max: 20,
-                });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`pref_gender`)
+        expect(query).toContain(`female`)
+      })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`drinks_per_month`);
-                expect(query).toContain('20');
-            });
+      it('that contains a minimum age filter', async () => {
+        await profilesModule.loadProfiles({
+          pref_age_min: 20,
+        })
 
-            it('that contains a relationship style filter', async () => {
-                await profilesModule.loadProfiles({
-                    pref_relation_styles: ['Chill and relaxing'],
-                });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`pref_relation_styles`);
-                expect(query).toContain('Chill and relaxing');
-            });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`age`)
+        expect(query).toContain(`>= 20`)
+      })
 
-            it('that contains a romantic style filter', async () => {
-                await profilesModule.loadProfiles({
-                    pref_romantic_styles: ['Sexy'],
-                });
+      it('that contains a maximum age filter', async () => {
+        await profilesModule.loadProfiles({
+          pref_age_max: 40,
+        })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`pref_romantic_styles`);
-                expect(query).toContain('Sexy');
-            });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-            it('that contains a diet filter', async () => {
-                await profilesModule.loadProfiles({
-                    diet: ['Glutton'],
-                });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`age`)
+        expect(query).toContain(`<= 40`)
+      })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`diet`);
-                expect(query).toContain('Glutton');
-            });
+      it('that contains a minimum drinks per month filter', async () => {
+        await profilesModule.loadProfiles({
+          drinks_min: 4,
+        })
 
-            it('that contains a political beliefs filter', async () => {
-                await profilesModule.loadProfiles({
-                    political_beliefs: ['For the people'],
-                });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`political_beliefs`);
-                expect(query).toContain('For the people');
-            });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`drinks_per_month`)
+        expect(query).toContain('4')
+      })
 
-            it('that contains a religion filter', async () => {
-                await profilesModule.loadProfiles({
-                    religion: ['The blood god'],
-                });
+      it('that contains a maximum drinks per month filter', async () => {
+        await profilesModule.loadProfiles({
+          drinks_max: 20,
+        })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`religion`);
-                expect(query).toContain('The blood god');
-            });
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-            it('that contains a has kids filter', async () => {
-                await profilesModule.loadProfiles({
-                    has_kids: 3,
-                });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`drinks_per_month`)
+        expect(query).toContain('20')
+      })
 
-                const [query, values, cb] = mockPg.map.mock.calls[0]
-                
-                expect(mockPg.map.mock.calls).toHaveLength(1)
-                expect(query).toContain(`has_kids`);
-                expect(query).toContain('> 0');
-            });
+      it('that contains a relationship style filter', async () => {
+        await profilesModule.loadProfiles({
+          pref_relation_styles: ['Chill and relaxing'],
+        })
 
-            it('should return profiles from the database', async () => {
-                const mockProfiles = [
-                    {
-                    diet: ['Jonathon Hammon'],
-                    is_smoker: true,
-                    has_kids: 0
-                    },
-                    {
-                    diet: ['Joseph Hammon'],
-                    is_smoker: false,
-                    has_kids: 1
-                    },
-                    {
-                    diet: ['Jolene Hammon'],
-                    is_smoker: true,
-                    has_kids: 2,
-                    }
-                ] as Profile [];
-                const props = {} as any;
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
 
-                (mockPg.map as jest.Mock).mockResolvedValue(mockProfiles);
-                (mockPg.one as jest.Mock).mockResolvedValue(1);
-                
-                const results = await profilesModule.loadProfiles(props);
-                
-                expect(results).toEqual({profiles: mockProfiles, count: 1});
-            });
-        });
-    });
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`pref_relation_styles`)
+        expect(query).toContain('Chill and relaxing')
+      })
 
-    describe('when an error occurs', () => {
-        it('throw if there is no compatability', async () => {
-            const props = {
-                orderBy: 'compatibility_score'
-            }
+      it('that contains a romantic style filter', async () => {
+        await profilesModule.loadProfiles({
+          pref_romantic_styles: ['Sexy'],
+        })
 
-            expect(profilesModule.loadProfiles(props))
-                .rejects
-                .toThrowError('Incompatible with user ID')
-        });
-    });
-});
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`pref_romantic_styles`)
+        expect(query).toContain('Sexy')
+      })
+
+      it('that contains a diet filter', async () => {
+        await profilesModule.loadProfiles({
+          diet: ['Glutton'],
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`diet`)
+        expect(query).toContain('Glutton')
+      })
+
+      it('that contains a political beliefs filter', async () => {
+        await profilesModule.loadProfiles({
+          political_beliefs: ['For the people'],
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`political_beliefs`)
+        expect(query).toContain('For the people')
+      })
+
+      it('that contains a religion filter', async () => {
+        await profilesModule.loadProfiles({
+          religion: ['The blood god'],
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`religion`)
+        expect(query).toContain('The blood god')
+      })
+
+      it('that contains a has kids filter', async () => {
+        await profilesModule.loadProfiles({
+          has_kids: 3,
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`has_kids`)
+        expect(query).toContain('> 0')
+      })
+
+      it('should return profiles from the database', async () => {
+        const mockProfiles = [
+          {
+            diet: ['Jonathon Hammon'],
+            is_smoker: true,
+            has_kids: 0,
+          },
+          {
+            diet: ['Joseph Hammon'],
+            is_smoker: false,
+            has_kids: 1,
+          },
+          {
+            diet: ['Jolene Hammon'],
+            is_smoker: true,
+            has_kids: 2,
+          },
+        ] as Profile[]
+        const props = {} as any
+
+        ;(mockPg.map as jest.Mock).mockResolvedValue(mockProfiles)
+        ;(mockPg.one as jest.Mock).mockResolvedValue(1)
+
+        const results = await profilesModule.loadProfiles(props)
+
+        expect(results).toEqual({profiles: mockProfiles, count: 1})
+      })
+    })
+  })
+
+  describe('when an error occurs', () => {
+    it('throw if there is no compatability', async () => {
+      const props = {
+        orderBy: 'compatibility_score',
+      }
+
+      expect(profilesModule.loadProfiles(props)).rejects.toThrowError('Incompatible with user ID')
+    })
+  })
+})

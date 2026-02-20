@@ -1,28 +1,26 @@
-"use client"
+'use client'
 
-import React, {Suspense, useEffect, useState} from "react"
-import Link from "next/link"
-import {useSearchParams} from "next/navigation"
-import {signupThenMaybeRedirectToSignup} from "web/lib/util/signup"
+import {getProfileRow} from 'common/profiles/profile'
+import {createUserWithEmailAndPassword} from 'firebase/auth'
+import Link from 'next/link'
+import {useSearchParams} from 'next/navigation'
+import Router from 'next/router'
+import React, {Suspense, useEffect, useState} from 'react'
+import toast from 'react-hot-toast'
+import {GoogleButton} from 'web/components/buttons/sign-up-button'
+import FavIcon from 'web/components/FavIcon'
+import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
+import {useUser} from 'web/hooks/use-user'
+import {auth} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-
-import {createUserWithEmailAndPassword} from "firebase/auth"
-import {auth} from "web/lib/firebase/users"
-import FavIcon from "web/components/FavIcon"
-import {PageBase} from "web/components/page-base"
-import {getProfileRow} from "common/profiles/profile"
-import {db} from "web/lib/supabase/db"
-import Router from "next/router"
-import {useUser} from "web/hooks/use-user"
-import {GoogleButton} from "web/components/buttons/sign-up-button"
-import {SEO} from "web/components/SEO"
-import toast from "react-hot-toast"
-
+import {db} from 'web/lib/supabase/db'
+import {signupThenMaybeRedirectToSignup} from 'web/lib/util/signup'
 
 export default function RegisterPage() {
   return (
     <Suspense fallback={<div></div>}>
-      <RegisterComponent/>
+      <RegisterComponent />
     </Suspense>
   )
 }
@@ -63,22 +61,26 @@ function RegisterComponent() {
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
       const creds = await createUserWithEmailAndPassword(auth, email, password)
-      console.debug("User signed up:", creds.user)
+      console.debug('User signed up:', creds.user)
     } catch (error: any) {
-      console.error("Error signing up:", error)
-      toast.error(t('register.toast.signup_failed','Failed to sign up: ') + (error?.message ?? ''))
-      setError(error?.message ?? t('register.error.unknown','Registration failed'))
+      console.error('Error signing up:', error)
+      toast.error(t('register.toast.signup_failed', 'Failed to sign up: ') + (error?.message ?? ''))
+      setError(error?.message ?? t('register.error.unknown', 'Registration failed'))
       setIsLoading(false)
-      if (error instanceof Error && error.message.includes("email-already-in-use")) {
-        throw new Error(t('register.error.email_in_use','This email is already registered'))
+      if (error instanceof Error && error.message.includes('email-already-in-use')) {
+        throw new Error(t('register.error.email_in_use', 'This email is already registered'))
       }
     }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     function handleError(error: unknown) {
-      console.error("Registration error:", error)
-      setError(error instanceof Error ? error.message : String(error ?? t('register.error.unknown','Registration failed')))
+      console.error('Registration error:', error)
+      setError(
+        error instanceof Error
+          ? error.message
+          : String(error ?? t('register.error.unknown', 'Registration failed')),
+      )
     }
 
     try {
@@ -87,12 +89,12 @@ function RegisterComponent() {
       setError(null)
 
       const formData = new FormData(event.currentTarget)
-      const email = formData.get("email") as string
-      const password = formData.get("password") as string
+      const email = formData.get('email') as string
+      const password = formData.get('password') as string
 
       // Basic validation
       if (!email || !password) {
-        handleError(t('register.error.all_fields_required','All fields are required'))
+        handleError(t('register.error.all_fields_required', 'All fields are required'))
         setIsLoading(false)
         return
       }
@@ -111,7 +113,6 @@ function RegisterComponent() {
       // }
 
       // redirect()
-
     } catch (error) {
       handleError(error)
       setIsLoading(false)
@@ -121,8 +122,8 @@ function RegisterComponent() {
   return (
     <PageBase trackPageView={'register'}>
       <SEO
-        title={t('register.seo.title','Register')}
-        description={t('register.seo.description','Register for a new account')}
+        title={t('register.seo.title', 'Register')}
+        description={t('register.seo.description', 'Register for a new account')}
         url={`/register`}
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -145,30 +146,33 @@ function RegisterComponent() {
                 </svg>
               </div>
               <h2 className="mt-6 text-3xl font-extrabold ">
-                {t('register.check_email.title','Check your email')}
+                {t('register.check_email.title', 'Check your email')}
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                {t('register.check_email.sent_prefix','We have sent a verification link to ')}
+                {t('register.check_email.sent_prefix', 'We have sent a verification link to ')}
                 <span className="font-medium">{registeredEmail}</span>
-                {t('register.check_email.sent_suffix','.')}
+                {t('register.check_email.sent_suffix', '.')}
               </p>
               <p className="mt-4 text-sm text-gray-500">
-                {t('register.check_email.help_prefix','Did not receive the email? Check your spam folder or ')}
+                {t(
+                  'register.check_email.help_prefix',
+                  'Did not receive the email? Check your spam folder or ',
+                )}
                 <button
                   type="button"
                   className="font-medium text-blue-600 hover:text-blue-500"
                   onClick={() => setRegistrationSuccess(false)}
                 >
-                  {t('register.check_email.try_again','try again')}
+                  {t('register.check_email.try_again', 'try again')}
                 </button>
-                {t('register.check_email.help_suffix','.')}
+                {t('register.check_email.help_suffix', '.')}
               </p>
               <div className="mt-6">
                 <Link
                   href="/signin"
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  {t('register.back_to_login','Back to Login')}
+                  {t('register.back_to_login', 'Back to Login')}
                 </Link>
               </div>
             </div>
@@ -179,16 +183,18 @@ function RegisterComponent() {
                 {/*  The project is still in development...*/}
                 {/*</h2>*/}
                 <div className="flex justify-center mb-6">
-                  <FavIcon className="dark:invert"/>
+                  <FavIcon className="dark:invert" />
                 </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold ">
-                  {t('register.get_started','Get Started')}
+                  {t('register.get_started', 'Get Started')}
                 </h2>
               </div>
               <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 <div className="rounded-md shadow-sm -space-y-px">
                   <div>
-                    <label htmlFor="email" className="sr-only">Email</label>
+                    <label htmlFor="email" className="sr-only">
+                      Email
+                    </label>
                     <input
                       id="email"
                       name="email"
@@ -199,35 +205,31 @@ function RegisterComponent() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="password" className="sr-only">Password</label>
+                    <label htmlFor="password" className="sr-only">
+                      Password
+                    </label>
                     <input
                       id="password"
                       name="password"
                       type="password"
                       required
                       className="bg-canvas-50 bg-input appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder={t('register.password_placeholder','Password')}
+                      placeholder={t('register.password_placeholder', 'Password')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <p className="text-sm mt-2 text-center custom-link">
-                    {t('register.agreement.prefix','By signing up, I agree to the ')}
-                    <Link href="/terms">
-                      {t('register.terms','Terms and Conditions')}
-                    </Link>
-                    {t('register.agreement.and',' and ')}
-                    <Link href="/privacy">
-                      {t('register.privacy','Privacy Policy')}
-                    </Link>
-                    {t('register.agreement.suffix','.')}
+                    {t('register.agreement.prefix', 'By signing up, I agree to the ')}
+                    <Link href="/terms">{t('register.terms', 'Terms and Conditions')}</Link>
+                    {t('register.agreement.and', ' and ')}
+                    <Link href="/privacy">{t('register.privacy', 'Privacy Policy')}</Link>
+                    {t('register.agreement.suffix', '.')}
                   </p>
                 </div>
 
-                {error && (
-                  <div className="text-red-500 text-sm text-center">{error}</div>
-                )}
+                {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
                 <div className="space-y-4">
                   <button
@@ -235,7 +237,9 @@ function RegisterComponent() {
                     disabled={isLoading}
                     className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    {isLoading ? t('register.button.creating','Creating account...') : t('register.button.email','Sign up with Email')}
+                    {isLoading
+                      ? t('register.button.creating', 'Creating account...')
+                      : t('register.button.email', 'Sign up with Email')}
                   </button>
 
                   <div className="relative">
@@ -243,24 +247,23 @@ function RegisterComponent() {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 body-bg text-gray-500">{t('register.or_sign_up_with','Or sign up with')}</span>
+                      <span className="px-2 body-bg text-gray-500">
+                        {t('register.or_sign_up_with', 'Or sign up with')}
+                      </span>
                     </div>
                   </div>
-                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading}/>
+                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading} />
                 </div>
               </form>
-              <div className="my-8"/>
+              <div className="my-8" />
               <div className="text-center custom-link">
                 <p className="">
-                  {t('register.already_account','Already have an account?')}{' '}
-                  <Link href="/signin">
-                    {t('register.link_signin','Sign in')}
-                  </Link>
+                  {t('register.already_account', 'Already have an account?')}{' '}
+                  <Link href="/signin">{t('register.link_signin', 'Sign in')}</Link>
                 </p>
               </div>
             </div>
-          )
-          }
+          )}
         </div>
       </div>
     </PageBase>

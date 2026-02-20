@@ -9,4 +9,3 @@
 ## Reporting a Vulnerability
 
 Contact the development team at hello@compassmeet.com to report a vulnerability. You should receive updates within a week.
-

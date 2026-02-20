@@ -1,15 +1,15 @@
+import clsx from 'clsx'
+import {convertGender, Gender} from 'common/gender'
 import {User} from 'common/user'
-import {useOtherAnswers} from 'web/hooks/use-other-answers'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {capitalize} from 'lodash'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Linkify} from 'web/components/widgets/linkify'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {UserLink} from 'web/components/widgets/user-link'
-import {convertGender, Gender} from 'common/gender'
-import {capitalize} from 'lodash'
-import clsx from 'clsx'
+import {useOtherAnswers} from 'web/hooks/use-other-answers'
+import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 
 export function OtherProfileAnswers(props: {
@@ -20,15 +20,13 @@ export function OtherProfileAnswers(props: {
   const {question, className} = props
   const otherAnswers = useOtherAnswers(question.id)
   const shownAnswers = otherAnswers?.filter(
-    (a) => a.multiple_choice != null || a.free_response || a.integer
+    (a) => a.multiple_choice != null || a.free_response || a.integer,
   )
 
-  if (otherAnswers === undefined) return <CompassLoadingIndicator/>
+  if (otherAnswers === undefined) return <CompassLoadingIndicator />
   if (
-    (otherAnswers === null ||
-      otherAnswers.length ||
-      !shownAnswers ||
-      shownAnswers.length === 0) === 0
+    (otherAnswers === null || otherAnswers.length || !shownAnswers || shownAnswers.length === 0) ===
+    0
   )
     return <div>No answers yet!</div>
 
@@ -37,24 +35,16 @@ export function OtherProfileAnswers(props: {
       {shownAnswers?.map((otherAnswer) => {
         const answerUser = otherAnswer.data
         return (
-          <Col
-            key={answerUser.id}
-            className="bg-canvas-50 gap-2 rounded px-4 py-2"
-          >
+          <Col key={answerUser.id} className="bg-canvas-50 gap-2 rounded px-4 py-2">
             <Row className="w-full justify-between">
               <Row className="text-ink-500 items-center gap-2">
-                <Avatar
-                  username={answerUser.username}
-                  avatarUrl={answerUser.avatarUrl}
-                  size="sm"
-                />
+                <Avatar username={answerUser.username} avatarUrl={answerUser.avatarUrl} size="sm" />
                 <Col>
                   <span className="text-sm">
-                    <UserLink user={answerUser}/>, {otherAnswer.age}
+                    <UserLink user={answerUser} />, {otherAnswer.age}
                   </span>
                   <Row className="gap-1 text-xs">
-                    {otherAnswer.city} •{' '}
-                    {capitalize(convertGender(otherAnswer.gender as Gender))}
+                    {otherAnswer.city} • {capitalize(convertGender(otherAnswer.gender as Gender))}
                   </Row>
                 </Col>
               </Row>
@@ -64,11 +54,7 @@ export function OtherProfileAnswers(props: {
             </Row>
             <Linkify
               className="text-sm"
-              text={
-                otherAnswer.free_response ??
-                otherAnswer.multiple_choice ??
-                otherAnswer.integer
-              }
+              text={otherAnswer.free_response ?? otherAnswer.multiple_choice ?? otherAnswer.integer}
             />
           </Col>
         )

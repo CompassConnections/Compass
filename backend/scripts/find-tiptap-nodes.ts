@@ -1,13 +1,8 @@
-import { runScript } from './run-script'
-import {
-  renderSql,
-  select,
-  from,
-  where,
-} from 'shared/supabase/sql-builder'
-import { SupabaseDirectClient } from 'shared/supabase/init'
+import {runScript} from './run-script'
+import {from, renderSql, select, where} from 'shared/supabase/sql-builder'
+import {SupabaseDirectClient} from 'shared/supabase/init'
 
-runScript(async ({ pg }) => {
+runScript(async ({pg}) => {
   const tests = [
     'mention',
     'contract-mention',
@@ -28,7 +23,7 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   const commentQuery = renderSql(
     select('id, user_id, on_user_id, content'),
     from('profile_comments'),
-    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeName}")')`)
+    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeName}")')`),
   )
   const comments = await pg.manyOrNone(commentQuery)
 
@@ -44,7 +39,7 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   const messageQuery = renderSql(
     select('id, user_id, channel_id, content'),
     from('private_user_messages'),
-    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeName}")')`)
+    where(`jsonb_path_exists(content, '$.**.type ? (@ == "${nodeName}")')`),
   )
   const messages = await pg.manyOrNone(messageQuery)
 
@@ -60,7 +55,7 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   const users = renderSql(
     select('user_id, bio'),
     from('profiles'),
-    where(`jsonb_path_exists(bio::jsonb, '$.**.type ? (@ == "${nodeName}")')`)
+    where(`jsonb_path_exists(bio::jsonb, '$.**.type ? (@ == "${nodeName}")')`),
   )
 
   const usersWithMentions = await pg.manyOrNone(users)

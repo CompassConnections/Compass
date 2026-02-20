@@ -1,13 +1,12 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {APIError, APIHandler} from './helpers/endpoint'
-import {PrivateMessageChannel,} from 'common/supabase/private-messages'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
+import {tryCatch} from 'common/util/try-catch'
 import {groupBy, mapValues} from 'lodash'
-import {convertPrivateChatMessage} from "shared/supabase/messages";
-import {tryCatch} from "common/util/try-catch";
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {convertPrivateChatMessage} from 'shared/supabase/messages'
 
-export const getChannelMemberships: APIHandler<
-  'get-channel-memberships'
-> = async (props, auth) => {
+import {APIError, APIHandler} from './helpers/endpoint'
+
+export const getChannelMemberships: APIHandler<'get-channel-memberships'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
   const {channelId, lastUpdatedTime, createdTime, limit} = props
 
@@ -29,7 +28,7 @@ export const getChannelMemberships: APIHandler<
        limit $3
       `,
       [auth.uid, channelId, limit],
-      convertRow
+      convertRow,
     )
   } else {
     channels = await pg.map(
@@ -59,11 +58,10 @@ export const getChannelMemberships: APIHandler<
        limit $3
       `,
       [auth.uid, createdTime ?? null, limit, lastUpdatedTime ?? null],
-      convertRow
+      convertRow,
     )
   }
-  if (!channels || channels.length === 0)
-    return {channels: [], memberIdsByChannelId: {}}
+  if (!channels || channels.length === 0) return {channels: [], memberIdsByChannelId: {}}
   const channelIds = channels.map((c) => c.channel_id)
 
   const members = await pg.map(
@@ -77,12 +75,11 @@ export const getChannelMemberships: APIHandler<
     (r) => ({
       channel_id: r.channel_id as number,
       user_id: r.user_id as string,
-    })
+    }),
   )
 
-  const memberIdsByChannelId = mapValues(
-    groupBy(members, 'channel_id'),
-    (members) => members.map((m) => m.user_id)
+  const memberIdsByChannelId = mapValues(groupBy(members, 'channel_id'), (members) =>
+    members.map((m) => m.user_id),
   )
 
   return {
@@ -93,23 +90,24 @@ export const getChannelMemberships: APIHandler<
 
 export const getChannelMessagesEndpoint: APIHandler<'get-channel-messages'> = async (
   props,
-  auth
+  auth,
 ) => {
   const userId = auth.uid
   return await getChannelMessages({...props, userId})
 }
 
 export async function getChannelMessages(props: {
-  channelId: number;
-  limit?: number;
-  id?: number | undefined;
-  userId: string;
+  channelId: number
+  limit?: number
+  id?: number | undefined
+  userId: string
 }) {
   // console.log('initial message request', props)
   const {channelId, limit, id, userId} = props
   const pg = createSupabaseDirectClient()
-  const {data, error} = await tryCatch(pg.map(
-    `select *, created_time as created_time_ts
+  const {data, error} = await tryCatch(
+    pg.map(
+      `select *, created_time as created_time_ts
      from private_user_messages
      where channel_id = $1
        and exists (select 1
@@ -121,9 +119,10 @@ export async function getChannelMessages(props: {
      order by created_time desc
          ${limit ? 'limit $3' : ''}
     `,
-    [channelId, userId, limit, id],
-    convertPrivateChatMessage
-  ))
+      [channelId, userId, limit, id],
+      convertPrivateChatMessage,
+    ),
+  )
   if (error) {
     console.error(error)
     throw new APIError(401, 'Error getting messages')
@@ -132,9 +131,7 @@ export async function getChannelMessages(props: {
   return data
 }
 
-export const getLastSeenChannelTime: APIHandler<
-  'get-channel-seen-time'
-> = async (props, auth) => {
+export const getLastSeenChannelTime: APIHandler<'get-channel-seen-time'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
   const {channelIds} = props
   const unseens = await pg.map(
@@ -145,20 +142,18 @@ export const getLastSeenChannelTime: APIHandler<
      order by channel_id, created_time desc
     `,
     [channelIds, auth.uid],
-    (r) => [r.channel_id as number, r.created_time as string]
+    (r) => [r.channel_id as number, r.created_time as string],
   )
   return unseens as [number, string][]
 }
 
-export const setChannelLastSeenTime: APIHandler<
-  'set-channel-seen-time'
-> = async (props, auth) => {
+export const setChannelLastSeenTime: APIHandler<'set-channel-seen-time'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
   const {channelId} = props
   await pg.none(
     `insert into private_user_seen_message_channels (user_id, channel_id)
      values ($1, $2)
     `,
-    [auth.uid, channelId]
+    [auth.uid, channelId],
   )
 }

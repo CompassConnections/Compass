@@ -7,4 +7,4 @@ export const compassUserId = isProd()
 export const MAX_COMPATIBILITY_QUESTION_LENGTH = 240
 
 export const OPTION_TABLES = ['interests', 'causes', 'work'] as const
-export type OptionTableKey = typeof OPTION_TABLES[number]
+export type OptionTableKey = (typeof OPTION_TABLES)[number]

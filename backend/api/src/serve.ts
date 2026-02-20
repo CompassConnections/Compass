@@ -1,11 +1,15 @@
-import "tsconfig-paths/register";
-import * as admin from 'firebase-admin'
-import {initAdmin} from 'shared/init-admin'
+import 'tsconfig-paths/register'
+
+import {IS_LOCAL} from 'common/hosting/constants'
 import {loadSecretsToEnv} from 'common/secrets'
-import {log} from 'shared/utils'
-import {IS_LOCAL} from "common/hosting/constants";
+import * as admin from 'firebase-admin'
+import {getServiceAccountCredentials} from 'shared/firebase-utils'
+import {initAdmin} from 'shared/init-admin'
 import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
+import {log} from 'shared/utils'
 import {listen as webSocketListen} from 'shared/websockets/server'
+
+import {app} from './app'
 
 log('Api server starting up....')
 
@@ -21,13 +25,10 @@ if (IS_LOCAL) {
 
 METRIC_WRITER.start()
 
-import {app} from './app'
-import {getServiceAccountCredentials} from "shared/firebase-utils";
-
 const credentials = IS_LOCAL
   ? getServiceAccountCredentials()
   : // No explicit credentials needed for deployed service.
-  undefined
+    undefined
 
 const startupProcess = async () => {
   await loadSecretsToEnv(credentials)
@@ -40,4 +41,4 @@ const startupProcess = async () => {
 
   webSocketListen(httpServer, '/ws')
 }
-startupProcess().then(_r => log('Server started successfully'))
+startupProcess().then((_r) => log('Server started successfully'))

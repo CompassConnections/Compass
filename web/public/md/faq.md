@@ -24,12 +24,13 @@ Anyone who wants more than small talk or casual networking. If you value **depth
 
 ### Why is Compass different from other meeting apps?
 
-* **Keyword Search**: Find people who share your niche interests (e.g., “Minimalism”, “Thinking, Fast and Slow”, “Indie film”).
-* **Transparent Database**: See all profiles, apply filters, and search freely — no hidden algorithms.
-* **Notification System**: Get alerts when new people match your searches — no endless scrolling required.
-* **Personality-Centered**: Values and ideas first. Photos stay secondary.
-* **Democratic & Open Source**: Built by the community, for the community — no ads, no hidden monetization.
-* **Events**: Create and join real-world or virtual gatherings to form deeper connections.
+- **Keyword Search**: Find people who share your niche interests (e.g., “Minimalism”, “Thinking, Fast and Slow”, “Indie
+  film”).
+- **Transparent Database**: See all profiles, apply filters, and search freely — no hidden algorithms.
+- **Notification System**: Get alerts when new people match your searches — no endless scrolling required.
+- **Personality-Centered**: Values and ideas first. Photos stay secondary.
+- **Democratic & Open Source**: Built by the community, for the community — no ads, no hidden monetization.
+- **Events**: Create and join real-world or virtual gatherings to form deeper connections.
 
 ### Is Compass for dating or friendship?
 
@@ -49,17 +50,17 @@ Martin continues to serve as an initiator and steward of Compass, but its direct
 
 Compass is run democratically under a [constitution](/constitution) that prevents central control and ensures long-term alignment with its mission.
 
-* Major decisions (scope, funding, rules) are [voted](/vote) on by **active contributors**.
-* The full constitution is **public and transparent**.
-* No corporate capture — Compass will always remain a community-owned project.
+- Major decisions (scope, funding, rules) are [voted](/vote) on by **active contributors**.
+- The full constitution is **public and transparent**.
+- No corporate capture — Compass will always remain a community-owned project.
 
 ### Is Compass really free?
 
 Yes. Compass will always be:
 
-* **Ad-free**
-* **Subscription-free**
-* **Open-source**
+- **Ad-free**
+- **Subscription-free**
+- **Open-source**
 
 Supported entirely by **donations**, not by selling your data or attention.
 
@@ -67,13 +68,13 @@ Supported entirely by **donations**, not by selling your data or attention.
 
 Through **[donations](/support) and contributions from the community**. Options include:
 
-* Open Collective
-* Liberapay
-* Ko-fi
-* GitHub Sponsors
-* Patreon
-* PayPal
-* Sharing ideas, feedback, or code
+- Open Collective
+- Liberapay
+- Ko-fi
+- GitHub Sponsors
+- Patreon
+- PayPal
+- Sharing ideas, feedback, or code
 
 Every contribution, no matter the size — from a small code tweak to helping refine the interface, or simply spreading the word — is part of the gift that keeps Compass free, ad-free, and community-owned. All funding and expenses are **publicly documented** [here](/financials).
 
@@ -81,18 +82,19 @@ Every contribution, no matter the size — from a small code tweak to helping re
 
 Yes.
 
-* Your data will **never be sold**.
-* You can **control what is visible publicly**.
-* Chat messages are stored in the database with AES-256 encryption (it may move toward **end-to-end encryption** in future versions).
-* Stored in secure Supabase and Firebase databases.
+- Your data will **never be sold**.
+- You can **control what is visible publicly**.
+- Chat messages are stored in the database with AES-256 encryption (it may move toward **end-to-end encryption** in
+  future versions).
+- Stored in secure Supabase and Firebase databases.
 
 ### How is the compatibility score calculated?
 
 The **compatibility score** comes from answers to **compatibility prompts**. Each user provides:
 
-* **Their answer**
-* **Answers they would accept from others**
-* **A degree of importance** for each question
+- **Their answer**
+- **Answers they would accept from others**
+- **A degree of importance** for each question
 
 Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
 
@@ -105,25 +107,25 @@ scores help you discover kindred spirits, events create the space where genuine 
 
 **Why events matter for our mission:**
 
-* **Depth through shared experience**: Meeting in person (or virtually) allows for the nuanced conversations, laughter,
+- **Depth through shared experience**: Meeting in person (or virtually) allows for the nuanced conversations, laughter,
   and spontaneous moments that build real trust and understanding.
-* **Community building**: Events transform individual connections into a thriving ecosystem of people supporting each
+- **Community building**: Events transform individual connections into a thriving ecosystem of people supporting each
   other's growth and goals.
-* **Purposeful gathering**: Unlike generic social platforms, Compass events are organized around shared values,
+- **Purposeful gathering**: Unlike generic social platforms, Compass events are organized around shared values,
   interests, and intentions — creating natural alignment from the start.
-* **Accessibility**: Both online and in-person events ensure everyone can participate, regardless of geography or
+- **Accessibility**: Both online and in-person events ensure everyone can participate, regardless of geography or
   mobility.
 
 Examples of events you might find or create:
 
-* **Book clubs** — Discuss ideas that shape our worldview
-* **Walking groups** — Explore nature while exploring ideas
-* **Coffee chats** — One-on-one or small group deep conversations
-* **Creative workshops** — Learn and create together
-* **Philosophy discussions** — Explore life's big questions
-* **Sustainability meetups** — Collaborate on positive impact
-* **Game nights** — Bond over shared play
-* **Hobby exchanges** — Teach and learn skills from each other
+- **Book clubs** — Discuss ideas that shape our worldview
+- **Walking groups** — Explore nature while exploring ideas
+- **Coffee chats** — One-on-one or small group deep conversations
+- **Creative workshops** — Learn and create together
+- **Philosophy discussions** — Explore life's big questions
+- **Sustainability meetups** — Collaborate on positive impact
+- **Game nights** — Bond over shared play
+- **Hobby exchanges** — Teach and learn skills from each other
 
 Anyone can [create an event](/events) — whether you're looking to find a hiking buddy, start a writers' circle, or host
 a discussion about effective altruism. Events are how we turn shared values into shared lives.
@@ -152,10 +154,10 @@ Whether it’s fixing a small bug, adding a new feature, improving design, or wr
 
 Yes. Compass exposes a **public API** for developers who want to build tools, integrations, or visualizations around the platform. The API is fully **documented via Swagger/OpenAPI**, and follows the same transparency principles as the rest of the project:
 
-* **Open access** to non-sensitive public endpoints
-* **Authenticated endpoints** for user-specific or administrative actions
-* **Rate-limiting** to protect server stability
-* **Versioned** to ensure backward compatibility
+- **Open access** to non-sensitive public endpoints
+- **Authenticated endpoints** for user-specific or administrative actions
+- **Rate-limiting** to protect server stability
+- **Versioned** to ensure backward compatibility
 
 You can explore or test the API at [api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new endpoints or suggest improvements.
 
@@ -163,17 +165,17 @@ You can explore or test the API at [api.compassmeet.com](https://api.compassmeet
 
 Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent community data on our [**Growth & Stats page**](/stats). It includes information such as:
 
-* Community growth over time
-* Number of active users
-* Messages sent
-* Discussions started
-* Search bookmarks created
-* Endorsements given
-* Compatibility prompts
-* Prompts answered
-* Number of proposals and votes
+- Community growth over time
+- Number of active users
+- Messages sent
+- Discussions started
+- Search bookmarks created
+- Endorsements given
+- Compatibility prompts
+- Prompts answered
+- Number of proposals and votes
 
-[//]: # (* Contributions and donations)
+[//]: # '* Contributions and donations'
 
 Because Compass is fully transparent and community-owned, you can see how the ecosystem evolves — not just in numbers, but in how people connect, collaborate, and help shape the platform together.
 
@@ -189,12 +191,13 @@ Every action, whether sharing, donating, or contributing, directly helps Compass
 
 ### How can I help?
 
-* **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
-* **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
-* **Make and vote on proposals**: [vote here](/vote)
-* **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
-* **Donate**: [Support the infrastructure](/support)
-* **Spread the Word**: Tell friends and family who value depth and real connection. Post about it on forums, social media, etc. Share the URL or this [QR code](/referrals).
+- **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
+- **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
+- **Make and vote on proposals**: [vote here](/vote)
+- **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
+- **Donate**: [Support the infrastructure](/support)
+- **Spread the Word**: Tell friends and family who value depth and real connection. Post about it on forums, social
+  media, etc. Share the URL or this [QR code](/referrals).
 
 ### How can I contact the community?
 

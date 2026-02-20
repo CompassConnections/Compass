@@ -1,11 +1,12 @@
 import clsx from 'clsx'
-import GenderIcon from '../gender-icon'
+import {GENDERS_PLURAL} from 'common/choices'
+import {FilterFields} from 'common/filters'
 import {Gender} from 'common/gender'
 import {Row} from 'web/components/layout/row'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {FilterFields} from 'common/filters'
 import {useT} from 'web/lib/locale'
-import {GENDERS_PLURAL} from "common/choices";
+
+import GenderIcon from '../gender-icon'
 
 export function PrefGenderFilterText(props: {
   pref_gender: Gender[] | undefined
@@ -18,12 +19,7 @@ export function PrefGenderFilterText(props: {
     return (
       <span>
         <span className="">{t('filter.gender.they_seek', 'Gender they seek')}: </span>
-        <span
-          className={clsx(
-            'text-semibold capitalize sm:normal-case',
-            highlightedClass
-          )}
-        >
+        <span className={clsx('text-semibold capitalize sm:normal-case', highlightedClass)}>
           {t('filter.any', 'any')}
         </span>
       </span>
@@ -33,14 +29,7 @@ export function PrefGenderFilterText(props: {
     <Row className="items-center gap-0.5 font-semibold">
       <span className="">{t('filter.gender.they_seek', 'Gender they seek')}: </span>
       {pref_gender.map((gender) => {
-        return (
-          <GenderIcon
-            key={gender}
-            gender={gender}
-            className={clsx('h-4 w-4')}
-            hasColor
-          />
-        )
+        return <GenderIcon key={gender} gender={gender} className={clsx('h-4 w-4')} hasColor />
       })}
     </Row>
   )

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import {useEffect, useState} from 'react'
 
 export const useIsPageVisible = () => {
   const [isPageVisible, setIsPageVisible] = useState(
-    typeof document !== 'undefined' ? !document.hidden : true
+    typeof document !== 'undefined' ? !document.hidden : true,
   )
 
   useEffect(() => {

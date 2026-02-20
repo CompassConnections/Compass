@@ -1,26 +1,26 @@
 'use client'
-import {createContext, ReactNode, useEffect, useState} from 'react'
-import {pickBy} from 'lodash'
-import {onAuthStateChanged, onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
-import {auth} from 'web/lib/firebase/users'
-import {api} from 'web/lib/api'
-import {randomString} from 'common/util/random'
-import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
 import {AUTH_COOKIE_NAME, TEN_YEARS_SECS} from 'common/envs/constants'
-import {getCookie, setCookie} from 'web/lib/util/cookie'
-import {type PrivateUser, type User, type UserAndPrivateUser,} from 'common/user'
-import {safeLocalStorage} from 'web/lib/util/local'
+import {type PrivateUser, type User, type UserAndPrivateUser} from 'common/user'
+import {randomString} from 'common/util/random'
+import {onAuthStateChanged, onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
+import {pickBy} from 'lodash'
+import {createContext, ReactNode, useEffect, useState} from 'react'
 import {useEffectCheckEquality} from 'web/hooks/use-effect-check-equality'
-import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
+import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
 import {useWebsocketPrivateUser, useWebsocketUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
+import {auth} from 'web/lib/firebase/users'
 import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
+import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
+import {getCookie, setCookie} from 'web/lib/util/cookie'
+import {safeLocalStorage} from 'web/lib/util/local'
 
 // Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
 export type AuthUser =
   | undefined
   | null
-  | (UserAndPrivateUser & { authLoaded: boolean, firebaseUser: FirebaseUser })
+  | (UserAndPrivateUser & {authLoaded: boolean; firebaseUser: FirebaseUser})
 const CACHED_USER_KEY = 'CACHED_USER_KEY_V2'
 
 export const ensureDeviceToken = () => {
@@ -82,42 +82,38 @@ export const clearUserCookie = () => {
  *   which is important for reflecting `emailVerified` changes without a hard refresh.
  */
 export function useAndSetupFirebaseUser() {
-  const [, forceRender] = useState(0);
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(auth.currentUser);
+  const [, forceRender] = useState(0)
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(auth.currentUser)
 
   useEffect(() => {
     const update = (u: FirebaseUser | null) => {
-      setFirebaseUser(u);      // keep the real User instance
-      forceRender(v => v + 1); // force React to re-render
-    };
+      setFirebaseUser(u) // keep the real User instance
+      forceRender((v) => v + 1) // force React to re-render
+    }
 
-    const unsubAuth = onAuthStateChanged(auth, update);
-    const unsubToken = onIdTokenChanged(auth, update);
+    const unsubAuth = onAuthStateChanged(auth, update)
+    const unsubToken = onIdTokenChanged(auth, update)
 
     return () => {
-      unsubAuth();
-      unsubToken();
-    };
-  }, []);
+      unsubAuth()
+      unsubToken()
+    }
+  }, [])
 
-  return firebaseUser;
+  return firebaseUser
 }
-
 
 export const AuthContext = createContext<AuthUser>(undefined)
 
-export function AuthProvider(props: {
-  children: ReactNode
-  serverUser?: AuthUser
-}) {
+export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}) {
   const {children, serverUser} = props
 
   const [user, setUser] = useStateCheckEquality<User | undefined | null>(
-    serverUser ? serverUser.user : serverUser
+    serverUser ? serverUser.user : serverUser,
   )
-  const [privateUser, setPrivateUser] = useStateCheckEquality<
-    PrivateUser | undefined
-  >(serverUser ? serverUser.privateUser : undefined)
+  const [privateUser, setPrivateUser] = useStateCheckEquality<PrivateUser | undefined>(
+    serverUser ? serverUser.privateUser : undefined,
+  )
   const [authLoaded, setAuthLoaded] = useState(false)
   const firebaseUser = useAndSetupFirebaseUser()
 
@@ -125,7 +121,9 @@ export function AuthProvider(props: {
     ? user
     : !privateUser
       ? privateUser
-      : firebaseUser ? {user, privateUser, authLoaded, firebaseUser} : undefined
+      : firebaseUser
+        ? {user, privateUser, authLoaded, firebaseUser}
+        : undefined
 
   useEffect(() => {
     if (serverUser === undefined) {
@@ -149,11 +147,7 @@ export function AuthProvider(props: {
     }
   }, [authUser])
 
-  const onAuthLoad = (
-    fbUser: FirebaseUser,
-    user: User,
-    privateUser: PrivateUser
-  ) => {
+  const onAuthLoad = (fbUser: FirebaseUser, user: User, privateUser: PrivateUser) => {
     setUser(user)
     setPrivateUser(privateUser)
     setAuthLoaded(true)
@@ -204,7 +198,7 @@ export function AuthProvider(props: {
       },
       (e) => {
         console.error(e)
-      }
+      },
     )
   }, [])
 
@@ -235,7 +229,5 @@ export function AuthProvider(props: {
     if (authLoaded && listenPrivateUser) setPrivateUser(listenPrivateUser)
   }, [authLoaded, listenPrivateUser])
 
-  return (
-    <AuthContext.Provider value={authUser}>{children}</AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={authUser}>{children}</AuthContext.Provider>
 }

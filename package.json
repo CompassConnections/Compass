@@ -11,9 +11,11 @@
     "web"
   ],
   "scripts": {
-    "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
     "lint": "yarn --cwd=web lint; yarn --cwd=common lint; yarn --cwd=backend/api lint; yarn --cwd=backend/shared lint",
     "lint-fix": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix",
+    "typecheck": "yarn --cwd=web typecheck; yarn --cwd=common typecheck; yarn --cwd=backend/api typecheck; yarn --cwd=backend/shared typecheck",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "dev": "./scripts/run_local.sh dev",
     "dev:isolated": "./scripts/run_local_isolated.sh",
     "prod": "./scripts/run_local.sh prod",
@@ -45,22 +47,20 @@
     "prepare": "npx husky"
   },
   "lint-staged": {
-    "web/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+    "**/*.{json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "web/**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
       "next lint --fix --file",
       "next lint --max-warnings 0 --file"
     ],
-    "common/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+    "common/**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
       "eslint --fix",
       "eslint --max-warnings 0"
     ],
-    "backend/api/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
-      "prettier --write",
-      "eslint --fix",
-      "eslint --max-warnings 0"
-    ],
-    "backend/shared/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+    "backend/{api,shared}/**/*.{ts,tsx,js,jsx}": [
       "prettier --write",
       "eslint --fix",
       "eslint --max-warnings 0"
@@ -101,6 +101,7 @@
     "dotenv-cli": "10.0.0",
     "eslint": "8.57.0",
     "eslint-plugin-lodash": "7.4.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-unused-imports": "4.1.4",
     "firebase-tools": "14.27.0",
     "husky": "9.1.7",
@@ -109,7 +110,7 @@
     "prettier": "3.6.2",
     "prettier-plugin-sql": "0.19.2",
     "prettier-plugin-tailwindcss": "0.2.8",
-    "ts-jest": "29.0.3",
+    "ts-jest": "29.4.6",
     "ts-node": "10.9.1",
     "tsc-alias": "1.8.2",
     "tsconfig-paths": "4.2.0",

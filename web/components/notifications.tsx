@@ -1,32 +1,27 @@
-import {usePersistentInMemoryState} from "web/hooks/use-persistent-in-memory-state";
+import {PrivateUser} from 'common/user'
 import {
   notification_destination_types,
   notification_preference,
-  notification_preferences
-} from "common/user-notification-preferences";
-import {useCallback} from "react";
-import {debounce} from "lodash";
-import {api} from "web/lib/api";
-import {MultiSelectAnswers} from "web/components/answers/answer-compatibility-question-content";
-import {PrivateUser} from "common/user";
-import {WithPrivateUser} from "web/components/user/with-user";
+  notification_preferences,
+} from 'common/user-notification-preferences'
+import {debounce} from 'lodash'
+import {useCallback} from 'react'
+import {MultiSelectAnswers} from 'web/components/answers/answer-compatibility-question-content'
+import {WithPrivateUser} from 'web/components/user/with-user'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 export const NotificationSettings = () => (
-  <WithPrivateUser>
-    {user => <LoadedNotificationSettings privateUser={user}/>}
-  </WithPrivateUser>
+  <WithPrivateUser>{(user) => <LoadedNotificationSettings privateUser={user} />}</WithPrivateUser>
 )
 
-function LoadedNotificationSettings(props: {
-  privateUser: PrivateUser,
-}) {
+function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
   const {privateUser} = props
-  const [prefs, setPrefs] =
-    usePersistentInMemoryState<notification_preferences>(
-      privateUser.notificationPreferences,
-      'notification-preferences'
-    )
+  const [prefs, setPrefs] = usePersistentInMemoryState<notification_preferences>(
+    privateUser.notificationPreferences,
+    'notification-preferences',
+  )
 
   const t = useT()
 
@@ -36,8 +31,7 @@ function LoadedNotificationSettings(props: {
   }[] = [
     {
       type: 'new_match',
-      question:
-        t('notifications.question.new_match', '... matches with you?'),
+      question: t('notifications.question.new_match', '... matches with you?'),
     },
     {
       type: 'new_message',
@@ -69,15 +63,19 @@ function LoadedNotificationSettings(props: {
     },
     {
       type: 'opt_out_all',
-      question:
-        t('notifications.question.opt_out_all', 'Opt out of all notifications? (You can always change this later)'),
+      question: t(
+        'notifications.question.opt_out_all',
+        'Opt out of all notifications? (You can always change this later)',
+      ),
     },
   ]
 
   return (
     <div className="mx-auto max-w-2xl">
       <div className="flex flex-col gap-8 p-4">
-        <p className="text-ink-700 font-medium">{t('notifications.heading', 'Where do you want to be notified when someone')}</p>
+        <p className="text-ink-700 font-medium">
+          {t('notifications.heading', 'Where do you want to be notified when someone')}
+        </p>
         {notificationTypes.map(({type, question}) => (
           <NotificationOption
             key={type}
@@ -123,7 +121,7 @@ const NotificationOption = (props: {
     debounce(
       (
         oldDestinations: notification_destination_types[],
-        newDestinations: notification_destination_types[]
+        newDestinations: notification_destination_types[],
       ) => {
         // for each medium, if it changed, trigger a save
         const mediums = ['email', 'browser'] as const
@@ -139,9 +137,9 @@ const NotificationOption = (props: {
           }
         })
       },
-      500
+      500,
     ),
-    []
+    [],
   )
 
   return (

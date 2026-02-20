@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import {RangeSlider} from 'web/components/widgets/slider'
 import {FilterFields} from 'common/filters'
+import {RangeSlider} from 'web/components/widgets/slider'
 import {useT} from 'web/lib/locale'
 
 export const DRINKS_MIN = 0
@@ -8,7 +8,7 @@ export const DRINKS_MAX = 20
 
 export function getNoMinMaxDrinks(
   drinks_min: number | null | undefined,
-  drinks_max: number | null | undefined
+  drinks_max: number | null | undefined,
 ) {
   const noMin = drinks_min == null || drinks_min <= DRINKS_MIN
   const noMax = drinks_max == null || drinks_max >= DRINKS_MAX
@@ -24,7 +24,6 @@ export function DrinksFilterText(props: {
   const {drinks_min, drinks_max, highlightedClass} = props
   const [noMin, noMax] = getNoMinMaxDrinks(drinks_min, drinks_max)
   const t = useT()
-
 
   if (drinks_max === DRINKS_MIN) {
     return (

@@ -1,6 +1,7 @@
-import { PLATFORM_LABELS, SITE_ORDER } from 'common/socials'
-import { SearchableSelect } from './searchable-select'
-import { SocialIcon } from '../user/social'
+import {PLATFORM_LABELS, SITE_ORDER} from 'common/socials'
+
+import {SocialIcon} from '../user/social'
+import {SearchableSelect} from './searchable-select'
 
 const suggestions = SITE_ORDER.map((platform) => {
   return {

@@ -1,8 +1,8 @@
+import {Popover, Transition} from '@headlessui/react'
 import {DotsHorizontalIcon} from '@heroicons/react/solid'
+import clsx from 'clsx'
 import {Fragment, ReactNode, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Popover, Transition} from '@headlessui/react'
-import clsx from 'clsx'
 
 export type DropdownItem = {
   name: string
@@ -35,25 +35,19 @@ export default function DropdownMenu(props: {
     withinOverflowContainer,
     buttonContent,
   } = props
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>()
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>()
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>()
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+  const {styles, attributes} = usePopper(referenceElement, popperElement, {
     strategy: withinOverflowContainer ? 'fixed' : 'absolute',
   })
-  const icon = props.icon ?? (
-    <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-  )
+  const icon = props.icon ?? <DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />
   return (
     <Popover className={clsx('relative inline-block text-left', className)}>
-      {({ open, close }) => (
+      {({open, close}) => (
         <>
           <Popover.Button
             ref={setReferenceElement}
-            className={clsx(
-              'text-ink-500 hover-bold flex items-center',
-              buttonClass
-            )}
+            className={clsx('text-ink-500 hover-bold flex items-center', buttonClass)}
             onClick={(e: any) => {
               e.stopPropagation()
             }}
@@ -72,7 +66,7 @@ export default function DropdownMenu(props: {
                 'bg-canvas-0 ring-ink-1000 z-30 mt-2 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none',
                 menuWidth ?? 'w-34',
                 menuItemsClass,
-                'py-1'
+                'py-1',
               )}
             >
               {items.map((item) => (
@@ -91,7 +85,7 @@ export default function DropdownMenu(props: {
                         ? 'bg-primary-100'
                         : 'hover:bg-canvas-100 hover:text-ink-900',
                       'text-ink-700',
-                      'flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md'
+                      'flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md',
                     )}
                   >
                     {item.icon && <div className="w-5">{item.icon}</div>}

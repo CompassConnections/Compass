@@ -1,11 +1,12 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { JSONContent } from '@tiptap/react'
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/solid'
+import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { useSafeLayoutEffect } from 'web/hooks/use-safe-layout-effect'
-import { Row } from '../layout/row'
-import { Content } from './editor'
-import { usePersistentLocalState } from 'web/hooks/use-persistent-local-state'
+import {MouseEventHandler, useEffect, useRef, useState} from 'react'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {useSafeLayoutEffect} from 'web/hooks/use-safe-layout-effect'
+
+import {Row} from '../layout/row'
+import {Content} from './editor'
 
 export const COLLAPSIBLE_HEIGHT = 26 * 3 // line height is 26px
 export const SHOW_COLLAPSE_TRESHOLD = 180
@@ -17,14 +18,14 @@ export function ShowMoreLessButton(props: {
   howManyMore?: number
   moreWhat?: string
 }) {
-  const { onClick, isCollapsed, className, howManyMore, moreWhat = '' } = props
+  const {onClick, isCollapsed, className, howManyMore, moreWhat = ''} = props
   const howManyMoreText = howManyMore ? howManyMore + ' ' : ''
 
   return (
     <button
       className={clsx(
         'text-primary-500 hover:text-primary-700 z-10 select-none text-sm',
-        className
+        className,
       )}
       onClick={onClick}
     >
@@ -34,9 +35,7 @@ export function ShowMoreLessButton(props: {
         ) : (
           <ChevronUpIcon className="h-4 w-4" />
         )}
-        {isCollapsed
-          ? `Show ${howManyMoreText}more ${moreWhat}`
-          : `Show less ${moreWhat}`}
+        {isCollapsed ? `Show ${howManyMoreText}more ${moreWhat}` : `Show less ${moreWhat}`}
       </Row>
     </button>
   )
@@ -48,9 +47,8 @@ export function CollapsibleContent(props: {
   defaultCollapse?: boolean
   hideCollapse?: boolean
 }) {
-  const { content, stateKey, defaultCollapse, hideCollapse } = props
-  const [shouldAllowCollapseOfContent, setShouldAllowCollapseOfContent] =
-    useState(false)
+  const {content, stateKey, defaultCollapse, hideCollapse} = props
+  const [shouldAllowCollapseOfContent, setShouldAllowCollapseOfContent] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   useSafeLayoutEffect(() => {
@@ -82,10 +80,10 @@ function ActuallyCollapsibleContent(props: {
   stateKey: string
   defaultCollapse?: boolean
 }) {
-  const { content, stateKey, defaultCollapse } = props
+  const {content, stateKey, defaultCollapse} = props
   const [isCollapsed, setCollapsed] = usePersistentLocalState<boolean>(
     defaultCollapse ?? false,
-    stateKey
+    stateKey,
   )
   useEffect(() => {
     if (defaultCollapse !== undefined) setCollapsed(defaultCollapse)
@@ -94,7 +92,7 @@ function ActuallyCollapsibleContent(props: {
   return (
     <div>
       <div
-        style={{ height: isCollapsed ? COLLAPSIBLE_HEIGHT : 'auto' }}
+        style={{height: isCollapsed ? COLLAPSIBLE_HEIGHT : 'auto'}}
         className="relative w-full overflow-hidden"
       >
         <Row className="justify-end gap-2">

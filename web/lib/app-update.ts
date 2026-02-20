@@ -8,7 +8,7 @@ interface AppUpdatePlugin {
     availableVersionCode: number
   }>
 
-  startUpdate(options: { type: 'immediate' | 'flexible' }): Promise<void>
+  startUpdate(options: {type: 'immediate' | 'flexible'}): Promise<void>
 }
 
 const AppUpdate = registerPlugin<AppUpdatePlugin>('AppUpdate')

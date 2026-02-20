@@ -1,7 +1,7 @@
 import {areGenderCompatible} from 'common/profiles/compatibility-util'
 import {type Profile, type ProfileRow} from 'common/profiles/profile'
-import {type User} from 'common/user'
 import {Row} from 'common/supabase/utils'
+import {type User} from 'common/user'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export type ProfileAndUserRow = ProfileRow & {
@@ -37,7 +37,7 @@ export const getProfile = async (userId: string) => {
         where user_id = $1
     `,
     [userId],
-    convertRow
+    convertRow,
   )
 }
 
@@ -52,7 +52,7 @@ export const getProfiles = async (userIds: string[]) => {
         where user_id = any ($1)
     `,
     [userIds],
-    convertRow
+    convertRow,
   )
 }
 
@@ -71,15 +71,12 @@ export const getGenderCompatibleProfiles = async (profile: ProfileRow) => {
           and profiles.pinned_url is not null
     `,
     {...profile},
-    convertRow
+    convertRow,
   )
   return profiles.filter((l: Profile) => areGenderCompatible(profile, l))
 }
 
-export const getCompatibleProfiles = async (
-  profile: ProfileRow,
-  radiusKm: number | undefined
-) => {
+export const getCompatibleProfiles = async (profile: ProfileRow, radiusKm: number | undefined) => {
   const pg = createSupabaseDirectClient()
   return await pg.map(
     `
@@ -107,7 +104,7 @@ export const getCompatibleProfiles = async (
                                           profiles.city_longitude) < $(radiusKm)
     `,
     {...profile, radiusKm: radiusKm ?? 40_000},
-    convertRow
+    convertRow,
   )
 }
 
@@ -119,7 +116,7 @@ export const getCompatibilityAnswers = async (userIds: string[]) => {
         from compatibility_answers
         where creator_id = any ($1)
     `,
-    [userIds]
+    [userIds],
   )
 }
 
@@ -129,7 +126,7 @@ export async function getAnswersForUser(userId: string) {
   const pg = createSupabaseDirectClient()
   const answersSelf = await pg.manyOrNone<AnswerRow>(
     'select * from compatibility_answers where creator_id = $1',
-    [userId]
+    [userId],
   )
   return answersSelf
 }

@@ -1,19 +1,19 @@
-import {Col} from 'web/components/layout/col'
 import clsx from 'clsx'
-import {Row} from 'web/components/layout/row'
-import {Avatar} from 'web/components/widgets/avatar'
-import {RelativeTimestamp} from 'web/components/relative-timestamp'
-import {Content} from 'web/components/widgets/editor'
+import {DisplayUser} from 'common/api/user-types'
 import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {compassUserId} from 'common/profiles/constants'
 import {first, last} from 'lodash'
 import {Dispatch, memo, SetStateAction, useRef, useState} from 'react'
-import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {MessageActions} from 'web/components/chat/message-actions'
+import {MessageReactions} from 'web/components/chat/message-reactions'
+import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
+import {RelativeTimestamp} from 'web/components/relative-timestamp'
+import {Avatar} from 'web/components/widgets/avatar'
+import {Content} from 'web/components/widgets/editor'
 import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
-import {compassUserId} from 'common/profiles/constants'
-import {DisplayUser} from 'common/api/user-types'
-import {MessageActions} from "web/components/chat/message-actions"
-import {MessageReactions} from "web/components/chat/message-reactions";
 
 export function ChatMessageItem(props: {
   chats: ChatMessage[]
@@ -75,7 +75,7 @@ export function ChatMessageItem(props: {
       className={clsx(
         '@container items-end justify-start gap-1',
         isMe && 'flex-row-reverse',
-        firstOfUser ? 'mt-2' : 'mt-1'
+        firstOfUser ? 'mt-2' : 'mt-1',
       )}
     >
       {!isMe && !hideAvatar && (
@@ -90,10 +90,7 @@ export function ChatMessageItem(props: {
         <Col className="gap-1">
           {chats.map((chat) => (
             <div
-              className={clsx(
-                'group flex items-end gap-1',
-                isMe && 'flex-row-reverse'
-              )}
+              className={clsx('group flex items-end gap-1', isMe && 'flex-row-reverse')}
               key={chat.id}
             >
               <div className="group relative">
@@ -106,7 +103,7 @@ export function ChatMessageItem(props: {
                         ? 'bg-canvas-50 italic'
                         : isMe
                           ? 'bg-primary-100 items-end self-end rounded-r-none group-first:rounded-tr-3xl'
-                          : 'bg-canvas-0 items-start self-start rounded-l-none group-first:rounded-tl-3xl'
+                          : 'bg-canvas-0 items-start self-start rounded-l-none group-first:rounded-tl-3xl',
                     )}
                     onMouseDown={() => startLongPress(chat.id)}
                     onMouseUp={cancelLongPress}
@@ -115,16 +112,11 @@ export function ChatMessageItem(props: {
                     onTouchEnd={cancelLongPress}
                     onTouchCancel={cancelLongPress}
                   >
-                    <Content size={'sm'} content={chat.content} key={chat.id}/>
+                    <Content size={'sm'} content={chat.content} key={chat.id} />
                   </div>
                 </Row>
                 {/* Hidden host for emoji picker, opened via long-press */}
-                <div
-                  className={clsx(
-                    'absolute -mt-2',
-                    isMe ? 'right-40' : 'left-40',
-                  )}
-                >
+                <div className={clsx('absolute -mt-2', isMe ? 'right-40' : 'left-40')}>
                   <MessageActions
                     message={{
                       id: chat.id,
@@ -143,16 +135,11 @@ export function ChatMessageItem(props: {
                     id: chat.id,
                     reactions: chat.reactions as Record<string, string[]> | undefined,
                   }}
-                  className={clsx(
-                    'ml-2',
-                    isMe ? 'justify-end' : 'justify-start'
-                  )}
+                  className={clsx('ml-2', isMe ? 'justify-end' : 'justify-start')}
                   setMessages={setMessages}
                 />
               </div>
-              <Col
-                className="mb-2 mr-1 text-xs"
-              >
+              <Col className="mb-2 mr-1 text-xs">
                 {chat.visibility !== 'system_status' && (
                   <Row className={'items-center gap-3'}>
                     {/*{!isMe &&*/}
@@ -202,78 +189,69 @@ export function ChatMessageItem(props: {
   )
 }
 
-export const SystemChatMessageItem = memo(
-  function SystemChatMessageItem(props: {
-    chats: ChatMessage[]
-    otherUsers: DisplayUser[] | undefined
-  }) {
-    const {chats, otherUsers} = props
-    const chat = last(chats)
-    const [showUsers, setShowUsers] = useState(false)
-    if (!chat) return null
-    const totalUsers = otherUsers?.length || 1
-    const hideAvatar =
-      chat.visibility === 'system_status' &&
-      chat.userId === compassUserId &&
-      chats.length === 1 ||
-      totalUsers < 2
-    return (
-      <Row className={clsx('flex-row-reverse items-center gap-1')}>
-        <Row className="grow"/>
-        <Col className={clsx('grow-y justify-end pb-2')}>
-          <RelativeTimestamp
-            time={chat.createdTime}
-            shortened
-            className="text-xs"
-          />
+export const SystemChatMessageItem = memo(function SystemChatMessageItem(props: {
+  chats: ChatMessage[]
+  otherUsers: DisplayUser[] | undefined
+}) {
+  const {chats, otherUsers} = props
+  const chat = last(chats)
+  const [showUsers, setShowUsers] = useState(false)
+  if (!chat) return null
+  const totalUsers = otherUsers?.length || 1
+  const hideAvatar =
+    (chat.visibility === 'system_status' && chat.userId === compassUserId && chats.length === 1) ||
+    totalUsers < 2
+  return (
+    <Row className={clsx('flex-row-reverse items-center gap-1')}>
+      <Row className="grow" />
+      <Col className={clsx('grow-y justify-end pb-2')}>
+        <RelativeTimestamp time={chat.createdTime} shortened className="text-xs" />
+      </Col>
+      <Col className="max-w-[calc(100vw-6rem)] md:max-w-[80%]">
+        <Col className={clsx(' bg-canvas-50  px-1 py-2 text-sm italic')}>
+          {totalUsers > 1 ? (
+            <span>
+              {totalUsers} user{totalUsers > 1 ? 's' : ''} joined the chat!
+            </span>
+          ) : (
+            <>
+              <Content content={chat.content} size={'sm'} />
+              {chat.visibility !== 'system_status' && (
+                <div className="invisible absolute right-0 top-0 -mt-2 flex translate-x-2 items-center opacity-0 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100">
+                  <MessageActions
+                    message={{
+                      id: chat.id,
+                      userId: chat.userId,
+                      content: chat.content,
+                      isEdited: chat.isEdited,
+                      reactions: chat.reactions,
+                    }}
+                  />
+                </div>
+              )}
+            </>
+          )}
         </Col>
-        <Col className="max-w-[calc(100vw-6rem)] md:max-w-[80%]">
-          <Col className={clsx(' bg-canvas-50  px-1 py-2 text-sm italic')}>
-            {totalUsers > 1 ? (
-              <span>
-                  {totalUsers} user{totalUsers > 1 ? 's' : ''} joined the chat!
-                </span>
-            ) : (
-              <>
-                <Content content={chat.content} size={'sm'}/>
-                {chat.visibility !== 'system_status' && (
-                  <div
-                    className="invisible absolute right-0 top-0 -mt-2 flex translate-x-2 items-center opacity-0 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100">
-                    <MessageActions
-                      message={{
-                        id: chat.id,
-                        userId: chat.userId,
-                        content: chat.content,
-                        isEdited: chat.isEdited,
-                        reactions: chat.reactions,
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </Col>
-        </Col>
-        {!hideAvatar && (
-          <MultipleOrSingleAvatars
-            size={'xs'}
-            spacing={0.3}
-            startLeft={0.6}
-            avatars={otherUsers || []}
-            onClick={() => setShowUsers(true)}
-          />
-        )}
-        {showUsers && (
-          <MultiUserModal
-            showUsers={showUsers}
-            setShowUsers={setShowUsers}
-            otherUsers={otherUsers ?? []}
-          />
-        )}
-      </Row>
-    )
-  }
-)
+      </Col>
+      {!hideAvatar && (
+        <MultipleOrSingleAvatars
+          size={'xs'}
+          spacing={0.3}
+          startLeft={0.6}
+          avatars={otherUsers || []}
+          onClick={() => setShowUsers(true)}
+        />
+      )}
+      {showUsers && (
+        <MultiUserModal
+          showUsers={showUsers}
+          setShowUsers={setShowUsers}
+          otherUsers={otherUsers ?? []}
+        />
+      )}
+    </Row>
+  )
+})
 export const MultiUserModal = (props: {
   showUsers: boolean
   setShowUsers: (show: boolean) => void
@@ -284,11 +262,8 @@ export const MultiUserModal = (props: {
     <Modal open={showUsers} setOpen={setShowUsers}>
       <Col className={clsx(MODAL_CLASS)}>
         {otherUsers?.map((user) => (
-          <Row
-            key={user.id}
-            className={'w-full items-center justify-start gap-2'}
-          >
-            <UserAvatarAndBadge user={user}/>
+          <Row key={user.id} className={'w-full items-center justify-start gap-2'}>
+            <UserAvatarAndBadge user={user} />
           </Row>
         ))}
       </Col>
@@ -307,10 +282,10 @@ function MessageAvatar(props: {
     <Col
       className={clsx(
         beforeSameUser ? 'pointer-events-none invisible' : '',
-        'grow-y justify-end pb-2 pr-1'
+        'grow-y justify-end pb-2 pr-1',
       )}
     >
-      <Avatar avatarUrl={userAvatarUrl} username={username} size="xs"/>
+      <Avatar avatarUrl={userAvatarUrl} username={username} size="xs" />
     </Col>
   )
 }

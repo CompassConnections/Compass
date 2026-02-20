@@ -12,23 +12,25 @@ Nous, la communauté de Compass, nous engageons à construire et maintenir ce pr
 ## Article II : Niveaux d’adhésion
 
 1. **Définition** —
+   1. Un _Membre_ est toute personne possédant un compte.
+   2. Un _Bénévole_ est un membre avec droit de vote (également appelé **membre votant**).
+   3. Un _Administrateur_ est un type spécifique de _Bénévole_ disposant de pouvoirs supplémentaires et d’un accès en
+      écriture au code.
 
-    1. Un *Membre* est toute personne possédant un compte.
-    2. Un *Bénévole* est un membre avec droit de vote (également appelé **membre votant**).
-    3. Un *Administrateur* est un type spécifique de *Bénévole* disposant de pouvoirs supplémentaires et d’un accès en écriture au code.
 2. **Éligibilité** —
+   1. Pour devenir Bénévole, un individu doit :
+      - Avoir un entretien individuel avec un Bénévole actuel.
+      - Contribuer de manière significative au projet (code, documentation, design, sensibilisation, modération de la
+        communauté) pendant au moins 5 heures.
+      - Être approuvé par le Comité des Membres (voir Article IV) par un **vote à la supermajorité**.
+      - Pour devenir Administrateur, tous les Administrateurs actuels doivent voter à l’unanimité pour lui accorder ce
+        rôle.
 
-    1. Pour devenir Bénévole, un individu doit :
-
-        * Avoir un entretien individuel avec un Bénévole actuel.
-        * Contribuer de manière significative au projet (code, documentation, design, sensibilisation, modération de la communauté) pendant au moins 5 heures.
-        * Être approuvé par le Comité des Membres (voir Article IV) par un **vote à la supermajorité**.
-        * Pour devenir Administrateur, tous les Administrateurs actuels doivent voter à l’unanimité pour lui accorder ce rôle.
 3. **Bénévoles provisoires** — Les nouveaux participants peuvent rejoindre les discussions mais ne peuvent pas voter avant d’avoir rempli les critères.
 4. **Perte de l’adhésion** — Les Bénévoles peuvent être retirés pour :
-
-    * Inactivité prolongée (ex. moins de 10 heures de contribution sur 12 mois).
-    * Conduite de mauvaise foi avérée (manipulation de votes, harcèlement, sabotage). Le retrait nécessite un **vote des 2/3 des Bénévoles**.
+   - Inactivité prolongée (ex. moins de 10 heures de contribution sur 12 mois).
+   - Conduite de mauvaise foi avérée (manipulation de votes, harcèlement, sabotage). Le retrait nécessite un **vote des
+     2/3 des Bénévoles**.
 
 [Liste des bénévoles et administrateurs actuels](/members)
 
@@ -36,18 +38,21 @@ Nous, la communauté de Compass, nous engageons à construire et maintenir ce pr
 
 ### Section 1 : Gouvernance intérimaire
 
-* Jusqu’à ce que la communauté atteigne **5 membres votants**, les décisions de gouvernance seront prises par le *Mainteneur Fondateur*.
-* Le Mainteneur Fondateur peut nommer des coordinateurs temporaires pour des tâches spécifiques.
-* Une fois la communauté composée de **5 membres votants**, les postes de direction seront pourvus par élection communautaire comme décrit ci-dessous.
+- Jusqu’à ce que la communauté atteigne **5 membres votants**, les décisions de gouvernance seront prises par le
+  _Mainteneur Fondateur_.
+- Le Mainteneur Fondateur peut nommer des coordinateurs temporaires pour des tâches spécifiques.
+- Une fois la communauté composée de **5 membres votants**, les postes de direction seront pourvus par élection
+  communautaire comme décrit ci-dessous.
 
 ### Section 2 : Gouvernance démocratique
 
 1. **Pouvoir de vote** — Un Bénévole = un vote.
 2. **Quorum** — Au moins **40%** des Bénévoles actifs doivent participer pour qu’un vote soit valide.
 3. **Seuils de décision** :
+   - **Majorité simple (50%+1)** — Décisions opérationnelles quotidiennes.
+   - **Supermajorité (2/3)** — Modifications constitutionnelles, approbation/retrait de membres, décisions majeures de
+     financement, changements de périmètre du projet.
 
-    * **Majorité simple (50%+1)** — Décisions opérationnelles quotidiennes.
-    * **Supermajorité (2/3)** — Modifications constitutionnelles, approbation/retrait de membres, décisions majeures de financement, changements de périmètre du projet.
 4. **Période de délibération** — Toutes les propositions doivent rester ouvertes à discussion pendant au moins **7 jours** avant le début du vote.
 5. Tous les administrateurs disposent d’un droit de veto sur les votes.
 6. Les membres peuvent soumettre des retours et voter sur notre Formulaire de Feedback, mais ce n’est pas un vote officiel ; il sert aux Bénévoles et Administrateurs pour prise en compte.
@@ -81,5 +86,5 @@ Nous, la communauté de Compass, nous engageons à construire et maintenir ce pr
 
 Si le projet est dissous, la plateforme sera arrêtée et rendue inaccessible. Le code source restera toujours disponible publiquement sur GitHub. Les fonds seront donnés à une œuvre caritative choisie par les Membres.
 
-*Adopté le : 11 août 2025*
-*Mainteneur Fondateur : Martin Braquet*
+_Adopté le : 11 août 2025_
+_Mainteneur Fondateur : Martin Braquet_

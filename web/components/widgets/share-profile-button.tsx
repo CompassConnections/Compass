@@ -1,13 +1,10 @@
-import { ENV_CONFIG } from 'common/envs/constants'
-import { CopyLinkOrShareButton } from 'web/components/buttons/copy-link-button'
-import { useUser } from 'web/hooks/use-user'
-import {useT} from "web/lib/locale";
+import {ENV_CONFIG} from 'common/envs/constants'
+import {CopyLinkOrShareButton} from 'web/components/buttons/copy-link-button'
+import {useUser} from 'web/hooks/use-user'
+import {useT} from 'web/lib/locale'
 
-export const ShareProfileButton = (props: {
-  username: string
-  className?: string
-}) => {
-  const { username, className } = props
+export const ShareProfileButton = (props: {username: string; className?: string}) => {
+  const {username, className} = props
   const currentUser = useUser()
   const t = useT()
   const shareUrl = currentUser
@@ -15,12 +12,8 @@ export const ShareProfileButton = (props: {
     : `https://${ENV_CONFIG.domain}/${username}`
 
   return (
-    <CopyLinkOrShareButton
-      className={className}
-      url={shareUrl}
-      eventTrackingName="shareprofile"
-    >
-      <div className="ml-2 text-sm">{t("button.share.label", "Share")}</div>
+    <CopyLinkOrShareButton className={className} url={shareUrl} eventTrackingName="shareprofile">
+      <div className="ml-2 text-sm">{t('button.share.label', 'Share')}</div>
     </CopyLinkOrShareButton>
   )
 }

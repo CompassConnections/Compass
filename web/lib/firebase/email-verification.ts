@@ -1,17 +1,15 @@
-import toast from "react-hot-toast";
-import {sendEmailVerification, User} from "firebase/auth";
+import {sendEmailVerification, User} from 'firebase/auth'
+import toast from 'react-hot-toast'
 
-
-export const sendVerificationEmail = async (
-  user: User | null | undefined,
-  t: any
-) => {
+export const sendVerificationEmail = async (user: User | null | undefined, t: any) => {
   // if (!privateUser?.email) {
   //   toast.error(t('settings.email.no_email', 'No email found on your account.'))
   //   return
   // }
   if (!user) {
-    toast.error(t('settings.email.must_sign_in', 'You must be signed in to send a verification email.'))
+    toast.error(
+      t('settings.email.must_sign_in', 'You must be signed in to send a verification email.'),
+    )
     return
   }
   if (user?.emailVerified) {
@@ -21,25 +19,33 @@ export const sendVerificationEmail = async (
   toast
     .promise(sendEmailVerification(user), {
       loading: t('settings.email.sending', 'Sending verification email...'),
-      success: t('settings.email.verification_sent', 'Verification email sent — check your inbox and spam.'),
+      success: t(
+        'settings.email.verification_sent',
+        'Verification email sent — check your inbox and spam.',
+      ),
       error: t('settings.email.verification_failed', 'Failed to send verification email.'),
     })
     .catch((e) => {
-      console.error("Failed to send verification email", e)
+      console.error('Failed to send verification email', e)
       if (e?.code === 'auth/too-many-requests') {
-        toast.error(t('settings.email.too_many_requests', "You can't request more than one email per minute. Please wait before sending another request."))
+        toast.error(
+          t(
+            'settings.email.too_many_requests',
+            "You can't request more than one email per minute. Please wait before sending another request.",
+          ),
+        )
       }
       return
     })
 
   async function waitForEmailVerification(intervalMs = 2000, timeoutMs = 5 * 60 * 1000) {
-    const start = Date.now();
+    const start = Date.now()
 
     while (Date.now() - start < timeoutMs) {
-      if (!user) return false;
+      if (!user) return false
 
       // Refresh user record from Firebase
-      await user.reload();
+      await user.reload()
 
       if (user.emailVerified) {
         // IMPORTANT: force a new ID token with updated claims
@@ -48,12 +54,11 @@ export const sendVerificationEmail = async (
         return true
       }
 
-      await new Promise(r => setTimeout(r, intervalMs));
+      await new Promise((r) => setTimeout(r, intervalMs))
     }
 
-    return false;
+    return false
   }
 
   waitForEmailVerification()
-
 }

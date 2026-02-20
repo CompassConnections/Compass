@@ -4,9 +4,9 @@ Consultez la [constitution complète](/constitution) pour les détails sur les c
 
 ### Membres votants
 
-* [Martin Braquet](/Martin)
-* [Ruth](/RuthS)
+- [Martin Braquet](/Martin)
+- [Ruth](/RuthS)
 
 ### Administrateurs
 
-* [Martin Braquet](/Martin)
+- [Martin Braquet](/Martin)

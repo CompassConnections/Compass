@@ -1,12 +1,10 @@
-import {APIHandler} from './helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import {APIHandler} from './helpers/endpoint'
 
 // Unhide a profile for the requesting user by deleting from hidden_profiles.
 // Idempotent: if the pair does not exist, succeed silently.
-export const unhideProfile: APIHandler<'unhide-profile'> = async (
-  {hiddenUserId},
-  auth
-) => {
+export const unhideProfile: APIHandler<'unhide-profile'> = async ({hiddenUserId}, auth) => {
   const pg = createSupabaseDirectClient()
 
   await pg.none(
@@ -14,7 +12,7 @@ export const unhideProfile: APIHandler<'unhide-profile'> = async (
      from hidden_profiles
      where hider_user_id = $1
        and hidden_user_id = $2`,
-    [auth.uid, hiddenUserId]
+    [auth.uid, hiddenUserId],
   )
 
   return {status: 'success'}

@@ -1,18 +1,18 @@
-import { createSupabaseDirectClient } from 'shared/supabase/init'
-import { tryOrLogError } from 'shared/helpers/try-or-log-error'
+import {tryOrLogError} from 'shared/helpers/try-or-log-error'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const trackAuditEvent = async (
   userId: string,
   name: string,
   commentId?: string,
-  otherProps?: Record<string, any>
+  otherProps?: Record<string, any>,
 ) => {
   const pg = createSupabaseDirectClient()
   return await tryOrLogError(
     pg.none(
       `insert into audit_events (name, user_id, contract_id, comment_id, data) 
                 values ($1, $2, '', $3, $4) on conflict do nothing`,
-      [name, userId, commentId, otherProps]
-    )
+      [name, userId, commentId, otherProps],
+    ),
   )
 }

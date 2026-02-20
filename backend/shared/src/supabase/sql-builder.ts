@@ -1,6 +1,7 @@
-import { last } from 'lodash'
-import { buildArray } from 'common/util/array'
-import { pgp } from './init'
+import {buildArray} from 'common/util/array'
+import {last} from 'lodash'
+
+import {pgp} from './init'
 
 export type SqlBuilder = {
   with: string[]
@@ -49,44 +50,44 @@ export function buildSql(...parts: Args): SqlBuilder {
 
 export function withClause(clause: string, formatValues?: any) {
   const formattedWith = pgp.as.format(clause, formatValues)
-  return buildSql({ with: formattedWith })
+  return buildSql({with: formattedWith})
 }
 
 export function select(clause: string) {
-  return buildSql({ select: clause })
+  return buildSql({select: clause})
 }
 
 export function from(clause: string, formatValues?: any) {
   const from = pgp.as.format(clause, formatValues)
-  return buildSql({ from })
+  return buildSql({from})
 }
 
 export function join(clause: string, formatValues?: any) {
   const join = pgp.as.format(clause, formatValues)
-  return buildSql({ join })
+  return buildSql({join})
 }
 
 export function leftJoin(clause: string, formatValues?: any) {
   const leftJoin = pgp.as.format(clause, formatValues)
-  return buildSql({ leftJoin })
+  return buildSql({leftJoin})
 }
 
 export function groupBy(clause: string) {
-  return buildSql({ groupBy: clause })
+  return buildSql({groupBy: clause})
 }
 
 export function where(clause: string, formatValues?: any) {
   const where = pgp.as.format(clause, formatValues)
-  return buildSql({ where })
+  return buildSql({where})
 }
 
 export function orderBy(clause: string, formatValues?: any) {
   const orderBy = pgp.as.format(clause, formatValues)
-  return buildSql({ orderBy })
+  return buildSql({orderBy})
 }
 
 export function limit(limit: number, offset?: number) {
-  return buildSql({ limit, offset })
+  return buildSql({limit, offset})
 }
 
 export function renderSql(...args: Args) {
@@ -110,11 +111,10 @@ export function renderSql(...args: Args) {
     from && `from ${from}`,
     join.length && `join ${join.join(' join ')}`,
     leftJoin.length && `left join ${leftJoin.join(' left join ')}`,
-    where.length &&
-      `where ${where.map((clause) => `(${clause})`).join(' and ')}`,
+    where.length && `where ${where.map((clause) => `(${clause})`).join(' and ')}`,
     groupBy.length && `group by ${groupBy.join(', ')}`,
     orderBy.length && `order by ${orderBy.join(', ')}`,
     limit && `limit ${limit}`,
-    limit && offset && `offset ${offset}`
+    limit && offset && `offset ${offset}`,
   ).join('\n')
 }

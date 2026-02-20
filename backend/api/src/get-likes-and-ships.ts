@@ -1,10 +1,8 @@
-import { type APIHandler } from 'api/helpers/endpoint'
-import { createSupabaseDirectClient } from 'shared/supabase/init'
+import {type APIHandler} from 'api/helpers/endpoint'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getLikesAndShips: APIHandler<'get-likes-and-ships'> = async (
-  props
-) => {
-  const { userId } = props
+export const getLikesAndShips: APIHandler<'get-likes-and-ships'> = async (props) => {
+  const {userId} = props
 
   return {
     status: 'success',
@@ -34,7 +32,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
     (r) => ({
       user_id: r.target_id,
       created_time: new Date(r.created_time).getTime(),
-    })
+    }),
   )
 
   const likesReceived = await pg.map<{
@@ -56,7 +54,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
     (r) => ({
       user_id: r.creator_id,
       created_time: new Date(r.created_time).getTime(),
-    })
+    }),
   )
 
   const ships = await pg.map<{
@@ -95,7 +93,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
     (r) => ({
       ...r,
       created_time: new Date(r.created_time).getTime(),
-    })
+    }),
   )
 
   return {

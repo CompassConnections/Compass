@@ -1,20 +1,20 @@
-import { orderBy, keyBy } from 'lodash'
+import {UserIcon} from '@heroicons/react/solid'
+import {LikeData, ShipData} from 'common/api/profile-types'
+import {Profile} from 'common/profiles/profile'
+import {keyBy, orderBy} from 'lodash'
 import Image from 'next/image'
 import Link from 'next/link'
-import { UserIcon } from '@heroicons/react/solid'
+import {Col} from 'web/components/layout/col'
+import {SendMessageButton} from 'web/components/messaging/send-message-button'
+import {Avatar, EmptyAvatar} from 'web/components/widgets/avatar'
+import {Carousel} from 'web/components/widgets/carousel'
+import {UserLink} from 'web/components/widgets/user-link'
+import {useProfileByUserId} from 'web/hooks/use-profile'
+import {useUser} from 'web/hooks/use-user'
+import {useUserById} from 'web/hooks/use-user-supabase'
 
-import { Profile } from 'common/profiles/profile'
-import { useProfileByUserId } from 'web/hooks/use-profile'
-import { Col } from 'web/components/layout/col'
-import { Avatar, EmptyAvatar } from 'web/components/widgets/avatar'
-import { Carousel } from 'web/components/widgets/carousel'
-import { UserLink } from 'web/components/widgets/user-link'
-import { useUser } from 'web/hooks/use-user'
-import { useUserById } from 'web/hooks/use-user-supabase'
-import { SendMessageButton } from 'web/components/messaging/send-message-button'
-import { ShipsList } from './ships-display'
-import { Subtitle } from './profile-subtitle'
-import { LikeData, ShipData } from 'common/api/profile-types'
+import {Subtitle} from './profile-subtitle'
+import {ShipsList} from './ships-display'
 
 export const LikesDisplay = (props: {
   likesGiven: LikeData[]
@@ -23,30 +23,23 @@ export const LikesDisplay = (props: {
   refreshShips: () => Promise<void>
   profileProfile: Profile
 }) => {
-  const { likesGiven, likesReceived, ships, refreshShips, profileProfile } = props
+  const {likesGiven, likesReceived, ships, refreshShips, profileProfile} = props
 
   const likesGivenByUserId = keyBy(likesGiven, (l) => l.user_id)
   const likesReceivedByUserId = keyBy(likesReceived, (l) => l.user_id)
   const mutualLikeUserIds = Object.keys(likesGivenByUserId).filter(
-    (userId) => likesReceivedByUserId[userId]
+    (userId) => likesReceivedByUserId[userId],
   )
 
   const mutualLikes = mutualLikeUserIds.map((user_id) => {
     const likeGiven = likesGivenByUserId[user_id]
     const likeReceived = likesReceivedByUserId[user_id]
-    const created_time = Math.max(
-      likeGiven.created_time,
-      likeReceived.created_time
-    )
-    return { user_id, created_time }
+    const created_time = Math.max(likeGiven.created_time, likeReceived.created_time)
+    return {user_id, created_time}
   })
   const sortedMutualLikes = orderBy(mutualLikes, 'created_time', 'desc')
-  const onlyLikesGiven = likesGiven.filter(
-    (l) => !likesReceivedByUserId[l.user_id]
-  )
-  const onlyLikesReceived = likesReceived.filter(
-    (l) => !likesGivenByUserId[l.user_id]
-  )
+  const onlyLikesGiven = likesGiven.filter((l) => !likesReceivedByUserId[l.user_id])
+  const onlyLikesReceived = likesReceived.filter((l) => !likesGivenByUserId[l.user_id])
 
   if (
     sortedMutualLikes.length === 0 &&
@@ -79,9 +72,7 @@ export const LikesDisplay = (props: {
       {onlyLikesReceived.length > 0 && (
         <LikesList label="Likes received" likes={onlyLikesReceived} />
       )}
-      {onlyLikesGiven.length > 0 && (
-        <LikesList label="Likes given" likes={onlyLikesGiven} />
-      )}
+      {onlyLikesGiven.length > 0 && <LikesList label="Likes given" likes={onlyLikesGiven} />}
       {ships.length > 0 && (
         <ShipsList
           label="Shipped with"
@@ -94,8 +85,8 @@ export const LikesDisplay = (props: {
   )
 }
 
-const LikesList = (props: { label: string; likes: LikeData[] }) => {
-  const { label, likes } = props
+const LikesList = (props: {label: string; likes: LikeData[]}) => {
+  const {label, likes} = props
 
   const maxShown = 50
   const truncatedLikes = likes.slice(0, maxShown)
@@ -106,11 +97,7 @@ const LikesList = (props: { label: string; likes: LikeData[] }) => {
       {truncatedLikes.length > 0 ? (
         <Carousel className="w-full" labelsParentClassName="gap-0">
           {truncatedLikes.map((like) => (
-            <UserAvatar
-              className="-ml-1 first:ml-0"
-              key={like.user_id}
-              userId={like.user_id}
-            />
+            <UserAvatar className="-ml-1 first:ml-0" key={like.user_id} userId={like.user_id} />
           ))}
         </Carousel>
       ) : (
@@ -120,37 +107,26 @@ const LikesList = (props: { label: string; likes: LikeData[] }) => {
   )
 }
 
-const UserAvatar = (props: { userId: string; className?: string }) => {
-  const { userId, className } = props
+const UserAvatar = (props: {userId: string; className?: string}) => {
+  const {userId, className} = props
   const profile = useProfileByUserId(userId)
   const user = useUserById(userId)
 
   // console.debug('UserAvatar', user?.username, profile?.pinned_url)
 
-  if (!profile)
-    return <EmptyAvatar className={className} size={10} />
-  return (
-    <Avatar
-      className={className}
-      avatarUrl={profile.pinned_url}
-      username={user?.username}
-    />
-  )
+  if (!profile) return <EmptyAvatar className={className} size={10} />
+  return <Avatar className={className} avatarUrl={profile.pinned_url} username={user?.username} />
 }
 
-export const MatchTile = (props: {
-  profileProfile: Profile
-  matchUserId: string
-}) => {
-  const { matchUserId, profileProfile } = props
+export const MatchTile = (props: {profileProfile: Profile; matchUserId: string}) => {
+  const {matchUserId, profileProfile} = props
   const profile = useProfileByUserId(matchUserId)
   const user = useUserById(matchUserId)
   const currentUser = useUser()
   const isYourMatch = currentUser?.id === profileProfile.user_id
 
-  if (!profile || !user)
-    return <Col className="mb-2 h-[184px] w-[200px] shrink-0"></Col>
-  const { pinned_url } = profile
+  if (!profile || !user) return <Col className="mb-2 h-[184px] w-[200px] shrink-0"></Col>
+  const {pinned_url} = profile
 
   return (
     <Col className="mb-2 w-[200px] shrink-0 overflow-hidden rounded">
@@ -182,11 +158,7 @@ export const MatchTile = (props: {
         )}
         {isYourMatch && (
           <Col className="absolute right-3 top-2 gap-2">
-            <SendMessageButton
-              toUser={user as any}
-              currentUser={currentUser}
-              circleButton
-            />
+            <SendMessageButton toUser={user as any} currentUser={currentUser} circleButton />
           </Col>
         )}
       </Col>

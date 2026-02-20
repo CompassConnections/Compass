@@ -1,6 +1,7 @@
-import {APIError, APIHandler} from './helpers/endpoint'
+import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {broadcastPrivateMessages} from "api/helpers/private-messages";
+
+import {APIError, APIHandler} from './helpers/endpoint'
 
 // const DELETED_MESSAGE_CONTENT: JSONContent = {
 //   type: 'doc',
@@ -26,7 +27,7 @@ export const deleteMessage: APIHandler<'delete-message'> = async ({messageId}, a
      FROM private_user_messages
      WHERE id = $1
        AND user_id = $2`,
-    [messageId, auth.uid]
+    [messageId, auth.uid],
   )
 
   if (!message) {
@@ -51,14 +52,12 @@ export const deleteMessage: APIHandler<'delete-message'> = async ({messageId}, a
      FROM private_user_messages
      WHERE id = $1
        AND user_id = $2`,
-    [messageId, auth.uid]
+    [messageId, auth.uid],
   )
 
-  void broadcastPrivateMessages(pg, message.channel_id, auth.uid)
-    .catch((err) => {
-      console.error('broadcastPrivateMessages failed', err)
-    })
+  void broadcastPrivateMessages(pg, message.channel_id, auth.uid).catch((err) => {
+    console.error('broadcastPrivateMessages failed', err)
+  })
 
   return {success: true}
 }
-

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "shared/*": ["../../backend/shared/src/*"],
+      "common/*": ["../../common/src/*"],
+      "backend/*": ["../../backend/*"],
+      "web/*": ["../../web/*"]
+    }
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+}

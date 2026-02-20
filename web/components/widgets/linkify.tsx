@@ -1,11 +1,12 @@
 import clsx from 'clsx'
-import {Fragment} from 'react'
 import Link from 'next/link'
+import {Fragment} from 'react'
+
 import {linkClass} from './site-link'
 
 // Return a JSX span, linkifying @username, and https://...
-export function Linkify(props: { text: string; className?: string }) {
-  const { text, className } = props
+export function Linkify(props: {text: string; className?: string}) {
+  const {text, className} = props
 
   // Handle undefined/null text
   if (!text) {
@@ -58,7 +59,6 @@ export function Linkify(props: { text: string; className?: string }) {
 
 export const getLinkTarget = (href: string, newTab?: boolean) => {
   // TODO: make this more robust against domain changes?
-  if (href.startsWith('http') && !href.startsWith(`https://compassmeet`))
-    return '_blank'
+  if (href.startsWith('http') && !href.startsWith(`https://compassmeet`)) return '_blank'
   return newTab ? '_blank' : '_self'
 }

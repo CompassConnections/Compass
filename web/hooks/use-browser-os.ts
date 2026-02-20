@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 
 export const useBrowserOS = () => {
-  const [browser, setBrowser] = useState<
-    'chrome' | 'safari' | 'firefox' | 'ie' | 'unknown'
-  >('unknown')
-  const [os, setOS] = useState<
-    'mac' | 'windows' | 'linux' | 'ios' | 'android' | 'unknown'
-  >('unknown')
+  const [browser, setBrowser] = useState<'chrome' | 'safari' | 'firefox' | 'ie' | 'unknown'>(
+    'unknown',
+  )
+  const [os, setOS] = useState<'mac' | 'windows' | 'linux' | 'ios' | 'android' | 'unknown'>(
+    'unknown',
+  )
   useEffect(() => {
     const userAgent = window.navigator.userAgent
 
@@ -40,5 +40,5 @@ export const useBrowserOS = () => {
       setOS('unknown')
     }
   }, [])
-  return { os, browser }
+  return {os, browser}
 }

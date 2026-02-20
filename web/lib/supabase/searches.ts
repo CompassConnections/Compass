@@ -1,11 +1,10 @@
-import {Row, run} from "common/supabase/utils";
-import {db} from "web/lib/supabase/db";
-import {filterKeys} from "web/components/questions-form";
-import {track} from "web/lib/service/analytics";
-import {removeNullOrUndefinedProps} from "common/util/object";
-import {FilterFields} from "common/filters";
-import {api} from "web/lib/api";
-
+import {FilterFields} from 'common/filters'
+import {Row, run} from 'common/supabase/utils'
+import {removeNullOrUndefinedProps} from 'common/util/object'
+import {filterKeys} from 'web/components/questions-form'
+import {api} from 'web/lib/api'
+import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
 
 export const getUserBookmarkedSearches = async (userId: string) => {
   const {data} = await run(
@@ -13,7 +12,7 @@ export const getUserBookmarkedSearches = async (userId: string) => {
       .from('bookmarked_searches')
       .select('*')
       .eq('creator_id', userId)
-      .order('id', {ascending: false})
+      .order('id', {ascending: false}),
   )
   return data
 }
@@ -36,15 +35,16 @@ export const submitBookmarkedSearch = async (
     location: locationFilterProps?.location ? locationFilterProps : null,
   }
   const props = {
-    ...filterKeys(row, (key, _) => !['id', 'created_time', 'last_notified_at', 'creator_id'].includes(key)),
+    ...filterKeys(
+      row,
+      (key, _) => !['id', 'created_time', 'last_notified_at', 'creator_id'].includes(key),
+    ),
   } as BookmarkedSearchSubmitType
 
   await api('create-bookmarked-search', props)
 }
 
-export const deleteBookmarkedSearch = async (
-  id: number,
-) => {
+export const deleteBookmarkedSearch = async (id: number) => {
   if (!id) return
   await api('delete-bookmarked-search', {id})
   track('bookmarked_searches delete', {id})

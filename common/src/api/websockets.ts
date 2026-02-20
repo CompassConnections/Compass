@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import {z} from 'zod'
 
 export const CLIENT_MESSAGE_SCHEMAS = {
   identify: z.object({
@@ -55,11 +55,13 @@ export const SERVER_MESSAGE_SCHEMA = z.union([
 ])
 
 export type ClientMessageType = keyof typeof CLIENT_MESSAGE_SCHEMAS
-export type ClientMessage<T extends ClientMessageType = ClientMessageType> =
-  z.infer<(typeof CLIENT_MESSAGE_SCHEMAS)[T]>
+export type ClientMessage<T extends ClientMessageType = ClientMessageType> = z.infer<
+  (typeof CLIENT_MESSAGE_SCHEMAS)[T]
+>
 
 export type ServerMessageType = keyof typeof SERVER_MESSAGE_SCHEMAS
-export type ServerMessage<T extends ServerMessageType = ServerMessageType> =
-  z.infer<(typeof SERVER_MESSAGE_SCHEMAS)[T]>
+export type ServerMessage<T extends ServerMessageType = ServerMessageType> = z.infer<
+  (typeof SERVER_MESSAGE_SCHEMAS)[T]
+>
 
 export type BroadcastPayload = ServerMessage<'broadcast'>['data']

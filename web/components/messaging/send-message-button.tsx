@@ -1,25 +1,25 @@
 import clsx from 'clsx'
+import {MAX_COMMENT_LENGTH} from 'common/comment'
 import {User} from 'common/user'
-import {Button} from 'web/components/buttons/button'
+import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
+import {useEffect, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
+import {Button} from 'web/components/buttons/button'
+import {CommentInputTextArea} from 'web/components/comments/comment-input'
+import {Col} from 'web/components/layout/col'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
+import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
+import {useTextEditor} from 'web/components/widgets/editor'
+import {Title} from 'web/components/widgets/title'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
 import {usePrivateUser} from 'web/hooks/use-user'
-import {findKey} from 'lodash'
-import {useEffect, useState} from 'react'
-import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
-import {Col} from 'web/components/layout/col'
 import {api} from 'web/lib/api'
-import {useTextEditor} from 'web/components/widgets/editor'
-import {MAX_COMMENT_LENGTH} from 'common/comment'
-import {CommentInputTextArea} from 'web/components/comments/comment-input'
-import {Title} from 'web/components/widgets/title'
-import {Row} from 'web/components/layout/row'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {Tooltip} from "web/components/widgets/tooltip";
-import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
-import {useFirebaseUser} from "web/hooks/use-firebase-user";
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -43,13 +43,11 @@ export const SendMessageButton = (props: {
     if (!currentUser) return firebaseLogin()
     const previousDirectMessageChannel = findKey(
       memberIdsByChannelId,
-      (dm) => dm.includes(toUser.id) && dm.length === 1
+      (dm) => dm.includes(toUser.id) && dm.length === 1,
     )
 
     const previousChannelId =
-      previousDirectMessageChannel !== undefined
-        ? previousDirectMessageChannel
-        : undefined
+      previousDirectMessageChannel !== undefined ? previousDirectMessageChannel : undefined
 
     if (previousChannelId) router.push(`/messages/${previousChannelId}`)
     else setOpenComposeModal(true)
@@ -106,16 +104,17 @@ export const SendMessageButton = (props: {
             onClick={messageButtonClicked}
           >
             <BiEnvelope
-              className={clsx(
-                'm-auto h-5 w-5 text-white drop-shadow',
-                includeLabel && 'mr-2'
-              )}
+              className={clsx('m-auto h-5 w-5 text-white drop-shadow', includeLabel && 'mr-2')}
             />
           </button>
         ) : (
-          <Button size={'sm'} onClick={messageButtonClicked} color={'none'}
-                  className='bg-canvas-200 hover:bg-canvas-300'>
-            <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')}/>{' '}
+          <Button
+            size={'sm'}
+            onClick={messageButtonClicked}
+            color={'none'}
+            className="bg-canvas-200 hover:bg-canvas-300"
+          >
+            <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
             {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
           </Button>
         )}
@@ -124,17 +123,21 @@ export const SendMessageButton = (props: {
       <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
         <Col className={MODAL_CLASS}>
           <Row className={'w-full'}>
-            <Title className={'!mb-2'}>{t('send_message.title', 'Message')} {toUser.name}</Title>
+            <Title className={'!mb-2'}>
+              {t('send_message.title', 'Message')} {toUser.name}
+            </Title>
           </Row>
-          {firebaseUser?.emailVerified ? <CommentInputTextArea
+          {firebaseUser?.emailVerified ? (
+            <CommentInputTextArea
               editor={editor}
               user={currentUser}
               submit={sendMessage}
               isSubmitting={!editor || submitting}
               submitOnEnter={false}
-            /> :
-            <EmailVerificationPrompt t={t} className='max-w-xl'/>
-          }
+            />
+          ) : (
+            <EmailVerificationPrompt t={t} className="max-w-xl" />
+          )}
           <span className={'text-red-500'}>{error}</span>
         </Col>
       </Modal>

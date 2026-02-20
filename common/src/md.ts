@@ -1,4 +1,4 @@
-import type { JSONContent } from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 
 export function jsonToMarkdown(node: JSONContent): string {
   if (!node) return ''
@@ -49,10 +49,12 @@ export function jsonToMarkdown(node: JSONContent): string {
     case 'listItem':
       return `- ${content}`
     case 'blockquote':
-      return content
-        .split('\n')
-        .map((line) => (line ? `> ${line}` : ''))
-        .join('\n') + '\n\n'
+      return (
+        content
+          .split('\n')
+          .map((line) => (line ? `> ${line}` : ''))
+          .join('\n') + '\n\n'
+      )
     case 'codeBlock':
       return `\`\`\`\n${content}\n\`\`\`\n\n`
     case 'horizontalRule':

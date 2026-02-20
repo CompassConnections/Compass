@@ -1,10 +1,10 @@
 name: CD API
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
-      - "backend/api/package.json"
-      - ".github/workflows/cd-api.yml"
+      - 'backend/api/package.json'
+      - '.github/workflows/cd-api.yml'
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # we need full history for git log
+          fetch-depth: 0 # we need full history for git log
 
       - name: Install jq
         run: sudo apt-get install -y jq

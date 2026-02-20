@@ -1,6 +1,6 @@
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {getLocale} from "web/lib/locale-cookie";
-import {MeasurementSystem} from "common/measurement-utils";
+import {getLocale} from 'web/lib/locale-cookie'
+import {MeasurementSystem} from 'common/measurement-utils'
 
 export const useMeasurementSystem = () => {
   // Get default based on locale
@@ -24,11 +24,10 @@ export const useMeasurementSystem = () => {
     return 'imperial' // server-side default
   }
 
-  const [measurementSystem, setMeasurementSystemState] =
-    usePersistentLocalState<MeasurementSystem>(
-      getDefaultMeasurementSystem(),
-      'measurement-system'
-    )
+  const [measurementSystem, setMeasurementSystemState] = usePersistentLocalState<MeasurementSystem>(
+    getDefaultMeasurementSystem(),
+    'measurement-system',
+  )
 
   const setMeasurementSystem = (newSystem: MeasurementSystem) => {
     setMeasurementSystemState(newSystem)

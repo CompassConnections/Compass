@@ -1,4 +1,5 @@
 import {CheckIcon, ClipboardCopyIcon, DuplicateIcon} from '@heroicons/react/outline'
+import {LinkIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {ComponentProps, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -8,7 +9,6 @@ import {track} from 'web/lib/service/analytics'
 import {copyToClipboard} from 'web/lib/util/copy'
 
 import {Tooltip} from '../widgets/tooltip'
-import {LinkIcon} from '@heroicons/react/solid'
 
 export function CopyLinkOrShareButton(props: {
   url: string

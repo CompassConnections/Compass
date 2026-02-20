@@ -1,6 +1,6 @@
-import {test as base} from '@playwright/test';
-import axios from 'axios';
-import {config} from '../SPEC_CONFIG';
+import {test as base} from '@playwright/test'
+import axios from 'axios'
+import {config} from '../SPEC_CONFIG'
 
 // const baseUrl = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';
 
@@ -11,14 +11,13 @@ async function deleteUser(email: string, password: string) {
       {
         email,
         password,
-        returnSecureToken: true
-      }
-    );
+        returnSecureToken: true,
+      },
+    )
 
-    await axios.post(
-      `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.DELETE}`,
-      { idToken: login.data.idToken }
-    );
+    await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.DELETE}`, {
+      idToken: login.data.idToken,
+    })
   } catch (err: any) {
     // Skip deletion if user doesn't exist or other auth errors occur
     if (

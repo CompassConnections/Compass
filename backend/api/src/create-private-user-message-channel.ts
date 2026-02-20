@@ -30,13 +30,13 @@ export const createPrivateUserMessageChannel: APIHandler<
     throw new APIError(
       404,
       `Private user ${userIds.find(
-        (uid) => !toPrivateUsers.map((p) => p.id).includes(uid),
+        (uid) => !toPrivateUsers.map((p: any) => p.id).includes(uid),
       )} not found`,
     )
 
   if (
-    toPrivateUsers.some((user) =>
-      user.blockedUserIds.some((blockedId) => userIds.includes(blockedId)),
+    toPrivateUsers.some((user: any) =>
+      user.blockedUserIds.some((blockedId: string) => userIds.includes(blockedId)),
     )
   ) {
     throw new APIError(403, 'One of the users has blocked another user in the list')

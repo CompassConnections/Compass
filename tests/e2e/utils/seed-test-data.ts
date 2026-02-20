@@ -1,13 +1,11 @@
-// TODO: add test data to firebase emulator as well (see example below, but user IDs from supabase and firebase need to the same)
-
-import {createSupabaseDirectClient} from 'shared/lib/supabase/init'
-import UserAccountInformation from '../tests/e2e/backend/utils/userInformation'
-import {seedDatabase} from '../tests/e2e/utils/seedDatabase'
-
 import axios from 'axios'
-import {config} from '../tests/e2e/web/SPEC_CONFIG.js'
-import {tryCatch} from 'common/lib/util/try-catch'
-import {insert} from 'shared/lib/supabase/utils'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+
+import UserAccountInformation from '../backend/utils/userInformation'
+import {config} from '../web/SPEC_CONFIG'
+import {seedDatabase} from './seedDatabase'
 
 async function createAuth(email: string, password: string) {
   const base = 'http://localhost:9099/identitytoolkit.googleapis.com/v1'
@@ -35,7 +33,7 @@ async function createAuth(email: string, password: string) {
   }
 }
 
-async function seedCompatibilityPrompts(pg: any, userId: string = null) {
+async function seedCompatibilityPrompts(pg: any, userId: string | null = null) {
   // Need some prompts to prevent the onboarding from stopping once it reaches them (just after profile creation)
   const question = 'What is your favorite color?'
   const multiple_choice_options = {Blue: 0, Green: 1, Red: 2}

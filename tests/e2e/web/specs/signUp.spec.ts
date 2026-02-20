@@ -1,4 +1,5 @@
 import {expect} from '@playwright/test'
+
 import {test} from '../fixtures/deleteUserFixture'
 import {AuthPage} from '../pages/AuthPage'
 import {config} from '../SPEC_CONFIG'

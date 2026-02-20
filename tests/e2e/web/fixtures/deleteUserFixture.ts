@@ -1,5 +1,6 @@
 import {test as base} from '@playwright/test'
 import axios from 'axios'
+
 import {config} from '../SPEC_CONFIG'
 
 const baseUrl = 'http://localhost:9099/identitytoolkit.googleapis.com/v1'
@@ -31,7 +32,7 @@ type CleanupFixtures = {
 
 export const test = base.extend<CleanupFixtures>({
   cleanupUsers: [
-    async ({}, use) => {
+    async (_, use) => {
       // Run all tests first
       await use()
 

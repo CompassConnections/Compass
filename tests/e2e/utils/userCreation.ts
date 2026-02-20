@@ -1,9 +1,10 @@
 //Run with:
-// export ENVIRONMENT=DEV && ./scripts/build_api.sh && npx tsx ./scripts/userCreation.ts
+// export ENVIRONMENT=DEV && npx tsx userCreation.ts
 
-import {createSupabaseDirectClient} from 'shared/lib/supabase/init'
-import UserAccountInformation from '../tests/e2e/backend/utils/userInformation'
-import {seedDatabase} from '../tests/e2e/utils/seedDatabase'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+import UserAccountInformation from '../backend/utils/userInformation'
+import {seedDatabase} from './seedDatabase'
 
 type ProfileType = 'basic' | 'medium' | 'full'
 ;(async () => {

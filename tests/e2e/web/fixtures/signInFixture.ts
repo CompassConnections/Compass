@@ -1,4 +1,5 @@
 import {expect, Page, test as base} from '@playwright/test'
+
 import {AuthPage} from '../pages/AuthPage'
 import {config} from '../SPEC_CONFIG'
 

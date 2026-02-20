@@ -1,5 +1,5 @@
 import {APIRequestContext, request, test as base} from '@playwright/test'
-import {createSupabaseDirectClient} from '../../../../backend/shared/src/supabase/init'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export type TestOptions = {
   backendPage: {
@@ -9,7 +9,7 @@ export type TestOptions = {
 }
 
 export const test = base.extend<TestOptions>({
-  backendPage: async ({}, use) => {
+  backendPage: async (_, use) => {
     const apiContext = await request.newContext({
       baseURL: 'https://api.compassmeet.com',
     })

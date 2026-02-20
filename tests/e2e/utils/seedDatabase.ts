@@ -1,9 +1,10 @@
-import {insert} from '../../../backend/shared/lib/supabase/utils'
-import {PrivateUser} from '../../../common/lib/user'
-import {getDefaultNotificationPreferences} from '../../../common/lib/user-notification-preferences'
-import {randomString} from '../../../common/lib/util/random'
+import {PrivateUser} from 'common/user'
+import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
+import {cleanUsername} from 'common/util/clean-username'
+import {randomString} from 'common/util/random'
+import {insert} from 'shared/supabase/utils'
+
 import UserAccountInformation from '../backend/utils/userInformation'
-import {cleanUsername} from 'common/lib/util/clean-username'
 
 /**
  * Function used to populate the database with profiles.

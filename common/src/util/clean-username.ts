@@ -1,4 +1,5 @@
 export const cleanUsername = (name: string, maxLength = 25) => {
+  // Test guidance: do not mock this method (pure, deterministic transformations with no side effects)
   return name
     .replace(/\s+/g, '')
     .normalize('NFD') // split an accented letter in the base letter and the accent
@@ -8,5 +9,6 @@ export const cleanUsername = (name: string, maxLength = 25) => {
 }
 
 export const cleanDisplayName = (displayName: string, maxLength = 30) => {
+  // Test guidance: do not mock this method (pure, deterministic transformations with no side effects)
   return displayName.replace(/\s+/g, ' ').substring(0, maxLength).trim()
 }

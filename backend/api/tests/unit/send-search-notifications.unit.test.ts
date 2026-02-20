@@ -2,19 +2,12 @@ jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/sql-builder')
 jest.mock('api/get-profiles')
 jest.mock('email/functions/helpers')
-jest.mock('lodash/keyBy')
 
 import * as profileModules from 'api/get-profiles'
 import * as searchNotificationModules from 'api/send-search-notifications'
 import * as helperModules from 'email/functions/helpers'
-// eslint-disable-next-line lodash/import-scope
-import keyBy from 'lodash/keyBy'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sqlBuilderModules from 'shared/supabase/sql-builder'
-
-const lodashModules = {
-  keyBy,
-}
 
 describe('sendSearchNotification', () => {
   let mockPg = {} as any
@@ -70,24 +63,6 @@ describe('sendSearchNotification', () => {
           username: 'mockUsername1',
         },
       ]
-      const mockUsers = {
-        user1: {
-          created_time: 'mockUserCreatedTime',
-          data: {mockData: 'mockDataValue'},
-          id: 'mockId',
-          name: 'mockName',
-          name_username_vector: 'mockNameUsernameVector',
-          username: 'mockUsername',
-        },
-        user2: {
-          created_time: 'mockUserCreatedTime1',
-          data: {mockData1: 'mockDataValue1'},
-          id: 'mockId1',
-          name: 'mockName1',
-          name_username_vector: 'mockNameUsernameVector1',
-          username: 'mockUsername1',
-        },
-      }
       const _mockPrivateUsers = [
         {
           data: {mockData: 'mockDataValue'},
@@ -98,16 +73,6 @@ describe('sendSearchNotification', () => {
           id: 'mockId1',
         },
       ]
-      const mockPrivateUsers = {
-        privateUser1: {
-          data: {mockData: 'mockDataValue'},
-          id: 'mockId',
-        },
-        privateUser2: {
-          data: {mockData1: 'mockDataValue1'},
-          id: 'mockId1',
-        },
-      }
       const mockProfiles = [
         {
           name: 'mockProfileName',
@@ -142,9 +107,6 @@ describe('sendSearchNotification', () => {
         .mockResolvedValueOnce(mockSearches)
         .mockResolvedValueOnce(_mockUsers)
         .mockResolvedValueOnce(_mockPrivateUsers)
-      ;(lodashModules.keyBy as jest.Mock)
-        .mockReturnValueOnce(mockUsers)
-        .mockReturnValueOnce(mockPrivateUsers)
       ;(profileModules.loadProfiles as jest.Mock)
         .mockResolvedValueOnce({profiles: mockProfiles})
         .mockResolvedValueOnce({profiles: mockProfiles})
@@ -199,7 +161,7 @@ describe('sendSearchNotification', () => {
       const _mockUsers = [
         {
           created_time: 'mockUserCreatedTime',
-          data: {mockData: 'mockDataValue'},
+          data: {mockCreatorId: 'mockDataValue'},
           id: 'mockId',
           name: 'mockName',
           name_username_vector: 'mockNameUsernameVector',
@@ -214,44 +176,16 @@ describe('sendSearchNotification', () => {
           username: 'mockUsername1',
         },
       ]
-      const mockUsers = {
-        user1: {
-          created_time: 'mockUserCreatedTime',
-          data: {mockData: 'mockDataValue'},
-          id: 'mockId',
-          name: 'mockName',
-          name_username_vector: 'mockNameUsernameVector',
-          username: 'mockUsername',
-        },
-        user2: {
-          created_time: 'mockUserCreatedTime1',
-          data: {mockData1: 'mockDataValue1'},
-          id: 'mockId1',
-          name: 'mockName1',
-          name_username_vector: 'mockNameUsernameVector1',
-          username: 'mockUsername1',
-        },
-      }
       const _mockPrivateUsers = [
         {
           data: {mockData: 'mockDataValue'},
-          id: 'mockId',
+          id: 'mockCreatorId',
         },
         {
           data: {mockData1: 'mockDataValue1'},
           id: 'mockId1',
         },
       ]
-      const mockPrivateUsers = {
-        mockCreatorId: {
-          data: {mockData: 'mockDataValue'},
-          id: 'mockId',
-        },
-        mockCreatorId1: {
-          data: {mockData1: 'mockDataValue1'},
-          id: 'mockId1',
-        },
-      }
       const mockProfiles = [
         {
           name: 'mockProfileName',
@@ -272,9 +206,6 @@ describe('sendSearchNotification', () => {
         .mockResolvedValueOnce(mockSearches)
         .mockResolvedValueOnce(_mockUsers)
         .mockResolvedValueOnce(_mockPrivateUsers)
-      ;(lodashModules.keyBy as jest.Mock)
-        .mockReturnValueOnce(mockUsers)
-        .mockReturnValueOnce(mockPrivateUsers)
       ;(profileModules.loadProfiles as jest.Mock)
         .mockResolvedValueOnce({profiles: mockProfiles})
         .mockResolvedValueOnce({profiles: mockProfiles})

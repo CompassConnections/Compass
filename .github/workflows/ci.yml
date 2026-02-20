@@ -28,9 +28,6 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Build dependencies (for type check)
-        run: ./scripts/build_api.sh
-
       - name: Type check
         run: yarn typecheck
 

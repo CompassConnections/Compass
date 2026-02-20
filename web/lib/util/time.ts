@@ -30,10 +30,10 @@ export function formatTimeShort(
   hourOnly: boolean | null = null,
 ) {
   let date = dayjs(time)
-  let template = hourOnly ? 'h:mm A' : 'MMM D, h:mm A'
+  let template = hourOnly ? 'h:mm A' : 'dddd, MMMM D · h:mm A'
   if (locale) {
     date = date.locale(locale)
-    if (locale !== 'en') template = hourOnly ? 'HH:mm' : 'D MMM, HH:mm'
+    if (locale !== 'en') template = hourOnly ? 'HH:mm' : 'dddd D MMMM · HH:mm'
   }
   return date.format(template)
 }
@@ -70,4 +70,8 @@ export const getCountdownStringHoursMinutes = (endDate: Date) => {
   const minutesStr = `${minutes % 60}m`
 
   return `${isPast ? '-' : ''} ${hoursStr} ${minutesStr}`
+}
+
+export function capitalizePure(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1)
 }

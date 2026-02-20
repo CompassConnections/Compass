@@ -1,12 +1,11 @@
 import clsx from 'clsx'
 import {HOUR_MS} from 'common/util/time'
 import dayjs from 'dayjs'
-import {capitalize} from 'lodash'
 import Link from 'next/link'
 import {Event} from 'web/hooks/use-events'
 import {useUser} from 'web/hooks/use-user'
 import {useLocale, useT} from 'web/lib/locale'
-import {formatTimeShort, fromNow} from 'web/lib/util/time'
+import {capitalizePure, formatTimeShort, fromNow} from 'web/lib/util/time'
 
 import {UserLink, UserLinkFromId} from './user-link'
 
@@ -26,7 +25,8 @@ export function EventCard(props: {
   const isRsvped = user && event.participants.includes(user.id)
   const isMaybe = user && event.maybe.includes(user.id)
   const isCreator = user && event.creator_id === user.id
-  const isPast = new Date(event.event_start_time) < new Date()
+  const start = new Date(event.event_start_time)
+  const isPast = start < new Date()
 
   const formattedDate = formatTimeShort(event.event_start_time, locale)
   const formattedEnd =
@@ -36,10 +36,22 @@ export function EventCard(props: {
       locale,
       dayjs(event.event_end_time).isSame(event.event_start_time, 'day'),
     )
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const longFormatter = new Intl.DateTimeFormat(locale, {
+    timeZone,
+    timeZoneName: 'long',
+  })
+  const offsetFormatter = new Intl.DateTimeFormat(locale, {
+    timeZone,
+    timeZoneName: 'longOffset', // gives "GMT+5:30", "GMT-5:00", etc.
+  })
+  const longName = longFormatter.formatToParts(start).find((p) => p.type === 'timeZoneName')?.value
+  const offset = offsetFormatter.formatToParts(start).find((p) => p.type === 'timeZoneName')?.value
+  const timezone = `${longName} (${offset})`
+
   let timeAgo = fromNow(event.event_start_time, false, t, locale)
-  const assumedEnd = new Date(
-    event.event_end_time ?? new Date(event.event_start_time).getTime() + 24 * HOUR_MS,
-  )
+  const assumedEnd = new Date(event.event_end_time ?? start.getTime() + 24 * HOUR_MS)
   if (isPast && assumedEnd > new Date())
     timeAgo = t('events.started', 'Started {time}', {time: timeAgo})
 
@@ -61,9 +73,11 @@ export function EventCard(props: {
       {/* Date & Time */}
       <div className="mb-3">
         <p className="text-ink-700 font-medium">
-          {formattedDate} - {formattedEnd}
+          {capitalizePure(formattedDate)} {formattedEnd && '- '}
+          {formattedEnd}
         </p>
-        <p className="text-ink-500 text-sm">{capitalize(timeAgo)}</p>
+        <p className="text-ink-500 text-sm">{capitalizePure(timezone)}</p>
+        <p className="text-ink-500 text-sm">{capitalizePure(timeAgo)}</p>
       </div>
 
       {/* Description */}

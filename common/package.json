@@ -5,10 +5,9 @@
   "scripts": {
     "build": "tsc -b && tsc-alias",
     "compile": "tsc -b",
-    "verify": "yarn --cwd=.. verify",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
-    "verify:dir": "npx eslint . --max-warnings 0",
+    "typecheck": "npx tsc --noEmit",
     "test": "jest --config jest.config.js --passWithNoTests"
   },
   "sideEffects": false,

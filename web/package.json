@@ -12,12 +12,11 @@
     "clear-nextjs-cache": "rm -rf ./.next/cache",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings 0",
     "lint-fix": "next lint --fix",
-    "format": "npx prettier --write .",
+    "typecheck": "npx tsc --noEmit",
+    "prettier": "npx prettier --write .",
     "format-changed": "cd .. && git diff $(git merge-base --fork-point main) --name-only --diff-filter=d | xargs npx prettier -w",
-    "verify": "(cd .. && yarn verify)",
-    "verify:dir": "npx prettier --check .; yarn lint --max-warnings 0; tsc --pretty --project tsconfig.json --noEmit",
     "test": "jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {

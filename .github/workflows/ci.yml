@@ -29,7 +29,7 @@ jobs:
         run: yarn lint
 
       - name: Type check
-        run: npx tsc --noEmit
+        run: yarn typecheck
 
       - name: Run Jest tests
         env:

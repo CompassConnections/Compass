@@ -11,9 +11,9 @@
     "web"
   ],
   "scripts": {
-    "verify": "yarn --cwd=common verify:dir; yarn --cwd=web verify:dir; yarn --cwd=backend/shared verify:dir",
     "lint": "yarn --cwd=web lint; yarn --cwd=common lint; yarn --cwd=backend/api lint; yarn --cwd=backend/shared lint",
     "lint-fix": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix",
+    "typecheck": "yarn --cwd=web typecheck; yarn --cwd=common typecheck; yarn --cwd=backend/api typecheck; yarn --cwd=backend/shared typecheck",
     "prettier": "prettier --write .",
     "dev": "./scripts/run_local.sh dev",
     "dev:isolated": "./scripts/run_local_isolated.sh",

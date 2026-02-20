@@ -68,7 +68,7 @@ export default function ProfileHeader(props: {
       <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
         <Row className="items-center gap-1">
           <Col className="gap-1">
-            <Row className="items-center gap-1 text-xl">
+            <Row className="items-center gap-1 text-xl" data-testid="profile-display-name-age">
               {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
               <span>
                 {simpleView ? (
@@ -92,6 +92,7 @@ export default function ProfileHeader(props: {
             />
             <Tooltip text={t('more_options_user.edit_profile', 'Edit profile')} noTap>
               <Button
+                data-testid="profile-edit"
                 color={'gray-outline'}
                 onClick={() => {
                   track('editprofile', {userId: user.id})
@@ -103,7 +104,7 @@ export default function ProfileHeader(props: {
               </Button>
             </Tooltip>
 
-            <Tooltip text={t('more_options_user.profile_options', 'Profile options')} noTap>
+            <Tooltip text={t('more_options_user.profile_options', 'Profile options')} noTap testId='profile-options'>
               <DropdownMenu
                 menuWidth={'w-52'}
                 icon={

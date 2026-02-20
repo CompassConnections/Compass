@@ -2,12 +2,12 @@ import {test as base} from '@playwright/test';
 import axios from 'axios';
 import {config} from '../SPEC_CONFIG';
 
-const baseUrl = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';
+// const baseUrl = 'http://localhost:9099/identitytoolkit.googleapis.com/v1';
 
 async function deleteUser(email: string, password: string) {
   try {
     const login = await axios.post(
-      `${baseUrl}/accounts:signInWithPassword?key=fake-api-key`,
+      `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SIGN_IN_PASSWORD}`,
       {
         email,
         password,
@@ -16,7 +16,7 @@ async function deleteUser(email: string, password: string) {
     );
 
     await axios.post(
-      `${baseUrl}/accounts:delete?key=fake-api-key`,
+      `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.DELETE}`,
       { idToken: login.data.idToken }
     );
   } catch (err: any) {

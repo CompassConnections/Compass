@@ -10,7 +10,7 @@ import {
   RelationshipStatusKey,
   RelationshipStyleKey,
   ReligionKey,
-} from 'common/choices'
+} from '../../../../common/src/choices'
 
 export type Gender = 'Woman' | 'Man' | 'Other'
 export type InterestedIn = 'Women' | 'Men' | 'Other'
@@ -421,10 +421,7 @@ export class SignUpPage {
     }
   }
 
-  async setReligiousBeliefs(
-    religiousBeliefs?: ReligionKey | undefined,
-    details?: string | undefined,
-  ) {
+  async setReligiousBeliefs(religiousBeliefs?: ReligionKey | undefined, details?: string | undefined) {
     if (religiousBeliefs && religiousBeliefs === 'Other') {
       await expect(
         this.page

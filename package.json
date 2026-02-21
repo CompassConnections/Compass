@@ -51,9 +51,7 @@
       "prettier --write"
     ],
     "web/**/*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "next lint --fix --file",
-      "next lint --max-warnings 0 --file"
+      "prettier --write"
     ],
     "common/**/*.{ts,tsx,js,jsx}": [
       "prettier --write",

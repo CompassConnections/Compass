@@ -1,35 +1,25 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
-  RELATIONSHIP_CHOICES,
-  RELATIONSHIP_STATUS_CHOICES,
-  ROMANTIC_CHOICES,
-  POLITICAL_CHOICES,
-  DIET_CHOICES,
-  EDUCATION_CHOICES,
-  RELIGION_CHOICES,
-  LANGUAGE_CHOICES,
-  RACE_CHOICES,
-  MBTI_CHOICES,
+  ConnectionTypeKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  PoliticalBeliefsKey,
+  DietKey,
+  EducationKey,
+  ReligionKey,
+  LanguageKey,
+  EthnicityKey,
+  PersonalityKey,
 } from 'common/choices'
 
 export type Gender = 'Woman' | 'Man' | 'Other'
 export type InterestedIn = 'Women' | 'Men' | 'Other'
-export type ConnectionType = keyof typeof RELATIONSHIP_CHOICES
-export type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES
-export type RelationshipStyle = keyof typeof ROMANTIC_CHOICES
 export type ChildrenExpectation =
   | 'Strongly against'
   | 'Against'
   | 'Neutral'
   | 'For'
   | 'Strongly for'
-export type PoliticalBeliefs = keyof typeof POLITICAL_CHOICES
-export type Diet = keyof typeof DIET_CHOICES
-export type Education = keyof typeof EDUCATION_CHOICES
-export type Religion = keyof typeof RELIGION_CHOICES
-export type Language = keyof typeof LANGUAGE_CHOICES
-export type Ethnicity = keyof typeof RACE_CHOICES
-export type Personality = keyof typeof MBTI_CHOICES
 export type Interests = 'Chess' | 'Games' | 'Joy' | 'Livres'
 export type Causes = 'Animal Rights' | 'Feminism'
 export type Platforms =
@@ -224,7 +214,7 @@ export class SignUpPage {
     await this.centimetersHeightField.fill(centimeters)
   }
 
-  async fillEthnicity(ethnicity: Ethnicity | undefined) {
+  async fillEthnicity(ethnicity: EthnicityKey | undefined) {
     if (ethnicity === 'Other') {
       await expect(
         this.page
@@ -276,19 +266,19 @@ export class SignUpPage {
     }
   }
 
-  async setConnectionType(type: ConnectionType | undefined) {
+  async setConnectionType(type: ConnectionTypeKey | undefined) {
     await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${type}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStatus(status: RelationshipStatus | undefined) {
+  async setRelationshipStatus(status: RelationshipStatusKey | undefined) {
     await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${status}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStyle(style: RelationshipStyle | undefined) {
+  async setRelationshipStyle(style: RelationshipStyleKey | undefined) {
     await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${style}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeChecked()
@@ -366,7 +356,7 @@ export class SignUpPage {
     }
   }
 
-  async setHighestEducationLevel(education: Education | undefined) {
+  async setHighestEducationLevel(education: EducationKey | undefined) {
     await expect(this.page.getByText(`${education}`, {exact: true})).toBeVisible()
     await this.page.getByText(`${education}`, {exact: true}).click()
     await expect(this.page.getByText(`${education}`, {exact: true})).toBeChecked()
@@ -412,7 +402,7 @@ export class SignUpPage {
   }
 
   async setPoliticalBeliefs(
-    politicalBeliefs?: PoliticalBeliefs | undefined,
+    politicalBeliefs?: PoliticalBeliefsKey | undefined,
     details?: string | undefined,
   ) {
     if (politicalBeliefs) {
@@ -427,7 +417,7 @@ export class SignUpPage {
     }
   }
 
-  async setReligiousBeliefs(religiousBeliefs?: Religion | undefined, details?: string | undefined) {
+  async setReligiousBeliefs(religiousBeliefs?: ReligionKey | undefined, details?: string | undefined) {
     if (religiousBeliefs && religiousBeliefs === 'Other') {
       await expect(
         this.page
@@ -458,7 +448,7 @@ export class SignUpPage {
     }
   }
 
-  async setPersonalityType(personalityType: Personality | undefined) {
+  async setPersonalityType(personalityType: PersonalityKey | undefined) {
     await expect(this.page.getByText(`${personalityType}`, {exact: true})).toBeVisible()
     await this.page.getByText(`${personalityType}`, {exact: true}).click()
     await expect(this.page.getByText(`${personalityType}`, {exact: true})).toBeChecked()
@@ -619,7 +609,7 @@ export class SignUpPage {
     }
   }
 
-  async setDietType(dietType: Diet | undefined) {
+  async setDietType(dietType: DietKey | undefined) {
     if (dietType === 'Other') {
       await expect(this.page.locator('label').filter({hasText: 'Other'}).nth(4)).toBeVisible()
       await this.page.locator('label').filter({hasText: 'Other'}).nth(4).click()
@@ -649,7 +639,7 @@ export class SignUpPage {
     await this.alcoholConsumedPerMonthField.fill(amount)
   }
 
-  async setLanguages(language: Language[] | undefined) {
+  async setLanguages(language: LanguageKey[] | undefined) {
     if (!language || language.length === 0) return
     for (let i = 0; i < language.length; i++) {
       await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible()

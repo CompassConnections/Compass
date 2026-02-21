@@ -231,3 +231,15 @@ export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
 export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
 export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)
 export const INVERTED_GENDERS = invert(GENDERS)
+
+//Exported types for test files to use when referencing the keys of the choices objects
+export type ConnectionTypeKey = keyof typeof RELATIONSHIP_CHOICES
+export type RelationshipStatusKey = keyof typeof RELATIONSHIP_STATUS_CHOICES
+export type RelationshipStyleKey = keyof typeof ROMANTIC_CHOICES
+export type PoliticalBeliefsKey = keyof typeof POLITICAL_CHOICES
+export type DietKey = keyof typeof DIET_CHOICES
+export type EducationKey = keyof typeof EDUCATION_CHOICES
+export type ReligionKey = keyof typeof RELIGION_CHOICES
+export type LanguageKey = keyof typeof LANGUAGE_CHOICES
+export type EthnicityKey = keyof typeof RACE_CHOICES
+export type PersonalityKey = keyof typeof MBTI_CHOICES

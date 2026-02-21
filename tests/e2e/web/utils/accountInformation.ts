@@ -1,22 +1,24 @@
 import {faker} from '@faker-js/faker'
 import {
-  ConnectionType,
-  Ethnicity,
   Gender,
   InterestedIn,
-  RelationshipStatus,
-  RelationshipStyle,
   ChildrenExpectation,
   Interests,
   Causes,
-  Education,
-  PoliticalBeliefs,
-  Religion,
-  Personality,
-  Diet,
-  Language,
   Platforms,
 } from '../pages/signUpPage'
+import {
+  ConnectionTypeKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  PoliticalBeliefsKey,
+  DietKey,
+  EducationKey,
+  ReligionKey,
+  LanguageKey,
+  EthnicityKey,
+  PersonalityKey,
+} from 'common/choices'
 
 export type OnboardingUser = {
   email: string
@@ -27,28 +29,28 @@ export type OnboardingUser = {
   gender?: Gender
   age?: string
   height?: Height
-  ethnicity_origin?: Ethnicity
+  ethnicity_origin?: EthnicityKey
   interested_in?: InterestedIn
   Interested_in_ages?: InterestedInAges
-  connection_type?: ConnectionType
-  relationship_status?: RelationshipStatus
-  relationship_style?: RelationshipStyle
+  connection_type?: ConnectionTypeKey
+  relationship_status?: RelationshipStatusKey
+  relationship_style?: RelationshipStyleKey
   number_of_kids?: string
   children_expectation?: ChildrenExpectation
   interests?: (Interests | string)[]
   causes?: (Causes | string)[]
-  education_level?: Education
+  education_level?: EducationKey
   university?: string
   job_title?: string
   company?: string
   work_area?: string[]
   beliefs?: BeliefDetails
-  personality_type?: Personality
+  personality_type?: PersonalityKey
   big_five_personality_traits?: FiveBigPersonalityTraits
-  diet?: Diet
+  diet?: DietKey
   is_smoker?: boolean
   alcohol_consumed_per_month?: string
-  languages?: Language[]
+  languages?: LanguageKey[]
   social_media?: Socials[]
 }
 
@@ -65,11 +67,11 @@ type InterestedInAges = {
 
 type BeliefDetails = {
   political?: {
-    belief?: PoliticalBeliefs
+    belief?: PoliticalBeliefsKey
     details?: string
   }
   religious?: {
-    belief?: Religion
+    belief?: ReligionKey
     details?: string
   }
 }

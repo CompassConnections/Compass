@@ -21,18 +21,22 @@ export function LocationFilterText(props: {
   youProfile: Profile | undefined | null
   radius: number
   highlightedClass?: string
+  labelPrefix?: string
 }) {
-  const {location, radius, highlightedClass} = props
+  const {location, radius, highlightedClass, labelPrefix} = props
   const {measurementSystem} = useMeasurementSystem()
 
   const t = useT()
+  const locationLabel = labelPrefix
+    ? t('filter.raised_in', labelPrefix)
+    : t('filter.location', 'Living')
   if (!location) {
     return (
       <span>
+        <span className="">{locationLabel} </span>
         <span className={clsx('text-semibold', highlightedClass)}>
-          {t('filter.location.any', 'Any')}
+          {t('filter.location.any', 'anywhere')}
         </span>
-        <span className=""> {t('filter.location', 'location')}</span>
       </span>
     )
   }
@@ -41,6 +45,7 @@ export function LocationFilterText(props: {
 
   return (
     <span className="font-semibold">
+      <span className="">{locationLabel} </span>
       <span className="">
         <span className={clsx(highlightedClass)}>{formattedDistance}</span>
       </span>{' '}

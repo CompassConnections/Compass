@@ -6,8 +6,6 @@
     {"path": "./backend/shared"},
     {"path": "./backend/shared/tsconfig.test.json"},
     {"path": "./common"},
-    {"path": "./common/tsconfig.test.json"},
-    {"path": "./web"},
-    {"path": "./web/tsconfig.test.json"}
+    {"path": "./common/tsconfig.test.json"}
   ]
 }

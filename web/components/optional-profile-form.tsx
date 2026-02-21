@@ -15,7 +15,7 @@ import {
   ROMANTIC_CHOICES,
 } from 'common/choices'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
-import {getProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
+import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
 import {User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
@@ -243,6 +243,40 @@ export const OptionalProfileUserForm = (props: {
     }
   }
 
+  function profileToRaisedInCity(profile: Profile): City | undefined {
+    if (profile.raised_in_geodb_city_id && profile.raised_in_lat && profile.raised_in_lon) {
+      return {
+        geodb_city_id: profile.raised_in_geodb_city_id,
+        city: profile.raised_in_city ?? null,
+        region_code: profile.raised_in_region_code ?? '',
+        country: profile.raised_in_country ?? '',
+        country_code: '',
+        latitude: profile.raised_in_lat,
+        longitude: profile.raised_in_lon,
+      }
+    }
+    return undefined
+  }
+
+  function setProfileRaisedInCity(inputCity: City | undefined) {
+    if (!inputCity) {
+      setProfile('raised_in_geodb_city_id', null)
+      setProfile('raised_in_city', null)
+      setProfile('raised_in_region_code', null)
+      setProfile('raised_in_country', null)
+      setProfile('raised_in_lat', null)
+      setProfile('raised_in_lon', null)
+    } else {
+      const {geodb_city_id, city, region_code, country, latitude, longitude} = inputCity
+      setProfile('raised_in_geodb_city_id', geodb_city_id)
+      setProfile('raised_in_city', city)
+      setProfile('raised_in_region_code', region_code)
+      setProfile('raised_in_country', country)
+      setProfile('raised_in_lat', latitude)
+      setProfile('raised_in_lon', longitude)
+    }
+  }
+
   return (
     <>
       {/*<Row className={'justify-end'}>*/}
@@ -429,6 +463,41 @@ export const OptionalProfileUserForm = (props: {
             selected={profile['ethnicity'] ?? []}
             onChange={(selected) => setProfile('ethnicity', selected)}
           />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.raised_in', 'Place you grew up')}
+          </label>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.raised_in_hint',
+              'Especially useful if you grew up in a different country than where you live now—and if it reflects your cultural references, values, and life experiences.',
+            )}
+          </label>
+          {profile.raised_in_geodb_city_id ? (
+            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
+              <CityRow
+                city={profileToRaisedInCity(profile as Profile)!}
+                onSelect={() => {}}
+                className="pointer-events-none"
+              />
+              <button
+                className="text-ink-700 hover:text-primary-700 text-sm underline"
+                onClick={() => {
+                  setProfileRaisedInCity(undefined)
+                }}
+              >
+                {t('common.change', 'Change')}
+              </button>
+            </Row>
+          ) : (
+            <CitySearchBox
+              onCitySelected={(city: City | undefined) => {
+                setProfileRaisedInCity(city)
+              }}
+            />
+          )}
         </Col>
 
         <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")} />

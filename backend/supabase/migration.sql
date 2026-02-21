@@ -47,4 +47,5 @@ BEGIN;
 \i backend/supabase/migrations/20251112_add_mbti_to_profiles.sql
 \i backend/supabase/migrations/20260213_add_big_5_to_profiles.sql
 \i backend/supabase/migrations/20260218_add_events.sql
+\i backend/supabase/migrations/20260218_add_notification_templates.sql
 COMMIT;

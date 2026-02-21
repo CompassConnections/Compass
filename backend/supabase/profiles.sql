@@ -43,6 +43,13 @@ CREATE TABLE IF NOT EXISTS profiles (
     pref_gender          TEXT[],
     pref_relation_styles TEXT[],
     pref_romantic_styles TEXT[],
+    raised_in_city TEXT,
+    raised_in_country TEXT,
+    raised_in_geodb_city_id TEXT,
+    raised_in_lat NUMERIC(9, 6),
+    raised_in_lon NUMERIC(9, 6),
+    raised_in_radius INTEGER,
+    raised_in_region_code TEXT,
     referred_by_username TEXT,
     region_code TEXT,
     relationship_status TEXT[],
@@ -92,9 +99,11 @@ CREATE INDEX IF NOT EXISTS idx_profiles_bio_length
 
 -- Fastest general-purpose index
 CREATE INDEX IF NOT EXISTS profiles_lat_lon_idx ON profiles (city_latitude, city_longitude);
+CREATE INDEX IF NOT EXISTS profiles_lat_lon_idx ON profiles (raised_in_lat, raised_in_lon);
 
 -- Optional additional index for large tables / clustered inserts
 CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (city_latitude, city_longitude) WITH (pages_per_range = 32);
+CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (raised_in_lat, raised_in_lon) WITH (pages_per_range = 32);
 
 CREATE INDEX profiles_pref_gender_gin ON profiles USING GIN (pref_gender);
 CREATE INDEX profiles_pref_relation_styles_gin ON profiles USING GIN (pref_relation_styles);
@@ -118,6 +127,7 @@ CREATE INDEX profiles_smoker_idx ON profiles (is_smoker);
 CREATE INDEX profiles_education_level_idx ON profiles (education_level);
 CREATE INDEX profiles_gender_idx ON profiles (gender);
 CREATE INDEX profiles_geodb_city_idx ON profiles (geodb_city_id);
+CREATE INDEX profiles_raised_in_geodb_city_idx ON profiles (raised_in_geodb_city_id);
 
 CREATE INDEX profiles_recent_active_idx
     ON profiles (last_modification_time DESC)

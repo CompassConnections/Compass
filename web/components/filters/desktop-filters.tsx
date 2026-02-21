@@ -53,6 +53,7 @@ export function DesktopFilters(props: {
   setYourFilters: (checked: boolean) => void
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
+  raisedInLocationFilterProps?: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
 }) {
@@ -64,6 +65,7 @@ export function DesktopFilters(props: {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
+    raisedInLocationFilterProps,
     includeRelationshipFilters,
     choices,
   } = props
@@ -151,6 +153,34 @@ export function DesktopFilters(props: {
         popoverClassName="bg-canvas-50"
         menuWidth="w-80"
       />
+
+      {/* RAISED IN LOCATION */}
+      {raisedInLocationFilterProps && (
+        <CustomizeableDropdown
+          buttonContent={(open: boolean) => (
+            <DropdownButton
+              content={
+                <LocationFilterText
+                  youProfile={youProfile}
+                  location={raisedInLocationFilterProps.location}
+                  radius={raisedInLocationFilterProps.radius ?? 100}
+                  highlightedClass={open ? 'text-primary-500' : ''}
+                  labelPrefix={t('filter.raised_in', 'Grew up')}
+                />
+              }
+              open={open}
+            />
+          )}
+          dropdownMenuContent={
+            <LocationFilter
+              youProfile={youProfile}
+              locationFilterProps={raisedInLocationFilterProps}
+            />
+          }
+          popoverClassName="bg-canvas-50"
+          menuWidth="w-80"
+        />
+      )}
 
       {/* AGE RANGE */}
       <CustomizeableDropdown

@@ -15,6 +15,9 @@ export type FilterFields = {
   lat: number | null
   lon: number | null
   radius: number | null
+  raised_in_lat: number | null
+  raised_in_lon: number | null
+  raised_in_radius: number | null
   genders: string[]
   education_levels: string[]
   mbti: string[]
@@ -73,6 +76,9 @@ export const initialFilters: Partial<FilterFields> = {
   lat: undefined,
   lon: undefined,
   radius: undefined,
+  raised_in_lat: undefined,
+  raised_in_lon: undefined,
+  raised_in_radius: undefined,
   name: undefined,
   genders: undefined,
   education_levels: undefined,

@@ -55,6 +55,7 @@ function MobileFilters(props: {
   setYourFilters: (checked: boolean) => void
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
+  raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
 }) {
@@ -67,6 +68,7 @@ function MobileFilters(props: {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
+    raisedInLocationFilterProps,
     includeRelationshipFilters,
     choices,
   } = props
@@ -141,7 +143,7 @@ function MobileFilters(props: {
 
       {/* LOCATION */}
       <MobileFilterSection
-        title={t('profile.optional.location', 'Location')}
+        title={t('profile.optional.location', 'Living')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={!!locationFilterProps.location}
@@ -155,6 +157,27 @@ function MobileFilters(props: {
         }
       >
         <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
+      </MobileFilterSection>
+
+      {/* RAISED IN LOCATION */}
+      <MobileFilterSection
+        title={t('profile.optional.raised_in', 'Grew up')}
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={!!raisedInLocationFilterProps.location}
+        selection={
+          <LocationFilterText
+            location={raisedInLocationFilterProps.location}
+            radius={raisedInLocationFilterProps.radius}
+            labelPrefix={t('filter.raised_in', 'Grew up')}
+            youProfile={youProfile}
+            highlightedClass={
+              !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
+            }
+          />
+        }
+      >
+        <LocationFilter youProfile={youProfile} locationFilterProps={raisedInLocationFilterProps} />
       </MobileFilterSection>
 
       {/* AGE RANGE */}

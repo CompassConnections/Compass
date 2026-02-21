@@ -113,6 +113,7 @@ export const Search = forwardRef<
     setYourFilters: (checked: boolean) => void
     isYourFilters: boolean
     locationFilterProps: LocationFilterProps
+    raisedInLocationFilterProps: LocationFilterProps
     bookmarkedSearches: BookmarkedSearchesType[]
     refreshBookmarkedSearches: () => void
     profileCount: number | undefined
@@ -141,6 +142,7 @@ export const Search = forwardRef<
     setOpenFiltersModal: parentSetOpenFiltersModal,
     highlightFilters,
     highlightSort,
+    raisedInLocationFilterProps,
   } = props
 
   const [internalOpenFiltersModal, setInternalOpenFiltersModal] = useState(false)
@@ -280,6 +282,7 @@ export const Search = forwardRef<
           setYourFilters={setYourFilters}
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
+          raisedInLocationFilterProps={raisedInLocationFilterProps}
           includeRelationshipFilters={youSeekingRelationship}
           choices={choices}
         />
@@ -297,6 +300,7 @@ export const Search = forwardRef<
           setYourFilters={setYourFilters}
           isYourFilters={isYourFilters}
           locationFilterProps={locationFilterProps}
+          raisedInLocationFilterProps={raisedInLocationFilterProps}
           includeRelationshipFilters={youSeekingRelationship}
           choices={choices}
         />

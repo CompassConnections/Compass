@@ -30,6 +30,7 @@ export const useFilters = (you: Profile | undefined) => {
   const clearFilters = () => {
     setFilters(isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'})
     setLocation(undefined)
+    setRaisedInLocation(undefined)
   }
 
   const [radius, setRadius] = usePersistentLocalState<number>(100, 'search-radius')
@@ -40,6 +41,19 @@ export const useFilters = (you: Profile | undefined) => {
     undefined,
     'nearby-origin-location',
   )
+
+  const [raisedInRadius, setRaisedInRadius] = usePersistentLocalState<number>(
+    100,
+    'raised-in-radius',
+  )
+
+  const debouncedSetRaisedInRadius = useCallback(debounce(setRaisedInRadius, 200), [
+    setRaisedInRadius,
+  ])
+
+  const [raisedInLocation, setRaisedInLocation] = usePersistentLocalState<
+    OriginLocation | undefined | null
+  >(undefined, 'raised-in-location')
 
   // const nearbyCities = useNearbyCities(location?.id, radius)
   //
@@ -55,11 +69,34 @@ export const useFilters = (you: Profile | undefined) => {
     }
   }, [location?.id, radius])
 
+  useEffect(() => {
+    if (raisedInLocation?.lat && raisedInLocation?.lon) {
+      updateFilter({
+        raised_in_lat: raisedInLocation.lat,
+        raised_in_lon: raisedInLocation.lon,
+        raised_in_radius: raisedInRadius,
+      })
+    } else {
+      updateFilter({
+        raised_in_lat: undefined,
+        raised_in_lon: undefined,
+        raised_in_radius: undefined,
+      })
+    }
+  }, [raisedInLocation?.id, raisedInRadius])
+
   const locationFilterProps = {
     location,
     setLocation,
     radius,
     setRadius: debouncedSetRadius,
+  }
+
+  const raisedInLocationFilterProps = {
+    location: raisedInLocation,
+    setLocation: setRaisedInLocation,
+    radius: raisedInRadius,
+    setRadius: debouncedSetRaisedInRadius,
   }
 
   const yourFilters: Partial<FilterFields> = {
@@ -146,6 +183,7 @@ export const useFilters = (you: Profile | undefined) => {
     setYourFilters,
     isYourFilters,
     locationFilterProps,
+    raisedInLocationFilterProps,
   }
 }
 

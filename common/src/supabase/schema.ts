@@ -504,6 +504,42 @@ export type Database = {
           },
         ]
       }
+      notification_templates: {
+        Row: {
+          created_time: number
+          data: Json | null
+          id: string
+          source_slug: string | null
+          source_text: string
+          source_type: string
+          source_update_type: string | null
+          source_user_avatar_url: string | null
+          title: string | null
+        }
+        Insert: {
+          created_time: number
+          data?: Json | null
+          id: string
+          source_slug?: string | null
+          source_text: string
+          source_type: string
+          source_update_type?: string | null
+          source_user_avatar_url?: string | null
+          title?: string | null
+        }
+        Update: {
+          created_time?: number
+          data?: Json | null
+          id?: string
+          source_slug?: string | null
+          source_text?: string
+          source_type?: string
+          source_update_type?: string | null
+          source_user_avatar_url?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
       private_user_message_channel_members: {
         Row: {
           channel_id: number
@@ -990,6 +1026,13 @@ export type Database = {
           pref_gender: string[] | null
           pref_relation_styles: string[] | null
           pref_romantic_styles: string[] | null
+          raised_in_city: string | null
+          raised_in_country: string | null
+          raised_in_geodb_city_id: string | null
+          raised_in_lat: number | null
+          raised_in_lon: number | null
+          raised_in_radius: number | null
+          raised_in_region_code: string | null
           referred_by_username: string | null
           region_code: string | null
           relationship_status: string[] | null
@@ -1052,6 +1095,13 @@ export type Database = {
           pref_gender?: string[] | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
+          raised_in_city?: string | null
+          raised_in_country?: string | null
+          raised_in_geodb_city_id?: string | null
+          raised_in_lat?: number | null
+          raised_in_lon?: number | null
+          raised_in_radius?: number | null
+          raised_in_region_code?: string | null
           referred_by_username?: string | null
           region_code?: string | null
           relationship_status?: string[] | null
@@ -1114,6 +1164,13 @@ export type Database = {
           pref_gender?: string[] | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
+          raised_in_city?: string | null
+          raised_in_country?: string | null
+          raised_in_geodb_city_id?: string | null
+          raised_in_lat?: number | null
+          raised_in_lon?: number | null
+          raised_in_radius?: number | null
+          raised_in_region_code?: string | null
           referred_by_username?: string | null
           region_code?: string | null
           relationship_status?: string[] | null
@@ -1322,19 +1379,29 @@ export type Database = {
         Row: {
           data: Json
           notification_id: string
+          template_id: string | null
           user_id: string
         }
         Insert: {
           data: Json
           notification_id: string
+          template_id?: string | null
           user_id: string
         }
         Update: {
           data?: Json
           notification_id?: string
+          template_id?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'user_notifications_template_id_fkey'
+            columns: ['template_id']
+            isOneToOne: false
+            referencedRelation: 'notification_templates'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'user_notifications_user_id_fkey'
             columns: ['user_id']

@@ -28,8 +28,15 @@ export function ProfilesHome() {
   const user = useUser()
   const you = useProfile()
 
-  const {filters, updateFilter, clearFilters, setYourFilters, isYourFilters, locationFilterProps} =
-    useFilters(you ?? undefined)
+  const {
+    filters,
+    updateFilter,
+    clearFilters,
+    setYourFilters,
+    isYourFilters,
+    locationFilterProps,
+    raisedInLocationFilterProps,
+  } = useFilters(you ?? undefined)
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
@@ -260,6 +267,7 @@ export function ProfilesHome() {
         setYourFilters={setYourFilters}
         isYourFilters={isYourFilters}
         locationFilterProps={locationFilterProps}
+        raisedInLocationFilterProps={raisedInLocationFilterProps}
         bookmarkedSearches={bookmarkedSearches}
         refreshBookmarkedSearches={refreshBookmarkedSearches}
         profileCount={profileCount}

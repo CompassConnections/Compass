@@ -14,6 +14,7 @@ import {convertGenderPlural, Gender} from 'common/gender'
 import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
+import {Home} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
@@ -29,6 +30,7 @@ import {RiScales3Line} from 'react-icons/ri'
 import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {getLocationText} from 'web/components/profile/profile-location'
 import {UserHandles} from 'web/components/user/user-handles'
 import {useChoices} from 'web/hooks/use-choices'
 import {useLocale, useT} from 'web/lib/locale'
@@ -151,6 +153,7 @@ export default function ProfileAbout(props: {
           ?.map((r: any) => t(`profile.race.${r}`, convertRace(r)))}
         testId="profile-about-ethnicity"
       />
+      <RaisedIn profile={profile} />
       <Smoker profile={profile} />
       <Drinks profile={profile} />
       <AboutRow
@@ -503,6 +506,20 @@ function HasKids(props: {profile: Profile}) {
       faChild
     )
   return <AboutRow icon={icon} text={hasKidsText} testId={'profile-about-has-kids'} />
+}
+
+function RaisedIn(props: {profile: Profile}) {
+  const t = useT()
+  const locationText = getLocationText(props.profile, 'raised_in_')
+  if (!locationText) {
+    return null
+  }
+  return (
+    <AboutRow
+      icon={<Home className="h-5 w-5" />}
+      text={t('profile.about.raised_in', `Raised in ${locationText}`, {location: locationText})}
+    />
+  )
 }
 
 export const formatProfileValue = (

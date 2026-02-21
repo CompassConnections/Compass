@@ -6,7 +6,7 @@ import {
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELIGION_CHOICES,
-} from 'common/lib/choices'
+} from 'common/choices'
 
 class UserAccountInformation {
   name = faker.person.fullName()

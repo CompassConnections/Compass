@@ -52,6 +52,9 @@ export type profileQueryType = {
   lat?: number | undefined
   lon?: number | undefined
   radius?: number | undefined
+  raised_in_lat?: number | undefined
+  raised_in_lon?: number | undefined
+  raised_in_radius?: number | undefined
   compatibleWithUserId?: string | undefined
   skipId?: string | undefined
   orderBy?: string | undefined
@@ -107,6 +110,9 @@ export const loadProfiles = async (props: profileQueryType) => {
     lat,
     lon,
     radius,
+    raised_in_lat,
+    raised_in_lon,
+    raised_in_radius,
     compatibleWithUserId,
     orderBy: orderByParam = 'created_time',
     lastModificationWithin,
@@ -115,6 +121,7 @@ export const loadProfiles = async (props: profileQueryType) => {
   } = props
 
   const filterLocation = lat && lon && radius
+  const filterRaisedInLocation = raised_in_lat && raised_in_lon && raised_in_radius
 
   const keywords = name
     ? name
@@ -370,6 +377,21 @@ export const loadProfiles = async (props: profileQueryType) => {
           ) <= $(radius) / 69.0
       `,
         {target_lat: lat, target_lon: lon, radius},
+      ),
+
+    filterRaisedInLocation &&
+      where(
+        `
+      raised_in_lat BETWEEN $(target_lat) - ($(radius) / 69.0)
+           AND $(target_lat) + ($(radius) / 69.0)
+      AND raised_in_lon BETWEEN $(target_lon) - ($(radius) / (69.0 * COS(RADIANS($(target_lat)))))
+           AND $(target_lon) + ($(radius) / (69.0 * COS(RADIANS($(target_lat)))))
+      AND SQRT(
+            POWER(raised_in_lat - $(target_lat), 2)
+          + POWER((raised_in_lon - $(target_lon)) * COS(RADIANS($(target_lat))), 2)
+          ) <= $(radius) / 69.0
+      `,
+        {target_lat: raised_in_lat, target_lon: raised_in_lon, radius: raised_in_radius},
       ),
 
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),

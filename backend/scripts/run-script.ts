@@ -4,11 +4,14 @@ import {refreshConfig} from 'common/envs/prod'
 
 export const runScript = async (
   main: (services: {pg: SupabaseDirectClient}) => Promise<any> | any,
+  logEnv = false,
 ) => {
   initAdmin()
   await initEnvVariables()
-  console.debug('Environment variables in runScript:')
-  for (const k of Object.keys(process.env)) console.debug(`${k}=${process.env[k]}`)
+  if (logEnv) {
+    console.debug('Environment variables in runScript:')
+    for (const k of Object.keys(process.env)) console.debug(`${k}=${process.env[k]}`)
+  }
 
   console.debug('runScript: creating pg client...')
   const pg = createSupabaseDirectClient()

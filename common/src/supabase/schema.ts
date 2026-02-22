@@ -321,6 +321,30 @@ export type Database = {
           },
         ]
       }
+      deleted_users: {
+        Row: {
+          deleted_time: string
+          id: string
+          reason_category: string | null
+          reason_details: string | null
+          username: string | null
+        }
+        Insert: {
+          deleted_time?: string
+          id?: string
+          reason_category?: string | null
+          reason_details?: string | null
+          username?: string | null
+        }
+        Update: {
+          deleted_time?: string
+          id?: string
+          reason_category?: string | null
+          reason_details?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_time: string

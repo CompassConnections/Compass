@@ -1,6 +1,5 @@
 import {PrivateUser} from 'common/src/user'
 import {updateEmail} from 'firebase/auth'
-import router from 'next/router'
 import {useState} from 'react'
 import {useForm} from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -15,6 +14,7 @@ import MeasurementSystemToggle from 'web/components/measurement-system-toggle'
 import {NoSEO} from 'web/components/NoSEO'
 import {NotificationSettings} from 'web/components/notifications'
 import {PageBase} from 'web/components/page-base'
+import {DeleteAccountSurveyModal} from 'web/components/profile/delete-account-survey-modal'
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import ThemeIcon from 'web/components/theme-icon'
 import {WithPrivateUser} from 'web/components/user/with-user'
@@ -26,7 +26,6 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {useT} from 'web/lib/locale'
-import {deleteAccount} from 'web/lib/util/delete'
 import {isNativeMobile} from 'web/lib/util/webview'
 
 export default function NotificationsPage() {
@@ -77,31 +76,6 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
 
   const user = useFirebaseUser()
   if (!user) return null
-
-  const handleDeleteAccount = async () => {
-    const confirmed = confirm(
-      t(
-        'settings.delete_confirm',
-        'Are you sure you want to delete your profile? This cannot be undone.',
-      ),
-    )
-    if (confirmed) {
-      toast
-        .promise(deleteAccount(), {
-          loading: t('settings.delete.loading', 'Deleting account...'),
-          success: () => {
-            router.push('/')
-            return t('settings.delete.success', 'Your account has been deleted.')
-          },
-          error: () => {
-            return t('settings.delete.error', 'Failed to delete account.')
-          },
-        })
-        .catch(() => {
-          console.log('Failed to delete account')
-        })
-    }
-  }
 
   const changeUserEmail = async (newEmail: string) => {
     if (!user) return
@@ -217,9 +191,9 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
         </Button>
 
         <h5>{t('settings.danger_zone', 'Danger Zone')}</h5>
-        <Button color="red" onClick={handleDeleteAccount} className="w-fit">
-          {t('settings.delete_account', 'Delete Account')}
-        </Button>
+        <div className={'w-fit'}>
+          <DeleteAccountSurveyModal />
+        </div>
       </div>
 
       {/* Hidden profiles modal */}

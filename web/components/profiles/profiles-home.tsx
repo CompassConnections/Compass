@@ -27,6 +27,9 @@ import {getStars} from 'web/lib/supabase/stars'
 export function ProfilesHome() {
   const user = useUser()
   const you = useProfile()
+  const router = useRouter()
+  const {query} = router
+  const fromSignup = query.fromSignup === 'true'
 
   const {
     filters,
@@ -36,7 +39,7 @@ export function ProfilesHome() {
     isYourFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
-  } = useFilters(you ?? undefined)
+  } = useFilters(you ?? undefined, fromSignup)
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
@@ -57,9 +60,6 @@ export function ProfilesHome() {
   const t = useT()
   const {locale} = useLocale()
   const isClearedFilters = useIsClearedFilters(filters)
-  const router = useRouter()
-  const {query} = router
-  const fromSignup = query.fromSignup === 'true'
   const isMobile = useIsMobile()
   const [sendScrollWarning, setSendScrollWarning] = useState(true)
   const [recentlyHiddenIds, setRecentlyHiddenIds] = useState<string[]>([])

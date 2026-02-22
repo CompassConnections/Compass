@@ -11,11 +11,25 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {useLocale} from 'web/lib/locale'
 
-export const useFilters = (you: Profile | undefined) => {
+export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
+  const {locale} = useLocale()
+
+  // Set French as default language filter if from signup and locale is French
+  const getInitialFilters = (): Partial<FilterFields> => {
+    const baseFilters = isLooking
+      ? initialFilters
+      : {...initialFilters, orderBy: 'created_time' as const}
+    if (fromSignup && locale === 'fr') {
+      return {...baseFilters, languages: ['french']}
+    }
+    return baseFilters
+  }
+
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
-    isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'},
+    getInitialFilters(),
     'profile-filters-4',
   )
 

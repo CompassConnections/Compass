@@ -6,6 +6,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CompatibilityAnswerBlock} from 'web/components/answers/compatibility-questions-display'
 import {Col} from 'web/components/layout/col'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
+import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {Input} from 'web/components/widgets/input'
@@ -119,6 +120,7 @@ export default function CompatibilityPage() {
               setKeyword(e.target.value)
             }}
           />
+          <EnglishOnlyWarning />
           <UncontrolledTabs
             trackingName={'compatibility page'}
             name={'compatibility-page'}

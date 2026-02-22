@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {CustomLink} from 'web/components/links'
 import {CustomMarkdown} from 'web/components/markdown'
+import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
@@ -89,6 +90,7 @@ export default function WhatsNew(props: {releases?: Release[]}) {
         <p>{t('news.failed', 'Failed to fetch releases.')}</p>
       ) : (
         <Col className="max-w-3xl mx-auto py-10 px-4 custom-link">
+          <EnglishOnlyWarning />
           {releases.map((release: Release) => (
             <div key={release.id} className="mb-10 border-b pb-6">
               <div className="flex justify-between items-center">

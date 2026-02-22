@@ -641,10 +641,11 @@ export class SignUpPage {
 
   async setLanguages(language: LanguageKey[] | undefined) {
     if (!language || language.length === 0) return
+    await this.page.getByRole('checkbox', {name: `English`}).click();
     for (let i = 0; i < language.length; i++) {
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${language[i]}`}).click()
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeChecked()
+      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible();
+      await this.page.getByRole('checkbox', {name: `${language[i]}`}).click();
+      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeChecked();
     }
   }
 

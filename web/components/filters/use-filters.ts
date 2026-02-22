@@ -16,13 +16,13 @@ import {getLocale} from 'web/lib/locale-cookie'
 
 export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
+  const baseFilters = isLooking
+    ? initialFilters
+    : {...initialFilters, orderBy: 'created_time' as const}
 
   const getInitialFilters = (): Partial<FilterFields> => {
-    const baseFilters = isLooking
-      ? initialFilters
-      : {...initialFilters, orderBy: 'created_time' as const}
     if (fromSignup) {
-      baseFilters.languages = [LOCALE_TO_LANGUAGE[getLocale()]]
+      return {...baseFilters, languages: [LOCALE_TO_LANGUAGE[getLocale()]]}
     }
     return baseFilters
   }
@@ -41,7 +41,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   }
 
   const clearFilters = () => {
-    setFilters(isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'})
+    setFilters(baseFilters)
     setLocation(undefined)
     setRaisedInLocation(undefined)
   }

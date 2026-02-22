@@ -188,7 +188,7 @@
   "delete_yourself.confirm_phrase": "delete my account",
   "delete_yourself.description": "Supprimer votre compte signifie que vous ne pourrez plus l'utiliser. Vous perdrez l'accès à toutes vos données.",
   "delete_yourself.input_placeholder": "Tapez 'delete my account' pour confirmer",
-  "delete_yourself.open_label": "Supprimer définitivement ce compte",
+  "delete_yourself.open_label": "Supprimer le compte",
   "delete_yourself.submit": "Supprimer le compte",
   "delete_yourself.title": "Êtes-vous sûr ?",
   "delete_yourself.toast.error": "Échec de la suppression du compte.",

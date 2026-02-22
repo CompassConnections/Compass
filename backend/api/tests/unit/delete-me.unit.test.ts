@@ -33,7 +33,10 @@ describe('deleteMe', () => {
         username: 'mockUsername',
       }
       const mockAuth = {uid: '321'} as AuthedUser
-      const mockRef = {} as any
+      const mockRef = {
+        reasonCategory: 'someReasonCategory',
+        reasonDetails: 'someReasonDetails',
+      } as any
 
       const mockDeleteUser = jest.fn().mockResolvedValue(null)
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockUser)
@@ -48,8 +51,15 @@ describe('deleteMe', () => {
 
       expect(sharedUtils.getUser).toBeCalledTimes(1)
       expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid)
-      expect(mockPg.none).toBeCalledTimes(1)
-      expect(mockPg.none).toBeCalledWith(sqlMatch('DELETE FROM users WHERE id = $1'), [mockUser.id])
+      expect(mockPg.none).toBeCalledTimes(2)
+      expect(mockPg.none).toHaveBeenNthCalledWith(
+        1,
+        sqlMatch('INSERT INTO deleted_users (username, reason_category, reason_details)'),
+        [mockUser.username, mockRef.reasonCategory, mockRef.reasonDetails],
+      )
+      expect(mockPg.none).toHaveBeenNthCalledWith(2, sqlMatch('DELETE FROM users WHERE id = $1'), [
+        mockUser.id,
+      ])
       expect(firebaseUtils.deleteUserFiles).toBeCalledTimes(1)
       expect(firebaseUtils.deleteUserFiles).toBeCalledWith(mockUser.username)
       expect(mockDeleteUser).toBeCalledTimes(1)

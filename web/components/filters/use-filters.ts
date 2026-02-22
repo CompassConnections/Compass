@@ -1,3 +1,4 @@
+import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {logger} from 'common/logging'
@@ -11,19 +12,17 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {useLocale} from 'web/lib/locale'
+import {getLocale} from 'web/lib/locale-cookie'
 
 export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
-  const {locale} = useLocale()
 
-  // Set French as default language filter if from signup and locale is French
   const getInitialFilters = (): Partial<FilterFields> => {
     const baseFilters = isLooking
       ? initialFilters
       : {...initialFilters, orderBy: 'created_time' as const}
-    if (fromSignup && locale === 'fr') {
-      return {...baseFilters, languages: ['french']}
+    if (fromSignup) {
+      baseFilters.languages = [LOCALE_TO_LANGUAGE[getLocale()]]
     }
     return baseFilters
   }

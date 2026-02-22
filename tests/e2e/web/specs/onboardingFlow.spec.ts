@@ -29,9 +29,9 @@ test.describe('when given valid input', () => {
     await signUpPage.fillHeight({
       feet: testAccount.height?.feet,
       inches: testAccount.height?.inches,
-    })
-    await signUpPage.fillEthnicity(testAccount.ethnicity_origin)
-    await signUpPage.fillInterestedInConnectingWith(testAccount.interested_in)
+    });
+    await signUpPage.fillEthnicity(testAccount.ethnicity_origin);
+    await signUpPage.fillInterestedInConnectingWith(testAccount.interested_in);
     await signUpPage.fillAgeRangeInterest(
       testAccount.Interested_in_ages?.min,
       testAccount.Interested_in_ages?.max,
@@ -51,7 +51,7 @@ test.describe('when given valid input', () => {
     await signUpPage.setPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
-    )
+    );
     await signUpPage.setReligiousBeliefs(
       testAccount.beliefs?.religious?.belief,
       testAccount.beliefs?.religious?.details,
@@ -75,21 +75,21 @@ test.describe('when given valid input', () => {
       undefined,
       testAccount.height?.feet,
       testAccount.height?.inches,
-    )
+    );
     await profilePage.verifyIntrestedInConnectingWith(
       testAccount.interested_in,
       testAccount.Interested_in_ages?.min,
       testAccount.Interested_in_ages?.max,
-    )
+    );
     await profilePage.verifyRelationShipTypeAndInterest(
       testAccount.connection_type,
       testAccount.relationship_style,
-    )
-    await profilePage.verifyRelationshipStatus(testAccount.relationship_status)
-    await profilePage.verifyCurrentNumberOfKids(testAccount.number_of_kids)
-    await profilePage.verifyWantChildrenExpectation(testAccount.children_expectation)
-    await profilePage.verifyInterests(testAccount.interests)
-    await profilePage.verifyCauses(testAccount.causes)
+    );
+    await profilePage.verifyRelationshipStatus(testAccount.relationship_status);
+    await profilePage.verifyCurrentNumberOfKids(testAccount.number_of_kids);
+    await profilePage.verifyWantChildrenExpectation(testAccount.children_expectation);
+    await profilePage.verifyInterests(testAccount.interests);
+    await profilePage.verifyCauses(testAccount.causes);
     await profilePage.verifyEducationLevelAndUniversity(
       testAccount.education_level,
       testAccount.university,
@@ -99,7 +99,7 @@ test.describe('when given valid input', () => {
     await profilePage.verifyPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
-    )
+    );
     await profilePage.verifyReligiousBeliefs(
       testAccount.beliefs?.religious?.belief,
       testAccount.beliefs?.religious?.details,

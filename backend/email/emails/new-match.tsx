@@ -1,10 +1,11 @@
-import React from 'react'
 import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
-import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 import {Footer} from 'email/utils'
+import React from 'react'
+
+import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 
 interface NewMatchEmailProps {
   onUser: User

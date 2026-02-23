@@ -1,11 +1,12 @@
-import React from 'react'
 import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
-import {type User} from 'common/user'
-import {type ProfileRow} from 'common/profiles/profile'
-import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
+import {type ProfileRow} from 'common/profiles/profile'
+import {type User} from 'common/user'
 import {button, container, content, Footer, imageContainer, main, paragraph} from 'email/utils'
+import React from 'react'
 import {createT} from 'shared/locale'
+
+import {jamesProfile, jamesUser, mockUser} from './functions/mock'
 
 interface NewMessageEmailProps {
   fromUser: User

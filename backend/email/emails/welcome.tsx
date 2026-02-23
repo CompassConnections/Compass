@@ -1,9 +1,10 @@
-import React from 'react'
 import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
 import {type User} from 'common/user'
-import {mockUser} from './functions/mock'
 import {button, container, content, Footer, main, paragraph} from 'email/utils'
+import React from 'react'
 import {createT} from 'shared/locale'
+
+import {mockUser} from './functions/mock'
 
 interface WelcomeEmailProps {
   toUser: User
@@ -26,15 +27,29 @@ export const WelcomeEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>{t('email.welcome.preview', 'Welcome to Compass — Please confirm your email')}</Preview>
+      <Preview>
+        {t('email.welcome.preview', 'Welcome to Compass — Please confirm your email')}
+      </Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={content}>
-            <Text style={paragraph}>{t('email.welcome.title', 'Welcome to Compass, {name}!', {name})}</Text>
+            <Text style={paragraph}>
+              {t('email.welcome.title', 'Welcome to Compass, {name}!', {name})}
+            </Text>
 
-            <Text style={paragraph}>{t('email.welcome.intro', 'Compass is a free, community-owned platform built to help people form deep, meaningful connections — platonic, romantic, or collaborative. There are no ads, no hidden algorithms, and no subscriptions — just a transparent, open-source space shaped by people like you.')}</Text>
+            <Text style={paragraph}>
+              {t(
+                'email.welcome.intro',
+                'Compass is a free, community-owned platform built to help people form deep, meaningful connections — platonic, romantic, or collaborative. There are no ads, no hidden algorithms, and no subscriptions — just a transparent, open-source space shaped by people like you.',
+              )}
+            </Text>
 
-            <Text style={paragraph}>{t('email.welcome.confirmation', 'To finish creating your account and start exploring Compass, please confirm your email below:')}</Text>
+            <Text style={paragraph}>
+              {t(
+                'email.welcome.confirmation',
+                'To finish creating your account and start exploring Compass, please confirm your email below:',
+              )}
+            </Text>
 
             <Button style={button} href={verificationLink}>
               {t('email.welcome.confirmButton', 'Confirm My Email')}
@@ -46,7 +61,10 @@ export const WelcomeEmail = ({
             </Text>
 
             <Text style={{marginTop: '40px', fontSize: '12px', color: '#555'}}>
-              {t('email.welcome.thanks', 'Your presence and participation are what make Compass possible. Thank you for helping us build an internet space that prioritizes depth, trust, and community over monetization.')}
+              {t(
+                'email.welcome.thanks',
+                'Your presence and participation are what make Compass possible. Thank you for helping us build an internet space that prioritizes depth, trust, and community over monetization.',
+              )}
             </Text>
           </Section>
 

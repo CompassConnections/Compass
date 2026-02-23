@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Body,
   Button,
@@ -11,11 +10,13 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import {type User} from 'common/user'
 import {DOMAIN} from 'common/envs/constants'
-import {jamesUser, mockUser} from './functions/mock'
+import {type User} from 'common/user'
 import {button, container, content, Footer, main, paragraph} from 'email/utils'
+import React from 'react'
 import {createT} from 'shared/locale'
+
+import {jamesUser, mockUser} from './functions/mock'
 
 interface NewEndorsementEmailProps {
   fromUser: User
@@ -42,7 +43,11 @@ export const NewEndorsementEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>{t('email.new_endorsement.preview', 'New endorsement from {fromUserName}', {fromUserName: fromUser.name})}</Preview>
+      <Preview>
+        {t('email.new_endorsement.preview', 'New endorsement from {fromUserName}', {
+          fromUserName: fromUser.name,
+        })}
+      </Preview>
       <Body style={main}>
         <Container style={container}>
           {/*<Section style={logoContainer}>*/}
@@ -55,9 +60,15 @@ export const NewEndorsementEmail = ({
           {/*</Section>*/}
 
           <Section style={content}>
-            <Text style={paragraph}>{t('email.new_endorsement.greeting', 'Hi {name},', {name})}</Text>
+            <Text style={paragraph}>
+              {t('email.new_endorsement.greeting', 'Hi {name},', {name})}
+            </Text>
 
-            <Text style={paragraph}>{t('email.new_endorsement.message', '{fromUserName} endorsed you!', {fromUserName: fromUser.name})}</Text>
+            <Text style={paragraph}>
+              {t('email.new_endorsement.message', '{fromUserName} endorsed you!', {
+                fromUserName: fromUser.name,
+              })}
+            </Text>
 
             <Section style={endorsementContainer}>
               <Row>

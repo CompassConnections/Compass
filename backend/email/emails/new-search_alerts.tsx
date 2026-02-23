@@ -1,13 +1,14 @@
-import React from 'react'
 import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
-import {type User} from 'common/user'
-import {mockUser} from './functions/mock'
 import {DOMAIN} from 'common/envs/constants'
-import {container, content, Footer, main, paragraph} from 'email/utils'
+import {FilterFields} from 'common/filters'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {formatFilters, locationType} from 'common/searches'
-import {FilterFields} from 'common/filters'
+import {type User} from 'common/user'
+import {container, content, Footer, main, paragraph} from 'email/utils'
+import React from 'react'
 import {createT} from 'shared/locale'
+
+import {mockUser} from './functions/mock'
 
 interface NewMessageEmailProps {
   toUser: User

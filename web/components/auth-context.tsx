@@ -11,6 +11,7 @@ import {useWebsocketPrivateUser, useWebsocketUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {auth} from 'web/lib/firebase/users'
 import {useLocale} from 'web/lib/locale'
+import {getLocale} from 'web/lib/locale-cookie'
 import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
 import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
 import {getCookie, setCookie} from 'web/lib/util/cookie'
@@ -118,7 +119,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
   const [authLoaded, setAuthLoaded] = useState(false)
   const firebaseUser = useAndSetupFirebaseUser()
   const {locale} = useLocale()
-  console.log('AuthProvider locale', locale)
+  console.log('AuthProvider hook locale', locale)
 
   const authUser = !user
     ? user
@@ -156,6 +157,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     setAuthLoaded(true)
     // generate auth token
     fbUser.getIdToken()
+    const locale = getLocale()
     console.log('onAuthLoad', locale)
     if (privateUser.locale !== locale) {
       console.log('update-user-locale', locale)
@@ -186,6 +188,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
             const deviceToken = ensureDeviceToken()
             const adminToken = getAdminToken()
 
+            const locale = getLocale()
             console.log('create-user locale', locale)
             const newUser = (await api('create-user', {
               deviceToken,

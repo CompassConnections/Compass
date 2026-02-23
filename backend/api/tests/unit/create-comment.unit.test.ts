@@ -116,10 +116,7 @@ describe('createComment', () => {
         'new_endorsement',
       )
       expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledTimes(1)
-      expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledWith(
-        expect.any(Object),
-        expect.any(Object),
-      )
+      expect(supabaseNotifications.insertNotificationToSupabase).toBeCalledWith(expect.any(Object))
       expect(emailHelpers.sendNewEndorsementEmail).toBeCalledTimes(1)
       expect(emailHelpers.sendNewEndorsementEmail).toBeCalledWith(
         mockOnUser,

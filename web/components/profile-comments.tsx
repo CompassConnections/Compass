@@ -4,6 +4,7 @@ import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {type Comment, MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
 import {buildArray} from 'common/util/array'
+import {ChevronDown, ChevronUp} from 'lucide-react'
 import {memo, ReactNode, useEffect, useRef, useState} from 'react'
 import {toast} from 'react-hot-toast'
 import {Button, IconButton} from 'web/components/buttons/button'
@@ -24,8 +25,6 @@ import {useProfileByUserId} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {firebaseLogin, User} from 'web/lib/firebase/users'
-import TriangleDownFillIcon from 'web/lib/icons/triangle-down-fill-icon.svg'
-import TriangleFillIcon from 'web/lib/icons/triangle-fill-icon.svg'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -108,8 +107,8 @@ export function ProfileProfileCommentThread(props: {
             }}
           >
             <Col>
-              <TriangleFillIcon className={'mr-2 h-2'} />
-              <TriangleDownFillIcon className={'mr-2 h-2'} />
+              <ChevronUp className={'mr-2 h-2'} />
+              <ChevronDown className={'mr-2 h-2'} />
             </Col>
             See {threadComments.length - 1} replies
           </Button>

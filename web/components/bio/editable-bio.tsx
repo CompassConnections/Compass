@@ -42,7 +42,7 @@ export function BioTips({onClick}: {onClick?: () => void}) {
     <ShowMore
       labelClosed={t('profile.bio.tips', 'Tips')}
       labelOpen={t('profile.bio.hide_info', 'Hide info')}
-      className={'custom-link text-sm'}
+      className={'custom-link text-sm prose prose-neutral dark:prose-invert'}
     >
       <p>
         {t(
@@ -184,7 +184,7 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
   return (
     <div>
       {textLength < MIN_BIO_LENGTH && (
-        <p>
+        <p className={'guidance'}>
           {remainingChars === 1
             ? t(
                 'profile.bio.add_characters_one',

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import TriangleDownFillIcon from 'web/lib/icons/triangle-down-fill-icon.svg'
+import {ChevronDown} from 'lucide-react'
 
 export function ReplyToggle(props: {
   seeReplies: boolean
@@ -16,7 +16,7 @@ export function ReplyToggle(props: {
       onClick={onSeeReplyClick}
     >
       <div className={clsx(numComments === 0 ? 'hidden' : 'flex select-none items-center gap-1')}>
-        <TriangleDownFillIcon
+        <ChevronDown
           className={clsx('h-2 w-2 transition-transform', seeReplies ? '' : 'rotate-[-60deg]')}
         />
         {numComments} {numComments === 1 ? 'reply' : 'replies'}

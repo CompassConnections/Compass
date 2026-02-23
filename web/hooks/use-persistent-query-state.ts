@@ -1,6 +1,6 @@
+import {debounce, pickBy} from 'lodash'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
-import {debounce, pickBy} from 'lodash'
 
 type UrlParams = Record<string, string | undefined>
 

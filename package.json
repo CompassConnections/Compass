@@ -46,24 +46,6 @@
     "emulate": "firebase emulators:start --only auth,storage --project compass-57c3c",
     "prepare": "npx husky"
   },
-  "lint-staged": {
-    "**/*.{json,css,scss,md}": [
-      "prettier --write"
-    ],
-    "web/**/*.{ts,tsx,js,jsx}": [
-      "prettier --write"
-    ],
-    "common/**/*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "eslint --fix",
-      "eslint --max-warnings 0"
-    ],
-    "backend/{api,shared}/**/*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "eslint --fix",
-      "eslint --max-warnings 0"
-    ]
-  },
   "dependencies": {
     "@capacitor/app": "7.1.0",
     "@capacitor/core": "7.4.4",
@@ -92,12 +74,16 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "29.2.4",
     "@types/node": "20.12.11",
-    "@typescript-eslint/eslint-plugin": "^8",
-    "@typescript-eslint/parser": "^8",
+    "@eslint/js": "^9.39.0",
+    "typescript-eslint": "^8.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-config-prettier": "^10.1.5",
+    "@next/eslint-plugin-next": "^15.3.3",
     "chalk": "5.6.2",
     "concurrently": "8.2.2",
     "dotenv-cli": "10.0.0",
-    "eslint": "8.57.0",
+    "eslint": "9.39.3",
     "eslint-plugin-lodash": "7.4.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-unused-imports": "4.1.4",

@@ -1,5 +1,6 @@
-import {useUser} from './use-user'
 import {isAdminId, isModId} from 'common/envs/constants'
+
+import {useUser} from './use-user'
 
 export const useAdmin = () => {
   const user = useUser()

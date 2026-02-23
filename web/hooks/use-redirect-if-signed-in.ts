@@ -1,5 +1,6 @@
 import {useRouter} from 'next/router'
 import {useEffect} from 'react'
+
 import {useUser} from './use-user'
 
 export const useRedirectIfSignedIn = (endpoint?: string) => {

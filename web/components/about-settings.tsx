@@ -115,7 +115,7 @@ function diagnosticsToText(d: Diagnostics): string {
 
   return JSON.stringify(d, replacer, 2)
     .replace(/ {2}"/g, '')
-    .replace(/["{}\[\]]/g, '')
+    .replace(/["{}[\]]/g, '')
     .replace(/^[ \t]*\n/gm, '')
     .replace(/,\n/g, '\n')
     .trim()
@@ -125,9 +125,7 @@ export const AboutSettings = () => (
   <WithPrivateUser>{(user) => <LoadedAboutSettings privateUser={user} />}</WithPrivateUser>
 )
 
-const LoadedAboutSettings = (props: {privateUser: PrivateUser}) => {
-  const {} = props
-
+const LoadedAboutSettings = (_props: {privateUser: PrivateUser}) => {
   const [copyFeedback, setCopyFeedback] = useState('')
   const t = useT()
 

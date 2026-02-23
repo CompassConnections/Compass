@@ -1,9 +1,9 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {useLocale} from 'web/lib/locale'
 import {defaultLocale} from 'common/constants'
+import {useEffect, useState} from 'react'
 import {MD_PATHS} from 'web/components/markdown'
+import {useLocale} from 'web/lib/locale'
 
 export function useMarkdown(filename: (typeof MD_PATHS)[number]) {
   const {locale} = useLocale()

@@ -1,7 +1,7 @@
-import {useState} from 'react'
-import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {APIError} from 'common/api/utils'
 import {User} from 'common/user'
+import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
+import {useState} from 'react'
 import {updateUser} from 'web/lib/api'
 
 type UserInfoState = {

@@ -94,7 +94,7 @@ export function SelectUsers(props: {
                 queryReady && 'h-56',
               )}
             >
-              {({}) => (
+              {() => (
                 <Transition
                   show={queryReady}
                   as={Fragment}

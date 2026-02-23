@@ -1,5 +1,5 @@
-import {useCallback, useEffect, useState} from 'react'
 import {ProfileWithoutUser} from 'common/profiles/profile'
+import {useCallback, useEffect, useState} from 'react'
 
 const safeLocalStorage = typeof window !== 'undefined' ? window.localStorage : null
 

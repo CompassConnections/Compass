@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import {Editor} from '@tiptap/react'
 import {DOMAIN} from 'common/envs/constants'
 import {useState} from 'react'

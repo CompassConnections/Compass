@@ -248,7 +248,7 @@ export function AvatarNotificationIcon(props: {
 }) {
   const {notification, symbol} = props
   const {sourceUserName, sourceUserAvatarUrl, sourceUserUsername, sourceSlug} = notification
-  const href = !!sourceUserUsername ? `/${sourceUserUsername}` : (sourceSlug ?? '/')
+  const href = sourceUserUsername ? `/${sourceUserUsername}` : (sourceSlug ?? '/')
   return (
     <div className="relative">
       <Link

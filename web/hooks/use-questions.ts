@@ -1,6 +1,9 @@
+import {Row} from 'common/supabase/utils'
 import {sortBy} from 'lodash'
 import {useEffect, useState} from 'react'
-import {Row} from 'common/supabase/utils'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {api} from 'web/lib/api'
+import {useLocale} from 'web/lib/locale'
 import {
   getAllQuestions,
   getFreeResponseQuestions,
@@ -8,9 +11,6 @@ import {
   getUserAnswers,
   getUserCompatibilityAnswers,
 } from 'web/lib/supabase/questions'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {api} from 'web/lib/api'
-import {useLocale} from 'web/lib/locale'
 
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])

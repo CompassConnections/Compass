@@ -1,10 +1,10 @@
-import {useEffect} from 'react'
-
 import {APIParams, APIPath, APIResponse} from 'common/api/schema'
-import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
-import {api} from 'web/lib/api'
-import {useEvent} from './use-event'
 import {APIError} from 'common/api/utils'
+import {useEffect} from 'react'
+import {api} from 'web/lib/api'
+
+import {useEvent} from './use-event'
+import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
 
 const promiseCache: Record<string, Promise<any> | undefined> = {}
 

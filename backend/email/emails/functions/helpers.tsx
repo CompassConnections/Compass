@@ -1,21 +1,22 @@
-import React from 'react'
+import {render} from '@react-email/render'
+import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
 import {
   getNotificationDestinationsForUser,
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
-import {sendEmail} from './send-email'
-import {NewMessageEmail} from '../new-message'
-import {NewEndorsementEmail} from '../new-endorsement'
-import {Test} from '../test'
-import {getProfile} from 'shared/profiles/supabase'
-import {render} from '@react-email/render'
-import {MatchesType} from 'common/profiles/bookmarked_searches'
 import NewSearchAlertsEmail from 'email/new-search_alerts'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'
-import {getOptionsIdsToLabels} from 'shared/supabase/options'
+import React from 'react'
 import {createT} from 'shared/locale'
+import {getProfile} from 'shared/profiles/supabase'
+import {getOptionsIdsToLabels} from 'shared/supabase/options'
+
+import {NewEndorsementEmail} from '../new-endorsement'
+import {NewMessageEmail} from '../new-message'
+import {Test} from '../test'
+import {sendEmail} from './send-email'
 
 export const fromEmail = 'Compass <compass@compassmeet.com>'
 
@@ -98,7 +99,7 @@ export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) =
 
   const locale = privateUser?.locale
   const t = createT(locale)
-  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+  console.log(`Sending welcome email to ${privateUser.email} in ${locale}`)
 
   const subject = t('email.welcome.subject', 'Welcome to Compass!')
 

@@ -32,4 +32,4 @@ export function convertGenderPlural(gender: Gender) {
   return gender
 }
 
-// TODO: support more gender expressions and politically inclusive copy
+// TODO:  support more gender expressions and politically inclusive copy

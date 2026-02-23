@@ -44,7 +44,7 @@ export function VoteItem(props: {vote: Vote; onVoted?: () => void | Promise<void
             <Content className="w-full" content={vote.description as JSONContent} />
           </Col>
           <Row className={'gap-2 mt-2 items-center justify-between w-full custom-link flex-wrap'}>
-            {!!vote.priority ? (
+            {vote.priority ? (
               <div>
                 {t('vote.priority', 'Priority')}: {vote.priority.toFixed(0)}%
               </div>

@@ -1,4 +1,5 @@
 import {useEffect} from 'react'
+
 import {usePersistentLocalState} from './use-persistent-local-state'
 
 // 640 matches tailwind sm breakpoint

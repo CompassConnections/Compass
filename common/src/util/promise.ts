@@ -53,7 +53,6 @@ export const mapAsync = <T, U>(
 
   // The following is a hack to fix a Node bug where the process exits before
   // the promise is resolved.
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const intervalId = setInterval(() => {}, 10000)
 
   return new Promise((resolve: (results: U[]) => void, reject) => {

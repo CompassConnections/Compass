@@ -1,12 +1,12 @@
-import {useEffect} from 'react'
-import {run} from 'common/supabase/utils'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {db} from 'web/lib/supabase/db'
-import {useLocale} from 'web/lib/locale'
 import {OptionTableKey} from 'common/profiles/constants'
+import {run} from 'common/supabase/utils'
+import {useEffect} from 'react'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useLocale} from 'web/lib/locale'
+import {db} from 'web/lib/supabase/db'
 
 export async function fetchChoices(label: OptionTableKey, locale: string) {
-  let choicesById: Record<string, string> = {}
+  const choicesById: Record<string, string> = {}
   const {data} = await run(
     db
       .from(label)

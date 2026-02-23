@@ -1,7 +1,7 @@
-import {useEffect} from 'react'
 import {getWebsocketUrl} from 'common/api/utils'
-import {ServerMessage} from 'common/api/websockets'
 import {APIRealtimeClient} from 'common/api/websocket-client'
+import {ServerMessage} from 'common/api/websockets'
+import {useEffect} from 'react'
 
 const client = typeof window !== 'undefined' ? new APIRealtimeClient(getWebsocketUrl()) : undefined
 

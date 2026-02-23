@@ -1,6 +1,6 @@
+import {MeasurementSystem} from 'common/measurement-utils'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getLocale} from 'web/lib/locale-cookie'
-import {MeasurementSystem} from 'common/measurement-utils'
 
 export const useMeasurementSystem = () => {
   // Get default based on locale
@@ -16,7 +16,7 @@ export const useMeasurementSystem = () => {
         }
         // Default based on locale
         return getLocale() === 'en' ? 'imperial' : 'metric'
-      } catch (e) {
+      } catch (_e) {
         // Fallback to imperial if anything goes wrong
         return 'imperial'
       }

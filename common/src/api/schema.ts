@@ -705,6 +705,7 @@ export const API = (_apiTypeCheck = {
       .object({
         after: z.coerce.number().optional(),
         limit: z.coerce.number().gte(0).lte(1000).default(100),
+        locale: z.string().optional(),
       })
       .strict(),
     summary: 'Fetch notifications for the authenticated user',

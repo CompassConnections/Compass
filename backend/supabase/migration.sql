@@ -49,4 +49,5 @@ BEGIN;
 \i backend/supabase/migrations/20260218_add_events.sql
 \i backend/supabase/migrations/20260218_add_notification_templates.sql
 \i backend/supabase/migrations/20260222_add_deleted_users.sql
+\i backend/supabase/migrations/20260223_add_notification_template_translations.sql
 COMMIT;

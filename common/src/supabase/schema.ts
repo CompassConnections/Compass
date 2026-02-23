@@ -564,6 +564,37 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_template_translations: {
+        Row: {
+          template_id: string
+          locale: string
+          title: string | null
+          source_text: string
+          created_time: number
+        }
+        Insert: {
+          template_id: string
+          locale: string
+          title?: string | null
+          source_text: string
+          created_time?: number
+        }
+        Update: {
+          template_id?: string
+          locale?: string
+          title?: string | null
+          source_text?: string
+          created_time?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'notification_template_translations_template_id_fkey'
+            columns: ['template_id']
+            referencedRelation: 'notification_templates'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       private_user_message_channel_members: {
         Row: {
           channel_id: number

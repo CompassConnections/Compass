@@ -3,7 +3,11 @@ import {Notification} from 'common/notifications'
 import {Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
-import {createBulkNotification, insertNotificationToSupabase} from 'shared/supabase/notifications'
+import {
+  createBulkNotification,
+  insertNotificationToSupabase,
+  NotificationTemplateTranslation,
+} from 'shared/supabase/notifications'
 
 export const createAndroidReleaseNotifications = async () => {
   const createdTime = Date.now()
@@ -159,6 +163,63 @@ export const createEventsAvailableNotifications = async () => {
   )
 
   console.log(`Created events notification template ${templateId} for ${count} users`)
+
+  return {
+    success: true,
+    templateId,
+    userCount: count,
+  }
+}
+
+export const createSomeNotifications = async () => {
+  const pg = createSupabaseDirectClient()
+
+  // Fetch all users
+  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select id from users'))
+
+  if (error) {
+    console.error('Error fetching users', error)
+    return {success: false, error}
+  }
+
+  if (!users || users.length === 0) {
+    console.error('No users found')
+    return {success: false, error: 'No users found'}
+  }
+
+  const userIds = users.map((u: Row<'users'>) => u.id)
+
+  const translations: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[] = [
+    // French translation
+    {
+      locale: 'fr',
+      title: '',
+      source_text: '',
+    },
+    // German translation
+    {
+      locale: 'de',
+      title: '',
+      source_text: '',
+    },
+  ]
+
+  // Create template with translations
+  const {templateId, count} = await createBulkNotification(
+    {
+      sourceType: 'welcome',
+      title: '',
+      sourceText: '',
+      sourceSlug: '/',
+      sourceUserAvatarUrl: '',
+      sourceUpdateType: 'created',
+    },
+    userIds,
+    pg,
+    translations,
+  )
+
+  console.log(`Created notification template ${templateId} for ${count} users`)
 
   return {
     success: true,

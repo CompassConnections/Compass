@@ -1,4 +1,4 @@
-import {test, expect} from '../fixtures/base'
+import {test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
   test('should successfully complete the onboarding flow', async ({
@@ -22,7 +22,6 @@ test.describe('when given valid input', () => {
     await signUpPage.fillUsername(testAccount.username + Date.now().toString())
     await signUpPage.clickNextButton()
     await signUpPage.fillBio(testAccount.bio)
-    await signUpPage.clickNextButton()
     await signUpPage.chooseGender(testAccount.gender)
     await signUpPage.fillAge(testAccount.age)
     await signUpPage.fillHeight({
@@ -108,6 +107,7 @@ test.describe('when given valid input', () => {
     await profilePage.verifyLanguages(testAccount.languages)
     await profilePage.verifySocialMedia(testAccount.social_media)
   })
+
   test('should successfully skip the onboarding flow', async ({
     homePage,
     onboardingPage,
@@ -125,7 +125,6 @@ test.describe('when given valid input', () => {
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip bio
     await signUpPage.clickNextButton() //Skip optional information
     // TODO: fix below
     // await profilePage.clickCloseButton();

@@ -7,6 +7,7 @@ import {Content} from 'web/components/widgets/editor'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useIsClient} from 'web/hooks/use-is-client'
+import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 import {formatTimeShort} from 'web/lib/util/time'
@@ -22,6 +23,7 @@ export const CommentEditHistoryButton = (props: {comment: Comment}) => {
   const [edits, setEdits] = useState<EditHistory[] | undefined>(undefined)
 
   const isClient = useIsClient()
+  const t = useT()
 
   const loadEdits = async () => {
     const {data} = await run(
@@ -61,7 +63,7 @@ export const CommentEditHistoryButton = (props: {comment: Comment}) => {
           }
           onClick={() => setShowEditHistory(true)}
         >
-          (edited) {isClient && shortenedFromNow(comment.editedTime)}
+          (edited) {isClient && shortenedFromNow(comment.editedTime, t)}
         </button>
       </DateTimeTooltip>
       <Modal size={'md'} open={showEditHistory} setOpen={setShowEditHistory}>

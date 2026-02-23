@@ -10,6 +10,7 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {UserLink} from 'web/components/widgets/user-link'
 import {useOtherAnswers} from 'web/hooks/use-other-answers'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
+import {useT} from 'web/lib/locale'
 import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 
 export function OtherProfileAnswers(props: {
@@ -18,6 +19,7 @@ export function OtherProfileAnswers(props: {
   className?: string
 }) {
   const {question, className} = props
+  const t = useT()
   const otherAnswers = useOtherAnswers(question.id)
   const shownAnswers = otherAnswers?.filter(
     (a) => a.multiple_choice != null || a.free_response || a.integer,
@@ -49,7 +51,7 @@ export function OtherProfileAnswers(props: {
                 </Col>
               </Row>
               <div className="text-ink-400 text-xs">
-                {shortenedFromNow(otherAnswer.created_time)}
+                {shortenedFromNow(otherAnswer.created_time, t)}
               </div>
             </Row>
             <Linkify

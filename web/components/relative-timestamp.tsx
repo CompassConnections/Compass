@@ -16,6 +16,8 @@ export function RelativeTimestamp(props: {
 }) {
   const {time, className, placement, shortened} = props
   const isClient = useIsClient()
+  const {locale} = useLocale()
+  const t = useT()
   return (
     <DateTimeTooltip
       className="text-ink-400 ml-1 whitespace-nowrap"
@@ -23,7 +25,7 @@ export function RelativeTimestamp(props: {
       placement={placement}
     >
       <span className={className}>
-        {isClient ? shortened ? shortenedFromNow(time) : fromNow(time) : <></>}
+        {isClient ? shortened ? shortenedFromNow(time, t) : fromNow(time, false, t, locale) : <></>}
       </span>
     </DateTimeTooltip>
   )

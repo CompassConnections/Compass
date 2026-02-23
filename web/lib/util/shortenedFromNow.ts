@@ -26,7 +26,7 @@ export function shortenedDuration(diff: duration.Duration, t: any = undefined) {
 
   for (const unit in units) {
     if (units[unit] > 0) {
-      return `${units[unit]}${t(`time.units.${unit}`, unit)}`
+      return `${units[unit]}${t ? t(`time.units.${unit}`, unit) : unit}`
     }
   }
 

@@ -47,7 +47,7 @@ test.describe('when given valid input', () => {
     await signUpPage.fillUniversity(testAccount.university);
     await signUpPage.fillJobTitle(testAccount.job_title);
     await signUpPage.fillCompany(testAccount.company);
-    await signUpPage.setWorkArea(testAccount.work_area); //Is not displayed correctly
+    await signUpPage.setWorkArea(testAccount.work_area);
     await signUpPage.setPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
@@ -66,7 +66,8 @@ test.describe('when given valid input', () => {
     await signUpPage.clickNextButton();
     await profilePage.clickCloseButton();
     await onboardingPage.clickRefineProfileButton();
-
+    
+    //Verify information is correct
     await profilePage.verifyDisplayNameAndAge(testAccount.display_name, testAccount.age);
     await profilePage.verifyGenderLocationHeight(
       testAccount.gender,
@@ -93,6 +94,7 @@ test.describe('when given valid input', () => {
       testAccount.university,
     );
     await profilePage.verifyJobInformation(testAccount.job_title, testAccount.company);
+    await profilePage.verifyWorkArea(testAccount.work_area);
     await profilePage.verifyPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
@@ -109,6 +111,7 @@ test.describe('when given valid input', () => {
     await profilePage.verifyLanguages(testAccount.languages);
     await profilePage.verifySocialMedia(testAccount.social_media);
 
+    //Verify Database Information
     const dbInfo = await userInformationFromDb(testAccount);
     console.log(dbInfo);
 
@@ -126,6 +129,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.profile.relationship_status).toContain(`open`);
     await expect(dbInfo.profile.pref_romantic_styles).toContain(`open`);
     await expect(dbInfo.profile.has_kids).toEqual(Number(testAccount.number_of_kids));
+    await expect(dbInfo.profile.wants_kids_strength).toEqual(testAccount.children_expectation?.[1]);
     await expect(dbInfo.profile.education_level).toContain(`${testAccount.education_level}`.toLowerCase());
     await expect(dbInfo.profile.university).toContain(testAccount.university);
     await expect(dbInfo.profile.occupation_title).toContain(testAccount.job_title);

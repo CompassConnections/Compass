@@ -37,5 +37,5 @@ export async function userInformationFromDb(account: any) {
         }
     } catch (error) {
         throw error
-    }
-}
+    };
+};

@@ -15,11 +15,11 @@ import {
 export type Gender = 'Woman' | 'Man' | 'Other'
 export type InterestedIn = 'Women' | 'Men' | 'Other'
 export type ChildrenExpectation =
-  | 'Strongly against'
-  | 'Against'
-  | 'Neutral'
-  | 'For'
-  | 'Strongly for'
+  | ['Strongly against', 0]
+  | ['Against',1 ]
+  | ['Neutral', 2]
+  | ['For', 3]
+  | ['Strongly for', 4]
 export type Interests = 'Chess' | 'Games' | 'Joy' | 'Livres'
 export type Causes = 'Animal Rights' | 'Feminism'
 export type Platforms =
@@ -291,19 +291,21 @@ export class SignUpPage {
   }
 
   async setWantChildrenExpectation(expectation: ChildrenExpectation | undefined) {
-    if (expectation === 'Strongly against') {
+    if (!expectation) return;
+    const [label, value] = expectation;
+    if (label === 'Strongly against') {
       await expect(this.stronglyDisagreeOnWantingKids).toBeVisible()
       await this.stronglyDisagreeOnWantingKids.click()
       await expect(this.stronglyDisagreeOnWantingKids).toBeChecked()
-    } else if (expectation === 'Against') {
+    } else if (label === 'Against') {
       await expect(this.disagreeOnWantingKids).toBeVisible()
       await this.disagreeOnWantingKids.click()
       await expect(this.disagreeOnWantingKids).toBeChecked()
-    } else if (expectation === 'Neutral') {
+    } else if (label === 'Neutral') {
       await expect(this.neutralOnWantingKids).toBeVisible()
       await this.neutralOnWantingKids.click()
       await expect(this.neutralOnWantingKids).toBeChecked()
-    } else if (expectation === 'For') {
+    } else if (label === 'For') {
       await expect(this.agreeOnWantingKids).toBeVisible()
       await this.agreeOnWantingKids.click()
       await expect(this.agreeOnWantingKids).toBeChecked()

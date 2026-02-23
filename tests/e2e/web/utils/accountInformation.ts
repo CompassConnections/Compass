@@ -124,7 +124,7 @@ export const onboarding: OnboardingConfig = {
     relationship_status: 'In open relationship',
     relationship_style: 'Open Relationship',
     number_of_kids: '2',
-    children_expectation: 'Neutral',
+    children_expectation: ['Neutral', 2],
     interests: ['Chess', 'Eating'],
     causes: ['Animal Rights', 'Free Spotify'],
     education_level: 'Bachelors',

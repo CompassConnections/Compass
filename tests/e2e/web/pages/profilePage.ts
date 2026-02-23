@@ -185,11 +185,12 @@ export class ProfilePage {
     await expect(textContent?.toLowerCase()).toContain(numberOfKids.toLowerCase())
   }
 
-  async verifyWantChildrenExpectation(expectation: string | undefined) {
+  async verifyWantChildrenExpectation(expectation: [string, number] | undefined) {
     if (!expectation) return
+    const [label, value] = expectation;
     await expect(this.wantsKidsAboutSection).toBeVisible()
     const textContent = await this.wantsKidsAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(expectation.toLowerCase())
+    await expect(textContent?.toLowerCase()).toContain(label.toLowerCase())
   }
 
   async verifyInterests(interest: string[] | undefined) {
@@ -207,6 +208,15 @@ export class ProfilePage {
     const textContent = await this.causesAboutSection.textContent()
     for (let i = 0; i < causes.length; i++) {
       await expect(textContent?.toLowerCase()).toContain(causes[i].toLowerCase())
+    }
+  }
+
+  async verifyWorkArea(workArea: string[] | undefined) {
+    if (!workArea || workArea.length === 0) return
+    await expect(this.workAreaAboutSection).toBeVisible()
+    const textContent = await this.workAreaAboutSection.textContent()
+    for (let i = 0; i < workArea.length; i++) {
+      await expect(textContent?.toLowerCase()).toContain(workArea[i].toLowerCase())
     }
   }
 

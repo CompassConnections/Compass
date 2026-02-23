@@ -34,9 +34,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
   const name = cleanDisplayName(rawName)
 
   const bucket = getBucket()
-  const avatarUrl = fbUser.photoURL
-    ? fbUser.photoURL
-    : await generateAvatarUrl(auth.uid, name, bucket)
+  const avatarUrl = fbUser.photoURL ?? (await generateAvatarUrl(auth.uid, name, bucket))
 
   const pg = createSupabaseDirectClient()
 

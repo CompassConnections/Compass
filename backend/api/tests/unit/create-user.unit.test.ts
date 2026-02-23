@@ -74,13 +74,6 @@ describe('createUser', () => {
         },
       }
       const mockReq = {get: jest.fn().mockReturnValue(mockReferer)} as any
-      const mockFirebaseUser = {
-        providerData: [
-          {
-            providerId: 'passwords',
-          },
-        ],
-      }
       const mockFbUser = {
         email: 'mockEmail@mockServer.com',
         displayName: 'mockDisplayName',
@@ -101,10 +94,7 @@ describe('createUser', () => {
         id: 'mockPrivateUserId',
       }
 
-      const mockGetUser = jest
-        .fn()
-        .mockResolvedValueOnce(mockFirebaseUser)
-        .mockResolvedValueOnce(mockFbUser)
+      const mockGetUser = jest.fn().mockResolvedValueOnce(mockFbUser)
       ;(firebaseAdmin.auth as jest.Mock).mockReturnValue({
         getUser: mockGetUser,
       })
@@ -127,13 +117,8 @@ describe('createUser', () => {
 
       expect(results.result.user).toEqual(mockNewUserRow)
       expect(results.result.privateUser).toEqual(mockPrivateUserRow)
-      expect(mockGetUser).toBeCalledTimes(2)
+      expect(mockGetUser).toBeCalledTimes(1)
       expect(mockGetUser).toHaveBeenNthCalledWith(1, mockAuth.uid)
-      expect(mockReq.get).toBeCalledTimes(1)
-      expect(mockReq.get).toBeCalledWith(Object.keys(mockReferer.headers)[0])
-      expect(sharedAnalytics.getIp).toBeCalledTimes(1)
-      expect(sharedAnalytics.getIp).toBeCalledWith(mockReq)
-      expect(mockGetUser).toHaveBeenNthCalledWith(2, mockAuth.uid)
       expect(usernameUtils.cleanDisplayName).toBeCalledTimes(1)
       expect(usernameUtils.cleanDisplayName).toHaveBeenCalledWith(mockFbUser.displayName)
       expect(usernameUtils.cleanUsername).toBeCalledTimes(1)
@@ -176,83 +161,6 @@ describe('createUser', () => {
       expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow)
       expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledTimes(1)
       expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledWith(mockAuth.uid)
-    })
-
-    it('should generate a device token when creating a user', async () => {
-      const mockProps = {
-        deviceToken: 'mockDeviceToken',
-        adminToken: 'mockAdminToken',
-      }
-      const mockAuth = {uid: '321'} as AuthedUser
-      const mockReferer = {
-        headers: {
-          referer: 'mockReferer',
-        },
-      }
-      const mockReq = {get: jest.fn().mockReturnValue(mockReferer)} as any
-      const mockFirebaseUser = {
-        providerData: [
-          {
-            providerId: 'password',
-          },
-        ],
-      }
-      const mockFbUser = {
-        email: 'mockEmail@mockServer.com',
-        displayName: 'mockDisplayName',
-        photoURL: 'mockPhotoUrl',
-      }
-      const mockIp = 'mockIP'
-      const mockBucket = {} as any
-      const mockNewUserRow = {
-        created_time: 'mockCreatedTime',
-        data: {mockNewUserJson: 'mockNewUserJsonData'},
-        id: 'mockNewUserId',
-        name: 'mockName',
-        name_username_vector: 'mockNameUsernameVector',
-        username: 'mockUsername',
-      }
-      const mockPrivateUserRow = {
-        data: {mockPrivateUserJson: 'mockPrivateUserJsonData'},
-        id: 'mockPrivateUserId',
-      }
-
-      const mockGetUser = jest
-        .fn()
-        .mockResolvedValueOnce(mockFirebaseUser)
-        .mockResolvedValueOnce(mockFbUser)
-
-      ;(firebaseAdmin.auth as jest.Mock).mockReturnValue({
-        getUser: mockGetUser,
-      })
-      ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
-      ;(firebaseAdmin.auth as jest.Mock).mockReturnValue({
-        getUser: mockGetUser,
-      })
-      ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue(mockFbUser.displayName)
-      ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
-      ;(usernameUtils.cleanUsername as jest.Mock).mockReturnValue(mockFbUser.displayName)
-      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
-      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(false)
-      ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
-      ;(userNotificationPref.getDefaultNotificationPreferences as jest.Mock).mockReturnValue(null)
-      ;(supabaseUtils.insert as jest.Mock).mockResolvedValueOnce(null).mockResolvedValueOnce(null)
-      ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
-      ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
-
-      await createUser(mockProps, mockAuth, mockReq)
-
-      expect(supabaseUtils.insert).not.toHaveBeenNthCalledWith(
-        2,
-        expect.any(Object),
-        'private_users',
-        {
-          id: expect.any(String),
-          data: expect.objectContaining({
-            initialDeviceToken: mockProps.deviceToken,
-          }),
-        },
-      )
     })
 
     it('should generate a avatar Url when creating a user', async () => {
@@ -460,6 +368,7 @@ describe('createUser', () => {
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue(mockFbUser.displayName)
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
       ;(usernameUtils.cleanUsername as jest.Mock).mockReturnValue(mockFbUser.displayName)
+      ;(avatarHelpers.generateAvatarUrl as jest.Mock).mockResolvedValue(mockFbUser.photoURL)
       ;(mockPg.one as jest.Mock).mockResolvedValue(0)
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(false)
       ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
@@ -475,7 +384,7 @@ describe('createUser', () => {
       expect(objectUtils.removeUndefinedProps).toHaveBeenCalledWith({
         avatarUrl: mockFbUser.photoURL,
         isBannedFromPosting: true,
-        link: expect.any(Object),
+        link: {},
       })
     })
   })

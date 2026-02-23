@@ -51,7 +51,7 @@ module.exports = {
     unoptimized: isAppBuild,
     dangerouslyAllowSVG: true,
     remotePatterns: [
-      {hostname: 'manifold.markets'},
+      {hostname: 'martinbraquet.com'},
       {hostname: 'compassmeet.com'},
       {hostname: 'lh3.googleusercontent.com'},
       {hostname: 'i.imgur.com'},

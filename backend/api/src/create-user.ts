@@ -20,28 +20,12 @@ import {getUser, getUserByUsername, log} from 'shared/utils'
 import {APIError, APIHandler} from './helpers/endpoint'
 
 export const createUser: APIHandler<'create-user'> = async (props, auth, req) => {
-  const {deviceToken: preDeviceToken, locale = defaultLocale} = props
-  const firebaseUser = await admin.auth().getUser(auth.uid)
-
-  const testUserAKAEmailPasswordUser = firebaseUser.providerData[0].providerId === 'password'
-
-  // if (
-  //   testUserAKAEmailPasswordUser &&
-  //   adminToken !== process.env.TEST_CREATE_USER_KEY
-  // ) {
-  //   throw new APIError(
-  //     401,
-  //     'Must use correct TEST_CREATE_USER_KEY to create user with email/password'
-  //   )
-  // }
+  const {deviceToken, locale = defaultLocale} = props
 
   const host = req.get('referer')
-  log(`Create user from: ${host}`)
+  log(`Create user from: ${host}, ${props}`)
 
   const ip = getIp(req)
-  const deviceToken = testUserAKAEmailPasswordUser
-    ? randomString() + randomString()
-    : preDeviceToken
 
   const fbUser = await admin.auth().getUser(auth.uid)
   const email = fbUser.email

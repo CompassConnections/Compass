@@ -1,6 +1,7 @@
 import {Notification, NotificationTemplate} from 'common/notifications'
 import {Row} from 'common/supabase/utils'
-import {SupabaseDirectClient} from 'shared/supabase/init'
+import {tryCatch} from 'common/util/try-catch'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {bulkInsert} from 'shared/supabase/utils'
 import {broadcast} from 'shared/websockets/server'
 
@@ -16,8 +17,9 @@ export type NotificationTemplateTranslation = Row<'notification_template_transla
  */
 export const insertNotificationToSupabase = async (
   notification: Notification,
-  pg: SupabaseDirectClient,
+  pg?: SupabaseDirectClient,
 ) => {
+  pg = pg ?? createSupabaseDirectClient()
   // Check if this notification has a template_id (new style)
   if (notification.templateId) {
     await pg.none(
@@ -31,6 +33,7 @@ export const insertNotificationToSupabase = async (
         {
           isSeen: notification.isSeen,
           viewTime: notification.viewTime,
+          templateData: notification.templateData || {}, // Store dynamic template data
         },
       ],
     )
@@ -73,8 +76,8 @@ export const bulkInsertNotifications = async (
  */
 export const createNotificationTemplate = async (
   template: NotificationTemplate,
-  pg: SupabaseDirectClient,
 ): Promise<string> => {
+  const pg = createSupabaseDirectClient()
   await pg.none(
     `insert into notification_templates
      (id, source_type, title, source_text, source_slug, source_user_avatar_url, source_update_type, created_time, data)
@@ -106,9 +109,9 @@ export const createNotificationTemplate = async (
  */
 export const createNotificationTemplateTranslations = async (
   translations: NotificationTemplateTranslation[],
-  pg: SupabaseDirectClient,
 ): Promise<void> => {
   if (translations.length === 0) return
+  const pg = createSupabaseDirectClient()
 
   await bulkInsert(pg, 'notification_template_translations', translations)
 }
@@ -120,10 +123,9 @@ export const createNotificationTemplateTranslations = async (
 export const createNotificationTemplateWithTranslations = async (
   template: NotificationTemplate,
   translations: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[],
-  pg: SupabaseDirectClient,
 ): Promise<string> => {
   // Create the base template
-  await createNotificationTemplate(template, pg)
+  await createNotificationTemplate(template)
 
   // Add template_id to translations and create them
   if (translations.length > 0) {
@@ -132,11 +134,10 @@ export const createNotificationTemplateWithTranslations = async (
         ({
           ...t,
           template_id: template.id,
-          created_time: Date.now(),
         }) as NotificationTemplateTranslation,
     )
 
-    await createNotificationTemplateTranslations(fullTranslations, pg)
+    await createNotificationTemplateTranslations(fullTranslations)
   }
 
   return template.id
@@ -149,15 +150,19 @@ export const createNotificationTemplateWithTranslations = async (
 export const createUserNotifications = async (
   templateId: string,
   userIds: string[],
-  pg: SupabaseDirectClient,
+  templateData?: {[key: string]: string | number | boolean}, // Dynamic data for template placeholders
   // baseNotificationId?: string
 ) => {
   const timestamp = Date.now()
+  const pg = createSupabaseDirectClient()
   const notifications = userIds.map((userId, index) => ({
     user_id: userId,
     notification_id: `${templateId}-${userId}-${timestamp}-${index}`,
     template_id: templateId,
-    data: {isSeen: false},
+    data: {
+      isSeen: false,
+      templateData: templateData || {}, // Store dynamic template data
+    },
   }))
 
   await bulkInsert(pg, 'user_notifications', notifications)
@@ -172,17 +177,43 @@ export const createUserNotifications = async (
   return notifications.length
 }
 
+async function getUserIds() {
+  const pg = createSupabaseDirectClient()
+
+  // Fetch all users
+  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select id from users'))
+
+  if (error) {
+    console.error('Error fetching users', error)
+    return
+  }
+
+  if (!users || users.length === 0) {
+    console.error('No users found')
+    return
+  }
+
+  const userIds = users.map((u: Row<'users'>) => u.id)
+
+  return userIds
+}
+
 /**
  * Create a bulk notification using the template system
  * Creates one template and many lightweight user notification entries
  * Optionally includes translations
+ * Each template can have dynamic (user-dependent) data
  */
 export const createBulkNotification = async (
   template: Omit<NotificationTemplate, 'id' | 'createdTime'>,
-  userIds: string[],
-  pg: SupabaseDirectClient,
   translations?: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[],
+  templateData?: {[key: string]: string | number | boolean}, // Dynamic data for template placeholders
+  userIds?: string[],
 ) => {
+  if (!userIds) {
+    userIds = await getUserIds()
+    if (!userIds) return {}
+  }
   const timestamp = Date.now()
   const templateId = `${template.sourceType}-${timestamp}`
 
@@ -195,22 +226,18 @@ export const createBulkNotification = async (
         createdTime: timestamp,
       },
       translations,
-      pg,
     )
   } else {
     // Create just the base template
-    await createNotificationTemplate(
-      {
-        ...template,
-        id: templateId,
-        createdTime: timestamp,
-      },
-      pg,
-    )
+    await createNotificationTemplate({
+      ...template,
+      id: templateId,
+      createdTime: timestamp,
+    })
   }
 
-  // Create lightweight user notifications
-  const count = await createUserNotifications(templateId, userIds, pg)
+  // Create lightweight user notifications with template data
+  const count = await createUserNotifications(templateId, userIds, templateData)
 
   return {templateId, count}
 }

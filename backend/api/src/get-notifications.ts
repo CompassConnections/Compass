@@ -3,6 +3,18 @@ import {defaultLocale} from 'common/constants'
 import {Notification} from 'common/notifications'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
+// Helper function to substitute placeholders in template text
+function substitutePlaceholders(templateText: string, templateData: any): string {
+  let result = templateText
+  if (templateData) {
+    for (const [key, value] of Object.entries(templateData)) {
+      // Replace all occurrences of {key} with the value
+      result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value))
+    }
+  }
+  return result
+}
+
 export const getNotifications: APIHandler<'get-notifications'> = async (props, auth, _req) => {
   const {limit, after, locale = defaultLocale} = props
   const pg = createSupabaseDirectClient()
@@ -23,7 +35,8 @@ export const getNotifications: APIHandler<'get-notifications'> = async (props, a
                              'sourceText', COALESCE(ntt.source_text, nt.source_text),
                              'sourceSlug', nt.source_slug,
                              'sourceUserAvatarUrl', nt.source_user_avatar_url,
-                             'data', nt.data
+                             'data', nt.data,
+                             'templateData', un.data->'templateData'
                      )
                  else
                      un.data
@@ -47,9 +60,31 @@ export const getNotifications: APIHandler<'get-notifications'> = async (props, a
     limit $2
   `
 
-  return await pg.map(
+  const rawNotifications = await pg.map(
     query,
     [auth.uid, limit, after, locale],
-    (row) => row.notification_data as Notification,
+    (row) => row.notification_data,
   )
+
+  // Process notifications to apply template data substitution
+  const processedNotifications: Notification[] = rawNotifications.map((notif: any) => {
+    if (notif.templateId) {
+      // Apply template data substitution to title and sourceText
+      const templateData = notif.templateData || {}
+      const processedNotif = {...notif}
+
+      if (processedNotif.title) {
+        processedNotif.title = substitutePlaceholders(processedNotif.title, templateData)
+      }
+
+      if (processedNotif.sourceText) {
+        processedNotif.sourceText = substitutePlaceholders(processedNotif.sourceText, templateData)
+      }
+
+      return processedNotif as Notification
+    }
+    return notif as Notification
+  })
+
+  return processedNotifications
 }

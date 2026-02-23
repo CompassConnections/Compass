@@ -9,7 +9,6 @@ import {getPrivateUser, getUser} from './utils'
 
 export const createProfileLikeNotification = async (like: Row<'profile_likes'>) => {
   const {creator_id, target_id, like_id} = like
-  const pg = createSupabaseDirectClient()
 
   const targetPrivateUser = await getPrivateUser(target_id)
   const profile = await getProfile(creator_id)
@@ -34,7 +33,7 @@ export const createProfileLikeNotification = async (like: Row<'profile_likes'>) 
     sourceUserAvatarUrl: profile.pinned_url ?? profile.user.avatarUrl,
     sourceText: '',
   }
-  return await insertNotificationToSupabase(notification, pg)
+  return await insertNotificationToSupabase(notification)
 }
 
 export const createProfileShipNotification = async (

@@ -3,7 +3,6 @@ import {type User} from 'common/src/user'
 import {Fragment, useEffect, useMemo, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
-import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {NoSEO} from 'web/components/NoSEO'
 import {NotificationItem} from 'web/components/notification-items'
 import {NotificationSettings} from 'web/components/notifications'
@@ -24,7 +23,6 @@ export default function NotificationsPage() {
     <PageBase trackPageView={'notifications page'} className={'mx-4'}>
       <NoSEO />
       <Title>{t('notifications.title', 'Updates')}</Title>
-      <EnglishOnlyWarning />
       <UncontrolledTabs
         name={'notifications-page'}
         tabs={[

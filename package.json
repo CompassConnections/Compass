@@ -119,6 +119,7 @@
     "@types/react-dom": "18.3.0",
     "prosemirror-model": "1.x",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "pg-query-stream/pg": "8.x"
   }
 }

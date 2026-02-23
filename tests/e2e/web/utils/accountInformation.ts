@@ -100,7 +100,7 @@ export const onboarding: OnboardingConfig = {
   faker_account: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: `faker+${id}@test.com`,
+      email: `faker${id}@test.com`,
       password: faker.internet.password(),
       display_name: faker.internet.displayName(),
       username: `user_${id}`,

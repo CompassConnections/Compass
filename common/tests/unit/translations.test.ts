@@ -1,7 +1,7 @@
 describe('translation', () => {
   it('same number of translation keys', async () => {
-    const de = await import('common/messages/de.json')
-    const fr = await import('common/messages/fr.json')
+    const de = await import('../../messages/de.json')
+    const fr = await import('../../messages/fr.json')
 
     // Check if both files have the same number of top-level keys
     // expect(Object.keys(de).length).toBe(Object.keys(fr).length)

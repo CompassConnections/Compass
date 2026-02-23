@@ -3,22 +3,19 @@ import {getTranslationMethod} from 'common/translate'
 import {readFileSync} from 'fs'
 import {join} from 'path'
 
+function getMessagesPath(locale: string): string {
+  const filePath = join(__dirname, '..', '..', '..', 'common', 'messages', `${locale}.json`)
+  return filePath
+}
+
 const messageCache: Record<string, Record<string, string>> = {}
 
 export function loadMessages(locale: string): Record<string, string> {
   if (messageCache[locale]) return messageCache[locale]
 
   try {
-    const filePath = join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      'common',
-      'src',
-      'messages',
-      `${locale}.json`,
-    )
+    const filePath = getMessagesPath(locale)
+    console.log(`Loading messages from ${filePath}.`)
     const raw = readFileSync(filePath, 'utf-8')
     messageCache[locale] = JSON.parse(raw)
   } catch (e) {

@@ -18,6 +18,6 @@
       "common/*": ["./src/*", "../lib/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/messages/*.json"],
+  "include": ["src/**/*.ts", "messages/*.json"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

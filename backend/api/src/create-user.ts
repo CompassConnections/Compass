@@ -1,7 +1,6 @@
 import {setLastOnlineTimeUser} from 'api/set-last-online-time'
 import {defaultLocale} from 'common/constants'
 import {RESERVED_PATHS} from 'common/envs/constants'
-import {IS_LOCAL} from 'common/hosting/constants'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
@@ -113,7 +112,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
       console.error('Failed to track create profile', e)
     }
     try {
-      if (!IS_LOCAL) await sendWelcomeEmail(user, privateUser)
+      await sendWelcomeEmail(user, privateUser)
     } catch (e) {
       console.error('Failed to sendWelcomeEmail', e)
     }

@@ -1,13 +1,16 @@
 import React from 'react'
 import {Column, Img, Link, Row, Section, Text} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
+import {createT} from 'shared/locale'
 
 interface Props {
   email?: string
   unsubscribeUrl: string
+  locale?: string
 }
 
-export const Footer = ({email, unsubscribeUrl}: Props) => {
+export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
+  const t = createT(locale)
   return (
     <Section style={footer}>
       <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}} />
@@ -58,8 +61,8 @@ export const Footer = ({email, unsubscribeUrl}: Props) => {
         </Text>
 
         <Text style={{fontSize: '10px', color: '#888', marginTop: '12px'}}>
-          The email was sent to {email}. To no longer receive these emails, unsubscribe{' '}
-          <Link href={unsubscribeUrl}>here</Link>.
+          {t('email.footer.sent_to', 'The email was sent to {email}. To no longer receive these emails, unsubscribe', {email})}{' '}
+          <Link href={unsubscribeUrl}>{t('email.footer.unsubscribe_link', 'here')}</Link>.
         </Text>
       </Row>
     </Section>

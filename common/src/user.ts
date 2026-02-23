@@ -4,33 +4,12 @@ import {notification_preferences} from './user-notification-preferences'
 export type User = {
   id: string
   createdTime: number
-
   name: string
   username: string
   avatarUrl: string
-
-  // For their user page
-  bio?: string
-
-  // Social links
-  link: Socials
-
-  // Legacy fields (deprecated)
-  /** @deprecated Use link.site instead */
-  website?: string
-  /** @deprecated Use link.x instead */
-  twitterHandle?: string
-  /** @deprecated Use link.discord instead */
-  discordHandle?: string
-  /** @deprecated Use link.manifold instead */
-  manifoldHandle?: string
-
+  link: Socials // Social links
   isBannedFromPosting?: boolean
   userDeleted?: boolean
-
-  sweestakesVerified?: boolean
-  verifiedPhone?: boolean
-  idVerified?: boolean
 }
 
 export type PrivateUser = {
@@ -41,6 +20,7 @@ export type PrivateUser = {
   notificationPreferences: notification_preferences
   blockedUserIds: string[]
   blockedByUserIds: string[]
+  locale?: string
 }
 
 export type UserActivity = {
@@ -49,9 +29,3 @@ export type UserActivity = {
 }
 
 export type UserAndPrivateUser = {user: User; privateUser: PrivateUser}
-
-export function getCurrentUtcTime(): Date {
-  const currentDate = new Date()
-  const utcDate = currentDate.toISOString()
-  return new Date(utcDate)
-}

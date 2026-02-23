@@ -157,6 +157,7 @@ export const API = (_apiTypeCheck = {
       .object({
         deviceToken: z.string().optional(),
         adminToken: z.string().optional(),
+        locale: z.string().optional(),
       })
       .strict(),
     summary: 'Create a new user (admin or onboarding flow)',
@@ -245,6 +246,16 @@ export const API = (_apiTypeCheck = {
     }),
     summary: 'Update a notification preference for the user',
     tag: 'Notifications',
+  },
+  'update-user-locale': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      locale: z.string(),
+    }),
+    summary: "Update the user's preferred locale",
+    tag: 'User',
   },
   'me/delete': {
     method: 'POST',

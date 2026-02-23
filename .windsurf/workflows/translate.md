@@ -60,6 +60,14 @@ const t = useT()
 No exceptions.
 Do not manually access locale files.
 
+For the backend, use
+
+```tsx
+import {createT} from 'shared/locale'
+
+const t = createT(locale)
+```
+
 ---
 
 ### 3️⃣ Replace Hardcoded Strings
@@ -121,8 +129,8 @@ After updating the component:
 1. Open:
 
    ```
-   web/messages/fr.json
-   web/messages/de.json
+   common/src/messages/fr.json
+   common/src/messages/de.json
    ...
    ```
 

@@ -7,6 +7,7 @@ import {container, content, Footer, main, paragraph} from 'email/utils'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {formatFilters, locationType} from 'common/searches'
 import {FilterFields} from 'common/filters'
+import {createT} from 'shared/locale'
 
 interface NewMessageEmailProps {
   toUser: User
@@ -14,6 +15,7 @@ interface NewMessageEmailProps {
   unsubscribeUrl: string
   email?: string
   optionIdsToLabels?: Record<string, Record<string, string>>
+  locale?: string
 }
 
 export const NewSearchAlertsEmail = ({
@@ -22,22 +24,28 @@ export const NewSearchAlertsEmail = ({
   matches,
   email,
   optionIdsToLabels = {},
+  locale,
 }: NewMessageEmailProps) => {
   const name = toUser.name.split(' ')[0]
+  const t = createT(locale)
+  const measurementSystem = locale === 'en' ? 'imperial' : 'metric'
 
   return (
     <Html>
       <Head />
-      <Preview>New people share your values — reach out and connect</Preview>
+      <Preview>
+        {t('email.search_alerts.preview', 'New people share your values — reach out and connect')}
+      </Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={content}>
-            <Text style={paragraph}>Hi {name},</Text>
+            <Text style={paragraph}>{t('email.search_alerts.greeting', 'Hi {name},', {name})}</Text>
 
             <Text style={paragraph}>
-              In the past 24 hours, new people joined Compass whose values and interests align with
-              your saved searches. Compass is a gift from the community, and it comes alive when
-              people like you take the step to connect with one another.
+              {t(
+                'email.search_alerts.intro',
+                'In the past 24 hours, new people joined Compass whose values and interests align with your saved searches. Compass is a gift from the community, and it comes alive when people like you take the step to connect with one another.',
+              )}
             </Text>
 
             {(matches || []).map((match) => (
@@ -47,6 +55,8 @@ export const NewSearchAlertsEmail = ({
                     match.description.filters as Partial<FilterFields>,
                     match.description.location as locationType,
                     optionIdsToLabels,
+                    measurementSystem,
+                    t,
                   )?.join(' • ')}
                 </Text>
                 <Text style={{margin: 0}}>
@@ -68,8 +78,10 @@ export const NewSearchAlertsEmail = ({
 
             <Section style={{textAlign: 'center', marginTop: '30px'}}>
               <Text style={{marginBottom: '20px'}}>
-                If someone resonates with you, reach out. A simple hello can be the start of a
-                meaningful friendship, collaboration, or relationship.
+                {t(
+                  'email.search_alerts.callToAction',
+                  'If someone resonates with you, reach out. A simple hello can be the start of a meaningful friendship, collaboration, or relationship.',
+                )}
               </Text>
               <Link
                 href={`https://${DOMAIN}/messages`}
@@ -83,16 +95,18 @@ export const NewSearchAlertsEmail = ({
                   fontWeight: 'bold',
                 }}
               >
-                Start a Conversation
+                {t('email.search_alerts.startConversation', 'Start a Conversation')}
               </Link>
             </Section>
 
             <Text style={{marginTop: '40px', fontSize: '12px', color: '#555'}}>
-              Compass is built and sustained by the community — no ads, no hidden algorithms, no
-              subscriptions. Your presence and participation make it possible.
+              {t(
+                'email.search_alerts.communityNote',
+                'Compass is built and sustained by the community — no ads, no hidden algorithms, no subscriptions. Your presence and participation make it possible.',
+              )}
             </Text>
           </Section>
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
         </Container>
       </Body>
     </Html>

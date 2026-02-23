@@ -1,4 +1,5 @@
 import {setLastOnlineTimeUser} from 'api/set-last-online-time'
+import {defaultLocale} from 'common/constants'
 import {RESERVED_PATHS} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
@@ -19,7 +20,7 @@ import {getUser, getUserByUsername, log} from 'shared/utils'
 import {APIError, APIHandler} from './helpers/endpoint'
 
 export const createUser: APIHandler<'create-user'> = async (props, auth, req) => {
-  const {deviceToken: preDeviceToken} = props
+  const {deviceToken: preDeviceToken, locale = defaultLocale} = props
   const firebaseUser = await admin.auth().getUser(auth.uid)
 
   const testUserAKAEmailPasswordUser = firebaseUser.providerData[0].providerId === 'password'
@@ -93,6 +94,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     const privateUser: PrivateUser = {
       id: auth.uid,
       email,
+      locale,
       initialIpAddress: ip,
       initialDeviceToken: deviceToken,
       notificationPreferences: getDefaultNotificationPreferences(),

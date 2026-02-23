@@ -15,6 +15,7 @@ import {type User} from 'common/user'
 import {DOMAIN} from 'common/envs/constants'
 import {jamesUser, mockUser} from './functions/mock'
 import {button, container, content, Footer, main, paragraph} from 'email/utils'
+import {createT} from 'shared/locale'
 
 interface NewEndorsementEmailProps {
   fromUser: User
@@ -22,6 +23,7 @@ interface NewEndorsementEmailProps {
   endorsementText: string
   unsubscribeUrl: string
   email?: string
+  locale?: string
 }
 
 export const NewEndorsementEmail = ({
@@ -30,15 +32,17 @@ export const NewEndorsementEmail = ({
   endorsementText,
   unsubscribeUrl,
   email,
+  locale,
 }: NewEndorsementEmailProps) => {
   const name = onUser.name.split(' ')[0]
+  const t = createT(locale)
 
   const endorsementUrl = `https://${DOMAIN}/${onUser.username}`
 
   return (
     <Html>
       <Head />
-      <Preview>New endorsement from {fromUser.name}</Preview>
+      <Preview>{t('email.new_endorsement.preview', 'New endorsement from {fromUserName}', {fromUserName: fromUser.name})}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/*<Section style={logoContainer}>*/}
@@ -51,9 +55,9 @@ export const NewEndorsementEmail = ({
           {/*</Section>*/}
 
           <Section style={content}>
-            <Text style={paragraph}>Hi {name},</Text>
+            <Text style={paragraph}>{t('email.new_endorsement.greeting', 'Hi {name},', {name})}</Text>
 
-            <Text style={paragraph}>{fromUser.name} just endorsed you!</Text>
+            <Text style={paragraph}>{t('email.new_endorsement.message', '{fromUserName} endorsed you!', {fromUserName: fromUser.name})}</Text>
 
             <Section style={endorsementContainer}>
               <Row>
@@ -72,12 +76,12 @@ export const NewEndorsementEmail = ({
               </Row>
 
               <Button href={endorsementUrl} style={button}>
-                View endorsement
+                {t('email.new_endorsement.viewButton', 'View endorsement')}
               </Button>
             </Section>
           </Section>
 
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
         </Container>
       </Body>
     </Html>

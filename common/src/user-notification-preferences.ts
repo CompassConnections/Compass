@@ -1,3 +1,5 @@
+import {DOMAIN} from 'common/envs/constants'
+
 import {PrivateUser} from './user'
 import {filterDefined} from './util/array'
 
@@ -49,7 +51,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = 'https://compassmeet.com/notifications'
+export const UNSUBSCRIBE_URL = `https://${DOMAIN}/notifications`
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference,

@@ -289,7 +289,7 @@ function UserPageInner(props: ActiveUserPageProps) {
     >
       <SEO
         title={`${user.name}`}
-        description={user.bio ?? ''}
+        description={`${user.name} is on Compass`}
         url={`/${user.username}`}
         image={getProfileOgImageUrl(user, profile)}
       />

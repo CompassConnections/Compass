@@ -11,10 +11,13 @@
     "strict": true,
     "target": "es2022",
     "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "common/*": ["./src/*", "../lib/*"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/messages/*.json"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

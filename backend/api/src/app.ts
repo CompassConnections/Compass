@@ -88,6 +88,7 @@ import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfile} from './update-profile'
+import {updateUserLocale} from './update-user-locale'
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -371,6 +372,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'star-profile': starProfile,
   'update-notif-settings': updateNotifSettings,
   'update-options': updateOptions,
+  'update-user-locale': updateUserLocale,
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
   'update-profile': updateProfile,
   'user/by-id/:id': getUser,

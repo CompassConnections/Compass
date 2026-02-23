@@ -20,6 +20,7 @@ import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
 import {updateStatusBar} from 'web/hooks/use-theme'
+import {updateBackendLocale} from 'web/lib/api'
 import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
 import {I18nContext} from 'web/lib/locale'
 import {getLocale, resetCachedLocale} from 'web/lib/locale-cookie'
@@ -98,13 +99,16 @@ function MyApp(props: AppProps<PageProps>) {
   useFontPreferenceManager()
   const router = useRouter()
 
-  const [locale, setLocaleState] = useState(getLocale())
+  const [locale, setLocaleState] = useState<string>(getLocale())
+  console.log('_app locale', locale)
   const setLocale = (newLocale: string) => {
+    console.log('setLocale', newLocale)
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
     setLocaleState(newLocale)
     resetCachedLocale()
     DAYJS_LOCALE_IMPORTS[newLocale]?.()
     registerDatePickerLocale(newLocale)
+    updateBackendLocale(newLocale)
   }
 
   useEffect(() => {
@@ -190,15 +194,15 @@ function MyApp(props: AppProps<PageProps>) {
             // mainFont.variable
           )}
         >
-          <AuthProvider serverUser={pageProps.auth}>
-            <HiddenProfilesProvider>
-              <WebPush />
-              <AndroidPush />
-              <I18nContext.Provider value={{locale, setLocale}}>
+          <I18nContext.Provider value={{locale, setLocale}}>
+            <AuthProvider serverUser={pageProps.auth}>
+              <HiddenProfilesProvider>
+                <WebPush />
+                <AndroidPush />
                 <Component {...pageProps} />
-              </I18nContext.Provider>
-            </HiddenProfilesProvider>
-          </AuthProvider>
+              </HiddenProfilesProvider>
+            </AuthProvider>
+          </I18nContext.Provider>
           {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
           <div id="headlessui-portal-root">
             <div />

@@ -186,9 +186,16 @@ const notifyOtherUserInChannelIfInactive = async (
     body: textContent,
     url: `/messages/${channelId}`,
   }
-  await sendWebNotifications(pg, receiverId, JSON.stringify(payload))
-  await sendMobileNotifications(pg, receiverId, payload)
-
+  try {
+    await sendWebNotifications(pg, receiverId, JSON.stringify(payload))
+  } catch (err) {
+    console.error('Failed to send web notification:', err)
+  }
+  try {
+    await sendMobileNotifications(pg, receiverId, payload)
+  } catch (err) {
+    console.error('Failed to send mobile notification:', err)
+  }
   const startOfDay = dayjs().tz('America/Los_Angeles').startOf('day').toISOString()
   const previousMessagesThisDayBetweenTheseUsers = await pg.one(
     `select count(*)

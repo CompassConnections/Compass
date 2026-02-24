@@ -53,6 +53,7 @@ describe('createPrivateUserMessageChannel', () => {
       ]
       const mockCurrentChannel = {
         channel_id: '444',
+        allow_direct_messaging: true,
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -73,9 +74,9 @@ describe('createPrivateUserMessageChannel', () => {
       expect(sharedUtils.getPrivateUser).toBeCalledTimes(2)
       expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[0])
       expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[1])
-      expect(mockPg.oneOrNone).toBeCalledTimes(1)
+      expect(mockPg.oneOrNone).toBeCalledTimes(3)
       expect(mockPg.oneOrNone).toBeCalledWith(
-        sqlMatch('select channel_id\n        from private_user_message_channel_members'),
+        sqlMatch('select channel_id from private_user_message_channel_members'),
         [mockUserIds],
       )
     })

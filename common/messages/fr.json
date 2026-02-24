@@ -1228,13 +1228,13 @@
   "profile.connect.direct_messaging_disabled": "{user} a désactivé la messagerie directe",
   "profile.header.tooltip.direct_messaging_off": "{name} a désactivé la messagerie directe",
   "profile.header.tooltip.can_express_interest": ", mais vous pouvez toujours exprimer votre intérêt à la fin du profil",
-  "profile.connect.private_connection_signal": "Signal de connexion privé",
+  "profile.connect.private_connection_signal": "Signaler son intérêt en privé",
   "profile.connect.mutual_notification_description": "Ils ne seront pas notifiés à moins que l'intérêt soit mutuel.",
   "profile.connect.how_this_works": "Comment ça fonctionne",
   "profile.connect.not_both_open": "Vous n'êtes pas tous les deux ouverts à un {type}",
   "profile.connect.mutual": "Mutuel",
   "profile.connect.interest_indicators_disabled": "{user} a désactivé les indicateurs d'intérêt",
-  "profile.connect.tips": "- Vous choisissez le type de connexion auquel vous êtes ouvert.\n- Ils ne verront pas ceci à moins qu'ils ne choisissent le même type que vous.\n- Si vous choisissez tous les deux le même type, vous serez tous les deux notifiés.",
+  "profile.connect.tips": "- Vous choisissez le type de relation auquel vous êtes ouvert.\n- Ils ne verront pas ceci à moins qu'ils ne choisissent le même type que vous.\n- Si vous choisissez tous les deux le même type de relation, vous serez tous les deux notifiés.",
   "notifications.connection.mutual_title": "C’est mutuel 🎉",
   "notifications.connection.mutual_body": "{name} et vous êtes tous deux intéressés par un(e) {type}. Commencez la conversation."
 }

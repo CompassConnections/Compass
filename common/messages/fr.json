@@ -1223,7 +1223,7 @@
   "settings.connection_preferences.update_failed": "Échec de la mise à jour des préférences",
   "profile.connect.load_preferences_failed": "Échec du chargement des préférences",
   "profile.connect.update_preference_failed": "Échec de la mise à jour de la préférence",
-  "profile.connect.title": "Connecter",
+  "profile.connect.title": "Entre vous",
   "profile.connect.send_message": "Envoyer un message",
   "profile.connect.direct_messaging_disabled": "{user} a désactivé la messagerie directe",
   "profile.header.tooltip.direct_messaging_off": "{name} a désactivé la messagerie directe",

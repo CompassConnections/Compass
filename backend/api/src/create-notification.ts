@@ -180,3 +180,30 @@ export const createSomeNotifications = async () => {
   )
   console.log(`Created some notification template ${templateId} for ${count} users`)
 }
+
+export const createInterestIndicatorNotifications = async () => {
+  const translations: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[] = [
+    // French translation
+    {
+      locale: 'fr',
+      title: 'Nouveau : Signaux d’intérêt privés',
+      source_text:
+        'Vous pouvez désormais exprimer votre intérêt en privé à la fin de chaque profil. L’autre personne n’est informée que si l’intérêt est réciproque.',
+    },
+  ]
+
+  // Create template with translations
+  const {templateId, count} = await createBulkNotification(
+    {
+      sourceType: 'info',
+      title: 'New: Private interest signals',
+      sourceText:
+        'You can now express interest privately at the end of each profile. The other person is only notified if it’s mutual.',
+      sourceSlug: '/',
+      sourceUserAvatarUrl: COMPASS_LOGO_URL,
+      sourceUpdateType: 'created',
+    },
+    translations,
+  )
+  console.log(`Created some notification template ${templateId} for ${count} users`)
+}

@@ -235,6 +235,33 @@ export const API = (_apiTypeCheck = {
     summary: 'Update profile fields for the authenticated user',
     tag: 'Profiles',
   },
+  'get-connection-interests': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      targetUserId: z.string(),
+    }),
+    returns: {} as {
+      interests: string[]
+      targetInterests: string[]
+    },
+    summary: 'Get connection preferences for a user or another user',
+    tag: 'Profiles',
+  },
+  'update-connection-interest': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      targetUserId: z.string(),
+      connectionType: z.string(),
+      seeking: z.boolean(),
+    }),
+    returns: {} as {success: boolean},
+    summary: 'Update connection preference for the authenticated user',
+    tag: 'Profiles',
+  },
   'update-notif-settings': {
     method: 'POST',
     authed: true,

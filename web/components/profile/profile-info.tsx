@@ -10,6 +10,7 @@ import ProfileHeader from 'web/components/profile/profile-header'
 import ProfileAbout from 'web/components/profile-about'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
+import {ConnectActions} from 'web/components/profile/connect-actions'
 import {Content} from 'web/components/widgets/editor'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
@@ -180,6 +181,7 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
+      <ConnectActions user={user} profile={profile} />
       <ProfileCommentSection
         onUser={user}
         profile={profile}

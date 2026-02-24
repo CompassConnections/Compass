@@ -9,7 +9,6 @@ import {Input} from 'web/components/widgets/input'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
-import {useProfileDraft} from 'web/hooks/use-profile-draft'
 import {useT} from 'web/lib/locale'
 import {labelClassName} from 'web/pages/signup'
 
@@ -24,7 +23,6 @@ export const initialRequiredState = {
   pref_relation_styles: [],
   wants_kids_strength: -1,
   looking_for_matches: true,
-  messaging_status: 'open',
   visibility: 'member',
   city: '',
   pinned_url: '',
@@ -51,19 +49,11 @@ export const RequiredProfileUserForm = (props: {
   onSubmit?: () => void
   profileCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, profileCreatedAlready, setProfile, profile, isSubmitting} = props
+  const {user, onSubmit, profileCreatedAlready, isSubmitting} = props
   const {updateDisplayName, userInfo, updateUserState, updateUsername} = useEditableUserInfo(user)
 
   const [step, setStep] = useState<number>(0)
   const t = useT()
-
-  const {draftLoaded} = useProfileDraft(user.id, profile, setProfile)
-
-  useEffect(() => {
-    if (draftLoaded) {
-      setStep(1)
-    }
-  }, [draftLoaded])
 
   const {name, username, errorUsername, loadingUsername, loadingName, errorName} = userInfo
 

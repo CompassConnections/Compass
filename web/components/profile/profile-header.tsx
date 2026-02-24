@@ -61,6 +61,24 @@ export default function ProfileHeader(props: {
     currentUser,
   })
 
+  let tooltipText = undefined
+  if (!profile.allow_direct_messaging) {
+    tooltipText = t(
+      'profile.header.tooltip.direct_messaging_off',
+      '{name} turned off direct messaging',
+      {
+        name: user.name,
+      },
+    )
+  }
+  if (!profile.allow_direct_messaging && profile.allow_interest_indicating) {
+    tooltipText =
+      tooltipText +
+      t(
+        'profile.header.tooltip.can_express_interest',
+        ', but you can still express interest at the end of the profile',
+      )
+  }
   return (
     <Col className="w-full">
       {currentUser && !isCurrentUser && isHiddenFromMe && (
@@ -194,7 +212,12 @@ export default function ProfileHeader(props: {
               />
             )}
             {currentUser && showMessageButton && (
-              <SendMessageButton toUser={user} currentUser={currentUser} />
+              <SendMessageButton
+                toUser={user}
+                currentUser={currentUser}
+                tooltipText={tooltipText}
+                disabled={!profile.allow_direct_messaging}
+              />
             )}
             <MoreOptionsUserButton user={user} />
           </Row>

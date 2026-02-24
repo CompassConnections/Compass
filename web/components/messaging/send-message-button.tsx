@@ -26,8 +26,11 @@ export const SendMessageButton = (props: {
   currentUser: User | undefined | null
   includeLabel?: boolean
   circleButton?: boolean
+  text?: string
+  tooltipText?: string
+  disabled?: boolean
 }) => {
-  const {toUser, currentUser, includeLabel, circleButton} = props
+  const {toUser, currentUser, includeLabel, circleButton, text, tooltipText, disabled} = props
   const firebaseUser = useFirebaseUser()
   const router = useRouter()
   const privateUser = usePrivateUser()
@@ -40,6 +43,7 @@ export const SendMessageButton = (props: {
   const [submitting, setSubmitting] = useState(false)
 
   const messageButtonClicked = async () => {
+    if (disabled) return
     if (!currentUser) return firebaseLogin()
     const previousDirectMessageChannel = findKey(
       memberIdsByChannelId,
@@ -97,11 +101,24 @@ export const SendMessageButton = (props: {
 
   return (
     <>
-      <Tooltip text={t('send_message.button_label', 'Message')} noTap>
-        {circleButton ? (
-          <button
-            className="bg-primary-900 hover:bg-primary-600 h-7 w-7 rounded-full transition-colors"
+      <Tooltip text={tooltipText || t('send_message.button_label', 'Message')} noTap>
+        {text ? (
+          <Button
+            className={clsx('h-fit gap-1', disabled && 'opacity-50 cursor-not-allowed')}
+            color={'gray-outline'}
             onClick={messageButtonClicked}
+            disabled={disabled}
+          >
+            {t('messaging.send_thoughtful_message', 'Send them a thoughtful message')}
+          </Button>
+        ) : circleButton ? (
+          <button
+            className={clsx(
+              'h-7 w-7 rounded-full transition-colors',
+              disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-900 hover:bg-primary-600',
+            )}
+            onClick={messageButtonClicked}
+            disabled={disabled}
           >
             <BiEnvelope
               className={clsx('m-auto h-5 w-5 text-white drop-shadow', includeLabel && 'mr-2')}
@@ -112,7 +129,11 @@ export const SendMessageButton = (props: {
             size={'sm'}
             onClick={messageButtonClicked}
             color={'none'}
-            className="bg-canvas-200 hover:bg-canvas-300"
+            className={clsx(
+              'bg-canvas-200 hover:bg-canvas-300',
+              disabled && 'opacity-50 cursor-not-allowed',
+            )}
+            disabled={disabled}
           >
             <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
             {includeLabel && <>{t('send_message.button_label', 'Message')}</>}

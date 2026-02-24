@@ -5,6 +5,7 @@ import {useForm} from 'react-hook-form'
 import toast from 'react-hot-toast'
 import {AboutSettings} from 'web/components/about-settings'
 import {Button} from 'web/components/buttons/button'
+import {ConnectionPreferencesSettings} from 'web/components/connection-preferences-settings'
 import {EmailVerificationButton} from 'web/components/email-verification-button'
 import {FontPicker} from 'web/components/font-picker'
 import {LanguagePicker} from 'web/components/language/language-picker'
@@ -129,6 +130,9 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
         >
           {t('settings.hidden_profiles.manage', 'Manage hidden profiles')}
         </Button>
+
+        <h3>{t('settings.connection_preferences.title', 'Connection Preferences')}</h3>
+        <ConnectionPreferencesSettings />
 
         <h3>{t('settings.general.account', 'Account')}</h3>
         <h5>{t('settings.general.email', 'Email')}</h5>

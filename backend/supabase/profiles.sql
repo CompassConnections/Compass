@@ -1,90 +1,95 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_visibility') THEN
-CREATE TYPE profile_visibility AS ENUM ('public', 'member');
-END IF;
-END$$;
+DO
+$$
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'profile_visibility') THEN
+            CREATE TYPE profile_visibility AS ENUM ('public', 'member');
+        END IF;
+    END
+$$;
 
-CREATE TABLE IF NOT EXISTS profiles (
-    age INTEGER NULL,
-    bio JSONB,
-    bio_length integer null,
-    born_in_location TEXT,
-    city                 TEXT,
-    city_latitude NUMERIC(9, 6),
-    city_longitude NUMERIC(9, 6),
-    comments_enabled BOOLEAN DEFAULT TRUE NOT NULL,
-    company TEXT,
-    country TEXT,
-    created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
-    diet                TEXT[],
-    disabled            BOOLEAN DEFAULT FALSE NOT NULL,
-    drinks_per_month INTEGER,
-    education_level TEXT,
-    ethnicity TEXT[],
-    gender               TEXT,
-    geodb_city_id TEXT,
-    has_kids INTEGER,
-    height_in_inches float4,
-    id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
-    image_descriptions jsonb,
-    is_smoker BOOLEAN,
-    last_modification_time TIMESTAMPTZ DEFAULT now() NOT NULL,
-    looking_for_matches BOOLEAN DEFAULT TRUE NOT NULL,
-    messaging_status TEXT DEFAULT 'open'::TEXT NOT NULL,
-    occupation TEXT,
-    occupation_title TEXT,
-    photo_urls TEXT[],
-    pinned_url TEXT,
-    political_beliefs TEXT[],
-    political_details   TEXT,
-    pref_age_max INTEGER NULL,
-    pref_age_min INTEGER NULL,
-    pref_gender          TEXT[],
-    pref_relation_styles TEXT[],
-    pref_romantic_styles TEXT[],
-    raised_in_city TEXT,
-    raised_in_country TEXT,
-    raised_in_geodb_city_id TEXT,
-    raised_in_lat NUMERIC(9, 6),
-    raised_in_lon NUMERIC(9, 6),
-    raised_in_radius INTEGER,
-    raised_in_region_code TEXT,
-    referred_by_username TEXT,
-    region_code TEXT,
-    relationship_status TEXT[],
-    religion            TEXT[],
+CREATE TABLE IF NOT EXISTS profiles
+(
+    age                       INTEGER                                                 NULL,
+    bio                       JSONB,
+    bio_length                integer                                                 null,
+    born_in_location          TEXT,
+    city                      TEXT,
+    city_latitude             NUMERIC(9, 6),
+    city_longitude            NUMERIC(9, 6),
+    comments_enabled          BOOLEAN            DEFAULT TRUE                         NOT NULL,
+    company                   TEXT,
+    country                   TEXT,
+    created_time              TIMESTAMPTZ        DEFAULT now()                        NOT NULL,
+    diet                      TEXT[],
+    disabled                  BOOLEAN            DEFAULT FALSE                        NOT NULL,
+    drinks_per_month          INTEGER,
+    education_level           TEXT,
+    ethnicity                 TEXT[],
+    gender                    TEXT,
+    geodb_city_id             TEXT,
+    has_kids                  INTEGER,
+    height_in_inches          float4,
+    id                        BIGINT GENERATED ALWAYS AS IDENTITY                     NOT NULL,
+    image_descriptions        jsonb,
+    is_smoker                 BOOLEAN,
+    last_modification_time    TIMESTAMPTZ        DEFAULT now()                        NOT NULL,
+    looking_for_matches       BOOLEAN            DEFAULT TRUE                         NOT NULL,
+    allow_direct_messaging    BOOLEAN            DEFAULT TRUE                         NOT NULL,
+    allow_interest_indicating BOOLEAN            DEFAULT TRUE                         NOT NULL,
+    occupation                TEXT,
+    occupation_title          TEXT,
+    photo_urls                TEXT[],
+    pinned_url                TEXT,
+    political_beliefs         TEXT[],
+    political_details         TEXT,
+    pref_age_max              INTEGER                                                 NULL,
+    pref_age_min              INTEGER                                                 NULL,
+    pref_gender               TEXT[],
+    pref_relation_styles      TEXT[],
+    pref_romantic_styles      TEXT[],
+    raised_in_city            TEXT,
+    raised_in_country         TEXT,
+    raised_in_geodb_city_id   TEXT,
+    raised_in_lat             NUMERIC(9, 6),
+    raised_in_lon             NUMERIC(9, 6),
+    raised_in_radius          INTEGER,
+    raised_in_region_code     TEXT,
+    referred_by_username      TEXT,
+    region_code               TEXT,
+    relationship_status       TEXT[],
+    religion                  TEXT[],
     religious_belief_strength INTEGER,
-    religious_beliefs TEXT,
-    twitter TEXT,
-    university TEXT,
-    user_id TEXT NOT NULL,
-    visibility profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
-    wants_kids_strength  INTEGER DEFAULT 0,
-    website TEXT,
+    religious_beliefs         TEXT,
+    twitter                   TEXT,
+    university                TEXT,
+    user_id                   TEXT                                                    NOT NULL,
+    visibility                profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
+    wants_kids_strength       INTEGER            DEFAULT 0,
+    website                   TEXT,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
-    );
+);
 
 
 ALTER TABLE profiles
     ADD CONSTRAINT profiles_user_id_fkey
         FOREIGN KEY (user_id)
-            REFERENCES users(id)
+            REFERENCES users (id)
             ON DELETE CASCADE;
 
 -- Row Level Security
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles
+    ENABLE ROW LEVEL SECURITY;
 
 -- Policies
 DROP POLICY IF EXISTS "public read" ON profiles;
 CREATE POLICY "public read" ON profiles
-FOR SELECT USING (true);
+    FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "self update" ON profiles;
 
 CREATE POLICY "self update" ON profiles
-FOR UPDATE
-                    WITH CHECK ((user_id = firebase_uid()));
+    FOR UPDATE
+    WITH CHECK ((user_id = firebase_uid()));
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON public.profiles USING btree (user_id);
@@ -140,8 +145,9 @@ CREATE INDEX users_name_trgm_idx
 
 -- Functions and Triggers
 CREATE
-OR REPLACE FUNCTION update_last_modification_time()
-RETURNS TRIGGER AS $$
+    OR REPLACE FUNCTION update_last_modification_time()
+    RETURNS TRIGGER AS
+$$
 BEGIN
     NEW.last_modification_time = now();
     RETURN NEW;
@@ -153,7 +159,7 @@ CREATE TRIGGER trigger_update_last_mod_time
     BEFORE UPDATE
     ON profiles
     FOR EACH ROW
-    EXECUTE FUNCTION update_last_modification_time();
+EXECUTE FUNCTION update_last_modification_time();
 
 -- pg_trgm
 create extension if not exists pg_trgm;
@@ -163,10 +169,12 @@ CREATE INDEX profiles_bio_trgm_idx
 
 
 --- bio_text
-ALTER TABLE profiles ADD COLUMN bio_text TEXT;
+ALTER TABLE profiles
+    ADD COLUMN bio_text TEXT;
 
-ALTER TABLE profiles ADD COLUMN bio_tsv tsvector
-    GENERATED ALWAYS AS (to_tsvector('english', coalesce(bio_text, ''))) STORED;
+ALTER TABLE profiles
+    ADD COLUMN bio_tsv tsvector
+        GENERATED ALWAYS AS (to_tsvector('english', coalesce(bio_text, ''))) STORED;
 
 CREATE INDEX profiles_bio_tsv_idx ON profiles USING GIN (bio_tsv);
 
@@ -176,7 +184,8 @@ ALTER TABLE profiles
 
 -- Rebuild search (search_txt and search_tsv)
 CREATE OR REPLACE FUNCTION trg_profiles_rebuild_search()
-    RETURNS trigger AS $$
+    RETURNS trigger AS
+$$
 BEGIN
     PERFORM rebuild_profile_search(NEW.id);
     RETURN NEW;

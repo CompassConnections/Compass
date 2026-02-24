@@ -23,7 +23,7 @@ export function EmailVerificationButton() {
       console.log('User email verified')
       return true
     } else {
-      toast.error(t('', 'Email still not verified...'))
+      toast.error(t('settings.email.not_verified', 'Email still not verified...'))
     }
   }
 

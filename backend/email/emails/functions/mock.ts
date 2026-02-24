@@ -12,7 +12,6 @@ export type PartialProfile = Pick<
   | 'last_modification_time'
   | 'disabled'
   | 'looking_for_matches'
-  | 'messaging_status'
   | 'comments_enabled'
   | 'visibility'
 > &
@@ -48,7 +47,6 @@ export const jamesProfile: PartialProfile = {
   last_modification_time: '2024-05-17T02:11:48.83+00:00',
   disabled: false,
   looking_for_matches: true,
-  messaging_status: 'open',
   comments_enabled: true,
   visibility: 'public',
   city: 'San Francisco',

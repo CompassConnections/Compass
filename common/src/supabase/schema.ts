@@ -4,7 +4,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.4'
+    PostgrestVersion: '13.0.5'
   }
   public: {
     Tables: {
@@ -292,6 +292,45 @@ export type Database = {
           },
         ]
       }
+      connection_interests: {
+        Row: {
+          connection_type: string
+          created_at: string
+          id: number
+          target_user_id: string
+          user_id: string
+        }
+        Insert: {
+          connection_type: string
+          created_at?: string
+          id?: never
+          target_user_id: string
+          user_id: string
+        }
+        Update: {
+          connection_type?: string
+          created_at?: string
+          id?: never
+          target_user_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'connection_interests_target_user_id_fkey'
+            columns: ['target_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'connection_interests_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       contact: {
         Row: {
           content: Json | null
@@ -528,6 +567,38 @@ export type Database = {
           },
         ]
       }
+      notification_template_translations: {
+        Row: {
+          created_time: string
+          locale: string
+          source_text: string
+          template_id: string
+          title: string | null
+        }
+        Insert: {
+          created_time?: string
+          locale: string
+          source_text: string
+          template_id: string
+          title?: string | null
+        }
+        Update: {
+          created_time?: string
+          locale?: string
+          source_text?: string
+          template_id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'notification_template_translations_template_id_fkey'
+            columns: ['template_id']
+            isOneToOne: false
+            referencedRelation: 'notification_templates'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       notification_templates: {
         Row: {
           created_time: number
@@ -563,37 +634,6 @@ export type Database = {
           title?: string | null
         }
         Relationships: []
-      }
-      notification_template_translations: {
-        Row: {
-          template_id: string
-          locale: string
-          title: string | null
-          source_text: string
-          created_time: number
-        }
-        Insert: {
-          template_id: string
-          locale: string
-          title?: string | null
-          source_text: string
-          created_time?: number
-        }
-        Update: {
-          template_id?: string
-          locale?: string
-          title?: string | null
-          source_text?: string
-          created_time?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'notification_template_translations_template_id_fkey'
-            columns: ['template_id']
-            referencedRelation: 'notification_templates'
-            referencedColumns: ['id']
-          },
-        ]
       }
       private_user_message_channel_members: {
         Row: {
@@ -764,14 +804,17 @@ export type Database = {
         Row: {
           data: Json
           id: string
+          locale: string | null
         }
         Insert: {
           data: Json
           id: string
+          locale?: string | null
         }
         Update: {
           data?: Json
           id?: string
+          locale?: string | null
         }
         Relationships: [
           {
@@ -1036,6 +1079,8 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          allow_direct_messaging: boolean | null
+          allow_interest_indicating: boolean | null
           big5_agreeableness: number | null
           big5_conscientiousness: number | null
           big5_extraversion: number | null
@@ -1069,7 +1114,6 @@ export type Database = {
           last_modification_time: string
           looking_for_matches: boolean
           mbti: string | null
-          messaging_status: string
           occupation: string | null
           occupation_title: string | null
           photo_urls: string[] | null
@@ -1105,6 +1149,8 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          allow_direct_messaging?: boolean | null
+          allow_interest_indicating?: boolean | null
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1138,7 +1184,6 @@ export type Database = {
           last_modification_time?: string
           looking_for_matches?: boolean
           mbti?: string | null
-          messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
           photo_urls?: string[] | null
@@ -1174,6 +1219,8 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          allow_direct_messaging?: boolean | null
+          allow_interest_indicating?: boolean | null
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1207,7 +1254,6 @@ export type Database = {
           last_modification_time?: string
           looking_for_matches?: boolean
           mbti?: string | null
-          messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
           photo_urls?: string[] | null
@@ -1420,15 +1466,7 @@ export type Database = {
           ts?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: 'user_events_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       user_notifications: {
         Row: {

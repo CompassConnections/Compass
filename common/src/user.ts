@@ -10,6 +10,8 @@ export type User = {
   link: Socials // Social links
   isBannedFromPosting?: boolean
   userDeleted?: boolean
+  allow_direct_messaging?: boolean
+  allow_interest_indicating?: boolean
 }
 
 export type PrivateUser = {

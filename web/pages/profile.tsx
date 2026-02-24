@@ -28,7 +28,7 @@ export default function ProfilePage() {
     if (!user || !profile) {
       const timer = setTimeout(() => {
         setShowLoading(true)
-      }, 3000)
+      }, 1000)
       return () => clearTimeout(timer)
     } else {
       setShowLoading(false)

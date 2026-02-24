@@ -82,7 +82,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   if (isCurrentUser || !currentUser) return null
 
   return (
-    <Col className="bg-canvas-0 w-full gap-6 rounded-xl px-2 shadow-sm">
+    <Col className="bg-canvas-0 w-full gap-6 rounded-xl p-2 shadow-sm">
       <div className="border-t border-ink-200">
         <h3 className="text-xl font-semibold mb-4">{t('profile.connect.title', 'Connect')}</h3>
 

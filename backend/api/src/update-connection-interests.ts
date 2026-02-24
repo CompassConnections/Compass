@@ -1,6 +1,8 @@
 import {APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
+import {createT} from 'shared/locale'
+import {sendMobileNotifications, sendWebNotifications} from 'shared/mobile'
 import {getProfile} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
@@ -60,8 +62,32 @@ export const updateConnectionInterests: APIHandler<'update-connection-interest'>
             },
           }
           await insertNotificationToSupabase(notification, pg)
+        }
 
-          //   Send it to mobile as well
+        const t = createT(targetPrivateUser.locale)
+        const type = t(`profile.relationship.${connectionType}`, connectionType).toLowerCase()
+
+        const payload = {
+          title: t('notifications.connection.mutual_title', 'It’s mutual 🎉'),
+          body: t(
+            'notifications.connection.mutual_body',
+            'You and {name} are both interested in a {type}. Start the conversation.',
+            {
+              name: currentUser.name,
+              type,
+            },
+          ),
+          url: `/${currentUser.username}`,
+        }
+        try {
+          await sendWebNotifications(pg, targetUserId, JSON.stringify(payload))
+        } catch (err) {
+          console.error('Failed to send web notification:', err)
+        }
+        try {
+          await sendMobileNotifications(pg, targetUserId, payload)
+        } catch (err) {
+          console.error('Failed to send mobile notification:', err)
         }
       }
     }

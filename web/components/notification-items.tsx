@@ -238,7 +238,7 @@ export function ConnectionInterestMatchNotification(props: {
   const {sourceUserName, sourceUserUsername, sourceText} = notification
   const t = useT()
   const connectionType = notification.data?.connectionType || sourceText
-  const type = t(`profile.relationship.${connectionType}`, connectionType)
+  const type = t(`profile.relationship.${connectionType}`, connectionType).toLowerCase()
 
   return (
     <NotificationFrame
@@ -246,7 +246,7 @@ export function ConnectionInterestMatchNotification(props: {
       isChildOfGroup={isChildOfGroup}
       highlighted={highlighted}
       setHighlighted={setHighlighted}
-      icon={<AvatarNotificationIcon notification={notification} symbol={'💕'} />}
+      icon={<AvatarNotificationIcon notification={notification} />}
       link={`/${sourceUserUsername}`}
       subtitle={<></>}
     >

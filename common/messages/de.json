@@ -478,6 +478,7 @@
   "notifications.comment.on_your_profile": "auf Ihrem Profil",
   "notifications.match.proposed_new_match": "schlug einen neuen Match vor:",
   "notifications.profile.liked_you": "mag dich gerne!",
+  "notifications.connection.interested_in_you": "ist an dir interessiert für {type}",
   "notifications.who_liked_it": "Wer hat es gern?",
   "notifications.profile.are_being_shipped_by": "werden versandt von",
   "time.units.y": "y",

@@ -36,6 +36,8 @@ export function NotificationItem(props: {notification: Notification}) {
     return <ProfileLikeNotification {...params} />
   } else if (reason === 'new_profile_ship') {
     return <ProfileShipNotification {...params} />
+  } else if (reason === 'connection_interest_match') {
+    return <ConnectionInterestMatchNotification {...params} />
   } else {
     return <BaseNotification {...params} />
   }
@@ -222,6 +224,37 @@ function ProfileShipNotification(props: {
         open={open}
         setOpen={setOpen}
       />
+    </NotificationFrame>
+  )
+}
+
+export function ConnectionInterestMatchNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+  isChildOfGroup?: boolean
+}) {
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
+  const {sourceUserName, sourceUserUsername, sourceText} = notification
+  const t = useT()
+  const connectionType = notification.data?.connectionType || sourceText
+  const type = t(`profile.relationship.${connectionType}`, connectionType)
+
+  return (
+    <NotificationFrame
+      notification={notification}
+      isChildOfGroup={isChildOfGroup}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={<AvatarNotificationIcon notification={notification} symbol={'💕'} />}
+      link={`/${sourceUserUsername}`}
+      subtitle={<></>}
+    >
+      <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
+      {t('notifications.connection.interested_in_you', 'is interested in a {type} with you', {
+        type,
+      })}
+      !
     </NotificationFrame>
   )
 }

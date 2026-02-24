@@ -478,6 +478,7 @@
   "notifications.comment.on_your_profile": "votre profil",
   "notifications.match.proposed_new_match": "proposé un nouveau match :",
   "notifications.profile.liked_you": "vous a plu !",
+  "notifications.connection.interested_in_you": "est intéressé·e par un(e) {type} avec vous",
   "notifications.who_liked_it": "Qui l'a aimé ?",
   "time.units.y": "ans",
   "time.units.mo": "mo",

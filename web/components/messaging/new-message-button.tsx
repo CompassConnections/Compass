@@ -1,6 +1,7 @@
 import {PlusIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
+import {APIError} from 'common/api/utils'
 import {buildArray} from 'common/util/array'
 import {useRouter} from 'next/router'
 import {useState} from 'react'
@@ -33,13 +34,15 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
   const privateUser = usePrivateUser()
   const router = useRouter()
   const t = useT()
+  const [errorText, setErrorText] = useState<string>('')
 
   const [users, setUsers] = useState<DisplayUser[]>([])
   const createChannel = async () => {
     const res = await api('create-private-user-message-channel', {
       userIds: users.map((user) => user.id),
-    }).catch((e) => {
+    }).catch((e: APIError) => {
       console.error(e)
+      setErrorText(String(e))
       return
     })
     if (!res) {
@@ -61,6 +64,7 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
             .concat(buildArray(privateUser?.id))}
         />
       </Col>
+      {errorText && <p className={'bg-canvas-0 text-red-500 px-5'}>{errorText}</p>}
       <Row className={'bg-canvas-0 justify-end rounded-b-md p-2'}>
         <Button disabled={users.length === 0} onClick={createChannel}>
           {t('messages.create', 'Create')}

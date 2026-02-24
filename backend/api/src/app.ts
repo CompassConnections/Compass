@@ -58,7 +58,7 @@ import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {deleteMe} from './delete-me'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
-import {getConnectionInterests} from './get-connection-interests'
+import {getConnectionInterestsEndpoint} from './get-connection-interests'
 import {getCurrentPrivateUser} from './get-current-private-user'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
@@ -377,7 +377,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-user-locale': updateUserLocale,
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
   'update-profile': updateProfile,
-  'get-connection-interests': getConnectionInterests,
+  'get-connection-interests': getConnectionInterestsEndpoint,
   'update-connection-interest': updateConnectionInterests,
   'user/by-id/:id': getUser,
   'user/by-id/:id/block': blockUser,

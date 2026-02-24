@@ -154,12 +154,12 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
                 border
                 ${
                   isMutual
-                    ? 'bg-primary-500 text-white border-primary-500'
+                    ? 'bg-primary-200 border-primary-500'
                     : isSelected
-                      ? 'bg-primary-100 text-primary-800 border-primary-300'
-                      : 'bg-canvas-50 text-ink-700 border-ink-300 hover:border-primary-400'
+                      ? 'bg-primary-100 border-primary-300'
+                      : 'bg-canvas-50 text-ink-700 border-ink-300'
                 }
-                ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}
+                ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:border-primary-400'}
               `}
                       >
                         {t(`profile.relationship.${type}`, label)}

@@ -1,12 +1,15 @@
 import {APIHandler} from 'api/helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getConnectionInterests: APIHandler<'get-connection-interests'> = async (
+export const getConnectionInterestsEndpoint: APIHandler<'get-connection-interests'> = async (
   props,
   auth,
 ) => {
+  return getConnectionInterests(props, auth.uid)
+}
+
+export const getConnectionInterests = async (props: any, userId: string) => {
   const {targetUserId} = props
-  const userId = auth.uid
 
   if (!targetUserId) {
     throw new Error('Missing target user ID')

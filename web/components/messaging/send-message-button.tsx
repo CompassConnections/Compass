@@ -109,7 +109,7 @@ export const SendMessageButton = (props: {
             onClick={messageButtonClicked}
             disabled={disabled}
           >
-            {t('messaging.send_thoughtful_message', 'Send them a thoughtful message')}
+            {text}
           </Button>
         ) : circleButton ? (
           <button

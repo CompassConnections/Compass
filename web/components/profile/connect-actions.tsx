@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
+import {Subtitle} from 'web/components/widgets/profile-subtitle'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
@@ -82,9 +83,9 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   if (isCurrentUser || !currentUser) return null
 
   return (
-    <Col className="bg-canvas-0 w-full gap-6 rounded-xl p-2 shadow-sm">
-      <div className="border-t border-ink-200">
-        <h3 className="text-xl font-semibold mb-4">{t('profile.connect.title', 'Connect')}</h3>
+    <Col className="w-full gap-6 rounded-xl shadow-sm">
+      <div className="border-y border-canvas-200 p-2 pb-8">
+        <Subtitle className="mb-4">{t('profile.connect.title', 'Connect')}</Subtitle>
 
         {/* Primary Action */}
         <div className="mb-6">
@@ -92,7 +93,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
             <SendMessageButton
               toUser={user}
               currentUser={currentUser}
-              text={t('profile.connect.send_message', 'Send Message')}
+              text={t('messaging.send_thoughtful_message', 'Send them a thoughtful message')}
             />
           ) : (
             <p className={'guidance'}>

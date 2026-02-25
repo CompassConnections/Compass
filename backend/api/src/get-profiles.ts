@@ -230,7 +230,7 @@ export const loadProfiles = async (props: profileQueryType) => {
        OR ${getOptionClauseKeyword('causes')}
        OR ${getOptionClauseKeyword('work')}
        OR lower(headline) ilike '%' || lower($(word)) || '%'
-       OR keywords && LOWER($(word)) = ANY(keywords)
+       OR EXISTS ( SELECT 1 FROM unnest(keywords) AS kw WHERE kw ILIKE '%' || LOWER($(word)) || '%' )
         `,
         {word, locale},
       ),

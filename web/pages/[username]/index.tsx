@@ -291,7 +291,7 @@ function UserPageInner(props: ActiveUserPageProps) {
     >
       <SEO
         title={`${user.name}`}
-        description={`${user.name} is on Compass`}
+        description={profile?.headline ?? `${user.name} is on Compass`}
         url={`/${user.username}`}
         image={seoImage}
       />

@@ -1,4 +1,3 @@
-// Define nice labels for each key
 import {
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
@@ -131,9 +130,10 @@ export function formatFilters(
     let stringValue = value
     if (key === 'has_kids')
       stringValue = translate(`profile.has_kids.${value}`, hasKidsNames[value as number])
-    else if (key === 'wants_kids_strength')
+    else if (key === 'wants_kids_strength') {
+      if (value === -1) return
       stringValue = translate(`profile.wants_kids_${value}`, wantsKidsNames[value as number])
-    else if (key === 'is_smoker')
+    } else if (key === 'is_smoker')
       stringValue = translate(
         `profile.smoker.${value ? 'yes' : 'no'}`,
         value ? 'Smoker' : 'Non-smoker',

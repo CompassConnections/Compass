@@ -46,40 +46,40 @@ export class ProfilePage {
   private readonly viewQuestionListButton: Locator
 
   constructor(public readonly page: Page) {
-    this.startAnsweringButton = page.getByRole('button', {})
-    this.doThisLaterLink = page.getByRole('button', {})
-    this.closeButton = page.getByRole('button', {name: 'Close'})
-    this.shareButton = page.getByRole('button', {name: 'Share'})
-    this.editProfileButton = page.getByTestId('profile-edit')
-    this.profileOptionsDropdown = page.getByTestId('profile-options')
-    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true})
+    this.startAnsweringButton = page.getByRole('button', {});
+    this.doThisLaterLink = page.getByRole('button', {});
+    this.closeButton = page.getByRole('button', {name: 'Close'});
+    this.shareButton = page.getByRole('button', {name: 'Share'});
+    this.editProfileButton = page.getByTestId('profile-edit');
+    this.profileOptionsDropdown = page.getByTestId('profile-options');
+    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true});
     this.limitProfileToMembersDropdownOption = page.getByText('Limit to Members Only', {
       exact: true,
-    })
-    this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true})
-    this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age')
+    });
+    this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true});
+    this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age');
     this.genderLocationHightInInchesSection = page.getByTestId(
       'profile-gender-location-height-inches',
-    )
-    this.politicalAboutSection = page.getByTestId('profile-about-political')
-    this.relegiousAboutSection = page.getByTestId('profile-about-religious')
-    this.interestsAboutSection = page.getByTestId('profile-about-interests')
-    this.causesAboutSection = page.getByTestId('profile-about-causes')
-    this.personalityAboutSection = page.getByTestId('profile-about-personality')
-    this.ethnicityAboutSection = page.getByTestId('profile-about-ethnicity')
-    this.dietAboutSection = page.getByTestId('profile-about-diet')
-    this.languagesAboutSection = page.getByTestId('profile-about-languages')
-    this.seekingAboutSection = page.getByTestId('profile-about-seeking')
-    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type')
-    this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
-    this.educationAboutSection = page.getByTestId('profile-about-education')
-    this.occupationAboutSection = page.getByTestId('profile-about-occupation')
-    this.workAreaAboutSection = page.getByTestId('profile-about-work-area')
-    this.smokerAboutSection = page.getByTestId('profile-about-smoker')
-    this.notDrinkerAboutSection = page.getByTestId('profile-about-not-drink')
-    this.drinkerAboutSection = page.getByTestId('profile-about-drinker')
-    this.wantsKidsAboutSection = page.getByTestId('profile-about-wants-kids')
-    this.lastOnlineAboutSection = page.getByTestId('profile-about-wants-last-online')
+    );
+    this.politicalAboutSection = page.getByTestId('profile-about-political');
+    this.relegiousAboutSection = page.getByTestId('profile-about-religious');
+    this.interestsAboutSection = page.getByTestId('profile-about-interests');
+    this.causesAboutSection = page.getByTestId('profile-about-causes');
+    this.personalityAboutSection = page.getByTestId('profile-about-personality');
+    this.ethnicityAboutSection = page.getByTestId('profile-about-ethnicity');
+    this.dietAboutSection = page.getByTestId('profile-about-diet');
+    this.languagesAboutSection = page.getByTestId('profile-about-languages');
+    this.seekingAboutSection = page.getByTestId('profile-about-seeking');
+    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type');
+    this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status');
+    this.educationAboutSection = page.getByTestId('profile-about-education');
+    this.occupationAboutSection = page.getByTestId('profile-about-occupation');
+    this.workAreaAboutSection = page.getByTestId('profile-about-work-area');
+    this.smokerAboutSection = page.getByTestId('profile-about-smoker');
+    this.notDrinkerAboutSection = page.getByTestId('profile-about-not-drink');
+    this.drinkerAboutSection = page.getByTestId('profile-about-drinker');
+    this.wantsKidsAboutSection = page.getByTestId('profile-about-wants-kids');
+    this.lastOnlineAboutSection = page.getByTestId('profile-about-wants-last-online');
     this.bigFivePersonalityTraitsAboutSection = page.getByTestId(
       'profile-about-big-five-personality-traits',
     )
@@ -94,24 +94,24 @@ export class ProfilePage {
   }
 
   async clickCloseButton() {
-    await expect(this.closeButton).toBeInViewport()
-    await this.closeButton.click()
-  }
+    await expect(this.closeButton).toBeInViewport();
+    await this.closeButton.click();
+  };
 
   async clickStartAnsweringButton() {
-    await expect(this.startAnsweringButton).toBeVisible()
-    await this.startAnsweringButton.click()
-  }
+    await expect(this.startAnsweringButton).toBeVisible();
+    await this.startAnsweringButton.click();
+  };
 
   async clickDoThisLaterButton() {
-    await expect(this.doThisLaterLink).toBeVisible()
-    await this.doThisLaterLink.click()
-  }
+    await expect(this.doThisLaterLink).toBeVisible();
+    await this.doThisLaterLink.click();
+  };
 
   async clickShareButton() {
-    await expect(this.shareButton).toBeVisible()
-    await this.shareButton.click()
-  }
+    await expect(this.shareButton).toBeVisible();
+    await this.shareButton.click();
+  };
 
   async clickEditProfileButton() {
     await expect(this.editProfileButton).toBeVisible()
@@ -129,20 +129,20 @@ export class ProfilePage {
   }
 
   async selectOptionFromProfileDropdown(option: ProfileDropdownOptions) {
-    await expect(this.profileOptionsDropdown).toBeVisible()
-    await this.profileOptionsDropdown.click()
+    await expect(this.profileOptionsDropdown).toBeVisible();
+    await this.profileOptionsDropdown.click();
 
     if (option === 'Public') {
-      await expect(this.listProfilePubliclyDropdownOption).toBeVisible()
-      await this.listProfilePubliclyDropdownOption.click()
+      await expect(this.listProfilePubliclyDropdownOption).toBeVisible();
+      await this.listProfilePubliclyDropdownOption.click();
     } else if (option === 'Disable') {
-      await expect(this.disableProfileDropdownOption).toBeVisible()
-      await this.disableProfileDropdownOption.click()
+      await expect(this.disableProfileDropdownOption).toBeVisible();
+      await this.disableProfileDropdownOption.click();
     } else if (option === 'Private') {
-      await expect(this.limitProfileToMembersDropdownOption).toBeVisible()
-      await this.limitProfileToMembersDropdownOption.click()
-    }
-  }
+      await expect(this.limitProfileToMembersDropdownOption).toBeVisible();
+      await this.limitProfileToMembersDropdownOption.click();
+    };
+  };
 
   async verifyDisplayNameAndAge(displayName?: string, age?: string) {
     await expect(this.displayNameAndAgeSection).toBeVisible()

@@ -1,7 +1,6 @@
 import {ImageResponse} from '@vercel/og'
 import {ImageResponseOptions} from '@vercel/og/dist/types'
 import {ogProps} from 'common/profiles/og-image'
-import {capitalize} from 'lodash'
 import {NextRequest} from 'next/server'
 import {classToTw} from 'web/components/og/utils'
 
@@ -16,10 +15,10 @@ export const getCardOptions = async () => ({
 })
 
 // Edge-safe capitalize
-// function capitalize(str: string) {
-//   if (!str) return ''
-//   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-// }
+function capitalize(str: string) {
+  if (!str) return ''
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
 
 function OgProfile(props: ogProps) {
   const {avatarUrl, name, city, country, age, interests, keywords} = props

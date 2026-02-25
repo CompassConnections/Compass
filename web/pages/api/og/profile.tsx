@@ -27,7 +27,7 @@ function OgProfile(props: ogProps) {
         width: 1200,
         height: 630,
         padding: 40,
-        // background: 'linear-gradient(90deg, #5B5FC7, #3A9AD9)',
+        backgroundColor: '#FFFFFF',
       }}
     >
       {/* Left Column: Text */}

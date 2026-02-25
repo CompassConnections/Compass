@@ -28,9 +28,9 @@ function OgProfile(props: ogProps) {
     typeof interests === 'string' ? (interests ? interests.split(',') : []) : (interests ?? [])
   const keywordsList =
     typeof keywords === 'string' ? (keywords ? keywords.split(',') : []) : (keywords ?? [])
-  const allTags = [...keywordsList].filter(Boolean)
+  const allTags = [...keywordsList].filter(Boolean).slice(0, 8)
 
-  const maxChars = 250
+  const maxChars = 200
   if (headline && headline.length > maxChars) {
     headline = headline.slice(0, maxChars) + '...'
   }
@@ -49,14 +49,11 @@ function OgProfile(props: ogProps) {
         backgroundColor: '#f5f5f5',
       }}
     >
-      {/* Top Section: Name + Headline */}
-
-      {/* Bottom Section: Two Columns */}
-      <div style={{display: 'flex', flex: 1}}>
-        {/* Left Column: City + Tags */}
+      <div style={{display: 'flex', flex: 3}}>
+        {/* Left Column: Text */}
         <div
           style={{
-            flex: 1,
+            flex: 3,
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
@@ -93,7 +90,14 @@ function OgProfile(props: ogProps) {
         </div>
 
         {/* Right Column: Avatar */}
-        <div style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <img
             src={avatarUrl || COMPASS_LOGO}
             width={250}
@@ -106,7 +110,7 @@ function OgProfile(props: ogProps) {
 
       <div
         style={{
-          flex: 1,
+          flex: 2,
           display: 'flex',
           flexDirection: 'column',
           marginBottom: '40px',

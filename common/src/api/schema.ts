@@ -157,6 +157,7 @@ export const API = (_apiTypeCheck = {
       .object({
         deviceToken: z.string().optional(),
         adminToken: z.string().optional(),
+        locale: z.string().optional(),
       })
       .strict(),
     summary: 'Create a new user (admin or onboarding flow)',
@@ -234,6 +235,33 @@ export const API = (_apiTypeCheck = {
     summary: 'Update profile fields for the authenticated user',
     tag: 'Profiles',
   },
+  'get-connection-interests': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      targetUserId: z.string(),
+    }),
+    returns: {} as {
+      interests: string[]
+      targetInterests: string[]
+    },
+    summary: 'Get connection preferences for a user or another user',
+    tag: 'Profiles',
+  },
+  'update-connection-interest': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      targetUserId: z.string(),
+      connectionType: z.string(),
+      seeking: z.boolean(),
+    }),
+    returns: {} as {success: boolean},
+    summary: 'Update connection preference for the authenticated user',
+    tag: 'Profiles',
+  },
   'update-notif-settings': {
     method: 'POST',
     authed: true,
@@ -246,11 +274,26 @@ export const API = (_apiTypeCheck = {
     summary: 'Update a notification preference for the user',
     tag: 'Notifications',
   },
+  'update-user-locale': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      locale: z.string(),
+    }),
+    summary: "Update the user's preferred locale",
+    tag: 'User',
+  },
   'me/delete': {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    props: z.object({}),
+    props: z
+      .object({
+        reasonCategory: z.string().nullable().optional(),
+        reasonDetails: z.string().optional(),
+      })
+      .strict(),
     summary: 'Delete the authenticated user account',
     tag: 'Users',
   },
@@ -689,6 +732,7 @@ export const API = (_apiTypeCheck = {
       .object({
         after: z.coerce.number().optional(),
         limit: z.coerce.number().gte(0).lte(1000).default(100),
+        locale: z.string().optional(),
       })
       .strict(),
     summary: 'Fetch notifications for the authenticated user',

@@ -167,7 +167,6 @@ test.describe('when given valid input', () => {
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip bio
     await signUpPage.clickNextButton() //Skip optional information
     await profilePage.clickCloseButton();
     await onboardingPage.clickRefineProfileButton();

@@ -2,6 +2,7 @@ import {Placement} from '@floating-ui/react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import {useIsClient} from 'web/hooks/use-is-client'
+import {useLocale, useT} from 'web/lib/locale'
 import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 import {fromNow} from 'web/lib/util/time'
 
@@ -15,6 +16,8 @@ export function RelativeTimestamp(props: {
 }) {
   const {time, className, placement, shortened} = props
   const isClient = useIsClient()
+  const {locale} = useLocale()
+  const t = useT()
   return (
     <DateTimeTooltip
       className="text-ink-400 ml-1 whitespace-nowrap"
@@ -22,7 +25,7 @@ export function RelativeTimestamp(props: {
       placement={placement}
     >
       <span className={className}>
-        {isClient ? shortened ? shortenedFromNow(time) : fromNow(time) : <></>}
+        {isClient ? shortened ? shortenedFromNow(time, t) : fromNow(time, false, t, locale) : <></>}
       </span>
     </DateTimeTooltip>
   )
@@ -35,9 +38,11 @@ export function RelativeTimestampNoTooltip(props: {
 }) {
   const {time, className, shortened} = props
   const isClient = useIsClient()
+  const {locale} = useLocale()
+  const t = useT()
   return (
     <span className={className}>
-      {isClient && (shortened ? shortenedFromNow(time) : fromNow(time))}
+      {isClient && (shortened ? shortenedFromNow(time, t) : fromNow(time, false, t, locale))}
     </span>
   )
 }

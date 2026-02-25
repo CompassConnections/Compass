@@ -1,3 +1,4 @@
+import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useRouter} from 'next/router'
@@ -54,7 +55,7 @@ export default function SignupPage() {
   }, [user, holdLoading])
 
   const {locale} = useLocale()
-  const language = {en: 'english', fr: 'french'}[locale]
+  const language = LOCALE_TO_LANGUAGE[locale]
 
   // Omit the id, created_time?
   const [profileForm, setProfileForm] = useState<ProfileWithoutUser>({

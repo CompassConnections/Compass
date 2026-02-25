@@ -6,6 +6,7 @@ import {sortBy} from 'lodash'
 import Link from 'next/link'
 import {ReactNode, useState} from 'react'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useT} from 'web/lib/locale'
 
 import {Col} from './layout/col'
 import {Row} from './layout/row'
@@ -35,6 +36,8 @@ export function NotificationItem(props: {notification: Notification}) {
     return <ProfileLikeNotification {...params} />
   } else if (reason === 'new_profile_ship') {
     return <ProfileShipNotification {...params} />
+  } else if (reason === 'connection_interest_match') {
+    return <ConnectionInterestMatchNotification {...params} />
   } else {
     return <BaseNotification {...params} />
   }
@@ -74,7 +77,8 @@ export function CommentOnProfileNotification(props: {
 }) {
   const {notification, isChildOfGroup, highlighted, setHighlighted} = props
   const {sourceUserName, sourceUserUsername, sourceText} = notification
-  const reasonText = `commented `
+  const t = useT()
+  const reasonText = t('notifications.comment.commented', `commented `)
   return (
     <NotificationFrame
       notification={notification}
@@ -91,7 +95,9 @@ export function CommentOnProfileNotification(props: {
     >
       <div className="line-clamp-3">
         <NotificationUserLink name={sourceUserName} username={sourceUserUsername} /> {reasonText}
-        {!isChildOfGroup && <span>on your profile</span>}
+        {!isChildOfGroup && (
+          <span>{t('notifications.comment.on_your_profile', 'on your profile')}</span>
+        )}
       </div>
     </NotificationFrame>
   )
@@ -105,6 +111,7 @@ export function NewMatchNotification(props: {
 }) {
   const {notification, isChildOfGroup, highlighted, setHighlighted} = props
   const {sourceContractTitle, sourceText, sourceUserName, sourceUserUsername} = notification
+  const t = useT()
   return (
     <NotificationFrame
       notification={notification}
@@ -122,7 +129,8 @@ export function NewMatchNotification(props: {
       <div className="line-clamp-3">
         <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
         <span>
-          proposed a new match: <PrimaryNotificationLink text={sourceContractTitle} />
+          {t('notifications.match.proposed_new_match', 'proposed a new match:')}
+          <PrimaryNotificationLink text={sourceContractTitle} />
         </span>
       </div>
     </NotificationFrame>
@@ -137,6 +145,7 @@ function ProfileLikeNotification(props: {
 }) {
   const {notification, highlighted, setHighlighted, isChildOfGroup} = props
   const [open, setOpen] = useState(false)
+  const t = useT()
   const {sourceUserName, sourceUserUsername} = notification
   const relatedNotifications: Notification[] = notification.data?.relatedNotifications ?? [
     notification,
@@ -157,10 +166,11 @@ function ProfileLikeNotification(props: {
       link={`https://${ENV_CONFIG.domain}/${sourceUserUsername}`}
       subtitle={<></>}
     >
-      {reactorsText && <PrimaryNotificationLink text={reactorsText} />} liked you!
+      {reactorsText && <PrimaryNotificationLink text={reactorsText} />}{' '}
+      {t('notifications.profile.liked_you', 'liked you!')}
       <MultiUserReactionModal
         similarNotifications={relatedNotifications}
-        modalLabel={'Who liked it?'}
+        modalLabel={t('notifications.who_liked_it', 'Who liked it?')}
         open={open}
         setOpen={setOpen}
       />
@@ -176,6 +186,7 @@ function ProfileShipNotification(props: {
 }) {
   const {notification, highlighted, setHighlighted, isChildOfGroup} = props
   const [open, setOpen] = useState(false)
+  const t = useT()
   const {sourceUserName, sourceUserUsername} = notification
   const relatedNotifications: Notification[] = notification.data?.relatedNotifications ?? [
     notification,
@@ -198,7 +209,8 @@ function ProfileShipNotification(props: {
       link={`https://${ENV_CONFIG.domain}/${sourceUserUsername}`}
       subtitle={<></>}
     >
-      You and {reactorsText && <PrimaryNotificationLink text={reactorsText} />} are being shipped by{' '}
+      You and {reactorsText && <PrimaryNotificationLink text={reactorsText} />}{' '}
+      {t('notifications.profile.are_being_shipped_by', 'are being shipped by')}{' '}
       <NotificationUserLink
         name={creatorName}
         username={creatorUsername}
@@ -208,10 +220,41 @@ function ProfileShipNotification(props: {
       !
       <MultiUserReactionModal
         similarNotifications={relatedNotifications}
-        modalLabel={'Who liked it?'}
+        modalLabel={t('notifications.who_liked_it', 'Who liked it?')}
         open={open}
         setOpen={setOpen}
       />
+    </NotificationFrame>
+  )
+}
+
+export function ConnectionInterestMatchNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+  isChildOfGroup?: boolean
+}) {
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
+  const {sourceUserName, sourceUserUsername, sourceText} = notification
+  const t = useT()
+  const connectionType = notification.data?.connectionType || sourceText
+  const type = t(`profile.relationship.${connectionType}`, connectionType).toLowerCase()
+
+  return (
+    <NotificationFrame
+      notification={notification}
+      isChildOfGroup={isChildOfGroup}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={<AvatarNotificationIcon notification={notification} />}
+      link={`/${sourceUserUsername}`}
+      subtitle={<></>}
+    >
+      <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
+      {t('notifications.connection.interested_in_you', 'is interested in a {type} with you', {
+        type,
+      })}
+      !
     </NotificationFrame>
   )
 }
@@ -248,7 +291,7 @@ export function AvatarNotificationIcon(props: {
 }) {
   const {notification, symbol} = props
   const {sourceUserName, sourceUserAvatarUrl, sourceUserUsername, sourceSlug} = notification
-  const href = !!sourceUserUsername ? `/${sourceUserUsername}` : (sourceSlug ?? '/')
+  const href = sourceUserUsername ? `/${sourceUserUsername}` : (sourceSlug ?? '/')
   return (
     <div className="relative">
       <Link

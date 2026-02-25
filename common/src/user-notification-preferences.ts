@@ -1,3 +1,5 @@
+import {DOMAIN} from 'common/envs/constants'
+
 import {PrivateUser} from './user'
 import {filterDefined} from './util/array'
 
@@ -9,6 +11,7 @@ export type notification_preferences = {
   new_profile_like: notification_destination_types[]
   new_profile_ship: notification_destination_types[]
   new_search_alerts: notification_destination_types[]
+  connection_interest_match: notification_destination_types[]
 
   // User-related
   new_message: notification_destination_types[]
@@ -34,6 +37,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
     new_endorsement: constructPref(true, true, true),
     new_profile_like: constructPref(true, false, false),
     new_profile_ship: constructPref(true, false, false),
+    connection_interest_match: constructPref(true, false, true),
 
     // User-related
     new_message: constructPref(true, true, true),
@@ -49,7 +53,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = 'https://compassmeet.com/notifications'
+export const UNSUBSCRIBE_URL = `https://${DOMAIN}/notifications`
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference,

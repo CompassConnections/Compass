@@ -7,7 +7,7 @@ import ShortToggle, {ToggleColorMode} from './widgets/short-toggle'
 export const SwitchSetting = (props: {
   checked: boolean
   onChange: (checked: boolean) => void
-  label: 'Web' | 'Email' | 'Mobile'
+  label?: 'Web' | 'Email' | 'Mobile'
   disabled: boolean
   colorMode?: ToggleColorMode
 }) => {

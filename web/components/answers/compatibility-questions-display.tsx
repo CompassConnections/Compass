@@ -373,7 +373,7 @@ export function CompatibilityAnswerBlock(props: {
 
   const comparedProfile = isCurrentUser
     ? null
-    : !!fromProfilePage
+    : fromProfilePage
       ? fromProfilePage
       : {...currentProfile, user: currentUser}
 

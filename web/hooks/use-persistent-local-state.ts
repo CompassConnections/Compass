@@ -1,10 +1,10 @@
 import {safeJsonParse} from 'common/util/json'
 import {useEffect} from 'react'
-import {safeLocalStorage} from 'web/lib/util/local'
-import {isFunction} from 'web/hooks/use-persistent-in-memory-state'
-import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
 import {useEvent} from 'web/hooks/use-event'
 import {useIsClient} from 'web/hooks/use-is-client'
+import {isFunction} from 'web/hooks/use-persistent-in-memory-state'
+import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
+import {safeLocalStorage} from 'web/lib/util/local'
 
 export const usePersistentLocalState = <T>(initialValue: T, key: string) => {
   // Note: use a version (like "-v1") in the key to increment after backwards-incompatible changes

@@ -31,7 +31,7 @@ export const ProfileCommentSection = (props: {
   if (!currentUser && (!profile.comments_enabled || parentComments.length == 0)) return null
 
   return (
-    <Col className={'mt-4 rounded py-2'}>
+    <Col className={'rounded'}>
       <Row className={'mb-4 justify-between'}>
         <Subtitle>{t('profile.comments.section_title', 'Endorsements')}</Subtitle>
         {isCurrentUser && !simpleView && (

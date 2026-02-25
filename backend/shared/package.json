@@ -14,8 +14,8 @@
   "dependencies": {
     "@google-cloud/monitoring": "4.0.0",
     "@google-cloud/secret-manager": "4.2.1",
-    "@tiptap/core": "2.3.2",
-    "@tiptap/html": "2.3.2",
+    "@tiptap/core": "2.10.4",
+    "@tiptap/html": "2.10.4",
     "colors": "1.4.0",
     "dayjs": "1.11.4",
     "firebase-admin": "13.5.0",

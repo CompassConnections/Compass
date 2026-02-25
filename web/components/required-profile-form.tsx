@@ -1,9 +1,7 @@
-import {Editor} from '@tiptap/core'
 import clsx from 'clsx'
 import {ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {useEffect, useState} from 'react'
-import {SignupBio} from 'web/components/bio/editable-bio'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -11,9 +9,10 @@ import {Input} from 'web/components/widgets/input'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useEditableUserInfo} from 'web/hooks/use-editable-user-info'
-import {useProfileDraft} from 'web/hooks/use-profile-draft'
 import {useT} from 'web/lib/locale'
 import {labelClassName} from 'web/pages/signup'
+
+const LAST_STEP = 0
 
 export const initialRequiredState = {
   age: undefined,
@@ -24,7 +23,6 @@ export const initialRequiredState = {
   pref_relation_styles: [],
   wants_kids_strength: -1,
   looking_for_matches: true,
-  messaging_status: 'open',
   visibility: 'member',
   city: '',
   pinned_url: '',
@@ -51,19 +49,11 @@ export const RequiredProfileUserForm = (props: {
   onSubmit?: () => void
   profileCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, profileCreatedAlready, setProfile, profile, isSubmitting} = props
+  const {user, onSubmit, profileCreatedAlready, isSubmitting} = props
   const {updateDisplayName, userInfo, updateUserState, updateUsername} = useEditableUserInfo(user)
 
   const [step, setStep] = useState<number>(0)
   const t = useT()
-
-  const {draftLoaded} = useProfileDraft(user.id, profile, setProfile)
-
-  useEffect(() => {
-    if (draftLoaded) {
-      setStep(1)
-    }
-  }, [draftLoaded])
 
   const {name, username, errorUsername, loadingUsername, loadingName, errorName} = userInfo
 
@@ -146,19 +136,19 @@ export const RequiredProfileUserForm = (props: {
               </Col>
             )}
 
-            {step === 1 && (
-              <Col>
-                <label className={clsx(labelClassName)}>{t('profile.basics.bio', 'Bio')}</label>
-                <SignupBio
-                  profile={profile}
-                  onChange={(e: Editor) => {
-                    console.debug('bio changed', e, profile.bio)
-                    setProfile('bio', e.getJSON())
-                    setProfile('bio_length', e.getText().length)
-                  }}
-                />
-              </Col>
-            )}
+            {/*{step === 1 && (*/}
+            {/*  <Col>*/}
+            {/*    <label className={clsx(labelClassName)}>{t('profile.basics.bio', 'Bio')}</label>*/}
+            {/*    <SignupBio*/}
+            {/*      profile={profile}*/}
+            {/*      onChange={(e: Editor) => {*/}
+            {/*        console.debug('bio changed', e, profile.bio)*/}
+            {/*        setProfile('bio', e.getJSON())*/}
+            {/*        setProfile('bio_length', e.getText().length)*/}
+            {/*      }}*/}
+            {/*    />*/}
+            {/*  </Col>*/}
+            {/*)}*/}
           </>
         )}
 
@@ -173,10 +163,10 @@ export const RequiredProfileUserForm = (props: {
                   success = await updateUsername()
                 }
                 if (success) {
-                  if (step === 1) {
+                  if (step === LAST_STEP) {
                     onSubmit()
                   } else {
-                    setStep(1)
+                    setStep(step + 1)
                   }
                 }
               }}

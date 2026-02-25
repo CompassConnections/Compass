@@ -7,6 +7,7 @@ import {Button} from 'web/components/buttons/button'
 import {CreateEventModal} from 'web/components/events/create-event-modal'
 import {EventsList} from 'web/components/events/events-list'
 import {Col} from 'web/components/layout/col'
+import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Event, useEvents} from 'web/hooks/use-events'
@@ -180,6 +181,7 @@ export default function EventsPage() {
         {/* Events Content */}
         {!loading && !error && events && (
           <div className="space-y-10">
+            <EnglishOnlyWarning />
             {/* Upcoming Events */}
             <EventsList
               events={events.upcoming}

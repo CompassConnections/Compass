@@ -1,8 +1,8 @@
-import {useEffect} from 'react'
-import {db} from 'web/lib/supabase/db'
 import {run} from 'common/supabase/utils'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {UserActivity} from 'common/user'
+import {useEffect} from 'react'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {db} from 'web/lib/supabase/db'
 
 export function useUserActivity(userId: string | undefined) {
   const [userActivity, setUserActivity] = usePersistentInMemoryState<UserActivity | undefined>(
@@ -20,7 +20,6 @@ export function useUserActivity(userId: string | undefined) {
 
   useEffect(() => {
     refresh().catch(() => {})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   return {data: userActivity, refresh}

@@ -9,13 +9,14 @@ export const runScript = async (
   initAdmin()
   await initEnvVariables()
   if (logEnv) {
-    console.debug('Environment variables in runScript:')
+    console.debug('[runScript] Environment variables:')
     for (const k of Object.keys(process.env)) console.debug(`${k}=${process.env[k]}`)
   }
 
-  console.debug('runScript: creating pg client...')
+  console.debug('[runScript] Creating Supabase client...')
   const pg = createSupabaseDirectClient()
-  console.debug('runScript: running main...')
+
+  console.debug('[runScript] Running script...')
   await main({pg})
 }
 

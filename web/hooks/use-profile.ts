@@ -1,11 +1,11 @@
-import {useUser} from 'web/hooks/use-user'
-import {useEffect} from 'react'
-import {Row} from 'common/supabase/utils'
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {User} from 'common/user'
 import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
-import {db} from 'web/lib/supabase/db'
+import {Row} from 'common/supabase/utils'
+import {User} from 'common/user'
+import {useEffect} from 'react'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {useUser} from 'web/hooks/use-user'
+import {db} from 'web/lib/supabase/db'
 
 export const useProfile = () => {
   const user = useUser()

@@ -178,6 +178,12 @@ export const LANGUAGE_CHOICES = {
   Zulu: 'zulu',
 }
 
+export const LOCALE_TO_LANGUAGE: Record<string, string> = {
+  en: 'english',
+  fr: 'french',
+  de: 'german',
+} as const
+
 export const RACE_CHOICES = {
   'Black/African origin': 'african',
   'East Asian': 'asian',

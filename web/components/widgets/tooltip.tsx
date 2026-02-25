@@ -50,7 +50,7 @@ export function Tooltip(props: {
   const nowFn = () => Date.now()
   const SUPPRESS_MS = 900
   // Module-level shared state
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const g: any = globalThis as any
   if (g.__tooltipLastTapTs === undefined) g.__tooltipLastTapTs = 0 as number
   if (g.__tooltipListenersSetup === undefined) g.__tooltipListenersSetup = false as boolean
@@ -90,7 +90,6 @@ export function Tooltip(props: {
       // We intentionally do not remove listeners to avoid duplicating across many instances.
       // If component unmounts entirely (hot reload), listeners will be garbage-collected with the page.
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const {x, y, reference, floating, strategy, middlewareData, context, placement} = useFloating({

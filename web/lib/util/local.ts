@@ -33,11 +33,15 @@ export let safeSessionStorage: Store | undefined
 
 try {
   safeLocalStorage = getStorageProxy(localStorage)
-} catch {}
+} catch {
+  // localStorage may not be available in some environments (e.g., SSR, incognito mode)
+}
 
 try {
   safeSessionStorage = getStorageProxy(sessionStorage)
-} catch {}
+} catch {
+  // sessionStorage may not be available in some environments (e.g., SSR, incognito mode)
+}
 
 export function newInMemoryStore(): Store {
   const store: Record<string, string> = {}

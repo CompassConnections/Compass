@@ -1,6 +1,6 @@
 import {setLastOnlineTimeUser} from 'api/set-last-online-time'
+import {defaultLocale} from 'common/constants'
 import {RESERVED_PATHS} from 'common/envs/constants'
-import {IS_LOCAL} from 'common/hosting/constants'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
@@ -19,28 +19,12 @@ import {getUser, getUserByUsername, log} from 'shared/utils'
 import {APIError, APIHandler} from './helpers/endpoint'
 
 export const createUser: APIHandler<'create-user'> = async (props, auth, req) => {
-  const {deviceToken: preDeviceToken} = props
-  const firebaseUser = await admin.auth().getUser(auth.uid)
-
-  const testUserAKAEmailPasswordUser = firebaseUser.providerData[0].providerId === 'password'
-
-  // if (
-  //   testUserAKAEmailPasswordUser &&
-  //   adminToken !== process.env.TEST_CREATE_USER_KEY
-  // ) {
-  //   throw new APIError(
-  //     401,
-  //     'Must use correct TEST_CREATE_USER_KEY to create user with email/password'
-  //   )
-  // }
+  const {deviceToken, locale = defaultLocale} = props
 
   const host = req.get('referer')
-  log(`Create user from: ${host}`)
+  log(`Create user from: ${host}, ${props}`)
 
   const ip = getIp(req)
-  const deviceToken = testUserAKAEmailPasswordUser
-    ? randomString() + randomString()
-    : preDeviceToken
 
   const fbUser = await admin.auth().getUser(auth.uid)
   const email = fbUser.email
@@ -50,9 +34,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
   const name = cleanDisplayName(rawName)
 
   const bucket = getBucket()
-  const avatarUrl = fbUser.photoURL
-    ? fbUser.photoURL
-    : await generateAvatarUrl(auth.uid, name, bucket)
+  const avatarUrl = fbUser.photoURL ?? (await generateAvatarUrl(auth.uid, name, bucket))
 
   const pg = createSupabaseDirectClient()
 
@@ -93,6 +75,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     const privateUser: PrivateUser = {
       id: auth.uid,
       email,
+      locale,
       initialIpAddress: ip,
       initialDeviceToken: deviceToken,
       notificationPreferences: getDefaultNotificationPreferences(),
@@ -127,7 +110,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
       console.error('Failed to track create profile', e)
     }
     try {
-      if (!IS_LOCAL) await sendWelcomeEmail(user, privateUser)
+      await sendWelcomeEmail(user, privateUser)
     } catch (e) {
       console.error('Failed to sendWelcomeEmail', e)
     }

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {createSomeNotifications} from 'backend/api/src/create-notification'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -77,11 +78,14 @@ async function seedCompatibilityPrompts(pg: any, userId: string | null = null) {
   // console.log('Compatibility prompts created', {data, error})
 }
 
+async function seedNotifications() {
+  await createSomeNotifications()
+  console.log('Notifications created', {})
+}
+
 type ProfileType = 'basic' | 'medium' | 'full'
 ;(async () => {
   const pg = createSupabaseDirectClient()
-
-  await seedCompatibilityPrompts(pg)
 
   //Edit the count seedConfig to specify the amount of each profiles to create
   const seedConfig = [
@@ -106,6 +110,9 @@ type ProfileType = 'basic' | 'medium' | 'full'
       }
     }
   }
+
+  await seedCompatibilityPrompts(pg)
+  await seedNotifications()
 
   process.exit(0)
 })()

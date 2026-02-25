@@ -292,19 +292,15 @@ export const OptionalProfileUserForm = (props: {
       <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
-        {!fromSignup && (
-          <>
-            <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
-            <SignupBio
-              profile={profile}
-              onChange={(e: Editor) => {
-                console.debug('bio changed', e, profile.bio)
-                setProfile('bio', e.getJSON())
-                setProfile('bio_length', e.getText().length)
-              }}
-            />
-          </>
-        )}
+        <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
+        <SignupBio
+          profile={profile}
+          onChange={(e: Editor) => {
+            console.debug('bio changed', e, profile.bio)
+            setProfile('bio', e.getJSON())
+            setProfile('bio_length', e.getText().length)
+          }}
+        />
 
         <Category
           title={t('profile.optional.category.personal_info', 'Personal Information')}

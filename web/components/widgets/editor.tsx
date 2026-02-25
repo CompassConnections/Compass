@@ -110,6 +110,7 @@ export function useTextEditor(props: {
 
   const editor = useEditor({
     editorProps: getEditorProps(),
+    immediatelyRender: false,
     onUpdate: !key
       ? noop
       : ({editor}) => {

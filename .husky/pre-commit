@@ -1,3 +1,1 @@
 npx lint-staged
-yarn --cwd=web lint-fix
-yarn --cwd=web lint

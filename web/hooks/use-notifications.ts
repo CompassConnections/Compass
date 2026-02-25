@@ -3,6 +3,8 @@ import {type User} from 'common/user'
 import {first, groupBy, sortBy} from 'lodash'
 import {useEffect, useMemo} from 'react'
 import {api} from 'web/lib/api'
+import {useLocale} from 'web/lib/locale'
+
 import {useApiSubscription} from './use-api-subscription'
 import {usePersistentLocalState} from './use-persistent-local-state'
 
@@ -68,13 +70,13 @@ function useNotifications(userId: string, count = 15 * NOTIFICATIONS_PER_PAGE) {
     undefined,
     'notifications-' + userId,
   )
+  const {locale} = useLocale()
   useEffect(() => {
     if (userId)
-      api('get-notifications', {limit: count}).then((data) => {
+      api('get-notifications', {limit: count, locale}).then((data) => {
         setNotifications(data)
       })
-  }, [userId])
-
+  }, [userId, locale])
   useApiSubscription({
     topics: [`user-notifications/${userId}`],
     onBroadcast: ({data}) => {

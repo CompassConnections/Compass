@@ -1,6 +1,6 @@
-import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {Row} from 'common/supabase/utils'
 import {useEffect} from 'react'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {getUserBookmarkedSearches} from 'web/lib/supabase/searches'
 
 export const useBookmarkedSearches = (userId: string | undefined) => {

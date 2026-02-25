@@ -1,20 +1,22 @@
-import React from 'react'
+import {render} from '@react-email/render'
+import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
 import {
   getNotificationDestinationsForUser,
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
-import {sendEmail} from './send-email'
-import {NewMessageEmail} from '../new-message'
-import {NewEndorsementEmail} from '../new-endorsement'
-import {Test} from '../test'
-import {getProfile} from 'shared/profiles/supabase'
-import {render} from '@react-email/render'
-import {MatchesType} from 'common/profiles/bookmarked_searches'
 import NewSearchAlertsEmail from 'email/new-search_alerts'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'
+import React from 'react'
+import {createT} from 'shared/locale'
+import {getProfile} from 'shared/profiles/supabase'
 import {getOptionsIdsToLabels} from 'shared/supabase/options'
+
+import {NewEndorsementEmail} from '../new-endorsement'
+import {NewMessageEmail} from '../new-message'
+import {Test} from '../test'
+import {sendEmail} from './send-email'
 
 export const fromEmail = 'Compass <compass@compassmeet.com>'
 
@@ -65,9 +67,17 @@ export const sendNewMessageEmail = async (
     return
   }
 
+  const locale = privateUser?.locale
+  const t = createT(locale)
+  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+
+  const subject = t('email.new_message.subject', '{creatorName} sent you a message!', {
+    creatorName: fromUser.name,
+  })
+
   return await sendEmail({
     from: fromEmail,
-    subject: `${fromUser.name} sent you a message!`,
+    subject,
     to: privateUser.email,
     html: await render(
       <NewMessageEmail
@@ -77,6 +87,7 @@ export const sendNewMessageEmail = async (
         channelId={channelId}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
+        locale={locale}
       />,
     ),
   })
@@ -85,9 +96,16 @@ export const sendNewMessageEmail = async (
 export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) => {
   if (!privateUser.email) return
   const verificationLink = await admin.auth().generateEmailVerificationLink(privateUser.email)
+
+  const locale = privateUser?.locale
+  const t = createT(locale)
+  console.log(`Sending welcome email to ${privateUser.email} in ${locale}`)
+
+  const subject = t('email.welcome.subject', 'Welcome to Compass!')
+
   return await sendEmail({
     from: fromEmail,
-    subject: `Welcome to Compass!`,
+    subject,
     to: privateUser.email,
     html: await render(
       <WelcomeEmail
@@ -95,6 +113,7 @@ export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) =
         unsubscribeUrl={UNSUBSCRIBE_URL}
         email={privateUser.email}
         verificationLink={verificationLink}
+        locale={locale}
       />,
     ),
   })
@@ -112,14 +131,17 @@ export const sendSearchAlertsEmail = async (
   const email = privateUser.email
   if (!email || !sendToEmail) return
 
-  // Determine locale (fallback to 'en') and load option labels before rendering
-  // TODO: add locale to user array
-  const locale = (toUser as any)?.locale ?? 'en'
+  const locale = privateUser?.locale
+  const t = createT(locale)
+  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+
   const optionIdsToLabels = await getOptionsIdsToLabels(locale)
+
+  const subject = t('email.search_alerts.subject', 'People aligned with your values just joined')
 
   return await sendEmail({
     from: fromEmail,
-    subject: `People aligned with your values just joined`,
+    subject,
     to: email,
     html: await render(
       <NewSearchAlertsEmail
@@ -128,6 +150,7 @@ export const sendSearchAlertsEmail = async (
         unsubscribeUrl={unsubscribeUrl}
         email={email}
         optionIdsToLabels={optionIdsToLabels}
+        locale={locale}
       />,
     ),
   })
@@ -145,9 +168,17 @@ export const sendNewEndorsementEmail = async (
   )
   if (!privateUser.email || !sendToEmail) return
 
+  const locale = privateUser?.locale
+  const t = createT(locale)
+  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+
+  const subject = t('email.new_endorsement.subject', '{fromUserName} just endorsed you!', {
+    fromUserName: fromUser.name,
+  })
+
   return await sendEmail({
     from: fromEmail,
-    subject: `${fromUser.name} just endorsed you!`,
+    subject,
     to: privateUser.email,
     html: await render(
       <NewEndorsementEmail
@@ -156,6 +187,7 @@ export const sendNewEndorsementEmail = async (
         endorsementText={text}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
+        locale={locale}
       />,
     ),
   })

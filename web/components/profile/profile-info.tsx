@@ -6,6 +6,7 @@ import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
+import {ConnectActions} from 'web/components/profile/connect-actions'
 import ProfileHeader from 'web/components/profile/profile-header'
 import ProfileAbout from 'web/components/profile-about'
 import ProfileCarousel from 'web/components/profile-carousel'
@@ -180,6 +181,7 @@ function ProfileContent(props: {
         fromProfilePage={fromProfilePage}
         profile={profile}
       />
+      <ConnectActions user={user} profile={profile} />
       <ProfileCommentSection
         onUser={user}
         profile={profile}

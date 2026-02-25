@@ -1,9 +1,10 @@
-import {db} from 'web/lib/supabase/db'
 import {type Comment} from 'common/comment'
-import {useApiSubscription} from './use-api-subscription'
-import {useEffect, useState} from 'react'
-import {uniqBy} from 'lodash'
 import {convertComment} from 'common/supabase/comment'
+import {uniqBy} from 'lodash'
+import {useEffect, useState} from 'react'
+import {db} from 'web/lib/supabase/db'
+
+import {useApiSubscription} from './use-api-subscription'
 
 export function useLiveCommentsOnProfile(userId: string) {
   const [comments, setComments] = useState<Comment[]>([])

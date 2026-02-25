@@ -48,4 +48,7 @@ BEGIN;
 \i backend/supabase/migrations/20260213_add_big_5_to_profiles.sql
 \i backend/supabase/migrations/20260218_add_events.sql
 \i backend/supabase/migrations/20260218_add_notification_templates.sql
+\i backend/supabase/migrations/20260222_add_deleted_users.sql
+\i backend/supabase/migrations/20260223_add_notification_template_translations.sql
+\i backend/supabase/migrations/20260224_add_connection_preferences.sql
 COMMIT;

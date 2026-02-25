@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["jest"]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "include": ["src/**/*.ts", "messages/*.json", "tests/**/*.ts"],
   "exclude": []
 }

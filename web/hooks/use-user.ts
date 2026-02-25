@@ -2,9 +2,10 @@
 import {PrivateUser, User} from 'common/user'
 import {useContext, useEffect, useState} from 'react'
 import {AuthContext} from 'web/components/auth-context'
-import {useIsPageVisible} from './use-page-visible'
-import {useApiSubscription} from './use-api-subscription'
 import {getFullUserById, getPrivateUserSafe} from 'web/lib/supabase/users'
+
+import {useApiSubscription} from './use-api-subscription'
+import {useIsPageVisible} from './use-page-visible'
 
 export const useUser = () => {
   const authUser = useContext(AuthContext)

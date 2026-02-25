@@ -20,7 +20,6 @@ import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 import {Row} from '../layout/row'
-import {DeleteYourselfButton} from '../profile/delete-yourself'
 
 export function MoreOptionsUserButton(props: {user: User}) {
   const {user} = props
@@ -38,7 +37,7 @@ export function MoreOptionsUserButton(props: {user: User}) {
     month: 'short',
   })
 
-  const isYou = currentPrivateUser.id === userId
+  // const isYou = currentPrivateUser.id === userId
 
   return (
     <>
@@ -111,34 +110,22 @@ export function MoreOptionsUserButton(props: {user: User}) {
           <UncontrolledTabs
             className={'mb-4'}
             tabs={buildArray([
-              // TODO: if isYou include a tab for users you've blocked?
-              isYou
-                ? [
-                    {
-                      title: t('more_options_user.delete_account', 'Delete Account'),
-                      content: (
-                        <div className="flex min-h-[200px] items-center justify-center p-4">
-                          <DeleteYourselfButton />
-                        </div>
-                      ),
-                    },
-                  ]
-                : [
-                    {
-                      title: t('more_options_user.block', 'Block'),
-                      content: (
-                        <BlockUser
-                          user={user}
-                          currentUser={currentPrivateUser}
-                          closeModal={() => setIsModalOpen(false)}
-                        />
-                      ),
-                    },
-                    {
-                      title: t('more_options_user.report', 'Report'),
-                      content: <ReportUser user={user} closeModal={() => setIsModalOpen(false)} />,
-                    },
-                  ],
+              [
+                {
+                  title: t('more_options_user.block', 'Block'),
+                  content: (
+                    <BlockUser
+                      user={user}
+                      currentUser={currentPrivateUser}
+                      closeModal={() => setIsModalOpen(false)}
+                    />
+                  ),
+                },
+                {
+                  title: t('more_options_user.report', 'Report'),
+                  content: <ReportUser user={user} closeModal={() => setIsModalOpen(false)} />,
+                },
+              ],
             ])}
           />
         </Col>

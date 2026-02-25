@@ -1,6 +1,6 @@
+import {sleep} from 'common/util/time'
 import {type CreateEmailOptions, CreateEmailRequestOptions, Resend} from 'resend'
 import {log} from 'shared/utils'
-import {sleep} from 'common/util/time'
 
 /*
  * typically: { subject: string, to: string | string[] } & ({ text: string } | { react: ReactNode })

@@ -1,8 +1,10 @@
+import {getConnectionInterests} from 'api/get-connection-interests'
 import {APIError, APIHandler} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {filterDefined} from 'common/util/array'
 import * as admin from 'firebase-admin'
 import {uniq} from 'lodash'
+import {getProfile} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getPrivateUser, getUser} from 'shared/utils'
 
@@ -39,7 +41,21 @@ export const createPrivateUserMessageChannel: APIHandler<
       user.blockedUserIds.some((blockedId: string) => userIds.includes(blockedId)),
     )
   ) {
-    throw new APIError(403, 'One of the users has blocked another user in the list')
+    throw new APIError(403, `One of the users has blocked another user in the list`)
+  }
+
+  for (const u of toPrivateUsers) {
+    const p = await getProfile(u.id)
+    if (p && !p.allow_direct_messaging) {
+      const {interests, targetInterests} = await getConnectionInterests(
+        {targetUserId: u.id},
+        auth.uid,
+      )
+      const matches = interests.filter((interest: string[]) => targetInterests.includes(interest))
+      if (matches.length > 0) continue
+      const failedUser = await getUser(u.id)
+      throw new APIError(403, `${failedUser?.username} has disabled direct messaging`)
+    }
   }
 
   const currentChannel = await pg.oneOrNone(

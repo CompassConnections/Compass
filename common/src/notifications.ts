@@ -1,16 +1,23 @@
-import {Row, SupabaseClient} from 'common/supabase/utils'
-
 // Notification template - stores the shared content for notifications sent to multiple users
 export type NotificationTemplate = {
   id: string
   sourceType: string
   title?: string
-  sourceText: string
+  sourceText: string // May contain placeholders like "{user}"
   sourceSlug?: string
   sourceUserAvatarUrl?: string
   sourceUpdateType?: 'created' | 'updated' | 'deleted'
   createdTime: number
-  data?: {[key: string]: any}
+  data?: {[key: string]: any} // Static data for the template
+}
+
+// Notification template translations
+export type NotificationTemplateTranslation = {
+  templateId: string
+  locale: string
+  title?: string
+  sourceText: string // May contain placeholders like "{user}"
+  createdTime: number
 }
 
 // User-specific notification data (lightweight - references template)
@@ -20,6 +27,8 @@ export type UserNotification = {
   templateId: string
   isSeen: boolean
   viewTime?: number
+  // Dynamic values to substitute in template placeholders
+  templateData?: {[key: string]: string | number | boolean}
 }
 
 // Full notification (combines template + user data) - for backwards compatibility
@@ -54,37 +63,33 @@ export type Notification = {
 
   // New field for template-based notifications
   templateId?: string
-}
 
-// export const NOTIFICATION_TYPES_TO_SELECT = [
-//   'new_match', // new match markets
-//   'comment_on_profile', // endorsements
-//   'profile_like',
-//   'profile_ship',
-// ]
+  // Dynamic values to substitute in template placeholders
+  templateData?: {[key: string]: string | number | boolean}
+}
 
 export const NOTIFICATIONS_PER_PAGE = 30
 
-export async function getNotifications(db: SupabaseClient, userId: string, limit: number) {
-  const {data} = await db
-    .from('user_notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .order('data->createdTime', {ascending: false} as any)
-    .limit(limit)
-  return data?.map((d: Row<'user_notifications'>) => d)
-}
-
-export async function getUnseenNotifications(db: SupabaseClient, userId: string, limit: number) {
-  const {data} = await db
-    .from('user_notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('data->>isSeen', 'false')
-    .order('data->createdTime', {ascending: false} as any)
-    .limit(limit)
-
-  return data?.map((d: Row<'user_notifications'>) => d) ?? []
-}
-
-export type NotificationReason = any // TODO
+// export async function getNotifications(db: SupabaseClient, userId: string, limit: number) {
+//   const {data} = await db
+//     .from('user_notifications')
+//     .select('*')
+//     .eq('user_id', userId)
+//     .order('data->createdTime', {ascending: false} as any)
+//     .limit(limit)
+//   return data?.map((d: Row<'user_notifications'>) => d)
+// }
+//
+// export async function getUnseenNotifications(db: SupabaseClient, userId: string, limit: number) {
+//   const {data} = await db
+//     .from('user_notifications')
+//     .select('*')
+//     .eq('user_id', userId)
+//     .eq('data->>isSeen', 'false')
+//     .order('data->createdTime', {ascending: false} as any)
+//     .limit(limit)
+//
+//   return data?.map((d: Row<'user_notifications'>) => d) ?? []
+// }
+//
+// export type NotificationReason = any

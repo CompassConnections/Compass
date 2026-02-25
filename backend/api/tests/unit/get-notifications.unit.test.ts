@@ -23,22 +23,23 @@ describe('getNotifications', () => {
       const mockProps = {
         limit: 10,
         after: 2,
+        locale: 'fr',
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockNotifications = {} as any
+      const mockNotifications = [] as any
 
       ;(mockPg.map as jest.Mock).mockResolvedValue(mockNotifications)
 
       const result = await getNotifications(mockProps, mockAuth, mockReq)
 
-      expect(result).toBe(mockNotifications)
+      expect(result).toEqual(mockNotifications)
       expect(mockPg.map).toBeCalledTimes(1)
       expect(mockPg.map).toBeCalledWith(
         sqlMatch(
-          'from user_notifications un left join notification_templates nt on un.template_id = nt.id',
+          'from user_notifications un left join notification_templates nt on un.template_id = nt.id left join notification_template_translations ntt on nt.id = ntt.template_id and ntt.locale = $4',
         ),
-        [mockAuth.uid, mockProps.limit, mockProps.after],
+        [mockAuth.uid, mockProps.limit, mockProps.after, mockProps.locale],
         expect.any(Function),
       )
     })

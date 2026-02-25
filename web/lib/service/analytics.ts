@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import {ENV_CONFIG} from 'common/envs/constants'
 import {Json} from 'common/supabase/schema'
 import {run, SupabaseClient} from 'common/supabase/utils'
@@ -36,7 +35,7 @@ export function initTracking() {
     // Below was a failed attempt to remove that error in the browser console:
     // Cookie “dmn_chk_01993ec4-8420-79ca-85d3-28fec41426c0” has been rejected for invalid domain.
     // persistence: 'cookie',
-    // cross_subdomain_cookie: true,        // top-level domain cookie
+    // cross_subdomain_cookie: true,          // top-level domain cookie
     // secure_cookie: window.location.protocol === 'https:',
     // cookie_expiration: 365,
     // capture_pageview: true,
@@ -45,17 +44,12 @@ export function initTracking() {
 
 // Convenience functions:
 
-export const trackCallback =
-  (eventName: string, eventProperties?: any) => () => {
-    track(eventName, eventProperties)
-  }
+export const trackCallback = (eventName: string, eventProperties?: any) => () => {
+  track(eventName, eventProperties)
+}
 
 export const withTracking =
-  (
-    f: (() => void) | (() => Promise<void>),
-    eventName: string,
-    eventProperties?: any
-  ) =>
+  (f: (() => void) | (() => Promise<void>), eventName: string, eventProperties?: any) =>
   async () => {
     const promise = f()
     await promise
@@ -67,7 +61,7 @@ function insertUserEvent(
   data: EventData,
   db: SupabaseClient,
   userId?: string | null,
-  commentId?: string | null
+  commentId?: string | null,
 ) {
   // console.debug('inserting user event', name, data, userId, commentId, db)
   return run(
@@ -76,7 +70,7 @@ function insertUserEvent(
       data: removeUndefinedProps(data) as Record<string, Json>,
       user_id: userId,
       comment_id: commentId,
-    })
+    }),
   )
 }
 

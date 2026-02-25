@@ -24,6 +24,7 @@ export function ConfirmationButton(props: {
     label?: string
     color?: ColorType
     isSubmitting?: boolean
+    disabled?: boolean
   }
   children: ReactNode
   onSubmit?: () => void
@@ -73,6 +74,7 @@ export function ConfirmationButton(props: {
                     }
               }
               loading={submitBtn?.isSubmitting}
+              disabled={submitBtn?.disabled}
             >
               {submitBtn?.label ?? 'Submit'}
             </Button>

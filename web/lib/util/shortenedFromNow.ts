@@ -3,10 +3,9 @@ import duration from 'dayjs/plugin/duration'
 
 dayjs.extend(duration)
 
-export function shortenedFromNow(time: number): string {
+export function shortenedFromNow(time: number, t: any = undefined): string {
   const diff = dayjs.duration(Math.abs(dayjs().diff(time)))
-
-  return shortenedDuration(diff)
+  return shortenedDuration(diff, t)
 }
 
 export function simpleFromNow(time: number): string {
@@ -15,7 +14,7 @@ export function simpleFromNow(time: number): string {
   return durationFormat(diff)
 }
 
-export function shortenedDuration(diff: duration.Duration) {
+export function shortenedDuration(diff: duration.Duration, t: any = undefined) {
   const units: {[key: string]: number} = {
     y: diff.years(),
     mo: diff.months(),
@@ -27,7 +26,7 @@ export function shortenedDuration(diff: duration.Duration) {
 
   for (const unit in units) {
     if (units[unit] > 0) {
-      return `${units[unit]}${unit}`
+      return `${units[unit]}${t ? t(`time.units.${unit}`, unit) : unit}`
     }
   }
 

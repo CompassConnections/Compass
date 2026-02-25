@@ -22,6 +22,7 @@ import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
 import {sendSearchNotifications} from 'api/send-search-notifications'
 import {localSendTestEmail} from 'api/test'
 import {unhideProfile} from 'api/unhide-profile'
+import {updateConnectionInterests} from 'api/update-connection-interests'
 import {updateOptions} from 'api/update-options'
 import {vote} from 'api/vote'
 import {API, type APIPath} from 'common/api/schema'
@@ -57,6 +58,7 @@ import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {deleteMe} from './delete-me'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
+import {getConnectionInterestsEndpoint} from './get-connection-interests'
 import {getCurrentPrivateUser} from './get-current-private-user'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
@@ -88,6 +90,7 @@ import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfile} from './update-profile'
+import {updateUserLocale} from './update-user-locale'
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -371,8 +374,11 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'star-profile': starProfile,
   'update-notif-settings': updateNotifSettings,
   'update-options': updateOptions,
+  'update-user-locale': updateUserLocale,
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
   'update-profile': updateProfile,
+  'get-connection-interests': getConnectionInterestsEndpoint,
+  'update-connection-interest': updateConnectionInterests,
   'user/by-id/:id': getUser,
   'user/by-id/:id/block': blockUser,
   'user/by-id/:id/unblock': unblockUser,

@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useEffect, useMemo} from 'react'
-import {useUser} from 'web/hooks/use-user'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 
 type HiddenUser = {
@@ -39,7 +39,6 @@ export function HiddenProfilesProvider({children}: {children: React.ReactNode}) 
   useEffect(() => {
     // Load on user change
     refreshHiddenProfiles()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
   const value = useMemo(() => ({hiddenProfiles, refreshHiddenProfiles}), [hiddenProfiles])
@@ -50,25 +49,27 @@ export function HiddenProfilesProvider({children}: {children: React.ReactNode}) 
 // fall back to a local instance to avoid crashes (useful for tests or isolated renders).
 export const useHiddenProfiles = () => {
   const ctx = useContext(HiddenProfilesContext)
-  if (ctx) return ctx
 
-  // Fallback local instance (no cross-component sync)
+  // Always call hooks to maintain hook call order
   const user = useUser()
-  const [hiddenProfiles, setHiddenProfiles] = usePersistentLocalState<
+  const [localHiddenProfiles, setLocalHiddenProfiles] = usePersistentLocalState<
     HiddenUser[] | undefined | null
   >(undefined, `hidden-ids-${user?.id ?? 'anon'}`)
 
-  const refreshHiddenProfiles = () => {
+  const refreshLocalHiddenProfiles = () => {
     if (!user) return
     api('get-hidden-profiles', {limit: 200, offset: 0})
-      .then((res) => setHiddenProfiles(res.hidden))
+      .then((res) => setLocalHiddenProfiles(res.hidden))
       .catch((e) => console.error('Failed to load hidden profiles', e))
   }
 
   useEffect(() => {
-    refreshHiddenProfiles()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+    if (ctx) return
+    refreshLocalHiddenProfiles()
+  }, [ctx, user?.id])
 
-  return {hiddenProfiles, refreshHiddenProfiles}
+  // Return context if available, otherwise return local instance
+  if (ctx) return ctx
+
+  return {hiddenProfiles: localHiddenProfiles, refreshHiddenProfiles: refreshLocalHiddenProfiles}
 }

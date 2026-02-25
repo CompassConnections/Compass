@@ -8,7 +8,7 @@ import {getNotificationDestinationsForUser} from 'common/user-notification-prefe
 import {richTextToString} from 'common/util/parse'
 import * as crypto from 'crypto'
 import {sendNewEndorsementEmail} from 'email/functions/helpers'
-import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {getPrivateUser, getUser} from 'shared/utils'
 import {broadcastUpdatedComment} from 'shared/websockets/helpers'
@@ -44,7 +44,6 @@ export const createComment: APIHandler<'create-comment'> = async (
       creator,
       richTextToString(content),
       comment.id,
-      pg,
     )
 
   broadcastUpdatedComment(convertComment(comment))
@@ -78,7 +77,6 @@ const createNewCommentOnProfileNotification = async (
   creator: User,
   sourceText: string,
   commentId: number,
-  pg: SupabaseDirectClient,
 ) => {
   const privateUser = await getPrivateUser(onUser.id)
   if (!privateUser) return
@@ -104,7 +102,7 @@ const createNewCommentOnProfileNotification = async (
     sourceSlug: onUser.username,
   }
   if (sendToBrowser) {
-    await insertNotificationToSupabase(notification, pg)
+    await insertNotificationToSupabase(notification)
   }
   if (sendToMobile) {
     // await createPushNotification(

@@ -1,6 +1,8 @@
 # Comment Rédiger une Bio de Qualité sur Compass
 
-Une bio solide est le cœur de Compass. Elle aide les autres à comprendre qui vous êtes, ce qui compte pour vous et le type de connexions que vous recherchez. Utilisez les sections ci-dessous comme guide — incluez ce qui vous semble significatif et n’hésitez pas à développer ou combiner les sections selon vos besoins.
+Une bio solide est le cœur de Compass. Elle aide les autres à comprendre qui vous êtes, ce qui compte pour vous et le
+type de relation que vous recherchez. Utilisez les sections ci-dessous comme guide — incluez ce qui vous semble
+significatif et n’hésitez pas à développer ou combiner les sections selon vos besoins.
 
 ## 1. **Introduction**
 

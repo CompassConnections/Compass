@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react'
 export function inIframe() {
   try {
     return window.self !== window.top
-  } catch (e) {
+  } catch (_e) {
     return true
   }
 }

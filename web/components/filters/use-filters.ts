@@ -1,3 +1,4 @@
+import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {logger} from 'common/logging'
@@ -11,11 +12,23 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {getLocale} from 'web/lib/locale-cookie'
 
-export const useFilters = (you: Profile | undefined) => {
+export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
+  const baseFilters = isLooking
+    ? initialFilters
+    : {...initialFilters, orderBy: 'created_time' as const}
+
+  const getInitialFilters = (): Partial<FilterFields> => {
+    if (fromSignup) {
+      return {...baseFilters, languages: [LOCALE_TO_LANGUAGE[getLocale()]]}
+    }
+    return baseFilters
+  }
+
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
-    isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'},
+    getInitialFilters(),
     'profile-filters-4',
   )
 
@@ -28,7 +41,7 @@ export const useFilters = (you: Profile | undefined) => {
   }
 
   const clearFilters = () => {
-    setFilters(isLooking ? initialFilters : {...initialFilters, orderBy: 'created_time'})
+    setFilters(baseFilters)
     setLocation(undefined)
     setRaisedInLocation(undefined)
   }

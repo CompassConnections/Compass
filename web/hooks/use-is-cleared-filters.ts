@@ -1,7 +1,7 @@
 import {FilterFields, initialFilters} from 'common/filters'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {isEqual} from 'lodash'
 import {useMemo} from 'react'
-import {removeNullOrUndefinedProps} from 'common/util/object'
 
 export function useIsClearedFilters(filters: Partial<FilterFields>): boolean {
   return useMemo(

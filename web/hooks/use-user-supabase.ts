@@ -1,11 +1,12 @@
-import {useEffect, useState} from 'react'
-import {useEffectCheckEquality} from './use-effect-check-equality'
-import {uniq, uniqBy} from 'lodash'
-import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
-import {filterDefined} from 'common/util/array'
-import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
-import {DisplayUser, getDisplayUsers, getFullUserById} from 'web/lib/supabase/users'
 import {FullUser} from 'common/api/user-types'
+import {filterDefined} from 'common/util/array'
+import {uniq, uniqBy} from 'lodash'
+import {useEffect, useState} from 'react'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
+import {DisplayUser, getDisplayUsers, getFullUserById} from 'web/lib/supabase/users'
+
+import {useEffectCheckEquality} from './use-effect-check-equality'
+import {usePersistentInMemoryState} from './use-persistent-in-memory-state'
 
 export function useUserById(userId: string | undefined) {
   const [user, setUser] = usePersistentInMemoryState<FullUser | null | undefined>(
@@ -104,8 +105,7 @@ export function useUsersInStore(userIds: (string | null)[], key: string, limit?:
 }
 
 export function useUserInStore(userId: string | null) {
-  if (!userId) return null // early return avoids invalid key + hook calls are safe
-
   const users = useUsersInStore(userId ? [userId] : [], userId ?? 'empty')
+  if (!userId) return null
   return users?.[0] ?? null
 }

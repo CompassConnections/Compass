@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {Input} from 'web/components/widgets/input'
@@ -123,6 +124,8 @@ export function VoteComponent() {
           </ShowMore>
         </Col>
       )}
+
+      <EnglishOnlyWarning />
 
       {votes && votes.length > 0 && (
         <Col className={'mt-4'}>

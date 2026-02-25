@@ -4,10 +4,7 @@ import {sleep} from 'common/util/time'
 
 import {auth} from './firebase/users'
 
-export async function api<P extends APIPath>(
-  path: P,
-  params: APIParams<P> = {}
-) {
+export async function api<P extends APIPath>(path: P, params: APIParams<P> = {}) {
   // If the api is authed and the user is not loaded, wait for the user to load.
   if (API[path].authed && !auth.currentUser) {
     let i = 0
@@ -32,3 +29,11 @@ function curriedAPI<P extends APIPath>(path: P) {
 export const updateProfile = curriedAPI('update-profile')
 export const updateUser = curriedAPI('me/update')
 export const report = curriedAPI('report')
+
+export const updateBackendLocale = (newLocale: string) => {
+  if (!auth.currentUser) return
+  console.debug('Updating backend locale to', newLocale)
+  api('update-user-locale', {locale: newLocale}).catch((error) => {
+    console.error('Failed to update user locale:', error)
+  })
+}

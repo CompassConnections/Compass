@@ -292,6 +292,45 @@ export type Database = {
           },
         ]
       }
+      connection_interests: {
+        Row: {
+          connection_type: string
+          created_at: string
+          id: number
+          target_user_id: string
+          user_id: string
+        }
+        Insert: {
+          connection_type: string
+          created_at?: string
+          id?: never
+          target_user_id: string
+          user_id: string
+        }
+        Update: {
+          connection_type?: string
+          created_at?: string
+          id?: never
+          target_user_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'connection_interests_target_user_id_fkey'
+            columns: ['target_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'connection_interests_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       contact: {
         Row: {
           content: Json | null
@@ -320,6 +359,30 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      deleted_users: {
+        Row: {
+          deleted_time: string
+          id: string
+          reason_category: string | null
+          reason_details: string | null
+          username: string | null
+        }
+        Insert: {
+          deleted_time?: string
+          id?: string
+          reason_category?: string | null
+          reason_details?: string | null
+          username?: string | null
+        }
+        Update: {
+          deleted_time?: string
+          id?: string
+          reason_category?: string | null
+          reason_details?: string | null
+          username?: string | null
+        }
+        Relationships: []
       }
       events: {
         Row: {
@@ -500,6 +563,38 @@ export type Database = {
             columns: ['option_id']
             isOneToOne: false
             referencedRelation: 'interests'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      notification_template_translations: {
+        Row: {
+          created_time: string
+          locale: string
+          source_text: string
+          template_id: string
+          title: string | null
+        }
+        Insert: {
+          created_time?: string
+          locale: string
+          source_text: string
+          template_id: string
+          title?: string | null
+        }
+        Update: {
+          created_time?: string
+          locale?: string
+          source_text?: string
+          template_id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'notification_template_translations_template_id_fkey'
+            columns: ['template_id']
+            isOneToOne: false
+            referencedRelation: 'notification_templates'
             referencedColumns: ['id']
           },
         ]
@@ -981,6 +1076,8 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          allow_direct_messaging: boolean | null
+          allow_interest_indicating: boolean | null
           big5_agreeableness: number | null
           big5_conscientiousness: number | null
           big5_extraversion: number | null
@@ -1006,6 +1103,7 @@ export type Database = {
           gender: string | null
           geodb_city_id: string | null
           has_kids: number | null
+          headline: string | null
           height_in_inches: number | null
           id: number
           image_descriptions: Json | null
@@ -1050,6 +1148,8 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          allow_direct_messaging?: boolean | null
+          allow_interest_indicating?: boolean | null
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1075,6 +1175,7 @@ export type Database = {
           gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
+          headline?: string | null
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null
@@ -1119,6 +1220,8 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          allow_direct_messaging?: boolean | null
+          allow_interest_indicating?: boolean | null
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1144,6 +1247,7 @@ export type Database = {
           gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
+          headline?: string | null
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null

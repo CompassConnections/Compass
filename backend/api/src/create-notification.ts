@@ -3,7 +3,14 @@ import {Notification} from 'common/notifications'
 import {Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
-import {createBulkNotification, insertNotificationToSupabase} from 'shared/supabase/notifications'
+import {
+  createBulkNotification,
+  insertNotificationToSupabase,
+  NotificationTemplateTranslation,
+} from 'shared/supabase/notifications'
+
+const COMPASS_LOGO_URL =
+  'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185'
 
 export const createAndroidReleaseNotifications = async () => {
   const createdTime = Date.now()
@@ -16,8 +23,7 @@ export const createAndroidReleaseNotifications = async () => {
     sourceType: 'info',
     sourceUpdateType: 'created',
     sourceSlug: ANDROID_APP_URL,
-    sourceUserAvatarUrl:
-      'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
+    sourceUserAvatarUrl: COMPASS_LOGO_URL,
     title: 'Android App Released on Google Play',
     sourceText:
       'The Compass Android app is now publicly available on Google Play! Download it today to stay connected on the go.',
@@ -36,8 +42,7 @@ export const createAndroidTestNotifications = async () => {
     sourceType: 'info',
     sourceUpdateType: 'created',
     sourceSlug: '/contact',
-    sourceUserAvatarUrl:
-      'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
+    sourceUserAvatarUrl: COMPASS_LOGO_URL,
     title: 'Android App Ready for Review — Help Us Unlock the Google Play Release',
     sourceText:
       'To release our app, Google requires a closed test with at least 12 testers for 14 days. Please share your Google Play–registered email address so we can add you as a tester and complete the review process.',
@@ -125,38 +130,16 @@ export const createNotification = async (
  * Uses the new template-based system for efficient bulk notifications
  */
 export const createEventsAvailableNotifications = async () => {
-  const pg = createSupabaseDirectClient()
-
-  // Fetch all users
-  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select id from users'))
-
-  if (error) {
-    console.error('Error fetching users', error)
-    return {success: false, error}
-  }
-
-  if (!users || users.length === 0) {
-    console.error('No users found')
-    return {success: false, error: 'No users found'}
-  }
-
-  const userIds = users.map((u) => u.id)
-
   // Create template and bulk notifications using the new system
-  const {templateId, count} = await createBulkNotification(
-    {
-      sourceType: 'info',
-      title: 'New Events Page',
-      sourceText:
-        'You can now create and join events on Compass! Meet up with other members online or in person for workshops, social events, etc.',
-      sourceSlug: '/events',
-      sourceUserAvatarUrl:
-        'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-192.png?alt=media&token=9fd251c5-fc43-4375-b629-1a8f4bbe8185',
-      sourceUpdateType: 'created',
-    },
-    userIds,
-    pg,
-  )
+  const {templateId, count} = await createBulkNotification({
+    sourceType: 'info',
+    title: 'New Events Page',
+    sourceText:
+      'You can now create and join events on Compass! Meet up with other members online or in person for workshops, social events, etc.',
+    sourceSlug: '/events',
+    sourceUserAvatarUrl: COMPASS_LOGO_URL,
+    sourceUpdateType: 'created',
+  })
 
   console.log(`Created events notification template ${templateId} for ${count} users`)
 
@@ -165,4 +148,62 @@ export const createEventsAvailableNotifications = async () => {
     templateId,
     userCount: count,
   }
+}
+
+export const createSomeNotifications = async () => {
+  const translations: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[] = [
+    // French translation
+    {
+      locale: 'fr',
+      title: 'Bonjour',
+      source_text: "C'est une notif",
+    },
+    // German translation
+    {
+      locale: 'de',
+      title: 'Halo',
+      source_text: 'Dis das',
+    },
+  ]
+
+  // Create template with translations
+  const {templateId, count} = await createBulkNotification(
+    {
+      sourceType: 'hello',
+      title: 'Hello world',
+      sourceText: 'This is a notification',
+      sourceSlug: '/settings',
+      sourceUserAvatarUrl: COMPASS_LOGO_URL,
+      sourceUpdateType: 'created',
+    },
+    translations,
+  )
+  console.log(`Created some notification template ${templateId} for ${count} users`)
+}
+
+export const createInterestIndicatorNotifications = async () => {
+  const translations: Omit<NotificationTemplateTranslation, 'template_id' | 'created_time'>[] = [
+    // French translation
+    {
+      locale: 'fr',
+      title: 'Nouveau : Signaux d’intérêt privés',
+      source_text:
+        'Vous pouvez désormais exprimer votre intérêt en privé à la fin de chaque profil. L’autre personne n’est informée que si l’intérêt est réciproque.',
+    },
+  ]
+
+  // Create template with translations
+  const {templateId, count} = await createBulkNotification(
+    {
+      sourceType: 'info',
+      title: 'New: Private interest signals',
+      sourceText:
+        'You can now express interest privately at the end of each profile. The other person is only notified if it’s mutual.',
+      sourceSlug: '/',
+      sourceUserAvatarUrl: COMPASS_LOGO_URL,
+      sourceUpdateType: 'created',
+    },
+    translations,
+  )
+  console.log(`Created some notification template ${templateId} for ${count} users`)
 }

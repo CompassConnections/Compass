@@ -23,9 +23,9 @@ export function ProfitLossGraph(props: {
   const py1 = (p: Point) => yScale(p.y)
   // const clipId = ':rnm:'
   const gradientId = ':rnc:'
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const da = area(px, py0, py1).curve(curve)(data)!
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const dl = line(px, py1).curve(curve)(data)!
   const color = (p: Point) => (p.y >= 0 ? '#14b8a6' : '#FFA799')
   const stops = computeColorStops(data, color, px)
@@ -91,7 +91,6 @@ export function Sparkline(props: {
   const px = (p: Point) => xScale(p.x)
   const py1 = (p: Point) => yScale(p.y)
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const dl = line(px, py1).curve(curve)(data)!
 
   return (
@@ -123,9 +122,9 @@ export function ProbGraph(props: {
   const py1 = (p: Point) => yScale(p.y)
   // const clipId = ':rnm:'
   const gradientId = ':rnc:'
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const da = area(px, adjustedPy0, py1).curve(curve)(data)!
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const dl = line(px, py1).curve(curve)(data)!
 
   return (

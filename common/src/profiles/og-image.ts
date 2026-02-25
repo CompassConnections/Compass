@@ -8,6 +8,7 @@ export type ogProps = {
   avatarUrl: string
   username: string
   name: string
+  headline: string
   // profile props
   age: string
   city: string
@@ -19,9 +20,10 @@ export function getProfileOgImageUrl(user: User, profile?: ProfileRow | null) {
     avatarUrl: profile?.pinned_url,
     username: user.username,
     name: user.name,
-    age: profile?.age?.toString() ?? '25',
-    city: profile?.city ?? 'Internet',
-    gender: profile?.gender ?? '???',
+    age: profile?.age?.toString() ?? '',
+    city: profile?.city ?? '',
+    gender: profile?.gender ?? '',
+    headline: profile?.headline ?? '',
   } as ogProps
 
   return buildOgUrl(props, 'profile')

@@ -71,12 +71,6 @@ const logoFont = Major_Mono_Display({
   subsets: ['latin'],
 })
 
-// const mainFont = Figtree({
-//   weight: ['300', '400', '500', '600', '700'],
-//   variable: '--font-main',
-//   subsets: ['latin'],
-// })
-
 function printBuildInfo() {
   if (IS_VERCEL) {
     const env = process.env.NEXT_PUBLIC_VERCEL_ENV

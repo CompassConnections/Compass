@@ -18,8 +18,7 @@ export const getCardOptions = async () => ({
 // }
 
 function OgProfile(props: ogProps) {
-  const {avatarUrl, name, city} = props
-  const headline = 'Engineer & Researcher | AI Safety, Climate Solutions, and Ethical Technology'
+  const {avatarUrl, name, city, headline} = props
 
   return (
     <div

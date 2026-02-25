@@ -4,7 +4,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.5'
+    PostgrestVersion: '13.0.4'
   }
   public: {
     Tables: {
@@ -804,17 +804,14 @@ export type Database = {
         Row: {
           data: Json
           id: string
-          locale: string | null
         }
         Insert: {
           data: Json
           id: string
-          locale?: string | null
         }
         Update: {
           data?: Json
           id?: string
-          locale?: string | null
         }
         Relationships: [
           {
@@ -1106,6 +1103,7 @@ export type Database = {
           gender: string | null
           geodb_city_id: string | null
           has_kids: number | null
+          headline: string | null
           height_in_inches: number | null
           id: number
           image_descriptions: Json | null
@@ -1114,6 +1112,7 @@ export type Database = {
           last_modification_time: string
           looking_for_matches: boolean
           mbti: string | null
+          messaging_status: string
           occupation: string | null
           occupation_title: string | null
           photo_urls: string[] | null
@@ -1176,6 +1175,7 @@ export type Database = {
           gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
+          headline?: string | null
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null
@@ -1184,6 +1184,7 @@ export type Database = {
           last_modification_time?: string
           looking_for_matches?: boolean
           mbti?: string | null
+          messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
           photo_urls?: string[] | null
@@ -1246,6 +1247,7 @@ export type Database = {
           gender?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
+          headline?: string | null
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null
@@ -1254,6 +1256,7 @@ export type Database = {
           last_modification_time?: string
           looking_for_matches?: boolean
           mbti?: string | null
+          messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
           photo_urls?: string[] | null
@@ -1466,7 +1469,15 @@ export type Database = {
           ts?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'user_events_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       user_notifications: {
         Row: {

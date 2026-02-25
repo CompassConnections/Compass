@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS profiles
     gender                    TEXT,
     geodb_city_id             TEXT,
     has_kids                  INTEGER,
+    headline                  TEXT,
     height_in_inches          float4,
     id                        BIGINT GENERATED ALWAYS AS IDENTITY                     NOT NULL,
     image_descriptions        jsonb,

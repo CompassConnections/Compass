@@ -281,6 +281,8 @@ function UserPageInner(props: ActiveUserPageProps) {
     )
   }
 
+  const seoImage = getProfileOgImageUrl(user, profile)
+  console.log('SEO image:', seoImage)
   return (
     <PageBase
       trackPageView={'user page'}
@@ -291,7 +293,7 @@ function UserPageInner(props: ActiveUserPageProps) {
         title={`${user.name}`}
         description={`${user.name} is on Compass`}
         url={`/${user.username}`}
-        image={getProfileOgImageUrl(user, profile)}
+        image={seoImage}
       />
       {(user.isBannedFromPosting || user.userDeleted) && (
         <Head>

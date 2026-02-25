@@ -1,98 +1,79 @@
 import {ImageResponse} from '@vercel/og'
 import {ImageResponseOptions} from '@vercel/og/dist/types'
-import {convertGender, Gender} from 'common/gender'
 import {ogProps} from 'common/profiles/og-image'
 import {NextRequest} from 'next/server'
 import {classToTw} from 'web/components/og/utils'
 
 export const config = {runtime: 'edge'}
 
-export const getCardOptions = async () => {
-  const [light, med] = await Promise.all([figtreeLightData, figtreeMediumData])
+export const getCardOptions = async () => ({
+  width: 1200,
+  height: 630,
+})
 
-  return {
-    width: 600,
-    height: 315,
-    fonts: [
-      {
-        name: 'Figtree',
-        data: med,
-        style: 'normal',
-      },
-      {
-        name: 'Figtree-light',
-        data: light,
-        style: 'normal',
-      },
-    ],
-  }
-}
-
-const FIGTREE_LIGHT_URL = new URL('Figtree-Light.ttf', import.meta.url)
-const figtreeLightData = fetch(FIGTREE_LIGHT_URL).then((res) => res.arrayBuffer())
-const FIGTREE_MED_URL = new URL('Figtree-Medium.ttf', import.meta.url)
-const figtreeMediumData = fetch(FIGTREE_MED_URL).then((res) => res.arrayBuffer())
-
-// Quick replacement for lodash.capitalize since this is an edge function
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
+// Edge-safe capitalize
+// function capitalize(str: string) {
+//   if (!str) return ''
+//   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+// }
 
 function OgProfile(props: ogProps) {
-  const {avatarUrl, username, name, age, city, gender} = props
+  const {avatarUrl, name, city} = props
+  const headline = 'Engineer & Researcher | AI Safety, Climate Solutions, and Ethical Technology'
+
   return (
     <div
-      className="flex h-full w-full flex-col items-center justify-center"
-      // style={{
-      //   fontFamily: 'var(--font-main), Figtree',
-      //   background:
-      //     'radial-gradient(circle at top left, #ffffff 0%, #ffffff 85%, #ffffff 100%)',
-      // }}
+      style={{
+        display: 'flex',
+        width: 1200,
+        height: 630,
+        padding: 40,
+        // background: 'linear-gradient(90deg, #5B5FC7, #3A9AD9)',
+      }}
     >
-      <div className="flex flex-col">
-        <img
-          src={avatarUrl}
-          width={250}
-          height={250}
-          className="rounded-lg"
-          style={{
-            objectPosition: 'center',
-            objectFit: 'cover',
-          }}
-          alt="Compass logo"
-        />
-
-        {/* Details */}
-        <div
-          className="absolute inset-x-0 bottom-0 flex flex-col rounded-lg px-4 pb-2 pt-6"
-          // Equivalent to bg-gradient-to-t from-black/70 via-black/70 to-transparent
-          style={{
-            background:
-              'linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%)',
-          }}
-        >
-          <div className="flex flex-row flex-wrap text-gray-50">
-            <span className="font-bold">{name}</span>, {age}
-          </div>
-          <div className="flex flex-row text-xs text-gray-50">
-            {city} • {capitalize(convertGender(gender as Gender))}
-          </div>
-        </div>
+      {/* Left Column: Text */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          flex: 1,
+          padding: 24,
+          // color: 'white',
+        }}
+      >
+        <span style={{fontSize: 64, fontWeight: 800}}>{name}</span>
+        {/*{age && <span style={{fontSize: 28}}>{age}</span>}*/}
+        <span style={{fontSize: 32, marginTop: 8}}>{headline}</span>
+        {city && <span style={{fontSize: 28, marginTop: 8, opacity: 0.5}}>{city}</span>}
       </div>
 
-      {/* Bottom: Logo + URL */}
-      <div
-        className="flex items-center pb-1"
-        style={{fontFamily: 'var(--font-main), Figtree-light'}}
-      >
-        <img
-          className="mr-1.5 h-12 w-12"
-          src="https://www.compassmeet.com/favicon.ico"
-          width={48}
-          height={48}
-          alt="Compass logo"
-        />
-        <span className="text-2xl font-thin">compassmeet.com/{username}</span>
+      {/* Right Column: Image */}
+      <div style={{display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            width={500}
+            height={500}
+            style={{borderRadius: 50, objectFit: 'cover', objectPosition: 'center'}}
+            alt={`${name}'s avatar`}
+          />
+        ) : (
+          <div
+            style={{
+              width: 500,
+              height: 500,
+              borderRadius: 50,
+              backgroundColor: '#ccc',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#666',
+            }}
+          >
+            No Image
+          </div>
+        )}
       </div>
     </div>
   )
@@ -107,9 +88,7 @@ export default async function handler(req: NextRequest) {
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)
   } catch (e: any) {
-    console.error(`${e.message}`)
-    return new Response(`Failed to generate the image`, {
-      status: 500,
-    })
+    console.error(`Failed to generate OG image for URL: ${req.url}`, e)
+    return new Response('Failed to generate the image', {status: 500})
   }
 }

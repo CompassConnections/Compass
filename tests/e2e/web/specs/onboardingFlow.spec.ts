@@ -148,7 +148,8 @@ test.describe('when given valid input', () => {
     );
     await expect(String(dbInfo.profile.drinks_per_month)).toEqual(testAccount.alcohol_consumed_per_month);
     
-  })
+  });
+  
   test('should successfully skip the onboarding flow', async ({
     homePage,
     onboardingPage,
@@ -176,9 +177,69 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name);
     await expect(dbInfo.user.username).toContain(fakerAccount.username);
 
-  })
-})
+  });
+
+  test.describe('should successfully complete the onboarding flow after using the back button', () => {
+    test.beforeEach(async ({homePage, authPage, fakerAccount}) => {
+      await homePage.gotToHomePage()
+      await homePage.clickSignUpButton()
+      await authPage.fillEmailField(fakerAccount.email)
+      await authPage.fillPasswordField(fakerAccount.password)
+      await authPage.clickSignUpWithEmailButton()
+    });
+
+    test('the first time its an option', async ({
+      onboardingPage,
+      signUpPage,
+      profilePage,
+      fakerAccount,
+    }) => {
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickBackButton();
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickGetStartedButton();
+      await signUpPage.fillDisplayName(fakerAccount.display_name)
+      await signUpPage.fillUsername(fakerAccount.username)
+      await signUpPage.clickNextButton()
+      await signUpPage.clickNextButton() //Skip bio
+      await signUpPage.clickNextButton() //Skip optional information
+      await profilePage.clickCloseButton();
+      await onboardingPage.clickRefineProfileButton();
+  
+      const dbInfo = await userInformationFromDb(fakerAccount);
+  
+      await expect(dbInfo.user.name).toContain(fakerAccount.display_name);
+      await expect(dbInfo.user.username).toContain(fakerAccount.username);
+    });
+
+    test('the second time its an option', async ({
+      onboardingPage,
+      signUpPage,
+      profilePage,
+      fakerAccount,
+    }) => {
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickBackButton();
+      await onboardingPage.clickContinueButton();
+      await onboardingPage.clickGetStartedButton();
+      await signUpPage.fillDisplayName(fakerAccount.display_name)
+      await signUpPage.fillUsername(fakerAccount.username)
+      await signUpPage.clickNextButton()
+      await signUpPage.clickNextButton() //Skip bio
+      await signUpPage.clickNextButton() //Skip optional information
+      await profilePage.clickCloseButton();
+      await onboardingPage.clickRefineProfileButton();
+  
+      const dbInfo = await userInformationFromDb(fakerAccount);
+  
+      await expect(dbInfo.user.name).toContain(fakerAccount.display_name);
+      await expect(dbInfo.user.username).toContain(fakerAccount.username);
+    });
+  });
+});
 
 test.describe('when an error occurs', () => {
-  test('placeholder', async () => {})
-})
+  test('placeholder', async () => {});
+});

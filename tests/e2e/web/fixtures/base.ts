@@ -6,6 +6,7 @@ import {HomePage} from '../pages/homePage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
 import {AuthPage} from '../pages/AuthPage'
+import { ComatibilityPage } from "../pages/compatibilityPage";
 
 export const test = base.extend<{
   homePage: HomePage
@@ -13,6 +14,7 @@ export const test = base.extend<{
   signUpPage: SignUpPage
   profilePage: ProfilePage
   authPage: AuthPage
+  compatabilityPage: ComatibilityPage
   cleanUpUsers: void
   testAccount: OnboardingUser
   fakerAccount: OnboardingUser
@@ -42,6 +44,10 @@ export const test = base.extend<{
   profilePage: async ({page}, use) => {
     const profilePage = new ProfilePage(page)
     await use(profilePage)
+  },
+  compatabilityPage: async ({page}, use) => {
+    const compatibilityPage = new ComatibilityPage(page)
+    await use(compatibilityPage)
   },
   cleanUpUsers: [
     async ({}, use) => {

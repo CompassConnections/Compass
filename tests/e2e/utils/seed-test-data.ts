@@ -35,17 +35,46 @@ async function createAuth(email: string, password: string) {
 
 async function seedCompatibilityPrompts(pg: any, userId: string | null = null) {
   // Need some prompts to prevent the onboarding from stopping once it reaches them (just after profile creation)
-  const question = 'What is your favorite color?'
-  const multiple_choice_options = {Blue: 0, Green: 1, Red: 2}
-  const {data, error} = await tryCatch(
-    insert(pg, 'compatibility_prompts', {
-      creator_id: userId,
-      question,
-      answer_type: 'compatibility_multiple_choice',
-      multiple_choice_options,
-    }),
-  )
-  console.log('Compatibility prompts created', {data, error})
+  const compatibilityPrompts = [
+    {
+      question: "What is your favorite color?",
+      options: {Blue: 0, Green: 1, Red: 2}
+    },
+    {
+      question: "What is your favorite animal?",
+      options: {Dog: 0, Cat: 1, Bird: 2}
+    },
+    {
+      question: "What is your preferred time of day?",
+      options: {Morning: 0, Afternoon: 1, Night: 2}
+    },
+    {
+      question: "What type of movies do you enjoy most?",
+      options: {Action: 0, Comedy: 1, Drama: 2}
+    }
+  ];
+  // const question = 'What is your favorite color?'
+  // const multiple_choice_options = {Blue: 0, Green: 1, Red: 2}
+  for (let i = 0; i < compatibilityPrompts.length; i++) {
+    const {data, error} = await tryCatch(
+      insert(pg, 'compatibility_prompts', {
+        creator_id: userId,
+        question: compatibilityPrompts[i].question,
+        answer_type: 'compatibility_multiple_choice',
+        multiple_choice_options: compatibilityPrompts[i].options,
+      }),
+    )
+    console.log('Compatibility prompts created', {data, error})
+  }
+  // const {data, error} = await tryCatch(
+  //   insert(pg, 'compatibility_prompts', {
+  //     creator_id: userId,
+  //     question,
+  //     answer_type: 'compatibility_multiple_choice',
+  //     multiple_choice_options,
+  //   }),
+  // )
+  // console.log('Compatibility prompts created', {data, error})
 }
 
 type ProfileType = 'basic' | 'medium' | 'full'

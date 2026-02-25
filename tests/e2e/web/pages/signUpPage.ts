@@ -100,7 +100,7 @@ export class SignUpPage {
     this.displayNameField = page.getByPlaceholder('Display name')
     this.usernameField = page.getByPlaceholder('Username')
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
-    this.bioField = page.getByRole('paragraph').filter({hasText: /^$/})
+    this.bioField = page.locator('.tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
     this.ageField = page.getByPlaceholder('Age', {exact: true})
     this.feetHeightField = page.getByTestId('height-feet')

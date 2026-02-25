@@ -64,13 +64,13 @@ export class ProfilePage {
   private readonly profileCompatibilityExplanation: Locator
 
   constructor(public readonly page: Page) {
-    this.startAnsweringButton = page.getByRole('button', {})
-    this.doThisLaterLink = page.getByRole('button', {})
-    this.closeButton = page.getByRole('button', {name: 'Close'})
-    this.shareButton = page.getByRole('button', {name: 'Share'})
-    this.editProfileButton = page.getByTestId('profile-edit')
-    this.profileOptionsDropdown = page.getByTestId('profile-options')
-    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true})
+    this.startAnsweringButton = page.getByRole('button', {});
+    this.doThisLaterLink = page.getByRole('button', {});
+    this.closeButton = page.getByRole('button', {name: 'Close'});
+    this.shareButton = page.getByRole('button', {name: 'Share'});
+    this.editProfileButton = page.getByTestId('profile-edit');
+    this.profileOptionsDropdown = page.getByTestId('profile-options');
+    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true});
     this.limitProfileToMembersDropdownOption = page.getByText('Limit to Members Only', {
       exact: true,
     })
@@ -90,7 +90,7 @@ export class ProfilePage {
     this.dietAboutSection = page.getByTestId('profile-about-diet')
     this.languagesAboutSection = page.getByTestId('profile-about-languages')
     this.seekingAboutSection = page.getByTestId('profile-about-seeking')
-    this.relationshipTypeAboutSection = page.getByTestId('profile-about-seeking')
+    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type')
     this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
     this.educationAboutSection = page.getByTestId('profile-about-education')
     this.occupationAboutSection = page.getByTestId('profile-about-occupation')
@@ -274,19 +274,19 @@ export class ProfilePage {
   }
 
   async clickStartAnsweringButton() {
-    await expect(this.startAnsweringButton).toBeVisible()
-    await this.startAnsweringButton.click()
-  }
+    await expect(this.startAnsweringButton).toBeVisible();
+    await this.startAnsweringButton.click();
+  };
 
   async clickDoThisLaterButton() {
-    await expect(this.doThisLaterLink).toBeVisible()
-    await this.doThisLaterLink.click()
-  }
+    await expect(this.doThisLaterLink).toBeVisible();
+    await this.doThisLaterLink.click();
+  };
 
   async clickShareButton() {
-    await expect(this.shareButton).toBeVisible()
-    await this.shareButton.click()
-  }
+    await expect(this.shareButton).toBeVisible();
+    await this.shareButton.click();
+  };
 
   async clickEditProfileButton() {
     await expect(this.editProfileButton).toBeVisible()
@@ -304,20 +304,20 @@ export class ProfilePage {
   }
 
   async selectOptionFromProfileDropdown(option: ProfileDropdownOptions) {
-    await expect(this.profileOptionsDropdown).toBeVisible()
-    await this.profileOptionsDropdown.click()
+    await expect(this.profileOptionsDropdown).toBeVisible();
+    await this.profileOptionsDropdown.click();
 
     if (option === 'Public') {
-      await expect(this.listProfilePubliclyDropdownOption).toBeVisible()
-      await this.listProfilePubliclyDropdownOption.click()
+      await expect(this.listProfilePubliclyDropdownOption).toBeVisible();
+      await this.listProfilePubliclyDropdownOption.click();
     } else if (option === 'Disable') {
-      await expect(this.disableProfileDropdownOption).toBeVisible()
-      await this.disableProfileDropdownOption.click()
+      await expect(this.disableProfileDropdownOption).toBeVisible();
+      await this.disableProfileDropdownOption.click();
     } else if (option === 'Private') {
-      await expect(this.limitProfileToMembersDropdownOption).toBeVisible()
-      await this.limitProfileToMembersDropdownOption.click()
-    }
-  }
+      await expect(this.limitProfileToMembersDropdownOption).toBeVisible();
+      await this.limitProfileToMembersDropdownOption.click();
+    };
+  };
 
   async verifyDisplayName(displayName?: string) {
     await expect(this.displayNameAndAgeSection).toBeVisible()

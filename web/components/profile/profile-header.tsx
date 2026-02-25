@@ -2,6 +2,7 @@ import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicon
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
+import {capitalize} from 'lodash'
 import Link from 'next/link'
 import Router from 'next/router'
 import React, {useState} from 'react'
@@ -240,7 +241,7 @@ export default function ProfileHeader(props: {
       />
       {profile.headline && <div className="italic max-w-3xl px-4 py-3">{profile.headline}</div>}
       <Row className={'px-4 gap-2 flex-wrap py-2'}>
-        {profile.keywords?.map((tag, i) => (
+        {profile.keywords?.map(capitalize)?.map((tag, i) => (
           <span
             key={i}
             className={'bg-canvas-100'}

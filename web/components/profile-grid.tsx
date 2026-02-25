@@ -2,6 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
+import {capitalize} from 'lodash'
 import Link from 'next/link'
 import {Row} from 'web/components/layout/row'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
@@ -225,7 +226,7 @@ function ProfilePreview(props: {
               <div className="line-clamp-4">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
                 {profile.headline && <p>{profile.headline}</p>}
-                {profile.keywords?.join(' • ')}
+                {profile.keywords?.map(capitalize)?.join(' • ')}
                 <Content className="w-full" content={bio} />
                 {seekingGenderText && <p>{seekingGenderText}.</p>}
                 {(!!profile.work?.length || profile.occupation_title) && (

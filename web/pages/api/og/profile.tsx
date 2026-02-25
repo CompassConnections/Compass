@@ -1,6 +1,7 @@
 import {ImageResponse} from '@vercel/og'
 import {ImageResponseOptions} from '@vercel/og/dist/types'
 import {ogProps} from 'common/profiles/og-image'
+import {capitalize} from 'lodash'
 import {NextRequest} from 'next/server'
 import {classToTw} from 'web/components/og/utils'
 
@@ -76,7 +77,7 @@ function OgProfile(props: ogProps) {
           {/*  <img src={'https://www.compassmeet.com/favicon.svg'} width={100} height={100} />*/}
           {/*</div>*/}
           <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-            {allTags.map((tag, i) => (
+            {allTags?.map(capitalize).map((tag, i) => (
               <span
                 key={i}
                 style={{

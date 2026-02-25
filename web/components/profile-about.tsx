@@ -88,7 +88,7 @@ export default function ProfileAbout(props: {
   const {locale} = useLocale()
 
   return (
-    <Col className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded p-4')}>
+    <Col className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded px-4')}>
       <Seeking profile={profile} />
       <RelationshipType profile={profile} />
       <RelationshipStatus profile={profile} />

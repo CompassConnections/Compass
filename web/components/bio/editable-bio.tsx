@@ -171,7 +171,7 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
     defaultValue: defaultValue,
     placeholder: t(
       'profile.bio.placeholder',
-      "Tell us about yourself — and what you're looking for!",
+      "Tell us all the details about yourself — and what you're looking for!",
     ),
   })
   const textLength = editor?.getText().length ?? 0
@@ -184,7 +184,7 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
   return (
     <div>
       {textLength < MIN_BIO_LENGTH && (
-        <p className={'guidance'}>
+        <p className={'guidance hidden'}>
           {remainingChars === 1
             ? t(
                 'profile.bio.add_characters_one',

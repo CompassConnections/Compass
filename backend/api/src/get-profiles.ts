@@ -229,7 +229,9 @@ export const loadProfiles = async (props: profileQueryType) => {
        OR ${getOptionClauseKeyword('interests')}
        OR ${getOptionClauseKeyword('causes')}
        OR ${getOptionClauseKeyword('work')}
-       `,
+       OR lower(headline) ilike '%' || lower($(word)) || '%'
+       OR keywords && LOWER($(word)) = ANY(keywords)
+        `,
         {word, locale},
       ),
     ),
@@ -399,6 +401,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     !shortBio &&
       where(
         `bio_length >= ${100}
+       OR headline IS NOT NULL
        OR array_length(profile_work.work, 1) > 0
        OR array_length(profile_interests.interests, 1) > 0
        OR occupation_title IS NOT NULL

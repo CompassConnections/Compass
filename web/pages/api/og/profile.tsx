@@ -6,6 +6,9 @@ import {classToTw} from 'web/components/og/utils'
 
 export const config = {runtime: 'edge'}
 
+const COMPASS_LOGO =
+  'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-512.png?alt=media&token=d2fa566f-f443-4a94-90be-e50403f1805a'
+
 export const getCardOptions = async () => ({
   width: 1200,
   height: 630,
@@ -18,60 +21,99 @@ export const getCardOptions = async () => ({
 // }
 
 function OgProfile(props: ogProps) {
-  const {avatarUrl, name, city, headline} = props
+  const {avatarUrl, name, city, country, age, interests, keywords} = props
+  let headline = props.headline
+
+  const _interestsList =
+    typeof interests === 'string' ? (interests ? interests.split(',') : []) : (interests ?? [])
+  const keywordsList =
+    typeof keywords === 'string' ? (keywords ? keywords.split(',') : []) : (keywords ?? [])
+  const allTags = [...keywordsList].filter(Boolean)
+
+  const maxChars = 250
+  if (headline && headline.length > maxChars) {
+    headline = headline.slice(0, maxChars) + '...'
+  }
+
+  console.log(props)
 
   return (
     <div
       style={{
+        width: '1200px',
+        height: '630px',
         display: 'flex',
-        width: 1200,
-        height: 630,
-        padding: 40,
-        backgroundColor: '#FFFFFF',
+        flexDirection: 'column',
+        padding: '50px',
+        fontFamily: 'sans-serif',
+        backgroundColor: '#f5f5f5',
       }}
     >
-      {/* Left Column: Text */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          flex: 1,
-          padding: 24,
-          // color: 'white',
-        }}
-      >
-        <span style={{fontSize: 64, fontWeight: 800}}>{name}</span>
-        {/*{age && <span style={{fontSize: 28}}>{age}</span>}*/}
-        <span style={{fontSize: 32, marginTop: 8}}>{headline}</span>
-        {city && <span style={{fontSize: 28, marginTop: 8, opacity: 0.5}}>{city}</span>}
+      {/* Top Section: Name + Headline */}
+
+      {/* Bottom Section: Two Columns */}
+      <div style={{display: 'flex', flex: 1}}>
+        {/* Left Column: City + Tags */}
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            justifyContent: 'center',
+          }}
+        >
+          <div style={{display: 'flex', fontSize: '64px', fontWeight: 'bold'}}>
+            {name}
+            {age && `, ${age}`}
+          </div>
+          {city && (
+            <div style={{display: 'flex', fontSize: '28px', marginBottom: '20px', opacity: 0.85}}>
+              {city}, {country}
+            </div>
+          )}
+          {/*<div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start'}}>*/}
+          {/*  <img src={'https://www.compassmeet.com/favicon.svg'} width={100} height={100} />*/}
+          {/*</div>*/}
+          <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+            {allTags.map((tag, i) => (
+              <span
+                key={i}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#ddd',
+                  borderRadius: '20px',
+                  fontSize: '24px',
+                }}
+              >
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: Avatar */}
+        <div style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <img
+            src={avatarUrl || COMPASS_LOGO}
+            width={250}
+            height={250}
+            style={{borderRadius: 50, objectFit: 'cover'}}
+            alt="Avatar"
+          />
+        </div>
       </div>
 
-      {/* Right Column: Image */}
-      <div style={{display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            width={500}
-            height={500}
-            style={{borderRadius: 50, objectFit: 'cover', objectPosition: 'center'}}
-            alt={`${name}'s avatar`}
-          />
-        ) : (
-          <div
-            style={{
-              width: 500,
-              height: 500,
-              borderRadius: 50,
-              backgroundColor: '#ccc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#666',
-            }}
-          >
-            No Image
-          </div>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          marginBottom: '40px',
+        }}
+      >
+        {headline && (
+          <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
         )}
       </div>
     </div>

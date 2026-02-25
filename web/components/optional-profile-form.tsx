@@ -1,5 +1,5 @@
 import {PlusIcon, XIcon} from '@heroicons/react/solid'
-import {Editor} from '@tiptap/core'
+import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
   DIET_CHOICES,
@@ -24,6 +24,7 @@ import {tryCatch} from 'common/util/try-catch'
 import {isEqual, range} from 'lodash'
 import {useRouter} from 'next/router'
 import {Fragment, useEffect, useRef, useState} from 'react'
+import Textarea from 'react-expanding-textarea'
 import toast from 'react-hot-toast'
 import {AddOptionEntry} from 'web/components/add-option-entry'
 import {SignupBio} from 'web/components/bio/editable-bio'
@@ -104,6 +105,8 @@ export const OptionalProfileUserForm = (props: {
   const [causeChoices, setCauseChoices] = useState({})
   const [workChoices, setWorkChoices] = useState({})
   const {locale} = useLocale()
+
+  const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
 
   const {clearProfileDraft} = useProfileDraft(user.id, profile, setProfile, updateHeight)
 
@@ -292,16 +295,6 @@ export const OptionalProfileUserForm = (props: {
       <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
-        <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
-        <SignupBio
-          profile={profile}
-          onChange={(e: Editor) => {
-            console.debug('bio changed', e, profile.bio)
-            setProfile('bio', e.getJSON())
-            setProfile('bio_length', e.getText().length)
-          }}
-        />
-
         <Category
           title={t('profile.optional.category.personal_info', 'Personal Information')}
           className={'mt-0'}
@@ -494,6 +487,64 @@ export const OptionalProfileUserForm = (props: {
               }}
             />
           )}
+        </Col>
+
+        <Category title={t('profile.optional.og_card', 'Profile Card')} className={'mt-0'} />
+
+        <label className={clsx('guidance')}>
+          {t(
+            'profile.optional.headline_description',
+            'What will appear on your profile card when others view it.',
+          )}
+        </label>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.headline', 'Headline')}
+          </label>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.headline_hint',
+              "2-3 sentences that describe you and what you are looking for (max 250 characters). You'll be able to create a long document later in the profile bio.",
+            )}
+          </label>
+          <Textarea
+            data-testid="headline"
+            onChange={(e) => setProfile('headline', e.target.value)}
+            className={'w-full md:w-[700px] bg-canvas-50 border rounded-md p-2'}
+            value={profile['headline'] ?? undefined}
+            maxLength={250}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.keywords', 'Keywords')}
+          </label>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.keywords_hint',
+              'Add 3-5 main keywords separated by commas that will be very visible on your profile (identity, interests, causes, politics, etc.). You can add more keywords later in the interests, causes and work sections.',
+            )}
+          </label>
+          <Input
+            data-testid="keywords"
+            type="text"
+            onChange={(e) => {
+              setKeywordsString(e.target.value)
+              const keywords = e.target.value
+                .split(',')
+                .map((k) => k.trim())
+                .filter(Boolean)
+              setProfile('keywords', keywords)
+            }}
+            className={'w-full sm:w-96'}
+            value={keywordsString}
+            placeholder={t(
+              'profile.optional.keywords_placeholder',
+              'e.g., hiking, climate, progressive',
+            )}
+          />
         </Col>
 
         <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")} />
@@ -989,6 +1040,22 @@ export const OptionalProfileUserForm = (props: {
           </div>
         </Col>
 
+        <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
+        <label className={clsx('guidance')}>
+          {t(
+            'profile.optional.bio_description',
+            'Here you can write a long document about who you are and what you are looking for. It includes nice formatting like headers, bold, italic, lists, links, embedded images, and more.',
+          )}
+        </label>
+        <SignupBio
+          profile={profile}
+          onChange={(e: Editor) => {
+            console.debug('bio changed', e, profile.bio)
+            setProfile('bio', e.getJSON())
+            setProfile('bio_length', e.getText().length)
+          }}
+        />
+
         <Category title={t('profile.optional.photos', 'Photos')} />
 
         <Col className={clsx(colClassName)}>
@@ -1027,6 +1094,7 @@ export const OptionalProfileUserForm = (props: {
             disabled={isSubmitting}
             loading={isSubmitting}
             onClick={handleSubmit}
+            color={'gray'}
           >
             {buttonLabel ?? t('common.next', 'Next')}
           </Button>

@@ -4,7 +4,7 @@ import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
 import Link from 'next/link'
 import Router from 'next/router'
-import {useState} from 'react'
+import React, {useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
@@ -238,6 +238,21 @@ export default function ProfileHeader(props: {
           refreshProfile()
         }}
       />
+      {profile.headline && <div className="italic max-w-3xl px-4 py-3">{profile.headline}</div>}
+      <Row className={'px-4 gap-2 flex-wrap py-2'}>
+        {profile.keywords?.map((tag, i) => (
+          <span
+            key={i}
+            className={'bg-canvas-100'}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '20px',
+            }}
+          >
+            {tag.trim()}
+          </span>
+        ))}
+      </Row>
     </Col>
   )
 }

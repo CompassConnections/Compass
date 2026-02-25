@@ -44,6 +44,8 @@ export const zBoolean = z
 
 export const baseProfilesSchema = z.object({
   age: z.number().min(18).max(100).optional().nullable(),
+  allow_direct_messaging: zBoolean.optional(),
+  allow_interest_indicating: zBoolean.optional(),
   bio: contentSchema.optional().nullable(),
   bio_length: z.number().optional().nullable(),
   city: z.string().optional().nullable(),
@@ -54,8 +56,6 @@ export const baseProfilesSchema = z.object({
   geodb_city_id: z.string().optional().nullable(),
   languages: z.array(z.string()).optional().nullable(),
   looking_for_matches: zBoolean.optional(),
-  allow_direct_messaging: zBoolean.optional(),
-  allow_interest_indicating: zBoolean.optional(),
   photo_urls: z.array(z.string()).nullable(),
   pinned_url: z.string(),
   pref_age_max: z.number().min(18).max(100).optional().nullable(),
@@ -89,7 +89,9 @@ const optionalProfilesSchema = z.object({
   ethnicity: z.array(z.string()).optional().nullable(),
   has_kids: z.number().min(0).optional().nullable(),
   has_pets: zBoolean.optional().nullable(),
+  headline: z.string().optional().nullable(),
   height_in_inches: z.number().optional().nullable(),
+  keywords: z.array(z.string()).optional().nullable(),
   image_descriptions: z.any().optional().nullable(),
   interests: z.array(z.string()).optional().nullable(),
   is_smoker: zBoolean.optional().nullable(),

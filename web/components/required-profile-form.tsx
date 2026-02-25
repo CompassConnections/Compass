@@ -23,7 +23,7 @@ export const initialRequiredState = {
   pref_relation_styles: [],
   wants_kids_strength: -1,
   looking_for_matches: true,
-  visibility: 'member',
+  visibility: 'public',
   city: '',
   pinned_url: '',
   photo_urls: [],
@@ -132,6 +132,14 @@ export const RequiredProfileUserForm = (props: {
                   />
                   {loadingUsername && <LoadingIndicator className={'ml-2'} />}
                 </Row>
+                {
+                  <span className="guidance text-sm py-4">
+                    {t(
+                      'profile.required.username_letters_only',
+                      'Only letters and numbers are allowed for the username.',
+                    )}
+                  </span>
+                }
                 {errorUsername && <span className="text-error text-sm">{errorUsername}</span>}
               </Col>
             )}

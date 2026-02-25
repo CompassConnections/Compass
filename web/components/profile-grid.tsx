@@ -217,7 +217,6 @@ function ProfilePreview(props: {
         <Col className="absolute inset-x-0 top-[-15px] bg-gradient-to-b to-transparent px-4 pt-0">
           <div>
             <div className="flex-1 min-w-0">
-              {/* <OnlineIcon last_online_time={last_online_time} /> */}
               <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
                 {user.name}
                 {profile.age && `, ${profile.age}`}
@@ -225,20 +224,24 @@ function ProfilePreview(props: {
               </h3>
               <div className="line-clamp-4">
                 {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
+                {profile.headline && <p>{profile.headline}</p>}
+                {profile.keywords?.join(' • ')}
                 <Content className="w-full" content={bio} />
                 {seekingGenderText && <p>{seekingGenderText}.</p>}
                 {(!!profile.work?.length || profile.occupation_title) && (
                   <p>
                     {t('profile.optional.category.work', 'Work')}: {profile.occupation_title}
                     {profile.occupation_title && !!profile.work?.length && ', '}
-                    {profile.work?.map((id) => choicesIdsToLabels['work'][id]).join(', ')}
+                    {profile.work?.map((id) => choicesIdsToLabels['work'][id]).join(' • ')}
                     {/*{(profile.work?.length || 0) > 3 && ',...'}*/}
                   </p>
                 )}
                 {!!profile.interests?.length && (
                   <p>
                     {t('profile.optional.interests', 'Interests')}:{' '}
-                    {profile.interests?.map((id) => choicesIdsToLabels['interests'][id]).join(', ')}
+                    {profile.interests
+                      ?.map((id) => choicesIdsToLabels['interests'][id])
+                      .join(' • ')}
                   </p>
                 )}
               </div>

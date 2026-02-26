@@ -4,6 +4,7 @@ import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
+import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
 
 export const PhotosModal = (props: {
   open: boolean
@@ -35,5 +36,50 @@ export const PhotosModal = (props: {
         </Row>
       </Col>
     </Modal>
+  )
+}
+
+export const ExpandablePhoto = (props: {src: string; width?: number; height?: number}) => {
+  const {src, width = 1000, height = 1000} = props
+  const [open, setOpen] = useState<boolean>(false)
+  return (
+    <div className="">
+      <Image
+        src={src}
+        width={width}
+        height={height}
+        alt=""
+        className="cursor-pointer object-cover rounded-2xl"
+        onClick={() => setOpen(true)}
+      />
+      <Modal open={open} setOpen={setOpen} size={'xl'}>
+        <Image src={src} width={1000} height={1000} alt="" className={'rounded-2xl'} />
+      </Modal>
+    </div>
+  )
+}
+
+export const PhotoButton = (props: {
+  src: string
+  username: string
+  width?: number
+  height?: number
+}) => {
+  const {src, username, width = 1000, height = 1000} = props
+  const [open, setOpen] = useState<boolean>(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>View Profile Card</Button>
+      <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
+        <Col className="gap-4 bg-canvas-100/75 rounded-2xl">
+          <Image src={src} width={width} height={height} alt="" className={'rounded-2xl'} />
+          <ShareProfileButtons
+            username={username}
+            className={'justify-center gap-4 text-3xl pb-4'}
+            buttonClassName={'hover:bg-canvas-200'}
+          />
+        </Col>
+      </Modal>
+    </>
   )
 }

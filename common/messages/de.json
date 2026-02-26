@@ -1248,5 +1248,7 @@
   "profile.connect.interest_indicators_disabled": "{user} hat Interessenssignale deaktiviert",
   "profile.connect.tips": "- Wählen Sie den Verbindungstyp, für den Sie offen sind.\n- Sie sehen dies nicht, es sei denn, sie wählen denselben Typ wie Sie.\n- Wenn Sie beide denselben Typ wählen, werden Sie beide benachrichtigt.",
   "notifications.connection.mutual_title": "Es ist gegenseitig 🎉",
-  "notifications.connection.mutual_body": "Du und {name} sind beide an einem {type} interessiert. Beginnen Sie das Gespräch."
+  "notifications.connection.mutual_body": "Du und {name} sind beide an einem {type} interessiert. Beginnen Sie das Gespräch.",
+  "share_profile.on_x": "Auf X teilen",
+  "share_profile.on_linkedin": "Auf LinkedIn teilen"
 }

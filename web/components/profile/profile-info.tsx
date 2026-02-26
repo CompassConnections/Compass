@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
@@ -6,6 +7,7 @@ import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
+import {PhotoButton} from 'web/components/photos-modal'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import ProfileHeader from 'web/components/profile/profile-header'
 import ProfileAbout from 'web/components/profile-about'
@@ -166,6 +168,9 @@ function ProfileContent(props: {
 
   return (
     <>
+      <div className={'w-fit mx-4 mb-2'}>
+        <PhotoButton src={getProfileOgImageUrl(user, profile)} username={user.username} />
+      </div>
       <ProfileAbout profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
       <ProfileBio
         isCurrentUser={isCurrentUser}

@@ -2,15 +2,10 @@ import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import Image from 'next/image'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
-import {
-  ShareProfileOnLinkedinButton,
-  ShareProfileOnXButton,
-} from 'web/components/buttons/copy-link-button'
 import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {ShareProfileButton} from 'web/components/widgets/share-profile-button'
+import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -58,11 +53,7 @@ export default function SoftGatePage() {
                   'You created a public profile card and values-based profile. Share them to attract people who think like you. Shared profiles are discovered much more often.',
                 )}
               </p>
-              <Row className={'gap-4'}>
-                <ShareProfileOnXButton username={user?.username} />
-                <ShareProfileOnLinkedinButton username={user?.username} />
-                <ShareProfileButton username={user?.username} color={'gray-outline'} />
-              </Row>
+              <ShareProfileButtons username={user?.username} />
             </Col>
           )}
 

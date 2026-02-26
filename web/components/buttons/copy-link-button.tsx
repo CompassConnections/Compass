@@ -194,6 +194,7 @@ export const shareOnLinkedIn = (profileUrl: string) => {
 }
 export const ShareProfileOnXButton = (props: {username: string; className?: string}) => {
   const {username, className} = props
+  const t = useT()
 
   return (
     <Button
@@ -202,19 +203,21 @@ export const ShareProfileOnXButton = (props: {username: string; className?: stri
         shareOnX(`https://compassmeet.com/${username}`, `Thoughtful connections > swiping.`)
       }
     >
-      Share on X
+      {t('share_profile.on_x', 'Share on X')}
     </Button>
   )
 }
+
 export const ShareProfileOnLinkedinButton = (props: {username: string; className?: string}) => {
   const {username, className} = props
+  const t = useT()
 
   return (
     <Button
       className={className}
       onClick={() => shareOnLinkedIn(`https://compassmeet.com/${username}`)}
     >
-      Share on LinkedIn
+      {t('share_profile.on_linkedin', 'Share on LinkedIn')}
     </Button>
   )
 }

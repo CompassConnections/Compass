@@ -1,10 +1,10 @@
-name: CD
+name: GitHub Release
 
 # Must select "Read and write permissions" in GitHub → Repo → Settings → Actions → General → Workflow permissions
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'package.json'
       - '.github/workflows/cd.yml'

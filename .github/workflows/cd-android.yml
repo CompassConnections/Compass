@@ -74,8 +74,9 @@ jobs:
 
       - name: Build AAB
         run: |
-          chmod +x android/gradlew
-          ./android/gradlew bundleRelease \
+          cd android
+          chmod +x gradlew
+          ./gradlew bundleRelease \
             -Pandroid.injected.signing.store.file=release.keystore \
             -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=compass \

@@ -45,11 +45,7 @@ export function CopyLinkOrShareButton(props: {
     >
       <Button
         onClick={onClick}
-        className={clsx(
-          className,
-          'active:text-white',
-          isSuccess && 'text-green-500 duration-[25ms] hover:text-green-200',
-        )}
+        className={clsx(className, '', isSuccess && 'duration-[25ms]')}
         disabled={!url}
         size={size}
         color={color ?? 'gray-white'}

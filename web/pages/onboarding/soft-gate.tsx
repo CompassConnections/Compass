@@ -1,14 +1,24 @@
+import {getProfileOgImageUrl} from 'common/profiles/og-image'
+import Image from 'next/image'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {
+  ShareProfileButton,
+  ShareProfileOnLinkedinButton,
+  ShareProfileOnXButton,
+} from 'web/components/widgets/share-profile-button'
+import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 export default function SoftGatePage() {
   const user = useUser()
   const t = useT()
+  const profile = useProfile()
 
   const handleExplore = () => {
     Router.push('/?fromSignup=true')
@@ -32,6 +42,29 @@ export default function SoftGatePage() {
           <h1 className="text-4xl font-semibold text-ink-900">
             {t('onboarding.soft-gate.title', "You're ready to explore")}
           </h1>
+
+          {profile && user && (
+            <Col className="gap-4 text-ink-700 items-center">
+              <Image
+                src={getProfileOgImageUrl(user, profile)}
+                alt="OG"
+                width={550}
+                height={550}
+                className="rounded-xl border border-md"
+              />
+              <p>
+                {t(
+                  'onboarding.soft-gate.profile_card',
+                  'You created a public profile card and values-based profile. Share them to attract people who think like you. Shared profiles are discovered much more often.',
+                )}
+              </p>
+              <Row className={'gap-4'}>
+                <ShareProfileOnXButton username={user?.username} />
+                <ShareProfileOnLinkedinButton username={user?.username} />
+                <ShareProfileButton username={user?.username} className={''} />
+              </Row>
+            </Col>
+          )}
 
           <Col className="gap-4 text-ink-700">
             <p>

@@ -119,7 +119,7 @@ export default function ProfileHeader(props: {
         </Row>
         {currentUser && isCurrentUser ? (
           <Row className={'items-center gap-1 sm:gap-2'}>
-            <ShareProfileButton className="hidden sm:flex" username={user.username} />
+            <ShareProfileButton className="sm:flex" username={user.username} />
             <Tooltip text={t('more_options_user.edit_profile', 'Edit profile')} noTap>
               <Button
                 data-testid="profile-edit"

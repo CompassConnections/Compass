@@ -858,6 +858,7 @@
   "profile.optional.keywords_placeholder": "ex: randonnée, écologie, progressiste",
   "profile.optional.og_card": "Carte de profil",
   "profile.required.username_letters_only": "Seules les lettres et les chiffres sont autorisés pour le nom d'utilisateur.",
+  "profile.required.username_locked_warning": "Vous ne pouvez pas changer votre nom d'utilisateur après avoir créé un profil, mais vous pouvez mettre à jour votre nom plus tard dans vos paramètres de profil.",
   "profile.political.conservative": "Conservateur·trice",
   "profile.political.e/acc": "Accélérationnisme efficace",
   "profile.political.green": "Vert·e / Éco-socialiste",

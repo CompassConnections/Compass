@@ -46,10 +46,11 @@ export const RequiredProfileUserForm = (props: {
     value: ProfileWithoutUser[K] | undefined,
   ) => void
   isSubmitting: boolean
+  isLocked: boolean
   onSubmit?: () => void
   profileCreatedAlready?: boolean
 }) => {
-  const {user, onSubmit, profileCreatedAlready, isSubmitting} = props
+  const {user, onSubmit, profileCreatedAlready, isSubmitting, isLocked} = props
   const {updateDisplayName, userInfo, updateUserState, updateUsername} = useEditableUserInfo(user)
 
   const [step, setStep] = useState<number>(0)
@@ -82,9 +83,17 @@ export const RequiredProfileUserForm = (props: {
   return (
     <>
       {!profileCreatedAlready && <Title>{t('profile.basics.title', 'The Basics')}</Title>}
-      {step === 1 && !profileCreatedAlready && (
-        <div className="text-ink-500 mb-6 text-lg">
-          {t('profile.basics.subtitle', 'Write your own bio, your own way.')}
+      {/*{step === 1 && !profileCreatedAlready && (*/}
+      {/*  <div className="text-ink-500 mb-6 text-lg">*/}
+      {/*    {t('profile.basics.subtitle', 'Write your own bio, your own way.')}*/}
+      {/*  </div>*/}
+      {/*)}*/}
+      {isLocked && (
+        <div className="mb-6 text-lg">
+          {t(
+            'profile.required.username_locked_warning',
+            'You cannot change your username after creating a profile, but you can update you name later in your profile settings.',
+          )}
         </div>
       )}
       <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-fit'}>
@@ -95,7 +104,7 @@ export const RequiredProfileUserForm = (props: {
             </label>
             <Row className={'items-center gap-2'}>
               <Input
-                disabled={loadingName}
+                disabled={loadingName || isLocked}
                 type="text"
                 placeholder="Display name"
                 value={name}
@@ -119,7 +128,7 @@ export const RequiredProfileUserForm = (props: {
                 </label>
                 <Row className={'items-center gap-2'}>
                   <Input
-                    // disabled={loadingUsername}
+                    disabled={isLocked}
                     type="text"
                     placeholder="Username"
                     value={username}

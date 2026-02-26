@@ -859,6 +859,7 @@
   "profile.optional.keywords_placeholder": "z.B. Wandern, Umwelt, progressiv",
   "profile.optional.og_card": "Profilkarte",
   "profile.required.username_letters_only": "Nur Buchstaben und Zahlen sind für den Benutzernamen erlaubt.",
+  "profile.required.username_locked_warning": "Du kannst deinen Benutzernamen nach der Erstellung deines Profils nicht mehr ändern, aber du kannst deinen Namen später in deinen Profileinstellungen aktualisieren.",
   "profile.political.conservative": "Konservativ",
   "profile.political.e/acc": "Effektiver Akzelerationismus",
   "profile.political.green": "Grün / Ökosozialismus",

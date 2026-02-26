@@ -1249,5 +1249,6 @@
   "notifications.connection.mutual_title": "C’est mutuel 🎉",
   "notifications.connection.mutual_body": "{name} et vous êtes tous deux intéressés par un(e) {type}. Commencez la conversation.",
   "share_profile.on_x": "Partager sur X",
-  "share_profile.on_linkedin": "Partager sur LinkedIn"
+  "share_profile.on_linkedin": "Partager sur LinkedIn",
+  "share_profile.view_profile_card": "Voir la carte de profil"
 }

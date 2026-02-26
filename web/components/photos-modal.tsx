@@ -5,6 +5,7 @@ import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
+import {useT} from 'web/lib/locale'
 
 export const PhotosModal = (props: {
   open: boolean
@@ -67,9 +68,12 @@ export const PhotoButton = (props: {
 }) => {
   const {src, username, width = 1000, height = 1000} = props
   const [open, setOpen] = useState<boolean>(false)
+  const t = useT()
   return (
     <>
-      <Button onClick={() => setOpen(true)}>View Profile Card</Button>
+      <Button onClick={() => setOpen(true)}>
+        {t('share_profile.view_profile_card', 'View Profile Card')}
+      </Button>
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
         <Col className="gap-4 bg-canvas-100/75 rounded-2xl">
           <Image src={src} width={width} height={height} alt="" className={'rounded-2xl'} />

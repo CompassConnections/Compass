@@ -1250,5 +1250,6 @@
   "notifications.connection.mutual_title": "Es ist gegenseitig 🎉",
   "notifications.connection.mutual_body": "Du und {name} sind beide an einem {type} interessiert. Beginnen Sie das Gespräch.",
   "share_profile.on_x": "Auf X teilen",
-  "share_profile.on_linkedin": "Auf LinkedIn teilen"
+  "share_profile.on_linkedin": "Auf LinkedIn teilen",
+  "share_profile.view_profile_card": "Profilkarte ansehen"
 }

@@ -1,3 +1,5 @@
+import {ProfileRow} from 'common/profiles/profile'
+
 export const geodbHost = 'wft-geo-db.p.rapidapi.com'
 
 export const geodbFetch = async (endpoint: string) => {
@@ -28,4 +30,23 @@ export const geodbFetch = async (endpoint: string) => {
     console.debug('geodbFetch', endpoint, error)
     return {status: 'failure', data: error}
   }
+}
+export function getLocationText(
+  profile: ProfileRow | undefined | null,
+  prefix?: string | undefined | null,
+) {
+  if (!profile) return
+  prefix = prefix ?? ''
+  const city = profile[`${prefix}city` as keyof ProfileRow]
+  const country = profile[`${prefix}country` as keyof ProfileRow]
+  const regionCode = profile[`${prefix}region_code` as keyof ProfileRow]
+  console.log({city, country, regionCode})
+
+  const stateOrCountry = country === 'United States of America' ? regionCode : country
+
+  if (!city) {
+    return null
+  }
+
+  return `${city}${stateOrCountry && ', '}${stateOrCountry}`
 }

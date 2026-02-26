@@ -35,8 +35,13 @@ function OgProfile(props: ogProps) {
     headline = headline.slice(0, maxChars) + '...'
   }
 
+  const totalChars = (headline?.length || 0) + (allTags?.join(' ')?.length || 0) + name.length * 3
+
+  const isLargerPicLayout = totalChars < 220
+
   console.log(props)
 
+  const imgSize = isLargerPicLayout ? 400 : 250
   return (
     <div
       style={{
@@ -49,11 +54,11 @@ function OgProfile(props: ogProps) {
         backgroundColor: '#f5f5f5',
       }}
     >
-      <div style={{display: 'flex', flex: 3}}>
+      <div style={{display: 'flex', flex: isLargerPicLayout ? 1 : 3}}>
         {/* Left Column: Text */}
         <div
           style={{
-            flex: 3,
+            flex: isLargerPicLayout ? 1 : 3,
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
@@ -65,28 +70,46 @@ function OgProfile(props: ogProps) {
             {age && `, ${age}`}
           </div>
           {city && (
-            <div style={{display: 'flex', fontSize: '28px', marginBottom: '20px', opacity: 0.85}}>
-              {city}, {country}
+            <div
+              style={{
+                display: 'flex',
+                fontSize: '28px',
+                marginBottom: '20px',
+                marginTop: '20px',
+                opacity: 0.85,
+              }}
+            >
+              {city}
+              {country && `, ${country}`}
             </div>
           )}
           {/*<div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start'}}>*/}
           {/*  <img src={'https://www.compassmeet.com/favicon.svg'} width={100} height={100} />*/}
           {/*</div>*/}
-          <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-            {allTags?.map(capitalize).map((tag, i) => (
-              <span
-                key={i}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#ddd',
-                  borderRadius: '20px',
-                  fontSize: '24px',
-                }}
-              >
-                {tag.trim()}
-              </span>
-            ))}
-          </div>
+          {allTags && (
+            <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+              {allTags?.map(capitalize).map((tag, i) => (
+                <span
+                  key={i}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#ddd',
+                    borderRadius: '20px',
+                    fontSize: '24px',
+                  }}
+                >
+                  {tag.trim()}
+                </span>
+              ))}
+            </div>
+          )}
+          {isLargerPicLayout && (
+            <div style={{display: 'flex'}}>
+              {headline && (
+                <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Column: Avatar */}
@@ -94,32 +117,49 @@ function OgProfile(props: ogProps) {
           style={{
             flex: 1,
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
           <img
             src={avatarUrl || COMPASS_LOGO}
-            width={250}
-            height={250}
+            width={imgSize}
+            height={imgSize}
             style={{borderRadius: 50, objectFit: 'cover'}}
             alt="Avatar"
           />
+          {isLargerPicLayout && (
+            <div
+              style={{
+                display: 'flex',
+                fontSize: '48px',
+                fontWeight: 'semibold',
+                fontFamily: 'Georgia',
+                marginTop: '20px',
+                fontStyle: 'italic',
+              }}
+            >
+              compassmeet.com
+            </div>
+          )}
         </div>
       </div>
 
-      <div
-        style={{
-          flex: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          marginBottom: '40px',
-        }}
-      >
-        {headline && (
-          <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
-        )}
-      </div>
+      {!isLargerPicLayout && (
+        <div
+          style={{
+            flex: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            marginBottom: '40px',
+          }}
+        >
+          {headline && (
+            <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

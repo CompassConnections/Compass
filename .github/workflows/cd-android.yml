@@ -74,6 +74,7 @@ jobs:
           cd android
           echo "${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}" | base64 -d > app/google-services.json
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+          cp release.keystore app/release.keystore
           chmod +x gradlew
           ./gradlew bundleRelease \
             -Pandroid.injected.signing.store.file=release.keystore \

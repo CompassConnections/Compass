@@ -46,7 +46,7 @@ export const RequiredProfileUserForm = (props: {
     value: ProfileWithoutUser[K] | undefined,
   ) => void
   isSubmitting: boolean
-  isLocked: boolean
+  isLocked?: boolean
   onSubmit?: () => void
   profileCreatedAlready?: boolean
 }) => {

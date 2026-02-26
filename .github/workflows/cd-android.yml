@@ -1,0 +1,90 @@
+name: Android Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'android/app/build.gradle'
+      - '.github/workflows/cd-android.yml'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get previous versionCode
+        id: prev_version
+        run: |
+          git checkout HEAD^
+          PREV=$(grep versionCode android/app/build.gradle | awk '{print $2}')
+          echo "prev_version=$PREV" >> $GITHUB_OUTPUT
+          git checkout -
+
+      - name: Get current versionCode
+        id: curr_version
+        run: |
+          CURR=$(grep versionCode android/app/build.gradle | awk '{print $2}')
+          echo "curr_version=$CURR" >> $GITHUB_OUTPUT
+
+      - name: Compare versionCodes
+        id: version_check
+        run: |
+          if [ "${{ steps.curr_version.outputs.curr_version }}" -gt "${{ steps.prev_version.outputs.prev_version }}" ]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stop if version not incremented
+        if: steps.version_check.outputs.should_build == 'false'
+        run: |
+          echo "VersionCode not increased. Skipping build."
+          exit 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Compile Web App into Android assets
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
+        run: yarn build-sync-android
+
+      - name: Build AAB
+        run: |
+          chmod +x android/gradlew
+          ./android/gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=compass \
+            -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload to Play Store (Internal Track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.your.package
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal

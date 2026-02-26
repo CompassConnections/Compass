@@ -171,7 +171,7 @@ export async function mobileShare(url: string) {
   }
 }
 
-const share = async (url: string) => {
+export const share = async (url: string) => {
   const success = await mobileShare(url)
   if (!success) {
     window.open(url, '_blank', 'noopener,noreferrer')
@@ -183,14 +183,14 @@ export const shareOnX = (profileUrl: string, text: string) => {
 
   const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
 
-  share(shareUrl)
+  window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
 export const shareOnLinkedIn = (profileUrl: string) => {
   const encodedUrl = encodeURIComponent(profileUrl)
 
   const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
 
-  share(shareUrl)
+  window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
 export const ShareProfileOnXButton = (props: {username: string; className?: string}) => {
   const {username, className} = props

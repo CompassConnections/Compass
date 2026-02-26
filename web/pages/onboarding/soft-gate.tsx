@@ -2,15 +2,15 @@ import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import Image from 'next/image'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
+import {
+  ShareProfileOnLinkedinButton,
+  ShareProfileOnXButton,
+} from 'web/components/buttons/copy-link-button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {
-  ShareProfileButton,
-  ShareProfileOnLinkedinButton,
-  ShareProfileOnXButton,
-} from 'web/components/widgets/share-profile-button'
+import {ShareProfileButton} from 'web/components/widgets/share-profile-button'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -49,7 +49,7 @@ export default function SoftGatePage() {
                 src={getProfileOgImageUrl(user, profile)}
                 alt="OG"
                 width={550}
-                height={550}
+                height={325}
                 className="rounded-xl border border-md"
               />
               <p>

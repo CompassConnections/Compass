@@ -30,6 +30,7 @@ export function CopyLinkOrShareButton(props: {
   const onClick = () => {
     if (!url) return
     copyToClipboard(url)
+    mobileShare(url)
     setIsSuccess(true)
     setTimeout(() => setIsSuccess(false), 2000) // Reset after 2 seconds
   }
@@ -154,5 +155,66 @@ export function SimpleCopyTextButton(props: {
         <ClipboardCopyIcon className={'h-5'} aria-hidden="true" />
       </Tooltip>
     </IconButton>
+  )
+}
+export async function mobileShare(url: string) {
+  try {
+    await navigator.share({
+      title: 'My Compass profile',
+      text: 'Thoughtful connections > swiping.',
+      url: url,
+    })
+    return true
+  } catch (e) {
+    console.error('Failed to share', e)
+    return false
+  }
+}
+
+const share = async (url: string) => {
+  const success = await mobileShare(url)
+  if (!success) {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+}
+export const shareOnX = (profileUrl: string, text: string) => {
+  const encodedText = encodeURIComponent(text)
+  const encodedUrl = encodeURIComponent(profileUrl)
+
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
+
+  share(shareUrl)
+}
+export const shareOnLinkedIn = (profileUrl: string) => {
+  const encodedUrl = encodeURIComponent(profileUrl)
+
+  const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
+
+  share(shareUrl)
+}
+export const ShareProfileOnXButton = (props: {username: string; className?: string}) => {
+  const {username, className} = props
+
+  return (
+    <Button
+      className={className}
+      onClick={() =>
+        shareOnX(`https://compassmeet.com/${username}`, `Thoughtful connections > swiping.`)
+      }
+    >
+      Share on X
+    </Button>
+  )
+}
+export const ShareProfileOnLinkedinButton = (props: {username: string; className?: string}) => {
+  const {username, className} = props
+
+  return (
+    <Button
+      className={className}
+      onClick={() => shareOnLinkedIn(`https://compassmeet.com/${username}`)}
+    >
+      Share on LinkedIn
+    </Button>
   )
 }

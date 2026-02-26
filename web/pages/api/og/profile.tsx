@@ -30,14 +30,14 @@ function OgProfile(props: ogProps) {
     typeof keywords === 'string' ? (keywords ? keywords.split(',') : []) : (keywords ?? [])
   const allTags = [...keywordsList].filter(Boolean).slice(0, 8)
 
-  const maxChars = 200
+  const maxChars = 220
   if (headline && headline.length > maxChars) {
     headline = headline.slice(0, maxChars) + '...'
   }
 
   const totalChars = (headline?.length || 0) + (allTags?.join(' ')?.length || 0) + name.length * 3
 
-  const isLargerPicLayout = totalChars < 220
+  const isLargerPicLayout = totalChars < maxChars
 
   console.log(props)
 

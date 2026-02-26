@@ -61,7 +61,7 @@ export default function SoftGatePage() {
               <Row className={'gap-4'}>
                 <ShareProfileOnXButton username={user?.username} />
                 <ShareProfileOnLinkedinButton username={user?.username} />
-                <ShareProfileButton username={user?.username} className={''} />
+                <ShareProfileButton username={user?.username} color={'gray-outline'} />
               </Row>
             </Col>
           )}

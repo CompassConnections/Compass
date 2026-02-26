@@ -1,24 +1,23 @@
 name: CD Android Live Update
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'android/capawesome.json'
       - '.github/workflows/cd-android-live-update.yml'
 
 jobs:
-  deploy:
-    name: Deploy
+  check-version:
+    name: Check Version
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # we need full history for git log
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
+          fetch-depth: 2
 
       - name: Read current version
         id: current
@@ -29,7 +28,6 @@ jobs:
       - name: Read previous version
         id: previous
         run: |
-          # Get previous commit’s package.json (if it existed)
           if git show HEAD^:android/capawesome.json >/dev/null 2>&1; then
             previous=$(git show HEAD^:android/capawesome.json | jq -r '.version')
           else
@@ -37,29 +35,37 @@ jobs:
           fi
           echo "version=$previous" >> $GITHUB_OUTPUT
 
-      - name: Check version change
+      - name: Compare versions
         id: check
         run: |
           echo "current=${{ steps.current.outputs.version }}"
           echo "previous=${{ steps.previous.outputs.version }}"
           if [ "${{ steps.current.outputs.version }}" = "${{ steps.previous.outputs.version }}" ]; then
+            echo "Version unchanged. Skipping deploy."
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
-        if: steps.check.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install dependencies
-        if: steps.check.outputs.changed == 'true'
         run: yarn install
 
       - name: Deploy Live Update
-        if: steps.check.outputs.changed == 'true'
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}

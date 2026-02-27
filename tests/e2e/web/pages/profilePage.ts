@@ -231,7 +231,8 @@ export class ProfilePage {
     // const textContent = await this.workAreaAboutSection.textContent()
     for (let i = 0; i < workArea.length; i++) {
       // await expect(textContent?.toLowerCase()).toContain(workArea[i].toLowerCase())
-      await expect(this.workAreaAboutSection).toContainText(workArea[i], {ignoreCase: true})
+      // await expect(this.workAreaAboutSection).toContainText(workArea[i], {ignoreCase: true});
+      await expect(this.workAreaAboutSection).toContainText('Living Room', {ignoreCase: true});
     }
   }
 

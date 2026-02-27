@@ -22,7 +22,6 @@ test.describe('when given valid input', () => {
     await signUpPage.fillDisplayName(testAccount.display_name);
     await signUpPage.fillUsername(testAccount.username + Date.now().toString());
     await signUpPage.clickNextButton();
-    await signUpPage.fillBio(testAccount.bio);
     await signUpPage.chooseGender(testAccount.gender);
     await signUpPage.fillAge(testAccount.age);
     await signUpPage.fillHeight({
@@ -62,6 +61,7 @@ test.describe('when given valid input', () => {
     await signUpPage.fillAlcoholPerMonth(testAccount.alcohol_consumed_per_month);
     await signUpPage.setLanguages(testAccount.languages);
     await signUpPage.addSocialMediaPlatform(testAccount.social_media);
+    await signUpPage.fillBio(testAccount.bio);
     await signUpPage.clickNextButton();
     await profilePage.clickCloseButton();
     await onboardingPage.clickRefineProfileButton();

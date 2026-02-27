@@ -98,7 +98,7 @@
   "block_user.toast.loading": "Blocage en cours...",
   "block_user.toast.success": "Vous ne verrez plus le contenu de cet utilisateur",
   "block_user.unblock": "Débloquer",
-  "button.share.label": "Partager",
+  "button.share.label": "Copier lien vers profil",
   "charts.date": "Date",
   "common.active": "Actif",
   "common.add": "Ajouter",

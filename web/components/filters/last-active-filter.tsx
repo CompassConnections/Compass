@@ -1,10 +1,13 @@
 import clsx from 'clsx'
-import {INVERTED_LAST_ONLINE_CHOICES, LAST_ONLINE_CHOICES} from 'common/choices'
+import {LAST_ONLINE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
+import {toKey} from 'common/parsing'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 import {Col} from '../layout/col'
+
+const DEFAULT_KEY = 'any'
 
 export function LastActiveFilterText(props: {
   last_active: string | undefined
@@ -12,10 +15,11 @@ export function LastActiveFilterText(props: {
 }) {
   const {last_active, highlightedClass} = props
   const t = useT()
-  const option = Object.values(LAST_ONLINE_CHOICES).find((opt) => opt === last_active)
-  const label =
-    INVERTED_LAST_ONLINE_CHOICES[option ?? ''] ?? t('filter.last_active.any', 'Any time')
-
+  const key =
+    (Object.keys(LAST_ONLINE_CHOICES) as Array<keyof typeof LAST_ONLINE_CHOICES>).find(
+      (opt) => opt === last_active,
+    ) ?? DEFAULT_KEY
+  const label = t(`filter.last_active.${key}`, LAST_ONLINE_CHOICES[key])
   return (
     <Row className="items-center gap-0.5">
       <span className={highlightedClass}>
@@ -34,10 +38,11 @@ export function LastActiveFilter(props: {
 
   return (
     <DropdownOptions
-      items={INVERTED_LAST_ONLINE_CHOICES}
-      activeKey={filters.last_active || 'any'}
+      items={LAST_ONLINE_CHOICES}
+      activeKey={filters.last_active || DEFAULT_KEY}
+      translationPrefix={'filter.last_active'}
       onClick={(option) => {
-        updateFilter({last_active: option === 'any' ? undefined : option})
+        updateFilter({last_active: option === DEFAULT_KEY ? undefined : option})
         close?.()
       }}
     />
@@ -48,8 +53,17 @@ export function DropdownOptions(props: {
   items: Record<string, any>
   onClick: (item: any) => void
   activeKey: string
+  translationPrefix?: string
 }) {
-  const {items, onClick, activeKey} = props
+  const {items, onClick, activeKey, translationPrefix} = props
+
+  const t = useT()
+
+  const translateOption = (key: string, value: string) => {
+    if (!translationPrefix) return value
+    return t(`${translationPrefix}.${toKey(key)}`, value)
+  }
+
   return (
     <Col className={'w-[150px]'}>
       {Object.entries(items).map(([key, item]) => (
@@ -67,7 +81,7 @@ export function DropdownOptions(props: {
             )}
           >
             {item.icon && <div className="w-5">{item.icon}</div>}
-            {item.label ?? item}
+            {translateOption(key, item.label ?? item)}
           </button>
         </div>
       ))}

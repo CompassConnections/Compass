@@ -227,12 +227,12 @@ export const GENDERS_PLURAL = {
 }
 
 export const LAST_ONLINE_CHOICES = {
-  Today: 'today',
-  'Last 3 days': '3days',
-  'Last week': 'week',
-  'Last month': 'month',
-  'Last 3 months': '3months',
-  'Any time': 'any',
+  today: 'Today',
+  '3days': 'Last 3 days',
+  week: 'Last week',
+  month: 'Last month',
+  '3months': 'Last 3 months',
+  any: 'Any time',
 }
 
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)

@@ -55,7 +55,7 @@ export function MbtiFilter(props: {
 
   return (
     <MultiCheckbox
-      optionsClassName={'grid grid-cols-2 xs:grid-cols-4'}
+      optionsClassName={'grid grid-cols-2'}
       selected={filters.mbti ?? []}
       choices={MBTI_CHOICES as any}
       translationPrefix={'profile.mbti'}

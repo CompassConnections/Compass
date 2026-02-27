@@ -142,7 +142,7 @@ export function DropdownOptions(props: {
   }
 
   return (
-    <Col className={'w-[150px]'}>
+    <Col className={''}>
       {Object.entries(items).map(([key, item]) => (
         <div key={key}>
           <button

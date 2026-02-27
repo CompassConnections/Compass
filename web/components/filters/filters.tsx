@@ -35,6 +35,7 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
+import {useChoices} from 'web/hooks/use-choices'
 import {useT} from 'web/lib/locale'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 
@@ -48,7 +49,7 @@ import {MyMatchesToggle} from './my-matches-toggle'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
 
-function MobileFilters(props: {
+function Filters(props: {
   filters: Partial<FilterFields>
   youProfile: Profile | undefined | null
   updateFilter: (newState: Partial<FilterFields>) => void
@@ -83,7 +84,7 @@ function MobileFilters(props: {
   const [noMinAge, noMaxAge] = getNoMinMaxAge(filters.pref_age_min, filters.pref_age_max)
 
   return (
-    <Col className="mb-[calc(20px+env(safe-area-inset-bottom))] mt-[calc(20px+env(safe-area-inset-top))]">
+    <Col className="mb-[calc(var(filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(filter-offset)+env(safe-area-inset-top))] pt-3">
       <FilterGuide className={'justify-between px-4 py-2'} />
 
       <Row className="justify-between px-4">
@@ -104,7 +105,7 @@ function MobileFilters(props: {
       </Col>
 
       {/* CONNECTION */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.seeking', 'Seeking')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -120,10 +121,10 @@ function MobileFilters(props: {
         }
       >
         <RelationshipFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* Relationship Status */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.relationship_status', 'Relationship status')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -140,10 +141,10 @@ function MobileFilters(props: {
         }
       >
         <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* LOCATION */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.location', 'Living')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -158,10 +159,10 @@ function MobileFilters(props: {
         }
       >
         <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* RAISED IN LOCATION */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.raised_in', 'Grew up')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -179,10 +180,10 @@ function MobileFilters(props: {
         }
       >
         <LocationFilter youProfile={youProfile} locationFilterProps={raisedInLocationFilterProps} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* AGE RANGE */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.age', 'Age')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -197,10 +198,10 @@ function MobileFilters(props: {
         }
       >
         <AgeFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* GENDER */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.gender', 'Gender')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -213,7 +214,7 @@ function MobileFilters(props: {
         }
       >
         <GenderFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* PREFERRED GENDER */}
       {/*<MobileFilterSection*/}
@@ -236,7 +237,7 @@ function MobileFilters(props: {
       {includeRelationshipFilters && (
         <>
           {/* ROMANTIC STYLE */}
-          <MobileFilterSection
+          <FilterSection
             title={t('profile.romantic.style', 'Style')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
@@ -254,10 +255,10 @@ function MobileFilters(props: {
             }
           >
             <RomanticFilter filters={filters} updateFilter={updateFilter} />
-          </MobileFilterSection>
+          </FilterSection>
 
           {/* WANTS KIDS */}
-          <MobileFilterSection
+          <FilterSection
             title={t('filter.wants_kids.wants_kids', 'Wants kids')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
@@ -276,10 +277,10 @@ function MobileFilters(props: {
             }
           >
             <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
-          </MobileFilterSection>
+          </FilterSection>
 
           {/* HAS KIDS */}
-          <MobileFilterSection
+          <FilterSection
             title={t('profile.has_kids', 'Has kids')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
@@ -298,12 +299,12 @@ function MobileFilters(props: {
             }
           >
             <HasKidsFilter filters={filters} updateFilter={updateFilter} />
-          </MobileFilterSection>
+          </FilterSection>
         </>
       )}
 
       {/* DIET */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.diet', 'Diet')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -319,10 +320,10 @@ function MobileFilters(props: {
         }
       >
         <DietFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* DRINKS PER MONTH */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.drinks', 'Drinks')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -343,10 +344,10 @@ function MobileFilters(props: {
         }
       >
         <DrinksFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* SMOKER */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.smokes', 'Smoker')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -361,10 +362,10 @@ function MobileFilters(props: {
         }
       >
         <SmokerFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* LANGUAGES */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.languages', 'Languages')}
         // className="col-span-full max-h-80 overflow-y-auto"
         openFilter={openFilter}
@@ -381,10 +382,10 @@ function MobileFilters(props: {
         }
       >
         <LanguageFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* INTERESTS */}
-      <MobileFilterSection
+      <FilterSection
         newBadgeClassName={'-top-0 -left-0'}
         title={t('profile.optional.interests', 'Interests')}
         openFilter={openFilter}
@@ -407,10 +408,10 @@ function MobileFilters(props: {
           choices={choices.interests}
           label={'interests'}
         />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* CAUSES */}
-      <MobileFilterSection
+      <FilterSection
         newBadgeClassName={'-top-0 -left-0'}
         title={t('profile.optional.causes', 'Causes')}
         openFilter={openFilter}
@@ -433,10 +434,10 @@ function MobileFilters(props: {
           choices={choices.causes}
           label={'causes'}
         />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* WORK */}
-      <MobileFilterSection
+      <FilterSection
         newBadgeClassName={'-top-0 -left-0'}
         title={t('profile.optional.work', 'Work')}
         openFilter={openFilter}
@@ -459,10 +460,10 @@ function MobileFilters(props: {
           choices={choices.work}
           label={'work'}
         />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* POLITICS */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.political_beliefs', 'Politics')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -478,10 +479,10 @@ function MobileFilters(props: {
         }
       >
         <PoliticalFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* RELIGION */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.optional.religious_beliefs', 'Religion')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -497,10 +498,10 @@ function MobileFilters(props: {
         }
       >
         <ReligionFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* MBTI */}
-      <MobileFilterSection
+      <FilterSection
         title="MBTI"
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -515,10 +516,10 @@ function MobileFilters(props: {
         }
       >
         <MbtiFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* BIG FIVE PERSONALITY */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.big5', 'Personality (Big Five)')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -532,10 +533,10 @@ function MobileFilters(props: {
         }
       >
         <Big5Filters filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* EDUCATION */}
-      <MobileFilterSection
+      <FilterSection
         title={t('profile.education.short_name', 'Education')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -551,10 +552,10 @@ function MobileFilters(props: {
         }
       >
         <EducationFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
 
       {/* LAST ACTIVE */}
-      <MobileFilterSection
+      <FilterSection
         title={t('filter.last_active.title', 'Last active')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
@@ -567,14 +568,14 @@ function MobileFilters(props: {
         }
       >
         <LastActiveFilter filters={filters} updateFilter={updateFilter} />
-      </MobileFilterSection>
+      </FilterSection>
     </Col>
   )
 }
 
-export default MobileFilters
+export default Filters
 
-export function MobileFilterSection(props: {
+export function FilterSection(props: {
   title: string
   children: ReactNode
   openFilter: string | undefined
@@ -622,9 +623,52 @@ export function MobileFilterSection(props: {
           {isOpen ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
         </div>
       </button>
-      {isOpen && (
-        <div className={clsx('bg-canvas-50 px-4 py-2', childrenClassName)}>{children}</div>
-      )}
+      {isOpen && <div className={clsx('px-4 py-2', childrenClassName)}>{children}</div>}
     </Col>
+  )
+}
+
+export function FiltersElement(props: {
+  filters: Partial<FilterFields>
+  youProfile: Profile | undefined | null
+  updateFilter: (newState: Partial<FilterFields>) => void
+  clearFilters: () => void
+  setYourFilters: (checked: boolean) => void
+  isYourFilters: boolean
+  locationFilterProps: LocationFilterProps
+  raisedInLocationFilterProps: LocationFilterProps
+}) {
+  const {
+    filters,
+    youProfile,
+    updateFilter,
+    clearFilters,
+    setYourFilters,
+    isYourFilters,
+    locationFilterProps,
+    raisedInLocationFilterProps,
+  } = props
+  const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
+  const {choices: interestChoices} = useChoices('interests')
+  const {choices: causeChoices} = useChoices('causes')
+  const {choices: workChoices} = useChoices('work')
+  const choices = {
+    interests: interestChoices,
+    causes: causeChoices,
+    work: workChoices,
+  }
+  return (
+    <Filters
+      filters={filters}
+      youProfile={youProfile}
+      updateFilter={updateFilter}
+      clearFilters={clearFilters}
+      setYourFilters={setYourFilters}
+      isYourFilters={isYourFilters}
+      locationFilterProps={locationFilterProps}
+      raisedInLocationFilterProps={raisedInLocationFilterProps}
+      includeRelationshipFilters={youSeekingRelationship}
+      choices={choices}
+    />
   )
 }

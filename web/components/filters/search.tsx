@@ -21,9 +21,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {submitBookmarkedSearch} from 'web/lib/supabase/searches'
 
-import {DesktopFilters} from './desktop-filters'
 import {LocationFilterProps} from './location-filter'
-import MobileFilters from './mobile-filters'
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(input)
@@ -109,11 +107,7 @@ export const Search = forwardRef<
     // filter props
     filters: Partial<FilterFields>
     updateFilter: (newState: Partial<FilterFields>) => void
-    clearFilters: () => void
-    setYourFilters: (checked: boolean) => void
-    isYourFilters: boolean
     locationFilterProps: LocationFilterProps
-    raisedInLocationFilterProps: LocationFilterProps
     bookmarkedSearches: BookmarkedSearchesType[]
     refreshBookmarkedSearches: () => void
     profileCount: number | undefined
@@ -122,14 +116,12 @@ export const Search = forwardRef<
     highlightFilters?: boolean
     highlightSort?: boolean
     setOpenFiltersModal?: (open: boolean) => void
+    filtersElement: JSX.Element
   }
 >((props, ref) => {
   const {
     youProfile,
     updateFilter,
-    clearFilters,
-    setYourFilters,
-    isYourFilters,
     locationFilterProps,
     filters,
     bookmarkedSearches,
@@ -142,7 +134,7 @@ export const Search = forwardRef<
     setOpenFiltersModal: parentSetOpenFiltersModal,
     highlightFilters,
     highlightSort,
-    raisedInLocationFilterProps,
+    filtersElement,
   } = props
 
   const [internalOpenFiltersModal, setInternalOpenFiltersModal] = useState(false)
@@ -186,16 +178,8 @@ export const Search = forwardRef<
   const [openBookmarks, setOpenBookmarks] = useState(false)
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false)
   const user = useUser()
-  const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   const isClearedFilters = useIsClearedFilters(filters)
   const {choices: interestChoices} = useChoices('interests')
-  const {choices: causeChoices} = useChoices('causes')
-  const {choices: workChoices} = useChoices('work')
-  const choices = {
-    interests: interestChoices,
-    causes: causeChoices,
-    work: workChoices,
-  }
 
   useEffect(() => {
     if (isHolding) return
@@ -269,41 +253,12 @@ export const Search = forwardRef<
         </Row>
       </Row>
       <FilterGuide className={'hidden sm:inline'} />
-      <Row
-        className={
-          'border-ink-300 dark:border-ink-300 hidden flex-wrap items-center gap-4 pb-4 pt-1 sm:inline-flex'
-        }
-      >
-        <DesktopFilters
-          filters={filters}
-          youProfile={youProfile}
-          updateFilter={updateFilter}
-          clearFilters={clearFilters}
-          setYourFilters={setYourFilters}
-          isYourFilters={isYourFilters}
-          locationFilterProps={locationFilterProps}
-          raisedInLocationFilterProps={raisedInLocationFilterProps}
-          includeRelationshipFilters={youSeekingRelationship}
-          choices={choices}
-        />
-      </Row>
       <RightModal
         className="bg-canvas-0 w-2/3 text-sm sm:hidden h-full max-h-screen overflow-y-auto"
         open={openFiltersModal}
         setOpen={setOpenFiltersModal}
       >
-        <MobileFilters
-          filters={filters}
-          youProfile={youProfile}
-          updateFilter={updateFilter}
-          clearFilters={clearFilters}
-          setYourFilters={setYourFilters}
-          isYourFilters={isYourFilters}
-          locationFilterProps={locationFilterProps}
-          raisedInLocationFilterProps={raisedInLocationFilterProps}
-          includeRelationshipFilters={youSeekingRelationship}
-          choices={choices}
-        />
+        {filtersElement}
       </RightModal>
       <Row className="items-center justify-between w-full flex-wrap gap-2">
         <Row className={'mb-2 gap-2'}>

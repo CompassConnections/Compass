@@ -61,6 +61,12 @@ export function PageBase(props: {
   useOnline()
   const [_, setIsAddFundsModalOpen] = useState(false)
 
+  const colSpan = className?.split(' ').find((c) => c.startsWith('col-span-')) ?? 'col-span-8'
+  const restClassName = className
+    ?.split(' ')
+    .filter((c) => !c.startsWith('col-span-'))
+    .join(' ')
+
   return (
     <>
       <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]" />
@@ -88,7 +94,7 @@ export function PageBase(props: {
             className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
           />
         )}
-        <main className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', 'col-span-8', className)}>
+        <main className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', colSpan, restClassName)}>
           {children}
         </main>
       </Col>

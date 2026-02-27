@@ -82,7 +82,13 @@ export const ViewProfileCardButton = (props: {
       </Button>
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
         <Col className="gap-4 bg-canvas-100/75 rounded-2xl">
-          <Image src={src} width={width} height={height} alt="" className={'rounded-2xl'} />
+          <Image
+            src={src}
+            width={width}
+            height={height}
+            alt={t('profile_card.loading', 'Loading your card, it may take a few seconds...')}
+            className={'rounded-2xl'}
+          />
           <ShareProfileButtons
             username={username}
             className={'justify-center gap-4 text-3xl pb-4'}

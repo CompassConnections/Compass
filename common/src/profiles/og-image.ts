@@ -54,15 +54,15 @@ export function getProfileOgImageUrl(
       ' • ',
     )
   const props = {
-    avatarUrl: profile?.pinned_url,
-    username: user.username,
-    name: user.name,
+    avatarUrl: profile?.pinned_url ?? '',
+    username: user.username ?? '',
+    name: user.name ?? '',
     age: profile?.age?.toString() ?? '',
     city: getLocationText(profile) ?? '',
     gender: profile?.gender ?? '',
-    headline: headline.slice(0, 500),
+    headline: headline.slice(0, 500) ?? '',
     interests: '',
-    keywords: (profile?.keywords ?? []).join(','),
+    keywords: (profile?.keywords ?? []).join(',') ?? '',
   }
 
   return buildOgUrl(props as any, 'profile')

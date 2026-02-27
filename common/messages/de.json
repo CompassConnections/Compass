@@ -1258,5 +1258,6 @@
   "notifications.connection.mutual_body": "Du und {name} sind beide an einem {type} interessiert. Beginnen Sie das Gespräch.",
   "share_profile.on_x": "Auf X teilen",
   "share_profile.on_linkedin": "Auf LinkedIn teilen",
-  "share_profile.view_profile_card": "Profilkarte ansehen"
+  "share_profile.view_profile_card": "Profilkarte ansehen",
+  "profile_card.loading": "Ihre Karte wird geladen, es kann ein paar Sekunden dauern..."
 }

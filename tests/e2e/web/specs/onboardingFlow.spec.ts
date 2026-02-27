@@ -117,7 +117,7 @@ test.describe('when given valid input', () => {
 
     await expect(dbInfo.user.name).toBe(testAccount.display_name);
     await expect(dbInfo.user.username).toContain(testAccount.username);
-    await expect(dbInfo.profile.bio_text).toBe(testAccount.bio); //Need to sort out the bio locator
+    await expect(dbInfo.profile.bio_text).toBe(testAccount.bio);
     await expect(dbInfo.profile.gender).toEqual(`female`);
     await expect(String(dbInfo.profile.age)).toEqual(testAccount.age);
     await expect(dbInfo.profile.height_in_inches).toEqual(Number(testAccount.height?.feet) * 12);

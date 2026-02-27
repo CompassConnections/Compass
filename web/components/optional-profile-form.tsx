@@ -1124,6 +1124,8 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
           if (dropdownRef.current && !dropdownRef.current.contains(e.relatedTarget)) {
             setFocused(false)
           }
+          // Set to the best guess (first city) if no option selected
+          if (cities.length > 0) props.onCitySelected(cities[0])
         }}
       />
       <div className="relative w-full" ref={dropdownRef}>

@@ -1,3 +1,6 @@
+import {getProfileOgImageUrl} from 'common/profiles/og-image'
+import {Profile} from 'common/profiles/profile'
+import {User} from 'common/user'
 import Image from 'next/image'
 import {useEffect, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
@@ -60,15 +63,18 @@ export const ExpandablePhoto = (props: {src: string; width?: number; height?: nu
   )
 }
 
-export const PhotoButton = (props: {
-  src: string
-  username: string
+export const ViewProfileCardButton = (props: {
+  user: User
+  profile: Profile
   width?: number
   height?: number
 }) => {
-  const {src, username, width = 1000, height = 1000} = props
+  const {user, profile, width = 1000, height = 300} = props
   const [open, setOpen] = useState<boolean>(false)
   const t = useT()
+  if (!user || !profile) return
+  const src = getProfileOgImageUrl(user, profile)
+  const username = user.username
   return (
     <>
       <Button onClick={() => setOpen(true)}>

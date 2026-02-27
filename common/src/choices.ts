@@ -226,6 +226,15 @@ export const GENDERS_PLURAL = {
   Other: 'other',
 }
 
+export const LAST_ONLINE_CHOICES = {
+  Today: 'today',
+  'Last 3 days': '3days',
+  'Last week': 'week',
+  'Last month': 'month',
+  'Last 3 months': '3months',
+  'Any time': 'any',
+}
+
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
@@ -237,3 +246,4 @@ export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
 export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
 export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)
 export const INVERTED_GENDERS = invert(GENDERS)
+export const INVERTED_LAST_ONLINE_CHOICES = invert(LAST_ONLINE_CHOICES)

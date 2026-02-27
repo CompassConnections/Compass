@@ -59,6 +59,7 @@ export type profileQueryType = {
   skipId?: string | undefined
   orderBy?: string | undefined
   lastModificationWithin?: string | undefined
+  last_active?: string | undefined
   locale?: string | undefined
 } & {
   [K in OptionTableKey]?: string[] | undefined
@@ -118,6 +119,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     lastModificationWithin,
     skipId,
     locale = 'en',
+    last_active,
   } = props
 
   const filterLocation = lat && lon && radius
@@ -171,7 +173,7 @@ export const loadProfiles = async (props: profileQueryType) => {
   )
 
   const joins = [
-    orderByParam === 'last_online_time' && leftJoin(userActivityJoin),
+    (orderByParam === 'last_online_time' || last_active) && leftJoin(userActivityJoin),
     orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
     joinInterests && leftJoin(interestsJoin),
     joinCauses && leftJoin(causesJoin),
@@ -413,6 +415,20 @@ export const loadProfiles = async (props: profileQueryType) => {
         lastModificationWithin,
       }),
 
+    last_active &&
+      where(`user_activity.last_online_time >= NOW() - INTERVAL $(last_active_interval)`, {
+        last_active_interval:
+          last_active === 'today'
+            ? '1 day'
+            : last_active === '3days'
+              ? '3 days'
+              : last_active === 'week'
+                ? '7 days'
+                : last_active === 'month'
+                  ? '30 days'
+                  : '90 days',
+      }),
+
     // Exclude profiles that the requester has chosen to hide
     userId &&
       where(
@@ -428,7 +444,7 @@ export const loadProfiles = async (props: profileQueryType) => {
   let selectCols = 'profiles.*, users.name, users.username, users.data as user'
   if (orderByParam === 'compatibility_score') {
     selectCols += ', cs.score as compatibility_score'
-  } else if (orderByParam === 'last_online_time') {
+  } else if (orderByParam === 'last_online_time' || last_active) {
     selectCols += ', user_activity.last_online_time'
   }
   if (joinInterests) selectCols += `, COALESCE(profile_interests.interests, '{}') AS interests`

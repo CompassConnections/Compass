@@ -23,7 +23,6 @@ test.describe('when given valid input', () => {
     await signUpPage.fillUsername(testAccount.username + Date.now().toString());
     await signUpPage.clickNextButton();
     await signUpPage.fillBio(testAccount.bio);
-    await signUpPage.clickNextButton();
     await signUpPage.chooseGender(testAccount.gender);
     await signUpPage.fillAge(testAccount.age);
     await signUpPage.fillHeight({
@@ -110,14 +109,15 @@ test.describe('when given valid input', () => {
     await profilePage.verifyDrinksPerMonth(testAccount.alcohol_consumed_per_month);
     await profilePage.verifyLanguages(testAccount.languages);
     await profilePage.verifySocialMedia(testAccount.social_media);
+    await profilePage.verifyBio(testAccount.bio);
 
     //Verify Database Information
     const dbInfo = await userInformationFromDb(testAccount);
-    console.log(dbInfo);
+    console.log(dbInfo.profile.bio_text);
 
     await expect(dbInfo.user.name).toBe(testAccount.display_name);
     await expect(dbInfo.user.username).toContain(testAccount.username);
-    // await expect(dbInfo.profile.bio).toContain(testAccount.bio); //Need to sort out the bio locator
+    await expect(dbInfo.profile.bio_text).toBe(testAccount.bio); //Need to sort out the bio locator
     await expect(dbInfo.profile.gender).toEqual(`female`);
     await expect(String(dbInfo.profile.age)).toEqual(testAccount.age);
     await expect(dbInfo.profile.height_in_inches).toEqual(Number(testAccount.height?.feet) * 12);

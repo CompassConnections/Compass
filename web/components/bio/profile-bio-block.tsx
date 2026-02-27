@@ -30,9 +30,9 @@ export function BioBlock(props: {
         !edit && 'px-3 py-2',
       )}
     >
-      <Row className="w-full" data-testid="profile-bio">
+      <Row className="w-full">
         {!edit && profile.bio && (
-          <Col className="flex w-full flex-grow">
+          <Col className="flex w-full flex-grow" data-testid="profile-bio">
             <Content className="w-full" content={profile.bio as JSONContent} />
           </Col>
         )}

@@ -318,4 +318,10 @@ export class ProfilePage {
       await expect(textContent?.toLowerCase()).toContain(socialMedia[i].urlOrUsername.toLowerCase())
     }
   }
+
+  async verifyBio(bio: string | undefined) {
+    if (!bio) return
+    await expect(this.bioSection).toBeVisible();
+    await expect(this.bioSection).toContainText(bio)
+  }
 }

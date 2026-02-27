@@ -226,6 +226,15 @@ export const GENDERS_PLURAL = {
   Other: 'other',
 }
 
+export const LAST_ONLINE_CHOICES = {
+  today: 'Today',
+  '3days': 'Last 3 days',
+  week: 'Last week',
+  month: 'Last month',
+  '3months': 'Last 3 months',
+  any: 'Any time',
+}
+
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
@@ -237,6 +246,7 @@ export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)
 export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
 export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)
 export const INVERTED_GENDERS = invert(GENDERS)
+export const INVERTED_LAST_ONLINE_CHOICES = invert(LAST_ONLINE_CHOICES)
 
 //Exported types for test files to use when referencing the keys of the choices objects
 export type ConnectionTypeKey = keyof typeof RELATIONSHIP_CHOICES

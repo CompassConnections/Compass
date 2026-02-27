@@ -49,9 +49,6 @@ export default function SignupPage() {
       }
     }
     prevUserRef.current = user
-    return () => {
-      // no-op
-    }
   }, [user, holdLoading])
 
   const {locale} = useLocale()
@@ -68,11 +65,15 @@ export default function SignupPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // When a profile already exists (e.g. user pressed browser back after submitting),
+  // lock the username and display name fields so they can't be changed.
+  const [isLocked, setIsLocked] = useState(false)
+
   const existingProfile = useProfileByUserId(user?.id)
   useEffect(() => {
     if (existingProfile) {
       setProfileForm(existingProfile)
-      setStep(1)
+      setIsLocked(true)
     }
   }, [existingProfile])
 
@@ -94,6 +95,32 @@ export default function SignupPage() {
   //   </PageBase>
   // }
 
+  // Sync the step with browser history so the back button works within the flow.
+  // When we advance to step 1, push a new history entry. When the user presses
+  // back, popstate fires and we move back to step 0 rather than leaving the page.
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      const historyStep = e.state?.signupStep ?? 0
+      setStep(historyStep)
+      scrollTo(0, 0)
+      setIsLocked(true)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    // Record step 0 in history on mount so there's always a baseline entry.
+    window.history.replaceState({signupStep: 0}, '')
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
+  const advanceToStep = (nextStep: number) => {
+    window.history.pushState({signupStep: nextStep}, '')
+    setStep(nextStep)
+    scrollTo(0, 0)
+  }
+
   if (user === null && !holdLoading) {
     console.log('user === null && !holdLoading')
     return <CompassLoadingIndicator />
@@ -112,11 +139,24 @@ export default function SignupPage() {
               setProfile={setProfileState}
               profile={profileForm}
               isSubmitting={isSubmitting}
+              // Lock username and display name if the profile was already created.
+              // This handles the case where the user pressed browser back after
+              // submitting — they can review and continue, but not re-set these fields.
+              isLocked={isLocked}
               onSubmit={async () => {
                 if (!profileForm.looking_for_matches) {
                   router.push('/')
                   return
                 }
+
+                // If the profile already exists (back-navigation case), skip the
+                // API call and just advance to the next step.
+                if (isLocked) {
+                  advanceToStep(1)
+                  console.log('resume signup after back navigation')
+                  return
+                }
+
                 const referredByUsername = safeLocalStorage
                   ? (safeLocalStorage.getItem(CACHED_REFERRAL_USERNAME_KEY) ?? undefined)
                   : undefined
@@ -136,8 +176,7 @@ export default function SignupPage() {
                 setIsSubmitting(false)
                 if (profile) {
                   setProfileForm(profile)
-                  setStep(1)
-                  scrollTo(0, 0)
+                  advanceToStep(1)
                   track('submit required profile')
                 }
               }}
@@ -160,5 +199,6 @@ export default function SignupPage() {
     </Col>
   )
 }
+
 export const colClassName = 'items-start gap-2'
 export const labelClassName = 'font-semibold text-md'

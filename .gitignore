@@ -100,3 +100,5 @@ test-results
 /.nyc_output/
 
 **/coverage
+
+*my-release-key.keystore

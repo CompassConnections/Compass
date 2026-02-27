@@ -58,7 +58,12 @@ function InternalUnseenMessagesBubble(props: {
   if (unseenChannels.length === 0 || !sendToBrowser || pathName === '/messages') return null
 
   return (
-    <Row className={clsx('absolute left-0 right-0 top-1 items-center justify-center', className)}>
+    <Row
+      className={clsx(
+        'absolute left-6 lg:left-0 right-0 top-1 items-center justify-center',
+        className,
+      )}
+    >
       <div
         className={clsx(
           'text-ink-0 bg-primary-500 min-w-[15px] rounded-full p-[2px] text-center text-[10px] leading-3 ',

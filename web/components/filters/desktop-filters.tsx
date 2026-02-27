@@ -41,6 +41,7 @@ import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-typ
 
 import {AgeFilter, AgeFilterText} from './age-filter'
 import {GenderFilter, GenderFilterText} from './gender-filter'
+import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
@@ -662,6 +663,28 @@ export function DesktopFilters(props: {
             <EducationFilter filters={filters} updateFilter={updateFilter} />
           </Col>
         }
+        popoverClassName="bg-canvas-50"
+        menuWidth="w-50"
+      />
+
+      {/* LAST ACTIVE */}
+      <CustomizeableDropdown
+        buttonContent={(open: boolean) => (
+          <DropdownButton
+            open={open}
+            content={
+              <LastActiveFilterText
+                last_active={filters.last_active}
+                highlightedClass={open ? 'text-primary-500' : ''}
+              />
+            }
+          />
+        )}
+        dropdownMenuContent={(close) => (
+          <Col className="mx-2 mb-4">
+            <LastActiveFilter filters={filters} updateFilter={updateFilter} close={close} />
+          </Col>
+        )}
         popoverClassName="bg-canvas-50"
         menuWidth="w-50"
       />

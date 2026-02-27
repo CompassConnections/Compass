@@ -18,7 +18,7 @@ import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
 import {LikeData, ShipData} from './profile-types'
-import {FullUser} from './user-types'
+import {FullUser} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
@@ -583,6 +583,7 @@ export const API = (_apiTypeCheck = {
         work: arraybeSchema.optional(),
         relationship_status: arraybeSchema.optional(),
         languages: arraybeSchema.optional(),
+        last_active: z.string().optional(),
         wants_kids_strength: z.coerce.number().optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),

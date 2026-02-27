@@ -11,6 +11,7 @@ import {cloneDeep} from 'lodash'
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
+  last_active: string | undefined
   geodbCityIds: string[] | null
   lat: number | null
   lon: number | null
@@ -112,6 +113,7 @@ export const initialFilters: Partial<FilterFields> = {
   big5_agreeableness_max: undefined,
   big5_neuroticism_min: undefined,
   big5_neuroticism_max: undefined,
+  last_active: undefined,
   orderBy: 'created_time',
 }
 

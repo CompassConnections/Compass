@@ -88,6 +88,7 @@ interface PushPayload {
   body: string
   url: string
   data?: Record<string, string>
+  imageUrl?: string
 }
 
 export async function sendPushToToken(
@@ -102,6 +103,7 @@ export async function sendPushToToken(
       notification: {
         title: payload.title,
         body: payload.body,
+        imageUrl: payload.imageUrl || undefined, // 👈 publicly accessible HTTPS URL
       },
     },
     data: {

@@ -42,6 +42,7 @@ import {AgeFilter, AgeFilterText, getNoMinMaxAge} from './age-filter'
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from './drinks-filter'
 import {GenderFilter, GenderFilterText} from './gender-filter'
 import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
+import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
@@ -550,6 +551,22 @@ function MobileFilters(props: {
         }
       >
         <EducationFilter filters={filters} updateFilter={updateFilter} />
+      </MobileFilterSection>
+
+      {/* LAST ACTIVE */}
+      <MobileFilterSection
+        title={t('filter.last_active.title', 'Last active')}
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={!!filters.last_active}
+        selection={
+          <LastActiveFilterText
+            last_active={filters.last_active}
+            highlightedClass={filters.last_active ? 'text-primary-600' : 'text-ink-900'}
+          />
+        }
+      >
+        <LastActiveFilter filters={filters} updateFilter={updateFilter} />
       </MobileFilterSection>
     </Col>
   )

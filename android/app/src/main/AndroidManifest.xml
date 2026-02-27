@@ -10,7 +10,6 @@
         android:fitsSystemWindows="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
             android:name=".MainActivity"
@@ -18,19 +17,18 @@
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-<!--            <intent-filter>-->
-<!--                <action android:name="openapp" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+            <!--            <intent-filter>-->
+            <!--                <action android:name="openapp" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <category android:name="android.intent.category.BROWSABLE" />-->
 
-<!--                <data android:scheme="com.compassconnections.app" android:host="details"/>-->
-<!--            </intent-filter>-->
+            <!--                <data android:scheme="com.compassconnections.app" android:host="details"/>-->
+            <!--            </intent-filter>-->
 
             <!--            <intent-filter android:autoVerify="true">-->
             <!--                <action android:name="android.intent.action.VIEW" />-->
@@ -40,16 +38,16 @@
             <!--            </intent-filter>-->
         </activity>
 
-<!--        <service-->
-<!--            android:name=".MyMessagingService"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-<!--            </intent-filter>-->
-<!--&lt;!&ndash;            <meta-data&ndash;&gt;-->
-<!--&lt;!&ndash;                android:name="com.google.firebase.messaging.default_notification_channel_id"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:value="@string/default_notification_channel_id" />&ndash;&gt;-->
-<!--        </service>-->
+        <!--        <service-->
+        <!--            android:name=".MyMessagingService"-->
+        <!--            android:exported="false">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+        <!--            </intent-filter>-->
+        <!--&lt;!&ndash;            <meta-data&ndash;&gt;-->
+        <!--&lt;!&ndash;                android:name="com.google.firebase.messaging.default_notification_channel_id"&ndash;&gt;-->
+        <!--&lt;!&ndash;                android:value="@string/default_notification_channel_id" />&ndash;&gt;-->
+        <!--        </service>-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -66,7 +64,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 

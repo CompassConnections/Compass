@@ -1,12 +1,14 @@
 # Compass Android WebView App
 
 This folder contains the source code for the Android application of Compass.
-A hybrid mobile app built with **Next.js (TypeScript)** frontend, **Firebase backend**, and wrapped as a **Capacitor WebView** for Android. In the future it may contain native code as well.
+A hybrid mobile app built with **Next.js (TypeScript)** frontend, **Firebase backend**, and wrapped as a **Capacitor
+WebView** for Android. In the future it may contain native code as well.
 
 This document describes how to:
-1. Build and run the web frontend and backend locally  
-2. Sync and build the Android WebView wrapper  
-3. Debug, sign, and publish the APK  
+
+1. Build and run the web frontend and backend locally
+2. Sync and build the Android WebView wrapper
+3. Debug, sign, and publish the APK
 4. Enable Google Sign-In and push notifications
 
 ---
@@ -15,7 +17,8 @@ This document describes how to:
 
 The app is a Capacitor Android project that loads the local Next.js assets inside a WebView.
 
-During development, it can instead load the local frontend (`http://10.0.2.2:3000`) and backend (`http://10.0.2.2:8088`).
+During development, it can instead load the local frontend (`http://10.0.2.2:3000`) and backend (
+`http://10.0.2.2:8088`).
 
 Firebase handles authentication and push notifications.
 Google Sign-In is supported natively in the WebView via the Capacitor Social Login plugin.
@@ -29,29 +32,36 @@ Project Structure
 - `AndroidManifest.xml`: The manifest file that describes essential information about the application.
 
 ### **Why Local Is the Default**
+
 - **Performance:** Local assets load instantly, without network latency.
 - **Reliability:** Works offline or in poor connectivity environments.
-- **App Store policy compliance:** Apple and Google generally prefer that the main experience doesn’t depend on a remote site (for security, review, and performance reasons).
+- **App Store policy compliance:** Apple and Google generally prefer that the main experience doesn’t depend on a remote
+  site (for security, review, and performance reasons).
 - **Version consistency:** The web bundle is versioned with the app, ensuring no breaking updates outside your control.
 
 When Remote (No Local Assets) Is sometimes Used
 Loading from a **remote URL** (e.g. `https://compassmeet.com`) is **less common**, but seen in a few cases:
+
 - **Internal enterprise apps** where the WebView just wraps an existing web portal.
-- **Dynamic content** or **frequent updates** where pushing a new web build every time through app stores would be too slow.
+- **Dynamic content** or **frequent updates** where pushing a new web build every time through app stores would be too
+  slow.
 - To leverage the low latency of ISR and SSR.
-However, this approach requires:
+  However, this approach requires:
 - Careful handling of **CORS**, **SSL**, and **login/session** persistence.
-- Compliance with **Google Play policies** (they may reject apps that are “just a webview of a website” unless there’s meaningful native integration).
+- Compliance with **Google Play policies** (they may reject apps that are “just a webview of a website” unless there’s
+  meaningful native integration).
 
 **A middle ground we use:**
+
 - The app ships with **local assets** for core functionality.
 - The app **fetches remote content or updates** (e.g., via Capacitor Live Updates, Ionic Appflow).
 
 ## 2. Prerequisites
 
 ### Required Software
+
 | Tool           | Version | Purpose                            |
-| -------------- | ------- | ---------------------------------- |
+|----------------|---------|------------------------------------|
 | Node.js        | 22+     | For building frontend/backend      |
 | yarn           | latest  | Package manager                    |
 | Java           | 21      | Required for Android Gradle plugin |
@@ -60,6 +70,7 @@ However, this approach requires:
 | OpenJDK        | 21      | JDK for Gradle                     |
 
 ### Environment Setup
+
 ```bash
 sudo apt install openjdk-21-jdk
 sudo update-alternatives --config java
@@ -84,6 +95,7 @@ yarn build-web-view
 If you want the webview to load from your local web version of Compass, run the web app.
 
 In root directory:
+
 ```bash
 export NEXT_PUBLIC_LOCAL_ANDROID=1
 yarn dev # or prod
@@ -94,7 +106,8 @@ yarn dev # or prod
 
 ### Deployed mode
 
-If you want the webview to load from the deployed web version of Compass (like at www.compassmeet.com), no web app to run.
+If you want the webview to load from the deployed web version of Compass (like at www.compassmeet.com), no web app to
+run.
 
 ---
 
@@ -108,6 +121,7 @@ cd android
 ```
 
 Sync web files and native plugins with Android, for offline fallback. In root:
+
 ``` 
 export NEXT_PUBLIC_LOCAL_ANDROID=1 # if running your local web Compass
 yarn build-web-view # if you made changes to web app
@@ -116,20 +130,28 @@ npx cap sync android
 
 ### Load from site
 
-During local development, open Android Studio project and run the app on an emulator or your physical device. 
+During local development, open Android Studio project and run the app on an emulator or your physical device.
 
 To use an emulator:
+
 ```
 npx cap open android
 ```
 
-To use a physical device for the local web version, you need your mobile and computer to be on the same network / Wi-Fi and point the URL (`LOCAL_BACKEND_DOMAIN` in the code) to your computer IP address (for example, `192.168.1.3:3000`). You also need to set
+To use a physical device for the local web version, you need your mobile and computer to be on the same network / Wi-Fi
+and point the URL (`LOCAL_BACKEND_DOMAIN` in the code) to your computer IP address (for example, `192.168.1.3:3000`).
+You also need to set
+
 ```
 export NEXT_PUBLIC_WEBVIEW_DEV_PHONE=1
 ```
-Then adb install the app your phone (or simply run it from Android Studio on your phone) and the app should be loading content directly from the local code on your computer. You can make changes in the code and it will refresh instantly on the phone.
+
+Then adb install the app your phone (or simply run it from Android Studio on your phone) and the app should be loading
+content directly from the local code on your computer. You can make changes in the code and it will refresh instantly on
+the phone.
 
 Building the Application:
+
 1. Open Android Studio.
 2. Click on "Open an existing Android Studio project".
 3. Navigate to the `android` folder in this repository and select it.
@@ -145,7 +167,8 @@ Building the Application:
 
 ### From Android Studio
 
-- If you want to generate a signed APK for release, go to "Build" > "Generate Signed Bundle / APK..." and follow the prompts.
+- If you want to generate a signed APK for release, go to "Build" > "Generate Signed Bundle / APK..." and follow the
+  prompts.
 - Make sure to test the application thoroughly on different devices and Android versions to ensure compatibility.
 
 ### Debug build
@@ -184,19 +207,26 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ### Release on App Stores
 
-To release on the app stores, you need to submit the .aab files, which are not signed, instead of APK. Google or Apple will then sign it with their own key.
+To release on the app stores, you need to submit the .aab files, which are not signed, instead of APK. Google or Apple
+will then sign it with their own key.
+
+However, it's recommended to use the GitHub Action for better version control and automation. See section below:
+`Deploy to Play Store`.
 
 ---
+
 ## 9. Debugging
 
-Client logs from the emulator on Chrome can be accessed at:  
+Client logs from the emulator on Chrome can be accessed at:
+
 ```  
 chrome://inspect/#devices  
 ```  
-  
-Backend logs can be accessed from the output of `yarn prod / dev` like in the web application.  
-  
-Java/Kotlin logs can be accessed via Android Studio's Logcat.  
+
+Backend logs can be accessed from the output of `yarn prod / dev` like in the web application.
+
+Java/Kotlin logs can be accessed via Android Studio's Logcat.
+
 ```  
 adb logcat | grep CompassApp
 adb logcat | grep com.compassconnections.app
@@ -219,22 +249,29 @@ webView.setWebChromeClient(new WebChromeClient() {
 
 ## 10. Deploy to Play Store
 
+The best way to deploy to the Play Store is to use the GitHub Action defined
+in [cd-android.yml](../.github/workflows/cd-android.yml). You
+increase the version in `android/app/build.gradle`, commit to the main branch and it will automatically build the
+release APK and upload it to the Play Store.
+
+To deploy manually, follow these steps:
+
 1. Sign the release APK or AAB.
 2. Verify package name matches Firebase settings (`com.compassconnections.app`).
 3. Upload to Google Play Console.
-4. Add Privacy Policy and content rating.
-5. Submit for review.
+4. Add Privacy Policy and content rating (one time).
+5. Submit for review. It takes around an hour for it to be approved and appear in the store.
 
 ---
 
 ## 11. Common Issues
 
-| Problem                                | Cause                                  | Fix                                                                 |
-| -------------------------------------- | -------------------------------------- | ------------------------------------------------------------------- |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE`   | Old APK signed with different key      | Uninstall old app first                                             |
-| `Account reauth failed [16]`           | Missing or incorrect SHA-1 in Firebase | Re-add SHA-1 of keystore                                            |
-| App opens in Firefox                   | Missing `WebViewClient` override       | Fix `shouldOverrideUrlLoading`                                      |
-| APK > 1 GB                             | Cached webpack artifacts included      | Add `.next/` and `/public/cache` to `.gitignore` and build excludes |
+| Problem                              | Cause                                  | Fix                                                                 |
+|--------------------------------------|----------------------------------------|---------------------------------------------------------------------|
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Old APK signed with different key      | Uninstall old app first                                             |
+| `Account reauth failed [16]`         | Missing or incorrect SHA-1 in Firebase | Re-add SHA-1 of keystore                                            |
+| App opens in Firefox                 | Missing `WebViewClient` override       | Fix `shouldOverrideUrlLoading`                                      |
+| APK > 1 GB                           | Cached webpack artifacts included      | Add `.next/` and `/public/cache` to `.gitignore` and build excludes |
 
 ---
 
@@ -256,6 +293,8 @@ npx cap sync android
 
 ## 14. Deployment Workflow
 
+To deploy manually:
+
 ```bash
 # Build web app for production and Sync assets to Android
 yarn build-sync-android
@@ -263,25 +302,38 @@ yarn build-sync-android
 # Build signed release APK in Android Studio
 ```
 
+But prefer using the GitHub Action, see `Deploy to Play Store`.
+
 ---
 
 ## Live Updates
 
-To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in Capawesome Cloud (an alternative to Ionic). To add a new update, increment the version number in [capawesome.json](capawesome.json) and push to main (or make a PR to main). A GitHub Action will automatically build the new bundle and push it to Capawesome.
+Note: As of early 2026, we don't use the live update anymore because the free plan is too limited for our use case. To
+update the android app, we need to stick to the normal release process on the app stores.
+
+To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in
+Capawesome Cloud (an alternative to Ionic). To add a new update, increment the version number
+in [capawesome.json](capawesome.json) and push to main (or make a PR to main). A GitHub Action will automatically build
+the new bundle and push it to Capawesome.
 
 You can also do so locally if you have admin access. First, you need to do this one-time setup:
+
 ```
 npm install -g @capawesome/cli@latest
 npx @capawesome/cli login
 ```
 
-Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a notice that there is a new update available, which they can approve to download.
+Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a
+notice that there is a new update available, which they can approve to download.
+
 ```
 yarn android:live-update
 ```
 
-That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially updates the web app) to update the mobile app as well.
-There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we scale. Next plan is $9 / month and allows 1000 MAUs.
+That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially
+updates the web app) to update the mobile app as well.
+There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we
+scale. Next plan is $9 / month and allows 1000 MAUs.
 
 - ∞ Live Updates
 - 100 Monthly Active Users
@@ -296,7 +348,6 @@ There is a limit of 100 monthly active user per month, though. So we may need to
 * [Firebase Android Setup](https://firebase.google.com/docs/android/setup)
 * [FCM HTTP API](https://firebase.google.com/docs/cloud-messaging/send-message)
 * [Next.js Deployment](https://nextjs.org/docs/deployment)
-
 
 # Useful Commands
 
@@ -318,6 +369,7 @@ There is a limit of 100 monthly active user per month, though. So we may need to
 # One time setups
 
 Was already done for Compass, so you only need to do the steps below if you create a project separated from Compass.
+
 ## Configure Firebase
 
 ### In Firebase Console
@@ -345,7 +397,6 @@ keytool -list -v \
 
 Add both SHA-1 and SHA-256 to Firebase.
 
-
 ## 7. Google Sign-In (Web + Native)
 
 In Firebase Console:
@@ -357,9 +408,8 @@ In Firebase Console:
 In your code:
 
 ```ts
-import { googleNativeLogin } from 'web/lib/service/android-push'
+import {googleNativeLogin} from 'web/lib/service/android-push'
 ```
-
 
 ## 8. Push Notifications (FCM)
 
@@ -381,17 +431,17 @@ import { googleNativeLogin } from 'web/lib/service/android-push'
 ### Test notification
 
 ```ts
-const message = {  
-  notification: {  
-    title: "Test Notification",  
-    body: "Hello from Firebase Admin SDK"  
-  },  
-  token: "..."  
-};  
-initAdmin()  
-await admin.messaging().send(message)  
-  .then(response => console.log("Successfully sent message:", response))  
-  .catch(error => console.error("Error sending message:", error));
+const message = {
+    notification: {
+        title: "Test Notification",
+        body: "Hello from Firebase Admin SDK"
+    },
+    token: "..."
+};
+initAdmin()
+await admin.messaging().send(message)
+    .then(response => console.log("Successfully sent message:", response))
+    .catch(error => console.error("Error sending message:", error));
 ```
 
 ---
@@ -405,7 +455,77 @@ Example:
 com.compassconnections.app://auth
 ```
 
-
-When Android (or iOS) sees a redirect to one of these URLs, it **launches your app** and passes it the URL data. It's useful to open links in the app instead of the browser. For example, if there's a link to Compass on Discord and we click on it on a mobile device that has the app, we want the link to open in the app instead of the browser.
+When Android (or iOS) sees a redirect to one of these URLs, it **launches your app** and passes it the URL data. It's
+useful to open links in the app instead of the browser. For example, if there's a link to Compass on Discord and we
+click on it on a mobile device that has the app, we want the link to open in the app instead of the browser.
 
 You register this scheme in your `AndroidManifest.xml` so Android knows which app handles it.
+
+## Automatic Workflow for App Release
+
+Below is a **minimal, production-ready GitHub Actions setup** that:
+
+* Builds on push to `main`
+* Checks if `versionCode` increased
+* Only builds if it did
+* Signs the AAB
+* Uploads to Google Play (internal track)
+
+#### A. Create Play Console API access
+
+1. Go to google cloud console. Create service account without selecting any specific permission or roles. Just copy
+   paste the email address and generate a JSON key.
+2. Go to **Google Play Console**
+3. Invite user, enter the service account email address.
+5. Give it:
+    * Release Manager role
+
+You will store the JSON key in GitHub Secrets.
+
+---
+
+#### B. Prepare Keystore
+
+If you already sign locally, you have a `.jks` or `.keystore` file.
+
+Base64 encode it:
+
+```bash
+base64 my-release-key.keystore
+```
+
+Copy the output.
+
+---
+
+#### C. GitHub Secrets
+
+In your GitHub repo:
+
+Settings → Secrets and variables → Actions → New repository secret
+
+Add:
+
+```
+ANDROID_KEYSTORE_BASE64
+ANDROID_KEYSTORE_PASSWORD
+ANDROID_KEY_PASSWORD
+PLAY_SERVICE_ACCOUNT_JSON
+```
+
+For the JSON:
+
+* Paste full raw JSON (not base64)
+
+#### GitHub Actions YAML
+
+We compare:
+
+* `versionCode` in current commit
+* `versionCode` in previous commit
+
+If not increased → skip build.
+
+We extract from `app/build.gradle` using grep.
+
+See `.github/workflows/android-release.yml` for all details.

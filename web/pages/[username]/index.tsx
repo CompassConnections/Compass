@@ -1,7 +1,9 @@
+import {JSONContent} from '@tiptap/core'
 import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {getProfileRow, ProfileRow} from 'common/profiles/profile'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {User} from 'common/user'
+import {parseJsonContentToText} from 'common/util/parse'
 import {sleep} from 'common/util/time'
 import {GetStaticPropsContext} from 'next'
 import Head from 'next/head'
@@ -291,7 +293,11 @@ function UserPageInner(props: ActiveUserPageProps) {
     >
       <SEO
         title={`${user.name}`}
-        description={profile?.headline ?? `${user.name} is on Compass`}
+        description={
+          profile?.headline ||
+          parseJsonContentToText(profile?.bio as JSONContent)?.slice(0, 250) ||
+          `${user.name} is on Compass`
+        }
         url={`/${user.username}`}
         image={seoImage}
       />

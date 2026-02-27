@@ -113,7 +113,7 @@ test.describe('when given valid input', () => {
 
     //Verify Database Information
     const dbInfo = await userInformationFromDb(testAccount);
-    console.log(dbInfo.profile.bio_text);
+    // console.log(dbInfo.profile.bio_text);
 
     await expect(dbInfo.user.name).toBe(testAccount.display_name);
     await expect(dbInfo.user.username).toContain(testAccount.username);

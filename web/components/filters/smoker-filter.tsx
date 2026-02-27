@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
+import {invert} from 'lodash'
+import {DropdownOptions} from 'web/components/comments/dropdown-menu'
 import {Row} from 'web/components/layout/row'
-import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {useT} from 'web/lib/locale'
 
 export function SmokerFilterText(props: {
@@ -14,6 +15,7 @@ export function SmokerFilterText(props: {
   return (
     <Row className="items-center gap-0.5">
       <span className={clsx(highlightedClass, is_smoker != null && 'font-semibold')}>
+        {is_smoker == null && t('profile.smokes', 'Smokes') + ': '}
         {is_smoker == null
           ? t('common.either', 'Either')
           : is_smoker
@@ -35,24 +37,23 @@ export function SmokerFilter(props: {
   const {filters, updateFilter} = props
 
   const choicesMap = {
-    Either: 'either',
     Yes: 'yes',
     No: 'no',
+    Either: 'either',
   } as const
 
   const currentChoice = filters.is_smoker == null ? 'either' : filters.is_smoker ? 'yes' : 'no'
 
   return (
-    <ChoicesToggleGroup
-      currentChoice={currentChoice}
-      choicesMap={choicesMap}
-      translationPrefix={'profile.smoker'}
-      setChoice={(c) => {
+    <DropdownOptions
+      items={invert(choicesMap)}
+      activeKey={String(currentChoice)}
+      translationPrefix="profile.smoker"
+      onClick={(c) => {
         if (c === 'either') updateFilter({is_smoker: undefined})
         else if (c === 'yes') updateFilter({is_smoker: true})
         else updateFilter({is_smoker: false})
       }}
-      toggleClassName="w-1/3 justify-center"
     />
   )
 }

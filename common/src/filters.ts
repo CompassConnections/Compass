@@ -3,12 +3,6 @@ import {Profile, ProfileRow} from 'common/profiles/profile'
 import {filterDefined} from 'common/util/array'
 import {cloneDeep} from 'lodash'
 
-// export type TargetArea = {
-//   lat: number
-//   lon: number
-//   radius: number
-// }
-
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
   last_active: string | undefined

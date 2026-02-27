@@ -550,6 +550,7 @@ input {
 
 .hover-bold {
   transition: text-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .hover-bold:hover {

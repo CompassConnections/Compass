@@ -49,7 +49,7 @@ export type locationType = {
   radius: number
 }
 
-const skippedKeys = [
+export const SKIPPED_FORMAT_FILTERS_KEYS = [
   'pref_age_min',
   'pref_age_max',
   'geodbCityIds',
@@ -59,6 +59,9 @@ const skippedKeys = [
   'lat',
   'lon',
   'radius',
+  'raised_in_lat',
+  'raised_in_lon',
+  'raised_in_radius',
   // Big Five min/max keys are handled separately
   'big5_openness_min',
   'big5_openness_max',
@@ -101,7 +104,7 @@ export function formatFilters(
       if (ageMin) {
         text = `${text}-${ageMax}`
       } else {
-        text = `${text}${translate('filter.age.up_to', 'up to')} ${ageMax}`
+        text = `${text}${translate('filter.age.up_to', 'up to')} ${ageMax} ${translate('filter.age.years', 'years old')}`
       }
     } else {
       text = `${text}+`
@@ -113,7 +116,7 @@ export function formatFilters(
     const typedKey = key as keyof FilterFields
 
     if (value === undefined || value === null) return
-    if (skippedKeys.includes(typedKey)) return
+    if (SKIPPED_FORMAT_FILTERS_KEYS.includes(typedKey)) return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
 
@@ -241,13 +244,13 @@ export function formatFilters(
 
     if (drinksMin !== undefined && drinksMax !== undefined) {
       // Both min and max: "12-78"
-      drinksText = `${drinksMin}-${drinksMax}`
+      drinksText = drinksMin === drinksMax ? String(drinksMax) : `${drinksMin}-${drinksMax}`
     } else if (drinksMin !== undefined) {
       // Only min: "12+"
       drinksText = `${drinksMin}+`
     } else {
       // Only max: "up to 82"
-      drinksText = `${translate('filter.age.up_to', 'up to')} ${drinksMax}`
+      drinksText = drinksMax === 0 ? '0' : `${translate('filter.age.up_to', 'up to')} ${drinksMax}`
     }
 
     entries.push(`${drinksLabel}: ${drinksText} ${perMonth}`)

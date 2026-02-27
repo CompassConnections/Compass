@@ -2,6 +2,7 @@ import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {logger} from 'common/logging'
+import {kmToMiles} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {
   wantsKidsDatabase,
@@ -11,6 +12,7 @@ import {
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getLocale} from 'web/lib/locale-cookie'
 
@@ -46,7 +48,11 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     setRaisedInLocation(undefined)
   }
 
-  const [radius, setRadius] = usePersistentLocalState<number>(100, 'search-radius')
+  const {measurementSystem} = useMeasurementSystem()
+
+  const defaultRadius = measurementSystem === 'imperial' ? 100 : kmToMiles(100)
+
+  const [radius, setRadius] = usePersistentLocalState<number>(defaultRadius, 'search-radius')
 
   const debouncedSetRadius = useCallback(debounce(setRadius, 200), [setRadius])
 
@@ -56,7 +62,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   )
 
   const [raisedInRadius, setRaisedInRadius] = usePersistentLocalState<number>(
-    100,
+    defaultRadius,
     'raised-in-radius',
   )
 
@@ -174,8 +180,8 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const setYourFilters = (checked: boolean) => {
     if (checked) {
       updateFilter(yourFilters)
-      setRadius(100)
-      debouncedSetRadius(100) // clear any pending debounced sets
+      setRadius(defaultRadius)
+      debouncedSetRadius(defaultRadius) // clear any pending debounced sets
       if (you?.geodb_city_id && you.city && you.city_latitude && you.city_longitude) {
         setLocation({
           id: you?.geodb_city_id,

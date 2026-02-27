@@ -2,9 +2,11 @@ import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
 import {XIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
+import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
+import {nullifyDictValues, sampleDictByPrefix} from 'common/util/array'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
@@ -32,7 +34,8 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
-import {useChoices} from 'web/hooks/use-choices'
+import {useAllChoices, useChoices} from 'web/hooks/use-choices'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 
@@ -51,9 +54,8 @@ function countActiveFilters(
   locationFilterProps: LocationFilterProps,
   raisedInLocationFilterProps: LocationFilterProps,
 ) {
-  let parsedFilters = Object.keys(removeNullOrUndefinedProps({...filters, orderBy: undefined}))
-  parsedFilters = parsedFilters.filter((key) => !key.startsWith('big5_'))
-  let count = parsedFilters.length
+  const keys = Object.keys(filters).filter((key) => !key.startsWith('big5_'))
+  let count = keys.length
   if (locationFilterProps.location) count = count - 2
   if (raisedInLocationFilterProps.location) count = count - 2
   if (filters.pref_age_min && filters.pref_age_max) count--
@@ -69,15 +71,39 @@ function SelectedFiltersSummary(props: {
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
 }) {
-  const {filters, locationFilterProps, raisedInLocationFilterProps, updateFilter, clearFilters} =
-    props
+  const {locationFilterProps, raisedInLocationFilterProps, updateFilter, clearFilters} = props
   const t = useT()
+  const choicesIdsToLabels = useAllChoices()
+  const {measurementSystem} = useMeasurementSystem()
 
+  const filters = removeNullOrUndefinedProps({...props.filters, orderBy: undefined})
   const filterCount = countActiveFilters(filters, locationFilterProps, raisedInLocationFilterProps)
 
   if (filterCount === 0) return null
 
   const selectedFilters: {label: string; onClear: () => void}[] = []
+
+  function formatLabel(filters: any) {
+    return String(
+      formatFilters(
+        filters,
+        locationFilterProps.location as any,
+        choicesIdsToLabels,
+        measurementSystem,
+        t,
+      )?.join(' • ') || Object.values(filters)[0],
+    )
+  }
+
+  Object.entries(filters).forEach(([key, value]) => {
+    const typedKey = key as keyof FilterFields
+    if (value === undefined || value === null) return
+    if (SKIPPED_FORMAT_FILTERS_KEYS.includes(typedKey)) return
+    selectedFilters.push({
+      label: formatLabel({[key]: value}),
+      onClear: () => updateFilter({[key]: undefined}),
+    })
+  })
 
   if (locationFilterProps.location) {
     selectedFilters.push({
@@ -90,8 +116,11 @@ function SelectedFiltersSummary(props: {
   }
 
   if (raisedInLocationFilterProps.location) {
+    let label = t('filter.raised_in', 'Grew up')
+    if (raisedInLocationFilterProps.location.name)
+      label = `${label}: ${raisedInLocationFilterProps.location.name}`
     selectedFilters.push({
-      label: t('filter.raised_in', 'Grew up'),
+      label: label,
       onClear: () => {
         raisedInLocationFilterProps.setLocation(null)
         updateFilter({
@@ -103,30 +132,24 @@ function SelectedFiltersSummary(props: {
     })
   }
 
-  if (filters.pref_age_min || filters.pref_age_max) {
-    const ageLabel =
-      filters.pref_age_min && filters.pref_age_max
-        ? `${filters.pref_age_min}-${filters.pref_age_max}`
-        : filters.pref_age_min
-          ? `${filters.pref_age_min}+`
-          : `< ${filters.pref_age_max}`
-    selectedFilters.push({
-      label: `${t('filter.age.label', 'Age')}: ${ageLabel}`,
-      onClear: () => updateFilter({pref_age_min: undefined, pref_age_max: undefined}),
-    })
+  function formatAggregatedFields(prefix: string) {
+    const aggFilters = sampleDictByPrefix(filters, prefix)
+    if (Object.keys(aggFilters).length > 0) {
+      selectedFilters.push({
+        label: formatLabel(aggFilters),
+        onClear: () => updateFilter(nullifyDictValues(aggFilters)),
+      })
+    }
   }
 
-  if (filters.genders?.length) {
-    selectedFilters.push({
-      label: filters.genders.join(', '),
-      onClear: () => updateFilter({genders: undefined}),
-    })
-  }
+  formatAggregatedFields('pref_age')
+  formatAggregatedFields('big5')
+  formatAggregatedFields('drink')
 
-  if (filters.pref_relation_styles?.length) {
+  if (filters.shortBio) {
     selectedFilters.push({
-      label: filters.pref_relation_styles.join(', '),
-      onClear: () => updateFilter({pref_relation_styles: undefined}),
+      label: t('filter.short_bio_toggle', 'Include incomplete profiles'),
+      onClear: () => updateFilter({shortBio: undefined}),
     })
   }
 
@@ -147,7 +170,7 @@ function SelectedFiltersSummary(props: {
         {selectedFilters.map((filter, idx) => (
           <Row
             key={idx}
-            className="items-center gap-1 text-primary-700 px-2 py-1 rounded-full text-sm"
+            className="items-center gap-1 text-primary-700 px-2 py-1 rounded-full text-sm bg-canvas-50"
           >
             <span>{filter.label}</span>
             <button onClick={filter.onClear} className="hover:text-primary-900">
@@ -467,6 +490,52 @@ function Filters(props: {
         // icon={<GiFruitBowl className="h-4 w-4" />}
       >
         <FilterSection
+          title={t('profile.optional.interests', 'Interests')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.interests || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.interests as string[] | undefined}
+              label={'interests'}
+              highlightedClass={
+                hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.interests}
+            label="interests"
+          />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.causes', 'Causes')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.causes || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.causes as string[] | undefined}
+              label={'causes'}
+              highlightedClass={
+                hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.causes}
+            label="causes"
+          />
+        </FilterSection>
+
+        <FilterSection
           title={t('profile.optional.diet', 'Diet')}
           openFilter={openFilter}
           setOpenFilter={setOpenFilter}
@@ -541,52 +610,6 @@ function Filters(props: {
           }
         >
           <LanguageFilter filters={filters} updateFilter={updateFilter} />
-        </FilterSection>
-
-        <FilterSection
-          title={t('profile.optional.interests', 'Interests')}
-          openFilter={openFilter}
-          setOpenFilter={setOpenFilter}
-          isActive={hasAny(filters.interests || undefined)}
-          selection={
-            <InterestFilterText
-              options={filters.interests as string[] | undefined}
-              label={'interests'}
-              highlightedClass={
-                hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
-            />
-          }
-        >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.interests}
-            label="interests"
-          />
-        </FilterSection>
-
-        <FilterSection
-          title={t('profile.optional.causes', 'Causes')}
-          openFilter={openFilter}
-          setOpenFilter={setOpenFilter}
-          isActive={hasAny(filters.causes || undefined)}
-          selection={
-            <InterestFilterText
-              options={filters.causes as string[] | undefined}
-              label={'causes'}
-              highlightedClass={
-                hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
-            />
-          }
-        >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.causes}
-            label="causes"
-          />
         </FilterSection>
       </FilterGroup>
 

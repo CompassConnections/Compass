@@ -12,9 +12,9 @@
   touch-action: pan-y;
 }
 
-@media (width < 600px) {
-  --filter-offset: 0px;
-}
+/*@media (width < 600px) {*/
+/*  --filter-offset: 0px;*/
+/*}*/
 
 .safe-top {
   /*padding-top: calc(20px);*/

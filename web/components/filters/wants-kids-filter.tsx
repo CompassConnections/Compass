@@ -88,7 +88,7 @@ export function WantsKidsFilter(props: {
     <ChoicesToggleGroup
       currentChoice={filters.wants_kids_strength ?? 0}
       choicesMap={generateChoicesMap(wantsKidsLabelsWithIcon)}
-      setChoice={(c) => updateFilter({wants_kids_strength: Number(c)})}
+      setChoice={(c) => updateFilter({wants_kids_strength: Number(c) >= 0 ? Number(c) : undefined})}
       toggleClassName="w-1/3 justify-center"
     />
   )

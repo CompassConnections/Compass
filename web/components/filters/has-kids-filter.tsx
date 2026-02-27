@@ -45,7 +45,7 @@ export function HasKidsFilter(props: {
       currentChoice={filters.has_kids ?? 0}
       choicesMap={generateChoicesMap(hasKidsLabels)}
       translationPrefix="profile.has_kids"
-      setChoice={(c) => updateFilter({has_kids: Number(c)})}
+      setChoice={(c) => updateFilter({has_kids: Number(c) >= 0 ? Number(c) : undefined})}
       toggleClassName="w-1/3 justify-center"
     />
   )

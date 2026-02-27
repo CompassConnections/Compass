@@ -1,21 +1,18 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
+import {XIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
 import {Gender} from 'common/gender'
-import {hasKidsLabels} from 'common/has-kids'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
-import {wantsKidsLabels} from 'common/wants-kids'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {ReactNode, useState} from 'react'
-import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
-import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from 'react-icons/fa'
-import {FaUserGroup} from 'react-icons/fa6'
-import {GiFruitBowl} from 'react-icons/gi'
-import {LuCigarette, LuGraduationCap} from 'react-icons/lu'
-import {MdLanguage, MdLocalBar} from 'react-icons/md'
-import {PiHandsPrayingBold} from 'react-icons/pi'
-import {RiScales3Line} from 'react-icons/ri'
-import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from 'web/components/filters/big5-filter'
+import {
+  Big5Filters,
+  Big5FilterText,
+  countBig5Filters,
+  hasAnyBig5Filter,
+} from 'web/components/filters/big5-filter'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
@@ -49,6 +46,118 @@ import {MyMatchesToggle} from './my-matches-toggle'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
 
+function countActiveFilters(
+  filters: Partial<FilterFields>,
+  locationFilterProps: LocationFilterProps,
+  raisedInLocationFilterProps: LocationFilterProps,
+) {
+  let count = Object.keys(removeNullOrUndefinedProps({...filters, orderBy: undefined})).length
+  if (locationFilterProps.location) count = count - 2
+  if (raisedInLocationFilterProps.location) count = count - 2
+  if (filters.pref_age_min && filters.pref_age_max) count--
+  const big5Count = countBig5Filters(filters)
+  if (big5Count > 1) count = count - (big5Count - 1)
+  return count
+}
+
+function SelectedFiltersSummary(props: {
+  filters: Partial<FilterFields>
+  locationFilterProps: LocationFilterProps
+  raisedInLocationFilterProps: LocationFilterProps
+  updateFilter: (newState: Partial<FilterFields>) => void
+  clearFilters: () => void
+}) {
+  const {filters, locationFilterProps, raisedInLocationFilterProps, updateFilter, clearFilters} =
+    props
+  const t = useT()
+
+  const filterCount = countActiveFilters(filters, locationFilterProps, raisedInLocationFilterProps)
+
+  if (filterCount === 0) return null
+
+  const selectedFilters: {label: string; onClear: () => void}[] = []
+
+  if (locationFilterProps.location) {
+    selectedFilters.push({
+      label: locationFilterProps.location.name || t('filter.location', 'Location'),
+      onClear: () => {
+        locationFilterProps.setLocation(null)
+        updateFilter({geodbCityIds: undefined, lat: undefined, lon: undefined, radius: undefined})
+      },
+    })
+  }
+
+  if (raisedInLocationFilterProps.location) {
+    selectedFilters.push({
+      label: t('filter.raised_in', 'Grew up'),
+      onClear: () => {
+        raisedInLocationFilterProps.setLocation(null)
+        updateFilter({
+          raised_in_lat: undefined,
+          raised_in_lon: undefined,
+          raised_in_radius: undefined,
+        })
+      },
+    })
+  }
+
+  if (filters.pref_age_min || filters.pref_age_max) {
+    const ageLabel =
+      filters.pref_age_min && filters.pref_age_max
+        ? `${filters.pref_age_min}-${filters.pref_age_max}`
+        : filters.pref_age_min
+          ? `${filters.pref_age_min}+`
+          : `< ${filters.pref_age_max}`
+    selectedFilters.push({
+      label: `${t('filter.age.label', 'Age')}: ${ageLabel}`,
+      onClear: () => updateFilter({pref_age_min: undefined, pref_age_max: undefined}),
+    })
+  }
+
+  if (filters.genders?.length) {
+    selectedFilters.push({
+      label: filters.genders.join(', '),
+      onClear: () => updateFilter({genders: undefined}),
+    })
+  }
+
+  if (filters.pref_relation_styles?.length) {
+    selectedFilters.push({
+      label: filters.pref_relation_styles.join(', '),
+      onClear: () => updateFilter({pref_relation_styles: undefined}),
+    })
+  }
+
+  return (
+    <Col className="px-4 py-2 gap-2">
+      <Row className="items-center justify-between">
+        <Row className="items-center gap-2">
+          <span className="font-semibold text-sm">{filterCount}</span>
+          <span className="text-sm text-ink-600">
+            {filterCount === 1
+              ? t('filter.selected', 'filter selected')
+              : t('filter.selected_plural', 'filters selected')}
+          </span>
+        </Row>
+        <ResetFiltersButton clearFilters={clearFilters} />
+      </Row>
+      <Row className="flex-wrap gap-2">
+        {selectedFilters.map((filter, idx) => (
+          <Row
+            key={idx}
+            className="items-center gap-1 text-primary-700 px-2 py-1 rounded-full text-sm"
+          >
+            <span>{filter.label}</span>
+            <button onClick={filter.onClear} className="hover:text-primary-900">
+              <XIcon className="h-3 w-3" />
+            </button>
+          </Row>
+        ))}
+      </Row>
+    </Col>
+  )
+}
+
 function Filters(props: {
   filters: Partial<FilterFields>
   youProfile: Profile | undefined | null
@@ -76,6 +185,7 @@ function Filters(props: {
   } = props
 
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
+  const [openGroup, setOpenGroup] = useState<string | undefined>(undefined)
 
   function hasAny(filterArray: any[] | undefined | null): boolean {
     return !!filterArray && filterArray.length > 0
@@ -85,6 +195,13 @@ function Filters(props: {
 
   return (
     <Col className="mb-[calc(var(filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(filter-offset)+env(safe-area-inset-top))] pt-3">
+      <SelectedFiltersSummary
+        filters={filters}
+        locationFilterProps={locationFilterProps}
+        raisedInLocationFilterProps={raisedInLocationFilterProps}
+        updateFilter={updateFilter}
+        clearFilters={clearFilters}
+      />
       <FilterGuide className={'justify-between px-4 py-2'} />
 
       <Row className="justify-between px-4">
@@ -96,7 +213,6 @@ function Filters(props: {
             hidden={!youProfile}
           />
         </Col>
-        <ResetFiltersButton clearFilters={clearFilters} />
       </Row>
 
       {/* Short Bios */}
@@ -104,13 +220,15 @@ function Filters(props: {
         <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
       </Col>
 
-      {/* CONNECTION */}
+      {/* ALWAYS VISIBLE FILTERS */}
+
+      {/* CONNECTION - Always visible */}
       <FilterSection
         title={t('profile.seeking', 'Seeking')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         isActive={hasAny(filters.pref_relation_styles)}
-        icon={<FaUserGroup className="h-4 w-4" />}
+        // icon={<FaUserGroup className="h-4 w-4" />}
         selection={
           <RelationshipFilterText
             relationship={filters.pref_relation_styles as RelationshipType[]}
@@ -123,27 +241,7 @@ function Filters(props: {
         <RelationshipFilter filters={filters} updateFilter={updateFilter} />
       </FilterSection>
 
-      {/* Relationship Status */}
-      <FilterSection
-        title={t('profile.optional.relationship_status', 'Relationship status')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.relationship_status || undefined)}
-        icon={<BsPersonHeart className="h-4 w-4" />}
-        selection={
-          <RelationshipStatusFilterText
-            options={filters.relationship_status as string[]}
-            defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
-            highlightedClass={
-              hasAny(filters.relationship_status || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
-      >
-        <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* LOCATION */}
+      {/* LOCATION - Always visible */}
       <FilterSection
         title={t('profile.optional.location', 'Living')}
         openFilter={openFilter}
@@ -161,28 +259,7 @@ function Filters(props: {
         <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
       </FilterSection>
 
-      {/* RAISED IN LOCATION */}
-      <FilterSection
-        title={t('profile.optional.raised_in', 'Grew up')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={!!raisedInLocationFilterProps.location}
-        selection={
-          <LocationFilterText
-            location={raisedInLocationFilterProps.location}
-            radius={raisedInLocationFilterProps.radius}
-            labelPrefix={t('filter.raised_in', 'Grew up')}
-            youProfile={youProfile}
-            highlightedClass={
-              !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
-            }
-          />
-        }
-      >
-        <LocationFilter youProfile={youProfile} locationFilterProps={raisedInLocationFilterProps} />
-      </FilterSection>
-
-      {/* AGE RANGE */}
+      {/* AGE RANGE - Always visible */}
       <FilterSection
         title={t('profile.optional.age', 'Age')}
         openFilter={openFilter}
@@ -200,7 +277,7 @@ function Filters(props: {
         <AgeFilter filters={filters} updateFilter={updateFilter} />
       </FilterSection>
 
-      {/* GENDER */}
+      {/* GENDER - Always visible */}
       <FilterSection
         title={t('profile.optional.gender', 'Gender')}
         openFilter={openFilter}
@@ -216,33 +293,43 @@ function Filters(props: {
         <GenderFilter filters={filters} updateFilter={updateFilter} />
       </FilterSection>
 
-      {/* PREFERRED GENDER */}
-      {/*<MobileFilterSection*/}
-      {/*  title={t('filter.gender.they_seek', 'Gender they seek')}*/}
-      {/*  openFilter={openFilter}*/}
-      {/*  setOpenFilter={setOpenFilter}*/}
-      {/*  isActive={hasAny(filters.pref_gender)}*/}
-      {/*  selection={*/}
-      {/*    <PrefGenderFilterText*/}
-      {/*      pref_gender={filters.pref_gender as Gender[]}*/}
-      {/*      highlightedClass={*/}
-      {/*        hasAny(filters.pref_gender) ? 'text-primary-600' : 'text-ink-900'*/}
-      {/*      }*/}
-      {/*    />*/}
-      {/*  }*/}
-      {/*>*/}
-      {/*  <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>*/}
-      {/*</MobileFilterSection>*/}
+      {/* ACCORDION GROUPS */}
 
+      {/* Relationship Group */}
       {includeRelationshipFilters && (
-        <>
-          {/* ROMANTIC STYLE */}
+        <FilterGroup
+          title={t('filter.group.relationship', 'Relationship')}
+          openGroup={openGroup}
+          setOpenGroup={setOpenGroup}
+          // icon={<FaHeart className="h-4 w-4" />}
+        >
+          {/* Relationship Status */}
+          <FilterSection
+            title={t('profile.optional.relationship_status', 'Status')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={hasAny(filters.relationship_status || undefined)}
+            selection={
+              <RelationshipStatusFilterText
+                options={filters.relationship_status as string[]}
+                defaultLabel={t('filter.relationship_status.any', 'Any')}
+                highlightedClass={
+                  hasAny(filters.relationship_status || undefined)
+                    ? 'text-primary-600'
+                    : 'text-ink-900'
+                }
+              />
+            }
+          >
+            <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
+          </FilterSection>
+
+          {/* Romantic Style */}
           <FilterSection
             title={t('profile.romantic.style', 'Style')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
             isActive={hasAny(filters.pref_romantic_styles || undefined)}
-            icon={<FaHeart className="h-4 w-4" />}
             selection={
               <RomanticFilterText
                 relationship={filters.pref_romantic_styles as RomanticType[]}
@@ -257,323 +344,356 @@ function Filters(props: {
             <RomanticFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
 
-          {/* WANTS KIDS */}
+          {/* Wants Kids */}
           <FilterSection
             title={t('filter.wants_kids.wants_kids', 'Wants kids')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
             isActive={filters.wants_kids_strength != null && filters.wants_kids_strength !== -1}
-            // icon={<WantsKidsIcon strength={filters.wants_kids_strength ?? -1}/>}
             selection={
               <KidsLabel
                 strength={filters.wants_kids_strength ?? -1}
                 highlightedClass={
-                  (filters.wants_kids_strength ?? -1) == wantsKidsLabels.no_preference.strength
-                    ? 'text-ink-900'
-                    : 'text-primary-600'
+                  filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
+                    ? 'text-primary-600'
+                    : 'text-ink-900'
                 }
-                mobile
               />
             }
           >
             <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
 
-          {/* HAS KIDS */}
+          {/* Has Kids */}
           <FilterSection
-            title={t('profile.has_kids', 'Has kids')}
+            title={t('profile.optional.has_kids', 'Has kids')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
             isActive={filters.has_kids != null && filters.has_kids !== -1}
-            // icon={<FaChild className="text-ink-900 h-4 w-4"/>}
             selection={
               <HasKidsLabel
                 has_kids={filters.has_kids ?? -1}
                 highlightedClass={
-                  (filters.has_kids ?? -1) == hasKidsLabels.no_preference.value
-                    ? 'text-ink-900'
-                    : 'text-primary-600'
+                  filters.has_kids != null && filters.has_kids !== -1
+                    ? 'text-primary-600'
+                    : 'text-ink-900'
                 }
-                mobile
               />
             }
           >
             <HasKidsFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
-        </>
+        </FilterGroup>
       )}
 
-      {/* DIET */}
-      <FilterSection
-        title={t('profile.optional.diet', 'Diet')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.diet || undefined)}
-        icon={<GiFruitBowl className="h-4 w-4" />}
-        selection={
-          <DietFilterText
-            options={filters.diet as DietType[]}
-            highlightedClass={
-              hasAny(filters.diet || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
+      {/* Background Group */}
+      <FilterGroup
+        title={t('filter.group.background', 'Background')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+        // icon={<BsPersonHeart className="h-4 w-4" />}
       >
-        <DietFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* DRINKS PER MONTH */}
-      <FilterSection
-        title={t('profile.drinks', 'Drinks')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={(() => {
-          const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max)
-          return !noMin || !noMax
-        })()}
-        icon={<MdLocalBar className="h-4 w-4" />}
-        selection={
-          <DrinksFilterText
-            drinks_min={filters.drinks_min}
-            drinks_max={filters.drinks_max}
-            highlightedClass={(() => {
-              const [noMin, noMax] = getNoMinMaxDrinks(filters.drinks_min, filters.drinks_max)
-              return noMin && noMax ? 'text-ink-900' : 'text-primary-600'
-            })()}
+        <FilterSection
+          title={t('profile.optional.raised_in', 'Grew up')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={!!raisedInLocationFilterProps.location}
+          selection={
+            <LocationFilterText
+              location={raisedInLocationFilterProps.location}
+              radius={raisedInLocationFilterProps.radius}
+              labelPrefix={t('filter.raised_in', 'Grew up')}
+              youProfile={youProfile}
+              highlightedClass={
+                !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
+              }
+            />
+          }
+        >
+          <LocationFilter
+            youProfile={youProfile}
+            locationFilterProps={raisedInLocationFilterProps}
           />
-        }
-      >
-        <DrinksFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
+        </FilterSection>
 
-      {/* SMOKER */}
-      <FilterSection
-        title={t('profile.smokes', 'Smoker')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={filters.is_smoker != null}
-        icon={<LuCigarette className="h-4 w-4" />}
-        selection={
-          <SmokerFilterText
-            is_smoker={filters.is_smoker}
-            highlightedClass={filters.is_smoker == null ? 'text-ink-900' : 'text-primary-600'}
-            mobile
-          />
-        }
-      >
-        <SmokerFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
+        <FilterSection
+          title={t('profile.optional.education_level', 'Education')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.education_levels)}
+          selection={
+            <EducationFilterText
+              options={filters.education_levels as string[]}
+              highlightedClass={
+                hasAny(filters.education_levels) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <EducationFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
 
-      {/* LANGUAGES */}
-      <FilterSection
-        title={t('profile.optional.languages', 'Languages')}
-        // className="col-span-full max-h-80 overflow-y-auto"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.languages || undefined)}
-        icon={<MdLanguage className="h-4 w-4" />}
-        selection={
-          <LanguageFilterText
-            options={filters.languages as string[]}
-            highlightedClass={
-              hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
-      >
-        <LanguageFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* INTERESTS */}
-      <FilterSection
-        newBadgeClassName={'-top-0 -left-0'}
-        title={t('profile.optional.interests', 'Interests')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.interests || undefined)}
-        icon={<FaStar className="h-4 w-4" />}
-        selection={
-          <InterestFilterText
-            options={filters.interests as string[]}
-            highlightedClass={
-              hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-            label={'interests'}
-          />
-        }
-      >
-        <InterestFilter
-          filters={filters}
-          updateFilter={updateFilter}
-          choices={choices.interests}
-          label={'interests'}
-        />
-      </FilterSection>
-
-      {/* CAUSES */}
-      <FilterSection
-        newBadgeClassName={'-top-0 -left-0'}
-        title={t('profile.optional.causes', 'Causes')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.causes || undefined)}
-        icon={<FaHandsHelping className="h-4 w-4" />}
-        selection={
-          <InterestFilterText
-            options={filters.causes as string[]}
-            highlightedClass={
-              hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-            label={'causes'}
-          />
-        }
-      >
-        <InterestFilter
-          filters={filters}
-          updateFilter={updateFilter}
-          choices={choices.causes}
-          label={'causes'}
-        />
-      </FilterSection>
-
-      {/* WORK */}
-      <FilterSection
-        newBadgeClassName={'-top-0 -left-0'}
-        title={t('profile.optional.work', 'Work')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.work || undefined)}
-        icon={<FaBriefcase className="h-4 w-4" />}
-        selection={
-          <InterestFilterText
-            options={filters.work as string[]}
-            highlightedClass={
-              hasAny(filters.work || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-            label={'work'}
-          />
-        }
-      >
-        <InterestFilter
-          filters={filters}
-          updateFilter={updateFilter}
-          choices={choices.work}
-          label={'work'}
-        />
-      </FilterSection>
-
-      {/* POLITICS */}
-      <FilterSection
-        title={t('profile.optional.political_beliefs', 'Politics')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.political_beliefs || undefined)}
-        icon={<RiScales3Line className="h-4 w-4" />}
-        selection={
-          <PoliticalFilterText
-            options={filters.political_beliefs as string[]}
-            highlightedClass={
-              hasAny(filters.political_beliefs || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
-      >
-        <PoliticalFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* RELIGION */}
-      <FilterSection
-        title={t('profile.optional.religious_beliefs', 'Religion')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.religion || undefined)}
-        icon={<PiHandsPrayingBold className="h-4 w-4" />}
-        selection={
-          <ReligionFilterText
-            options={filters.religion as string[]}
-            highlightedClass={
-              hasAny(filters.religion || undefined) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
-      >
-        <ReligionFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* MBTI */}
-      <FilterSection
-        title="MBTI"
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.mbti)}
-        icon={<BsPersonVcard className="h-4 w-4" />}
-        selection={
-          <MbtiFilterText
-            options={filters.mbti as string[]}
-            highlightedClass={hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'}
-            defaultLabel={t('filter.any_mbti', 'Any MBTI')}
-          />
-        }
-      >
-        <MbtiFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
-
-      {/* BIG FIVE PERSONALITY */}
-      <FilterSection
-        title={t('profile.big5', 'Personality (Big Five)')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAnyBig5Filter(filters)}
-        icon={<BsPersonVcard className="h-4 w-4" />}
-        selection={
-          <Big5FilterText
+        <FilterSection
+          title={t('profile.optional.work', 'Work')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.work || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.work as string[] | undefined}
+              label={'work'}
+              highlightedClass={
+                hasAny(filters.work || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <InterestFilter
             filters={filters}
-            highlightedClass={hasAnyBig5Filter(filters) ? 'text-primary-600' : 'text-ink-900'}
+            updateFilter={updateFilter}
+            choices={choices.work}
+            label="work"
           />
-        }
-      >
-        <Big5Filters filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
+        </FilterSection>
+      </FilterGroup>
 
-      {/* EDUCATION */}
-      <FilterSection
-        title={t('profile.education.short_name', 'Education')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny(filters.education_levels)}
-        icon={<LuGraduationCap className="h-4 w-4" />}
-        selection={
-          <EducationFilterText
-            options={filters.education_levels as string[]}
-            highlightedClass={
-              hasAny(filters.education_levels) ? 'text-primary-600' : 'text-ink-900'
-            }
-          />
-        }
+      {/* Lifestyle Group */}
+      <FilterGroup
+        title={t('filter.group.lifestyle', 'Lifestyle')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+        // icon={<GiFruitBowl className="h-4 w-4" />}
       >
-        <EducationFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
+        <FilterSection
+          title={t('profile.optional.diet', 'Diet')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.diet || undefined)}
+          selection={
+            <DietFilterText
+              options={filters.diet as DietType[] | undefined}
+              highlightedClass={
+                hasAny(filters.diet || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <DietFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
 
-      {/* LAST ACTIVE */}
-      <FilterSection
-        title={t('filter.last_active.title', 'Last active')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={!!filters.last_active}
-        selection={
-          <LastActiveFilterText
-            last_active={filters.last_active}
-            highlightedClass={filters.last_active ? 'text-primary-600' : 'text-ink-900'}
+        <FilterSection
+          title={t('profile.optional.drinks_per_month', 'Drinks')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={(() => {
+            const [noMinDrinks, noMaxDrinks] = getNoMinMaxDrinks(
+              filters.drinks_min,
+              filters.drinks_max,
+            )
+            return !noMinDrinks || !noMaxDrinks
+          })()}
+          selection={
+            <DrinksFilterText
+              drinks_min={filters.drinks_min}
+              drinks_max={filters.drinks_max}
+              highlightedClass={(() => {
+                const [noMinDrinks, noMaxDrinks] = getNoMinMaxDrinks(
+                  filters.drinks_min,
+                  filters.drinks_max,
+                )
+                return noMinDrinks && noMaxDrinks ? 'text-ink-900' : 'text-primary-600'
+              })()}
+            />
+          }
+        >
+          <DrinksFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.is_smoker', 'Smoker')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={filters.is_smoker != null}
+          selection={
+            <SmokerFilterText
+              is_smoker={filters.is_smoker}
+              highlightedClass={filters.is_smoker == null ? 'text-ink-900' : 'text-primary-600'}
+            />
+          }
+        >
+          <SmokerFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.languages', 'Languages')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.languages || undefined)}
+          selection={
+            <LanguageFilterText
+              options={filters.languages as string[] | undefined}
+              highlightedClass={
+                hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <LanguageFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.interests', 'Interests')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.interests || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.interests as string[] | undefined}
+              label={'interests'}
+              highlightedClass={
+                hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.interests}
+            label="interests"
           />
-        }
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.causes', 'Causes')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.causes || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.causes as string[] | undefined}
+              label={'causes'}
+              highlightedClass={
+                hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.causes}
+            label="causes"
+          />
+        </FilterSection>
+      </FilterGroup>
+
+      {/* Values & Beliefs Group */}
+      <FilterGroup
+        title={t('filter.group.values', 'Values & Beliefs')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+        // icon={<RiScales3Line className="h-4 w-4" />}
       >
-        <LastActiveFilter filters={filters} updateFilter={updateFilter} />
-      </FilterSection>
+        <FilterSection
+          title={t('profile.optional.politics', 'Politics')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.political_beliefs || undefined)}
+          selection={
+            <PoliticalFilterText
+              options={filters.political_beliefs as string[] | undefined}
+              highlightedClass={
+                hasAny(filters.political_beliefs || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <PoliticalFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.religion', 'Religion')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.religion || undefined)}
+          selection={
+            <ReligionFilterText
+              options={filters.religion as string[] | undefined}
+              highlightedClass={
+                hasAny(filters.religion || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <ReligionFilter filters={filters} updateFilter={updateFilter} className={''} />
+        </FilterSection>
+      </FilterGroup>
+
+      {/* Personality Group */}
+      <FilterGroup
+        title={t('filter.group.personality', 'Personality')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+        // icon={<BsPersonVcard className="h-4 w-4" />}
+      >
+        <FilterSection
+          title={t('profile.optional.mbti', 'MBTI')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.mbti)}
+          selection={
+            <MbtiFilterText
+              options={filters.mbti as string[] | undefined}
+              defaultLabel={t('filter.any_mbti', 'Any MBTI')}
+              highlightedClass={hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'}
+            />
+          }
+        >
+          <MbtiFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.big5', 'Big Five')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAnyBig5Filter(filters)}
+          selection={
+            <Big5FilterText
+              filters={filters}
+              highlightedClass={hasAnyBig5Filter(filters) ? 'text-primary-600' : 'text-ink-900'}
+            />
+          }
+        >
+          <Big5Filters filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+      </FilterGroup>
+
+      {/* Advanced */}
+      <FilterGroup
+        title={t('filter.group.advanced', 'Advanced')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+      >
+        {/* LAST ACTIVE */}
+        <FilterSection
+          title={t('filter.last_active.title', 'Last active')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={!!filters.last_active}
+          selection={
+            <LastActiveFilterText
+              last_active={filters.last_active}
+              highlightedClass={!filters.last_active ? 'text-ink-900' : 'text-primary-600'}
+            />
+          }
+        >
+          <LastActiveFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+      </FilterGroup>
     </Col>
   )
 }
-
-export default Filters
 
 export function FilterSection(props: {
   title: string
@@ -585,9 +705,7 @@ export function FilterSection(props: {
   childrenClassName?: string
   icon?: ReactNode
   selection?: ReactNode
-  // When true, shows a tiny "new" badge at the top-left of the button
   showNewBadge?: boolean
-  // Optional extra classes for the badge container (to tweak position/size)
   newBadgeClassName?: string
 }) {
   const {
@@ -617,13 +735,38 @@ export function FilterSection(props: {
         <Row className={clsx('items-center gap-2', isActive && 'font-semibold')}>
           {icon}
           {selection}
-          {/*{title}: {selection}*/}
         </Row>
         <div className="text-ink-900">
           {isOpen ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
         </div>
       </button>
       {isOpen && <div className={clsx('px-4 py-2', childrenClassName)}>{children}</div>}
+    </Col>
+  )
+}
+
+function FilterGroup(props: {
+  title: string
+  children: ReactNode
+  openGroup: string | undefined
+  setOpenGroup: (openGroup: string | undefined) => void
+  icon?: ReactNode
+}) {
+  const {title, children, openGroup, setOpenGroup, icon} = props
+  const isOpen = openGroup === title
+  return (
+    <Col className="border-t border-ink-200">
+      <button
+        className="flex w-full flex-row items-center justify-between px-4 py-3 text-ink-600"
+        onClick={() => (isOpen ? setOpenGroup(undefined) : setOpenGroup(title))}
+      >
+        <Row className="items-center gap-2 font-semibold">
+          {icon}
+          {title}
+        </Row>
+        {isOpen ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+      </button>
+      {isOpen && <div className="px-2 pb-4">{children}</div>}
     </Col>
   )
 }

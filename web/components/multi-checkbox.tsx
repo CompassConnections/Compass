@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {toKey} from 'common/parsing'
+import {nullifyEmpty} from 'common/util/array'
 import {useEffect, useMemo, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Row} from 'web/components/layout/row'
@@ -12,7 +13,7 @@ export const MultiCheckbox = (props: {
   choices: {[key: string]: string}
   // Selected values (should match the "value" side of choices)
   selected: string[]
-  onChange: (selected: string[]) => void
+  onChange: (selected: string[] | null) => void
   className?: string
   optionsClassName?: string
   // If provided, enables adding a new option and should persist it (e.g. to DB)
@@ -146,7 +147,7 @@ export const MultiCheckbox = (props: {
               if (checked) {
                 onChange([...selected, value])
               } else {
-                onChange(selected.filter((s) => s !== value))
+                onChange(nullifyEmpty(selected.filter((s) => s !== value)))
               }
             }}
           />

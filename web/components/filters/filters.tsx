@@ -51,12 +51,14 @@ function countActiveFilters(
   locationFilterProps: LocationFilterProps,
   raisedInLocationFilterProps: LocationFilterProps,
 ) {
-  let count = Object.keys(removeNullOrUndefinedProps({...filters, orderBy: undefined})).length
+  let parsedFilters = Object.keys(removeNullOrUndefinedProps({...filters, orderBy: undefined}))
+  parsedFilters = parsedFilters.filter((key) => !key.startsWith('big5_'))
+  let count = parsedFilters.length
   if (locationFilterProps.location) count = count - 2
   if (raisedInLocationFilterProps.location) count = count - 2
   if (filters.pref_age_min && filters.pref_age_max) count--
   const big5Count = countBig5Filters(filters)
-  if (big5Count > 1) count = count - (big5Count - 1)
+  if (big5Count > 0) count++
   return count
 }
 
@@ -344,26 +346,6 @@ function Filters(props: {
             <RomanticFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
 
-          {/* Wants Kids */}
-          <FilterSection
-            title={t('filter.wants_kids.wants_kids', 'Wants kids')}
-            openFilter={openFilter}
-            setOpenFilter={setOpenFilter}
-            isActive={filters.wants_kids_strength != null && filters.wants_kids_strength !== -1}
-            selection={
-              <KidsLabel
-                strength={filters.wants_kids_strength ?? -1}
-                highlightedClass={
-                  filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
-                    ? 'text-primary-600'
-                    : 'text-ink-900'
-                }
-              />
-            }
-          >
-            <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
-          </FilterSection>
-
           {/* Has Kids */}
           <FilterSection
             title={t('profile.optional.has_kids', 'Has kids')}
@@ -382,6 +364,26 @@ function Filters(props: {
             }
           >
             <HasKidsFilter filters={filters} updateFilter={updateFilter} />
+          </FilterSection>
+
+          {/* Wants Kids */}
+          <FilterSection
+            title={t('filter.wants_kids.wants_kids', 'Wants kids')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={filters.wants_kids_strength != null && filters.wants_kids_strength !== -1}
+            selection={
+              <KidsLabel
+                strength={filters.wants_kids_strength ?? -1}
+                highlightedClass={
+                  filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
+                    ? 'text-primary-600'
+                    : 'text-ink-900'
+                }
+              />
+            }
+          >
+            <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
         </FilterGroup>
       )}
@@ -726,7 +728,7 @@ export function FilterSection(props: {
     <Col className={clsx(className)}>
       <button
         className={clsx(
-          'text-ink-600 flex w-full flex-row justify-between px-4 pt-4 relative',
+          'text-ink-600 flex w-full flex-row justify-between px-4 pt-4 relative hover-bold',
           isOpen ? 'pb-2' : 'pb-4',
         )}
         onClick={() => (isOpen ? setOpenFilter(undefined) : setOpenFilter(title))}

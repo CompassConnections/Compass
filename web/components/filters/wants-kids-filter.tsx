@@ -1,10 +1,11 @@
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
 import {generateChoicesMap, KidLabel, wantsKidsLabels} from 'common/wants-kids'
+import {invert} from 'lodash'
 import {ReactNode} from 'react'
 import {MdNoStroller, MdOutlineStroller, MdStroller} from 'react-icons/md'
+import {DropdownOptions} from 'web/components/comments/dropdown-menu'
 import {Row} from 'web/components/layout/row'
-import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {useT} from 'web/lib/locale'
 
 interface KidLabelWithIcon extends KidLabel {
@@ -15,12 +16,14 @@ interface KidsLabelsMapWithIcon {
   [key: string]: KidLabelWithIcon
 }
 
+const DEFAULT_KEY = -1
+
 export const useWantsKidsLabelsWithIcon = () => {
   const t = useT()
   return {
     no_preference: {
       ...wantsKidsLabels.no_preference,
-      name: t('filter.wants_kids.any_preference', 'Any preference'),
+      name: t('filter.wants_kids.any_preference', 'Either'),
       shortName: t('filter.wants_kids.either', 'Either'),
       icon: <MdOutlineStroller className="h-4 w-4" />,
     },
@@ -55,18 +58,22 @@ export function WantsKidsIcon(props: {strength: number; className?: string}) {
 }
 
 export function KidsLabel(props: {strength: number; highlightedClass?: string; mobile?: boolean}) {
-  const {strength, highlightedClass} = props
+  const {highlightedClass} = props
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
+  const t = useT()
+
+  const strength = props.strength ? Number(props.strength) : DEFAULT_KEY
 
   return (
     <Row className="items-center gap-0.5">
-      <WantsKidsIcon strength={strength} className={clsx('')} />
+      {/*<WantsKidsIcon strength={strength} className={clsx('')} />*/}
       <span
         className={clsx(
           strength != wantsKidsLabelsWithIcon.no_preference.strength && 'font-semibold',
           highlightedClass,
         )}
       >
+        {strength === DEFAULT_KEY && t('filter.label.wants_kids_strength', 'Wants Kids') + ': '}
         {strength == wantsKidsLabelsWithIcon.no_preference.strength
           ? wantsKidsLabelsWithIcon.no_preference.name
           : strength == wantsKidsLabelsWithIcon.wants_kids.strength
@@ -85,11 +92,13 @@ export function WantsKidsFilter(props: {
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
 
   return (
-    <ChoicesToggleGroup
-      currentChoice={filters.wants_kids_strength ?? 0}
-      choicesMap={generateChoicesMap(wantsKidsLabelsWithIcon)}
-      setChoice={(c) => updateFilter({wants_kids_strength: Number(c) >= 0 ? Number(c) : undefined})}
-      toggleClassName="w-1/3 justify-center"
+    <DropdownOptions
+      items={invert(generateChoicesMap(wantsKidsLabelsWithIcon))}
+      activeKey={String(filters.wants_kids_strength ?? DEFAULT_KEY)}
+      translationPrefix="profile.wants_kids"
+      onClick={(key) => {
+        updateFilter({wants_kids_strength: Number(key) === DEFAULT_KEY ? undefined : key})
+      }}
     />
   )
 }

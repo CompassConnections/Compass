@@ -10,7 +10,7 @@ export type KidsLabelsMap = Record<string, KidLabel>
 
 export const wantsKidsLabels: KidsLabelsMap = {
   no_preference: {
-    name: 'Any preference',
+    name: 'Either',
     shortName: 'Either',
     strength: -1,
   },

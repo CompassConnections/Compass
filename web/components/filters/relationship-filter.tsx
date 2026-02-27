@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import {RELATIONSHIP_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
+import {nullifyEmpty} from 'common/util/array'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useT} from 'web/lib/locale'
 import {convertRelationshipType, RelationshipType} from 'web/lib/util/convert-types'
@@ -59,7 +60,7 @@ export function RelationshipFilter(props: {
       choices={RELATIONSHIP_CHOICES as any}
       translationPrefix={'profile.relationship'}
       onChange={(c) => {
-        updateFilter({pref_relation_styles: c})
+        updateFilter({pref_relation_styles: nullifyEmpty(c)})
       }}
     />
   )

@@ -1,18 +1,22 @@
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
 import {generateChoicesMap, hasKidsLabels} from 'common/has-kids'
-import {FaChild} from 'react-icons/fa6'
+import {invert} from 'lodash'
+import {DropdownOptions} from 'web/components/comments/dropdown-menu'
 import {Row} from 'web/components/layout/row'
-import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {useT} from 'web/lib/locale'
+
+const DEFAULT_KEY = -1
 
 export function HasKidsLabel(props: {
   has_kids: number
   highlightedClass?: string
   mobile?: boolean
 }) {
-  const {has_kids, highlightedClass} = props
+  const {highlightedClass} = props
   const t = useT()
+
+  const has_kids = Number(props.has_kids)
 
   // Get the appropriate label based on has_kids value
   let labelKey = 'no_preference'
@@ -27,8 +31,9 @@ export function HasKidsLabel(props: {
   }
   return (
     <Row className="items-center gap-0.5">
-      <FaChild className="h-4 w-4" />
-      <span className={clsx(highlightedClass, has_kids !== -1 && 'font-semibold')}>
+      {/*<FaChild className="h-4 w-4" />*/}
+      <span className={clsx(highlightedClass, has_kids !== DEFAULT_KEY && 'font-semibold')}>
+        {has_kids === DEFAULT_KEY && t('filter.label.has_kids', 'Kids') + ': '}
         {t(`profile.has_kids.${labelKey}`, labelValue)}
       </span>
     </Row>
@@ -41,12 +46,13 @@ export function HasKidsFilter(props: {
 }) {
   const {filters, updateFilter} = props
   return (
-    <ChoicesToggleGroup
-      currentChoice={filters.has_kids ?? 0}
-      choicesMap={generateChoicesMap(hasKidsLabels)}
+    <DropdownOptions
+      items={invert(generateChoicesMap(hasKidsLabels))}
+      activeKey={String(filters.has_kids ?? DEFAULT_KEY)}
       translationPrefix="profile.has_kids"
-      setChoice={(c) => updateFilter({has_kids: Number(c) >= 0 ? Number(c) : undefined})}
-      toggleClassName="w-1/3 justify-center"
+      onClick={(key) => {
+        updateFilter({has_kids: Number(key) === DEFAULT_KEY ? undefined : key})
+      }}
     />
   )
 }

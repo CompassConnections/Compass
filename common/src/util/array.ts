@@ -31,3 +31,8 @@ export function groupConsecutive<T, U>(xs: T[], key: (x: T) => U) {
   result.push(curr)
   return result
 }
+
+export function nullifyEmpty<T>(array: T[]) {
+  if (!Array.isArray(array)) return null
+  return array.length > 0 ? array : null
+}

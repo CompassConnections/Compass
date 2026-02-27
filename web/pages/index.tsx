@@ -20,9 +20,9 @@ export default function ProfilesPage() {
   console.debug('user:', user)
 
   return (
-    <PageBase trackPageView={'user profiles'}>
+    <PageBase trackPageView={'user profiles'} className={'col-span-10'}>
       <Col className="items-center">
-        <Col className={'w-full rounded px-3 py-4 sm:px-6'}>
+        <Col className={'w-full rounded px-3 sm:px-4'}>
           {user ? <ProfilesHome /> : <LoggedOutHome />}
         </Col>
       </Col>

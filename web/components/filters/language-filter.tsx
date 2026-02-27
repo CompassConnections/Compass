@@ -65,7 +65,7 @@ export function LanguageFilter(props: {
       onChange={(c) => {
         updateFilter({languages: c})
       }}
-      optionsClassName={'w-[200px] sm:w-[400px]'}
+      optionsClassName={''}
     />
   )
 }

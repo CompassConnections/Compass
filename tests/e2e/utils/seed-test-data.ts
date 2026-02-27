@@ -89,9 +89,9 @@ type ProfileType = 'basic' | 'medium' | 'full'
 
   //Edit the count seedConfig to specify the amount of each profiles to create
   const seedConfig = [
-    {count: 1, profileType: 'basic' as ProfileType},
-    {count: 1, profileType: 'medium' as ProfileType},
-    {count: 1, profileType: 'full' as ProfileType},
+    {count: 8, profileType: 'basic' as ProfileType},
+    {count: 8, profileType: 'medium' as ProfileType},
+    {count: 8, profileType: 'full' as ProfileType},
   ]
 
   for (const {count, profileType} of seedConfig) {

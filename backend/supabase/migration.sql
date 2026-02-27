@@ -51,4 +51,5 @@ BEGIN;
 \i backend/supabase/migrations/20260222_add_deleted_users.sql
 \i backend/supabase/migrations/20260223_add_notification_template_translations.sql
 \i backend/supabase/migrations/20260224_add_connection_preferences.sql
+\i backend/supabase/migrations/20260225_add_keywords_to_profiles.sql
 COMMIT;

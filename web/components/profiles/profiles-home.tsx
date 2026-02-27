@@ -1,9 +1,11 @@
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
+import {DAY_MS} from 'common/util/time'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
+import {FiltersElement} from 'web/components/filters/filters'
 import {Search} from 'web/components/filters/search'
 import {useFilters} from 'web/components/filters/use-filters'
 import {Col} from 'web/components/layout/col'
@@ -17,6 +19,7 @@ import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {useUser} from 'web/hooks/use-user'
@@ -53,6 +56,11 @@ export function ProfilesHome() {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
   const [showBanner, setShowBanner] = useState(true)
+  const [showEarlyBanner, setShowEarlyBanner] = usePersistentLocalState<boolean>(
+    true,
+    'profiles-home-show-early-banner',
+    7 * DAY_MS,
+  )
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
   const [highlightFilters, setHighlightFilters] = useState(false)
   const [highlightSort, setHighlightSort] = useState(false)
@@ -177,127 +185,163 @@ export function ProfilesHome() {
     [refreshHiddenProfiles],
   )
 
+  const filtersElement = (
+    <FiltersElement
+      filters={filters}
+      youProfile={you}
+      updateFilter={updateFilter}
+      clearFilters={clearFilters}
+      setYourFilters={setYourFilters}
+      isYourFilters={isYourFilters}
+      locationFilterProps={locationFilterProps}
+      raisedInLocationFilterProps={raisedInLocationFilterProps}
+    />
+  )
+
   return (
-    <>
-      {showBanner && fromSignup && (
-        <div className="lg:col-span-12 w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
-          <Col className="items-center justify-center gap-2">
-            <span className={'mb-2'}>
-              {t(
-                'profiles.search_intention',
-                'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.',
-              )}
-            </span>
-            <Row className="gap-2 mb-2">
-              <Button
-                size="sm"
-                color="gray-white"
-                className={'border'}
-                onClick={() => {
-                  searchInputRef.current?.focus()
-                }}
-              >
-                {t('profiles.try_keyword_search', 'Try a keyword search')}
-              </Button>
-              {isMobile && (
+    <div className="lg:grid lg:grid-cols-12 lg:gap-4">
+      <Col className={'lg:col-span-9'}>
+        {showBanner && fromSignup && (
+          <div className="w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
+            <Col className="items-center justify-center gap-2">
+              <span className={'mb-2'}>
+                {t(
+                  'profiles.search_intention',
+                  'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.',
+                )}
+              </span>
+              <Row className="gap-2 mb-2">
+                <Button
+                  size="sm"
+                  color="gray-white"
+                  className={'border'}
+                  onClick={() => {
+                    searchInputRef.current?.focus()
+                  }}
+                >
+                  {t('profiles.try_keyword_search', 'Try a keyword search')}
+                </Button>
+                {isMobile && (
+                  <Button
+                    size="sm"
+                    color={'gray-white'}
+                    className={'border'}
+                    onClick={() => {
+                      if (!isMobile) return
+                      setHighlightFilters(true)
+                      setTimeout(() => {
+                        setHighlightFilters(false)
+                        setOpenFiltersModal(true)
+                      }, 500)
+                    }}
+                  >
+                    {t('profiles.show_filters', 'Show me the filters')}
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   color={'gray-white'}
                   className={'border'}
                   onClick={() => {
-                    if (!isMobile) return
-                    setHighlightFilters(true)
+                    setHighlightSort(true)
                     setTimeout(() => {
-                      setHighlightFilters(false)
-                      setOpenFiltersModal(true)
+                      setHighlightSort(false)
                     }, 500)
                   }}
                 >
-                  {t('profiles.show_filters', 'Show me the filters')}
+                  {t('profiles.sort_differently', 'Sort differently')}
                 </Button>
-              )}
-              <Button
-                size="sm"
-                color={'gray-white'}
-                className={'border'}
-                onClick={() => {
-                  setHighlightSort(true)
-                  setTimeout(() => {
-                    setHighlightSort(false)
-                  }, 500)
-                }}
-              >
-                {t('profiles.sort_differently', 'Sort differently')}
-              </Button>
-            </Row>
-            <Row className="gap-2 mb-6 sm:mb-2">
-              <p>
+              </Row>
+              <Row className="gap-2 mb-6 sm:mb-2">
+                <p>
+                  {t(
+                    'profiles.interactive_profiles',
+                    'Profiles are interactive — click any card to learn more and reach out.',
+                  )}
+                </p>
+              </Row>
+            </Col>
+            <Button
+              size="2xs"
+              color="gray-white"
+              onClick={() => setShowBanner(false)}
+              className="absolute bottom-1 right-1"
+            >
+              {t('profiles.dismiss', 'Dismiss')}
+            </Button>
+          </div>
+        )}
+        {showEarlyBanner && (
+          <div className="w-full bg-canvas-50 rounded-lg text-center py-3 px-3 relative">
+            <Col className="items-center justify-center gap-2">
+              <span className={'mb-2'}>
                 {t(
-                  'profiles.interactive_profiles',
-                  'Profiles are interactive — click any card to learn more and reach out.',
+                  'profiles.early_growth',
+                  `Compass is in its early growth phase — 500+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
+                )}
+              </span>
+            </Col>
+            <Button
+              size="2xs"
+              color="gray-white"
+              onClick={() => setShowEarlyBanner(false)}
+              className="absolute bottom-1 right-1"
+            >
+              {t('profiles.dismiss', 'Dismiss')}
+            </Button>
+          </div>
+        )}
+        {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
+        <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
+        <Search
+          ref={searchInputRef}
+          openFilters={() => setOpenFiltersModal(true)}
+          openFiltersModal={openFiltersModal}
+          setOpenFiltersModal={setOpenFiltersModal}
+          highlightFilters={highlightFilters}
+          highlightSort={highlightSort}
+          youProfile={you}
+          starredUsers={starredUsers ?? []}
+          refreshStars={refreshStars}
+          filters={filters}
+          updateFilter={updateFilter}
+          locationFilterProps={locationFilterProps}
+          bookmarkedSearches={bookmarkedSearches}
+          refreshBookmarkedSearches={refreshBookmarkedSearches}
+          profileCount={profileCount}
+          filtersElement={filtersElement}
+        />
+        {displayProfiles === undefined || compatibleProfiles === undefined ? (
+          <CompassLoadingIndicator />
+        ) : (
+          <>
+            {fromSignup && isClearedFilters && (
+              <p className={'guidance'}>
+                {t(
+                  'profiles.seeing_all_profiles',
+                  'You are seeing all profiles. Use search or filters to narrow it down.',
                 )}
               </p>
-            </Row>
-          </Col>
-          <Button
-            size="2xs"
-            color="gray-white"
-            onClick={() => setShowBanner(false)}
-            className="absolute bottom-1 right-1"
-          >
-            {t('profiles.dismiss', 'Dismiss')}
-          </Button>
-        </div>
-      )}
-      {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
-      <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
-      <Search
-        ref={searchInputRef}
-        openFilters={() => setOpenFiltersModal(true)}
-        openFiltersModal={openFiltersModal}
-        setOpenFiltersModal={setOpenFiltersModal}
-        highlightFilters={highlightFilters}
-        highlightSort={highlightSort}
-        youProfile={you}
-        starredUsers={starredUsers ?? []}
-        refreshStars={refreshStars}
-        filters={filters}
-        updateFilter={updateFilter}
-        clearFilters={clearFilters}
-        setYourFilters={setYourFilters}
-        isYourFilters={isYourFilters}
-        locationFilterProps={locationFilterProps}
-        raisedInLocationFilterProps={raisedInLocationFilterProps}
-        bookmarkedSearches={bookmarkedSearches}
-        refreshBookmarkedSearches={refreshBookmarkedSearches}
-        profileCount={profileCount}
-      />
-      {displayProfiles === undefined || compatibleProfiles === undefined ? (
-        <CompassLoadingIndicator />
-      ) : (
-        <>
-          {fromSignup && isClearedFilters && (
-            <p className={'guidance'}>
-              {t(
-                'profiles.seeing_all_profiles',
-                'You are seeing all profiles. Use search or filters to narrow it down.',
-              )}
-            </p>
-          )}
-          <ProfileGrid
-            profiles={displayProfiles}
-            loadMore={loadMore}
-            isLoadingMore={isLoadingMore}
-            isReloading={isReloading}
-            compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
-            starredUserIds={starredUserIds}
-            refreshStars={refreshStars}
-            onHide={onHide}
-            hiddenUserIds={recentlyHiddenIds}
-            onUndoHidden={onUndoHidden}
-          />
-        </>
-      )}
-    </>
+            )}
+            <ProfileGrid
+              profiles={displayProfiles}
+              loadMore={loadMore}
+              isLoadingMore={isLoadingMore}
+              isReloading={isReloading}
+              compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
+              starredUserIds={starredUserIds}
+              refreshStars={refreshStars}
+              onHide={onHide}
+              hiddenUserIds={recentlyHiddenIds}
+              onUndoHidden={onUndoHidden}
+            />
+          </>
+        )}
+      </Col>
+      {/* Desktop: filters sidebar on the right */}
+      <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-4 lg:h-fit text-sm bg-canvas-25 rounded-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+        {filtersElement}
+      </div>
+    </div>
   )
 }

@@ -392,11 +392,13 @@ export class SignUpPage {
       if (isExisting) {
         await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
         await this.page.getByLabel(`${workArea[i]}`, {exact: true}).click()
+        await this.page.waitForTimeout(500)
       } else {
         await expect(this.addWorkAreaField).toBeVisible()
         await expect(this.addWorkAreaButton).toBeVisible()
         await this.addWorkAreaField.fill(workArea[i])
         await this.addWorkAreaButton.click()
+        await this.page.waitForTimeout(500)
       }
       await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
       await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeChecked()

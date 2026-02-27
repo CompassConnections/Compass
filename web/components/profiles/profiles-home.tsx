@@ -1,5 +1,6 @@
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
+import {DAY_MS} from 'common/util/time'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -17,6 +18,7 @@ import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {useUser} from 'web/hooks/use-user'
@@ -53,6 +55,11 @@ export function ProfilesHome() {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
   const [showBanner, setShowBanner] = useState(true)
+  const [showEarlyBanner, setShowEarlyBanner] = usePersistentLocalState<boolean>(
+    true,
+    'profiles-home-show-early-banner',
+    7 * DAY_MS,
+  )
   const [openFiltersModal, setOpenFiltersModal] = useState(false)
   const [highlightFilters, setHighlightFilters] = useState(false)
   const [highlightSort, setHighlightSort] = useState(false)
@@ -243,6 +250,26 @@ export function ProfilesHome() {
             size="2xs"
             color="gray-white"
             onClick={() => setShowBanner(false)}
+            className="absolute bottom-1 right-1"
+          >
+            {t('profiles.dismiss', 'Dismiss')}
+          </Button>
+        </div>
+      )}
+      {showEarlyBanner && (
+        <div className="lg:col-span-12 w-full bg-canvas-50 rounded-lg text-center py-3 px-3 relative">
+          <Col className="items-center justify-center gap-2">
+            <span className={'mb-2'}>
+              {t(
+                'profiles.early_growth',
+                `Compass is in its early growth phase — 500+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
+              )}
+            </span>
+          </Col>
+          <Button
+            size="2xs"
+            color="gray-white"
+            onClick={() => setShowEarlyBanner(false)}
             className="absolute bottom-1 right-1"
           >
             {t('profiles.dismiss', 'Dismiss')}

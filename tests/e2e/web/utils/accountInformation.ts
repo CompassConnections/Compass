@@ -99,7 +99,7 @@ export const onboarding: OnboardingConfig = {
     email: faker.internet.email(),
     password: faker.internet.password(),
     display_name: faker.internet.displayName(),
-    username: faker.internet.username(),
+    username: faker.string.alphanumeric(),
   },
   account_one: {
     email: 'onboardingOne@compass.com',

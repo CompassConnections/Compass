@@ -1,11 +1,8 @@
-import clsx from 'clsx'
 import {LAST_ONLINE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
-import {toKey} from 'common/parsing'
+import {DropdownOptions} from 'web/components/comments/dropdown-menu'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
-
-import {Col} from '../layout/col'
 
 const DEFAULT_KEY = 'any'
 
@@ -41,50 +38,10 @@ export function LastActiveFilter(props: {
       items={LAST_ONLINE_CHOICES}
       activeKey={filters.last_active || DEFAULT_KEY}
       translationPrefix={'filter.last_active'}
-      onClick={(option) => {
-        updateFilter({last_active: option === DEFAULT_KEY ? undefined : option})
+      onClick={(key) => {
+        updateFilter({last_active: key === DEFAULT_KEY ? undefined : key})
         close?.()
       }}
     />
-  )
-}
-
-export function DropdownOptions(props: {
-  items: Record<string, any>
-  onClick: (item: any) => void
-  activeKey: string
-  translationPrefix?: string
-}) {
-  const {items, onClick, activeKey, translationPrefix} = props
-
-  const t = useT()
-
-  const translateOption = (key: string, value: string) => {
-    if (!translationPrefix) return value
-    return t(`${translationPrefix}.${toKey(key)}`, value)
-  }
-
-  return (
-    <Col className={'w-[150px]'}>
-      {Object.entries(items).map(([key, item]) => (
-        <div key={key}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              e.preventDefault()
-              onClick(key)
-            }}
-            className={clsx(
-              key == activeKey ? 'bg-primary-100' : 'hover:bg-canvas-100 hover:text-ink-900',
-              'text-ink-700',
-              'flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md',
-            )}
-          >
-            {item.icon && <div className="w-5">{item.icon}</div>}
-            {translateOption(key, item.label ?? item)}
-          </button>
-        </div>
-      ))}
-    </Col>
   )
 }

@@ -1,8 +1,11 @@
 import {Popover, Transition} from '@headlessui/react'
 import {DotsHorizontalIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
+import {toKey} from 'common/parsing'
 import {Fragment, ReactNode, useState} from 'react'
 import {usePopper} from 'react-popper'
+import {Col} from 'web/components/layout/col'
+import {useT} from 'web/lib/locale'
 
 export type DropdownItem = {
   name: string
@@ -120,5 +123,45 @@ export const AnimationOrNothing = (props: {
     </Transition>
   ) : (
     <>{props.children}</>
+  )
+}
+
+export function DropdownOptions(props: {
+  items: Record<string, any>
+  onClick: (item: any) => void
+  activeKey: string
+  translationPrefix?: string
+}) {
+  const {items, onClick, activeKey, translationPrefix} = props
+
+  const t = useT()
+
+  const translateOption = (key: string, value: string) => {
+    if (!translationPrefix) return value
+    return t(`${translationPrefix}.${toKey(key)}`, value)
+  }
+
+  return (
+    <Col className={'w-[150px]'}>
+      {Object.entries(items).map(([key, item]) => (
+        <div key={key}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              onClick(key)
+            }}
+            className={clsx(
+              key == activeKey ? 'bg-primary-100' : 'hover:bg-canvas-100 hover:text-ink-900',
+              'text-ink-700',
+              'flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md',
+            )}
+          >
+            {item.icon && <div className="w-5">{item.icon}</div>}
+            {translateOption(key, item.label ?? item)}
+          </button>
+        </div>
+      ))}
+    </Col>
   )
 }

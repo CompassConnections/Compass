@@ -1,13 +1,4 @@
 import {faker} from '@faker-js/faker'
-
-import {
-  Causes,
-  ChildrenExpectation,
-  Gender,
-  InterestedIn,
-  Interests,
-  Platforms,
-} from '../pages/signUpPage'
 import {
   ConnectionTypeKey,
   DietKey,
@@ -20,6 +11,8 @@ import {
   RelationshipStyleKey,
   ReligionKey,
 } from 'common/choices'
+
+import {Causes, ChildrenExpectation, Gender, InterestedIn, Interests, Platforms,} from '../pages/signUpPage'
 
 export type OnboardingUser = {
   email: string
@@ -98,7 +91,7 @@ type OnboardingConfig = {
 export const onboarding: OnboardingConfig = {
   // Use a function so email is unique per test call
   faker_account: () => ({
-    email: `faker+${crypto.randomUUID()}@test.com`,
+    email: `faker+${crypto.randomUUID().slice(0, 8)}@test.com`,
     password: faker.internet.password(),
     display_name: faker.internet.displayName(),
     username: `user_${crypto.randomUUID().slice(0, 8)}`,
@@ -109,7 +102,7 @@ export const onboarding: OnboardingConfig = {
     email: `onboarding+${crypto.randomUUID().slice(0, 8)}@test.compass`,
     password: 'CompassTest',
     display_name: 'Compass Onboarding',
-    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 4)}`,
+    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 4)}`, // username max length is 25 (see /create-user)
     bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
     gender: 'Woman',
     age: '25',
@@ -135,7 +128,7 @@ export const onboarding: OnboardingConfig = {
     university: 'Open-Source University',
     job_title: 'Unemployed',
     company: 'Home',
-    work_area: ['Living Room', 'University'],
+    work_area: ['Engineering', 'Academia'],
     beliefs: {
       political: {
         belief: 'Green / Eco-Socialist',

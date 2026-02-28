@@ -1,705 +1,691 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {FilterFields} from 'common/filters'
-import {Gender} from 'common/gender'
-import {hasKidsLabels} from 'common/has-kids'
-import {OptionTableKey} from 'common/profiles/constants'
-import {Profile} from 'common/profiles/profile'
-import {ReactNode} from 'react'
-import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
-import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from 'react-icons/fa'
-import {FaUserGroup} from 'react-icons/fa6'
-import {GiFruitBowl} from 'react-icons/gi'
-import {LuCigarette, LuGraduationCap} from 'react-icons/lu'
-import {MdLanguage, MdLocalBar} from 'react-icons/md'
-import {PiHandsPrayingBold} from 'react-icons/pi'
-import {RiScales3Line} from 'react-icons/ri'
-import DropdownMenu from 'web/components/comments/dropdown-menu'
-import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from 'web/components/filters/big5-filter'
-import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
-import {DrinksFilter, DrinksFilterText} from 'web/components/filters/drinks-filter'
-import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
-import {HasKidsLabel} from 'web/components/filters/has-kids-filter'
-import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
-import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
-import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
-import {PoliticalFilter, PoliticalFilterText} from 'web/components/filters/political-filter'
-import {
-  RelationshipStatusFilter,
-  RelationshipStatusFilterText,
-} from 'web/components/filters/relationship-status-filter'
-import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
-import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
-import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
-import {SmokerFilter, SmokerFilterText} from 'web/components/filters/smoker-filter'
-import {KidsLabel, useWantsKidsLabelsWithIcon} from 'web/components/filters/wants-kids-filter'
-import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
-import {ResetFiltersButton} from 'web/components/searches/button'
-import {CustomizeableDropdown} from 'web/components/widgets/customizeable-dropdown'
-import {useT} from 'web/lib/locale'
-import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
-
-import {AgeFilter, AgeFilterText} from './age-filter'
-import {GenderFilter, GenderFilterText} from './gender-filter'
-import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
-import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
-import {MyMatchesToggle} from './my-matches-toggle'
-import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
-
-export function DesktopFilters(props: {
-  filters: Partial<FilterFields>
-  youProfile: Profile | undefined | null
-  updateFilter: (newState: Partial<FilterFields>) => void
-  clearFilters: () => void
-  setYourFilters: (checked: boolean) => void
-  isYourFilters: boolean
-  locationFilterProps: LocationFilterProps
-  raisedInLocationFilterProps?: LocationFilterProps
-  includeRelationshipFilters: boolean | undefined
-  choices: Record<OptionTableKey, Record<string, string>>
-}) {
-  const {
-    filters,
-    youProfile,
-    updateFilter,
-    clearFilters,
-    setYourFilters,
-    isYourFilters,
-    locationFilterProps,
-    raisedInLocationFilterProps,
-    includeRelationshipFilters,
-    choices,
-  } = props
-
-  const t = useT()
-  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
-
-  return (
-    <>
-      <ResetFiltersButton clearFilters={clearFilters} />
-
-      <MyMatchesToggle
-        setYourFilters={setYourFilters}
-        youProfile={youProfile}
-        on={isYourFilters}
-        hidden={!youProfile}
-      />
-
-      {/* Short Bios */}
-      <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
-
-      {/* CONNECTION */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <FaUserGroup className="h-4 w-4" />
-                <RelationshipFilterText
-                  relationship={filters.pref_relation_styles as RelationshipType[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={<RelationshipFilter filters={filters} updateFilter={updateFilter} />}
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* RELATIONSHIP STATUS */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <BsPersonHeart className="h-4 w-4" />
-                <RelationshipStatusFilterText
-                  options={filters.relationship_status as string[] | undefined}
-                  defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* LOCATION */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <LocationFilterText
-                youProfile={youProfile}
-                location={locationFilterProps.location}
-                radius={locationFilterProps.radius}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-80"
-      />
-
-      {/* RAISED IN LOCATION */}
-      {raisedInLocationFilterProps && (
-        <CustomizeableDropdown
-          buttonContent={(open: boolean) => (
-            <DropdownButton
-              content={
-                <LocationFilterText
-                  youProfile={youProfile}
-                  location={raisedInLocationFilterProps.location}
-                  radius={raisedInLocationFilterProps.radius ?? 100}
-                  highlightedClass={open ? 'text-primary-500' : ''}
-                  labelPrefix={t('filter.raised_in', 'Grew up')}
-                />
-              }
-              open={open}
-            />
-          )}
-          dropdownMenuContent={
-            <LocationFilter
-              youProfile={youProfile}
-              locationFilterProps={raisedInLocationFilterProps}
-            />
-          }
-          popoverClassName="bg-canvas-50"
-          menuWidth="w-80"
-        />
-      )}
-
-      {/* AGE RANGE */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            open={open}
-            content={
-              <AgeFilterText
-                pref_age_min={filters.pref_age_min}
-                pref_age_max={filters.pref_age_max}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <AgeFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-80"
-      />
-
-      {/* GENDER */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <GenderFilterText
-                gender={filters.genders as Gender[]}
-                highlightedClass={open ? 'text-primary-500' : undefined}
-              />
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <Col>
-            <GenderFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-      />
-
-      {/* GENDER THEY SEEK */}
-      {/*<CustomizeableDropdown*/}
-      {/*  buttonContent={(open: boolean) => (*/}
-      {/*    <DropdownButton*/}
-      {/*      content={*/}
-      {/*        <PrefGenderFilterText*/}
-      {/*          pref_gender={filters.pref_gender as Gender[]}*/}
-      {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
-      {/*        />*/}
-      {/*      }*/}
-      {/*      open={open}*/}
-      {/*    />*/}
-      {/*  )}*/}
-      {/*  dropdownMenuContent={*/}
-      {/*    <Col>*/}
-      {/*      <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>*/}
-      {/*    </Col>*/}
-      {/*  }*/}
-      {/*  popoverClassName="bg-canvas-50"*/}
-      {/*/>*/}
-
-      {includeRelationshipFilters && (
-        <>
-          {/* RELATIONSHIP STYLE */}
-          <CustomizeableDropdown
-            buttonContent={(open) => (
-              <DropdownButton
-                open={open}
-                content={
-                  <Row className="items-center gap-1">
-                    <FaHeart className="h-4 w-4" />
-                    <RomanticFilterText
-                      relationship={filters.pref_romantic_styles as RomanticType[] | undefined}
-                      highlightedClass={open ? 'text-primary-500' : undefined}
-                    />
-                  </Row>
-                }
-              />
-            )}
-            dropdownMenuContent={<RomanticFilter filters={filters} updateFilter={updateFilter} />}
-            popoverClassName="bg-canvas-50"
-            menuWidth="w-50"
-          />
-
-          {/* WANTS KIDS */}
-          <DropdownMenu
-            items={[
-              {
-                name: wantsKidsLabelsWithIcon.no_preference.name,
-                icon: wantsKidsLabelsWithIcon.no_preference.icon,
-                onClick: () => {
-                  updateFilter({
-                    wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
-                  })
-                },
-              },
-              {
-                name: wantsKidsLabelsWithIcon.wants_kids.name,
-                icon: wantsKidsLabelsWithIcon.wants_kids.icon,
-                onClick: () => {
-                  updateFilter({
-                    wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
-                  })
-                },
-              },
-              {
-                name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
-                icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
-                onClick: () => {
-                  updateFilter({
-                    wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
-                  })
-                },
-              },
-            ]}
-            closeOnClick
-            buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-            buttonContent={(open: boolean) => (
-              <DropdownButton
-                content={
-                  <KidsLabel
-                    strength={
-                      filters.wants_kids_strength ?? wantsKidsLabelsWithIcon.no_preference.strength
-                    }
-                    highlightedClass={open ? 'text-primary-500' : ''}
-                  />
-                }
-                open={open}
-              />
-            )}
-            menuItemsClass={'bg-canvas-50'}
-            menuWidth="w-48"
-          />
-
-          {/* HAS KIDS */}
-          <DropdownMenu
-            items={[
-              {
-                name: t('profile.has_kids.no_preference', hasKidsLabels.no_preference.name),
-                onClick: () => {
-                  updateFilter({has_kids: hasKidsLabels.no_preference.value})
-                },
-              },
-              {
-                name: t('profile.has_kids.doesnt_have_kids', hasKidsLabels.doesnt_have_kids.name),
-                onClick: () => {
-                  updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
-                },
-              },
-              {
-                name: t('profile.has_kids.has_kids', hasKidsLabels.has_kids.name),
-                onClick: () => {
-                  updateFilter({has_kids: hasKidsLabels.has_kids.value})
-                },
-              },
-            ]}
-            closeOnClick
-            buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-            buttonContent={(open: boolean) => (
-              <DropdownButton
-                content={
-                  <HasKidsLabel
-                    has_kids={filters.has_kids ?? -1}
-                    highlightedClass={open ? 'text-primary-500' : ''}
-                  />
-                }
-                open={open}
-              />
-            )}
-            menuItemsClass="bg-canvas-50"
-            menuWidth="w-40"
-          />
-        </>
-      )}
-
-      {/* DIET */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <GiFruitBowl className="h-4 w-4" />
-                <DietFilterText
-                  options={filters.diet as DietType[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={<DietFilter filters={filters} updateFilter={updateFilter} />}
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* DRINKS PER MONTH */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <MdLocalBar className="h-4 w-4" />
-                <DrinksFilterText
-                  drinks_min={filters.drinks_min}
-                  drinks_max={filters.drinks_max}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <DrinksFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-80"
-      />
-
-      {/* SMOKER */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <LuCigarette className="h-4 w-4" />
-                <SmokerFilterText
-                  is_smoker={filters.is_smoker}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <SmokerFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* LANGUAGES */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <MdLanguage className="h-4 w-4" />
-                <LanguageFilterText
-                  options={filters.languages as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={<LanguageFilter filters={filters} updateFilter={updateFilter} />}
-        popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
-        menuWidth="w-50"
-      />
-
-      {/* Interests */}
-      <CustomizeableDropdown
-        newBadgeClassName={'-top-3 -left-2'}
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <FaStar className="h-4 w-4" />
-                <InterestFilterText
-                  options={filters.interests as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                  label={'interests'}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.interests}
-            label={'interests'}
-          />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50 max-h-[400px] overflow-y-auto"
-      />
-
-      {/* Causes */}
-      <CustomizeableDropdown
-        newBadgeClassName={'-top-3 -left-2'}
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <FaHandsHelping className="h-4 w-4" />
-                <InterestFilterText
-                  options={filters.causes as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                  label={'causes'}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.causes}
-            label={'causes'}
-          />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50 max-h-[400px] overflow-y-auto"
-      />
-
-      {/* Work */}
-      <CustomizeableDropdown
-        newBadgeClassName={'-top-3 -left-2'}
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <FaBriefcase className="h-4 w-4" />
-                <InterestFilterText
-                  options={filters.work as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                  label={'work'}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.work}
-            label={'work'}
-          />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-100 max-h-[400px] overflow-y-auto"
-      />
-
-      {/* POLITICS */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <RiScales3Line className="h-4 w-4" />
-                <PoliticalFilterText
-                  options={filters.political_beliefs as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={<PoliticalFilter filters={filters} updateFilter={updateFilter} />}
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* RELIGION */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <PiHandsPrayingBold className="h-4 w-4" />
-                <ReligionFilterText
-                  options={filters.religion as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <ReligionFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            className={'w-[350px] grid grid-cols-2'}
-          />
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* MBTI */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <BsPersonVcard className="h-4 w-4" />
-                <MbtiFilterText
-                  options={filters.mbti as string[] | undefined}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                  defaultLabel={t('filter.any_mbti', 'Any MBTI')}
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={<MbtiFilter filters={filters} updateFilter={updateFilter} />}
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-[400px]"
-      />
-
-      {/* BIG FIVE PERSONALITY */}
-      <CustomizeableDropdown
-        buttonContent={(open) => (
-          <DropdownButton
-            open={open}
-            content={
-              <Row className="items-center gap-1">
-                <BsPersonVcard className="h-4 w-4" />
-                <Big5FilterText
-                  filters={filters}
-                  highlightedClass={
-                    open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined
-                  }
-                />
-              </Row>
-            }
-          />
-        )}
-        dropdownMenuContent={
-          <Col className="mx-2 mb-4">
-            <Big5Filters filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-[420px]"
-      />
-
-      {/* EDUCATION */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            content={
-              <Row className="items-center gap-1">
-                <LuGraduationCap className="h-4 w-4" />
-                <EducationFilterText
-                  options={filters.education_levels as string[]}
-                  highlightedClass={open ? 'text-primary-500' : undefined}
-                />
-              </Row>
-            }
-            open={open}
-          />
-        )}
-        dropdownMenuContent={
-          <Col>
-            <EducationFilter filters={filters} updateFilter={updateFilter} />
-          </Col>
-        }
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-
-      {/* LAST ACTIVE */}
-      <CustomizeableDropdown
-        buttonContent={(open: boolean) => (
-          <DropdownButton
-            open={open}
-            content={
-              <LastActiveFilterText
-                last_active={filters.last_active}
-                highlightedClass={open ? 'text-primary-500' : ''}
-              />
-            }
-          />
-        )}
-        dropdownMenuContent={(close) => (
-          <Col className="mx-2 mb-4">
-            <LastActiveFilter filters={filters} updateFilter={updateFilter} close={close} />
-          </Col>
-        )}
-        popoverClassName="bg-canvas-50"
-        menuWidth="w-50"
-      />
-    </>
-  )
-}
-
-export function DropdownButton(props: {open: boolean; content: ReactNode}) {
-  const {open, content} = props
-  return (
-    <Row className="hover:text-ink-700 items-center gap-0.5 transition-all">
-      {content}
-      <span className="text-ink-400">
-        {open ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
-      </span>
-    </Row>
-  )
-}
+// import {FilterFields} from 'common/filters'
+// import {Gender} from 'common/gender'
+// import {hasKidsLabels} from 'common/has-kids'
+// import {OptionTableKey} from 'common/profiles/constants'
+// import {Profile} from 'common/profiles/profile'
+// import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
+// import {FaBriefcase, FaHandsHelping, FaHeart, FaStar} from 'react-icons/fa'
+// import {FaUserGroup} from 'react-icons/fa6'
+// import {GiFruitBowl} from 'react-icons/gi'
+// import {LuCigarette, LuGraduationCap} from 'react-icons/lu'
+// import {MdLanguage, MdLocalBar} from 'react-icons/md'
+// import {PiHandsPrayingBold} from 'react-icons/pi'
+// import {RiScales3Line} from 'react-icons/ri'
+// import DropdownMenu from 'web/components/comments/dropdown-menu'
+// import {Big5Filters, Big5FilterText, hasAnyBig5Filter} from 'web/components/filters/big5-filter'
+// import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
+// import {DrinksFilter, DrinksFilterText} from 'web/components/filters/drinks-filter'
+// import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
+// import {HasKidsLabel} from 'web/components/filters/has-kids-filter'
+// import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
+// import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
+// import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
+// import {PoliticalFilter, PoliticalFilterText} from 'web/components/filters/political-filter'
+// import {
+//   RelationshipStatusFilter,
+//   RelationshipStatusFilterText,
+// } from 'web/components/filters/relationship-status-filter'
+// import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
+// import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
+// import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
+// import {SmokerFilter, SmokerFilterText} from 'web/components/filters/smoker-filter'
+// import {KidsLabel, useWantsKidsLabelsWithIcon} from 'web/components/filters/wants-kids-filter'
+// import {Col} from 'web/components/layout/col'
+// import {Row} from 'web/components/layout/row'
+// import {ResetFiltersButton} from 'web/components/searches/button'
+// import {CustomizeableDropdown} from 'web/components/widgets/customizeable-dropdown'
+// import {useT} from 'web/lib/locale'
+// import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
+//
+// import {AgeFilter, AgeFilterText} from './age-filter'
+// import {GenderFilter, GenderFilterText} from './gender-filter'
+// import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
+// import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
+// import {MyMatchesToggle} from './my-matches-toggle'
+// import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
+//
+// export function DesktopFilters(props: {
+//   filters: Partial<FilterFields>
+//   youProfile: Profile | undefined | null
+//   updateFilter: (newState: Partial<FilterFields>) => void
+//   clearFilters: () => void
+//   setYourFilters: (checked: boolean) => void
+//   isYourFilters: boolean
+//   locationFilterProps: LocationFilterProps
+//   raisedInLocationFilterProps?: LocationFilterProps
+//   includeRelationshipFilters: boolean | undefined
+//   choices: Record<OptionTableKey, Record<string, string>>
+// }) {
+//   const {
+//     filters,
+//     youProfile,
+//     updateFilter,
+//     clearFilters,
+//     setYourFilters,
+//     isYourFilters,
+//     locationFilterProps,
+//     raisedInLocationFilterProps,
+//     includeRelationshipFilters,
+//     choices,
+//   } = props
+//
+//   const t = useT()
+//   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
+//
+//   return (
+//     <>
+//       <ResetFiltersButton clearFilters={clearFilters} />
+//
+//       <MyMatchesToggle
+//         setYourFilters={setYourFilters}
+//         youProfile={youProfile}
+//         on={isYourFilters}
+//         hidden={!youProfile}
+//       />
+//
+//       {/* Short Bios */}
+//       <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
+//
+//       {/* CONNECTION */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <FaUserGroup className="h-4 w-4" />
+//                 <RelationshipFilterText
+//                   relationship={filters.pref_relation_styles as RelationshipType[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={<RelationshipFilter filters={filters} updateFilter={updateFilter} />}
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* RELATIONSHIP STATUS */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <BsPersonHeart className="h-4 w-4" />
+//                 <RelationshipStatusFilterText
+//                   options={filters.relationship_status as string[] | undefined}
+//                   defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* LOCATION */}
+//       <CustomizeableDropdown
+//         buttonContent={(open: boolean) => (
+//           <DropdownButton
+//             content={
+//               <LocationFilterText
+//                 youProfile={youProfile}
+//                 location={locationFilterProps.location}
+//                 radius={locationFilterProps.radius}
+//                 highlightedClass={open ? 'text-primary-500' : ''}
+//               />
+//             }
+//             open={open}
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-80"
+//       />
+//
+//       {/* RAISED IN LOCATION */}
+//       {raisedInLocationFilterProps && (
+//         <CustomizeableDropdown
+//           buttonContent={(open: boolean) => (
+//             <DropdownButton
+//               content={
+//                 <LocationFilterText
+//                   youProfile={youProfile}
+//                   location={raisedInLocationFilterProps.location}
+//                   radius={raisedInLocationFilterProps.radius ?? 100}
+//                   highlightedClass={open ? 'text-primary-500' : ''}
+//                   labelPrefix={t('filter.raised_in', 'Grew up')}
+//                 />
+//               }
+//               open={open}
+//             />
+//           )}
+//           dropdownMenuContent={
+//             <LocationFilter
+//               youProfile={youProfile}
+//               locationFilterProps={raisedInLocationFilterProps}
+//             />
+//           }
+//           popoverClassName="bg-canvas-50"
+//           menuWidth="w-80"
+//         />
+//       )}
+//
+//       {/* AGE RANGE */}
+//       <CustomizeableDropdown
+//         buttonContent={(open: boolean) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <AgeFilterText
+//                 pref_age_min={filters.pref_age_min}
+//                 pref_age_max={filters.pref_age_max}
+//                 highlightedClass={open ? 'text-primary-500' : ''}
+//               />
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col className="mx-2 mb-4">
+//             <AgeFilter filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-80"
+//       />
+//
+//       {/* GENDER */}
+//       <CustomizeableDropdown
+//         buttonContent={(open: boolean) => (
+//           <DropdownButton
+//             content={
+//               <GenderFilterText
+//                 gender={filters.genders as Gender[]}
+//                 highlightedClass={open ? 'text-primary-500' : undefined}
+//               />
+//             }
+//             open={open}
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col>
+//             <GenderFilter filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//       />
+//
+//       {/* GENDER THEY SEEK */}
+//       {/*<CustomizeableDropdown*/}
+//       {/*  buttonContent={(open: boolean) => (*/}
+//       {/*    <DropdownButton*/}
+//       {/*      content={*/}
+//       {/*        <PrefGenderFilterText*/}
+//       {/*          pref_gender={filters.pref_gender as Gender[]}*/}
+//       {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
+//       {/*        />*/}
+//       {/*      }*/}
+//       {/*      open={open}*/}
+//       {/*    />*/}
+//       {/*  )}*/}
+//       {/*  dropdownMenuContent={*/}
+//       {/*    <Col>*/}
+//       {/*      <PrefGenderFilter filters={filters} updateFilter={updateFilter}/>*/}
+//       {/*    </Col>*/}
+//       {/*  }*/}
+//       {/*  popoverClassName="bg-canvas-50"*/}
+//       {/*/>*/}
+//
+//       {includeRelationshipFilters && (
+//         <>
+//           {/* RELATIONSHIP STYLE */}
+//           <CustomizeableDropdown
+//             buttonContent={(open) => (
+//               <DropdownButton
+//                 open={open}
+//                 content={
+//                   <Row className="items-center gap-1">
+//                     <FaHeart className="h-4 w-4" />
+//                     <RomanticFilterText
+//                       relationship={filters.pref_romantic_styles as RomanticType[] | undefined}
+//                       highlightedClass={open ? 'text-primary-500' : undefined}
+//                     />
+//                   </Row>
+//                 }
+//               />
+//             )}
+//             dropdownMenuContent={<RomanticFilter filters={filters} updateFilter={updateFilter} />}
+//             popoverClassName="bg-canvas-50"
+//             menuWidth="w-50"
+//           />
+//
+//           {/* WANTS KIDS */}
+//           <DropdownMenu
+//             items={[
+//               {
+//                 name: wantsKidsLabelsWithIcon.no_preference.name,
+//                 icon: wantsKidsLabelsWithIcon.no_preference.icon,
+//                 onClick: () => {
+//                   updateFilter({
+//                     wants_kids_strength: wantsKidsLabelsWithIcon.no_preference.strength,
+//                   })
+//                 },
+//               },
+//               {
+//                 name: wantsKidsLabelsWithIcon.wants_kids.name,
+//                 icon: wantsKidsLabelsWithIcon.wants_kids.icon,
+//                 onClick: () => {
+//                   updateFilter({
+//                     wants_kids_strength: wantsKidsLabelsWithIcon.wants_kids.strength,
+//                   })
+//                 },
+//               },
+//               {
+//                 name: wantsKidsLabelsWithIcon.doesnt_want_kids.name,
+//                 icon: wantsKidsLabelsWithIcon.doesnt_want_kids.icon,
+//                 onClick: () => {
+//                   updateFilter({
+//                     wants_kids_strength: wantsKidsLabelsWithIcon.doesnt_want_kids.strength,
+//                   })
+//                 },
+//               },
+//             ]}
+//             closeOnClick
+//             buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+//             buttonContent={(open: boolean) => (
+//               <DropdownButton
+//                 content={
+//                   <KidsLabel
+//                     strength={
+//                       filters.wants_kids_strength ?? wantsKidsLabelsWithIcon.no_preference.strength
+//                     }
+//                     highlightedClass={open ? 'text-primary-500' : ''}
+//                   />
+//                 }
+//                 open={open}
+//               />
+//             )}
+//             menuItemsClass={'bg-canvas-50'}
+//             menuWidth="w-48"
+//           />
+//
+//           {/* HAS KIDS */}
+//           <DropdownMenu
+//             items={[
+//               {
+//                 name: t('profile.has_kids.no_preference', hasKidsLabels.no_preference.name),
+//                 onClick: () => {
+//                   updateFilter({has_kids: hasKidsLabels.no_preference.value})
+//                 },
+//               },
+//               {
+//                 name: t('profile.has_kids.doesnt_have_kids', hasKidsLabels.doesnt_have_kids.name),
+//                 onClick: () => {
+//                   updateFilter({has_kids: hasKidsLabels.doesnt_have_kids.value})
+//                 },
+//               },
+//               {
+//                 name: t('profile.has_kids.has_kids', hasKidsLabels.has_kids.name),
+//                 onClick: () => {
+//                   updateFilter({has_kids: hasKidsLabels.has_kids.value})
+//                 },
+//               },
+//             ]}
+//             closeOnClick
+//             buttonClass={'!text-ink-600 !hover:!text-ink-600'}
+//             buttonContent={(open: boolean) => (
+//               <DropdownButton
+//                 content={
+//                   <HasKidsLabel
+//                     has_kids={filters.has_kids ?? -1}
+//                     highlightedClass={open ? 'text-primary-500' : ''}
+//                   />
+//                 }
+//                 open={open}
+//               />
+//             )}
+//             menuItemsClass="bg-canvas-50"
+//             menuWidth="w-40"
+//           />
+//         </>
+//       )}
+//
+//       {/* DIET */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <GiFruitBowl className="h-4 w-4" />
+//                 <DietFilterText
+//                   options={filters.diet as DietType[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={<DietFilter filters={filters} updateFilter={updateFilter} />}
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* DRINKS PER MONTH */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <MdLocalBar className="h-4 w-4" />
+//                 <DrinksFilterText
+//                   drinks_min={filters.drinks_min}
+//                   drinks_max={filters.drinks_max}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col className="mx-2 mb-4">
+//             <DrinksFilter filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-80"
+//       />
+//
+//       {/* SMOKER */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <LuCigarette className="h-4 w-4" />
+//                 <SmokerFilterText
+//                   is_smoker={filters.is_smoker}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col className="mx-2 mb-4">
+//             <SmokerFilter filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* LANGUAGES */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <MdLanguage className="h-4 w-4" />
+//                 <LanguageFilterText
+//                   options={filters.languages as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={<LanguageFilter filters={filters} updateFilter={updateFilter} />}
+//         popoverClassName="bg-canvas-50 col-span-full max-h-80 overflow-y-auto"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* Interests */}
+//       <CustomizeableDropdown
+//         newBadgeClassName={'-top-3 -left-2'}
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <FaStar className="h-4 w-4" />
+//                 <InterestFilterText
+//                   options={filters.interests as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   label={'interests'}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <InterestFilter
+//             filters={filters}
+//             updateFilter={updateFilter}
+//             choices={choices.interests}
+//             label={'interests'}
+//           />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50 max-h-[400px] overflow-y-auto"
+//       />
+//
+//       {/* Causes */}
+//       <CustomizeableDropdown
+//         newBadgeClassName={'-top-3 -left-2'}
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <FaHandsHelping className="h-4 w-4" />
+//                 <InterestFilterText
+//                   options={filters.causes as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   label={'causes'}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <InterestFilter
+//             filters={filters}
+//             updateFilter={updateFilter}
+//             choices={choices.causes}
+//             label={'causes'}
+//           />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50 max-h-[400px] overflow-y-auto"
+//       />
+//
+//       {/* Work */}
+//       <CustomizeableDropdown
+//         newBadgeClassName={'-top-3 -left-2'}
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <FaBriefcase className="h-4 w-4" />
+//                 <InterestFilterText
+//                   options={filters.work as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   label={'work'}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <InterestFilter
+//             filters={filters}
+//             updateFilter={updateFilter}
+//             choices={choices.work}
+//             label={'work'}
+//           />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-100 max-h-[400px] overflow-y-auto"
+//       />
+//
+//       {/* POLITICS */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <RiScales3Line className="h-4 w-4" />
+//                 <PoliticalFilterText
+//                   options={filters.political_beliefs as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={<PoliticalFilter filters={filters} updateFilter={updateFilter} />}
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* RELIGION */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <PiHandsPrayingBold className="h-4 w-4" />
+//                 <ReligionFilterText
+//                   options={filters.religion as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <ReligionFilter
+//             filters={filters}
+//             updateFilter={updateFilter}
+//             className={'w-[350px] grid grid-cols-2'}
+//           />
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* MBTI */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <BsPersonVcard className="h-4 w-4" />
+//                 <MbtiFilterText
+//                   options={filters.mbti as string[] | undefined}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   defaultLabel={t('filter.any_mbti', 'Any MBTI')}
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={<MbtiFilter filters={filters} updateFilter={updateFilter} />}
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-[400px]"
+//       />
+//
+//       {/* BIG FIVE PERSONALITY */}
+//       <CustomizeableDropdown
+//         buttonContent={(open) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <Row className="items-center gap-1">
+//                 <BsPersonVcard className="h-4 w-4" />
+//                 <Big5FilterText
+//                   filters={filters}
+//                   highlightedClass={
+//                     open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined
+//                   }
+//                 />
+//               </Row>
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col className="mx-2 mb-4">
+//             <Big5Filters filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-[420px]"
+//       />
+//
+//       {/* EDUCATION */}
+//       <CustomizeableDropdown
+//         buttonContent={(open: boolean) => (
+//           <DropdownButton
+//             content={
+//               <Row className="items-center gap-1">
+//                 <LuGraduationCap className="h-4 w-4" />
+//                 <EducationFilterText
+//                   options={filters.education_levels as string[]}
+//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                 />
+//               </Row>
+//             }
+//             open={open}
+//           />
+//         )}
+//         dropdownMenuContent={
+//           <Col>
+//             <EducationFilter filters={filters} updateFilter={updateFilter} />
+//           </Col>
+//         }
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//
+//       {/* LAST ACTIVE */}
+//       <CustomizeableDropdown
+//         buttonContent={(open: boolean) => (
+//           <DropdownButton
+//             open={open}
+//             content={
+//               <LastActiveFilterText
+//                 last_active={filters.last_active}
+//                 highlightedClass={open ? 'text-primary-500' : ''}
+//               />
+//             }
+//           />
+//         )}
+//         dropdownMenuContent={(close) => (
+//           <Col className="mx-2 mb-4">
+//             <LastActiveFilter filters={filters} updateFilter={updateFilter} close={close} />
+//           </Col>
+//         )}
+//         popoverClassName="bg-canvas-50"
+//         menuWidth="w-50"
+//       />
+//     </>
+//   )
+// }

@@ -26,7 +26,7 @@ export function AddOptionEntry(props: {
       <MultiCheckbox
         choices={sortedChoices}
         selected={(profile[label] ?? []).map((s) => String(s))}
-        onChange={(selected) => setProfile(label, selected)}
+        onChange={(selected) => setProfile(label, selected as string[] | undefined)}
         addOption={(v: string) => {
           console.log(`Adding ${label}:`, v)
           setChoices((prev: string[]) => ({...prev, [v]: v}))

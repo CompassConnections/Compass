@@ -31,3 +31,36 @@ export function groupConsecutive<T, U>(xs: T[], key: (x: T) => U) {
   result.push(curr)
   return result
 }
+
+export function undefineEmpty<T>(array: T[]): T[] | undefined {
+  // Undefine a list if empty ([])
+  return fallbackIfEmpty(array, undefined)
+}
+
+export function nullifyEmpty<T>(array: T[]): T[] | null {
+  // Nullify a list if empty ([])
+  return fallbackIfEmpty(array, null)
+}
+
+export function fallbackIfEmpty<T>(array: T[], fallback: any) {
+  // Fallback a list if empty ([])
+  if (!Array.isArray(array)) return fallback
+  return array.length > 0 ? array : fallback
+}
+
+export function nullifyDictValues(array: Record<any, any>) {
+  // Nullify all the values of the dict
+  return Object.entries(array).reduce((acc, [key, _]) => {
+    return {...acc, [key]: null}
+  }, {})
+}
+
+export function sampleDictByPrefix(array: Record<any, any>, prefix: string) {
+  // Extract the keys that start with the prefix
+  return Object.entries(array).reduce((acc, [key, value]) => {
+    if (key.startsWith(prefix)) {
+      return {...acc, [key]: value}
+    }
+    return acc
+  }, {})
+}

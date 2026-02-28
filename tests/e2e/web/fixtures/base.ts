@@ -1,12 +1,14 @@
 import {test as base} from '@playwright/test'
-import {deleteUser} from '../utils/deleteUser'
-import {onboarding, OnboardingUser} from '../utils/accountInformation'
-import {OnboardingPage} from '../pages/onboardingPage'
+
+import {AuthPage} from '../pages/AuthPage'
 import {HomePage} from '../pages/homePage'
+import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
 import {AuthPage} from '../pages/AuthPage'
 import { ComatibilityPage } from "../pages/compatibilityPage";
+import {onboarding, OnboardingUser} from '../utils/accountInformation'
+import {deleteUser} from '../utils/deleteUser'
 
 export const test = base.extend<{
   homePage: HomePage
@@ -20,10 +22,16 @@ export const test = base.extend<{
   fakerAccount: OnboardingUser
 }>({
   testAccount: async ({}, use) => {
-    await use(onboarding.account_one)
+    const account = onboarding.account_one() // email captured here
+    await use(account)
+    console.log('Cleaning up onboarding 1 account...')
+    await deleteUser(account.email, account.password) // same account, guaranteed
   },
   fakerAccount: async ({}, use) => {
-    await use(onboarding.faker_account)
+    const account = onboarding.faker_account() // email captured here
+    await use(account)
+    console.log('Cleaning up faker account...')
+    await deleteUser(account.email, account.password) // same account, guaranteed
   },
   onboardingPage: async ({page}, use) => {
     const onboardingPage = new OnboardingPage(page)
@@ -49,14 +57,6 @@ export const test = base.extend<{
     const compatibilityPage = new ComatibilityPage(page)
     await use(compatibilityPage)
   },
-  cleanUpUsers: [
-    async ({}, use) => {
-      await use()
-      await deleteUser(onboarding.account_one.email, onboarding.account_one.password)
-      await deleteUser(onboarding.faker_account.email, onboarding.faker_account.password)
-    },
-    {auto: true},
-  ],
 })
 
 export {expect} from '@playwright/test'

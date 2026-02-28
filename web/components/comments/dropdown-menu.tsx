@@ -1,10 +1,11 @@
 import {Popover, Transition} from '@headlessui/react'
-import {DotsHorizontalIcon} from '@heroicons/react/solid'
+import {ChevronDownIcon, ChevronUpIcon, DotsHorizontalIcon} from '@heroicons/react/solid'
 import clsx from 'clsx'
 import {toKey} from 'common/parsing'
 import {Fragment, ReactNode, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 export type DropdownItem = {
@@ -163,5 +164,17 @@ export function DropdownOptions(props: {
         </div>
       ))}
     </Col>
+  )
+}
+
+export function DropdownButton(props: {open: boolean; content: ReactNode}) {
+  const {open, content} = props
+  return (
+    <Row className="hover:text-ink-700 items-center gap-0.5 transition-all">
+      {content}
+      <span className="text-ink-400">
+        {open ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+      </span>
+    </Row>
   )
 }

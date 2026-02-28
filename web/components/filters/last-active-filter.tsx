@@ -7,7 +7,7 @@ import {useT} from 'web/lib/locale'
 const DEFAULT_KEY = 'any'
 
 export function LastActiveFilterText(props: {
-  last_active: string | undefined
+  last_active: string | undefined | null
   highlightedClass?: string
 }) {
   const {last_active, highlightedClass} = props

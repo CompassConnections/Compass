@@ -49,7 +49,8 @@ const reRenderTheme = () => {
 }
 
 function getTheme() {
-  return JSON.parse(localStorage.getItem('theme') ?? 'null') ?? 'auto'
+  const theme = JSON.parse(localStorage.getItem('theme') ?? 'null') ?? 'auto'
+  return theme.value ?? theme
 }
 
 function isDark(theme: theme_option | null) {

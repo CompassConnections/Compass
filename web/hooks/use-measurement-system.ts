@@ -9,7 +9,8 @@ export const useMeasurementSystem = () => {
       try {
         const saved = localStorage.getItem('measurement-system')
         if (saved) {
-          const parsed = JSON.parse(saved)
+          let parsed = JSON.parse(saved)
+          parsed = parsed.value ?? parsed
           if (parsed === 'metric' || parsed === 'imperial') {
             return parsed
           }

@@ -1,7 +1,8 @@
 // run this in <head> as blocking to prevent flash of unstyled content. See theme-provider.tsx
 {
   const localTheme = localStorage.getItem('theme')
-  const theme = localTheme ? JSON.parse(localTheme) : 'auto'
+  let theme = localTheme ? JSON.parse(localTheme) : 'auto'
+  theme = theme.value ?? theme
 
   if (
     theme === 'dark' ||
@@ -11,7 +12,8 @@
   }
 
   const localFontPreference = localStorage.getItem('font-preference')
-  const fontPreference = localFontPreference ? JSON.parse(localFontPreference) : 'atkinson'
+  let fontPreference = localFontPreference ? JSON.parse(localFontPreference) : 'atkinson'
+  fontPreference = fontPreference.value ?? fontPreference
 
   const fontFamilies = {
     atkinson: '"Atkinson Hyperlegible Next", Georgia, "Times New Roman", Times, serif',

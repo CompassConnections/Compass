@@ -25,19 +25,22 @@ export type Big5MinMaxKey =
   | 'big5_neuroticism_min'
   | 'big5_neuroticism_max'
 
+const BIG5_TRAITS = [
+  'big5_openness',
+  'big5_conscientiousness',
+  'big5_extraversion',
+  'big5_agreeableness',
+  'big5_neuroticism',
+] as const
+
+export function countBig5Filters(filters: Partial<FilterFields>) {
+  return BIG5_TRAITS.filter(
+    (trait) => filters[`${trait}_min`] != null || filters[`${trait}_max`] != null,
+  ).length
+}
+
 export function hasAnyBig5Filter(filters: Partial<FilterFields>) {
-  return (
-    filters.big5_openness_min != null ||
-    filters.big5_openness_max != null ||
-    filters.big5_conscientiousness_min != null ||
-    filters.big5_conscientiousness_max != null ||
-    filters.big5_extraversion_min != null ||
-    filters.big5_extraversion_max != null ||
-    filters.big5_agreeableness_min != null ||
-    filters.big5_agreeableness_max != null ||
-    filters.big5_neuroticism_min != null ||
-    filters.big5_neuroticism_max != null
-  )
+  return countBig5Filters(filters) > 0
 }
 
 export function Big5FilterText(props: {filters: Partial<FilterFields>; highlightedClass?: string}) {

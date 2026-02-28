@@ -233,7 +233,7 @@ export const LAST_ONLINE_CHOICES = {
   month: 'Last month',
   '3months': 'Last 3 months',
   any: 'Any time',
-}
+} as const
 
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)

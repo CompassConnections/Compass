@@ -245,16 +245,16 @@ export const Search = forwardRef<
           <Button
             color={highlightFilters ? 'blue' : 'none'}
             size="sm"
-            className={`border-ink-300 border sm:hidden${highlightFilters ? ' border-blue-500' : ''}`}
+            className={`border-ink-300 border lg:hidden${highlightFilters ? ' border-blue-500' : ''}`}
             onClick={handleOpenFilters}
           >
             <IoFilterSharp className="h-5 w-5" />
           </Button>
         </Row>
       </Row>
-      <FilterGuide className={'hidden sm:inline'} />
+      <FilterGuide className={'hidden lg:inline'} />
       <RightModal
-        className="bg-canvas-0 w-2/3 text-sm sm:hidden h-full max-h-screen overflow-y-auto"
+        className="bg-canvas-0 w-2/3 text-sm lg:hidden h-full max-h-screen overflow-y-auto"
         open={openFiltersModal}
         setOpen={setOpenFiltersModal}
       >

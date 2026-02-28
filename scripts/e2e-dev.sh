@@ -11,14 +11,20 @@ NC='\033[0m'
 print_status() { echo -e "${GREEN}[E2E-DEV]${NC} $1"; }
 print_error()  { echo -e "${RED}[ERROR]${NC} $1"; }
 
+get_supabase_status() {
+  SUPABASE_STATUS=$(supabase status --output json 2>/dev/null)
+}
+
+get_supabase_status
+
 # Check services are running (fail fast with helpful message)
 check_services() {
   local missing=0
 
-  if ! supabase status --output json | jq -r '.API_URL'; then
+  if [ -z "$(echo "$SUPABASE_STATUS" | jq -r '.API_URL')" ]; then
     print_error "Supabase is not running. Starting..."
     yarn test:db:reset
-    missing=1
+    get_supabase_status
   fi
 
   if ! curl -s http://127.0.0.1:9099 > /dev/null 2>&1; then
@@ -49,9 +55,9 @@ check_services
 print_status "All services running ✅"
 
 export $(cat .env.test | grep -v '^#' | xargs)
-export NEXT_PUBLIC_SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')
-export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status --output json | jq -r '.ANON_KEY')
-export DATABASE_URL=$(supabase status --output json | jq -r '.DB_URL')
+export NEXT_PUBLIC_SUPABASE_URL=$(echo "$SUPABASE_STATUS" | jq -r '.API_URL')
+export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$SUPABASE_STATUS" | jq -r '.ANON_KEY')
+export DATABASE_URL=$(echo "$SUPABASE_STATUS" | jq -r '.DB_URL')
 
 # Run tests - pass all args through to playwright
 # Examples:

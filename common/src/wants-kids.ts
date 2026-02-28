@@ -10,7 +10,7 @@ export type KidsLabelsMap = Record<string, KidLabel>
 
 export const wantsKidsLabels: KidsLabelsMap = {
   no_preference: {
-    name: 'Any preference',
+    name: 'Either',
     shortName: 'Either',
     strength: -1,
   },
@@ -35,16 +35,16 @@ export const wantsKidsNames = Object.values(wantsKidsLabels).reduce<Record<numbe
 export type wantsKidsDatabase = 0 | 1 | 2 | 3 | 4
 
 export function wantsKidsToHasKidsFilter(wantsKidsStrength: wantsKidsDatabase) {
-  if (wantsKidsStrength < wantsKidsLabels.wants_kids.strength) {
+  if (wantsKidsStrength >= 0 && wantsKidsStrength < wantsKidsLabels.wants_kids.strength) {
     return hasKidsLabels.doesnt_have_kids.value
   }
-  return hasKidsLabels.no_preference.value
+  return null // hasKidsLabels.no_preference.value
 }
 
 export function wantsKidsDatabaseToWantsKidsFilter(wantsKidsStrength: wantsKidsDatabase) {
   // console.debug(wantsKidsStrength)
   if (wantsKidsStrength == wantsKidsLabels.no_preference.strength) {
-    return wantsKidsLabels.no_preference.strength
+    return null // wantsKidsLabels.no_preference.strength
   }
   if (wantsKidsStrength > wantsKidsLabels.wants_kids.strength) {
     return wantsKidsLabels.wants_kids.strength

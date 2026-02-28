@@ -1,4 +1,5 @@
 import {faker} from '@faker-js/faker'
+
 import {
   Gender,
   InterestedIn,
@@ -6,6 +7,10 @@ import {
   Interests,
   Causes,
   Platforms,
+  PoliticalBeliefs,
+  RelationshipStatus,
+  RelationshipStyle,
+  Religion,
 } from '../pages/signUpPage'
 import {
   ConnectionTypeKey,
@@ -86,26 +91,29 @@ type FiveBigPersonalityTraits = {
   conscientiousness?: number
   extraversion?: number
   agreeableness?: number
-  neutroticism?: number
+  neuroticism?: number
 }
 
 type OnboardingConfig = {
-  faker_account: OnboardingUser
-  account_one: OnboardingUser
+  faker_account: () => OnboardingUser
+  account_one: () => OnboardingUser
 }
 
 export const onboarding: OnboardingConfig = {
-  faker_account: {
-    email: faker.internet.email(),
+  // Use a function so email is unique per test call
+  faker_account: () => ({
+    email: `faker+${crypto.randomUUID()}@test.com`,
     password: faker.internet.password(),
     display_name: faker.internet.displayName(),
-    username: faker.string.alphanumeric(),
-  },
-  account_one: {
-    email: 'onboardingOne@compass.com',
+    username: `user_${crypto.randomUUID().slice(0, 8)}`,
+  }),
+
+  account_one: () => ({
+    // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
+    email: `onboarding+${crypto.randomUUID()}@test.compass`,
     password: 'CompassTest',
     display_name: 'Compass Onboarding',
-    username: 'TheGreatOnboarding',
+    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 8)}`,
     bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
     gender: 'Woman',
     age: '25',
@@ -156,5 +164,5 @@ export const onboarding: OnboardingConfig = {
         urlOrUsername: 'TheGreatConnection',
       },
     ],
-  },
+  }),
 }

@@ -2,6 +2,7 @@ import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {logger} from 'common/logging'
+import {kmToMiles} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {
   wantsKidsDatabase,
@@ -11,6 +12,7 @@ import {
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getLocale} from 'web/lib/locale-cookie'
 
@@ -46,7 +48,11 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     setRaisedInLocation(undefined)
   }
 
-  const [radius, setRadius] = usePersistentLocalState<number>(100, 'search-radius')
+  const {measurementSystem} = useMeasurementSystem()
+
+  const defaultRadius = measurementSystem === 'imperial' ? 100 : kmToMiles(100)
+
+  const [radius, setRadius] = usePersistentLocalState<number>(defaultRadius, 'search-radius')
 
   const debouncedSetRadius = useCallback(debounce(setRadius, 200), [setRadius])
 
@@ -56,7 +62,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   )
 
   const [raisedInRadius, setRaisedInRadius] = usePersistentLocalState<number>(
-    100,
+    defaultRadius,
     'raised-in-radius',
   )
 
@@ -113,7 +119,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   }
 
   const yourFilters: Partial<FilterFields> = {
-    pref_gender: you?.gender?.length ? [you.gender] : undefined,
+    // pref_gender: you?.gender?.length ? [you.gender] : undefined,
     genders: you?.pref_gender?.length ? you.pref_gender : undefined,
     education_levels: you?.education_level ? [you.education_level] : undefined,
     pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
@@ -144,9 +150,9 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
       filters.genders?.length ? filters.genders : undefined,
       yourFilters.genders?.length ? yourFilters.genders : undefined,
     ) &&
-    ((!you.gender && !filters.pref_gender?.length) ||
-      (filters.pref_gender?.length == 1 &&
-        isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))) &&
+    // ((!you.gender && !filters.pref_gender?.length) ||
+    //   (filters.pref_gender?.length == 1 &&
+    //     isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))) &&
     ((!you.education_level && !filters.education_levels?.length) ||
       (filters.education_levels?.length == 1 &&
         isEqual(
@@ -174,8 +180,8 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const setYourFilters = (checked: boolean) => {
     if (checked) {
       updateFilter(yourFilters)
-      setRadius(100)
-      debouncedSetRadius(100) // clear any pending debounced sets
+      setRadius(defaultRadius)
+      debouncedSetRadius(defaultRadius) // clear any pending debounced sets
       if (you?.geodb_city_id && you.city && you.city_latitude && you.city_longitude) {
         setLocation({
           id: you?.geodb_city_id,

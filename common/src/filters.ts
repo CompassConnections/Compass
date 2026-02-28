@@ -5,32 +5,32 @@ import {cloneDeep} from 'lodash'
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
-  last_active: string | undefined
-  geodbCityIds: string[] | null
-  lat: number | null
-  lon: number | null
-  radius: number | null
-  raised_in_lat: number | null
-  raised_in_lon: number | null
-  raised_in_radius: number | null
-  genders: string[]
-  education_levels: string[]
-  mbti: string[]
-  name: string | undefined
-  shortBio: boolean | undefined
-  drinks_min: number | undefined
-  drinks_max: number | undefined
+  last_active: string | null | undefined
+  geodbCityIds: string[] | null | undefined
+  lat: number | null | undefined
+  lon: number | null | undefined
+  radius: number | null | undefined
+  raised_in_lat: number | null | undefined
+  raised_in_lon: number | null | undefined
+  raised_in_radius: number | null | undefined
+  genders: string[] | null | undefined
+  education_levels: string[] | null | undefined
+  mbti: string[] | null | undefined
+  name: string | null | undefined
+  shortBio: boolean | null | undefined
+  drinks_min: number | null | undefined
+  drinks_max: number | null | undefined
   // Big Five personality filters (0-100 range)
-  big5_openness_min: number | undefined
-  big5_openness_max: number | undefined
-  big5_conscientiousness_min: number | undefined
-  big5_conscientiousness_max: number | undefined
-  big5_extraversion_min: number | undefined
-  big5_extraversion_max: number | undefined
-  big5_agreeableness_min: number | undefined
-  big5_agreeableness_max: number | undefined
-  big5_neuroticism_min: number | undefined
-  big5_neuroticism_max: number | undefined
+  big5_openness_min: number | null | undefined
+  big5_openness_max: number | null | undefined
+  big5_conscientiousness_min: number | null | undefined
+  big5_conscientiousness_max: number | null | undefined
+  big5_extraversion_min: number | null | undefined
+  big5_extraversion_max: number | null | undefined
+  big5_agreeableness_min: number | null | undefined
+  big5_agreeableness_max: number | null | undefined
+  big5_neuroticism_min: number | null | undefined
+  big5_neuroticism_max: number | null | undefined
 } & {
   [K in OptionTableKey]: string[]
 } & Pick<

@@ -32,10 +32,20 @@ export function groupConsecutive<T, U>(xs: T[], key: (x: T) => U) {
   return result
 }
 
-export function nullifyEmpty<T>(array: T[]) {
+export function undefineEmpty<T>(array: T[]): T[] | undefined {
+  // Undefine a list if empty ([])
+  return fallbackIfEmpty(array, undefined)
+}
+
+export function nullifyEmpty<T>(array: T[]): T[] | null {
   // Nullify a list if empty ([])
-  if (!Array.isArray(array)) return null
-  return array.length > 0 ? array : null
+  return fallbackIfEmpty(array, null)
+}
+
+export function fallbackIfEmpty<T>(array: T[], fallback: any) {
+  // Fallback a list if empty ([])
+  if (!Array.isArray(array)) return fallback
+  return array.length > 0 ? array : fallback
 }
 
 export function nullifyDictValues(array: Record<any, any>) {

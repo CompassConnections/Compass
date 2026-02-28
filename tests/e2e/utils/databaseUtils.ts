@@ -26,9 +26,9 @@ export async function userInformationFromDb(account: any) {
     const queryUserById = `
                 SELECT p.*
                 FROM users AS p
-                WHERE username = $1
+                WHERE name = $1
             `
-    const userResults = await db.query(queryUserById, [account.username])
+    const userResults = await db.query(queryUserById, [account.display_name])
     const queryProfileById = `
                 SELECT p.*
                 FROM profiles AS p

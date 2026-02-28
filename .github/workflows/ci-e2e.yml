@@ -54,7 +54,7 @@ jobs:
           java-version: '21' # Required for firebase-tools@15+
 
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        # if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
         env:
           HUSKY: 0

@@ -6,6 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")"/..
 
 export NEXT_PUBLIC_ISOLATED_ENV=true
+export CI=true
 
 # Colors for output
 RED='\033[0;31m'

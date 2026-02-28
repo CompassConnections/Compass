@@ -1,12 +1,11 @@
 import {test as base} from '@playwright/test'
 
 import {AuthPage} from '../pages/AuthPage'
+import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
-import {AuthPage} from '../pages/AuthPage'
-import { ComatibilityPage } from "../pages/compatibilityPage";
 import {onboarding, OnboardingUser} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 

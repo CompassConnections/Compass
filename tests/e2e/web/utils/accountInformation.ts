@@ -1,28 +1,24 @@
 import {faker} from '@faker-js/faker'
 
 import {
+  Causes,
+  ChildrenExpectation,
   Gender,
   InterestedIn,
-  ChildrenExpectation,
   Interests,
-  Causes,
   Platforms,
-  PoliticalBeliefs,
-  RelationshipStatus,
-  RelationshipStyle,
-  Religion,
 } from '../pages/signUpPage'
 import {
   ConnectionTypeKey,
-  RelationshipStatusKey,
-  RelationshipStyleKey,
-  PoliticalBeliefsKey,
   DietKey,
   EducationKey,
-  ReligionKey,
-  LanguageKey,
   EthnicityKey,
+  LanguageKey,
   PersonalityKey,
+  PoliticalBeliefsKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  ReligionKey,
 } from 'common/choices'
 
 export type OnboardingUser = {
@@ -110,10 +106,10 @@ export const onboarding: OnboardingConfig = {
 
   account_one: () => ({
     // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
-    email: `onboarding+${crypto.randomUUID()}@test.compass`,
+    email: `onboarding+${crypto.randomUUID().slice(0, 8)}@test.compass`,
     password: 'CompassTest',
     display_name: 'Compass Onboarding',
-    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 8)}`,
+    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 4)}`,
     bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
     gender: 'Woman',
     age: '25',

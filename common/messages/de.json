@@ -341,6 +341,7 @@
   "filter.label.pref_gender": "Gesuchtes Geschlecht",
   "filter.label.pref_relation_styles": "Suche",
   "filter.label.wants_kids_strength": "Kinder",
+  "filter.label.has_kids": "Kinder",
   "filter.location": "Wohnhaft",
   "filter.location.any": "überall",
   "filter.location.search_city": "Stadt suchen...",

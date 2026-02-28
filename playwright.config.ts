@@ -1,8 +1,9 @@
 import {defineConfig, devices} from '@playwright/test'
 import {execSync} from 'child_process'
+import {config} from 'dotenv'
 
 // Load static env vars from .env.test
-// config({path: '.env.test', quiet: true})
+config({path: '.env.test', quiet: true})
 
 // Dynamically pull Supabase vars
 function getSupabaseEnv() {
@@ -22,7 +23,7 @@ function getSupabaseEnv() {
 const supabaseEnv = getSupabaseEnv()
 
 // Inject into process.env so Playwright and your app code can read them
-// Object.assign(process.env, supabaseEnv)
+Object.assign(process.env, supabaseEnv)
 
 export default defineConfig({
   testDir: './tests/e2e',

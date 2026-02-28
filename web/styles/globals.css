@@ -8,13 +8,13 @@
   --bnh: env(safe-area-inset-bottom); /* native bottom nav height */
   --tnh: env(safe-area-inset-top); /* native top nav height */
   --hloss: calc(var(--bnh) + var(--tnh)); /* mobile height loss due to native top and bottom bars */
-  --filter-offset: 20px; /* padding for filters on mobile */
+  --filter-offset: 0px; /* padding for filters on mobile */
   touch-action: pan-y;
 }
 
-/*@media (width < 600px) {*/
-/*  --filter-offset: 0px;*/
-/*}*/
+@media (width < 600px) {
+  --filter-offset: 20px;
+}
 
 .safe-top {
   /*padding-top: calc(20px);*/

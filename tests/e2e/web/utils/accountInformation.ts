@@ -12,7 +12,14 @@ import {
   ReligionKey,
 } from 'common/choices'
 
-import {Causes, ChildrenExpectation, Gender, InterestedIn, Interests, Platforms,} from '../pages/signUpPage'
+import {
+  Causes,
+  ChildrenExpectation,
+  Gender,
+  InterestedIn,
+  Interests,
+  Platforms,
+} from '../pages/signUpPage'
 
 export type OnboardingUser = {
   email: string
@@ -133,7 +140,7 @@ export const onboarding: OnboardingConfig = {
       university: 'Open-Source University',
       job_title: 'Unemployed',
       company: 'Home',
-      work_area: ['Living Room', 'University'],
+      work_area: ['Engineering', 'Academia'],
       beliefs: {
         political: {
           belief: 'Green / Eco-Socialist',

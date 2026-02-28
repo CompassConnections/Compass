@@ -133,7 +133,7 @@ export const onboarding: OnboardingConfig = {
       university: 'Open-Source University',
       job_title: 'Unemployed',
       company: 'Home',
-      work_area: ['Engineering', 'Academia'],
+      work_area: ['Living Room', 'University'],
       beliefs: {
         political: {
           belief: 'Green / Eco-Socialist',

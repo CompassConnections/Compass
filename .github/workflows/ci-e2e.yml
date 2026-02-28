@@ -2,9 +2,9 @@ name: E2E Tests
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   e2e:
@@ -39,7 +39,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Start Supabase # optional step, as if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
+      - name: Start Supabase # optional step: indeed, if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
         run: |
           echo "::group::Supabase start (docker pull logs)"
           npx supabase start
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: tests/reports/playwright-report/
           retention-days: 7
 
       - name: Upload test results

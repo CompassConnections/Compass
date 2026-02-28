@@ -11,6 +11,7 @@ export async function login(email: string, password: string) {
       returnSecureToken: true,
     },
   )
+  console.log({login})
   return login
 }
 

@@ -76,7 +76,7 @@ jobs:
           fi
 
       - name: Start Supabase
-        run: npx supabase start
+        run: ./scripts/supabase_start.sh
 
       - name: Save Supabase Docker images
         run: |

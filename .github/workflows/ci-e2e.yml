@@ -16,6 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('yarn.lock') }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,7 +44,7 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
-        
+
       - name: Cache Firebase emulators
         uses: actions/cache@v4
         with:

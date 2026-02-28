@@ -168,12 +168,19 @@ export default function UserPage(props: UserPageProps) {
   const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
 
-  console.log('UserPage state:', {
-    username,
-    fetchedProps,
-    loading,
-    nativeMobile,
-  })
+  console.log(
+    'UserPage state:',
+    JSON.stringify(
+      {
+        username,
+        fetchedProps,
+        loading,
+        nativeMobile,
+      },
+      null,
+      2,
+    ),
+  )
 
   useEffect(() => {
     if (nativeMobile) {

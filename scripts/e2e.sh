@@ -5,6 +5,8 @@ set -euo pipefail
 # Change to project root
 cd "$(dirname "$0")"/..
 
+export NEXT_PUBLIC_ISOLATED_ENV=true
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -62,8 +64,6 @@ sleep 2  # Give ports time to free up
 # Build backend (required?)
 #./scripts/build_api.sh
 
-print_status "Supabase started at: $DATABASE_URL"
-
 # Install Playwright browsers
 print_status "Installing Playwright browsers..."
 npx playwright install chromium # --with-deps
@@ -86,6 +86,8 @@ STATUS_JSON=$(supabase status --output json)
 export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
 export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')
+
+print_status "Supabase started at: $DATABASE_URL"
 
 echo "Supabase env vars:"
 echo $NEXT_PUBLIC_SUPABASE_URL

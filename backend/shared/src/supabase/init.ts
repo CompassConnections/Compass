@@ -60,6 +60,14 @@ const newClient = (
     console.log('Creating Supabase direct client')
   }
 
+  if (!databaseUrl && process.env.NEXT_PUBLIC_ISOLATED_ENV) {
+    throw new Error(
+      `You are running isolated tests (NEXT_PUBLIC_ISOLATED_ENV=true), so you do not want to call the remote supabase. ${{
+        databaseUrl,
+      }}`,
+    )
+  }
+
   const config: any = databaseUrl
     ? {
         // Use connection string for local/dev Postgres

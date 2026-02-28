@@ -270,7 +270,8 @@ describe('functionUnderTest', () => {
 
 ###### Modules
 
-When mocking modules it's important to verify what was returned if applicable, the amount of times said module was called and what it was called with.
+When mocking modules it's important to verify what was returned if applicable, the amount of times said module was
+called and what it was called with.
 
 ```tsx
 //functionFile.ts
@@ -285,6 +286,7 @@ export const functionUnderTest = async (param) => {
 //testFile.unit.test.ts
 import {functionUnderTest} from 'path/to/function'
 import {module as mockedDep} from 'path/to/module'
+
 jest.mock('path/to/module')
 
 /**
@@ -346,13 +348,15 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
+
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
 When mocking modules, you can use `jest.spyOn()` instead of `jest.mock()`.
 
 - `jest.mock()` mocks the entire module, which is ideal for external dependencies like Axios or database clients.
-- `jest.spyOn()` mocks specific methods while keeping the real implementation for others. It can also be used to observe how a real method is called without changing its behavior.
+- `jest.spyOn()` mocks specific methods while keeping the real implementation for others. It can also be used to observe
+  how a real method is called without changing its behavior.
   - also replaces the need to have `jest.mock()` at the top of the file.
 
 ```tsx
@@ -372,7 +376,8 @@ expect(mockModule.module).toBeCalledWith(mockParam)
 
 ###### Dependencies
 
-Mocking dependencies allows you to test `your code’s` logic in isolation, without relying on third-party services or external functionality.
+Mocking dependencies allows you to test `your code’s` logic in isolation, without relying on third-party services or
+external functionality.
 
 ```tsx
 //functionFile.ts
@@ -700,6 +705,72 @@ Use this priority order for selecting elements in Playwright tests:
    ```
 
 This hierarchy mirrors how users actually interact with your application, making tests more reliable and meaningful.
+
+### Setting up test data
+
+Since the tests run in parallel (i.e., at the same time) and share the same database and Firebase emulator, it can
+create issues where one tests edits or deletes data that another test is using, hence breaking that test.
+
+The standard solution for shared data is **test isolation via unique data per test**. Each test generates its own unique
+identifiers so
+they never touch each other's data.
+
+**1. Use unique emails/username/IDs per test**
+
+Emails and usernames must be unique, so you must create different ones for each test. All the other info can be copied
+into users across different tests. By copy, we mean that a template can be used (for the bio for example) to seed
+accounts in different tests, but they must be cloned (not pointing to the same variables).
+
+```js
+const testId = crypto.randomUUID()
+const email = `test+${testId}@test.compass`
+const username = `user_${testId}`
+```
+
+This way no two tests share the same user, so deletes/reads never conflict.
+
+**2. Cleanup only your own data**
+
+Each test must fully attend to their own (and only their own) garden, by tracking what it created and cleaning up only
+that:
+
+```js
+afterEach(async () => {
+  await deleteUser(email, password) // only the one this test created
+})
+```
+
+Avoid `deleteAllUsers()` or broad wipes in parallel tests — that's what causes race conditions.
+
+**3. If you must share fixtures, use read-only shared data**
+
+Note that the above applies to written data. For shared data that is read and not modified (like compatibility
+questions), you should set them up once for all tests before any test starts in `seed-test-data.ts` or `beforeAll`.
+
+Seed shared/static data once before all tests, never mutate it in individual tests. Only mutable data
+should be per-test.
+
+**4. Use separate namespaces if the emulators support it (to do)**
+
+Firebase emulator supports multiple projects. You can spin up isolated project IDs per test suite (not per test, that's
+too slow):
+
+```js
+// jest.config.js - per worker
+projectId: `test-${process.env.JEST_WORKER_ID}`
+```
+
+This gives each parallel worker its own emulator namespace, so even aggressive cleanups don't cross workers.
+
+This is not implemented yet, but it will be very userful as the playwright test suite grows.
+
+**Recommended approach in practice:**
+
+- Unique email/username/ID per test → no sharing, no conflict
+- `afterEach` cleans up only own data
+- `beforeAll` seeds any read-only shared fixtures once
+
+This eliminates race conditions without needing locks or sequencing.
 
 ### Example test
 

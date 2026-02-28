@@ -10,6 +10,9 @@ test.describe('when given valid input', () => {
     profilePage,
     testAccount,
   }) => {
+    console.log(
+      `Starting "should successfully complete the onboarding flow" with ${testAccount.username}`,
+    )
     await homePage.gotToHomePage()
     await homePage.clickSignUpButton()
     await authPage.fillEmailField(testAccount.email)
@@ -168,6 +171,9 @@ test.describe('when given valid input', () => {
     profilePage,
     fakerAccount,
   }) => {
+    console.log(
+      `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
+    )
     await homePage.gotToHomePage()
     await homePage.clickSignUpButton()
     await authPage.fillEmailField(fakerAccount.email)
@@ -189,6 +195,7 @@ test.describe('when given valid input', () => {
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
     test.beforeEach(async ({homePage, authPage, fakerAccount}) => {
+      console.log(`Before each with ${fakerAccount.username}`)
       await homePage.gotToHomePage()
       await homePage.clickSignUpButton()
       await authPage.fillEmailField(fakerAccount.email)
@@ -202,6 +209,7 @@ test.describe('when given valid input', () => {
       profilePage,
       fakerAccount,
     }) => {
+      console.log(`Starting "the first time its an option" with ${fakerAccount.username}`)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()
       await onboardingPage.clickContinueButton()
@@ -227,6 +235,7 @@ test.describe('when given valid input', () => {
       profilePage,
       fakerAccount,
     }) => {
+      console.log(`Starting "the second time its an option" with ${fakerAccount.username}`)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()

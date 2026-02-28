@@ -170,10 +170,13 @@ function SelectedFiltersSummary(props: {
         {selectedFilters.map((filter, idx) => (
           <Row
             key={idx}
-            className="items-center gap-1 text-primary-700 px-2 py-1 rounded-full text-sm bg-canvas-50"
+            className="items-center gap-1 text-primary-700 pl-3 pr-2 py-1 rounded-full text-sm bg-gray-100/70 dark:bg-gray-900"
           >
             <span>{filter.label}</span>
-            <button onClick={filter.onClear} className="hover:text-primary-900">
+            <button
+              onClick={filter.onClear}
+              className="hover:text-gray-500 dark:hover:text-gray-50"
+            >
               <XIcon className="h-3 w-3" />
             </button>
           </Row>

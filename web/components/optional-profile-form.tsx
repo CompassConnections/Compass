@@ -511,7 +511,7 @@ export const OptionalProfileUserForm = (props: {
           <Textarea
             data-testid="headline"
             onChange={(e) => setProfile('headline', e.target.value)}
-            className={'w-full md:w-[700px] bg-canvas-50 border rounded-md p-2'}
+            className={'w-full md:w-[700px] bg-canvas-0 border rounded-md p-2'}
             value={profile['headline'] ?? undefined}
             maxLength={250}
           />

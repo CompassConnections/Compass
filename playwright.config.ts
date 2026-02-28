@@ -1,9 +1,9 @@
 import {defineConfig, devices} from '@playwright/test'
 import {execSync} from 'child_process'
-import dotenv from 'dotenv'
+import {config} from 'dotenv'
 
 // Load static env vars from .env.test
-dotenv.config({path: '.env.test', quiet: true})
+config({path: '.env.test', quiet: true})
 
 // Dynamically pull Supabase vars
 function getSupabaseEnv() {

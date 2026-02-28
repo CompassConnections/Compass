@@ -90,68 +90,74 @@ type OnboardingConfig = {
 
 export const onboarding: OnboardingConfig = {
   // Use a function so email is unique per test call
-  faker_account: () => ({
-    email: `faker+${crypto.randomUUID().slice(0, 8)}@test.com`,
-    password: faker.internet.password(),
-    display_name: faker.internet.displayName(),
-    username: `user_${crypto.randomUUID().slice(0, 8)}`,
-  }),
+  faker_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `faker+${id}@test.com`,
+      password: faker.internet.password(),
+      display_name: faker.internet.displayName(),
+      username: `user_${id}`,
+    }
+  },
 
-  account_one: () => ({
-    // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
-    email: `onboarding+${crypto.randomUUID().slice(0, 8)}@test.compass`,
-    password: 'CompassTest',
-    display_name: 'Compass Onboarding',
-    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 4)}`, // username max length is 25 (see /create-user)
-    bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
-    gender: 'Woman',
-    age: '25',
-    height: {
-      feet: '6',
-      inches: '0',
-      centimeters: '182.88',
-    },
-    ethnicity_origin: 'South/Southeast Asian',
-    interested_in: 'Men',
-    Interested_in_ages: {
-      min: '20',
-      max: '30',
-    },
-    connection_type: 'Relationship',
-    relationship_status: 'In open relationship',
-    relationship_style: 'Open Relationship',
-    number_of_kids: '2',
-    children_expectation: ['Neutral', 2],
-    interests: ['Chess', 'Eating'],
-    causes: ['Animal Rights', 'Free Spotify'],
-    education_level: 'Bachelors',
-    university: 'Open-Source University',
-    job_title: 'Unemployed',
-    company: 'Home',
-    work_area: ['Engineering', 'Academia'],
-    beliefs: {
-      political: {
-        belief: 'Green / Eco-Socialist',
-        details: 'This will be details',
+  account_one: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
+      email: `onboarding+${id}@test.compass`,
+      password: 'CompassTest',
+      display_name: 'Compass Onboarding',
+      username: `TheGreatOnboarding_${id}`, // username max length is 25 (see /create-user)
+      bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
+      gender: 'Woman',
+      age: '25',
+      height: {
+        feet: '6',
+        inches: '0',
+        centimeters: '182.88',
       },
-      religious: {
-        belief: 'Shinto',
-        details: 'This will be details',
+      ethnicity_origin: 'South/Southeast Asian',
+      interested_in: 'Men',
+      Interested_in_ages: {
+        min: '20',
+        max: '30',
       },
-    },
-    personality_type: 'ENFJ',
-    big_five_personality_traits: {
-      openness: 43,
-    },
-    diet: 'Omnivore',
-    is_smoker: false,
-    alcohol_consumed_per_month: '4',
-    languages: ['Akan', 'Cebuano'],
-    social_media: [
-      {
-        platform: 'Bluesky',
-        urlOrUsername: 'TheGreatConnection',
+      connection_type: 'Relationship',
+      relationship_status: 'In open relationship',
+      relationship_style: 'Open Relationship',
+      number_of_kids: '2',
+      children_expectation: ['Neutral', 2],
+      interests: ['Chess', 'Eating'],
+      causes: ['Animal Rights', 'Free Spotify'],
+      education_level: 'Bachelors',
+      university: 'Open-Source University',
+      job_title: 'Unemployed',
+      company: 'Home',
+      work_area: ['Engineering', 'Academia'],
+      beliefs: {
+        political: {
+          belief: 'Green / Eco-Socialist',
+          details: 'This will be details',
+        },
+        religious: {
+          belief: 'Shinto',
+          details: 'This will be details',
+        },
       },
-    ],
-  }),
+      personality_type: 'ENFJ',
+      big_five_personality_traits: {
+        openness: 43,
+      },
+      diet: 'Omnivore',
+      is_smoker: false,
+      alcohol_consumed_per_month: '4',
+      languages: ['Akan', 'Cebuano'],
+      social_media: [
+        {
+          platform: 'Bluesky',
+          urlOrUsername: 'TheGreatConnection',
+        },
+      ],
+    }
+  },
 }

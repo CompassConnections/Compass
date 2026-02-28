@@ -1,3 +1,4 @@
+import {IS_LOCAL} from 'common/hosting/constants'
 import {sleep} from 'common/util/time'
 import {type CreateEmailOptions, CreateEmailRequestOptions, Resend} from 'resend'
 import {log} from 'shared/utils'
@@ -12,7 +13,7 @@ export const sendEmail = async (
   const resend = getResend()
   console.debug(resend, payload, options)
 
-  const skip = false
+  const skip = IS_LOCAL
   if (skip) {
     console.warn('Skipping email send')
     return null

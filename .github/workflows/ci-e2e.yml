@@ -16,7 +16,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('firebase.json') }}
+          restore-keys: firebase-emulators-
+
+      - name: Cache Docker layers
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('supabase/config.toml') }}
+
       - name: Cache node_modules
+        id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
@@ -34,23 +47,14 @@ jobs:
           distribution: 'temurin'
           java-version: '21' # Required for firebase-tools@15+
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+        env:
+          HUSKY: 0
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
-
-      - name: Cache Firebase emulators
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/firebase/emulators
-          key: firebase-emulators-${{ hashFiles('firebase.json') }}
-          restore-keys: firebase-emulators-
 
       - name: Start Supabase # optional step: indeed, if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
         run: |

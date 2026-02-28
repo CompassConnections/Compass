@@ -23,10 +23,10 @@ jobs:
           key: firebase-emulators-${{ hashFiles('firebase.json') }}
           restore-keys: firebase-emulators-
 
-      - name: Cache Docker layers
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('supabase/config.toml') }}
+      #      - name: Cache Docker layers
+      #        uses: ScribeMD/docker-cache@0.5.0
+      #        with:
+      #          key: docker-${{ runner.os }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -56,11 +56,31 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Start Supabase # optional step: indeed, if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
+      - name: Cache Supabase Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/supabase-docker
+          key: supabase-docker-${{ hashFiles('supabase/config.toml') }}
+
+      - name: Load cached Docker images
         run: |
-          echo "::group::Supabase start (docker pull logs)"
-          npx supabase start
-          echo "::endgroup::"
+          if [ -d /tmp/supabase-docker ]; then
+            for tar in /tmp/supabase-docker/*.tar; do
+              [ -f "$tar" ] && docker load -i "$tar"
+            done
+          fi
+
+      - name: Start Supabase
+        run: npx supabase start
+
+      - name: Save Supabase Docker images
+        run: |
+          mkdir -p /tmp/supabase-docker
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E 'supabase|postgrest|gotrue|realtime|storage' \
+            | grep -v '<none>' \
+            | xargs -I{} sh -c \
+              'docker save {} -o /tmp/supabase-docker/$(echo {} | tr "/:" "--").tar'
 
       - name: Run E2E tests
         env:

@@ -9,6 +9,7 @@ import {
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES,
+  LAST_ONLINE_CHOICES,
 } from 'common/choices'
 import {FilterFields, initialFilters} from 'common/filters'
 import {hasKidsNames} from 'common/has-kids'
@@ -40,6 +41,7 @@ const filterLabels: Record<string, string> = {
   political_beliefs: 'Political views',
   languages: '',
   mbti: 'MBTI',
+  last_active: 'Active',
 }
 
 export type locationType = {
@@ -141,6 +143,12 @@ export function formatFilters(
         `profile.smoker.${value ? 'yes' : 'no'}`,
         value ? 'Smoker' : 'Non-smoker',
       )
+    else if (key === 'last_active')
+      stringValue = translate(
+        `filter.last_active.${value}`,
+        LAST_ONLINE_CHOICES[value as keyof typeof LAST_ONLINE_CHOICES] ?? value,
+      )
+
     if (Array.isArray(value)) {
       if (choicesIdsToLabels[key]) {
         value = value.map((id) => choicesIdsToLabels[key][id])

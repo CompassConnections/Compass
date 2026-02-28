@@ -354,6 +354,7 @@
   "filter.relationship_status.any": "Tout statut romantique",
   "filter.last_active.any": "N'importe quand",
   "filter.last_active.label": "Actif",
+  "filter.label.last_active": "Actif",
   "filter.last_active.today": "Aujourd'hui",
   "filter.last_active.3days": "3 derniers jours",
   "filter.last_active.week": "Dernière semaine",

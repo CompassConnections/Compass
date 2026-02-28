@@ -38,6 +38,13 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
+        
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('firebase.json') }}
+          restore-keys: firebase-emulators-
 
       - name: Start Supabase # optional step: indeed, if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
         run: |

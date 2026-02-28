@@ -1,22 +1,22 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
   ConnectionTypeKey,
-  RelationshipStatusKey,
-  RelationshipStyleKey,
-  PoliticalBeliefsKey,
   DietKey,
   EducationKey,
-  ReligionKey,
-  LanguageKey,
   EthnicityKey,
+  LanguageKey,
   PersonalityKey,
+  PoliticalBeliefsKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  ReligionKey,
 } from 'common/choices'
 
 export type Gender = 'Woman' | 'Man' | 'Other'
 export type InterestedIn = 'Women' | 'Men' | 'Other'
 export type ChildrenExpectation =
   | ['Strongly against', 0]
-  | ['Against',1 ]
+  | ['Against', 1]
   | ['Neutral', 2]
   | ['For', 3]
   | ['Strongly for', 4]
@@ -291,8 +291,8 @@ export class SignUpPage {
   }
 
   async setWantChildrenExpectation(expectation: ChildrenExpectation | undefined) {
-    if (!expectation) return;
-    const [label, value] = expectation;
+    if (!expectation) return
+    const [label, value] = expectation
     if (label === 'Strongly against') {
       await expect(this.stronglyDisagreeOnWantingKids).toBeVisible()
       await this.stronglyDisagreeOnWantingKids.click()
@@ -421,7 +421,10 @@ export class SignUpPage {
     }
   }
 
-  async setReligiousBeliefs(religiousBeliefs?: ReligionKey | undefined, details?: string | undefined) {
+  async setReligiousBeliefs(
+    religiousBeliefs?: ReligionKey | undefined,
+    details?: string | undefined,
+  ) {
     if (religiousBeliefs && religiousBeliefs === 'Other') {
       await expect(
         this.page
@@ -645,11 +648,11 @@ export class SignUpPage {
 
   async setLanguages(language: LanguageKey[] | undefined) {
     if (!language || language.length === 0) return
-    await this.page.getByRole('checkbox', {name: `English`}).click();
+    await this.page.getByRole('checkbox', {name: `English`}).click()
     for (let i = 0; i < language.length; i++) {
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible();
-      await this.page.getByRole('checkbox', {name: `${language[i]}`}).click();
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeChecked();
+      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible()
+      await this.page.getByRole('checkbox', {name: `${language[i]}`}).click()
+      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeChecked()
     }
   }
 

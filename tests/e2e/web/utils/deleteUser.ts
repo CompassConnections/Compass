@@ -1,14 +1,11 @@
-import { login, deleteAccount } from "../../utils/firebaseUtils";
-import { deleteFromDb } from "../../utils/databaseUtils";
-import axios from 'axios'
-
-import {config} from '../SPEC_CONFIG'
+import {deleteFromDb} from '../../utils/databaseUtils'
+import {deleteAccount, login} from '../../utils/firebaseUtils'
 
 export async function deleteUser(email: string, password: string) {
   try {
-    const loginInfo = await login(email, password);
-    await deleteFromDb(loginInfo.data.localId);
-    await deleteAccount(loginInfo);
+    const loginInfo = await login(email, password)
+    await deleteFromDb(loginInfo.data.localId)
+    await deleteAccount(loginInfo)
   } catch (err: any) {
     // Skip deletion if user doesn't exist or other auth errors occur
     if (
@@ -20,4 +17,4 @@ export async function deleteUser(email: string, password: string) {
     }
     console.log(err)
   }
-};
+}

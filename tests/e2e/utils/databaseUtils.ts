@@ -5,6 +5,11 @@ export async function deleteFromDb(user_id: string) {
   try {
     const deleteEntryById = `DELETE FROM users WHERE id = $1 RETURNING *`
     const result = await db.query(deleteEntryById, [user_id])
+
+    if (!result.length) {
+      throw new Error(`No user found with id: ${user_id}`)
+    }
+
     console.log('Deleted data: ', {
       id: result[0].id,
       name: result[0].name,

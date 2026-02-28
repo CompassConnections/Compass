@@ -119,7 +119,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   }
 
   const yourFilters: Partial<FilterFields> = {
-    pref_gender: you?.gender?.length ? [you.gender] : undefined,
+    // pref_gender: you?.gender?.length ? [you.gender] : undefined,
     genders: you?.pref_gender?.length ? you.pref_gender : undefined,
     education_levels: you?.education_level ? [you.education_level] : undefined,
     pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
@@ -150,9 +150,9 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
       filters.genders?.length ? filters.genders : undefined,
       yourFilters.genders?.length ? yourFilters.genders : undefined,
     ) &&
-    ((!you.gender && !filters.pref_gender?.length) ||
-      (filters.pref_gender?.length == 1 &&
-        isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))) &&
+    // ((!you.gender && !filters.pref_gender?.length) ||
+    //   (filters.pref_gender?.length == 1 &&
+    //     isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))) &&
     ((!you.education_level && !filters.education_levels?.length) ||
       (filters.education_levels?.length == 1 &&
         isEqual(

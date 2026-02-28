@@ -94,7 +94,7 @@ function MyApp(props: AppProps<PageProps>) {
   const router = useRouter()
 
   const [locale, setLocaleState] = useState<string>(getLocale())
-  console.log('_app locale', locale)
+  // console.log('_app locale', locale)
   const setLocale = (newLocale: string) => {
     console.log('setLocale', newLocale)
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`

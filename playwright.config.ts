@@ -1,9 +1,8 @@
 import {defineConfig, devices} from '@playwright/test'
 import {execSync} from 'child_process'
-import {config} from 'dotenv'
 
 // Load static env vars from .env.test
-config({path: '.env.test', quiet: true})
+// config({path: '.env.test', quiet: true})
 
 // Dynamically pull Supabase vars
 function getSupabaseEnv() {
@@ -23,13 +22,15 @@ function getSupabaseEnv() {
 const supabaseEnv = getSupabaseEnv()
 
 // Inject into process.env so Playwright and your app code can read them
-Object.assign(process.env, supabaseEnv)
+// Object.assign(process.env, supabaseEnv)
 
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  // No retries by default (even in CI) because it slows the CI pipeline and masks real bugs
+  // If there is a known intermittent browser timing issue for some tests, it's fine to give 1 retry to those flaky tests
+  retries: process.env.CI ? 0 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html', {outputFolder: `tests/reports/playwright-report`, open: 'on-failure'}]],
   use: {

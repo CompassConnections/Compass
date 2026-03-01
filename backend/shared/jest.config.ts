@@ -15,12 +15,18 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json'],
   clearMocks: true,
 
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.test.json',
-    },
-  },
-
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
   silent: true,
+}
+
+export default {
+  preset: 'ts-jest',
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: './tsconfig.jest.json',
+      },
+    ],
+  },
 }

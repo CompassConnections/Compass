@@ -3883,7 +3883,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-history/-/extension-history-2.27.2.tgz#43c6d976c521dc1cf2d4a0707df7d8328be0e9a9"
   integrity sha512-+hSyqERoFNTWPiZx4/FCyZ/0eFqB9fuMdTB4AC/q9iwu3RNWAQtlsJg5230bf/qmyO6bZxRUc0k8p4hrV6ybAw==
 
-"@tiptap/extension-horizontal-rule@2.10.4", "@tiptap/extension-horizontal-rule@^2.10.4":
+"@tiptap/extension-horizontal-rule@^2.10.4":
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-2.10.4.tgz#a2099c156c4c691f4951def225e1102ad1f69f22"
   integrity sha512-s9ycm/BOGoW3L0Epnj541vdngHbFbMM488HoODd1CmVSw1C+wBWFgsukgqKjlyE3VGfZXuSb1ur9zinW0RiLJQ==
@@ -4608,6 +4608,13 @@
   integrity sha512-vDg9PZ/zi+Nqp6boSOT7plNuthRugEKixDv5sFTIpkE89MmNtEArAShI4mxuX2+UrLEe9pxC1vm2cjm9YlWbJw==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/node@25.3.3":
+  version "25.3.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.3.3.tgz#605862544ee7ffd7a936bcbf0135a14012f1e549"
+  integrity sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==
+  dependencies:
+    undici-types "~7.18.0"
 
 "@types/node@^22.8.7":
   version "22.18.3"
@@ -13320,7 +13327,7 @@ pg@8.11.3:
   optionalDependencies:
     pg-cloudflare "^1.1.1"
 
-pg@8.18.0, pg@8.x:
+pg@8.18.0:
   version "8.18.0"
   resolved "https://registry.yarnpkg.com/pg/-/pg-8.18.0.tgz#e9ee214206f5d9231240f1b82f22d2fa9de5cb75"
   integrity sha512-xqrUDL1b9MbkydY/s+VZ6v+xiMUmOUk7SS9d/1kpyQxoJ6U9AO1oIJyUWVZojbfe5Cc/oluutcgFG4L9RDP1iQ==
@@ -13836,7 +13843,7 @@ prosemirror-menu@^1.2.4:
     prosemirror-history "^1.0.0"
     prosemirror-state "^1.0.0"
 
-prosemirror-model@1.x, prosemirror-model@^1.0.0, prosemirror-model@^1.20.0, prosemirror-model@^1.21.0, prosemirror-model@^1.23.0, prosemirror-model@^1.25.0, prosemirror-model@^1.25.4:
+prosemirror-model@^1.0.0, prosemirror-model@^1.20.0, prosemirror-model@^1.21.0, prosemirror-model@^1.23.0, prosemirror-model@^1.25.0, prosemirror-model@^1.25.4:
   version "1.25.4"
   resolved "https://registry.yarnpkg.com/prosemirror-model/-/prosemirror-model-1.25.4.tgz#8ebfbe29ecbee9e5e2e4048c4fe8e363fcd56e7c"
   integrity sha512-PIM7E43PBxKce8OQeezAs9j4TP+5yDpZVbuurd1h5phUxEKIu+G2a+EUZzIC5nS1mJktDJWzbqS23n1tsAf5QA==
@@ -16528,6 +16535,11 @@ undici-types@~6.21.0:
   version "6.21.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
   integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
+
+undici-types@~7.18.0:
+  version "7.18.2"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.18.2.tgz#29357a89e7b7ca4aef3bf0fd3fd0cd73884229e9"
+  integrity sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"

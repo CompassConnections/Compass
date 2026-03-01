@@ -9,5 +9,5 @@
       "headers": [{"key": "Cache-Control", "value": "no-cache"}]
     }
   ],
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- web/ common/"
+  "ignoreCommand": "git diff $VERCEL_GIT_PREVIOUS_SHA $VERCEL_GIT_COMMIT_SHA --quiet -- web/ common/"
 }

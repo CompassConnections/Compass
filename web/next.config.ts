@@ -1,3 +1,4 @@
+import {IS_LOCAL} from 'common/hosting/constants'
 import type {NextConfig} from 'next'
 
 const isAppBuild = !!process.env.NEXT_PUBLIC_WEBVIEW
@@ -43,7 +44,7 @@ const nextConfig: NextConfig = {
   // },
   skipTrailingSlashRedirect: true,
   images: {
-    unoptimized: isAppBuild,
+    unoptimized: isAppBuild || IS_LOCAL,
     dangerouslyAllowSVG: true,
     remotePatterns: [
       {hostname: 'martinbraquet.com'},
@@ -58,6 +59,8 @@ const nextConfig: NextConfig = {
       {hostname: 'localhost'},
       {hostname: '127.0.0.1'},
     ],
+    // Allow private IPs for local OG image generation
+    minimumCacheTTL: 0,
   },
   webpack: (config, {dev}) => {
     // console.log({dev})

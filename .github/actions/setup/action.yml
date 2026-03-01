@@ -8,8 +8,14 @@ runs:
       id: cache-node-modules
       uses: actions/cache@v4
       with:
-        path: node_modules
-        key: node-modules-${{ hashFiles('yarn.lock') }}
+        path: |
+          node_modules
+          web/node_modules
+          backend/api/node_modules
+          backend/shared/node_modules
+          backend/email/node_modules
+          common/node_modules
+        key: node-modules-${{ hashFiles('**/yarn.lock') }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4

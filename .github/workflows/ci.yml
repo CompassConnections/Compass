@@ -1,4 +1,4 @@
-name: Jest Tests
+name: CI
 
 on:
   push:
@@ -7,59 +7,39 @@ on:
     branches: [ main ]
 
 jobs:
-  ci:
-    name: Jest Tests
+  lint:
+    name: Lint & Typecheck
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('yarn.lock') }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'yarn'
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-
-      # In case yarn install (and thus post-install) is skipped
-      - name: Post-install
-        run: yarn postinstall
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Lint
         run: yarn lint
 
-      - name: Type check
+      - name: Typecheck
         run: yarn typecheck
+
+  test:
+    name: Jest Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Run Jest tests
         env:
           NEXT_PUBLIC_FIREBASE_ENV: DEV
         run: |
           yarn test:coverage
-      #          npm install -g lcov-result-merger
-      #          mkdir coverage
-      #          lcov-result-merger \
-      #          "backend/api/coverage/lcov.info" \
-      #          "backend/shared/coverage/lcov.info" \
-      #          "backend/email/coverage/lcov.info" \
-      #          "common/coverage/lcov.info" \
-      #          "web/coverage/lcov.info" \
-      #          > coverage/lcov.info
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        if: success()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: |
@@ -71,5 +51,3 @@ jobs:
           flags: unit
           fail_ci_if_error: true
           slug: CompassConnections/Compass
-        env:
-          CI: true

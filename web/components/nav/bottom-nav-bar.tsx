@@ -271,7 +271,7 @@ export function MobileSidebar(props: {
             leaveTo="opacity-0"
           >
             {/* background cover */}
-            <div className="bg-canvas-100/75 fixed inset-0" />
+            <div className="bg-canvas-100/75 fixed inset-0" onClick={() => setSidebarOpen(false)} />
           </Transition.Child>
           <Transition.Child
             as={Fragment}

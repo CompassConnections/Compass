@@ -226,7 +226,7 @@ export const Search = forwardRef<
         <Row className="gap-2">
           <Select
             ref={sortSelectRef}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               if (isOrderBy(e.target.value)) {
                 updateFilter({
                   orderBy: e.target.value,

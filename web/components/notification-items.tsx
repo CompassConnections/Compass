@@ -297,7 +297,7 @@ export function AvatarNotificationIcon(props: {
       <Link
         href={href}
         target={href.startsWith('http') ? '_blank' : undefined}
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation}
       >
         <Avatar
           username={sourceUserName}

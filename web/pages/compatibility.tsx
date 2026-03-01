@@ -116,7 +116,7 @@ export default function CompatibilityPage() {
             value={keyword}
             placeholder={t('compatibility.search_placeholder', 'Search questions and answers...')}
             className={'w-full max-w-xs mb-4'}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setKeyword(e.target.value)
             }}
           />

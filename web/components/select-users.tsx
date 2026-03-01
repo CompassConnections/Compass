@@ -82,7 +82,7 @@ export function SelectUsers(props: {
               name="user name"
               id="user name"
               value={query}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               placeholder="Search users..."
             />
           </Col>

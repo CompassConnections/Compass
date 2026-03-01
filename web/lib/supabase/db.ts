@@ -39,7 +39,7 @@ export function updateSupabaseAuth(token?: string) {
       // db['rest'].headers['Authorization']
       db['realtime'].setAuth(null)
     } else {
-      db['rest'].headers['Authorization'] = `Bearer ${token}`
+      db['rest'].headers.set('Authorization', `Bearer ${token}`)
       db['realtime'].setAuth(token)
     }
   }

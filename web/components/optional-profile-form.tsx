@@ -353,7 +353,7 @@ export const OptionalProfileUserForm = (props: {
             min={18}
             max={100}
             error={!!ageError}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value ? Number(e.target.value) : null
               if (value !== null && value < 18) {
                 setAgeError(
@@ -378,7 +378,7 @@ export const OptionalProfileUserForm = (props: {
               <Input
                 type="number"
                 data-testid="height-feet"
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
                   } else {
@@ -397,7 +397,7 @@ export const OptionalProfileUserForm = (props: {
               <Input
                 type="number"
                 data-testid="height-inches"
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.value === '') {
                     setHeightInches(undefined)
                   } else {
@@ -419,7 +419,7 @@ export const OptionalProfileUserForm = (props: {
               <Input
                 type="number"
                 data-testid="height-centimeters"
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.value === '') {
                     setHeightFeet(undefined)
                     setHeightInches(undefined)
@@ -534,7 +534,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="keywords"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setKeywordsString(e.target.value)
               const keywords = e.target.value
                 .split(',')
@@ -579,7 +579,7 @@ export const OptionalProfileUserForm = (props: {
               <Select
                 data-testid="pref-age-min"
                 value={profile['pref_age_min'] ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   const newMin = e.target.value ? Number(e.target.value) : 18
                   const currentMax = profile['pref_age_max'] ?? 100
                   setProfile('pref_age_min', Math.min(newMin, currentMax))
@@ -599,7 +599,7 @@ export const OptionalProfileUserForm = (props: {
               <Select
                 data-testid="pref-age-max"
                 value={profile['pref_age_max'] ?? ''}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   const newMax = e.target.value ? Number(e.target.value) : 100
                   const currentMin = profile['pref_age_min'] ?? 18
                   setProfile('pref_age_max', Math.max(newMax, currentMin))
@@ -671,7 +671,7 @@ export const OptionalProfileUserForm = (props: {
               <Input
                 data-testid="current-number-of-kids"
                 type="number"
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const value = e.target.value === '' ? null : Number(e.target.value)
                   setProfile('has_kids', value)
                 }}
@@ -749,7 +749,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="university"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('university', e.target.value)
             }
             className={'w-52'}
@@ -770,7 +770,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="job-title"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('occupation_title', e.target.value)
             }
             className={'w-52'}
@@ -783,7 +783,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="company"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('company', e.target.value)
             }
             className={'w-52'}
@@ -816,7 +816,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="political-belief-details"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('political_details', e.target.value)
             }
             className={'w-full sm:w-96'}
@@ -840,7 +840,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="religious-belief-details"
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('religious_beliefs', e.target.value)
             }
             className={'w-full sm:w-96'}
@@ -940,7 +940,7 @@ export const OptionalProfileUserForm = (props: {
           <Input
             data-testid="alcohol-consumed-per-month"
             type="number"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value === '' ? null : Number(e.target.value)
               setProfile('drinks_per_month', value)
             }}
@@ -974,7 +974,7 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx(labelClassName)}>Birthplace</label>
           <Input
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setProfileState('born_in_location', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileState('born_in_location', e.target.value)}
             className={'w-52'}
             value={profile['born_in_location'] ?? undefined}
           />
@@ -1008,7 +1008,7 @@ export const OptionalProfileUserForm = (props: {
                   <Input
                     type="text"
                     value={value!}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       updateUserLink(platform, e.target.value)
                     }
                     className="col-span-2 sm:col-span-1"
@@ -1036,9 +1036,7 @@ export const OptionalProfileUserForm = (props: {
                   : t('profile.optional.site_url', 'Site URL')
               }
               value={newLinkValue}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setNewLinkValue(e.target.value)
-              }
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewLinkValue(e.target.value)}
               // disable password managers
               autoComplete="off"
               data-1p-ignore
@@ -1134,7 +1132,7 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
     <>
       <Input
         value={query}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setQuery(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         placeholder={t('profile.optional.search_city', 'Search city...')}
         onFocus={() => setFocused(true)}
         onBlur={(e) => {

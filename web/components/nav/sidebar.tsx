@@ -1,4 +1,4 @@
-import {LoginIcon, LogoutIcon} from '@heroicons/react/24/outline'
+import {ArrowLeftOnRectangleIcon, ArrowRightOnRectangleIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ANDROID_APP_URL} from 'common/constants'
 import {buildArray} from 'common/util/array'
@@ -98,13 +98,13 @@ const bottomNav = (loggedIn: boolean) =>
     !loggedIn && {
       key: 'nav.sign_in',
       name: 'Sign in',
-      icon: LoginIcon,
+      icon: ArrowRightOnRectangleIcon,
       href: '/signin',
     },
     loggedIn && {
       key: 'nav.sign_out',
       name: 'Sign out',
-      icon: LogoutIcon,
+      icon: ArrowLeftOnRectangleIcon,
       onClick: logout,
     },
   )

@@ -48,7 +48,7 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
         'border-ink-300 text-ink-400 bg-canvas-0 inline-flex flex-row gap-2 rounded-md border p-1 text-sm shadow-sm',
         disabled && 'bg-canvas-50 !cursor-not-allowed',
       )}
-      value={currentChoice}
+      value={currentChoice ?? undefined}
       onChange={setChoice}
       disabled={disabled}
     >

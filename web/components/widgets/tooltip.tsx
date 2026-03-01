@@ -92,7 +92,7 @@ export function Tooltip(props: {
     }
   }, [])
 
-  const {x, y, reference, floating, strategy, middlewareData, context, placement} = useFloating({
+  const {x, y, refs, strategy, middlewareData, context, placement} = useFloating({
     open: open,
     onOpenChange: (next) => {
       if (next) {
@@ -131,7 +131,7 @@ export function Tooltip(props: {
         data-testid={testId}
         suppressHydrationWarning={suppressHydrationWarning}
         className={className}
-        ref={reference}
+        ref={refs.reference as any}
         {...getReferenceProps()}
       >
         {children}
@@ -146,14 +146,14 @@ export function Tooltip(props: {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
         // div attributes
-        role="tooltip"
-        ref={floating}
+        as="div"
+        ref={refs.floating as any}
         style={{position: strategy, top: y ?? 0, left: x ?? 0}}
         className="text-ink-1000 bg-canvas-50 z-20 w-max max-w-xs whitespace-normal rounded px-2 py-1 text-center text-sm font-medium"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}
       >
-        {text}
+        <div role="tooltip">{text}</div>
         <div
           ref={arrowRef}
           className="bg-canvas-50 absolute h-2 w-2 rotate-45"

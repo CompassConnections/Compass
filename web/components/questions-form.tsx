@@ -150,7 +150,7 @@ const QuestionRow = (props: {row: rowFor<'compatibility_prompts'>; user: User}) 
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setForm({...form, integer: Number(e.target.value)})
           }
           value={form.integer ?? undefined}
@@ -211,7 +211,7 @@ export const IndividualQuestionRow = (props: {
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setForm({...form, integer: Number(e.target.value)})
           }
           value={form.integer ?? undefined}

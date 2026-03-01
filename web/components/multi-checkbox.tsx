@@ -118,7 +118,7 @@ export const MultiCheckbox = (props: {
           <Input
             value={newLabel}
             placeholder={addPlaceholder ?? t('multi-checkbox.search_or_add', 'Search or add')}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setNewLabel(e.target.value)
               setError(null)
             }}

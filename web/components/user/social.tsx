@@ -1,4 +1,4 @@
-import {DocumentReportIcon, LinkIcon} from '@heroicons/react/24/solid'
+import {DocumentTextIcon, LinkIcon} from '@heroicons/react/24/solid'
 import {Site} from 'common/socials'
 import {ReactNode} from 'react'
 import {LuBookmark, LuHandshake, LuHeart, LuUsers} from 'react-icons/lu'
@@ -36,7 +36,7 @@ export const PLATFORM_ICONS: {
   okcupid: LuHeart,
   datingdoc: LuHeart,
   friendshipdoc: LuUsers,
-  workdoc: DocumentReportIcon,
+  workdoc: DocumentTextIcon,
   connectiondoc: LuHandshake,
   calendly: TbCalendar,
 }

@@ -24,7 +24,7 @@ export function MyMatchesToggle(props: {
         type="checkbox"
         className="border-ink-300 bg-canvas-0 dark:border-ink-500 text-primary-600 focus:ring-primary-500 h-4 w-4 rounded hover:bg-canvas-200"
         checked={on}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setYourFilters(e.target.checked)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYourFilters(e.target.checked)}
       />
       <label htmlFor={label} className={clsx('text-ink-600 ml-2')}>
         {label}

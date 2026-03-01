@@ -73,7 +73,7 @@ export function UserLink(props: {
     <Link
       href={`/${username}`}
       className={clsx(linkClass, 'inline-flex flex-row items-center gap-1', className)}
-      onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
     >
       {children}
     </Link>

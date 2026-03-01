@@ -1,6 +1,6 @@
 import type {DisplayUser} from 'common/api/user-types'
 import {APIError} from 'common/api/utils'
-import {run} from 'common/supabase/utils'
+import {run, TableName} from 'common/supabase/utils'
 import {MONTH_MS} from 'common/util/time'
 import {api} from 'web/lib/api'
 
@@ -52,16 +52,14 @@ export async function getDisplayUsers(userIds: string[]) {
     db
       .from('users')
       .select(`id, name, username, data->avatarUrl, data->isBannedFromPosting`)
-      .in('id', userIds)
+      .in('id', userIds),
   )
 
   return data as unknown as DisplayUser[]
 }
 
 export async function getProfilesCreations() {
-  const {data} = await run(
-    db.from('profiles').select(`id, created_time`).order('created_time')
-  )
+  const {data} = await run(db.from('profiles').select(`id, created_time`).order('created_time'))
   return data
 }
 
@@ -71,12 +69,12 @@ export async function getCompletedProfilesCreations() {
       .from('profiles')
       .select(`id, created_time`)
       .or(`bio_length.gte.100,occupation_title.not.is.null`)
-      .order('created_time')
+      .order('created_time'),
   )
   return data
 }
 
-export async function getCount(table: string) {
+export async function getCount(table: TableName | 'active_members') {
   if (table == 'private_user_messages') {
     const result = await api('get-messages-count')
     return result.count
@@ -86,13 +84,11 @@ export async function getCount(table: string) {
       db
         .from('user_activity')
         .select('*', {count: 'exact', head: true})
-        .gt('last_online_time', new Date(Date.now() - MONTH_MS).toISOString()) // last month
+        .gt('last_online_time', new Date(Date.now() - MONTH_MS).toISOString()), // last month
     )
     return count
   }
-  const {count} = await run(
-    db.from(table).select('*', {count: 'exact', head: true})
-  )
+  const {count} = await run(db.from(table as any).select('*', {count: 'exact', head: true}))
   return count
 }
 

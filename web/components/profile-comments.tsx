@@ -1,5 +1,5 @@
 import {EyeSlashIcon, FlagIcon} from '@heroicons/react/24/outline'
-import {EllipsisHorizontalIcon, ReplyIcon} from '@heroicons/react/24/solid'
+import {ArrowUturnLeftIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {type Comment, MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
@@ -333,7 +333,7 @@ function CommentActions(props: {
             }}
             className={'text-ink-500'}
           >
-            <ReplyIcon className="h-5 w-5 " />
+            <ArrowUturnLeftIcon className="h-5 w-5 " />
           </IconButton>
         </Tooltip>
       )}

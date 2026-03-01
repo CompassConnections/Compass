@@ -22,7 +22,7 @@ export function Checkbox(props: {
           type="checkbox"
           className="border-ink-300 bg-canvas-0 dark:border-ink-500 text-primary-600 focus:ring-primary-500 h-5 w-5 rounded hover:bg-canvas-300"
           checked={checked}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => toggle(e.target.checked)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => toggle(e.target.checked)}
           disabled={disabled}
         />
         <span

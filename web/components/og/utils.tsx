@@ -38,7 +38,7 @@ function replaceTw(element: ReactNode): ReactNode {
   // pure element
 
   // Replace `className` with `tw` for this element
-  const {props} = element
+  const props = element.props as {className?: string; children?: ReactNode; tw?: string}
   const newProps = {...props}
   if (props.className) {
     newProps.tw = props.className

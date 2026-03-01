@@ -1,5 +1,5 @@
 import {Dialog, Transition} from '@headlessui/react'
-import {MenuAlt3Icon} from '@heroicons/react/24/solid'
+import {Bars3Icon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {User} from 'common/user'
 import Link from 'next/link'
@@ -57,7 +57,7 @@ export function BottomNavBar(props: {navigationOptions: Item[]; sidebarNavigatio
           className={clsx(itemClass, 'relative', sidebarOpen ? selectedItemClass : '')}
           onClick={() => setSidebarOpen(true)}
         >
-          <MenuAlt3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true" />
+          <Bars3Icon className="mx-auto my-1 h-6 w-6" aria-hidden="true" />
           {t('nav.more', 'More')}
         </div>
         <MobileSidebar
@@ -271,7 +271,7 @@ export function MobileSidebar(props: {
             leaveTo="opacity-0"
           >
             {/* background cover */}
-            <Dialog.Overlay className="bg-canvas-100/75 fixed inset-0" />
+            <div className="bg-canvas-100/75 fixed inset-0" />
           </Transition.Child>
           <Transition.Child
             as={Fragment}

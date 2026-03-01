@@ -1,4 +1,4 @@
-import {logApiError, logger} from 'common/lib/logger'
+import {logApiError, logger} from 'common/logger'
 
 describe('logger', () => {
   const originalEnv = process.env.NODE_ENV
@@ -48,6 +48,7 @@ describe('logger', () => {
 
   it('logs debug messages only in development', () => {
     process.env.NODE_ENV = 'production'
+
     const consoleSpy = jest.spyOn(console, 'debug').mockImplementation(() => {})
 
     logger.debug('Debug message')

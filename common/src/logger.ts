@@ -71,7 +71,7 @@ export function logPageView(path: string): void {
 }
 
 const currentLevel = (): LogLevel => {
-  if (IS_PROD) return 'info'
+  if (IS_PROD || process.env.NODE_ENV == 'production') return 'info'
   return 'debug'
 }
 

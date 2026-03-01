@@ -33,7 +33,7 @@ cd web
 
 export NEXT_PUBLIC_WEBVIEW=1
 
-rm -rf .next
+rm -rf .next/* .next/.* 2>/dev/null || true
 
 # Hack to ignore getServerSideProps, getStaticProps and getStaticPaths for mobile webview build
 # as Next.js doesn't support SSG, SSR and ISR on mobile

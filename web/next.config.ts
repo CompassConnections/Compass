@@ -6,7 +6,7 @@ console.log({isAppBuild})
 
 const nextConfig: NextConfig = {
   output: isAppBuild ? 'export' : undefined,
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: !isAppBuild, // no source maps in Android build
   reactStrictMode: true,
   modularizeImports: {
     // heroicons v1 transforms removed — v2 has tree-shaking built in

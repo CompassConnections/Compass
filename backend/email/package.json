@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "build": "tsc -b",
+    "predev": "cp next.config.js .react-email/next.config.js",
     "dev": "email dev --port 3001",
+    "postinstall": "echo 'Setting up email dev, stop the process when it says that react email is ready and then run yarn dev' && yarn dev",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
     "test": "jest --config jest.config.ts --passWithNoTests",

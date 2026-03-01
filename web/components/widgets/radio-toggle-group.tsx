@@ -35,6 +35,7 @@ export function RadioToggleGroup(props: {
                 setChoice(-1)
               }
             }}
+            aria-label={choiceKey}
             key={choiceKey}
             value={choice}
             className={({disabled}) =>

@@ -1,6 +1,6 @@
 # Web Application
 
-The Compass web application built with Next.js, React, and TypeScript.
+The Compass web application built with Next.js, React and TypeScript.
 
 ## Overview
 

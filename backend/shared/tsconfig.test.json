@@ -11,8 +11,9 @@
       "shared/*": ["src/*"],
       "common/*": ["../../common/src/*"],
       "email/*": ["../email/emails/*"]
-    }
+    },
+    "isolatedModules": true
   },
-  "include": ["tests/**/*.ts", "src/**/*.ts"],
+  "include": ["tests/**/*.ts", "../../common/src/**/*.ts", "src/**/*.ts", "jest.config.ts"],
   "exclude": []
 }

@@ -1,8 +1,9 @@
 import {ImageResponse} from '@vercel/og'
-import {ImageResponseOptions} from '@vercel/og/dist/types'
 import {ogProps} from 'common/profiles/og-image'
 import {NextRequest} from 'next/server'
 import {classToTw} from 'web/components/og/utils'
+
+type ImageResponseOptions = ConstructorParameters<typeof ImageResponse>[1]
 
 export const config = {runtime: 'edge'}
 

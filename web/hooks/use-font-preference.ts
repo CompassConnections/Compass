@@ -34,6 +34,6 @@ export const applyFontPreference = (font: FontOption) => {
 
 const getStoredFontPreference = (): FontOption => {
   if (typeof window === 'undefined') return 'atkinson'
-  const theme = JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? 'atkinson'
-  return theme.value ?? (theme as FontOption)
+  const font = JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? 'atkinson'
+  return font.value ?? (font as FontOption)
 }

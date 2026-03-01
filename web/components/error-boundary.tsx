@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center p-4">
           <div className="max-w-md text-center">
             <h1 className="mb-4 text-2xl font-bold text-gray-900">Something went wrong</h1>
             <p className="mb-6 text-gray-600">
@@ -48,13 +48,15 @@ export class ErrorBoundary extends Component<Props, State> {
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
                   Error details
                 </summary>
-                <pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
+                <pre className="mt-2 overflow-auto rounded p-2 text-xs">
                   {this.state.error.message}
                 </pre>
               </details>
             )}
             <div className="flex gap-3 justify-center">
-              <Button onClick={this.handleReset}>Reload page</Button>
+              <Button color="gray" onClick={this.handleReset}>
+                Reload page
+              </Button>
               <Button color="gray" onClick={() => window.location.replace('/')}>
                 Go home
               </Button>

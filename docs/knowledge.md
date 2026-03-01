@@ -5,7 +5,8 @@
 
 ## Development Workflow
 
-- See the To Do section in the root [README.md](../README.md) for all the tasks. Some other tasks are in this [TODO.md](TODO.md), but they are secondary and need to be migrated to the main README.
+- See the To Do section in the root [README.md](../README.md) for all the tasks. Some other tasks are in
+  this [TODO.md](TODO.md), but they are secondary and need to be migrated to the main README.
 
 ## Project Structure
 
@@ -18,7 +19,18 @@
 - files shared between backend directories `/backend/shared`
   - anything in `/backend` can import from `shared`, but not vice versa
 - files shared between the frontend and backend in `/common`
-  - `/common` has lots of type definitions for our data structures, like User. It also contains many useful utility functions. We try not to add package dependencies to common. `/web` and `/backend` are allowed to import from `/common`, but not vice versa.
+  - `/common` has lots of type definitions for our data structures, like User. It also contains many useful utility
+    functions. We try not to add package dependencies to common. `/web` and `/backend` are allowed to import from
+    `/common`, but not vice versa.
+
+Monorepo with packages:
+
+- web/
+- backend/
+  - api/
+  - shared/
+  - email/
+- common/
 
 ## Deployment
 
@@ -79,31 +91,36 @@ export function HeadlineTabs(props: {
 
 ---
 
-We prefer to have many smaller components that each represent one logical unit, rather than one very large component that does everything. Then we compose and reuse the components.
+We prefer to have many smaller components that each represent one logical unit, rather than one very large component
+that does everything. Then we compose and reuse the components.
 
-It's best to export the main component at the top of the file. We also try to name the component the same as the file name (headline-tabs.tsx) so that it's easy to find.
+It's best to export the main component at the top of the file. We also try to name the component the same as the file
+name (headline-tabs.tsx) so that it's easy to find.
 
-Here's another example in `home.tsx` that calls our api. We have an endpoint called 'headlines', which is being cached by NextJS:
+Here's another example in `home.tsx` that calls our api. We have an endpoint called 'headlines', which is being cached
+by NextJS:
 
 ```ts
-import { api } from 'web/lib/api/api'
+import {api} from 'web/lib/api/api'
+
 // More imports...
 
 export async function getStaticProps() {
-  try {
-    const headlines = await api('headlines', {})
-    return {
-      props: {
-        headlines,
-        revalidate: 30 * 60, // 30 minutes
-      },
+    try {
+        const headlines = await api('headlines', {})
+        return {
+            props: {
+                headlines,
+                revalidate: 30 * 60, // 30 minutes
+            },
+        }
+    } catch (err) {
+        return {props: {headlines: []}, revalidate: 60}
     }
-  } catch (err) {
-    return { props: { headlines: [] }, revalidate: 60 }
-  }
 }
 
-export default function Home(props: { headlines: Headline[] }) { ... }
+export default function Home(props: { headlines: Headline[] }) { ...
+}
 ```
 
 ---
@@ -112,22 +129,24 @@ If we are calling the API on the client, prefer using the `useAPIGetter` hook:
 
 ```ts
 export const YourTopicsSection = (props: {
-  user: User
-  className?: string
+    user: User
+    className?: string
 }) => {
-  const { user, className } = props
-  const { data, refresh } = useAPIGetter('get-followed-groups', {
-    userId: user.id,
-  })
-  const followedGroups = data?.groups ?? []
-  ...
+    const {user, className} = props
+    const {data, refresh} = useAPIGetter('get-followed-groups', {
+        userId: user.id,
+    })
+    const followedGroups = data?.groups ?? []
+...
 ```
 
 This stores the result in memory, and allows you to call refresh() to get an updated version.
 
 ---
 
-We frequently use `usePersistentInMemoryState` or `usePersistentLocalState` as an alternative to `useState`. These cache data. Most of the time you want in-memory caching so that navigating back to a page will preserve the same state and appear to load instantly.
+We frequently use `usePersistentInMemoryState` or `usePersistentLocalState` as an alternative to `useState`. These cache
+data. Most of the time you want in-memory caching so that navigating back to a page will preserve the same state and
+appear to load instantly.
 
 Here's the definition of usePersistentInMemoryState:
 
@@ -237,16 +256,17 @@ export function broadcastUpdatedComment(comment: Comment) {
 
 We have our scripts in the directory `/backend/scripts`.
 
-To write a script, run it inside the helper function called `runScript` that automatically fetches any secret keys and loads them into process.env.
+To write a script, run it inside the helper function called `runScript` that automatically fetches any secret keys and
+loads them into process.env.
 
 Example from `/backend/scripts/manicode.ts`
 
 ```ts
-import { runScript } from 'run-script'
+import {runScript} from 'run-script'
 
-runScript(async ({ pg }) => {
-  const userPrompt = process.argv[2]
-  await pg.none(...)
+runScript(async ({pg}) => {
+    const userPrompt = process.argv[2]
+    await pg.none(...)
 })
 ```
 
@@ -265,30 +285,40 @@ bun x ts-node manicode.ts "Generate a page called cowp, which has cows that make
 
 ---
 
-Our backend is mostly a set of endpoints. We create new endpoints by adding to the schema in `/common/src/api/schema.ts`.
+Our backend is mostly a set of endpoints. We create new endpoints by adding to the schema in
+`/common/src/api/schema.ts`.
 
 E.g. Here is a hypothetical bet schema:
 
 ```ts
   bet: {
     method: 'POST',
-    authed: true,
-    returns: {} as CandidateBet & { betId: string },
-    props: z
-      .object({
-        contractId: z.string(),
-        amount: z.number().gte(1),
-        replyToCommentId: z.string().optional(),
-        limitProb: z.number().gte(0.01).lte(0.99).optional(),
-        expiresAt: z.number().optional(),
-        // Used for binary and new multiple choice contracts (cpmm-multi-1).
-        outcome: z.enum(['YES', 'NO']).default('YES'),
-        //Multi
-        answerId: z.string().optional(),
-        dryRun: z.boolean().optional(),
-      })
-      .strict(),
-  }
+        authed
+:
+    true,
+        returns
+:
+    {
+    }
+    as
+    CandidateBet & {betId: string},
+        props
+:
+    z
+        .object({
+            contractId: z.string(),
+            amount: z.number().gte(1),
+            replyToCommentId: z.string().optional(),
+            limitProb: z.number().gte(0.01).lte(0.99).optional(),
+            expiresAt: z.number().optional(),
+            // Used for binary and new multiple choice contracts (cpmm-multi-1).
+            outcome: z.enum(['YES', 'NO']).default('YES'),
+            //Multi
+            answerId: z.string().optional(),
+            dryRun: z.boolean().optional(),
+        })
+        .strict(),
+}
 ```
 
 Then, we define the bet endpoint in `backend/api/src/place-bet.ts`
@@ -306,12 +336,13 @@ export const placeBet: APIHandler<'bet'> = async (props, auth) => {
 And finally, you need to register the handler in `backend/api/src/routes.ts`
 
 ```ts
-import { placeBet } from './place-bet'
+import {placeBet} from './place-bet'
+
 ...
 
 const handlers = {
-  bet: placeBet,
-  ...
+    bet: placeBet,
+    ...
 }
 ```
 
@@ -334,9 +365,11 @@ const pg = createSupabaseDirectClient()
 pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [userId])
 ```
 
-The supabase client just uses the supabase client library, which is a wrapper around postgREST. It allows us to query and update the database directly from the frontend.
+The supabase client just uses the supabase client library, which is a wrapper around postgREST. It allows us to query
+and update the database directly from the frontend.
 
-`createSupabaseDirectClient` is used on the backend. it lets us specify sql strings to run directly on our database, using the pg-promise library. The client (code in web) does not have permission to do this.
+`createSupabaseDirectClient` is used on the backend. it lets us specify sql strings to run directly on our database,
+using the pg-promise library. The client (code in web) does not have permission to do this.
 
 Another example using the direct client:
 
@@ -356,13 +389,13 @@ We have a few helper functions for updating and inserting data into the database
 
 ```ts
 import {
-  buikInsert,
-  bulkUpdate,
-  bulkUpdateData,
-  bulkUpsert,
-  insert,
-  update,
-  updateData,
+    buikInsert,
+    bulkUpdate,
+    bulkUpdateData,
+    bulkUpsert,
+    insert,
+    update,
+    updateData,
 } from 'shared/supabase/utils'
 
 ...
@@ -370,18 +403,19 @@ import {
 const pg = createSupabaseDirectClient()
 
 // you are encouraged to use tryCatch for these
-const { data, error } = await tryCatch(
-  insert(pg, 'profiles', { user_id: auth.uid, ...body })
+const {data, error} = await tryCatch(
+    insert(pg, 'profiles', {user_id: auth.uid, ...body})
 )
 
 if (error) throw APIError(500, 'Error creating profile: ' + error.message)
 
-await update(pg, 'profiles', 'user_id', { user_id: auth.uid, age: 99 })
+await update(pg, 'profiles', 'user_id', {user_id: auth.uid, age: 99})
 
-await updateData(pg, 'private_users', { id: userId, notifications: { ... } })
+await updateData(pg, 'private_users', {id: userId, notifications: {...}})
 ```
 
-The sqlBuilder from `shared/supabase/sql-builder.ts` can be used to construct SQL queries with re-useable parts. All it does is sanitize and output sql query strings. It has several helper functions including:
+The sqlBuilder from `shared/supabase/sql-builder.ts` can be used to construct SQL queries with re-useable parts. All it
+does is sanitize and output sql query strings. It has several helper functions including:
 
 - `select`: Specifies the columns to select
 - `from`: Specifies the table to query
@@ -439,6 +473,6 @@ Instead of Sets, consider using lodash's uniq function:
 ```ts
 const betIds = uniq([])
 for (const id of betIds) {
-  ...
+...
 }
 ```

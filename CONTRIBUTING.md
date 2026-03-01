@@ -142,7 +142,7 @@ Compass/
 
 | Layer    | Technology                       |
 | -------- | -------------------------------- |
-| Frontend | Next.js 14, React 18, TypeScript |
+| Frontend | Next.js 16, React 19, TypeScript |
 | Styling  | Tailwind CSS                     |
 | Backend  | Express.js, Node.js              |
 | Database | PostgreSQL (Supabase)            |

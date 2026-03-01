@@ -18,18 +18,6 @@ yarn dev
 
 Open [localhost:3001](http://localhost:3001) with your browser to see the result.
 
-### Notes
-
-Right now, I can't make the email server run without breaking the backend API and web, as they require different versions of react.
-
-To run the email server, temporarily install the deps in this folder. They require react 19.
-
-```bash
-yarn add -D @react-email/preview-server react-email
-```
-
-When you are done, reinstall react 18.2 by running `yarn clean-install` at the root so that you can run the backend and web servers again.
-
 ## Useful commands
 
 ```bash

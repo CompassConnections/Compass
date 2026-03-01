@@ -226,7 +226,7 @@ export function CommentInputTextArea(props: {
             disabled={!editor || editor.isEmpty}
             onClick={() => submit('comment')}
           >
-            <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] rotate-90 p-0" />
+            <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />
           </button>
         )}
 

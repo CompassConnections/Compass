@@ -9,5 +9,5 @@
       "headers": [{"key": "Cache-Control", "value": "no-cache"}]
     }
   ],
-  "ignoreCommand": "git fetch --depth=2 && git diff HEAD^ HEAD --quiet -- ."
+  "ignoreCommand": "ls -A && git fetch --depth=2 && git diff HEAD^ HEAD --quiet -- web/ common/"
 }

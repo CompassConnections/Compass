@@ -1,9 +1,12 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "com.compassconnections.app"
     compileSdk 36
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
     defaultConfig {
         applicationId "com.compassconnections.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -50,7 +53,7 @@ dependencies {
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
 
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    implementation 'com.google.android.gms:play-services-auth:21.5.1'
     implementation 'com.google.firebase:firebase-auth:24.0.1'
 
     implementation 'com.google.android.play:app-update:2.1.0'

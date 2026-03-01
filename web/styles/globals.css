@@ -13,7 +13,9 @@
 }
 
 @media (width < 600px) {
-  --filter-offset: 20px;
+  :root {
+    --filter-offset: 20px;
+  }
 }
 
 .safe-top {

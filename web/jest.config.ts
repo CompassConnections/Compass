@@ -22,4 +22,5 @@ module.exports = {
   },
 
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
+  silent: true,
 }

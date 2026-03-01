@@ -6,20 +6,24 @@ module.exports = {
   testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.spec.ts'],
 
   moduleNameMapper: {
-    '^api/(.*)$': '<rootDir>/../api/src/$1',
-    '^shared/(.*)$': '<rootDir>/src/$1',
+    '^api/(.*)$': '<rootDir>/src/$1',
+    '^shared/(.*)$': '<rootDir>/../shared/src/$1',
     '^common/(.*)$': '<rootDir>/../../common/src/$1',
     '^email/(.*)$': '<rootDir>/../email/emails/$1',
   },
 
-  moduleFileExtensions: ['ts', 'js', 'json'],
+  moduleFileExtensions: ['tsx', 'ts', 'js', 'json'],
   clearMocks: true,
 
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.test.json',
-    },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.test.json',
+      },
+    ],
   },
 
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
+  silent: true,
 }

@@ -20,4 +20,5 @@ module.exports = {
     '<rootDir>/common',
     '<rootDir>/web',
   ],
+  silent: true,
 }

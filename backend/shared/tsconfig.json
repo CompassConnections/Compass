@@ -27,6 +27,6 @@
       "path": "../../common"
     }
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jest.config.ts"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

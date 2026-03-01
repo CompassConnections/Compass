@@ -16,6 +16,8 @@ import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
 import {useEffect, useState} from 'react'
 import {AuthProvider, AuthUser} from 'web/components/auth-context'
+import {ErrorBoundary} from 'web/components/error-boundary'
+import {LiveRegionProvider} from 'web/components/live-region'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
@@ -181,27 +183,31 @@ function MyApp(props: AppProps<PageProps>) {
         />
       </Head>
       <PostHogProvider client={posthog}>
-        <div
-          className={clsx(
-            'contents font-normal',
-            logoFont.variable,
-            // mainFont.variable
-          )}
-        >
-          <I18nContext.Provider value={{locale, setLocale}}>
-            <AuthProvider serverUser={pageProps.auth}>
-              <HiddenProfilesProvider>
-                <WebPush />
-                <AndroidPush />
-                <Component {...pageProps} />
-              </HiddenProfilesProvider>
-            </AuthProvider>
-          </I18nContext.Provider>
-          {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
-          <div id="headlessui-portal-root">
-            <div />
+        <LiveRegionProvider>
+          <div
+            className={clsx(
+              'contents font-normal',
+              logoFont.variable,
+              // mainFont.variable
+            )}
+          >
+            <I18nContext.Provider value={{locale, setLocale}}>
+              <ErrorBoundary>
+                <AuthProvider serverUser={pageProps.auth}>
+                  <HiddenProfilesProvider>
+                    <WebPush />
+                    <AndroidPush />
+                    <Component {...pageProps} />
+                  </HiddenProfilesProvider>
+                </AuthProvider>
+              </ErrorBoundary>
+            </I18nContext.Provider>
+            {/* Workaround for https://github.com/tailwindlabs/headlessui/discussions/666, to allow font CSS variable */}
+            <div id="headlessui-portal-root">
+              <div />
+            </div>
           </div>
-        </div>
+        </LiveRegionProvider>
       </PostHogProvider>
     </>
   )

@@ -4,8 +4,6 @@ description: Checkout, cache and install dependencies
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v4
-
     - name: Cache node_modules
       id: cache-node-modules
       uses: actions/cache@v4

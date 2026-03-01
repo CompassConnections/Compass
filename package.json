@@ -61,7 +61,6 @@
     "@tiptap/starter-kit": "2.10.4",
     "@tiptap/suggestion": "2.10.4",
     "@types/jest": "^29",
-    "@types/node": "20.19.35",
     "@types/react": "19.2.3",
     "@types/react-dom": "19.2.3",
     "jest": "^29",
@@ -70,6 +69,7 @@
     "prosemirror-model": "1.x",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-is": "^19.0.0",
     "zod": "^3.25"
   },
   "devDependencies": {
@@ -81,8 +81,6 @@
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^29",
-    "@types/node": "20.19.35",
     "concurrently": "8.2.2",
     "dotenv-cli": "10.0.0",
     "eslint": "9.39.3",

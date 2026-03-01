@@ -4936,10 +4936,17 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-2.1.0.tgz#052aa67a48eccc4309d7f0191b7e41434b90bb78"
   integrity sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==
 
-"@types/node@*", "@types/node@20.19.35", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^22.8.7":
+"@types/node@*", "@types/node@20.19.35", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
   version "20.19.35"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.19.35.tgz#117b373fd1dff528b2f9f8c2d1a85de6af8101ca"
   integrity sha512-Uarfe6J91b9HAUXxjvSOdiO2UPOKLm07Q1oh0JHxoZ1y8HoqxDAu3gVrsrOHeiio0kSsoVBt4wFrKOm0dKxVPQ==
+  dependencies:
+    undici-types "~6.21.0"
+
+"@types/node@^22.8.7":
+  version "22.19.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.19.13.tgz#c03cab3d1f0e5542fa358ecfff08f9b34834884e"
+  integrity sha512-akNQMv0wW5uyRpD2v2IEyRSZiR+BeGuoB6L310EgGObO44HSMNT8z1xzio28V8qOrgYaopIDNA18YgdXd+qTiw==
   dependencies:
     undici-types "~6.21.0"
 
@@ -14553,20 +14560,10 @@ react-icons@5.5.0:
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.5.0.tgz#8aa25d3543ff84231685d3331164c00299cdfaf2"
   integrity sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw==
 
-react-is@^16.13.1:
-  version "16.13.1"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
-  integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
-
-react-is@^17.0.1:
-  version "17.0.2"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
-  integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
-
-react-is@^18.0.0:
-  version "18.3.1"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
-  integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
+react-is@^16.13.1, react-is@^17.0.1, react-is@^18.0.0, react-is@^19.0.0:
+  version "19.2.4"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.2.4.tgz#a080758243c572ccd4a63386537654298c99d135"
+  integrity sha512-W+EWGn2v0ApPKgKKCy/7s7WHXkboGcsrXE+2joLyVxkbyVQfO3MUEaUQDHoSmb8TFFrSKYa9mw64WZHNHSDzYA==
 
 react-markdown@10.1.0:
   version "10.1.0"

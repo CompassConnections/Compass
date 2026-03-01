@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type {CapacitorConfig} from '@capacitor/cli'
 
 const WEBVIEW_DEV_PHONE = process.env.NEXT_PUBLIC_WEBVIEW_DEV_PHONE === '1'
 const LOCAL_ANDROID = WEBVIEW_DEV_PHONE || process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
@@ -14,7 +14,16 @@ const config: CapacitorConfig = {
     LiveUpdate: {
       appId: "969bc540-8077-492f-8403-b554bee5de50"
     }
-  }
+  },
+  includePlugins: [
+    '@capacitor/app',
+    '@capacitor/core',
+    '@capacitor/keyboard',
+    '@capacitor/push-notifications',
+    '@capacitor/status-bar',
+    '@capawesome/capacitor-live-update',
+    '@capgo/capacitor-social-login',
+  ],
 };
 
 export default config;

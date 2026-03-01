@@ -17,7 +17,7 @@ What testing is not
 
 How we apply it here
 
-- Unit and integration tests live in each package and run with Jest (see `jest.config.js`).
+- Unit and integration tests live in each package and run with Jest (see `jest.config.ts`).
 - Critical user journeys are covered by Playwright E2E tests under `tests/e2e` (see `playwright.config.ts`).
 
 ### Test types at a glance
@@ -25,18 +25,20 @@ How we apply it here
 This project uses three complementary test types. Use the right level for the job:
 
 - Unit tests
+
   - Purpose: Verify a single function/module in isolation; fast, deterministic.
   - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
     etc.).
-  - Runner: Jest (configured via root `jest.config.js`).
+  - Runner: Jest (configured via root `jest.config.ts`).
   - Naming: `*.unit.test.ts` (or `.tsx` for React in `web`).
   - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
 
 - Integration tests
+
   - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
     spinning up the full app.
   - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).
-  - Runner: Jest (configured via root `jest.config.js`).
+  - Runner: Jest (configured via root `jest.config.ts`).
   - Naming: `*.integration.test.ts` (or `.tsx` for React in `web`).
   - When to use: Boundaries between modules, real serialization/parsing, API handlers with mocked network/DB,
     component trees with providers.
@@ -62,7 +64,7 @@ yarn test:e2e
 
 ```filetree
 # Config
-jest.config.js (for unit and integration tests)
+jest.config.ts (for unit and integration tests)
 playwright.config.ts (for e2e tests)
 
 # Top-level End-to-End (Playwright)
@@ -114,7 +116,7 @@ web/
 - End-to-End tests live under `tests/e2e` and are executed by Playwright. The root `playwright.config.ts` sets `testDir`
   to `./tests/e2e`.
 - Unit and integration tests live in each package’s `tests` folder and are executed by Jest via the root
-  `jest.config.js` projects array.
+  `jest.config.ts` projects array.
 - Naming:
   - Unit: `*.unit.test.ts` (or `.tsx` for React in `web`)
   - Integration: `*.integration.test.ts`
@@ -348,7 +350,6 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
-
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
@@ -756,7 +757,7 @@ Firebase emulator supports multiple projects. You can spin up isolated project I
 too slow):
 
 ```js
-// jest.config.js - per worker
+// jest.config.ts - per worker
 projectId: `test-${process.env.JEST_WORKER_ID}`
 ```
 

@@ -25,6 +25,7 @@ import {MdThumbUp} from 'react-icons/md'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
+import {SkipLink} from 'web/components/skip-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useOnline} from 'web/hooks/use-online'
 import {useProfile} from 'web/hooks/use-profile'
@@ -69,6 +70,7 @@ export function PageBase(props: {
 
   return (
     <>
+      <SkipLink />
       <GoogleOneTapLogin className="fixed bottom-12 right-4 z-[1000]" />
       <Col
         className={clsx(
@@ -94,7 +96,11 @@ export function PageBase(props: {
             className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
           />
         )}
-        <main className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', colSpan, restClassName)}>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', colSpan, restClassName)}
+        >
           {children}
         </main>
       </Col>

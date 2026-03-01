@@ -39,6 +39,7 @@ export default function Sidebar(props: {
 
   return (
     <nav
+      id="main-navigation"
       aria-label="Sidebar"
       className={clsx(
         'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))]',

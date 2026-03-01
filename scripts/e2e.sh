@@ -95,6 +95,13 @@ echo $NEXT_PUBLIC_SUPABASE_URL
 echo $NEXT_PUBLIC_SUPABASE_ANON_KEY
 echo $DATABASE_URL
 
+for var in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY DATABASE_URL; do
+  if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+    echo "Error: $var is not set or null" >&2
+    exit 1
+  fi
+done
+
 # Start backend API
 print_status "Starting backend API..."
 yarn --cwd=backend/api dev & PIDS+=($!)

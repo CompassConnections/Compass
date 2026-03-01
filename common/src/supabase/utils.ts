@@ -29,6 +29,7 @@ export function createClient(
   key: string,
   opts?: SupabaseClientOptionsGeneric<'public'>,
 ) {
+  if (key === 'null') throw new Error(`Invalid supabase anon key: ${key}`)
   // Allow passing a full Supabase URL directly (e.g., http://localhost:54321)
   const url = /:\/\//.test(instanceIdOrUrl)
     ? instanceIdOrUrl

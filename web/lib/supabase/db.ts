@@ -9,7 +9,7 @@ export function initSupabaseClient() {
   const anonKeyOverride = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
   if (urlOverride && anonKeyOverride) {
-    console.log('Initializing Supabase client (env URL override)')
+    console.log('Initializing Supabase client (env URL override)', {urlOverride, anonKeyOverride})
     return createClient(urlOverride, anonKeyOverride)
   } else if (process.env.NEXT_PUBLIC_ISOLATED_ENV) {
     throw new Error(

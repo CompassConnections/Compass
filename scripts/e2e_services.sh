@@ -26,6 +26,13 @@ export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
 export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')
 
+for var in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY DATABASE_URL; do
+  if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+    echo "Error: $var is not set or null" >&2
+    exit 1
+  fi
+done
+
 # Build backend (required?)
 ./scripts/build_api.sh
 

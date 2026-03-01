@@ -10,12 +10,16 @@ function getSupabaseEnv() {
   try {
     const raw = execSync('npx supabase status --output json 2>/dev/null', {encoding: 'utf-8'})
     const status = JSON.parse(raw)
+    if (!status.API_URL) throw new Error('No supabase API URL')
+    if (!status.ANON_KEY) throw new Error('No supabase ANON_KEY')
+    if (!status.DB_URL) throw new Error('No supabase DB_URL')
     return {
       NEXT_PUBLIC_SUPABASE_URL: status.API_URL,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: status.ANON_KEY,
       DATABASE_URL: status.DB_URL,
     }
   } catch (e) {
+    console.error(e)
     throw new Error('Failed to get Supabase status. Is it running?')
   }
 }

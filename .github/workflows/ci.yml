@@ -2,9 +2,9 @@ name: Jest Tests
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   ci:
@@ -16,6 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('yarn.lock') }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -23,7 +30,12 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+
+      # In case yarn install (and thus post-install) is skipped
+      - name: Post-install
+        run: yarn postinstall
 
       - name: Lint
         run: yarn lint

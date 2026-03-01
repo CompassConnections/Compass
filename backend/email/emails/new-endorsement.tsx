@@ -103,7 +103,7 @@ NewEndorsementEmail.PreviewProps = {
   fromUser: jamesUser,
   onUser: mockUser,
   endorsementText:
-    "Sinclair is someone you want to have around because she injects creativity and humor into every conversation, and her laugh is infectious! Not to mention that she's a great employee, treats everyone with respect, and is even-tempered.",
+    "Martin is someone you want to have around because he injects creativity and humor into every conversation, and his laugh is infectious! Not to mention that he's a great employee, treats everyone with respect, and is even-tempered.",
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
   email: 'someone@gmail.com',
 } as NewEndorsementEmailProps

@@ -14,6 +14,7 @@ import {
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
 } from 'common/choices'
+import {IS_PROD} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
@@ -199,7 +200,7 @@ export const OptionalProfileUserForm = (props: {
         i++
       }
       if (profile) {
-        await sleep(5000) // attempt to mitigate profile not found at /${username} upon creation
+        if (IS_PROD) await sleep(5000) // attempt to mitigate profile not found at /${username} upon creation
         router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
       } else {
         console.log('Profile not found after fetching, going back home...')

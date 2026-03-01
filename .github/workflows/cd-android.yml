@@ -50,8 +50,8 @@ jobs:
     if: needs.check-version.outputs.should_build == 'true'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -59,14 +59,6 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: gradle
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: yarn install
 
       - name: Compile Web App into Android assets
         env:

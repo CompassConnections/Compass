@@ -1,7 +1,7 @@
 name: CD Android Live Update
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'android/capawesome.json'
       - '.github/workflows/cd-android-live-update.yml'
@@ -54,16 +54,8 @@ jobs:
     if: needs.check-version.outputs.changed == 'true'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: yarn install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Deploy Live Update
         env:

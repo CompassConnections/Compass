@@ -1,7 +1,7 @@
 name: API Release
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'backend/api/package.json'
       - '.github/workflows/cd-api.yml'
@@ -54,16 +54,8 @@ jobs:
     if: needs.check-version.outputs.changed == 'true'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: yarn install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2

@@ -17,7 +17,7 @@ runs:
         node-version: '22'
 
     - name: Install dependencies
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      # if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: yarn install --frozen-lockfile
       shell: bash
 

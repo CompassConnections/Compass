@@ -18,7 +18,7 @@ deep, authentic 1-on-1 connections with clarity and efficiency.
 - Radically transparent: user base fully searchable
 - Free, ad-free, not for profit (supported by donations)
 - Created, hosted, maintained, and moderated by volunteers
-- Open source
+- Open-source
 - Democratically governed
 
 You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and

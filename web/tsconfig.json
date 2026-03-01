@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "lib": ["es2020", "dom", "dom.iterable", "esnext"],
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -10,11 +10,12 @@
     "esModuleInterop": true,
     "module": "esnext",
     "typeRoots": ["./types", "./node_modules/@types"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
+    "tsBuildInfoFile": ".next/tsconfig.tsbuildinfo",
     "paths": {
       "common/*": ["../common/src/*"],
       "web/*": ["./*"]

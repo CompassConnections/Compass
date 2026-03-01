@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {isProd} from 'common/envs/is-prod'
+import {IS_PROD} from 'common/envs/constants'
 import Link from 'next/link'
 import FavIcon from 'web/components/FavIcon'
 import {Row} from 'web/components/layout/row'
@@ -10,7 +10,7 @@ export default function SiteLogo(props: {noLink?: boolean; className?: string}) 
     <>
       <FavIcon className="dark:invert" />
       <div className={clsx('my-auto text-xl font-thin logo')}>
-        {isProd() ? 'Compass' : 'Compass dev'}
+        {IS_PROD ? 'Compass' : 'Compass dev'}
       </div>
     </>
   )

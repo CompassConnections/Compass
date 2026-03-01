@@ -1,4 +1,5 @@
 'use client'
+import {debug} from 'common/logger'
 import {PrivateUser, User} from 'common/user'
 import {useContext, useEffect, useState} from 'react'
 import {AuthContext} from 'web/components/auth-context'
@@ -30,7 +31,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
   useApiSubscription({
     topics: [`user/${userId ?? '_'}`],
     onBroadcast: ({data}) => {
-      console.debug('User broadcast', {data})
+      debug('User broadcast', {data})
       setUser((user) => {
         if (!user || !data.user) {
           return user

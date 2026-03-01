@@ -1,3 +1,5 @@
+import {IS_PROD} from 'common/envs/constants'
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
 interface LogContext {
@@ -11,11 +13,6 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   info: 1,
   warn: 2,
   error: 3,
-}
-
-const currentLevel = (): LogLevel => {
-  if (process.env.NODE_ENV === 'production') return 'info'
-  return 'debug'
 }
 
 function shouldLog(level: LogLevel): boolean {
@@ -59,12 +56,27 @@ export const logger = {
 
 export function logApiError(endpoint: string, error: Error | unknown, extra?: LogContext): void {
   const errorMessage = error instanceof Error ? error.message : String(error)
-  logger.error(`API Error in ${endpoint}`, error instanceof Error ? error : new Error(errorMessage), {
-    endpoint,
-    ...extra,
-  })
+  logger.error(
+    `API Error in ${endpoint}`,
+    error instanceof Error ? error : new Error(errorMessage),
+    {
+      endpoint,
+      ...extra,
+    },
+  )
 }
 
 export function logPageView(path: string): void {
   logger.info('Page view', {path})
+}
+
+const currentLevel = (): LogLevel => {
+  if (IS_PROD) return 'info'
+  return 'debug'
+}
+
+export const debug = (...args: unknown[]) => {
+  if (currentLevel() === 'debug') {
+    console.debug(...args)
+  }
 }

@@ -14,6 +14,7 @@ import {
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
 } from 'common/choices'
+import {debug} from 'common/logger'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
@@ -148,7 +149,7 @@ export const OptionalProfileUserForm = (props: {
       work,
       ...otherProfileProps
     } = profile
-    console.debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
+    debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
     const promises: Promise<any>[] = [
       tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any)),
     ]
@@ -1050,7 +1051,7 @@ export const OptionalProfileUserForm = (props: {
         <SignupBio
           profile={profile}
           onChange={(e: Editor) => {
-            console.debug('bio changed', e, profile.bio)
+            debug('bio changed', e, profile.bio)
             setProfile('bio', e.getJSON())
             setProfile('bio_length', e.getText().length)
           }}

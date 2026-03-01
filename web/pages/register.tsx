@@ -1,5 +1,6 @@
 'use client'
 
+import {debug} from 'common/logger'
 import {getProfileRow} from 'common/profiles/profile'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
@@ -61,7 +62,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
       const creds = await createUserWithEmailAndPassword(auth, email, password)
-      console.debug('User signed up:', creds.user)
+      debug('User signed up:', creds.user)
     } catch (error: any) {
       console.error('Error signing up:', error)
       toast.error(t('register.toast.signup_failed', 'Failed to sign up: ') + (error?.message ?? ''))

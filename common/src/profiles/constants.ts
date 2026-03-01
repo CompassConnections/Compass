@@ -1,6 +1,6 @@
-import {isProd} from 'common/envs/is-prod'
+import {IS_PROD} from 'common/envs/constants'
 
-export const compassUserId = isProd()
+export const compassUserId = IS_PROD
   ? 'tRZZ6ihugZQLXPf6aPRneGpWLmz1'
   : 'RlXR2xa4EFfAzdCbSe45wkcdarh1'
 

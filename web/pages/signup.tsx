@@ -1,4 +1,5 @@
 import {LOCALE_TO_LANGUAGE} from 'common/choices'
+import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {useRouter} from 'next/router'
@@ -162,7 +163,7 @@ export default function SignupPage() {
                   : undefined
 
                 setIsSubmitting(true)
-                console.debug('profileForm', profileForm)
+                debug('profileForm', profileForm)
                 const profile = await api(
                   'create-profile',
                   removeNullOrUndefinedProps({

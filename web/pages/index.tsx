@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {LoggedOutHome} from 'web/components/home/home'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
@@ -17,7 +18,7 @@ export default function ProfilesPage() {
     return <PageBase trackPageView={'loading'} />
   }
 
-  console.debug('user:', user)
+  debug('user:', user)
 
   return (
     <PageBase trackPageView={'user profiles'} className={'col-span-10'}>

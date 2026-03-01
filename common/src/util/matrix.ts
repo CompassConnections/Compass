@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {max, sumBy} from 'lodash'
 
 // each row has [column, value] pairs
@@ -32,7 +33,7 @@ export function factorizeMatrix(
   const mFeatures = fillMatrix(m, FEATURES, initCell)
   const nFeatures = fillMatrix(n, FEATURES, initCell)
 
-  console.debug('rows', m, 'columns', n, 'numPoints', points)
+  debug('rows', m, 'columns', n, 'numPoints', points)
 
   const updateFeature = (a: number, b: number, error: number) =>
     a + LEARNING_RATE * (2 * error * b - REGULARIZATION_RATE * a)
@@ -75,7 +76,7 @@ export function factorizeMatrix(
           }
         }
       }
-      console.debug(iter, 'error', totalError / points)
+      debug(iter, 'error', totalError / points)
 
       // Complete factorization process if total error falls below a certain threshold
       if (totalError / points < THRESHOLD) break

@@ -1,4 +1,5 @@
 import {API, APIParams, APIPath} from 'common/api/schema'
+import {debug} from 'common/logger'
 import {typedAPICall} from 'common/util/api'
 import {sleep} from 'common/util/time'
 
@@ -16,7 +17,7 @@ export async function api<P extends APIPath>(path: P, params: APIParams<P> = {})
         break
       }
     }
-    console.debug('User loaded after', i, 'iterations')
+    debug('User loaded after', i, 'iterations')
   }
 
   return typedAPICall(path, params, auth.currentUser)
@@ -32,7 +33,7 @@ export const report = curriedAPI('report')
 
 export const updateBackendLocale = (newLocale: string) => {
   if (!auth.currentUser) return
-  console.debug('Updating backend locale to', newLocale)
+  debug('Updating backend locale to', newLocale)
   api('update-user-locale', {locale: newLocale}).catch((error) => {
     console.error('Failed to update user locale:', error)
   })

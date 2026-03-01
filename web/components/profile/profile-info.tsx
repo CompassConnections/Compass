@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
@@ -29,7 +30,7 @@ export function ProfileInfo(props: {
   fromSignup?: boolean
 }) {
   const {profile, user, refreshProfile, fromProfilePage, fromSignup} = props
-  console.debug('Rendering Profile for', user.username, user.name, props)
+  debug('Rendering Profile for', user.username, user.name, props)
 
   const currentUser = useUser()
   const t = useT()

@@ -1,5 +1,6 @@
 import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
 import clsx from 'clsx'
+import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
 import {capitalize} from 'lodash'
@@ -55,7 +56,7 @@ export default function ProfileHeader(props: {
   const disabled = profile.disabled
   const t = useT()
 
-  console.debug('ProfileProfileHeader', {
+  debug('ProfileProfileHeader', {
     user,
     profile,
     userActivity,

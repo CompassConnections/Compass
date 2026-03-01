@@ -1,6 +1,7 @@
 import {initAdmin} from 'shared/init-admin'
 import {createSupabaseDirectClient, type SupabaseDirectClient} from 'shared/supabase/init'
 import {refreshConfig} from 'common/envs/prod'
+import {debug} from 'common/logger'
 
 export const runScript = async (
   main: (services: {pg: SupabaseDirectClient}) => Promise<any> | any,
@@ -9,14 +10,14 @@ export const runScript = async (
   initAdmin()
   await initEnvVariables()
   if (logEnv) {
-    console.debug('[runScript] Environment variables:')
-    for (const k of Object.keys(process.env)) console.debug(`${k}=${process.env[k]}`)
+    debug('[runScript] Environment variables:')
+    for (const k of Object.keys(process.env)) debug(`${k}=${process.env[k]}`)
   }
 
-  console.debug('[runScript] Creating Supabase client...')
+  debug('[runScript] Creating Supabase client...')
   const pg = createSupabaseDirectClient()
 
-  console.debug('[runScript] Running script...')
+  debug('[runScript] Running script...')
   await main({pg})
 }
 

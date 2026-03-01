@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {useEffect, useRef} from 'react'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {api} from 'web/lib/api'
@@ -17,7 +18,7 @@ export function useNearbyCities(referenceCityId: string | null | undefined, radi
         cityId: referenceCityId,
         radius,
       }).then((result) => {
-        console.debug('search-near-city', result)
+        debug('search-near-city', result)
         if (thisSearchCount == searchCount.current) {
           if (result.status === 'failure') {
             setNearbyCities(null)

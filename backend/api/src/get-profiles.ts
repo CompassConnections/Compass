@@ -1,4 +1,5 @@
 import {type APIHandler} from 'api/helpers/endpoint'
+import {debug} from 'common/logger'
 import {OptionTableKey} from 'common/profiles/constants'
 import {compact} from 'lodash'
 import {convertRow} from 'shared/profiles/supabase'
@@ -69,7 +70,7 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  console.debug('loadProfiles', props)
+  debug('loadProfiles', props)
   const {
     limit: limitParam,
     after,

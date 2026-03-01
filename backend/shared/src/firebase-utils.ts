@@ -1,4 +1,5 @@
 import {ENV_CONFIG, getStorageBucketId} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {getStorage, Storage} from 'firebase-admin/storage'
 import {readFileSync} from 'fs'
 
@@ -40,10 +41,10 @@ export async function deleteUserFiles(username: string) {
   const [files] = await bucket.getFiles({prefix: path})
 
   if (files.length === 0) {
-    console.debug(`No files found in bucket for user ${username}`)
+    debug(`No files found in bucket for user ${username}`)
     return
   }
 
   await Promise.all(files.map((file) => file.delete()))
-  console.debug(`Deleted ${files.length} files for user ${username}`)
+  debug(`Deleted ${files.length} files for user ${username}`)
 }

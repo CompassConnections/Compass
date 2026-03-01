@@ -1,6 +1,6 @@
 'use client'
 
-import {logger} from 'common/logging'
+import {debug} from 'common/logger'
 import {getProfileRow} from 'common/profiles/profile'
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
@@ -45,7 +45,7 @@ function RegisterComponent() {
   useEffect(() => {
     const checkAndRedirect = async () => {
       if (user) {
-        console.debug('User signed in:', user)
+        debug('User signed in:', user)
         try {
           const profile = await getProfileRow(user.id, db)
           if (profile) {
@@ -68,7 +68,7 @@ function RegisterComponent() {
     setError(null)
     try {
       const creds = await firebaseLogin()
-      logger.debug('creds', creds)
+      debug('creds', creds)
       if (creds) {
         setIsLoading(true)
         setIsLoadingGoogle(true)
@@ -85,7 +85,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password)
-      logger.debug(creds)
+      debug(creds)
     } catch (error) {
       console.error('Error signing in:', error)
       const message = t(

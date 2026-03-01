@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 import {APIHandler} from './helpers/endpoint'
@@ -12,7 +13,7 @@ export const getMessagesCount: APIHandler<'get-messages-count'> = async (_, _aut
     [],
   )
   const count = Number(result.count)
-  console.debug('private_user_messages count:', count)
+  debug('private_user_messages count:', count)
   return {
     count: count,
   }

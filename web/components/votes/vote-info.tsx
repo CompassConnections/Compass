@@ -1,6 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import {formLink} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from 'common/votes/constants'
 import Link from 'next/link'
 import {useEffect, useState} from 'react'
@@ -113,7 +114,7 @@ export function VoteComponent() {
                     setTitle('')
                     editor.commands.clearContent()
                     toast.success(t('vote.toast.created', 'Vote created'))
-                    console.debug('Vote created', newVote)
+                    debug('Vote created', newVote)
                     refreshVotes()
                   }}
                 >

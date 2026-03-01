@@ -1,5 +1,6 @@
 import {PlusIcon, XIcon} from '@heroicons/react/outline'
 import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -53,7 +54,7 @@ function AddCompatibilityQuestionModal(props: {
   const [dbQuestion, setDbQuestion] = useState<rowFor<'compatibility_prompts'> | null>(null)
   const afterAddQuestion = (newQuestion: rowFor<'compatibility_prompts'>) => {
     setDbQuestion(newQuestion)
-    console.debug('setDbQuestion', newQuestion)
+    debug('setDbQuestion', newQuestion)
   }
 
   return (
@@ -132,7 +133,7 @@ function CreateCompatibilityModalContent(props: {
         options: generateJson(),
       }
       const newQuestion = await api('create-compatibility-question', data)
-      console.debug('create-compatibility-question', newQuestion, data)
+      debug('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question
       if (q) {
         afterAddQuestion(q as rowFor<'compatibility_prompts'>)

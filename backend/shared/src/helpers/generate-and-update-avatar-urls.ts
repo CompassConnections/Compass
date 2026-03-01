@@ -1,4 +1,5 @@
 import {DOMAIN} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {Bucket} from 'shared/firebase-utils'
 
 export const generateAvatarUrl = async (userId: string, name: string, bucket: Bucket) => {
@@ -21,7 +22,7 @@ export const generateAvatarUrl = async (userId: string, name: string, bucket: Bu
     const buffer = await res.arrayBuffer()
     return await upload(userId, Buffer.from(buffer), bucket)
   } catch (e) {
-    console.debug('error generating avatar', e)
+    debug('error generating avatar', e)
     return `https://${DOMAIN}/images/default-avatar.png`
   }
 }

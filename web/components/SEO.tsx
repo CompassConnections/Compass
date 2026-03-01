@@ -1,4 +1,4 @@
-import {isProd} from 'common/envs/is-prod'
+import {IS_PROD} from 'common/envs/constants'
 import {removeUndefinedProps} from 'common/util/object'
 import {buildOgUrl} from 'common/util/og'
 import Head from 'next/head'
@@ -16,7 +16,7 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
     image ?? (ogProps && buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint))
 
   const absUrl = 'https://compassmeet.com' + url
-  const endTitle = isProd() ? 'Compass' : 'Compass dev'
+  const endTitle = IS_PROD ? 'Compass' : 'Compass dev'
 
   return (
     <Head>

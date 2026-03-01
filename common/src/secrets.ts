@@ -1,6 +1,7 @@
 import {SecretManagerServiceClient} from '@google-cloud/secret-manager'
 import {refreshConfig} from 'common/envs/prod'
 import {IS_LOCAL} from 'common/hosting/constants'
+import {debug} from 'common/logger'
 import {zip} from 'lodash'
 
 // List of secrets that are available to backend (api, functions, scripts, etc.)
@@ -54,7 +55,7 @@ export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
 
   const secretIds = ids.length > 0 ? ids : secrets
 
-  console.debug('secretIds', secretIds)
+  debug('secretIds', secretIds)
 
   const fullSecretNames = secretIds.map(
     (secret: string) => `${client.projectPath(projectId)}/secrets/${secret}/versions/latest`,

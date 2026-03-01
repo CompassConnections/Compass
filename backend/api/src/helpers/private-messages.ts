@@ -1,6 +1,7 @@
 import {type JSONContent} from '@tiptap/core'
 import {APIError} from 'common/api/utils'
 import {ChatVisibility} from 'common/chat-message'
+import {debug} from 'common/logger'
 import {Json} from 'common/supabase/schema'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
@@ -174,7 +175,7 @@ const notifyOtherUserInChannelIfInactive = async (
   // TODO: notification only for active user
 
   const receiver = await getUser(receiverId)
-  console.debug('receiver:', receiver)
+  debug('receiver:', receiver)
   if (!receiver) return
 
   // Push notifs
@@ -212,7 +213,7 @@ const notifyOtherUserInChannelIfInactive = async (
 
 const createNewMessageNotification = async (fromUser: User, toUser: User, channelId: number) => {
   const privateUser = await getPrivateUser(toUser.id)
-  console.debug('privateUser:', privateUser)
+  debug('privateUser:', privateUser)
   if (!privateUser) return
   await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
 }

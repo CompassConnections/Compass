@@ -1,5 +1,6 @@
 import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
+import {debug} from 'common/logger'
 import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
 
@@ -17,10 +18,10 @@ export const initAdmin = () => {
       const serviceAccount = getServiceAccountCredentials()
 
       if (!serviceAccount.project_id) {
-        console.debug(`GOOGLE_APPLICATION_CREDENTIALS not set, skipping admin firebase init.`)
+        debug(`GOOGLE_APPLICATION_CREDENTIALS not set, skipping admin firebase init.`)
         return
       }
-      console.debug(`Initializing connection to ${serviceAccount.project_id} Firebase...`)
+      debug(`Initializing connection to ${serviceAccount.project_id} Firebase...`)
       return admin.initializeApp({
         projectId: serviceAccount.project_id,
         credential: admin.credential.cert(serviceAccount),
@@ -31,6 +32,6 @@ export const initAdmin = () => {
     }
   }
 
-  console.debug(`Initializing connection to default Firebase...`)
+  debug(`Initializing connection to default Firebase...`)
   return admin.initializeApp()
 }

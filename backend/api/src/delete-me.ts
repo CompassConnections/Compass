@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import * as admin from 'firebase-admin'
 import {deleteUserFiles} from 'shared/firebase-utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -42,7 +43,7 @@ export const deleteMe: APIHandler<'me/delete'> = async ({reasonCategory, reasonD
   try {
     const auth = admin.auth()
     await auth.deleteUser(userId)
-    console.debug(`Deleted user ${userId} from Firebase Auth and Supabase`)
+    debug(`Deleted user ${userId} from Firebase Auth and Supabase`)
   } catch (e) {
     console.error('Error deleting user from Firebase Auth:', e)
   }

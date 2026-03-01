@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {DAY_MS} from 'common/util/time'
@@ -96,7 +97,7 @@ export function ProfilesHome() {
       locale,
       ...filters,
     })
-    console.debug('Refreshing profiles, filters:', args)
+    debug('Refreshing profiles, filters:', args)
     api('get-profiles', args as any)
       .then(({profiles, count}) => {
         if (current === id.current) {

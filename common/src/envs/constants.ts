@@ -12,7 +12,11 @@ import {PROD_CONFIG} from './prod'
 export const MAX_DESCRIPTION_LENGTH = 100000
 export const MAX_ANSWER_LENGTH = 240
 
-export const ENV_CONFIG = isProd() ? PROD_CONFIG : DEV_CONFIG
+export const ENV = isProd() ? 'prod' : 'dev'
+export const IS_PROD = ENV === 'prod'
+export const IS_DEV = ENV === 'dev'
+
+export const ENV_CONFIG = IS_PROD ? PROD_CONFIG : DEV_CONFIG
 
 export function isAdminId(id: string) {
   return ENV_CONFIG.adminIds.includes(id)
@@ -21,10 +25,6 @@ export function isAdminId(id: string) {
 export function isModId(id: string) {
   return MOD_USERNAMES.includes(id)
 }
-
-export const ENV = isProd() ? 'prod' : 'dev'
-// export const IS_PROD = ENV === 'prod'
-export const IS_DEV = ENV === 'dev'
 
 console.debug(`Running in ${HOSTING_ENV} (${ENV})`)
 

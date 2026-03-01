@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {debug} from 'common/logger'
 import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {getProfileRow, ProfileRow} from 'common/profiles/profile'
 import {getUserForStaticProps} from 'common/supabase/users'
@@ -42,7 +43,7 @@ async function getProfile(userId: string) {
       break
     }
   }
-  console.debug(`Profile loaded after ${i} tries`)
+  debug(`Profile loaded after ${i} tries`)
   return profile
 }
 
@@ -81,10 +82,10 @@ export const getStaticProps = async (
 
   const user = await getUser(username)
 
-  console.debug('getStaticProps', {user})
+  debug('getStaticProps', {user})
 
   if (!user) {
-    console.debug('No user')
+    debug('No user')
     return {
       props: {
         notFoundCustomText:
@@ -95,7 +96,7 @@ export const getStaticProps = async (
   }
 
   if (user.username !== username) {
-    console.debug('Found a case-insensitive match')
+    debug('Found a case-insensitive match')
     // Found a case-insensitive match, redirect to correct casing
     return {
       redirect: {
@@ -106,7 +107,7 @@ export const getStaticProps = async (
   }
 
   if (user.userDeleted) {
-    console.debug('User deleted')
+    debug('User deleted')
     return {
       props: {
         username,
@@ -118,7 +119,7 @@ export const getStaticProps = async (
   const profile = await getProfile(user.id)
 
   if (!profile) {
-    console.debug('No profile', `${user.username} hasn't created a profile yet.`)
+    debug('No profile', `${user.username} hasn't created a profile yet.`)
     return {
       props: {
         notFoundCustomText: `${user.username} hasn't created a profile yet.`,
@@ -126,7 +127,7 @@ export const getStaticProps = async (
       revalidate: 1,
     }
   }
-  // console.debug('profile', profile)
+  // debug('profile', profile)
   return {
     props: {
       user,
@@ -260,7 +261,7 @@ export default function UserPage(props: UserPageProps) {
 }
 
 function UserPageInner(props: ActiveUserPageProps) {
-  // console.debug('Starting UserPageInner in /[username]')
+  // debug('Starting UserPageInner in /[username]')
   const {user, username} = props
   const router = useRouter()
   const {query} = router
@@ -276,7 +277,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
   // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
-  // console.debug('profile:', user?.username, profile, clientProfile, staticProfile)
+  // debug('profile:', user?.username, profile, clientProfile, staticProfile)
 
   if (!isCurrentUser && profile?.disabled) {
     return (

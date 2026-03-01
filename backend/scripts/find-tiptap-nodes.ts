@@ -1,6 +1,7 @@
 import {runScript} from './run-script'
 import {from, renderSql, select, where} from 'shared/supabase/sql-builder'
 import {SupabaseDirectClient} from 'shared/supabase/init'
+import {debug} from 'common/logger'
 
 runScript(async ({pg}) => {
   const tests = [
@@ -19,7 +20,7 @@ runScript(async ({pg}) => {
 })
 
 const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
-  console.debug(`\nSearching comments for ${nodeName}...`)
+  debug(`\nSearching comments for ${nodeName}...`)
   const commentQuery = renderSql(
     select('id, user_id, on_user_id, content'),
     from('profile_comments'),
@@ -27,15 +28,15 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
   const comments = await pg.manyOrNone(commentQuery)
 
-  console.debug(`Found ${comments.length} comments:`)
+  debug(`Found ${comments.length} comments:`)
   comments.forEach((comment) => {
-    console.debug('\nComment ID:', comment.id)
-    console.debug('From user:', comment.user_id)
-    console.debug('On user:', comment.on_user_id)
-    console.debug('Content:', JSON.stringify(comment.content))
+    debug('\nComment ID:', comment.id)
+    debug('From user:', comment.user_id)
+    debug('On user:', comment.on_user_id)
+    debug('Content:', JSON.stringify(comment.content))
   })
 
-  console.debug(`\nSearching private messages for ${nodeName}...`)
+  debug(`\nSearching private messages for ${nodeName}...`)
   const messageQuery = renderSql(
     select('id, user_id, channel_id, content'),
     from('private_user_messages'),
@@ -43,15 +44,15 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
   const messages = await pg.manyOrNone(messageQuery)
 
-  console.debug(`Found ${messages.length} private messages:`)
+  debug(`Found ${messages.length} private messages:`)
   messages.forEach((msg) => {
-    console.debug('\nMessage ID:', msg.id)
-    console.debug('From user:', msg.user_id)
-    console.debug('Channel:', msg.channel_id)
-    console.debug('Content:', JSON.stringify(msg.content))
+    debug('\nMessage ID:', msg.id)
+    debug('From user:', msg.user_id)
+    debug('Channel:', msg.channel_id)
+    debug('Content:', JSON.stringify(msg.content))
   })
 
-  console.debug(`\nSearching profiles for ${nodeName}...`)
+  debug(`\nSearching profiles for ${nodeName}...`)
   const users = renderSql(
     select('user_id, bio'),
     from('profiles'),
@@ -59,9 +60,9 @@ const getNodes = async (pg: SupabaseDirectClient, nodeName: string) => {
   )
 
   const usersWithMentions = await pg.manyOrNone(users)
-  console.debug(`Found ${usersWithMentions.length} users:`)
+  debug(`Found ${usersWithMentions.length} users:`)
   usersWithMentions.forEach((user) => {
-    console.debug('\nUser ID:', user.user_id)
-    console.debug('Bio:', JSON.stringify(user.bio))
+    debug('\nUser ID:', user.user_id)
+    debug('Bio:', JSON.stringify(user.bio))
   })
 }

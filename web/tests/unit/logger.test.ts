@@ -1,4 +1,4 @@
-import {logApiError, logger} from 'web/lib/logger'
+import {logApiError, logger} from 'common/lib/logger'
 
 describe('logger', () => {
   const originalEnv = process.env.NODE_ENV

@@ -1,5 +1,6 @@
 import {APIError, APIHandler} from 'api/helpers/endpoint'
 import {sendDiscordMessage} from 'common/discord/core'
+import {debug} from 'common/logger'
 import {jsonToMarkdown} from 'common/md'
 import {trimStrings} from 'common/parsing'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
@@ -31,7 +32,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     updateUser(pg, auth.uid, {avatarUrl: body.pinned_url})
   }
 
-  console.debug('body', body)
+  debug('body', body)
 
   const {data, error} = await tryCatch(insert(pg, 'profiles', {user_id: auth.uid, ...body}))
 
@@ -73,7 +74,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
           n % 50 === 0
         )
       }
-      console.debug(nProfiles, isMilestone(nProfiles))
+      debug(nProfiles, isMilestone(nProfiles))
       if (isMilestone(nProfiles)) {
         await sendDiscordMessage(`We just reached **${nProfiles}** total profiles! 🎉`, 'general')
       }

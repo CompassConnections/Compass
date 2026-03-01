@@ -1,4 +1,5 @@
 import {IS_LOCAL} from 'common/hosting/constants'
+import {debug} from 'common/logger'
 import {sleep} from 'common/util/time'
 import {type CreateEmailOptions, CreateEmailRequestOptions, Resend} from 'resend'
 import {log} from 'shared/utils'
@@ -11,7 +12,7 @@ export const sendEmail = async (
   options?: CreateEmailRequestOptions,
 ) => {
   const resend = getResend()
-  console.debug(resend, payload, options)
+  debug(resend, payload, options)
 
   const skip = IS_LOCAL
   if (skip) {
@@ -25,7 +26,7 @@ export const sendEmail = async (
     {replyTo: 'Compass <hello@compassmeet.com>', ...payload},
     options,
   )
-  console.debug('resend.emails.send', data, error)
+  debug('resend.emails.send', data, error)
 
   if (error) {
     log.error(`Failed to send email to ${payload.to} with subject ${payload.subject}`)
@@ -45,7 +46,7 @@ const getResend = () => {
   if (resend) return resend
 
   if (!process.env.RESEND_KEY) {
-    console.debug('No RESEND_KEY, skipping email send')
+    debug('No RESEND_KEY, skipping email send')
     return
   }
 

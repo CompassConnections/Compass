@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {ProfileRow} from 'common/profiles/profile'
 
 export const geodbHost = 'wft-geo-db.p.rapidapi.com'
@@ -24,10 +25,10 @@ export const geodbFetch = async (endpoint: string) => {
     }
 
     const data = await res.json()
-    console.debug('geodbFetch', endpoint, data)
+    debug('geodbFetch', endpoint, data)
     return {status: 'success', data}
   } catch (error) {
-    console.debug('geodbFetch', endpoint, error)
+    debug('geodbFetch', endpoint, error)
     return {status: 'failure', data: error}
   }
 }

@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -47,11 +48,11 @@ export const useProfileByUser = (user: User | undefined) => {
           else setProfile({...profile, user})
         })
         .catch((error) => {
-          console.debug('Warning: profile not found', user?.username, error)
+          debug('Warning: profile not found', user?.username, error)
           setProfile(null)
           return
         })
-      console.debug('End Refreshing profile for', user?.username, profile)
+      debug('End Refreshing profile for', user?.username, profile)
     }
   }
 

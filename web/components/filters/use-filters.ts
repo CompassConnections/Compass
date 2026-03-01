@@ -1,7 +1,7 @@
 import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
-import {logger} from 'common/logging'
+import {debug} from 'common/logger'
 import {kmToMiles} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {
@@ -141,7 +141,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     has_kids: wantsKidsToHasKidsFilter((you?.wants_kids_strength ?? 2) as wantsKidsDatabase),
     is_smoker: you?.is_smoker,
   }
-  logger.debug(you, yourFilters)
+  debug(you, yourFilters)
 
   const isYourFilters =
     !!you &&

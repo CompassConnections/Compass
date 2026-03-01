@@ -1,6 +1,7 @@
 # Contributing to Compass
 
-Thank you for your interest in contributing to Compass! This document provides comprehensive guidelines for contributing to this open-source project.
+Thank you for your interest in contributing to Compass! This document provides comprehensive guidelines for contributing
+to this open-source project.
 
 ## Table of Contents
 
@@ -18,7 +19,8 @@ Thank you for your interest in contributing to Compass! This document provides c
 
 ## Code of Conduct
 
-Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md). We are committed to providing a welcoming and inclusive environment for all contributors.
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md). We are committed to providing a welcoming and
+inclusive environment for all contributors.
 
 ## Getting Started
 
@@ -339,10 +341,10 @@ import {render, screen} from '@testing-library/react'
 import {MyComponent} from '../MyComponent'
 
 describe('MyComponent', () => {
-  it('renders correctly', () => {
-    render(<MyComponent />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-  })
+    it('renders correctly', () => {
+        render(<MyComponent / >)
+        expect(screen.getByText('Hello')).toBeInTheDocument()
+    })
 })
 ```
 
@@ -478,7 +480,7 @@ test(profiles): add unit tests for scoring
 API docs are auto-generated and available at:
 
 - Production: https://api.compassmeet.com
-- Local: http://localhost:3001 (when running locally)
+- Local: http://localhost:8088 (when running locally)
 
 ## Questions and Support
 

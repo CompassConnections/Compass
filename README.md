@@ -79,7 +79,7 @@ just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
 - [ ] Add calendar integration and scheduling
-- [ ] Add events (group calls, in-person meetups, etc.)
+- [x] Add events (group calls, in-person meetups, etc.)
 
 #### Secondary To Do
 

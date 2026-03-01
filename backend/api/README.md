@@ -102,7 +102,7 @@ cd backend/api
 yarn serve
 ```
 
-The API runs on http://localhost:3001 when running locally with the full stack.
+The API runs on http://localhost:8088 when running locally with the full stack.
 
 ### Testing
 
@@ -128,10 +128,9 @@ yarn lint-fix
 
 ### Authentication
 
-| Method | Endpoint            | Description     |
-| ------ | ------------------- | --------------- |
-| POST   | `/auth/google`      | Google Sign-In  |
-| POST   | `/auth/create-user` | Create new user |
+| Method | Endpoint       | Description     |
+| ------ | -------------- | --------------- |
+| POST   | `/create-user` | Create new user |
 
 ### Users
 
@@ -189,23 +188,21 @@ yarn lint-fix
 Add endpoint definition in `common/src/api/schema.ts`:
 
 ```typescript
-myEndpoint: {
+const endpoints = {
+  myEndpoint: {
     method: 'POST',
-        authed
-:
-    true,
-        returns
-:
-    z.object({
-        success: z.boolean(),
-        data: z.any()
+    authed: true,
+    returns: z.object({
+      success: z.boolean(),
+      data: z.any(),
     }),
-        props
-:
-    z.object({
+    props: z
+      .object({
         userId: z.string(),
-        option: z.string().optional()
-    }).strict()
+        option: z.string().optional(),
+      })
+      .strict(),
+  },
 }
 ```
 
@@ -272,6 +269,8 @@ const result = await pg.oneOrNone<User>('SELECT * FROM users WHERE id = $1', [us
 ```
 
 ### Using Supabase Client
+
+But this works only in the front-end.
 
 ```typescript
 import {db} from 'web/lib/supabase/db'
@@ -439,7 +438,7 @@ Docs are generated from route definitions in `app.ts`.
 - [Main README](../../README.md)
 - [Contributing Guide](../../CONTRIBUTING.md)
 - [Shared Backend Utils](../shared/README.md)
-- [Database Migrations](../../supabase/migrations)
+- [Database Migrations](../../supabase)
 
 ### Setup
 

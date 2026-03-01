@@ -22,7 +22,7 @@ This is the frontend of the Compass platform, a transparent platform for forming
 
 ```
 web/
-├── components/           # React components
+├── components/            # React components
 │   ├── auth-context.tsx   # Authentication state
 │   ├── buttons/           # Button components
 │   ├── chat/              # Chat/messaging components
@@ -35,13 +35,13 @@ web/
 │   ├── profile/           # Profile components
 │   └── widgets/           # Reusable widgets
 ├── hooks/                 # Custom React hooks (50+)
-├── lib/                  # Utilities and services
-│   ├── api.ts            # API client
-│   ├── firebase/         # Firebase configuration
-│   ├── locale/           # Internationalization
-│   ├── service/          # Analytics, push notifications
+├── lib/                   # Utilities and services
+│   ├── api.ts             # API client
+│   ├── firebase/          # Firebase configuration
+│   ├── locale/            # Internationalization
+│   ├── service/           # Analytics, push notifications
 │   ├── supabase/         # Supabase client
-│   └── logger.ts        # Structured logging
+│   └── logger.ts         # Structured logging
 ├── pages/                # Next.js pages
 │   ├── api/              # API routes
 │   ├── _app.tsx          # App wrapper
@@ -49,11 +49,11 @@ web/
 │   └── [username].tsx    # Dynamic routes
 ├── messages/             # Translation JSON files
 ├── public/               # Static assets
-├── styles/              # Global CSS
+├── styles/               # Global CSS
 ├── tests/
-│   ├── unit/            # Unit tests
-│   └── integration/     # Integration tests
-└── types/               # TypeScript type definitions
+│   ├── unit/             # Unit tests
+│   └── integration/      # Integration tests
+└── types/                # TypeScript type definitions
 ```
 
 ## Getting Started
@@ -188,7 +188,7 @@ const {data} = useAPIGetter('get-profiles', {})
 
 ### Internationalization
 
-Translation files are in `/messages` (e.g., `en.json`, `fr.json`).
+Translation files are in `/common/messages` (e.g., `en.json`, `fr.json`).
 
 ```tsx
 import {useT} from 'web/lib/locale'
@@ -317,9 +317,9 @@ export default function NewPage() {
 1. Create file in `/hooks/`
 2. Follow naming convention:\*.ts`
 
-### `use- Adding Translations
+### Adding Translations
 
-1. Add key to `/messages/en.json`
+1. Add key to `/messages/fr.json`
 2. Add translations to other locale files
 
 ## Troubleshooting
@@ -347,7 +347,7 @@ Check `yarn lint` first, as linting issues can cause build failures.
 ## Setup
 
 This is the setup for deployment on Vercel, which you only need to do if you create a new platform from scratch, not if
-you are contributing to Compass
+you are contributing to Compass.
 
 Set up a Vercel account and link it to your GitHub repository.
 

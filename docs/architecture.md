@@ -91,7 +91,7 @@ Compass/
 
 | Category   | Technology            | Version |
 | ---------- | --------------------- | ------- |
-| Framework  | Next.js               | 14.1.0  |
+| Framework  | Next.js               | 16      |
 | UI Library | React                 | 19.2.3  |
 | Language   | TypeScript            | 5.5.4   |
 | Styling    | Tailwind CSS          | 3.3.3   |

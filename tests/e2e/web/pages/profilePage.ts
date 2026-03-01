@@ -1,4 +1,5 @@
 import {expect, Locator, Page} from '@playwright/test'
+
 import {Socials} from '../utils/accountInformation'
 
 type ProfileDropdownOptions = 'Public' | 'Private' | 'Disable'
@@ -41,6 +42,8 @@ export class ProfilePage {
   private readonly bioOptionsDropdown: Locator
   private readonly editBioDropdownOptions: Locator
   private readonly deleteBioDropdownOptions: Locator
+  private readonly answerCoreQuestionsButton: Locator
+  private readonly viewQuestionListButton: Locator
 
   constructor(public readonly page: Page) {
     this.startAnsweringButton = page.getByRole('button', {})
@@ -86,6 +89,8 @@ export class ProfilePage {
     this.bioOptionsDropdown = page.getByTestId('profile-bio-options')
     this.editBioDropdownOptions = page.getByText('Edit', {exact: true})
     this.deleteBioDropdownOptions = page.getByText('Delete', {exact: true})
+    this.answerCoreQuestionsButton = page.getByRole('button', {name: 'Answer Core Questions'})
+    this.viewQuestionListButton = page.getByRole('link', {name: 'View List of Questions'})
   }
 
   async clickCloseButton() {
@@ -111,6 +116,16 @@ export class ProfilePage {
   async clickEditProfileButton() {
     await expect(this.editProfileButton).toBeVisible()
     await this.editProfileButton.click()
+  }
+
+  async clickAnswerQuestionsButton() {
+    await expect(this.answerCoreQuestionsButton).toBeVisible()
+    await this.answerCoreQuestionsButton.click()
+  }
+
+  async clickViewQuestionListButton() {
+    await expect(this.viewQuestionListButton).toBeVisible()
+    await this.viewQuestionListButton.click()
   }
 
   async selectOptionFromProfileDropdown(option: ProfileDropdownOptions) {
@@ -185,11 +200,12 @@ export class ProfilePage {
     await expect(textContent?.toLowerCase()).toContain(numberOfKids.toLowerCase())
   }
 
-  async verifyWantChildrenExpectation(expectation: string | undefined) {
+  async verifyWantChildrenExpectation(expectation: [string, number] | undefined) {
     if (!expectation) return
+    const [label, value] = expectation
     await expect(this.wantsKidsAboutSection).toBeVisible()
     const textContent = await this.wantsKidsAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(expectation.toLowerCase())
+    await expect(textContent?.toLowerCase()).toContain(label.toLowerCase())
   }
 
   async verifyInterests(interest: string[] | undefined) {
@@ -207,6 +223,14 @@ export class ProfilePage {
     const textContent = await this.causesAboutSection.textContent()
     for (let i = 0; i < causes.length; i++) {
       await expect(textContent?.toLowerCase()).toContain(causes[i].toLowerCase())
+    }
+  }
+
+  async verifyWorkArea(workArea: string[] | undefined) {
+    if (!workArea || workArea.length === 0) return
+    await expect(this.workAreaAboutSection).toBeVisible()
+    for (let i = 0; i < workArea.length; i++) {
+      await expect(this.workAreaAboutSection).toContainText(workArea[i], {ignoreCase: true})
     }
   }
 
@@ -293,5 +317,11 @@ export class ProfilePage {
     for (let i = 0; i < socialMedia.length; i++) {
       await expect(textContent?.toLowerCase()).toContain(socialMedia[i].urlOrUsername.toLowerCase())
     }
+  }
+
+  async verifyBio(bio: string | undefined) {
+    if (!bio) return
+    await expect(this.bioSection).toBeVisible()
+    await expect(this.bioSection).toContainText(bio)
   }
 }

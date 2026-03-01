@@ -8,12 +8,10 @@ cd "$(dirname "$0")"/..
 export $(cat .env.test | grep -v '^#' | xargs)
 
 # Get connection details
-export NEXT_PUBLIC_SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')
-export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status --output json | jq -r '.ANON_KEY')
-export DATABASE_URL=$(supabase status --output json | jq -r '.DB_URL')
-
-# Build backend (required?)
-#./scripts/build_api.sh
+STATUS_JSON=$(supabase status --output json)
+export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
+export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
+export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')
 
 cd tests/e2e/utils
 

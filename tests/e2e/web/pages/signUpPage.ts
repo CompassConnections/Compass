@@ -1,35 +1,25 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
-  RELATIONSHIP_CHOICES,
-  RELATIONSHIP_STATUS_CHOICES,
-  ROMANTIC_CHOICES,
-  POLITICAL_CHOICES,
-  DIET_CHOICES,
-  EDUCATION_CHOICES,
-  RELIGION_CHOICES,
-  LANGUAGE_CHOICES,
-  RACE_CHOICES,
-  MBTI_CHOICES,
+  ConnectionTypeKey,
+  DietKey,
+  EducationKey,
+  EthnicityKey,
+  LanguageKey,
+  PersonalityKey,
+  PoliticalBeliefsKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  ReligionKey,
 } from 'common/choices'
 
 export type Gender = 'Woman' | 'Man' | 'Other'
 export type InterestedIn = 'Women' | 'Men' | 'Other'
-export type ConnectionType = keyof typeof RELATIONSHIP_CHOICES
-export type RelationshipStatus = keyof typeof RELATIONSHIP_STATUS_CHOICES
-export type RelationshipStyle = keyof typeof ROMANTIC_CHOICES
 export type ChildrenExpectation =
-  | 'Strongly against'
-  | 'Against'
-  | 'Neutral'
-  | 'For'
-  | 'Strongly for'
-export type PoliticalBeliefs = keyof typeof POLITICAL_CHOICES
-export type Diet = keyof typeof DIET_CHOICES
-export type Education = keyof typeof EDUCATION_CHOICES
-export type Religion = keyof typeof RELIGION_CHOICES
-export type Language = keyof typeof LANGUAGE_CHOICES
-export type Ethnicity = keyof typeof RACE_CHOICES
-export type Personality = keyof typeof MBTI_CHOICES
+  | ['Strongly against', 0]
+  | ['Against', 1]
+  | ['Neutral', 2]
+  | ['For', 3]
+  | ['Strongly for', 4]
 export type Interests = 'Chess' | 'Games' | 'Joy' | 'Livres'
 export type Causes = 'Animal Rights' | 'Feminism'
 export type Platforms =
@@ -110,7 +100,7 @@ export class SignUpPage {
     this.displayNameField = page.getByPlaceholder('Display name')
     this.usernameField = page.getByPlaceholder('Username')
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
-    this.bioField = page.getByRole('paragraph').filter({hasText: /^$/})
+    this.bioField = page.locator('.tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
     this.ageField = page.getByPlaceholder('Age', {exact: true})
     this.feetHeightField = page.getByTestId('height-feet')
@@ -224,7 +214,7 @@ export class SignUpPage {
     await this.centimetersHeightField.fill(centimeters)
   }
 
-  async fillEthnicity(ethnicity: Ethnicity | undefined) {
+  async fillEthnicity(ethnicity: EthnicityKey | undefined) {
     if (ethnicity === 'Other') {
       await expect(
         this.page
@@ -276,19 +266,19 @@ export class SignUpPage {
     }
   }
 
-  async setConnectionType(type: ConnectionType | undefined) {
+  async setConnectionType(type: ConnectionTypeKey | undefined) {
     await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${type}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStatus(status: RelationshipStatus | undefined) {
+  async setRelationshipStatus(status: RelationshipStatusKey | undefined) {
     await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${status}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStyle(style: RelationshipStyle | undefined) {
+  async setRelationshipStyle(style: RelationshipStyleKey | undefined) {
     await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeVisible()
     await this.page.getByLabel(`${style}`, {exact: true}).click()
     await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeChecked()
@@ -301,19 +291,21 @@ export class SignUpPage {
   }
 
   async setWantChildrenExpectation(expectation: ChildrenExpectation | undefined) {
-    if (expectation === 'Strongly against') {
+    if (!expectation) return
+    const [label, value] = expectation
+    if (label === 'Strongly against') {
       await expect(this.stronglyDisagreeOnWantingKids).toBeVisible()
       await this.stronglyDisagreeOnWantingKids.click()
       await expect(this.stronglyDisagreeOnWantingKids).toBeChecked()
-    } else if (expectation === 'Against') {
+    } else if (label === 'Against') {
       await expect(this.disagreeOnWantingKids).toBeVisible()
       await this.disagreeOnWantingKids.click()
       await expect(this.disagreeOnWantingKids).toBeChecked()
-    } else if (expectation === 'Neutral') {
+    } else if (label === 'Neutral') {
       await expect(this.neutralOnWantingKids).toBeVisible()
       await this.neutralOnWantingKids.click()
       await expect(this.neutralOnWantingKids).toBeChecked()
-    } else if (expectation === 'For') {
+    } else if (label === 'For') {
       await expect(this.agreeOnWantingKids).toBeVisible()
       await this.agreeOnWantingKids.click()
       await expect(this.agreeOnWantingKids).toBeChecked()
@@ -366,7 +358,7 @@ export class SignUpPage {
     }
   }
 
-  async setHighestEducationLevel(education: Education | undefined) {
+  async setHighestEducationLevel(education: EducationKey | undefined) {
     await expect(this.page.getByText(`${education}`, {exact: true})).toBeVisible()
     await this.page.getByText(`${education}`, {exact: true}).click()
     await expect(this.page.getByText(`${education}`, {exact: true})).toBeChecked()
@@ -400,11 +392,13 @@ export class SignUpPage {
       if (isExisting) {
         await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
         await this.page.getByLabel(`${workArea[i]}`, {exact: true}).click()
+        await this.page.waitForTimeout(500)
       } else {
         await expect(this.addWorkAreaField).toBeVisible()
         await expect(this.addWorkAreaButton).toBeVisible()
         await this.addWorkAreaField.fill(workArea[i])
         await this.addWorkAreaButton.click()
+        await this.page.waitForTimeout(500)
       }
       await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
       await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeChecked()
@@ -412,7 +406,7 @@ export class SignUpPage {
   }
 
   async setPoliticalBeliefs(
-    politicalBeliefs?: PoliticalBeliefs | undefined,
+    politicalBeliefs?: PoliticalBeliefsKey | undefined,
     details?: string | undefined,
   ) {
     if (politicalBeliefs) {
@@ -427,7 +421,10 @@ export class SignUpPage {
     }
   }
 
-  async setReligiousBeliefs(religiousBeliefs?: Religion | undefined, details?: string | undefined) {
+  async setReligiousBeliefs(
+    religiousBeliefs?: ReligionKey | undefined,
+    details?: string | undefined,
+  ) {
     if (religiousBeliefs && religiousBeliefs === 'Other') {
       await expect(
         this.page
@@ -458,7 +455,7 @@ export class SignUpPage {
     }
   }
 
-  async setPersonalityType(personalityType: Personality | undefined) {
+  async setPersonalityType(personalityType: PersonalityKey | undefined) {
     await expect(this.page.getByText(`${personalityType}`, {exact: true})).toBeVisible()
     await this.page.getByText(`${personalityType}`, {exact: true}).click()
     await expect(this.page.getByText(`${personalityType}`, {exact: true})).toBeChecked()
@@ -619,7 +616,7 @@ export class SignUpPage {
     }
   }
 
-  async setDietType(dietType: Diet | undefined) {
+  async setDietType(dietType: DietKey | undefined) {
     if (dietType === 'Other') {
       await expect(this.page.locator('label').filter({hasText: 'Other'}).nth(4)).toBeVisible()
       await this.page.locator('label').filter({hasText: 'Other'}).nth(4).click()
@@ -649,8 +646,9 @@ export class SignUpPage {
     await this.alcoholConsumedPerMonthField.fill(amount)
   }
 
-  async setLanguages(language: Language[] | undefined) {
+  async setLanguages(language: LanguageKey[] | undefined) {
     if (!language || language.length === 0) return
+    await this.page.getByRole('checkbox', {name: `English`}).click()
     for (let i = 0; i < language.length; i++) {
       await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible()
       await this.page.getByRole('checkbox', {name: `${language[i]}`}).click()

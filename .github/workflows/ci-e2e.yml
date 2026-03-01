@@ -16,6 +16,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('firebase.json') }}
+          restore-keys: firebase-emulators-
+
+      #      - name: Cache Docker layers
+      #        uses: ScribeMD/docker-cache@0.5.0
+      #        with:
+      #          key: docker-${{ runner.os }}-${{ hashFiles('supabase/config.toml') }}
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('yarn.lock') }}
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package.json') }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,22 +53,40 @@ jobs:
           distribution: 'temurin'
           java-version: '21' # Required for firebase-tools@15+
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        env:
+          HUSKY: 0
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Start Supabase # optional step, as if supabase is stopped, it would be started in test:e2e, but done here to avoid cluttering the logs of the E2E tests
-        run: |
-          echo "::group::Supabase start (docker pull logs)"
-          npx supabase start
-          echo "::endgroup::"
+      # Docker load from cache is actually slower than pulling the images every time with supabase start
+      #      - name: Cache Supabase Docker images
+      #        uses: actions/cache@v4
+      #        with:
+      #          path: /tmp/supabase-docker
+      #          key: supabase-docker-${{ hashFiles('supabase/config.toml') }}
+      #
+      #      - name: Load cached Docker images
+      #        run: |
+      #          if [ -d /tmp/supabase-docker ]; then
+      #            for tar in /tmp/supabase-docker/*.tar; do
+      #              [ -f "$tar" ] && docker load -i "$tar"
+      #            done
+      #          fi
+
+      - name: Start Supabase
+        run: ./scripts/supabase_start.sh
+
+      #      - name: Save Supabase Docker images
+      #        run: |
+      #          mkdir -p /tmp/supabase-docker
+      #          docker images --format '{{.Repository}}:{{.Tag}}' \
+      #            | grep -E 'supabase|postgrest|gotrue|realtime|storage' \
+      #            | grep -v '<none>' \
+      #            | xargs -I{} sh -c \
+      #              'docker save {} -o /tmp/supabase-docker/$(echo {} | tr "/:" "--").tar'
 
       - name: Run E2E tests
         env:
@@ -58,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: tests/reports/playwright-report/
           retention-days: 7
 
       - name: Upload test results
@@ -68,3 +111,4 @@ jobs:
           name: test-results
           path: test-results/
           retention-days: 7
+          if-no-files-found: ignore

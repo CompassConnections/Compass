@@ -5,6 +5,9 @@ set -euo pipefail
 # Change to project root
 cd "$(dirname "$0")"/..
 
+export NEXT_PUBLIC_ISOLATED_ENV=true
+export CI=true
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -60,18 +63,7 @@ supabase stop --no-backup 2>/dev/null || true
 sleep 2  # Give ports time to free up
 
 # Build backend (required?)
-./scripts/build_api.sh
-
-# Get connection details
-export NEXT_PUBLIC_SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')
-export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status --output json | jq -r '.ANON_KEY')
-export DATABASE_URL=$(supabase status --output json | jq -r '.DB_URL')
-
-echo $NEXT_PUBLIC_SUPABASE_URL
-echo $NEXT_PUBLIC_SUPABASE_ANON_KEY
-echo $DATABASE_URL
-
-print_status "Supabase started at: $DATABASE_URL"
+#./scripts/build_api.sh
 
 # Install Playwright browsers
 print_status "Installing Playwright browsers..."
@@ -89,6 +81,26 @@ npx wait-on \
 
 # Start Supabase (includes Postgres, Auth, Storage, etc.) and Apply migrations and seed (needs firebase emulator running)
 yarn test:db:reset
+
+# Get connection details
+STATUS_JSON=$(supabase status --output json)
+export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
+export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
+export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')
+
+print_status "Supabase started at: $DATABASE_URL"
+
+echo "Supabase env vars:"
+echo $NEXT_PUBLIC_SUPABASE_URL
+echo $NEXT_PUBLIC_SUPABASE_ANON_KEY
+echo $DATABASE_URL
+
+for var in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY DATABASE_URL; do
+  if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+    echo "Error: $var is not set or null" >&2
+    exit 1
+  fi
+done
 
 # Start backend API
 print_status "Starting backend API..."

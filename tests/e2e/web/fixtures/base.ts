@@ -1,6 +1,7 @@
 import {test as base} from '@playwright/test'
 
 import {AuthPage} from '../pages/AuthPage'
+import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
@@ -14,6 +15,7 @@ export const test = base.extend<{
   signUpPage: SignUpPage
   profilePage: ProfilePage
   authPage: AuthPage
+  compatabilityPage: ComatibilityPage
   cleanUpUsers: void
   testAccount: OnboardingUser
   fakerAccount: OnboardingUser
@@ -50,12 +52,10 @@ export const test = base.extend<{
     const profilePage = new ProfilePage(page)
     await use(profilePage)
   },
-  // cleanUpUsers: [
-  //   async ({}, use) => {
-  //     await use()
-  //   },
-  //   {auto: true},
-  // ],
+  compatabilityPage: async ({page}, use) => {
+    const compatibilityPage = new ComatibilityPage(page)
+    await use(compatibilityPage)
+  },
 })
 
 export {expect} from '@playwright/test'

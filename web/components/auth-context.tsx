@@ -10,7 +10,6 @@ import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
 import {useWebsocketPrivateUser, useWebsocketUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {auth} from 'web/lib/firebase/users'
-import {useLocale} from 'web/lib/locale'
 import {getLocale} from 'web/lib/locale-cookie'
 import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
 import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
@@ -118,8 +117,6 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
   )
   const [authLoaded, setAuthLoaded] = useState(false)
   const firebaseUser = useAndSetupFirebaseUser()
-  const {locale} = useLocale()
-  console.log('AuthProvider hook locale', locale)
 
   const authUser = !user
     ? user

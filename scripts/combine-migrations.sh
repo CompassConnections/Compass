@@ -72,7 +72,7 @@ while IFS= read -r file; do
     cat "$file"
   } > "$OUTPUT"
 
-  echo "✅ $file -> $OUTPUT"
+#  echo "✅ $file -> $OUTPUT"
 
   COUNTER=$((COUNTER + 100))
 done <<< "$FILES"

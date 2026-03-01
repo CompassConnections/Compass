@@ -21,7 +21,8 @@ export const getServiceAccountCredentials = () => {
   try {
     return JSON.parse(readFileSync(keyPath, {encoding: 'utf8'}))
   } catch (e) {
-    throw new Error(`Failed to load service account key from ${keyPath}: ${e}`)
+    if (!process.env.NEXT_PUBLIC_ISOLATED_ENV && !process.env.FIREBASE_AUTH_EMULATOR_HOST)
+      throw new Error(`Failed to load service account key from ${keyPath}: ${e}`)
   }
 }
 

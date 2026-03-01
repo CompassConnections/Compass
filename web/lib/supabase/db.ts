@@ -9,12 +9,20 @@ export function initSupabaseClient() {
   const anonKeyOverride = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
 
   if (urlOverride && anonKeyOverride) {
-    console.log('Initializing Supabase client (env URL override)')
+    console.log('Initializing Supabase client (env URL override)', {urlOverride, anonKeyOverride})
     return createClient(urlOverride, anonKeyOverride)
+  } else if (process.env.NEXT_PUBLIC_ISOLATED_ENV) {
+    throw new Error(
+      `You are running isolated tests (NEXT_PUBLIC_ISOLATED_ENV=true), so you do not want to call the remote supabase. ${{
+        urlOverride,
+        anonKeyOverride,
+      }}`,
+    )
   }
+
   if (urlOverride || anonKeyOverride) {
     console.warn(
-      'Supabase env override is partially set. Both URL and ANON_KEY are required. Falling back to ENV_CONFIG.'
+      'Supabase env override is partially set. Both URL and ANON_KEY are required. Falling back to ENV_CONFIG.',
     )
   }
 

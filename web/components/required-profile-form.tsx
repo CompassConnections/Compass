@@ -92,7 +92,7 @@ export const RequiredProfileUserForm = (props: {
         <div className="mb-6 text-lg">
           {t(
             'profile.required.username_locked_warning',
-            'You cannot change your username after creating a profile, but you can update you name later in your profile settings.',
+            'You cannot change your username after creating a profile, but you can update your name later in your profile settings.',
           )}
         </div>
       )}

@@ -1,22 +1,24 @@
 import {faker} from '@faker-js/faker'
+import {
+  ConnectionTypeKey,
+  DietKey,
+  EducationKey,
+  EthnicityKey,
+  LanguageKey,
+  PersonalityKey,
+  PoliticalBeliefsKey,
+  RelationshipStatusKey,
+  RelationshipStyleKey,
+  ReligionKey,
+} from 'common/choices'
 
 import {
   Causes,
   ChildrenExpectation,
-  ConnectionType,
-  Diet,
-  Education,
-  Ethnicity,
   Gender,
   InterestedIn,
   Interests,
-  Language,
-  Personality,
   Platforms,
-  PoliticalBeliefs,
-  RelationshipStatus,
-  RelationshipStyle,
-  Religion,
 } from '../pages/signUpPage'
 
 export type OnboardingUser = {
@@ -28,28 +30,28 @@ export type OnboardingUser = {
   gender?: Gender
   age?: string
   height?: Height
-  ethnicity_origin?: Ethnicity
+  ethnicity_origin?: EthnicityKey
   interested_in?: InterestedIn
   Interested_in_ages?: InterestedInAges
-  connection_type?: ConnectionType
-  relationship_status?: RelationshipStatus
-  relationship_style?: RelationshipStyle
+  connection_type?: ConnectionTypeKey
+  relationship_status?: RelationshipStatusKey
+  relationship_style?: RelationshipStyleKey
   number_of_kids?: string
   children_expectation?: ChildrenExpectation
   interests?: (Interests | string)[]
   causes?: (Causes | string)[]
-  education_level?: Education
+  education_level?: EducationKey
   university?: string
   job_title?: string
   company?: string
   work_area?: string[]
   beliefs?: BeliefDetails
-  personality_type?: Personality
+  personality_type?: PersonalityKey
   big_five_personality_traits?: FiveBigPersonalityTraits
-  diet?: Diet
+  diet?: DietKey
   is_smoker?: boolean
   alcohol_consumed_per_month?: string
-  languages?: Language[]
+  languages?: LanguageKey[]
   social_media?: Socials[]
 }
 
@@ -66,11 +68,11 @@ type InterestedInAges = {
 
 type BeliefDetails = {
   political?: {
-    belief?: PoliticalBeliefs
+    belief?: PoliticalBeliefsKey
     details?: string
   }
   religious?: {
-    belief?: Religion
+    belief?: ReligionKey
     details?: string
   }
 }
@@ -95,68 +97,74 @@ type OnboardingConfig = {
 
 export const onboarding: OnboardingConfig = {
   // Use a function so email is unique per test call
-  faker_account: () => ({
-    email: `faker+${crypto.randomUUID()}@test.com`,
-    password: faker.internet.password(),
-    display_name: faker.internet.displayName(),
-    username: `user_${crypto.randomUUID().slice(0, 8)}`,
-  }),
+  faker_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `faker+${id}@test.com`,
+      password: faker.internet.password(),
+      display_name: faker.internet.displayName(),
+      username: `user_${id}`,
+    }
+  },
 
-  account_one: () => ({
-    // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
-    email: `onboarding+${crypto.randomUUID()}@test.compass`,
-    password: 'CompassTest',
-    display_name: 'Compass Onboarding',
-    username: `TheGreatOnboarding_${crypto.randomUUID().slice(0, 8)}`,
-    bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
-    gender: 'Woman',
-    age: '25',
-    height: {
-      feet: '6',
-      inches: '0',
-      centimeters: '182.88',
-    },
-    ethnicity_origin: 'South/Southeast Asian',
-    interested_in: 'Men',
-    Interested_in_ages: {
-      min: '20',
-      max: '30',
-    },
-    connection_type: 'Relationship',
-    relationship_status: 'In open relationship',
-    relationship_style: 'Open Relationship',
-    number_of_kids: '2',
-    children_expectation: 'Neutral',
-    interests: ['Chess', 'Eating'],
-    causes: ['Animal Rights', 'Free Spotify'],
-    education_level: 'Bachelors',
-    university: 'Open-Source University',
-    job_title: 'Unemployed',
-    company: 'Home',
-    work_area: ['Living Room', 'University'],
-    beliefs: {
-      political: {
-        belief: 'Green / Eco-Socialist',
-        details: 'This will be details',
+  account_one: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
+      email: `onboarding+${id}@test.compass`,
+      password: 'CompassTest',
+      display_name: 'Compass Onboarding',
+      username: `TheGreatOnboarding_${id}`, // username max length is 25 (see /create-user)
+      bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
+      gender: 'Woman',
+      age: '25',
+      height: {
+        feet: '6',
+        inches: '0',
+        centimeters: '182.88',
       },
-      religious: {
-        belief: 'Shinto',
-        details: 'This will be details',
+      ethnicity_origin: 'South/Southeast Asian',
+      interested_in: 'Men',
+      Interested_in_ages: {
+        min: '20',
+        max: '30',
       },
-    },
-    personality_type: 'ENFJ',
-    big_five_personality_traits: {
-      openness: 43,
-    },
-    diet: 'Omnivore',
-    is_smoker: false,
-    alcohol_consumed_per_month: '4',
-    languages: ['Akan', 'Cebuano'],
-    social_media: [
-      {
-        platform: 'Bluesky',
-        urlOrUsername: 'TheGreatConnection',
+      connection_type: 'Relationship',
+      relationship_status: 'In open relationship',
+      relationship_style: 'Open Relationship',
+      number_of_kids: '2',
+      children_expectation: ['Neutral', 2],
+      interests: ['Chess', 'Eating'],
+      causes: ['Animal Rights', 'Free Spotify'],
+      education_level: 'Bachelors',
+      university: 'Open-Source University',
+      job_title: 'Unemployed',
+      company: 'Home',
+      work_area: ['Engineering', 'Academia'],
+      beliefs: {
+        political: {
+          belief: 'Green / Eco-Socialist',
+          details: 'This will be details',
+        },
+        religious: {
+          belief: 'Shinto',
+          details: 'This will be details',
+        },
       },
-    ],
-  }),
+      personality_type: 'ENFJ',
+      big_five_personality_traits: {
+        openness: 43,
+      },
+      diet: 'Omnivore',
+      is_smoker: false,
+      alcohol_consumed_per_month: '4',
+      languages: ['Akan', 'Cebuano'],
+      social_media: [
+        {
+          platform: 'Bluesky',
+          urlOrUsername: 'TheGreatConnection',
+        },
+      ],
+    }
+  },
 }

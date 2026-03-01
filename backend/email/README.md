@@ -8,6 +8,7 @@ First, install the dependencies:
 
 ```sh
 yarn install
+yarn setup // to install the correct next config in the .react-email folder, with the right aliases
 ```
 
 Then, run the development server:

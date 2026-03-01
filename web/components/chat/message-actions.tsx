@@ -1,5 +1,5 @@
-import {DotsHorizontalIcon, PencilIcon, TrashIcon} from '@heroicons/react/outline'
-import {EmojiHappyIcon} from '@heroicons/react/solid'
+import {EllipsisHorizontalIcon, PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
+import {FaceSmileIcon} from '@heroicons/react/24/solid'
 import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
 import {PrivateChatMessage} from 'common/chat-message'
@@ -111,7 +111,7 @@ export function MessageActions(props: {
               },
               {
                 name: t('messages.action.add_reaction', 'Add Reaction'),
-                icon: <EmojiHappyIcon className="h-4 w-4" />,
+                icon: <FaceSmileIcon className="h-4 w-4" />,
                 onClick: () => {
                   setShowEmojiPicker(!showEmojiPicker)
                 },
@@ -119,7 +119,7 @@ export function MessageActions(props: {
             ].filter(Boolean) as DropdownItem[]
           }
           closeOnClick={true}
-          icon={<DotsHorizontalIcon className="h-5 w-5 text-gray-500" />}
+          icon={<EllipsisHorizontalIcon className="h-5 w-5 text-gray-500" />}
           menuWidth="w-40"
           className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-canvas-50"
         />

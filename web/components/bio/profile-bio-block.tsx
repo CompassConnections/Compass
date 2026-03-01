@@ -1,4 +1,4 @@
-import {PencilIcon, XIcon} from '@heroicons/react/outline'
+import {PencilIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
@@ -61,7 +61,7 @@ export function BioBlock(props: {
                 },
                 {
                   name: t('profile.bio.delete', 'Delete'),
-                  icon: <XIcon className="h-5 w-5" />,
+                  icon: <XMarkIcon className="h-5 w-5" />,
                   onClick: async () => {
                     const {error} = await tryCatch(updateProfile({bio: null}))
                     if (error) console.error(error)

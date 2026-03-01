@@ -1,7 +1,6 @@
-import {Popover} from '@headlessui/react'
+import {flip, offset, shift, useFloating} from '@floating-ui/react'
+import {Popover, PopoverButton, PopoverPanel} from '@headlessui/react'
 import clsx from 'clsx'
-import {useState} from 'react'
-import {usePopper} from 'react-popper'
 import {NewBadge} from 'web/components/new-badge'
 
 import {AnimationOrNothing} from '../comments/dropdown-menu'
@@ -16,9 +15,7 @@ export function CustomizeableDropdown(props: {
   closeOnClick?: boolean
   withinOverflowContainer?: boolean
   popoverClassName?: string
-  // When true, shows a tiny "new" badge at the top-left of the button
   showNewBadge?: boolean
-  // Optional extra classes for the badge container (to tweak position/size)
   newBadgeClassName?: string
 }) {
   const {
@@ -33,32 +30,30 @@ export function CustomizeableDropdown(props: {
     showNewBadge,
     newBadgeClassName,
   } = props
-  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>()
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>()
-  const {styles, attributes} = usePopper(referenceElement, popperElement, {
+
+  const {refs, floatingStyles} = useFloating({
     strategy: withinOverflowContainer ? 'fixed' : 'absolute',
+    middleware: [offset(8), flip(), shift({padding: 8})],
   })
+
   return (
     <Popover className={clsx('relative inline-block text-left', className)}>
       {({open, close}) => (
         <>
-          <Popover.Button
-            ref={setReferenceElement}
+          <PopoverButton
+            ref={refs.setReference}
             className={clsx('flex items-center relative hover-bold', buttonClass)}
-            onClick={(e: any) => {
-              e.stopPropagation()
-            }}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
             disabled={buttonDisabled}
           >
             {showNewBadge && <NewBadge classes={newBadgeClassName} />}
             {buttonContent(open)}
-          </Popover.Button>
+          </PopoverButton>
 
           <AnimationOrNothing show={open} animate={!withinOverflowContainer}>
-            <Popover.Panel
-              ref={setPopperElement}
-              style={styles.popper}
-              {...attributes.popper}
+            <PopoverPanel
+              ref={refs.setFloating}
+              style={floatingStyles}
               className={clsx(
                 'bg-canvas-0 ring-ink-1000 z-30 rounded-md px-2 py-2 shadow-lg ring-1 ring-opacity-5 focus:outline-none',
                 menuWidth ?? 'w-36',
@@ -68,7 +63,7 @@ export function CustomizeableDropdown(props: {
               {typeof dropdownMenuContent === 'function'
                 ? dropdownMenuContent(close)
                 : dropdownMenuContent}
-            </Popover.Panel>
+            </PopoverPanel>
           </AnimationOrNothing>
         </>
       )}

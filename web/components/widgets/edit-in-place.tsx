@@ -23,7 +23,7 @@ export const EditInPlaceInput = (props: {
     <ExpandingInput
       className={className}
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setValue(e.target.value)}
       onBlur={save}
       onKeyDown={(e) => e.key === 'Enter' && save()}
       autoFocus

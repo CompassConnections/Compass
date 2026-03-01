@@ -1,5 +1,5 @@
 import {flip, offset, shift, useFloating} from '@floating-ui/react-dom'
-import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
 import {useState} from 'react'
 
 export function QuestionMarkTooltip(props: {text: string | any}) {

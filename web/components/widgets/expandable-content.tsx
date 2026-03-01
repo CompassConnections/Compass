@@ -1,4 +1,4 @@
-import {DocumentTextIcon} from '@heroicons/react/outline'
+import {DocumentTextIcon} from '@heroicons/react/24/outline'
 import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
 import {MouseEventHandler, ReactNode, useRef, useState} from 'react'

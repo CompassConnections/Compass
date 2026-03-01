@@ -1,4 +1,4 @@
-import {XIcon} from '@heroicons/react/outline'
+import {XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
@@ -108,7 +108,7 @@ function ButtonModal(props: {
                     }}
                     className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
-                    <XIcon className="h-6 w-6" />
+                    <XMarkIcon className="h-6 w-6" />
                   </button>
                 </Row>
               ))}
@@ -241,7 +241,7 @@ function StarModal(props: {
                     }}
                     className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
-                    <XIcon className="h-6 w-6" />
+                    <XMarkIcon className="h-6 w-6" />
                   </button>
                 </Row>
               ))}

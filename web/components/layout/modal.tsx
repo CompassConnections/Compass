@@ -1,5 +1,5 @@
 import {Dialog, Transition} from '@headlessui/react'
-import {XIcon} from '@heroicons/react/outline'
+import {XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Fragment, ReactNode, useEffect, useRef} from 'react'
 
@@ -94,7 +94,7 @@ export function Modal(props: {
                       position === 'top' && 'sm:-bottom-4 sm:top-auto sm:translate-y-full',
                     )}
                   >
-                    <XIcon className="h-8 w-8" />
+                    <XMarkIcon className="h-8 w-8" />
                     <div className="sr-only">Close</div>
                   </button>
                 )}

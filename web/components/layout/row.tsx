@@ -1,8 +1,8 @@
 import clsx from 'clsx'
-import {forwardRef} from 'react'
+import {ComponentPropsWithoutRef, forwardRef} from 'react'
 
 export const Row = forwardRef(function Row(
-  props: JSX.IntrinsicElements['div'],
+  props: ComponentPropsWithoutRef<'div'>,
   ref: React.Ref<HTMLDivElement>,
 ) {
   const {children, className, ...rest} = props

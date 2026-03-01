@@ -1,5 +1,5 @@
-import {CheckIcon, ClipboardCopyIcon, DuplicateIcon} from '@heroicons/react/outline'
-import {LinkIcon} from '@heroicons/react/solid'
+import {CheckIcon, ClipboardIcon, DocumentDuplicateIcon} from '@heroicons/react/24/outline'
+import {LinkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ComponentProps, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -121,7 +121,11 @@ export const CopyLinkRow = (props: {
       <div className={'select-all truncate'}>{displayUrl}</div>
       {url && (
         <div className={linkButtonClassName}>
-          {!iconPressed ? <DuplicateIcon className="h-5 w-5" /> : <CheckIcon className="h-5 w-5" />}
+          {!iconPressed ? (
+            <DocumentDuplicateIcon className="h-5 w-5" />
+          ) : (
+            <CheckIcon className="h-5 w-5" />
+          )}
         </div>
       )}
     </button>
@@ -152,7 +156,7 @@ export function SimpleCopyTextButton(props: {
         noTap
         placement="bottom"
       >
-        <ClipboardCopyIcon className={'h-5'} aria-hidden="true" />
+        <ClipboardIcon className={'h-5'} aria-hidden="true" />
       </Tooltip>
     </IconButton>
   )

@@ -1,5 +1,5 @@
 import {Placement} from '@floating-ui/react'
-import {InformationCircleIcon} from '@heroicons/react/outline'
+import {InformationCircleIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 
 import {Tooltip} from './tooltip'

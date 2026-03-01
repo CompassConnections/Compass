@@ -1,4 +1,4 @@
-import {PlusIcon, XIcon} from '@heroicons/react/outline'
+import {PlusIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
@@ -156,7 +156,9 @@ function CreateCompatibilityModalContent(props: {
         <ExpandingInput
           maxLength={MAX_COMPATIBILITY_QUESTION_LENGTH}
           value={question}
-          onChange={(e) => setQuestion(e.target.value || '')}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setQuestion(e.target.value || '')
+          }
         />
       </Col>
       <Col className="gap-1">
@@ -169,7 +171,9 @@ function CreateCompatibilityModalContent(props: {
             <div key={index} className="relative">
               <ExpandingInput
                 value={options[index]}
-                onChange={(e) => onOptionChange(index, e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  onOptionChange(index, e.target.value)
+                }
                 className="w-full"
                 placeholder={t('answers.add.option_placeholder', 'Option {n}', {
                   n: String(index + 1),
@@ -182,7 +186,7 @@ function CreateCompatibilityModalContent(props: {
                   className="bg-ink-400 text-ink-0 hover:bg-ink-600 transition-color absolute -right-1.5 -top-1.5 rounded-full p-0.5"
                   onClick={() => deleteOption(index)}
                 >
-                  <XIcon className="z-10 h-3 w-3" />
+                  <XMarkIcon className="z-10 h-3 w-3" />
                 </button>
               )}
             </div>

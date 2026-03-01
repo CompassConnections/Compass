@@ -1,4 +1,4 @@
-import {InformationCircleIcon} from '@heroicons/react/solid'
+import {InformationCircleIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ReactNode} from 'react'
 

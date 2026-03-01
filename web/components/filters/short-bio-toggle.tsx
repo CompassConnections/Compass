@@ -25,7 +25,9 @@ export function ShortBioToggle(props: {
         type="checkbox"
         className="border-ink-300 bg-canvas-0 dark:border-ink-500 text-primary-600 focus:ring-primary-500 h-4 w-4 rounded hover:bg-canvas-200 cursor-pointer"
         checked={on}
-        onChange={(e) => updateFilter({shortBio: e.target.checked ? true : undefined})}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          updateFilter({shortBio: e.target.checked ? true : undefined})
+        }
       />
       <label htmlFor={label} className={clsx('text-ink-600 ml-2')}>
         {label}

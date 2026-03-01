@@ -1,4 +1,4 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {throttle} from 'lodash'
 import {forwardRef, ReactNode, Ref, useEffect, useRef, useState} from 'react'

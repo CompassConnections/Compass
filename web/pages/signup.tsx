@@ -26,7 +26,7 @@ export default function SignupPage() {
   useTracking('view signup page')
 
   // Hold loading indicator for 5s when user transitions from undefined -> null
-  const prevUserRef = useRef<ReturnType<typeof useUser>>()
+  const prevUserRef = useRef<ReturnType<typeof useUser>>(undefined)
   const holdTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [holdLoading, setHoldLoading] = useState(true)
 

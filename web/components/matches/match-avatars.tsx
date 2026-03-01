@@ -1,4 +1,4 @@
-import {HeartIcon, UserIcon} from '@heroicons/react/solid'
+import {HeartIcon, UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import Image from 'next/image'

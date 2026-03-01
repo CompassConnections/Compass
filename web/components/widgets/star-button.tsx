@@ -1,4 +1,4 @@
-import {StarIcon} from '@heroicons/react/outline'
+import {StarIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {useEffect, useState} from 'react'
@@ -42,7 +42,7 @@ export const StarButton = (props: {
   const button = (
     <button
       className={clsx(buttonClass('xs', 'none'), 'text-ink-500 group !rounded-full', className)}
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         star()
       }}

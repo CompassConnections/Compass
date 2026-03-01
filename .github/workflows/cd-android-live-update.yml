@@ -1,7 +1,7 @@
 name: CD Android Live Update
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
       - 'android/capawesome.json'
       - '.github/workflows/cd-android-live-update.yml'

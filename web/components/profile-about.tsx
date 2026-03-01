@@ -1,4 +1,4 @@
-import {ClockIcon} from '@heroicons/react/solid'
+import {ClockIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {
   INVERTED_DIET_CHOICES,

@@ -22,7 +22,7 @@ export type Row<T extends Selectable> = T extends TableName
     : never
 export type Column<T extends Selectable> = keyof Row<T> & string
 
-export type SupabaseClient = SupabaseClientGeneric<Database, 'public', Schema>
+export type SupabaseClient = SupabaseClientGeneric<Database, 'public'>
 
 export function createClient(
   instanceIdOrUrl: string,

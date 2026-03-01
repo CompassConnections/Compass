@@ -28,7 +28,7 @@ export const ClickFrame = forwardRef(
           // we put pointer-events:auto on links, buttons, and elements with class stop-prop,
           // so they get caught by the stopPropagation below
           className="pointer-events-none contents [&_.stop-prop]:pointer-events-auto [&_a]:pointer-events-auto [&_button]:pointer-events-auto"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
         >
           {children}
         </div>

@@ -1,4 +1,4 @@
-import {UserIcon} from '@heroicons/react/solid'
+import {UserIcon} from '@heroicons/react/24/solid'
 import {LikeData, ShipData} from 'common/api/profile-types'
 import {Profile} from 'common/profiles/profile'
 import {keyBy, orderBy} from 'lodash'

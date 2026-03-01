@@ -1,5 +1,5 @@
 import {RadioGroup} from '@headlessui/react'
-import {UserIcon} from '@heroicons/react/solid'
+import {UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -221,7 +221,9 @@ export function AnswerCompatibilityQuestionContent(props: {
             className={'w-full'}
             rows={3}
             value={answer.explanation ?? ''}
-            onChange={(e) => setAnswer({...answer, explanation: e.target.value})}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setAnswer({...answer, explanation: e.target.value})
+            }
           />
         </Col>
       </Col>

@@ -1,5 +1,5 @@
-import {CheckCircleIcon} from '@heroicons/react/outline'
-import {PlusIcon, XIcon} from '@heroicons/react/solid'
+import {CheckCircleIcon} from '@heroicons/react/24/outline'
+import {PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
@@ -101,7 +101,7 @@ export const AddPhotosWidget = (props: {
                 </div>
               )}
               <Button
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation()
                   const newUrls = (photo_urls ?? []).filter((u) => u !== url)
                   if (isPinned) setPinnedUrl(newUrls[0] ?? '')
@@ -111,7 +111,7 @@ export const AddPhotosWidget = (props: {
                 size={'2xs'}
                 className={clsx('bg-canvas-0 absolute right-0 top-0 !rounded-full !px-1 py-1')}
               >
-                <XIcon className={'h-4 w-4'} />
+                <XMarkIcon className={'h-4 w-4'} />
               </Button>
               <Image
                 src={url}
@@ -123,11 +123,11 @@ export const AddPhotosWidget = (props: {
 
               <textarea
                 // stop click bubbling so clicking/focusing the input doesn't pin the image
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent<HTMLTextAreaElement>) => e.stopPropagation()}
                 aria-label={`description for image ${index}`}
                 placeholder={t('add_photos.add_description', 'Add description')}
                 value={image_descriptions?.[url] ?? ''}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                   e.stopPropagation()
                   const v = e.target.value
                   setDescription(url, v)

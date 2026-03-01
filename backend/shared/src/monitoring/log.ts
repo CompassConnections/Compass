@@ -1,6 +1,6 @@
 import {format} from 'node:util'
 
-import {dim, red, yellow} from 'colors/safe'
+import {dim, red, yellow} from 'colorette'
 import {IS_GOOGLE_CLOUD} from 'common/hosting/constants'
 import {isError, omit, pick} from 'lodash'
 

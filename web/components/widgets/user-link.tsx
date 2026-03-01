@@ -1,5 +1,5 @@
-import {BadgeCheckIcon, ShieldCheckIcon} from '@heroicons/react/outline'
-import {SparklesIcon} from '@heroicons/react/solid'
+import {CheckBadgeIcon, ShieldCheckIcon} from '@heroicons/react/24/outline'
+import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
 import {DAY_MS} from 'common/util/time'
@@ -73,7 +73,7 @@ export function UserLink(props: {
     <Link
       href={`/${username}`}
       className={clsx(linkClass, 'inline-flex flex-row items-center gap-1', className)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
     >
       {children}
     </Link>
@@ -129,7 +129,7 @@ function ModBadge() {
 function VerifiedBadge() {
   return (
     <Tooltip text="Verified" placement="right">
-      <BadgeCheckIcon className="text-primary-700 h-4 w-4" aria-hidden />
+      <CheckBadgeIcon className="text-primary-700 h-4 w-4" aria-hidden />
     </Tooltip>
   )
 }

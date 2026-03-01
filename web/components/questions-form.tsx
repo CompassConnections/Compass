@@ -127,7 +127,9 @@ const QuestionRow = (props: {row: rowFor<'compatibility_prompts'>; user: User}) 
           className={'w-full max-w-xl'}
           rows={3}
           value={form.free_response ?? ''}
-          onChange={(e) => setForm({...form, free_response: e.target.value})}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setForm({...form, free_response: e.target.value})
+          }
           onBlur={() => submitAnswer(form)}
         />
       ) : answer_type === 'multiple_choice' && row.multiple_choice_options ? (
@@ -148,7 +150,9 @@ const QuestionRow = (props: {row: rowFor<'compatibility_prompts'>; user: User}) 
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e) => setForm({...form, integer: Number(e.target.value)})}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setForm({...form, integer: Number(e.target.value)})
+          }
           value={form.integer ?? undefined}
           onBlur={() => submitAnswer(form)}
         />
@@ -188,7 +192,9 @@ export const IndividualQuestionRow = (props: {
           className={'w-full'}
           rows={3}
           value={form.free_response ?? ''}
-          onChange={(e) => setForm({...form, free_response: e.target.value})}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setForm({...form, free_response: e.target.value})
+          }
         />
       ) : answer_type === 'multiple_choice' && row.multiple_choice_options ? (
         <RadioToggleGroup
@@ -205,7 +211,9 @@ export const IndividualQuestionRow = (props: {
           className={'w-20'}
           max={1000}
           min={0}
-          onChange={(e) => setForm({...form, integer: Number(e.target.value)})}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setForm({...form, integer: Number(e.target.value)})
+          }
           value={form.integer ?? undefined}
         />
       ) : null}

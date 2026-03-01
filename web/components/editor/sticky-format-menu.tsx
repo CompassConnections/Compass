@@ -1,5 +1,5 @@
-import {EmojiHappyIcon} from '@heroicons/react/outline'
-import {CodeIcon, PhotographIcon} from '@heroicons/react/solid'
+import {FaceSmileIcon} from '@heroicons/react/24/outline'
+import {CodeBracketIcon, PhotoIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/react'
 import {MouseEventHandler, useState} from 'react'
 import {Row} from 'web/components/layout/row'
@@ -30,13 +30,13 @@ export function StickyFormatMenu(props: {
         <ToolbarButton
           key={'embed-button'}
           label={t('sticky_format_menu.add_embed', 'Add embed')}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation()
             e.preventDefault()
             setIframeOpen(true)
           }}
         >
-          <CodeIcon className="h-5 w-5" aria-hidden="true" />
+          <CodeBracketIcon className="h-5 w-5" aria-hidden="true" />
         </ToolbarButton>
       )}
       <ToolbarButton
@@ -44,7 +44,7 @@ export function StickyFormatMenu(props: {
         label={t('sticky_format_menu.add_emoji', 'Add emoji')}
         onClick={() => insertEmoji(editor)}
       >
-        <EmojiHappyIcon className="h-5 w-5" />
+        <FaceSmileIcon className="h-5 w-5" />
       </ToolbarButton>
 
       <EmbedModal editor={editor} open={iframeOpen} setOpen={setIframeOpen} />
@@ -69,7 +69,7 @@ function UploadButton(props: {upload: UploadMutation}) {
         className="hover:text-ink-700 disabled:text-ink-300 active:text-ink-800 text-ink-400 relative flex rounded px-3 py-1 pl-4 transition-colors"
       >
         <Row className={'items-center justify-start gap-2'}>
-          <PhotographIcon className="h-5 w-5" aria-hidden="true" />
+          <PhotoIcon className="h-5 w-5" aria-hidden="true" />
           {upload?.isLoading && (
             <LoadingIndicator
               className="absolute bottom-0 left-0 right-0 top-0"

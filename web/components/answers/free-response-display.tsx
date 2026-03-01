@@ -1,4 +1,4 @@
-import {PencilIcon, XIcon} from '@heroicons/react/outline'
+import {PencilIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -122,7 +122,7 @@ function AnswerBlock(props: {
               },
               {
                 name: t('answers.menu.delete', 'Delete'),
-                icon: <XIcon className="h-5 w-5" />,
+                icon: <XMarkIcon className="h-5 w-5" />,
                 onClick: () => deleteAnswer(answer, user.id).then(() => refreshAnswers()),
               },
               {

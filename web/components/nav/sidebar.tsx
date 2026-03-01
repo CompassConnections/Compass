@@ -1,4 +1,4 @@
-import {LoginIcon, LogoutIcon} from '@heroicons/react/outline'
+import {LoginIcon, LogoutIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ANDROID_APP_URL} from 'common/constants'
 import {buildArray} from 'common/util/array'

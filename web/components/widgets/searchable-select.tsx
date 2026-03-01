@@ -1,8 +1,8 @@
-import {Popover} from '@headlessui/react'
-import {ChevronDownIcon} from '@heroicons/react/solid'
+import {flip, offset, shift, useFloating} from '@floating-ui/react'
+import {Popover, PopoverButton, PopoverPanel} from '@headlessui/react'
+import {ChevronDownIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {useState} from 'react'
-import {usePopper} from 'react-popper'
 
 import {Input} from './input'
 
@@ -24,29 +24,23 @@ export function SearchableSelect(props: {
   const {value, onChange, suggestions, placeholder, parentClassName, className, allowCustom} = props
   const [query, setQuery] = useState('')
 
-  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>()
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>()
-  const {styles, attributes} = usePopper(referenceElement, popperElement, {
+  const {refs, floatingStyles} = useFloating({
     placement: 'bottom-start',
+    middleware: [offset(4), flip(), shift({padding: 8})],
   })
 
-  // Filter suggestions based on search
   const filteredSuggestions = suggestions.filter((s) =>
     s.label.toLowerCase().includes(query.toLowerCase()),
   )
-
-  // Show custom option if allowed and no matches
   const showCustom = allowCustom && query.length > 0 && filteredSuggestions.length === 0
-
-  // Find the current suggestion for display
   const currentSuggestion = suggestions.find((s) => s.id === value)
 
   return (
     <Popover className={clsx('relative', parentClassName)}>
-      {({open: _open, close}) => (
+      {({close}) => (
         <>
-          <Popover.Button
-            ref={setReferenceElement}
+          <PopoverButton
+            ref={refs.setReference}
             className={clsx(
               'bg-canvas-0 border-ink-300 flex w-32 items-center justify-between rounded-md border px-3 py-2 text-left text-sm shadow-sm focus:outline-none',
               className,
@@ -56,23 +50,21 @@ export function SearchableSelect(props: {
               {currentSuggestion?.label || value || placeholder || 'Select...'}
             </span>
             <ChevronDownIcon className="h-4 w-4" />
-          </Popover.Button>
+          </PopoverButton>
 
-          <Popover.Panel
-            ref={setPopperElement}
-            style={styles.popper}
-            {...attributes.popper}
+          <PopoverPanel
+            ref={refs.setFloating}
+            style={floatingStyles}
             className="bg-canvas-0 ring-ink-1000 z-30 mt-1 w-48 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none"
           >
             <div className="p-2">
               <Input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e: any) => setQuery(e.target.value)}
                 placeholder="Search..."
                 className="mb-2 w-full"
               />
-
               <div className="max-h-48 space-y-1 overflow-auto">
                 {filteredSuggestions.map((suggestion) => (
                   <button
@@ -90,7 +82,6 @@ export function SearchableSelect(props: {
                     <span>{suggestion.label}</span>
                   </button>
                 ))}
-
                 {showCustom && (
                   <button
                     className="hover:bg-primary-100 flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm"
@@ -104,7 +95,7 @@ export function SearchableSelect(props: {
                 )}
               </div>
             </div>
-          </Popover.Panel>
+          </PopoverPanel>
         </>
       )}
     </Popover>

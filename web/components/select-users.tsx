@@ -1,5 +1,5 @@
 import {Menu, Transition} from '@headlessui/react'
-import {XIcon} from '@heroicons/react/outline'
+import {XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Fragment, useEffect, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
@@ -82,7 +82,7 @@ export function SelectUsers(props: {
               name="user name"
               id="user name"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setQuery(e.target.value)}
               placeholder="Search users..."
             />
           </Col>
@@ -160,7 +160,7 @@ export function SelectUsers(props: {
                   color={'gray-white'}
                   size={'xs'}
                 >
-                  <XIcon className="h-5 w-5" aria-hidden="true" />
+                  <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </Row>
             ))}

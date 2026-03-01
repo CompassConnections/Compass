@@ -1,4 +1,4 @@
-import {DotsHorizontalIcon} from '@heroicons/react/outline'
+import {EllipsisHorizontalIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
@@ -47,7 +47,7 @@ export function MoreOptionsUserButton(props: {user: User}) {
           className="rounded-none px-6"
           onClick={() => setIsModalOpen(true)}
         >
-          <DotsHorizontalIcon className={clsx('h-5 w-5 flex-shrink-0')} aria-hidden="true" />
+          <EllipsisHorizontalIcon className={clsx('h-5 w-5 flex-shrink-0')} aria-hidden="true" />
         </Button>
       </Tooltip>
 

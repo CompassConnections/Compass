@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import {forwardRef} from 'react'
+import {ComponentPropsWithoutRef, forwardRef} from 'react'
 
-export const Select = forwardRef<HTMLSelectElement, JSX.IntrinsicElements['select']>(
+export const Select = forwardRef<HTMLSelectElement, ComponentPropsWithoutRef<'select'>>(
   (props, ref) => {
     const {className, children, ...rest} = props
 

@@ -25,7 +25,7 @@ export function FileUploadButton(props: {
         accept=".gif,.jpg,.jpeg,.png,.webp, image/*"
         multiple
         className="hidden"
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const files = e.target.files
           if (files) {
             onFiles(Array.from(files))

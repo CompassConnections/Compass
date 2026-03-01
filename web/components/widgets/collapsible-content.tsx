@@ -1,4 +1,4 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/solid'
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/24/solid'
 import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
 import {MouseEventHandler, useEffect, useRef, useState} from 'react'

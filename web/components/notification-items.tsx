@@ -1,4 +1,4 @@
-import {SparklesIcon} from '@heroicons/react/solid'
+import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
 import {Notification} from 'common/notifications'
@@ -297,7 +297,7 @@ export function AvatarNotificationIcon(props: {
       <Link
         href={href}
         target={href.startsWith('http') ? '_blank' : undefined}
-        onClick={(e) => e.stopPropagation}
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation}
       >
         <Avatar
           username={sourceUserName}

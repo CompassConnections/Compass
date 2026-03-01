@@ -92,7 +92,7 @@ Compass/
 | Category   | Technology            | Version |
 | ---------- | --------------------- | ------- |
 | Framework  | Next.js               | 14.1.0  |
-| UI Library | React                 | 18.2.0  |
+| UI Library | React                 | 19.2.3  |
 | Language   | TypeScript            | 5.5.4   |
 | Styling    | Tailwind CSS          | 3.3.3   |
 | State      | React Context + Hooks | -       |
@@ -183,37 +183,40 @@ User Sign-In:
 
 ```sql
 -- Users table
-users (
+CREATE TABLE users (
   id UUID PRIMARY KEY,
   username TEXT UNIQUE,
   email TEXT,
   created_at TIMESTAMP,
   deleted_at TIMESTAMP
-)
+);
+
 -- Profile information
-profiles (
+CREATE TABLE profiles (
   id UUID PRIMARY KEY,
   user_id UUID REFERENCES users,
   name TEXT,
   age INTEGER,
-  bio TEXT,
+  bio TEXT
   -- many more fields
-)
+);
+
 -- Private user data
-private_users (
+CREATE TABLE private_users (
   id UUID PRIMARY KEY,
   user_id UUID REFERENCES users,
   email TEXT,
   notification_settings JSONB
-)
+);
+
 -- Messages
-private_user_messages (
+CREATE TABLE private_user_messages (
   id UUID PRIMARY KEY,
   from_user_id UUID,
   to_user_id UUID,
   content TEXT,
   created_at TIMESTAMP
-)
+);
 ```
 
 See `supabase/migrations/` for full schema.
@@ -245,18 +248,16 @@ See `supabase/migrations/` for full schema.
 
 ```typescript
 // Success
-{
-    // Response data
+return {
+  // Response data
 }
 
 // Error
-{
-    error: {
-        status: 400,
-            message
-    :
-        "Error description"
-    }
+return {
+  error: {
+    status: 400,
+    message: 'Error description',
+  },
 }
 ```
 
@@ -271,14 +272,21 @@ See `supabase/migrations/` for full schema.
 
 ### State Persistence
 
+In-memory (lost on refresh)
+
 ```typescript
-// In-memory (lost on refresh)
 const [state, setState] = useState(initialValue)
+```
 
-// Local storage (persists)
+Local storage (persists)
+
+```typescript
 const [state, setState] = usePersistentLocalState(initialValue, 'key')
+```
 
-// Session storage (persists until tab closed)
+Session storage (persists until tab closed)
+
+```typescript
 const [state, setState] = usePersistentInMemoryState(initialValue, 'key')
 ```
 

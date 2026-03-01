@@ -1,4 +1,4 @@
-import {CheckIcon, LinkIcon, TrashIcon} from '@heroicons/react/solid'
+import {CheckIcon, LinkIcon, TrashIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/core'
 import {BubbleMenu} from '@tiptap/react'
 import clsx from 'clsx'
@@ -71,7 +71,7 @@ export function FloatingFormatMenu(props: {
             inputMode="url"
             className="h-5 border-0 bg-inherit text-sm !shadow-none !ring-0"
             placeholder="Type or paste a link"
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
           />
           <button onClick={() => (setLink(), setUrl(null))}>
             <CheckIcon className="h-5 w-5" />

@@ -1,20 +1,14 @@
+import type {NextConfig} from 'next'
+
 const isAppBuild = !!process.env.NEXT_PUBLIC_WEBVIEW
 console.log({isAppBuild})
 
-/** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig: NextConfig = {
   output: isAppBuild ? 'export' : undefined,
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
-  // optimizeFonts: false,
   modularizeImports: {
-    '@heroicons/react/solid/?(((\\w*)?/?)*)': {
-      transform: '@heroicons/react/solid/{{ matches.[1] }}/{{member}}',
-    },
-    '@heroicons/react/outline/?(((\\w*)?/?)*)': {
-      transform: '@heroicons/react/outline/{{ matches.[1] }}/{{member}}',
-    },
-
+    // heroicons v1 transforms removed — v2 has tree-shaking built in
     lodash: {
       transform: 'lodash/{{member}}',
     },
@@ -22,6 +16,7 @@ module.exports = {
   transpilePackages: ['common'],
   experimental: {
     scrollRestoration: true,
+    turbopackFileSystemCacheForDev: true, // filesystem cache for faster dev rebuilds
   },
   env: {
     NEXT_PUBLIC_VERCEL_DEPLOYMENT_ID: process.env.VERCEL_DEPLOYMENT_ID,
@@ -65,7 +60,7 @@ module.exports = {
     ],
   },
   webpack: (config, {dev}) => {
-    console.log({dev})
+    // console.log({dev})
     if (dev) {
       config.cache = {type: 'filesystem'}
       config.infrastructureLogging = {level: 'warn'}
@@ -89,16 +84,8 @@ module.exports = {
   },
   async redirects() {
     return [
-      {
-        source: '/discord',
-        destination: 'https://discord.gg/8Vd7jzqjun',
-        permanent: false,
-      },
-      {
-        source: '/patreon',
-        destination: 'https://patreon.com/CompassMeet',
-        permanent: false,
-      },
+      {source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false},
+      {source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false},
       {
         source: '/paypal',
         destination: 'https://www.paypal.com/paypalme/CompassConnections',
@@ -113,3 +100,5 @@ module.exports = {
     ]
   },
 }
+
+export default nextConfig

@@ -1,4 +1,4 @@
-import {HeartIcon} from '@heroicons/react/outline'
+import {HeartIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {useState} from 'react'

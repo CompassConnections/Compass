@@ -1,4 +1,4 @@
-import {UserIcon, UsersIcon} from '@heroicons/react/solid'
+import {UserIcon, UsersIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {floor} from 'lodash'
 import Image from 'next/image'

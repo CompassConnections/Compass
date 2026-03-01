@@ -1,4 +1,4 @@
-import {EyeIcon, EyeOffIcon} from '@heroicons/react/outline'
+import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {useMemo, useState} from 'react'
 import {Tooltip} from 'web/components/widgets/tooltip'
@@ -88,7 +88,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
         }
       >
         {hidden || eyeOff ? (
-          <EyeOffIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
+          <EyeSlashIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
         ) : (
           <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
         )}

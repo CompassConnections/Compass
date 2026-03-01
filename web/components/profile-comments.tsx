@@ -1,5 +1,5 @@
-import {EyeOffIcon, FlagIcon} from '@heroicons/react/outline'
-import {DotsHorizontalIcon, ReplyIcon} from '@heroicons/react/solid'
+import {EyeSlashIcon, FlagIcon} from '@heroicons/react/24/outline'
+import {EllipsisHorizontalIcon, ReplyIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {type Comment, MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
@@ -273,7 +273,7 @@ function DotMenu(props: {onUser: User; comment: Comment; onHide: () => void}) {
       <DropdownMenu
         menuWidth={'w-36'}
         closeOnClick={true}
-        icon={<DotsHorizontalIcon className="mt-[0.12rem] h-4 w-4" aria-hidden="true" />}
+        icon={<EllipsisHorizontalIcon className="mt-[0.12rem] h-4 w-4" aria-hidden="true" />}
         items={buildArray(
           user &&
             comment.userId !== user.id && {
@@ -286,7 +286,7 @@ function DotMenu(props: {onUser: User; comment: Comment; onHide: () => void}) {
             },
           (isAdmin || isCurrentUser || isOwner) && {
             name: comment.hidden ? 'Undelete' : 'Delete',
-            icon: <EyeOffIcon className="h-5 w-5 text-red-500" />,
+            icon: <EyeSlashIcon className="h-5 w-5 text-red-500" />,
             onClick: async () => {
               onHide()
               await toast.promise(
@@ -326,7 +326,7 @@ function CommentActions(props: {
         <Tooltip text="Reply" placement="bottom">
           <IconButton
             size={'xs'}
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
               e.stopPropagation()
               onReplyClick(comment)

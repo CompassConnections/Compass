@@ -1,4 +1,4 @@
-import {PencilIcon, TrashIcon} from '@heroicons/react/outline'
+import {PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {
   getAnswerCompatibility,

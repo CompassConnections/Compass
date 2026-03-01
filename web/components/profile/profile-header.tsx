@@ -1,4 +1,9 @@
-import {DotsHorizontalIcon, EyeIcon, LockClosedIcon, PencilIcon} from '@heroicons/react/outline'
+import {
+  EllipsisHorizontalIcon,
+  EyeIcon,
+  LockClosedIcon,
+  PencilIcon,
+} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
@@ -142,7 +147,7 @@ export default function ProfileHeader(props: {
             >
               <DropdownMenu
                 menuWidth={'w-52'}
-                icon={<DotsHorizontalIcon className="h-5 w-5" aria-hidden="true" />}
+                icon={<EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />}
                 items={[
                   {
                     name:

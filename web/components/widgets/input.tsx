@@ -1,12 +1,12 @@
 import clsx from 'clsx'
-import {forwardRef, Ref} from 'react'
+import {ComponentPropsWithoutRef, forwardRef, Ref} from 'react'
 
 /** Text input. Wraps html `<input>` */
 export const Input = forwardRef(
   (
     props: {
       error?: boolean
-    } & JSX.IntrinsicElements['input'],
+    } & ComponentPropsWithoutRef<'input'>,
     ref: Ref<HTMLInputElement>,
   ) => {
     const {error, className, ...rest} = props

@@ -7,7 +7,7 @@
   "bracketSpacing": false,
   "printWidth": 100,
   "trailingComma": "all",
-  "plugins": ["prettier-plugin-sql"],
+  "plugins": ["prettier-plugin-sql", "prettier-plugin-packagejson"],
   "overrides": [
     {
       "files": "*.sql",

@@ -1,4 +1,4 @@
-import {ClipboardCopyIcon} from '@heroicons/react/outline'
+import {ClipboardIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Row} from 'web/components/layout/row'
 
@@ -13,7 +13,7 @@ export function ToastClipboard(props: {className?: string}) {
         className,
       )}
     >
-      <ClipboardCopyIcon height={20} className={'mr-2 self-center'} />
+      <ClipboardIcon height={20} className={'mr-2 self-center'} />
       <div className="pl-4 text-sm font-normal">Link copied to clipboard!</div>
     </Row>
   )

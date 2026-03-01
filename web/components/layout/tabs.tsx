@@ -48,7 +48,7 @@ export function MinimalistTabs(props: TabProps & {activeIndex: number}) {
           <a
             href="#"
             key={tab.queryString ?? tab.title}
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
               onClick?.(tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(), i)
               if (trackingName) {
@@ -108,7 +108,7 @@ export function ControlledTabs(props: TabProps & {activeIndex: number}) {
           <a
             href="#"
             key={tab.queryString ?? tab.title}
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
 
               onClick?.(tab.queryString?.toLowerCase() ?? tab.title.toLowerCase(), i)

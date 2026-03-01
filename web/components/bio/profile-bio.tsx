@@ -1,4 +1,4 @@
-import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
 import {JSONContent} from '@tiptap/core'
 import {MAX_INT, MIN_BIO_LENGTH} from 'common/constants'
 import {Profile} from 'common/profiles/profile'

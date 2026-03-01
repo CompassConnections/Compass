@@ -1,4 +1,4 @@
-import {PencilIcon} from '@heroicons/react/outline'
+import {PencilIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Row as rowFor} from 'common/supabase/utils'
 import {capitalize, orderBy} from 'lodash'

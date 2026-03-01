@@ -1,8 +1,8 @@
-import {QuestionMarkCircleIcon} from '@heroicons/react/outline'
+import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
-import {forwardRef, useEffect, useRef, useState} from 'react'
+import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
@@ -116,7 +116,7 @@ export const Search = forwardRef<
     highlightFilters?: boolean
     highlightSort?: boolean
     setOpenFiltersModal?: (open: boolean) => void
-    filtersElement: JSX.Element
+    filtersElement: ReactElement
   }
 >((props, ref) => {
   const {
@@ -218,7 +218,7 @@ export const Search = forwardRef<
           value={filters.name ?? ''}
           placeholder={placeholder}
           className={'w-full max-w-xs'}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             updateFilter({name: e.target.value})
           }}
         />
@@ -226,7 +226,7 @@ export const Search = forwardRef<
         <Row className="gap-2">
           <Select
             ref={sortSelectRef}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
               if (isOrderBy(e.target.value)) {
                 updateFilter({
                   orderBy: e.target.value,

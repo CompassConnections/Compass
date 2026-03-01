@@ -1,5 +1,5 @@
 import {Dialog, Transition} from '@headlessui/react'
-import {MenuAlt3Icon} from '@heroicons/react/solid'
+import {MenuAlt3Icon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {User} from 'common/user'
 import Link from 'next/link'

@@ -83,7 +83,7 @@ export function EmbedModal(props: {
           className="bg-canvas-50 border-ink-300 placeholder:text-ink-300 focus:border-primary-500 focus:ring-primary-500 block w-full rounded-md shadow-sm sm:text-sm"
           placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
         />
 
         {embed && <div dangerouslySetInnerHTML={{__html: embed}}></div>}

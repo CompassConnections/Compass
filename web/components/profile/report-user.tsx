@@ -93,7 +93,9 @@ export const ReportUser = (props: {user: User; closeModal: () => void}) => {
               rows={2}
               className={'border-ink-300 bg-canvas-0 -ml-2 rounded-md border p-2'}
               value={otherReportType}
-              onChange={(e) => setOtherReportType(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setOtherReportType(e.target.value)
+              }
             />
           </Col>
           <Row className={'justify-between'}>

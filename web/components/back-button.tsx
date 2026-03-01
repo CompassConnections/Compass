@@ -1,4 +1,4 @@
-import {ArrowLeftIcon} from '@heroicons/react/solid'
+import {ArrowLeftIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {useRouter} from 'next/navigation'
 import {useEffect, useState} from 'react'

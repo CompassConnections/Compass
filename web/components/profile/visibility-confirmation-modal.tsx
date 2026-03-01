@@ -1,4 +1,4 @@
-import {EyeIcon, LockClosedIcon} from '@heroicons/react/outline'
+import {EyeIcon, LockClosedIcon} from '@heroicons/react/24/outline'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'

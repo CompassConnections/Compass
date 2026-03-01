@@ -1,4 +1,4 @@
-import {MoonIcon, SunIcon} from '@heroicons/react/outline'
+import {MoonIcon, SunIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Row} from 'web/components/layout/row'
 import {useTheme} from 'web/hooks/use-theme'

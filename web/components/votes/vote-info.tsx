@@ -46,7 +46,9 @@ export function VoteComponent() {
           <select
             id="orderBy"
             value={orderBy}
-            onChange={(e) => setOrderBy(e.target.value as OrderBy)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setOrderBy(e.target.value as OrderBy)
+            }
             className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-canvas-50"
           >
             {ORDER_BY.map((key) => (
@@ -77,7 +79,7 @@ export function VoteComponent() {
               value={title}
               placeholder={t('vote.form.title_placeholder', 'Title')}
               className={'w-full mb-2'}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                 setTitle(e.target.value)
               }}
             />
@@ -87,7 +89,9 @@ export function VoteComponent() {
                 type="checkbox"
                 id="anonymous"
                 checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setIsAnonymous(e.target.checked)
+                }
                 className="h-4 w-4 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <label htmlFor="anonymous">{t('vote.form.anonymous', 'Anonymous?')}</label>

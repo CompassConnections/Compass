@@ -2,17 +2,17 @@
   "name": "common",
   "version": "1.0.0",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "build": "tsc -b && tsc-alias",
     "compile": "tsc -b",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
-    "typecheck": "npx tsc --noEmit",
-    "test": "jest --config jest.config.ts --passWithNoTests"
+    "test": "jest --config jest.config.ts --passWithNoTests",
+    "typecheck": "npx tsc --noEmit"
   },
-  "sideEffects": false,
   "dependencies": {
-    "@supabase/supabase-js": "2.38.5",
+    "@supabase/supabase-js": "2.98.0",
     "@tiptap/core": "2.10.4",
     "@tiptap/extension-image": "2.10.4",
     "@tiptap/extension-link": "2.10.4",
@@ -20,17 +20,16 @@
     "@tiptap/pm": "2.10.4",
     "@tiptap/starter-kit": "2.10.4",
     "@tiptap/suggestion": "2.10.4",
-    "dayjs": "1.11.4",
+    "dayjs": "1.11.19",
     "lodash": "4.17.23",
     "string-similarity": "4.0.4",
     "zod": "3.22.3"
   },
   "devDependencies": {
-    "@types/jest": "29.2.4",
-    "@types/lodash": "4.14.178",
+    "@types/jest": "^29",
+    "@types/lodash": "^4.17.0",
     "@types/string-similarity": "4.0.0",
-    "jest": "29.3.1",
-    "supabase": "2.15.8",
+    "jest": "^29",
     "ts-jest": "29.4.6"
   }
 }

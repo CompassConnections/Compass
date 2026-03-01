@@ -1,5 +1,5 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/outline'
-import {XIcon} from '@heroicons/react/solid'
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/24/outline'
+import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
 import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
@@ -177,7 +177,7 @@ function SelectedFiltersSummary(props: {
               onClick={filter.onClear}
               className="hover:text-gray-500 dark:hover:text-gray-50"
             >
-              <XIcon className="h-3 w-3" />
+              <XMarkIcon className="h-3 w-3" />
             </button>
           </Row>
         ))}

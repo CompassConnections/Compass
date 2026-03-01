@@ -1,4 +1,4 @@
-import {PaperAirplaneIcon} from '@heroicons/react/solid'
+import {PaperAirplaneIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'

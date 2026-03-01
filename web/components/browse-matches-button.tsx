@@ -141,7 +141,7 @@
 //             className={'!h-10 max-w-[200px] self-end text-sm'}
 //             value={query}
 //             placeholder={'Search name'}
-//             onChange={(e) => {
+//             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
 //               setQuery(e.target.value)
 //             }}
 //           />

@@ -202,7 +202,9 @@ export function DeleteAccountSurveyModal() {
                   className="block w-full bg-canvas-0 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   placeholder={t('delete_survey.other_placeholder', 'Please share more details')}
                   value={reasonFreeText}
-                  onChange={(e) => setReasonFreeText(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setReasonFreeText(e.target.value)
+                  }
                 />
               </div>
             </div>

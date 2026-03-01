@@ -129,7 +129,7 @@ export function CreateEventModal(props: {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const {name, value} = e.target
     setFormData((prev) => ({...prev, [name]: value}))

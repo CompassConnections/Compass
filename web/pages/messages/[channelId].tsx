@@ -1,4 +1,4 @@
-import {DotsVerticalIcon} from '@heroicons/react/solid'
+import {EllipsisVerticalIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
@@ -283,7 +283,7 @@ export const PrivateChat = (props: {
         <DropdownMenu
           className={'ml-auto [&_button]:p-4'}
           menuWidth={'w-44'}
-          icon={<DotsVerticalIcon className="h-5 w-5" />}
+          icon={<EllipsisVerticalIcon className="h-5 w-5" />}
           items={buildArray(
             {
               icon: <FaUserFriends className={'h-5 w-5'} />,

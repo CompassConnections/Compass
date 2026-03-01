@@ -1,16 +1,15 @@
+import {computePosition, flip, offset, shift} from '@floating-ui/dom'
 import type {MentionOptions} from '@tiptap/extension-mention'
 import {ReactRenderer} from '@tiptap/react'
 import {beginsWith} from 'common/util/parse'
 import {sortBy} from 'lodash'
-import tippy from 'tippy.js'
 import {searchUsers} from 'web/lib/supabase/users'
 
 import {MentionList} from './mention-list'
-type Render = Suggestion['render']
 
+type Render = Suggestion['render']
 type Suggestion = MentionOptions['suggestion']
 
-// copied from https://tiptap.dev/api/nodes/mention#usage
 export const mentionSuggestion: Suggestion = {
   allowedPrefixes: [' '],
   items: async ({query}) =>
@@ -23,53 +22,63 @@ export const mentionSuggestion: Suggestion = {
 export function makeMentionRender(mentionList: any): Render {
   return () => {
     let component: ReactRenderer
-    let popup: ReturnType<typeof tippy>
+    let container: HTMLDivElement
+
+    const updatePosition = (clientRect: (() => DOMRect | null) | null | undefined) => {
+      if (!clientRect || !container) return
+      const rect = clientRect()
+      if (!rect) return
+
+      // Virtual element from the cursor position
+      const virtualEl = {
+        getBoundingClientRect: () => rect,
+      }
+
+      computePosition(virtualEl as Element, container, {
+        placement: 'bottom-start',
+        middleware: [offset(8), flip(), shift({padding: 8})],
+      }).then(({x, y}) => {
+        Object.assign(container.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+        })
+      })
+    }
+
     return {
-      onStart: (props) => {
+      onStart(props) {
         component = new ReactRenderer(mentionList, {
           props,
           editor: props.editor,
         })
-        if (!props.clientRect) {
-          return
-        }
 
-        popup = tippy('body', {
-          getReferenceClientRect: props.clientRect as any,
-          appendTo: () => document.body,
-          content: component?.element,
-          showOnCreate: true,
-          interactive: true,
-          trigger: 'manual',
-          placement: 'bottom-start',
-        })
+        container = document.createElement('div')
+        container.style.cssText = 'position:fixed;z-index:9999;'
+        container.appendChild(component.element)
+        document.body.appendChild(container)
+
+        updatePosition(props.clientRect)
       },
+
       onUpdate(props) {
         component?.updateProps(props)
-
-        if (!props.clientRect) {
-          return
-        }
-
-        popup?.[0].setProps({
-          getReferenceClientRect: props.clientRect as any,
-        })
+        updatePosition(props.clientRect)
       },
+
       onKeyDown(props) {
-        if (props.event.key)
-          if (
-            props.event.key === 'Escape' ||
-            // Also break out of the mention if the tooltip isn't visible
-            (props.event.key === 'Enter' && !popup?.[0].state.isShown)
-          ) {
-            popup?.[0].destroy()
-            component?.destroy()
-            return false
-          }
+        if (
+          props.event.key === 'Escape' ||
+          (props.event.key === 'Enter' && !container?.isConnected)
+        ) {
+          container?.remove()
+          component?.destroy()
+          return false
+        }
         return (component?.ref as any)?.onKeyDown(props)
       },
+
       onExit() {
-        popup?.[0].destroy()
+        container?.remove()
         component?.destroy()
       },
     }

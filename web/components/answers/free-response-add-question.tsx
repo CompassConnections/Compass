@@ -1,4 +1,4 @@
-import {ArrowLeftIcon, PlusIcon} from '@heroicons/react/outline'
+import {ArrowLeftIcon, PlusIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {User} from 'common/user'
 import {TbMessage} from 'react-icons/tb'

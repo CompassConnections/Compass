@@ -12,7 +12,7 @@ export function LanguagePicker(props: {className?: string} = {}) {
     <select
       id="locale-picker"
       value={locale}
-      onChange={(e) => setLocale(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLocale(e.target.value)}
       className={clsx(
         'rounded-md border border-gray-300 px-2 py-1 text-sm bg-canvas-50',
         className,

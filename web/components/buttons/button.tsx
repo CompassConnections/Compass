@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {forwardRef, MouseEventHandler, ReactNode, Ref} from 'react'
+import {ComponentPropsWithoutRef, forwardRef, MouseEventHandler, ReactNode, Ref} from 'react'
 import {LoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export type SizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
@@ -75,7 +75,7 @@ export const Button = forwardRef(function Button(
     color?: ColorType | null
     type?: 'button' | 'reset' | 'submit'
     loading?: boolean
-  } & JSX.IntrinsicElements['button'],
+  } & ComponentPropsWithoutRef<'button'>,
   ref: Ref<HTMLButtonElement>,
 ) {
   const {

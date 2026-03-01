@@ -123,7 +123,7 @@ function ProfilePreview(props: {
           </span>
           <button
             className="text-primary-500 hover:text-primary-700 underline"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
               e.stopPropagation()
               onUndoHidden?.(profile.user_id)

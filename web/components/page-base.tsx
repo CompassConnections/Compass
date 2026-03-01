@@ -3,7 +3,7 @@ import {
   HomeIcon,
   NewspaperIcon,
   QuestionMarkCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/24/outline'
 import {
   CogIcon,
   GlobeAltIcon,
@@ -12,7 +12,7 @@ import {
   QuestionMarkCircleIcon as SolidQuestionIcon,
   UserCircleIcon,
   UsersIcon,
-} from '@heroicons/react/solid'
+} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {IS_MAINTENANCE} from 'common/constants'
 import {Profile} from 'common/profiles/profile'

@@ -522,7 +522,6 @@ How we apply it here
 This project uses three complementary test types. Use the right level for the job:
 
 - Unit tests
-
   - Purpose: Verify a single function/module in isolation; fast, deterministic.
   - Where: Each package under `tests/unit` (e.g., `backend/api/tests/unit`, `web/tests/unit`, `common/tests/unit`,
     etc.).
@@ -531,7 +530,6 @@ This project uses three complementary test types. Use the right level for the jo
   - When to use: Pure logic, utilities, hooks, reducers, small components with mocked dependencies.
 
 - Integration tests
-
   - Purpose: Verify multiple units working together (e.g., function + DB/client, component + context/provider) without
     spinning up the full app.
   - Where: Each package under `tests/integration` (e.g., `backend/shared/tests/integration`, `web/tests/integration`).

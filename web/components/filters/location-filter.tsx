@@ -1,4 +1,4 @@
-import {XIcon} from '@heroicons/react/solid'
+import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {OriginLocation} from 'common/filters'
 import {formatDistance, kmToMiles, milesToKm} from 'common/measurement-utils'
@@ -115,7 +115,7 @@ export function LocationFilter(props: {
       <Row className="items-center gap-1">
         <Input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
           placeholder={t('filter.location.search_city', 'Search city...')}
           className="h-8 w-full rounded-none border-0 bg-transparent px-1 focus:border-b focus:ring-0 focus:ring-transparent"
           autoFocus
@@ -201,7 +201,7 @@ function LocationResults(props: {
           className="hover:bg-primary-200 hover:text-ink-950 cursor-pointer px-4 py-2 transition-colors"
         >
           <Row className="items-center gap-2">
-            <XIcon className="h-4 w-4 text-ink-400" aria-label={t('common.close', 'Close')} />
+            <XMarkIcon className="h-4 w-4 text-ink-400" aria-label={t('common.close', 'Close')} />
             <span>{t('filter.location.set_any_city', 'Set to Any City')}</span>
           </Row>
         </button>

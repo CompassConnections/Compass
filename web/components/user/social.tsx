@@ -1,4 +1,4 @@
-import {DocumentReportIcon, LinkIcon} from '@heroicons/react/solid'
+import {DocumentReportIcon, LinkIcon} from '@heroicons/react/24/solid'
 import {Site} from 'common/socials'
 import {ReactNode} from 'react'
 import {LuBookmark, LuHandshake, LuHeart, LuUsers} from 'react-icons/lu'

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {ReactNode, useState} from 'react'
+import {ReactElement, ReactNode, useState} from 'react'
 
 import {Col} from '../layout/col'
 import {Modal} from '../layout/modal'
@@ -9,7 +9,7 @@ import {Button, ColorType, SizeType} from './button'
 export function ConfirmationButton(props: {
   openModalBtn: {
     label: string
-    icon?: JSX.Element
+    icon?: ReactElement
     className?: string
     color?: ColorType
     size?: SizeType
@@ -84,7 +84,7 @@ export function ConfirmationButton(props: {
 
       <Button
         className={openModalBtn.className}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.preventDefault()
           e.stopPropagation()
           if (disabled) {

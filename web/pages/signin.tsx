@@ -171,7 +171,7 @@ function RegisterComponent() {
                 <div className="text-right mt-1 custom-link">
                   <button
                     type="button"
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault()
                       const form = e.currentTarget.closest('form')
                       if (form) {

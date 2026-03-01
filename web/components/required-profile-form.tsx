@@ -108,7 +108,7 @@ export const RequiredProfileUserForm = (props: {
                 type="text"
                 placeholder="Display name"
                 value={name}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                   updateUserState({name: e.target.value || ''})
                 }}
                 onBlur={updateDisplayName}
@@ -132,7 +132,7 @@ export const RequiredProfileUserForm = (props: {
                     type="text"
                     placeholder="Username"
                     value={username}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       updateUserState({
                         username: e.target.value || '',
                         errorUsername: '',

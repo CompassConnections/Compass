@@ -70,6 +70,7 @@ export default tseslint.config(
       'eslint.config.mjs',
       'jest.config.ts',
       'ecosystem.config.js',
+      '.react-email',
     ],
   },
   eslintConfigPrettier,

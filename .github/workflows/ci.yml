@@ -13,7 +13,6 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
 
       - name: Lint

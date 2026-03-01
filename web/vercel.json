@@ -8,5 +8,6 @@
       "source": "/manifest.json",
       "headers": [{"key": "Cache-Control", "value": "no-cache"}]
     }
-  ]
+  ],
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- web/ common/"
 }

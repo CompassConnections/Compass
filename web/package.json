@@ -17,7 +17,7 @@
     "typecheck": "npx tsc --noEmit",
     "prettier": "npx prettier --write .",
     "format-changed": "cd .. && git diff $(git merge-base --fork-point main) --name-only --diff-filter=d | xargs npx prettier -w",
-    "test": "jest --config jest.config.js --passWithNoTests"
+    "test": "jest --config jest.config.ts --passWithNoTests"
   },
   "dependencies": {
     "@floating-ui/react": "0.19.0",

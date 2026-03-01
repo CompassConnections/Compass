@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "email dev --port 3001",
     "build": "tsc -b",
-    "test": "jest --config jest.config.js --passWithNoTests",
+    "test": "jest --config jest.config.ts --passWithNoTests",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
     "typecheck": "npx tsc --noEmit"

@@ -68,7 +68,7 @@ export default tseslint.config(
       'lib',
       'coverage',
       'eslint.config.mjs',
-      'jest.config.js',
+      'jest.config.ts',
       'ecosystem.config.js',
     ],
   },

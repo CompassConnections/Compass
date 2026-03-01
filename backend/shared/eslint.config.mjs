@@ -62,6 +62,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['dist', 'lib', 'coverage', 'eslint.config.mjs', 'jest.config.js'],
+    ignores: ['dist', 'lib', 'coverage', 'eslint.config.mjs', 'jest.config.ts'],
   },
 )

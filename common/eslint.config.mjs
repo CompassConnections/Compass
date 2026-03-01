@@ -84,7 +84,7 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['lib', 'coverage', 'jest.config.js', 'eslint.config.mjs'],
+    ignores: ['lib', 'coverage', 'jest.config.ts', 'eslint.config.mjs'],
   },
   eslintConfigPrettier,
 )

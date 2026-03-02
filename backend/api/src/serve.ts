@@ -1,7 +1,9 @@
 import 'tsconfig-paths/register'
 
-import {IS_LOCAL} from 'common/hosting/constants'
+import * as Sentry from '@sentry/node'
+import {IS_LOCAL, SENTRY_DSN} from 'common/hosting/constants'
 import {loadSecretsToEnv} from 'common/secrets'
+import {ErrorRequestHandler} from 'express'
 import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
 import {initAdmin} from 'shared/init-admin'
@@ -12,6 +14,27 @@ import {listen as webSocketListen} from 'shared/websockets/server'
 import {app} from './app'
 
 log('Api server starting up....')
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enabled: process.env.NODE_ENV === 'production',
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  enableLogs: process.env.NODE_ENV === 'production',
+})
+
+const sentryErrorFilter: ErrorRequestHandler = (err, req, _res, next) => {
+  const status = err.status ?? err.httpStatus ?? 500
+  if (status >= 500) {
+    Sentry.captureException(err, {
+      extra: {path: req.path, method: req.method, status},
+    })
+  }
+  next(err)
+}
+
+app.use(sentryErrorFilter)
+app.use(Sentry.expressErrorHandler())
 
 if (IS_LOCAL) {
   initAdmin()

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {type APIHandler} from 'api/helpers/endpoint'
 import {debug} from 'common/logger'
 import {OptionTableKey} from 'common/profiles/constants'
@@ -481,6 +482,7 @@ export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
     return {status: 'success', profiles: profiles, count: count}
   } catch (error) {
     console.log(error)
+    Sentry.captureException(error, {extra: props})
     return {status: 'fail', profiles: [], count: 0}
   }
 }

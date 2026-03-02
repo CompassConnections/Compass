@@ -21,4 +21,7 @@ if (IS_LOCAL && !process.env.ENVIRONMENT && !process.env.NEXT_PUBLIC_FIREBASE_EN
   process.env.ENVIRONMENT = 'DEV'
 }
 
+export const SENTRY_DSN =
+  'https://4e5d3b0aa566e8aaae97298398a1ad37@o4510975610060800.ingest.de.sentry.io/4510975611699280'
+
 // console.log('IS_LOCAL_ANDROID', IS_LOCAL_ANDROID)

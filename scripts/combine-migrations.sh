@@ -27,8 +27,8 @@ FILES=$(grep '\\i ' backend/supabase/migration.sql | sed 's/\\i //' | sed 's/;//
 TIMESTAMP=20250101000000
 COUNTER=0
 
-echo "Files to copy:"
-echo "----------------------------------------"
+#echo "Files to copy:"
+#echo "----------------------------------------"
 
 # Copy each file with timestamp
 while IFS= read -r file; do
@@ -77,8 +77,8 @@ while IFS= read -r file; do
   COUNTER=$((COUNTER + 100))
 done <<< "$FILES"
 
-echo ""
-echo "----------------------------------------"
+#echo ""
+#echo "----------------------------------------"
 echo "✅ Migration files copied to supabase/migrations/"
 echo ""
 echo "To apply migrations:"

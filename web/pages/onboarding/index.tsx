@@ -38,7 +38,7 @@ function OnboardingScreen({
     if (welcomeTitle) {
       const timer = setTimeout(() => {
         setShowWelcome(false)
-      }, 3000)
+      }, 2000)
       return () => clearTimeout(timer)
     }
   }, [welcomeTitle])

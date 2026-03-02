@@ -66,7 +66,7 @@ export default function SignupPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // When a profile already exists (e.g. user pressed browser back after submitting),
+  // When a profile already exists (e.g., when the user pressed browser back after submitting),
   // lock the username and display name fields so they can't be changed.
   const [isLocked, setIsLocked] = useState(false)
 

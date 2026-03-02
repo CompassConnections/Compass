@@ -293,7 +293,7 @@ describe('createProfile', () => {
       )
     })
 
-    it('should throw if the user already exists', async () => {
+    it('should throw if the profile already exists', async () => {
       const mockBody = {
         city: 'mockCity',
         gender: 'mockGender',
@@ -311,7 +311,7 @@ describe('createProfile', () => {
       ;(tryCatch as jest.Mock).mockResolvedValueOnce({data: true, error: null})
 
       await expect(createProfile(mockBody, mockAuth, mockReq)).rejects.toThrowError(
-        'User already exists',
+        'Profile already exists',
       )
     })
 

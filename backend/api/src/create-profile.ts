@@ -15,11 +15,11 @@ import {getUser, log} from 'shared/utils'
 export const createProfile: APIHandler<'create-profile'> = async (body, auth) => {
   const pg = createSupabaseDirectClient()
 
-  const {data: existingUser} = await tryCatch(
+  const {data: existingProfile} = await tryCatch(
     pg.oneOrNone<{id: string}>('select id from profiles where user_id = $1', [auth.uid]),
   )
-  if (existingUser) {
-    throw new APIError(400, 'User already exists')
+  if (existingProfile) {
+    throw new APIError(400, 'Profile already exists')
   }
 
   await removePinnedUrlFromPhotoUrls(body)

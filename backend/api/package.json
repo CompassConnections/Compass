@@ -1,6 +1,6 @@
 {
   "name": "@compass/api",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "private": true,
   "description": "Backend API endpoints",
   "main": "src/serve.ts",
@@ -13,7 +13,7 @@
     "dev": "yarn watch:serve",
     "dist": "yarn dist:clean && yarn dist:copy",
     "dist:clean": "rm -rf dist && mkdir -p dist/common/lib dist/backend/shared/lib dist/backend/api/lib dist/backend/email/lib",
-    "dist:copy": "rsync -a --delete ../../common/lib/ dist/common/lib && rsync -a ../../common/messages/ dist/common/messages/ && rsync -a --delete ../shared/lib/ dist/backend/shared/lib && rsync -a --delete ../email/lib/ dist/backend/email/lib && rsync -a --delete ./lib/* dist/backend/api/lib && cp ../../yarn.lock dist && cp package.json dist && cp package.json dist/backend/api && cp metadata.json dist && cp metadata.json dist/backend/api",
+    "dist:copy": "./dist_copy.sh",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
     "prod": "npx concurrently -n COMPILE,SERVER -c cyan,green \"yarn watch:compile\" \"yarn watch:serve\"",

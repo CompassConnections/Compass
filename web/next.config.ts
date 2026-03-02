@@ -116,7 +116,7 @@ export default withSentryConfig(nextConfig, {
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
 
-  // authToken: process.env.SENTRY_AUTH_TOKEN,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
 
   // hideSourceMaps: true,
   // disableLogger: true,
@@ -133,7 +133,6 @@ export default withSentryConfig(nextConfig, {
   // side errors will fail.
   tunnelRoute: isAppBuild ? undefined : '/monitoring',
 
-  disableLogger: true, // removes Sentry.logger calls from prod bundle
   sourcemaps: {disable: true}, // prevents source maps being served to browser
 
   webpack: {

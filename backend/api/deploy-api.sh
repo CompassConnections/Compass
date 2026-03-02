@@ -49,7 +49,7 @@ echo "🚀 Deploying ${SERVICE_NAME} to ${ENV} ($(date "+%Y-%m-%d %I:%M:%S %p"))
 yarn build
 
 gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin us-west1-docker.pkg.dev
-docker build . --tag ${IMAGE_URL} --platform linux/amd64
+docker build . --tag ${IMAGE_URL} --platform linux/amd64 --progress=plain
 echo "docker push ${IMAGE_URL}"
 docker push ${IMAGE_URL}
 

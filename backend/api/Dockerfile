@@ -14,6 +14,9 @@ RUN yarn install --frozen-lockfile --production && \
     yarn cache clean --force && \
     rm -rf /usr/local/share/.cache/yarn
 
+# Show installed packages
+RUN npm list || true
+
 # Copy over typescript payload
 COPY dist ./
 

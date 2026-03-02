@@ -1,5 +1,6 @@
 'use client'
 import {AUTH_COOKIE_NAME, TEN_YEARS_SECS} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {type PrivateUser, type User, type UserAndPrivateUser} from 'common/user'
 import {randomString} from 'common/util/random'
 import {onAuthStateChanged, onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
@@ -155,9 +156,8 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     // generate auth token
     fbUser.getIdToken()
     const locale = getLocale()
-    console.log('onAuthLoad', locale)
+    debug('onAuthLoad', locale)
     if (privateUser.locale !== locale) {
-      console.log('update-user-locale', locale)
       api('update-user-locale', {locale})
     }
   }
@@ -186,7 +186,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
             const adminToken = getAdminToken()
 
             const locale = getLocale()
-            console.log('create-user locale', locale)
+            debug('create-user locale', locale)
             const newUser = (await api('create-user', {
               deviceToken,
               adminToken,

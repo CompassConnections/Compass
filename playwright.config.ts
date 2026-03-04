@@ -1,4 +1,5 @@
 import {defineConfig, devices} from '@playwright/test'
+import 'tsconfig-paths/register'
 import {execSync} from 'child_process'
 import {config} from 'dotenv'
 

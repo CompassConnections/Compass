@@ -1,5 +1,5 @@
 import {expect, Locator, Page} from '@playwright/test'
-import { LocaleTuple } from "common/constants";
+import {LocaleTuple} from 'common/constants'
 
 export class HomePage {
   private readonly homePageLink: Locator
@@ -17,7 +17,7 @@ export class HomePage {
   private readonly closeButton: Locator
 
   constructor(public readonly page: Page) {
-    this.homePageLink = page.getByText('Compass', { exact: true})
+    this.homePageLink = page.getByText('Compass', {exact: true})
     this.aboutLink = page.getByTestId('sidebar-about')
     this.faqLink = page.getByTestId('sidebar-faq')
     this.voteLink = page.getByTestId('sidebar-vote')
@@ -35,7 +35,7 @@ export class HomePage {
   async gotToHomePage() {
     await this.page.goto('/')
   }
-  
+
   async clickAboutLink() {
     await expect(this.aboutLink).toBeVisible()
     await this.aboutLink.click()
@@ -82,7 +82,7 @@ export class HomePage {
   }
 
   async setLocale(locale: LocaleTuple) {
-    if (!locale) return;
+    if (!locale) return
     await expect(this.localePicker).toBeVisible()
     await this.localePicker.selectOption(locale[0])
   }

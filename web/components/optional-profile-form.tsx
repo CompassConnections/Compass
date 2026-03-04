@@ -250,9 +250,11 @@ export const OptionalProfileUserForm = (props: {
             <label className={clsx(labelClassName)}>{t('profile.optional.gender', 'Gender')}</label>
             <ChoicesToggleGroup
               currentChoice={profile['gender']}
-              choicesMap={Object.fromEntries(
-                Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]),
-              )}
+              choicesMap={
+                Object.fromEntries(
+                  Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]),
+                ) as any
+              }
               setChoice={(c) => setProfile('gender', c)}
             />
           </Col>
@@ -644,12 +646,12 @@ export const OptionalProfileUserForm = (props: {
           </label>
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
-              currentChoice={profile['education_level'] ?? ''}
+              currentChoice={profile['education_level']}
               choicesMap={Object.fromEntries(
                 Object.entries(EDUCATION_CHOICES).map(([k, v]) => [
                   t(`profile.education.${v}`, k),
                   v,
-                ]),
+                ]) as any,
               )}
               setChoice={(c) => setProfile('education_level', c)}
             />

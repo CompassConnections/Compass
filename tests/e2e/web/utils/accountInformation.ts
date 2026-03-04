@@ -4,24 +4,18 @@ import {
   DietTuple,
   EducationTuple,
   EthnicityTuple,
+  GenderTuple,
+  InterestedInGenderTuple,
   LanguageTuple,
   PersonalityKey,
   PoliticalTuple,
   RelationshipStatusTuple,
   RelationshipStyleTuple,
   ReligionTuple,
-  GenderTuple,
-  InterestedInGenderTuple,
 } from 'common/choices'
+import {ImportanceTuple} from 'web/components/answers/answer-compatibility-question-content'
 
-import {
-  Causes,
-  ChildrenExpectation,
-  Interests,
-  Platforms,
-} from '../pages/signUpPage'
-
-import { ImportanceTuple } from "web/components/answers/answer-compatibility-question-content";
+import {Causes, ChildrenExpectation, Interests, Platforms} from '../pages/signUpPage'
 
 export type OnboardingUser = {
   email: string
@@ -74,10 +68,10 @@ type InterestedInAges = {
 }
 
 export type Compatibility = {
-    answer: string | null,
-    acceptableAnswers: (string | null)[],
-    importance: ImportanceTuple,
-    explanation: string
+  answer: string | null
+  acceptableAnswers: (string | null)[]
+  importance: ImportanceTuple
+  explanation: string
 }
 type BeliefDetails = {
   political?: {
@@ -129,7 +123,8 @@ export const onboarding: OnboardingConfig = {
       display_name: 'Compass Onboarding',
       username: `TheGreatOnboarding_${id}`, // username max length is 25 (see /create-user)
       keywords: 'Spicey noodles, Chocolate milk',
-      headline: 'I went out before dawn to hunt the mantis shrimp, the small bright terror that cracked shells like glass and watched me with colors no man could name. In the quiet water, I felt its strikes through the line as if the sea itself were warning me.',
+      headline:
+        'I went out before dawn to hunt the mantis shrimp, the small bright terror that cracked shells like glass and watched me with colors no man could name. In the quiet water, I felt its strikes through the line as if the sea itself were warning me.',
       bio: 'Born beneath twin moons, this wanderer maps forgotten roads, trades riddles for shelter, and keeps stories in glass bottles. Drawn to ancient libraries and glowing forests, they seek lost spells, quiet taverns, and adventures that rewrite fate. Their compass points to wonder. Ever onward. Always. Go',
       gender: ['Woman', 'female'],
       age: '25',
@@ -171,13 +166,16 @@ export const onboarding: OnboardingConfig = {
         openness: 43,
         agreeableness: 20,
         conscientiousness: 32,
-        extraversion:63,
-        neuroticism:12
+        extraversion: 63,
+        neuroticism: 12,
       },
       diet: ['Omnivore', 'omnivore'],
       is_smoker: false,
       alcohol_consumed_per_month: '4',
-      languages: [['Akan', 'akan'], ['Cebuano', 'cebuano']],
+      languages: [
+        ['Akan', 'akan'],
+        ['Cebuano', 'cebuano'],
+      ],
       social_media: [
         {
           platform: 'Bluesky',
@@ -187,9 +185,9 @@ export const onboarding: OnboardingConfig = {
       compatibility: {
         answer: '1',
         acceptableAnswers: ['0', '2'],
-        importance: ["Important", 2],
-        explanation: 'This is my explanation one'
-      }
+        importance: ['Important', 2],
+        explanation: 'This is my explanation one',
+      },
     }
   },
 }

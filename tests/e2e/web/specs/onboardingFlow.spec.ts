@@ -29,7 +29,7 @@ test.describe('when given valid input', () => {
     await signUpPage.fillHeight({
       feet: testAccount.height?.feet,
       inches: testAccount.height?.inches,
-    });
+    })
     await signUpPage.fillEthnicity(testAccount.ethnicity_origin)
     await signUpPage.fillHeadline(testAccount.headline)
     await signUpPage.fillKeywords(testAccount.keywords)
@@ -53,17 +53,25 @@ test.describe('when given valid input', () => {
     await signUpPage.setPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
-    );
+    )
     await signUpPage.setReligiousBeliefs(
       testAccount.beliefs?.religious?.belief,
       testAccount.beliefs?.religious?.details,
     )
     await signUpPage.setPersonalityType(testAccount.personality_type)
     await signUpPage.setOpennessPersonalityValue(testAccount.big_five_personality_traits?.openness)
-    await signUpPage.setAgreeablenessPersonalityValue(testAccount.big_five_personality_traits?.agreeableness)
-    await signUpPage.setConscientiousnessPersonalityValue(testAccount.big_five_personality_traits?.conscientiousness)
-    await signUpPage.setExtraversionPersonalityValue(testAccount.big_five_personality_traits?.extraversion)
-    await signUpPage.setNeuroticismPersonalityValue(testAccount.big_five_personality_traits?.neuroticism)
+    await signUpPage.setAgreeablenessPersonalityValue(
+      testAccount.big_five_personality_traits?.agreeableness,
+    )
+    await signUpPage.setConscientiousnessPersonalityValue(
+      testAccount.big_five_personality_traits?.conscientiousness,
+    )
+    await signUpPage.setExtraversionPersonalityValue(
+      testAccount.big_five_personality_traits?.extraversion,
+    )
+    await signUpPage.setNeuroticismPersonalityValue(
+      testAccount.big_five_personality_traits?.neuroticism,
+    )
     await signUpPage.setDietType(testAccount.diet)
     await signUpPage.setIsSmoker(testAccount.is_smoker)
     await signUpPage.fillAlcoholPerMonth(testAccount.alcohol_consumed_per_month)
@@ -74,7 +82,9 @@ test.describe('when given valid input', () => {
     await profilePage.clickCloseButton()
     await onboardingPage.clickRefineProfileButton()
     await profilePage.clickAnswerQuestionsButton()
-    const compatQuestionOne = await profilePage.answerCompatibilityQuestion(testAccount.compatibility)
+    const compatQuestionOne = await profilePage.answerCompatibilityQuestion(
+      testAccount.compatibility,
+    )
     await profilePage.clickNextCompatibilityQuestionButton()
     await profilePage.clickSkipCompatibilityQuestionButton()
     await profilePage.clickSkipCompatibilityQuestionButton()
@@ -89,21 +99,21 @@ test.describe('when given valid input', () => {
       undefined,
       testAccount.height?.feet,
       testAccount.height?.inches,
-    );
-    await profilePage.verifyIntrestedInConnectingWith(
+    )
+    await profilePage.verifyInterestedInConnectingWith(
       testAccount.interested_in,
       testAccount.Interested_in_ages?.min,
       testAccount.Interested_in_ages?.max,
-    );
+    )
     await profilePage.verifyRelationShipTypeAndInterest(
       testAccount.connection_type,
       testAccount.relationship_style,
-    );
-    await profilePage.verifyRelationshipStatus(testAccount.relationship_status);
-    await profilePage.verifyCurrentNumberOfKids(testAccount.number_of_kids);
-    await profilePage.verifyWantChildrenExpectation(testAccount.children_expectation);
-    await profilePage.verifyInterests(testAccount.interests);
-    await profilePage.verifyCauses(testAccount.causes);
+    )
+    await profilePage.verifyRelationshipStatus(testAccount.relationship_status)
+    await profilePage.verifyCurrentNumberOfKids(testAccount.number_of_kids)
+    await profilePage.verifyWantChildrenExpectation(testAccount.children_expectation)
+    await profilePage.verifyInterests(testAccount.interests)
+    await profilePage.verifyCauses(testAccount.causes)
     await profilePage.verifyEducationLevelAndUniversity(
       testAccount.education_level,
       testAccount.university,
@@ -113,7 +123,7 @@ test.describe('when given valid input', () => {
     await profilePage.verifyPoliticalBeliefs(
       testAccount.beliefs?.political?.belief,
       testAccount.beliefs?.political?.details,
-    );
+    )
     await profilePage.verifyReligiousBeliefs(
       testAccount.beliefs?.religious?.belief,
       testAccount.beliefs?.religious?.details,
@@ -130,40 +140,42 @@ test.describe('when given valid input', () => {
 
     //Verify Database Information
     const dbInfo = await userInformationFromDb(testAccount)
-    console.log(dbInfo.profile);
+    console.log(dbInfo.profile)
 
     await expect(dbInfo.user.name).toBe(testAccount.display_name)
     await expect(dbInfo.user.username).toBe(testAccount.username)
     await expect(dbInfo.profile.bio_text).toBe(testAccount.bio)
-    await expect(dbInfo.profile.gender).toEqual(testAccount.gender[1])
+    await expect(dbInfo.profile.gender).toEqual(testAccount.gender?.[1])
     await expect(dbInfo.profile.headline).toEqual(testAccount.headline)
     await expect(dbInfo.profile.keywords).toEqual(
-      expect.arrayContaining(testAccount.keywords?.split(", ") ?? [])
+      expect.arrayContaining(testAccount.keywords?.split(', ') ?? []),
     )
     await expect(String(dbInfo.profile.age)).toEqual(testAccount.age)
     await expect(dbInfo.profile.height_in_inches).toEqual(Number(testAccount.height?.feet) * 12)
-    await expect(dbInfo.profile.ethnicity).toContain(testAccount.ethnicity_origin[1])
-    await expect(dbInfo.profile.pref_gender).toContain(testAccount.interested_in[1])
+    await expect(dbInfo.profile.ethnicity).toContain(testAccount.ethnicity_origin?.[1])
+    await expect(dbInfo.profile.pref_gender).toContain(testAccount.interested_in?.[1])
     await expect(String(dbInfo.profile.pref_age_min)).toContain(testAccount.Interested_in_ages?.min)
     await expect(String(dbInfo.profile.pref_age_max)).toContain(testAccount.Interested_in_ages?.max)
     await expect(dbInfo.profile.pref_relation_styles).toContain(
-      `${testAccount.connection_type[1]}`.toLowerCase(),
+      `${testAccount.connection_type?.[1]}`.toLowerCase(),
     )
-    await expect(dbInfo.profile.relationship_status).toContain(testAccount.relationship_status[1])
-    await expect(dbInfo.profile.pref_romantic_styles).toContain(testAccount.relationship_style[1])
+    await expect(dbInfo.profile.relationship_status).toContain(testAccount.relationship_status?.[1])
+    await expect(dbInfo.profile.pref_romantic_styles).toContain(testAccount.relationship_style?.[1])
     await expect(dbInfo.profile.has_kids).toEqual(Number(testAccount.number_of_kids))
     await expect(dbInfo.profile.wants_kids_strength).toEqual(testAccount.children_expectation?.[1])
     await expect(dbInfo.profile.education_level).toContain(
-      `${testAccount.education_level[1]}`.toLowerCase(),
+      `${testAccount.education_level?.[1]}`.toLowerCase(),
     )
     await expect(dbInfo.profile.university).toContain(testAccount.university)
     await expect(dbInfo.profile.occupation_title).toContain(testAccount.job_title)
     await expect(dbInfo.profile.company).toContain(testAccount.company)
-    await expect(dbInfo.profile.political_beliefs).toContain(testAccount.beliefs?.political?.belief[1])
+    await expect(dbInfo.profile.political_beliefs).toContain(
+      testAccount.beliefs?.political?.belief?.[1],
+    )
     await expect(dbInfo.profile.political_details).toContain(
       testAccount.beliefs?.political?.details,
     )
-    await expect(dbInfo.profile.religion).toContain(testAccount.beliefs?.religious?.belief[1])
+    await expect(dbInfo.profile.religion).toContain(testAccount.beliefs?.religious?.belief?.[1])
     await expect(dbInfo.profile.religious_beliefs).toContain(
       testAccount.beliefs?.religious?.details,
     )
@@ -183,7 +195,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.profile.big5_neuroticism).toEqual(
       testAccount.big_five_personality_traits?.neuroticism,
     )
-    await expect(dbInfo.profile.diet).toContain(`${testAccount.diet[1]}`.toLowerCase())
+    await expect(dbInfo.profile.diet).toContain(testAccount.diet?.[1].toLowerCase())
     await expect(dbInfo.profile.is_smoker).toEqual(testAccount.is_smoker)
     await expect(dbInfo.profile.languages).toHaveLength(2)
     await expect(dbInfo.profile.languages).toEqual(
@@ -290,4 +302,4 @@ test.describe('when given valid input', () => {
 
 test.describe('when an error occurs', () => {
   test('placeholder', async () => {})
-});
+})

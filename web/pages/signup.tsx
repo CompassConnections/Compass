@@ -112,7 +112,7 @@ export default function SignupPage() {
       await auth.currentUser?.getIdToken(true) // true = force refresh
 
       // Just to be sure everything is in the db before the server calls in profile props
-      if (IS_DEPLOYED) await sleep(3000)
+      if (IS_DEPLOYED) await sleep(5000)
 
       router.push(`/${result.user.username}?fromSignup=true`)
     } catch (e) {

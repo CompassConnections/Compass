@@ -408,5 +408,5 @@ test.describe('when given valid input', () => {
 })
 
 test.describe('when an error occurs', () => {
-  test('placeholder', async () => {});
+  test('placeholder', async () => {})
 });

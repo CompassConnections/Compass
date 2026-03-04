@@ -54,6 +54,7 @@ import {createPrivateUserMessage} from './create-private-user-message'
 import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
 import {createProfile} from './create-profile'
 import {createUser} from './create-user'
+import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {deleteMe} from './delete-me'
@@ -91,6 +92,7 @@ import {updateNotifSettings} from './update-notif-setting'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfile} from './update-profile'
 import {updateUserLocale} from './update-user-locale'
+import {validateUsernameEndpoint} from './validate-username'
 
 // const corsOptions: CorsOptions = {
 //   origin: ['*'], // Only allow requests from this domain
@@ -332,6 +334,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-private-user-message-channel': createPrivateUserMessageChannel,
   'create-profile': createProfile,
   'create-user': createUser,
+  'create-user-and-profile': createUserAndProfile,
   'create-vote': createVote,
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
@@ -383,6 +386,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'user/by-id/:id/block': blockUser,
   'user/by-id/:id/unblock': unblockUser,
   vote: vote,
+  'validate-username': validateUsernameEndpoint,
   // 'user/:username': getUser,
   // 'user/:username/lite': getDisplayUser,
   // 'user/by-id/:id/lite': getDisplayUser,

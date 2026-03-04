@@ -14,6 +14,7 @@
     "prettier": "npx prettier --write .",
     "prod": "cross-env NEXT_PUBLIC_FIREBASE_ENV=PROD concurrently -n NEXT,TS -c magenta,cyan \"yarn serve\" \"yarn ts-watch\"",
     "serve": "next dev -H 0.0.0.0 -p 3000",
+    "serve:debug": "NODE_OPTIONS='--inspect=0.0.0.0:9229' yarn serve",
     "start": "next start",
     "test": "jest --config jest.config.js --passWithNoTests",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",

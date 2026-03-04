@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {getProfileRow, ProfileRow} from 'common/profiles/profile'
@@ -78,7 +79,13 @@ export const getStaticProps = async (
 ) => {
   const {username} = props.params!
 
-  console.log('Starting getStaticProps in /[username]')
+  // Skip DB lookup entirely for known non-user routes
+  // Also block file extension requests — these are never valid usernames
+  if (RESERVED_PATHS.has(username.toLowerCase()) || username.includes('.')) {
+    return {notFound: true}
+  }
+
+  console.log('Starting getStaticProps in /[username]', username)
 
   const user = await getUser(username)
 

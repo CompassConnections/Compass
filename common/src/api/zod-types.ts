@@ -42,6 +42,7 @@ export const zBoolean = z
   .union([z.boolean(), z.string()])
   .transform((val) => val === true || val === 'true')
 
+// TODO: merge the two below when the deprecated /create-profile is deleted
 export const baseProfilesSchema = z.object({
   age: z.number().min(18).max(100).optional().nullable(),
   allow_direct_messaging: zBoolean.optional(),
@@ -56,16 +57,16 @@ export const baseProfilesSchema = z.object({
   geodb_city_id: z.string().optional().nullable(),
   languages: z.array(z.string()).optional().nullable(),
   looking_for_matches: zBoolean.optional(),
-  photo_urls: z.array(z.string()).nullable(),
-  pinned_url: z.string(),
+  photo_urls: z.array(z.string()).optional().nullable(),
+  pinned_url: z.string().optional().nullable(),
   pref_age_max: z.number().min(18).max(100).optional().nullable(),
   pref_age_min: z.number().min(18).max(100).optional().nullable(),
-  pref_gender: genderTypes.nullable(),
-  pref_relation_styles: z.array(z.string()).nullable(),
+  pref_gender: genderTypes.optional().nullable(),
+  pref_relation_styles: z.array(z.string()).optional().nullable(),
   referred_by_username: z.string().optional().nullable(),
   region_code: z.string().optional().nullable(),
   visibility: z.union([z.literal('public'), z.literal('member')]),
-  wants_kids_strength: z.number().nullable(),
+  wants_kids_strength: z.number().optional().nullable(),
 })
 
 const optionalProfilesSchema = z.object({
@@ -100,7 +101,7 @@ const optionalProfilesSchema = z.object({
   occupation_title: z.string().optional().nullable(),
   political_beliefs: z.array(z.string()).optional().nullable(),
   political_details: z.string().optional().nullable(),
-  pref_romantic_styles: z.array(z.string()).nullable(),
+  pref_romantic_styles: z.array(z.string()).optional().nullable(),
   raised_in_city: z.string().optional().nullable(),
   raised_in_country: z.string().optional().nullable(),
   raised_in_geodb_city_id: z.string().optional().nullable(),

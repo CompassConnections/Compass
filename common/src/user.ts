@@ -1,13 +1,16 @@
 import {Socials} from './socials'
 import {notification_preferences} from './user-notification-preferences'
 
-export type User = {
+export type BaseUser = {
   id: string
-  createdTime: number
   name: string
   username: string
-  avatarUrl: string
   link: Socials // Social links
+}
+
+export type User = BaseUser & {
+  createdTime: number
+  avatarUrl: string
   isBannedFromPosting?: boolean
   userDeleted?: boolean
   allow_direct_messaging?: boolean

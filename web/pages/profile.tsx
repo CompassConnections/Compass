@@ -1,7 +1,11 @@
+import {debug} from 'common/logger'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
-import {User} from 'common/user'
+import {BaseUser, User} from 'common/user'
+import {filterDefined} from 'common/util/array'
+import {removeUndefinedProps} from 'common/util/object'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
+import toast from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {PageBase} from 'web/components/page-base'
@@ -10,7 +14,7 @@ import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
-import {api} from 'web/lib/api'
+import {api, updateProfile, updateUser} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 export default function ProfilePage() {
@@ -60,8 +64,34 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     setProfile((prevState) => ({...prevState, [key]: value}))
   }
 
-  const [displayName, setDisplayName] = useState(user.name)
-  const [username, setUsername] = useState(user.username)
+  const [baseUser, setBaseUser] = useState<BaseUser>(user)
+
+  const setBaseUserState = <K extends keyof BaseUser>(key: K, value: BaseUser[K] | undefined) => {
+    setBaseUser((prevState) => ({...prevState, [key]: value}))
+  }
+
+  async function submitForm() {
+    const {interests, causes, work, ...otherProfileProps} = profile
+    const parsedProfile = removeUndefinedProps(otherProfileProps) as any
+    debug('parsedProfile', parsedProfile)
+    const promises: Promise<any>[] = filterDefined([
+      updateProfile(parsedProfile),
+      baseUser && updateUser(baseUser),
+      interests && api('update-options', {table: 'interests', values: interests}),
+      causes && api('update-options', {table: 'causes', values: causes}),
+      work && api('update-options', {table: 'work', values: work}),
+    ])
+    try {
+      await Promise.all(promises)
+    } catch (error) {
+      console.error(error)
+      toast.error(
+        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`,
+      )
+      return
+    }
+    Router.push(`/${user.username}`)
+  }
 
   return (
     <PageBase trackPageView={'profile'}>
@@ -73,26 +103,18 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
       <Col className="items-center">
         <Col className={'w-full px-6 py-4'}>
           <RequiredProfileUserForm
-            user={user}
-            setProfile={setProfileState}
-            profile={profile}
-            profileCreatedAlready={true}
-            isSubmitting={false}
-            setEditUsername={setUsername}
-            setEditDisplayName={setDisplayName}
+            data={baseUser}
+            setData={setBaseUserState}
+            profileCreatedAlready
           />
           <div className={'h-4'} />
           <OptionalProfileUserForm
             profile={profile}
-            user={user}
             setProfile={setProfileState}
+            user={baseUser}
+            setUser={setBaseUserState}
             buttonLabel={t('profile.save', 'Save')}
-            onSubmit={async () => {
-              api('me/update', {
-                name: displayName === user.name ? undefined : displayName,
-                username: username === user.username ? undefined : username,
-              })
-            }}
+            onSubmit={async () => await submitForm()}
           />
         </Col>
       </Col>

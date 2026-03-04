@@ -11,7 +11,7 @@ import {useUser} from 'web/hooks/use-user'
 import {firebaseLogout} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {withTracking} from 'web/lib/service/analytics'
-import {signupRedirect} from 'web/lib/util/signup'
+import {startSignup} from 'web/lib/util/signup'
 import {isAndroidApp} from 'web/lib/util/webview'
 
 import SiteLogo from '../site-logo'
@@ -123,7 +123,7 @@ export const SignUpButton = (props: {
       data-testid="side-bar-sign-up-button"
       color={color ?? 'gradient'}
       size={size ?? 'xl'}
-      onClick={signupRedirect}
+      onClick={startSignup}
       className={clsx('w-full', className)}
     >
       {text ?? t('nav.sign_up_now', 'Sign up now')}

@@ -14,8 +14,9 @@ import {auth} from 'web/lib/firebase/users'
 import {getLocale} from 'web/lib/locale-cookie'
 import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
 import {getPrivateUserSafe, getUserSafe} from 'web/lib/supabase/users'
-import {getCookie, setCookie} from 'web/lib/util/cookie'
+import {setCookie} from 'web/lib/util/cookie'
 import {safeLocalStorage} from 'web/lib/util/local'
+import {isOnboardingFlag} from 'web/lib/util/signup'
 
 // Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
@@ -33,18 +34,19 @@ export const ensureDeviceToken = () => {
   }
   return deviceToken
 }
-const getAdminToken = () => {
-  const key = 'TEST_CREATE_USER_KEY'
-  const cookie = getCookie(key)
-  if (cookie) return cookie.replace(/"/g, '')
 
-  // For our convenience. If there's a token in local storage, set it as a cookie
-  const localStorageToken = safeLocalStorage?.getItem(key)
-  if (localStorageToken) {
-    setCookie(key, localStorageToken.replace(/"/g, ''))
-  }
-  return localStorageToken?.replace(/"/g, '') ?? ''
-}
+// const getAdminToken = () => {
+//   const key = 'TEST_CREATE_USER_KEY'
+//   const cookie = getCookie(key)
+//   if (cookie) return cookie.replace(/"/g, '')
+//
+//   // For our convenience. If there's a token in local storage, set it as a cookie
+//   const localStorageToken = safeLocalStorage?.getItem(key)
+//   if (localStorageToken) {
+//     setCookie(key, localStorageToken.replace(/"/g, ''))
+//   }
+//   return localStorageToken?.replace(/"/g, '') ?? ''
+// }
 
 const stripUserData = (user: object) => {
   // there's some risk that this cookie could be too big for some clients,
@@ -107,6 +109,13 @@ export function useAndSetupFirebaseUser() {
 
 export const AuthContext = createContext<AuthUser>(undefined)
 
+// function getSupabaseAuthCall() {
+//   return api('get-supabase-token').catch((e) => {
+//     console.error('Error getting supabase token', e)
+//     return null
+//   })
+// }
+
 export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}) {
   const {children, serverUser} = props
 
@@ -149,6 +158,12 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     }
   }, [authUser])
 
+  // function updateSupabase() {
+  // When testing on a mobile device, we'll be pointed at a local ip or ngrok address, so this will fail
+  // Skipping for now as it seems to work fine without it
+  // if (supabaseJwt) updateSupabaseAuth(supabaseJwt.jwt)
+  // }
+
   const onAuthLoad = (fbUser: FirebaseUser, user: User, privateUser: PrivateUser) => {
     setUser(user)
     setPrivateUser(privateUser)
@@ -162,48 +177,40 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     }
   }
 
+  function onAuthLoggedOut() {
+    // User logged out; reset to null
+    setUserCookie(undefined)
+    setUser(null)
+    setPrivateUser(undefined)
+    // Clear local storage only if we were signed in, otherwise we'll clear referral info
+    if (safeLocalStorage?.getItem(CACHED_USER_KEY)) localStorage.clear()
+  }
+
   useEffect(() => {
     return onIdTokenChanged(
       auth,
       async (fbUser) => {
         if (fbUser) {
           setUserCookie(fbUser.toJSON())
-
-          const [user, privateUser] = await Promise.all([
-            getUserSafe(fbUser.uid),
-            getPrivateUserSafe(),
-            // api('get-supabase-token').catch((e) => {
-            //   console.error('Error getting supabase token', e)
-            //   return null
-            // }),
-          ])
-          // When testing on a mobile device, we'll be pointed at a local ip or ngrok address, so this will fail
-          // Skipping for now as it seems to work fine without it
-          // if (supabaseJwt) updateSupabaseAuth(supabaseJwt.jwt)
-
-          if (!user || !privateUser) {
-            const deviceToken = ensureDeviceToken()
-            const adminToken = getAdminToken()
-
-            const locale = getLocale()
-            debug('create-user locale', locale)
-            const newUser = (await api('create-user', {
-              deviceToken,
-              adminToken,
-              locale,
-            })) as UserAndPrivateUser
-
-            onAuthLoad(fbUser, newUser.user, newUser.privateUser)
+          if (isOnboardingFlag()) {
+            debug(
+              'Logged into firebase but onboarding, skipping auth load until onboarding is complete',
+            )
           } else {
-            onAuthLoad(fbUser, user, privateUser)
+            const [user, privateUser] = await Promise.all([
+              getUserSafe(fbUser.uid),
+              getPrivateUserSafe(),
+              // getSupabaseAuthCall(),
+            ])
+            // updateSupabase()
+            if (user && privateUser) {
+              onAuthLoad(fbUser, user, privateUser)
+            } else {
+              debug('Logged into firebase but user not found in db, should redirect to /onboarding')
+            }
           }
         } else {
-          // User logged out; reset to null
-          setUserCookie(undefined)
-          setUser(null)
-          setPrivateUser(undefined)
-          // Clear local storage only if we were signed in, otherwise we'll clear referral info
-          if (safeLocalStorage?.getItem(CACHED_USER_KEY)) localStorage.clear()
+          onAuthLoggedOut()
         }
       },
       (e) => {

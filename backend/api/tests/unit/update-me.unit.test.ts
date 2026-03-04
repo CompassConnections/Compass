@@ -122,17 +122,14 @@ describe('updateMe', () => {
     it('should throw if the username is reserved', async () => {
       const mockProps = {
         name: 'mockName',
-        username: 'mockUsername',
+        username: 'home',
         avatarUrl: 'mockAvatarUrl',
         link: {mockLink: 'mockLinkValue'},
       } as any
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
 
-      const arraySpy = jest.spyOn(Array.prototype, 'includes')
-
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(true)
-      arraySpy.mockReturnValue(true)
 
       expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow('This username is reserved')
     })

@@ -4,6 +4,7 @@ import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {buildOgUrl} from 'common/util/og'
 import {parseJsonContentToText} from 'common/util/parse'
+import {capitalize} from 'lodash'
 
 // TODO: handle age, gender undefined better
 export type ogProps = {
@@ -23,11 +24,10 @@ export type ogProps = {
 
 type NestedStringArray = (string | NestedStringArray | undefined | null)[]
 
-export const flatten = (arr: NestedStringArray, separator: string = ', '): string =>
+export const flatten = (arr: NestedStringArray): string[] =>
   arr
-    .flatMap((item) => (Array.isArray(item) ? [flatten(item, separator)] : [item]))
+    .flatMap((item) => (Array.isArray(item) ? flatten(item) : [item]))
     .filter((item): item is string => item != null && item !== '')
-    .join(separator)
 
 export function getProfileOgImageUrl(
   user: User,
@@ -38,21 +38,20 @@ export function getProfileOgImageUrl(
   const headline =
     profile?.headline ||
     parseJsonContentToText(profile?.bio as JSONContent) ||
-    flatten(
-      [
-        // profile?.interests?.map((id: string) => choicesIdsToLabels?.['interests']?.[id]),
-        // profile?.causes?.map((id: string) => choicesIdsToLabels?.['causes']?.[id]),
-        // profile?.work?.map((id: string) => choicesIdsToLabels?.['work']?.[id]),
-        profile?.occupation_title,
-        profile?.education_level,
-        profile?.university,
-        profile?.mbti,
-        profile?.religion,
-        profile?.political_beliefs,
-        profile?.languages,
-      ],
-      ' • ',
-    )
+    flatten([
+      // profile?.interests?.map((id: string) => choicesIdsToLabels?.['interests']?.[id]),
+      // profile?.causes?.map((id: string) => choicesIdsToLabels?.['causes']?.[id]),
+      // profile?.work?.map((id: string) => choicesIdsToLabels?.['work']?.[id]),
+      profile?.occupation_title,
+      profile?.education_level,
+      profile?.university,
+      profile?.mbti,
+      profile?.religion,
+      profile?.political_beliefs,
+    ])
+      .map(capitalize)
+      .join(' • ')
+
   const props = {
     avatarUrl: profile?.pinned_url ?? '',
     username: user.username ?? '',

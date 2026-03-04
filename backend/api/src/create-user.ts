@@ -49,7 +49,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     (r) => r.count,
   )
   const usernameExists = dupes > 0
-  const isReservedName = RESERVED_PATHS.includes(username)
+  const isReservedName = RESERVED_PATHS.has(username)
   if (usernameExists || isReservedName) username += randomString(4)
 
   const {user, privateUser} = await pg.tx(async (tx) => {

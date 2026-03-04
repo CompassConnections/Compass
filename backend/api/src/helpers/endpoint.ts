@@ -238,12 +238,16 @@ function checkRateLimit(name: string, req: Request, res: Response, auth?: Authed
 }
 
 export const typedEndpoint = <N extends APIPath>(name: N, handler: APIHandler<N>) => {
+  const apiSchema = API[name] as APISchema<N> & {
+    deprecation?: {deprecated: boolean; migrationPath?: string; sunsetDate?: string}
+  }
   const {
     props: propSchema,
     authed: authRequired,
     rateLimited = false,
     method,
-  } = API[name] as APISchema<N>
+    deprecation,
+  } = apiSchema
 
   return async (req: Request, res: Response, next: NextFunction) => {
     let authUser: AuthedUser | undefined = undefined
@@ -260,6 +264,10 @@ export const typedEndpoint = <N extends APIPath>(name: N, handler: APIHandler<N>
       } catch (e) {
         return next(e)
       }
+    }
+
+    if (deprecation?.deprecated) {
+      log('Deprecated endpoint called:', name, req)
     }
 
     const props = {
@@ -281,6 +289,17 @@ export const typedEndpoint = <N extends APIPath>(name: N, handler: APIHandler<N>
       const result = hasContinue ? resultOptionalContinue.result : resultOptionalContinue
 
       if (!res.headersSent) {
+        // Add deprecation headers for deprecated endpoints
+        if (deprecation?.deprecated) {
+          res.setHeader('Deprecation', 'true')
+          if (deprecation.sunsetDate) {
+            res.setHeader('Sunset', deprecation.sunsetDate)
+          }
+          if (deprecation.migrationPath) {
+            res.setHeader('Link', `<${deprecation.migrationPath}>; rel="migration"`)
+          }
+        }
+
         // Convert bigint to number, b/c JSON doesn't support bigint.
         const convertedResult = deepConvertBigIntToNumber(result)
         // console.debug('API result', convertedResult)

@@ -8,6 +8,7 @@ import {
   ServerMessage,
 } from 'common/api/websockets'
 import {IS_LOCAL} from 'common/hosting/constants'
+import {debug} from 'common/logger'
 import {isError} from 'lodash'
 import {log, metrics} from 'shared/utils'
 import {RawData, Server as WebSocketServer, WebSocket} from 'ws'
@@ -139,12 +140,12 @@ export function listen(server: HttpServer, path: string) {
     deadConnectionCleaner = setInterval(() => {
       for (const ws of wss.clients as Set<HeartbeatWebSocket>) {
         if (ws.isAlive === false) {
-          log.debug('Terminating dead connection')
+          debug('Terminating dead connection')
           ws.terminate()
           continue
         }
         ws.isAlive = false
-        // log.debug('Sending ping to client');
+        // debug('Sending ping to client');
         ws.ping()
       }
     }, 25000)
@@ -154,11 +155,11 @@ export function listen(server: HttpServer, path: string) {
   })
   wss.on('connection', (ws: HeartbeatWebSocket) => {
     ws.isAlive = true
-    // log.debug('Received pong from client');
+    // debug('Received pong from client');
     ws.on('pong', () => (ws.isAlive = true))
     metrics.inc('ws/connections_established')
     metrics.set('ws/open_connections', wss.clients.size)
-    log.debug('WS client connected.')
+    debug('WS client connected.')
     SWITCHBOARD.connect(ws)
     ws.on('message', (data) => {
       const result = processMessage(ws, data)
@@ -168,7 +169,7 @@ export function listen(server: HttpServer, path: string) {
     ws.on('close', (code, reason) => {
       metrics.inc('ws/connections_terminated')
       metrics.set('ws/open_connections', wss.clients.size)
-      log.debug(`WS client disconnected.`, {code, reason: reason.toString()})
+      debug(`WS client disconnected.`, {code, reason: reason.toString()})
       SWITCHBOARD.disconnect(ws)
     })
     ws.on('error', (err) => {

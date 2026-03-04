@@ -1,0 +1,186 @@
+import {setLastOnlineTimeUser} from 'api/set-last-online-time'
+import {defaultLocale} from 'common/constants'
+import {sendDiscordMessage} from 'common/discord/core'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {debug} from 'common/logger'
+import {trimStrings} from 'common/parsing'
+import {convertPrivateUser, convertUser} from 'common/supabase/users'
+import {PrivateUser} from 'common/user'
+import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
+import {cleanDisplayName} from 'common/util/clean-username'
+import {removeUndefinedProps} from 'common/util/object'
+import {MINUTE_MS, sleep} from 'common/util/time'
+import {sendWelcomeEmail} from 'email/functions/helpers'
+import * as admin from 'firebase-admin'
+import {getIp, track} from 'shared/analytics'
+import {getBucket} from 'shared/firebase-utils'
+import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
+import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
+import {getUserByUsername, log} from 'shared/utils'
+
+import {APIError, APIHandler} from './helpers/endpoint'
+import {validateUsername} from './validate-username'
+
+export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async (
+  props,
+  auth,
+  req,
+) => {
+  trimStrings(props)
+  const {deviceToken, locale = defaultLocale, username, name, link, profile} = props
+  await removePinnedUrlFromPhotoUrls(profile)
+
+  const host = req.get('referer')
+  log(`Create user and profile from: ${host}`)
+
+  const ip = getIp(req)
+
+  const pg = createSupabaseDirectClient()
+
+  const cleanName = cleanDisplayName(name || 'User')
+
+  const fbUser = await admin.auth().getUser(auth.uid)
+  const email = fbUser.email
+
+  const bucket = getBucket()
+  const avatarUrl = await generateAvatarUrl(auth.uid, cleanName, bucket)
+
+  let finalUsername = username
+  const validation = await validateUsername(username)
+  if (!validation.valid) {
+    if (validation.suggestedUsername) {
+      finalUsername = validation.suggestedUsername
+    } else {
+      throw new APIError(400, validation.message || 'Invalid username')
+    }
+  }
+
+  const {user, privateUser} = await pg.tx(async (tx) => {
+    const existingUser = await tx.oneOrNone('select id from users where id = $1', [auth.uid])
+    if (existingUser) {
+      throw new APIError(403, 'User already exists', {userId: auth.uid})
+    }
+
+    const sameNameUser = await getUserByUsername(finalUsername, tx)
+    if (sameNameUser) {
+      throw new APIError(403, 'Username already taken', {username: finalUsername})
+    }
+
+    const userData = removeUndefinedProps({
+      avatarUrl,
+      isBannedFromPosting: Boolean(
+        (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
+          (ip && bannedIpAddresses.includes(ip)),
+      ),
+      link: link,
+    })
+
+    const privateUserData: PrivateUser = {
+      id: auth.uid,
+      email,
+      locale,
+      initialIpAddress: ip,
+      initialDeviceToken: deviceToken,
+      notificationPreferences: getDefaultNotificationPreferences(),
+      blockedUserIds: [],
+      blockedByUserIds: [],
+    }
+
+    const newUserRow = await insert(tx, 'users', {
+      id: auth.uid,
+      name: cleanName,
+      username: finalUsername,
+      data: userData,
+    })
+
+    const newPrivateUserRow = await insert(tx, 'private_users', {
+      id: privateUserData.id,
+      data: privateUserData,
+    })
+
+    const profileData = removeUndefinedProps(profile)
+
+    await insert(tx, 'profiles', {
+      user_id: auth.uid,
+      ...profileData,
+    })
+
+    return {
+      user: convertUser(newUserRow),
+      privateUser: convertPrivateUser(newPrivateUserRow),
+    }
+  })
+
+  log('created user and profile', {username: user.username, firebaseId: auth.uid})
+
+  const continuation = async () => {
+    try {
+      await track(auth.uid, 'create profile', {username: user.username})
+    } catch (e) {
+      console.error('Failed to track create profile', e)
+    }
+    try {
+      await sendWelcomeEmail(user, privateUser)
+    } catch (e) {
+      console.error('Failed to sendWelcomeEmail', e)
+    }
+    try {
+      await setLastOnlineTimeUser(auth.uid)
+    } catch (e) {
+      console.error('Failed to set last online time', e)
+    }
+    try {
+      // Let the user fill in the optional form with all their info and pictures before notifying discord of their arrival.
+      // So we can sse their full profile as soon as we get the notif on discord. And that allows OG to pull their pic for the link preview.
+      // Regardless, you need to wait for at least 5 seconds that the profile is fully in the db—otherwise ISR may cache "profile not created yet"
+      await sleep(MINUTE_MS)
+      const message: string = `[**${user.name}**](${DEPLOYED_WEB_URL}/${user.username}) just created a profile`
+      await sendDiscordMessage(message, 'members')
+    } catch (e) {
+      console.error('Failed to send discord new profile', e)
+    }
+    try {
+      const nProfiles = await pg.one<number>(`SELECT count(*) FROM profiles`, [], (r) =>
+        Number(r.count),
+      )
+
+      const isMilestone = (n: number) => {
+        return (
+          [15, 20, 30, 40].includes(n) || // early milestones
+          n % 50 === 0
+        )
+      }
+      debug(nProfiles, isMilestone(nProfiles))
+      if (isMilestone(nProfiles)) {
+        await sendDiscordMessage(`We just reached **${nProfiles}** total profiles! 🎉`, 'general')
+      }
+    } catch (e) {
+      console.error('Failed to send discord user milestone', e)
+    }
+  }
+
+  return {
+    result: {
+      user,
+      privateUser,
+    },
+    continue: continuation,
+  }
+}
+
+const bannedDeviceTokens = [
+  'fa807d664415',
+  'dcf208a11839',
+  'bbf18707c15d',
+  '4c2d15a6cc0c',
+  '0da6b4ea79d3',
+]
+const bannedIpAddresses: string[] = [
+  '24.176.214.250',
+  '2607:fb90:bd95:dbcd:ac39:6c97:4e35:3fed',
+  '2607:fb91:389:ddd0:ac39:8397:4e57:f060',
+  '2607:fb90:ed9a:4c8f:ac39:cf57:4edd:4027',
+  '2607:fb90:bd36:517a:ac39:6c91:812c:6328',
+]

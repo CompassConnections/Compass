@@ -1,40 +1,11 @@
-import axios from 'axios'
 import {createSomeNotifications} from 'backend/api/src/create-notification'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 
-import UserAccountInformation from '../backend/utils/userInformation'
-import {config} from '../web/SPEC_CONFIG'
-import {seedDatabase} from './seedDatabase'
+import {seedUser} from './seedDatabase'
 
-async function createAuth(email: string, password: string) {
-  const base = 'http://localhost:9099/identitytoolkit.googleapis.com/v1'
-
-  try {
-    const response = await axios.post(`${base}/accounts:signUp?key=fake-api-key`, {
-      email: email,
-      password: password,
-      returnSecureToken: true,
-    })
-    const userId = response.data.localId
-    console.log('User created in Firebase Auth:', email, userId)
-    return userId
-  } catch (err: any) {
-    if (
-      err.response?.status === 400 ||
-      err.response?.data?.error?.message?.includes('EMAIL_EXISTS')
-    ) {
-      return
-    }
-    if (err.code === 'ECONNREFUSED') return
-    // throw Error('Firebase emulator not running. Start it with:\n  yarn test:e2e:services\n')
-    console.log(err)
-    throw err
-  }
-}
-
-async function seedCompatibilityPrompts(pg: any, userId: string | null = null) {
+async function seedCompatibilityPrompts(userId: string | null = null) {
   // Need some prompts to prevent the onboarding from stopping once it reaches them (just after profile creation)
   const compatibilityPrompts = [
     {
@@ -54,6 +25,7 @@ async function seedCompatibilityPrompts(pg: any, userId: string | null = null) {
       options: {Action: 0, Comedy: 1, Drama: 2},
     },
   ]
+  const pg = createSupabaseDirectClient()
   for (let i = 0; i < compatibilityPrompts.length; i++) {
     const {data, error} = await tryCatch(
       insert(pg, 'compatibility_prompts', {
@@ -74,33 +46,20 @@ async function seedNotifications() {
 
 type ProfileType = 'basic' | 'medium' | 'full'
 ;(async () => {
-  const pg = createSupabaseDirectClient()
-
   //Edit the count seedConfig to specify the amount of each profiles to create
   const seedConfig = [
-    {count: 8, profileType: 'basic' as ProfileType},
-    {count: 8, profileType: 'medium' as ProfileType},
-    {count: 8, profileType: 'full' as ProfileType},
+    {count: 1, profileType: 'basic' as ProfileType},
+    {count: 1, profileType: 'medium' as ProfileType},
+    {count: 1, profileType: 'full' as ProfileType},
   ]
 
   for (const {count, profileType} of seedConfig) {
     for (let i = 0; i < count; i++) {
-      const userInfo = new UserAccountInformation()
-      if (i == 0 && profileType === 'full') {
-        // Seed the first profile with deterministic data for the e2e tests
-        userInfo.name = 'Franklin Buckridge'
-        userInfo.email = config.USERS.DEV_1.EMAIL
-        userInfo.password = config.USERS.DEV_1.PASSWORD
-      }
-      userInfo.user_id = await createAuth(userInfo.email, userInfo.password)
-      if (userInfo.user_id) {
-        console.log('User created in Supabase:', userInfo.email)
-        await seedDatabase(pg, userInfo, profileType)
-      }
+      await seedUser(undefined, undefined, profileType)
     }
   }
 
-  await seedCompatibilityPrompts(pg)
+  await seedCompatibilityPrompts()
   await seedNotifications()
 
   process.exit(0)

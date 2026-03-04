@@ -1,5 +1,6 @@
 import {toUserAPIResponse} from 'common/api/user-types'
 import {RESERVED_PATHS} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {strip} from 'common/socials'
 import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
@@ -24,14 +25,17 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   if (update.username) {
     const cleanedUsername = cleanUsername(update.username)
     if (!cleanedUsername) throw new APIError(400, 'Invalid username')
-    const reservedName = RESERVED_PATHS.includes(cleanedUsername)
+    const reservedName = RESERVED_PATHS.has(cleanedUsername)
     if (reservedName) throw new APIError(403, 'This username is reserved')
     const otherUserExists = await getUserByUsername(cleanedUsername)
-    if (otherUserExists) throw new APIError(403, 'Username already taken')
+    if (otherUserExists && otherUserExists.id !== auth.uid)
+      throw new APIError(403, 'Username already taken')
     update.username = cleanedUsername
   }
 
   const pg = createSupabaseDirectClient()
+
+  debug({update})
 
   const {name, username, avatarUrl, link = {}, ...rest} = update
   await updateUser(pg, auth.uid, removeUndefinedProps(rest))

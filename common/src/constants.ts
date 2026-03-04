@@ -36,6 +36,12 @@ export const LOCALES = {
   fr: 'Français',
   de: 'Deutsch',
   // es: "Español",
-}
+} as const
+
 export const supportedLocales = Object.keys(LOCALES)
 export type Locale = (typeof supportedLocales)[number]
+
+//Exported types for test files to use when referencing the keys of the choices objects
+export type LocaleTuple = {
+  [K in keyof typeof LOCALES]: [K, (typeof LOCALES)[K]]
+}[keyof typeof LOCALES]

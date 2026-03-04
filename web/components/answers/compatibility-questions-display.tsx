@@ -400,13 +400,17 @@ export function CompatibilityAnswerBlock(props: {
   const isSkipped = answer && answer.importance == -1
   return (
     <Col
+      data-testid="profile-compatibility-section"
       className={
         'bg-canvas-0 flex-grow gap-4 whitespace-pre-line rounded-md px-3 py-2 leading-relaxed'
       }
     >
-      <Row className="text-ink-800 justify-between gap-1 font-semibold">
+      <Row
+        className="text-ink-800 justify-between gap-1 font-semibold"
+        data-testid="profile-compatibility-question"
+      >
         {question.question}
-        <Row className="gap-4 font-normal">
+        <Row className="gap-4 font-normal" data-testid="profile-compatibility-importance">
           {comparedProfile && isAnswered && (
             <div className="hidden sm:block">
               <CompatibilityDisplay
@@ -478,9 +482,14 @@ export function CompatibilityAnswerBlock(props: {
         </Row>
       </Row>
       {answerText && (
-        <Row className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">{answerText}</Row>
+        <Row
+          className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm"
+          data-testid="profile-compatibility-question-answer"
+        >
+          {answerText}
+        </Row>
       )}
-      <Row className="px-2 -mt-4">
+      <Row className="px-2 -mt-4" data-testid="profile-compatibility-question-answer-explanation">
         {answer?.explanation && <Linkify className="" text={answer.explanation} />}
       </Row>
       {distinctPreferredAnswersText.length > 0 && (
@@ -490,7 +499,10 @@ export function CompatibilityAnswerBlock(props: {
               ? t('answers.display.acceptable', 'Acceptable')
               : t('answers.display.also_acceptable', 'Also acceptable')}
           </div>
-          <Row className="flex-wrap gap-2 mt-0">
+          <Row
+            className="flex-wrap gap-2 mt-0"
+            data-testid="profile-compatibility-question-acceptable-answer"
+          >
             {distinctPreferredAnswersText.map((text) => (
               <Row key={text} className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
                 {text}

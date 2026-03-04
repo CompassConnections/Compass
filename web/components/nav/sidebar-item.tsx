@@ -9,6 +9,7 @@ export type Item = {
   children?: React.ReactNode
   trackingEventName?: string
   href?: string
+  dataId?: string
   onClick?: () => void
   icon?: React.ComponentType<{className?: string}>
 }
@@ -53,6 +54,7 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
     return (
       <Link
         href={item.href}
+        data-testid={`sidebar-${item.href?.replace('/', '')}`}
         aria-current={isCurrentPage ? 'page' : undefined}
         onClick={onClick}
         className={sidebarClass}

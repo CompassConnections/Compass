@@ -52,6 +52,7 @@ export default function DropdownMenu(props: {
       {({open, close}) => (
         <>
           <PopoverButton
+            data-testid="profile-compatibility-dropdown"
             ref={refs.setReference}
             className={clsx('text-ink-500 hover-bold flex items-center', buttonClass)}
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}

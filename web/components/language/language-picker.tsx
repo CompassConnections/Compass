@@ -11,6 +11,7 @@ export function LanguagePicker(props: {className?: string} = {}) {
   return (
     <select
       id="locale-picker"
+      data-testid="sidebar-locale-picker"
       value={locale}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLocale(e.target.value)}
       className={clsx(

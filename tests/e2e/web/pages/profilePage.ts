@@ -1,6 +1,6 @@
 import {expect, Locator, Page} from '@playwright/test'
-
-import {Socials} from '../utils/accountInformation'
+import { ImportanceTuple } from "../../../../web/components/answers/answer-compatibility-question-content";
+import {Socials, Compatibility} from '../utils/accountInformation'
 
 type ProfileDropdownOptions = 'Public' | 'Private' | 'Disable'
 
@@ -16,6 +16,8 @@ export class ProfilePage {
   private readonly disableProfileDropdownOption: Locator
   private readonly displayNameAndAgeSection: Locator
   private readonly genderLocationHightInInchesSection: Locator
+  private readonly headlineSection: Locator
+  private readonly keywordsSection: Locator
   private readonly politicalAboutSection: Locator
   private readonly relegiousAboutSection: Locator
   private readonly interestsAboutSection: Locator
@@ -40,10 +42,24 @@ export class ProfilePage {
   private readonly socialMediaSection: Locator
   private readonly bioSection: Locator
   private readonly bioOptionsDropdown: Locator
-  private readonly editBioDropdownOptions: Locator
-  private readonly deleteBioDropdownOptions: Locator
+  private readonly editDropdownOptions: Locator
+  private readonly deleteDropdownOptions: Locator
   private readonly answerCoreQuestionsButton: Locator
   private readonly viewQuestionListButton: Locator
+  private readonly compatibilityQuestion: Locator
+  private readonly compatibilityQuestionYourChoices: Locator
+  private readonly compatibilityQuestionAnswersYouAccept: Locator
+  private readonly compatibilityQuestionSkipButton: Locator
+  private readonly compatibilityQuestionNextButton: Locator
+  private readonly compatibilityQuestionFinishButton: Locator
+  private readonly compatibilityQuestionThoughts: Locator
+  private readonly profileCompatibilitySection: Locator
+  private readonly profileCompatibilityQuestion: Locator
+  private readonly profileCompatibilityImportance: Locator
+  private readonly profileCompatibilityDropdown: Locator
+  private readonly profileCompatibilityAnswer: Locator
+  private readonly profileCompatibilityAcceptableAnswer: Locator
+  private readonly profileCompatibilityExplanation: Locator
 
   constructor(public readonly page: Page) {
     this.startAnsweringButton = page.getByRole('button', {});
@@ -57,6 +73,8 @@ export class ProfilePage {
       exact: true,
     });
     this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true});
+    this.headlineSection = page.getByTestId('profile-headline')
+    this.keywordsSection = page.getByTestId('profile-keywords')
     this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age');
     this.genderLocationHightInInchesSection = page.getByTestId(
       'profile-gender-location-height-inches',
@@ -87,16 +105,133 @@ export class ProfilePage {
     this.socialMediaSection = page.getByTestId('profile-social-media-accounts')
     this.bioSection = page.getByTestId('profile-bio')
     this.bioOptionsDropdown = page.getByTestId('profile-bio-options')
-    this.editBioDropdownOptions = page.getByText('Edit', {exact: true})
-    this.deleteBioDropdownOptions = page.getByText('Delete', {exact: true})
+    this.editDropdownOptions = page.getByText('Edit', {exact: true})
+    this.deleteDropdownOptions = page.getByText('Delete', {exact: true})
     this.answerCoreQuestionsButton = page.getByRole('button', {name: 'Answer Core Questions'})
     this.viewQuestionListButton = page.getByRole('link', {name: 'View List of Questions'})
+    this.compatibilityQuestion = page.getByTestId('compatibility-question')
+    this.compatibilityQuestionYourChoices = page.getByTestId('compatibility-question-your-answer')
+    this.compatibilityQuestionAnswersYouAccept = page.getByTestId('compatibility-answers-you-accept')
+    this.compatibilityQuestionThoughts = page.getByTestId('compatibility-question-thoughts')
+    this.compatibilityQuestionSkipButton = page.getByRole('button', { name: 'Skip' })
+    this.compatibilityQuestionNextButton = page.getByText('Next', { exact: true })
+    this.compatibilityQuestionFinishButton = page.getByRole('button', { name: 'Finish' })
+    this.profileCompatibilitySection = page.getByTestId('profile-compatibility-section')
+    this.profileCompatibilityQuestion = page.getByTestId('profile-compatibility-question')
+    this.profileCompatibilityImportance = page.getByTestId('profile-compatibility-importance')
+    this.profileCompatibilityAnswer = page.getByTestId('profile-compatibility-question-answer')
+    this.profileCompatibilityAcceptableAnswer = page.getByTestId('profile-compatibility-question-acceptable-answer')
+    this.profileCompatibilityExplanation = page.getByTestId('profile-compatibility-question-answer-explanation')
+    this.profileCompatibilityDropdown = page.getByTestId('profile-compatibility-dropdown')
+  }
+
+  async answerCompatibilityQuestion(compatibility: Compatibility | undefined) {
+    if (!compatibility) return
+    await expect(this.compatibilityQuestion).toBeVisible()
+    const question = await this.compatibilityQuestion.textContent()
+
+    await expect(this.compatibilityQuestionYourChoices).toBeVisible()
+    await expect(this.page.getByTestId(`compatibility-your-answer-${compatibility.answer}`)).toBeVisible()
+    const myAnswer = await this.page.getByTestId(`compatibility-your-answer-${compatibility.answer}`).textContent();
+    
+    await this.page.getByTestId(`compatibility-your-answer-${compatibility.answer}`).click()
+
+    await expect(this.compatibilityQuestionAnswersYouAccept).toBeVisible()
+    let answersYouAccept = []
+    for (const answer of compatibility.acceptableAnswers) {
+      await expect(this.page.getByTestId(`compatibility-answers-you-accept-${answer}`)).toBeVisible()
+      const textContent = await this.page.getByTestId(`compatibility-answers-you-accept-${answer}`).textContent()
+      await this.page.getByTestId(`compatibility-answers-you-accept-${answer}`).click()
+      answersYouAccept.push(textContent)
+    }
+
+    await expect(this.page.getByTestId(`compatibility-question-importance-${compatibility.importance[1]}`)).toBeVisible()
+    await this.page.getByTestId(`compatibility-question-importance-${compatibility.importance[1]}`).click()
+
+    await expect(this.compatibilityQuestionThoughts).toBeVisible()
+    await this.compatibilityQuestionThoughts.fill(compatibility.explanation)
+
+    return {
+      question,
+      my_answer: myAnswer,
+      explanation: compatibility.explanation,
+      answers_you_accept: answersYouAccept,
+      importance: compatibility.importance,
+    }
+  }
+
+  async verifyCompatibilityAnswers(compatInfo: {
+    question: string | null,
+    my_answer: string | null,
+    answers_you_accept: (string | null)[],
+    importance: ImportanceTuple,
+    explanation: string
+  } | undefined) {
+    if (!compatInfo) return
+    const questionIndex = await this.profileCompatibilitySection.count()
+    await expect(questionIndex).toBeGreaterThan(0)
+    const target = compatInfo.question ?? ''
+    let matchIndex = -1
+    for (let i = 0; i < questionIndex; i++) {
+      const element = (await this.profileCompatibilitySection.nth(i).textContent()) ?? ''
+      if (target && element.includes(target)) {
+        matchIndex = i
+        break
+      }
+    }
+
+    await expect(matchIndex).toBeGreaterThanOrEqual(0)
+    await expect(this.profileCompatibilitySection.nth(matchIndex)).toBeVisible()
+
+    const question = await this.profileCompatibilitySection.nth(matchIndex).getByTestId('profile-compatibility-question').textContent()
+    await expect(question).toContain(compatInfo.question)
+
+    const importance = await this.profileCompatibilitySection.nth(matchIndex).getByTestId('profile-compatibility-importance').textContent()
+    await expect(importance).toContain(compatInfo.importance[0])
+
+    const answer = await this.profileCompatibilitySection.nth(matchIndex).getByTestId('profile-compatibility-question-answer').textContent()
+    await expect(answer).toContain(compatInfo.my_answer)
+
+    const answerExplanation = await this.profileCompatibilitySection.nth(matchIndex).getByTestId('profile-compatibility-question-answer-explanation').textContent()
+    await expect(answerExplanation).toContain(compatInfo.explanation)
+    
+    const acceptableAnswer = await this.profileCompatibilitySection.nth(matchIndex).getByTestId('profile-compatibility-question-acceptable-answer').textContent()
+    for (let i = 0; i < compatInfo.answers_you_accept.length; i++) {
+      const item = compatInfo.answers_you_accept[i];
+      await expect(acceptableAnswer).toContain(item)
+    }
+  }
+
+  async setCompatibilityQuestionImportance(importance: ImportanceTuple) {
+    await expect(this.page.getByTestId(`compatibility-question-importance-${importance[1]}`)).toBeVisible()
+    await this.page.getByTestId(`compatibility-question-importance-${importance[1]}`).click()
+  }
+
+  async clickSkipCompatibilityQuestionButton() {
+    await expect(this.compatibilityQuestionSkipButton).toBeVisible()
+    await this.compatibilityQuestionSkipButton.click()
+  }
+
+  async clickNextCompatibilityQuestionButton() {
+    await expect(this.compatibilityQuestionNextButton).toBeVisible()
+    await this.compatibilityQuestionNextButton.click()
+  }
+
+  async clickFinishCompatibilityQuestionButton() {
+    await expect(this.compatibilityQuestionFinishButton).toBeVisible()
+    await this.compatibilityQuestionFinishButton.click()
   }
 
   async clickCloseButton() {
     await expect(this.closeButton).toBeInViewport();
     await this.closeButton.click();
   };
+
+  async fillQuestionThoughts(thoughts: string | undefined) {
+    if (!thoughts) return
+    await expect(this.compatibilityQuestionThoughts).toBeVisible()
+    await this.compatibilityQuestionThoughts.fill(thoughts)
+  }
 
   async clickStartAnsweringButton() {
     await expect(this.startAnsweringButton).toBeVisible();
@@ -159,7 +294,7 @@ export class ProfilePage {
   ) {
     await expect(this.genderLocationHightInInchesSection).toBeVisible()
     const textContent = await this.genderLocationHightInInchesSection.textContent()
-    if (gender) await expect(textContent?.toLowerCase()).toContain(gender.toLowerCase())
+    if (gender) await expect(textContent?.toLowerCase()).toContain(gender[0].toLowerCase())
     if (location) await expect(textContent?.toLowerCase()).toContain(location.toLowerCase())
     if (heightFeet) await expect(textContent?.toLowerCase()).toContain(heightFeet.toLowerCase())
     if (heightInches) await expect(textContent?.toLowerCase()).toContain(heightInches.toLowerCase())
@@ -174,7 +309,7 @@ export class ProfilePage {
   async verifyIntrestedInConnectingWith(gender?: string, minAge?: string, maxAge?: string) {
     await expect(this.seekingAboutSection).toBeVisible()
     const textContent = await this.seekingAboutSection.textContent()
-    if (gender) await expect(textContent?.toLowerCase()).toContain(gender.toLowerCase())
+    if (gender) await expect(textContent?.toLowerCase()).toContain(gender[0].toLowerCase())
     if (minAge) await expect(textContent?.toLowerCase()).toContain(minAge.toLowerCase())
     if (maxAge) await expect(textContent?.toLowerCase()).toContain(maxAge.toLowerCase())
   }
@@ -182,15 +317,15 @@ export class ProfilePage {
   async verifyRelationShipTypeAndInterest(type?: string, interest?: string) {
     await expect(this.relationshipTypeAboutSection).toBeVisible()
     const textContent = await this.relationshipTypeAboutSection.textContent()
-    if (type) await expect(textContent?.toLowerCase()).toContain(type.toLowerCase())
-    if (interest) await expect(textContent?.toLowerCase()).toContain(interest.toLowerCase())
+    if (type) await expect(textContent?.toLowerCase()).toContain(type[0].toLowerCase())
+    if (interest) await expect(textContent?.toLowerCase()).toContain(interest[0].toLowerCase())
   }
 
   async verifyRelationshipStatus(status: string | undefined) {
     if (!status) return
     await expect(this.relationshipStatusAboutSection).toBeVisible()
     const textContent = await this.relationshipStatusAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(status.toLowerCase())
+    await expect(textContent?.toLowerCase()).toContain(status[0].toLowerCase())
   }
 
   async verifyCurrentNumberOfKids(numberOfKids: string | undefined) {
@@ -238,7 +373,7 @@ export class ProfilePage {
     await expect(this.educationAboutSection).toBeVisible()
     const textContent = await this.educationAboutSection.textContent()
     if (educationLevel)
-      await expect(textContent?.toLowerCase()).toContain(educationLevel.toLowerCase())
+      await expect(textContent?.toLowerCase()).toContain(educationLevel[0].toLowerCase())
     if (university) await expect(textContent?.toLowerCase()).toContain(university.toLowerCase())
   }
 
@@ -252,14 +387,14 @@ export class ProfilePage {
   async verifyPoliticalBeliefs(belief?: string, details?: string) {
     await expect(this.politicalAboutSection).toBeVisible()
     const textContent = await this.politicalAboutSection.textContent()
-    if (belief) await expect(textContent?.toLowerCase()).toContain(belief.toLowerCase())
+    if (belief) await expect(textContent?.toLowerCase()).toContain(belief[0].toLowerCase())
     if (details) await expect(textContent?.toLowerCase()).toContain(details.toLowerCase())
   }
 
   async verifyReligiousBeliefs(belief?: string, details?: string) {
     await expect(this.relegiousAboutSection).toBeVisible()
     const textContent = await this.relegiousAboutSection.textContent()
-    if (belief) await expect(textContent?.toLowerCase()).toContain(belief.toLowerCase())
+    if (belief) await expect(textContent?.toLowerCase()).toContain(belief[0].toLowerCase())
     if (details) await expect(textContent?.toLowerCase()).toContain(details.toLowerCase())
   }
 
@@ -284,7 +419,7 @@ export class ProfilePage {
     if (!diet) return
     await expect(this.dietAboutSection).toBeVisible()
     const textContent = await this.dietAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(diet.toLowerCase())
+    await expect(textContent?.toLowerCase()).toContain(diet[0].toLowerCase())
   }
 
   async verifySmoker(smoker: boolean | undefined) {
@@ -306,7 +441,7 @@ export class ProfilePage {
     await expect(this.languagesAboutSection).toBeVisible()
     const textContent = await this.languagesAboutSection.textContent()
     for (let i = 0; i < languages.length; i++) {
-      await expect(textContent?.toLowerCase()).toContain(languages[i].toLowerCase())
+      await expect(textContent?.toLowerCase()).toContain(languages[i][0].toLowerCase())
     }
   }
 
@@ -323,5 +458,21 @@ export class ProfilePage {
     if (!bio) return
     await expect(this.bioSection).toBeVisible()
     await expect(this.bioSection).toContainText(bio)
+  }
+
+  async verifyHeadline(headline: string | undefined) {
+    if (!headline) return
+    await expect(this.headlineSection).toBeVisible()
+    await expect(this.headlineSection).toContainText(headline)
+  }
+
+  async verifyKeywords(keywords: string | undefined) {
+    if (!keywords) return
+    console.log(this.keywordsSection.textContent());
+    const keywordsArr = keywords.split(", ")
+    await expect(this.keywordsSection).toBeVisible()
+    for (const word of keywordsArr) {
+      await expect(this.keywordsSection).toContainText(word)
+    }
   }
 }

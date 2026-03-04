@@ -5,7 +5,7 @@ export const RELATIONSHIP_CHOICES = {
   Collaboration: 'collaboration',
   Friendship: 'friendship',
   Relationship: 'relationship',
-}
+} as const
 
 export const RELATIONSHIP_STATUS_CHOICES = {
   Single: 'single',
@@ -13,13 +13,13 @@ export const RELATIONSHIP_STATUS_CHOICES = {
   'In casual relationship': 'casual',
   'In long-term relationship': 'long_term',
   'In open relationship': 'open',
-}
+} as const
 
 export const ROMANTIC_CHOICES = {
   Monogamous: 'mono',
   Polyamorous: 'poly',
   'Open Relationship': 'open',
-}
+} as const
 
 export const POLITICAL_CHOICES = {
   Progressive: 'progressive',
@@ -35,7 +35,7 @@ export const POLITICAL_CHOICES = {
   'Effective Accelerationism': 'e/acc',
   'Pause AI / Tech Skeptic': 'pause ai',
   'Independent / Other': 'other',
-}
+} as const
 
 export const DIET_CHOICES = {
   Omnivore: 'omnivore',
@@ -45,7 +45,7 @@ export const DIET_CHOICES = {
   Paleo: 'paleo',
   Pescetarian: 'pescetarian',
   Other: 'other',
-}
+} as const
 
 export const EDUCATION_CHOICES = {
   'High school': 'high-school',
@@ -53,7 +53,7 @@ export const EDUCATION_CHOICES = {
   Bachelors: 'bachelors',
   Masters: 'masters',
   PhD: 'doctorate',
-}
+} as const
 
 export const RELIGION_CHOICES = {
   Atheist: 'atheist',
@@ -72,7 +72,7 @@ export const RELIGION_CHOICES = {
   Zoroastrian: 'zoroastrian',
   'Unitarian Universalist': 'unitarian_universalist',
   Other: 'other',
-}
+} as const
 
 export const LANGUAGE_CHOICES = {
   Akan: 'akan',
@@ -176,7 +176,7 @@ export const LANGUAGE_CHOICES = {
   Yue: 'yue',
   Zhuang: 'zhuang',
   Zulu: 'zulu',
-}
+} as const
 
 export const LOCALE_TO_LANGUAGE: Record<string, string> = {
   en: 'english',
@@ -193,7 +193,7 @@ export const RACE_CHOICES = {
   'Middle Eastern': 'middle_eastern',
   'Native American/Indigenous': 'native_american',
   Other: 'other',
-}
+} as const
 
 export const MBTI_CHOICES = {
   INTJ: 'intj',
@@ -218,13 +218,13 @@ export const GENDERS = {
   Woman: 'female',
   Man: 'male',
   Other: 'other',
-}
+} as const
 
 export const GENDERS_PLURAL = {
   Women: 'female',
   Men: 'male',
   Other: 'other',
-}
+} as const
 
 export const LAST_ONLINE_CHOICES = {
   today: 'Today',
@@ -249,13 +249,37 @@ export const INVERTED_GENDERS = invert(GENDERS)
 export const INVERTED_LAST_ONLINE_CHOICES = invert(LAST_ONLINE_CHOICES)
 
 //Exported types for test files to use when referencing the keys of the choices objects
-export type ConnectionTypeKey = keyof typeof RELATIONSHIP_CHOICES
-export type RelationshipStatusKey = keyof typeof RELATIONSHIP_STATUS_CHOICES
-export type RelationshipStyleKey = keyof typeof ROMANTIC_CHOICES
-export type PoliticalBeliefsKey = keyof typeof POLITICAL_CHOICES
-export type DietKey = keyof typeof DIET_CHOICES
-export type EducationKey = keyof typeof EDUCATION_CHOICES
-export type ReligionKey = keyof typeof RELIGION_CHOICES
-export type LanguageKey = keyof typeof LANGUAGE_CHOICES
-export type EthnicityKey = keyof typeof RACE_CHOICES
 export type PersonalityKey = keyof typeof MBTI_CHOICES
+export type ConnectionTypeTuple = {
+  [K in keyof typeof RELATIONSHIP_CHOICES]: [K, (typeof RELATIONSHIP_CHOICES)[K]]
+}[keyof typeof RELATIONSHIP_CHOICES]
+export type RelationshipStatusTuple = {
+  [K in keyof typeof RELATIONSHIP_STATUS_CHOICES]: [K, (typeof RELATIONSHIP_STATUS_CHOICES)[K]]
+}[keyof typeof RELATIONSHIP_STATUS_CHOICES]
+export type RelationshipStyleTuple = {
+  [K in keyof typeof ROMANTIC_CHOICES]: [K, (typeof ROMANTIC_CHOICES)[K]]
+}[keyof typeof ROMANTIC_CHOICES]
+export type PoliticalTuple = {
+  [K in keyof typeof POLITICAL_CHOICES]: [K, (typeof POLITICAL_CHOICES)[K]]
+}[keyof typeof POLITICAL_CHOICES]
+export type DietTuple = {
+  [K in keyof typeof DIET_CHOICES]: [K, (typeof DIET_CHOICES)[K]]
+}[keyof typeof DIET_CHOICES]
+export type EducationTuple = {
+  [K in keyof typeof EDUCATION_CHOICES]: [K, (typeof EDUCATION_CHOICES)[K]]
+}[keyof typeof EDUCATION_CHOICES]
+export type ReligionTuple = {
+  [K in keyof typeof RELIGION_CHOICES]: [K, (typeof RELIGION_CHOICES)[K]]
+}[keyof typeof RELIGION_CHOICES]
+export type LanguageTuple = {
+  [K in keyof typeof LANGUAGE_CHOICES]: [K, (typeof LANGUAGE_CHOICES)[K]]
+}[keyof typeof LANGUAGE_CHOICES]
+export type EthnicityTuple = {
+  [K in keyof typeof RACE_CHOICES]: [K, (typeof RACE_CHOICES)[K]]
+}[keyof typeof RACE_CHOICES]
+export type GenderTuple = {
+  [K in keyof typeof GENDERS]: [K, (typeof GENDERS)[K]]
+}[keyof typeof GENDERS]
+export type InterestedInGenderTuple = {
+  [K in keyof typeof GENDERS_PLURAL]: [K, (typeof GENDERS_PLURAL)[K]]
+}[keyof typeof GENDERS_PLURAL]

@@ -1,19 +1,19 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
-  ConnectionTypeKey,
-  DietKey,
-  EducationKey,
-  EthnicityKey,
-  LanguageKey,
+  ConnectionTypeTuple,
+  DietTuple,
+  EducationTuple,
+  EthnicityTuple,
+  LanguageTuple,
   PersonalityKey,
-  PoliticalBeliefsKey,
-  RelationshipStatusKey,
-  RelationshipStyleKey,
-  ReligionKey,
+  PoliticalTuple,
+  RelationshipStatusTuple,
+  RelationshipStyleTuple,
+  ReligionTuple,
+  GenderTuple,
+  InterestedInGenderTuple,
 } from '../../../../common/src/choices'
 
-export type Gender = 'Woman' | 'Man' | 'Other'
-export type InterestedIn = 'Women' | 'Men' | 'Other'
 export type ChildrenExpectation =
   | ['Strongly against', 0]
   | ['Against', 1]
@@ -49,6 +49,9 @@ export class SignUpPage {
   private readonly nextButton: Locator
   private readonly bioField: Locator
   private readonly locationField: Locator
+  // private readonly birthPlaceField: Locator
+  private readonly headlineField: Locator
+  private readonly keywordsField: Locator
   private readonly ageField: Locator
   private readonly feetHeightField: Locator
   private readonly inchesHeightField: Locator
@@ -102,6 +105,8 @@ export class SignUpPage {
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
     this.bioField = page.locator('.tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
+    this.headlineField = page.getByTestId('headline')
+    this.keywordsField = page.getByTestId('keywords')
     this.ageField = page.getByPlaceholder('Age', {exact: true})
     this.feetHeightField = page.getByTestId('height-feet')
     this.inchesHeightField = page.getByTestId('height-inches')
@@ -172,10 +177,11 @@ export class SignUpPage {
     await this.locationField.fill(location)
   }
 
-  async chooseGender(gender: Gender | undefined) {
-    await expect(this.page.locator(`span:has-text("${gender}")`)).toBeVisible()
-    await this.page.locator(`span:has-text("${gender}")`).click()
-    await expect(this.page.locator(`span:has-text("${gender}")`)).toBeChecked()
+  async chooseGender(gender: GenderTuple | undefined) {
+    if (!gender) return
+    await expect(this.page.locator(`span:has-text("${gender[0]}")`)).toBeVisible()
+    await this.page.locator(`span:has-text("${gender[0]}")`).click()
+    await expect(this.page.locator(`span:has-text("${gender[0]}")`)).toBeChecked()
   }
 
   async fillAge(age: string | undefined) {
@@ -214,38 +220,40 @@ export class SignUpPage {
     await this.centimetersHeightField.fill(centimeters)
   }
 
-  async fillEthnicity(ethnicity: EthnicityKey | undefined) {
-    if (ethnicity === 'Other') {
+  async fillEthnicity(ethnicity: EthnicityTuple | undefined) {
+    if (!ethnicity) return
+    if (ethnicity[0] === 'Other') {
       await expect(
         this.page
           .locator('label')
-          .filter({hasText: `${ethnicity}`})
+          .filter({hasText: `${ethnicity[0]}`})
           .first(),
       ).toBeVisible()
       await this.page
         .locator('label')
-        .filter({hasText: `${ethnicity}`})
+        .filter({hasText: `${ethnicity[0]}`})
         .first()
         .click()
       await expect(
         this.page
           .locator('label')
-          .filter({hasText: `${ethnicity}`})
+          .filter({hasText: `${ethnicity[0]}`})
           .first(),
       ).toBeChecked()
     } else {
-      await expect(this.page.getByText(`${ethnicity}`, {exact: true})).toBeVisible()
-      await this.page.getByText(`${ethnicity}`, {exact: true}).click()
-      await expect(this.page.getByText(`${ethnicity}`, {exact: true})).toBeChecked()
+      await expect(this.page.getByText(`${ethnicity[0]}`, {exact: true})).toBeVisible()
+      await this.page.getByText(`${ethnicity[0]}`, {exact: true}).click()
+      await expect(this.page.getByText(`${ethnicity[0]}`, {exact: true})).toBeChecked()
     }
   }
 
-  async fillInterestedInConnectingWith(interestedIn: InterestedIn | undefined) {
-    if (interestedIn === 'Men') {
+  async fillInterestedInConnectingWith(interestedIn: InterestedInGenderTuple | undefined) {
+    if (!interestedIn) return
+    if (interestedIn[0] === 'Men') {
       await expect(this.interestedInMenCheckbox).toBeVisible()
       await this.interestedInMenCheckbox.click()
       await expect(this.interestedInMenCheckbox).toBeChecked()
-    } else if (interestedIn === 'Women') {
+    } else if (interestedIn[0] === 'Women') {
       await expect(this.interestedInWomenCheckbox).toBeVisible()
       await this.interestedInWomenCheckbox.click()
       await expect(this.interestedInWomenCheckbox).toBeChecked()
@@ -266,22 +274,25 @@ export class SignUpPage {
     }
   }
 
-  async setConnectionType(type: ConnectionTypeKey | undefined) {
-    await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${type}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${type}`, {exact: true})).toBeChecked()
+  async setConnectionType(type: ConnectionTypeTuple | undefined) {
+    if (!type) return
+    await expect(this.page.getByLabel(`${type[0]}`, {exact: true})).toBeVisible()
+    await this.page.getByLabel(`${type[0]}`, {exact: true}).click()
+    await expect(this.page.getByLabel(`${type[0]}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStatus(status: RelationshipStatusKey | undefined) {
-    await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${status}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${status}`, {exact: true})).toBeChecked()
+  async setRelationshipStatus(status: RelationshipStatusTuple | undefined) {
+    if (!status) return
+    await expect(this.page.getByLabel(`${status[0]}`, {exact: true})).toBeVisible()
+    await this.page.getByLabel(`${status[0]}`, {exact: true}).click()
+    await expect(this.page.getByLabel(`${status[0]}`, {exact: true})).toBeChecked()
   }
 
-  async setRelationshipStyle(style: RelationshipStyleKey | undefined) {
-    await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${style}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${style}`, {exact: true})).toBeChecked()
+  async setRelationshipStyle(style: RelationshipStyleTuple | undefined) {
+    if (!style) return
+    await expect(this.page.getByLabel(`${style[0]}`, {exact: true})).toBeVisible()
+    await this.page.getByLabel(`${style[0]}`, {exact: true}).click()
+    await expect(this.page.getByLabel(`${style[0]}`, {exact: true})).toBeChecked()
   }
 
   async fillCurrentNumberOfChildren(numberOfKids: string | undefined) {
@@ -358,10 +369,11 @@ export class SignUpPage {
     }
   }
 
-  async setHighestEducationLevel(education: EducationKey | undefined) {
-    await expect(this.page.getByText(`${education}`, {exact: true})).toBeVisible()
-    await this.page.getByText(`${education}`, {exact: true}).click()
-    await expect(this.page.getByText(`${education}`, {exact: true})).toBeChecked()
+  async setHighestEducationLevel(education: EducationTuple | undefined) {
+    if (!education) return
+    await expect(this.page.getByText(`${education[0]}`, {exact: true})).toBeVisible()
+    await this.page.getByText(`${education[0]}`, {exact: true}).click()
+    await expect(this.page.getByText(`${education[0]}`, {exact: true})).toBeChecked()
   }
 
   async fillUniversity(university: string | undefined) {
@@ -406,13 +418,13 @@ export class SignUpPage {
   }
 
   async setPoliticalBeliefs(
-    politicalBeliefs?: PoliticalBeliefsKey | undefined,
+    politicalBeliefs?: PoliticalTuple | undefined,
     details?: string | undefined,
   ) {
     if (politicalBeliefs) {
-      await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${politicalBeliefs}`}).click()
-      await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs}`})).toBeChecked()
+      await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`})).toBeVisible()
+      await this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`}).click()
+      await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`})).toBeChecked()
     }
 
     if (details) {
@@ -421,29 +433,30 @@ export class SignUpPage {
     }
   }
 
-  async setReligiousBeliefs(religiousBeliefs?: ReligionKey | undefined, details?: string | undefined) {
-    if (religiousBeliefs && religiousBeliefs === 'Other') {
+  async setReligiousBeliefs(religiousBeliefs?: ReligionTuple | undefined, details?: string | undefined) {
+    if (!religiousBeliefs) return
+    if (religiousBeliefs[0] === 'Other') {
       await expect(
         this.page
           .locator('label')
-          .filter({hasText: `${religiousBeliefs}`})
+          .filter({hasText: `${religiousBeliefs[0]}`})
           .nth(3),
       ).toBeVisible()
       await this.page
         .locator('label')
-        .filter({hasText: `${religiousBeliefs}`})
+        .filter({hasText: `${religiousBeliefs[0]}`})
         .nth(3)
         .click()
       await expect(
         this.page
           .locator('label')
-          .filter({hasText: `${religiousBeliefs}`})
+          .filter({hasText: `${religiousBeliefs[0]}`})
           .nth(3),
       ).toBeChecked()
     } else {
-      await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${religiousBeliefs}`}).click()
-      await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs}`})).toBeChecked()
+      await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`})).toBeVisible()
+      await this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`}).click()
+      await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`})).toBeChecked()
     }
 
     if (details) {
@@ -613,15 +626,16 @@ export class SignUpPage {
     }
   }
 
-  async setDietType(dietType: DietKey | undefined) {
-    if (dietType === 'Other') {
+  async setDietType(dietType: DietTuple | undefined) {
+    if (!dietType) return
+    if (dietType[0] === 'Other') {
       await expect(this.page.locator('label').filter({hasText: 'Other'}).nth(4)).toBeVisible()
       await this.page.locator('label').filter({hasText: 'Other'}).nth(4).click()
       await expect(this.page.locator('label').filter({hasText: 'Other'}).nth(4)).toBeChecked()
     } else {
-      await expect(this.page.getByRole('checkbox', {name: `${dietType}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${dietType}`}).click()
-      await expect(this.page.getByRole('checkbox', {name: `${dietType}`})).toBeChecked()
+      await expect(this.page.getByRole('checkbox', {name: `${dietType[0]}`})).toBeVisible()
+      await this.page.getByRole('checkbox', {name: `${dietType[0]}`}).click()
+      await expect(this.page.getByRole('checkbox', {name: `${dietType[0]}`})).toBeChecked()
     }
   }
 
@@ -643,13 +657,13 @@ export class SignUpPage {
     await this.alcoholConsumedPerMonthField.fill(amount)
   }
 
-  async setLanguages(language: LanguageKey[] | undefined) {
+  async setLanguages(language: LanguageTuple[] | undefined) {
     if (!language || language.length === 0) return
     await this.page.getByRole('checkbox', {name: `English`}).click();
     for (let i = 0; i < language.length; i++) {
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeVisible();
-      await this.page.getByRole('checkbox', {name: `${language[i]}`}).click();
-      await expect(this.page.getByRole('checkbox', {name: `${language[i]}`})).toBeChecked();
+      await expect(this.page.getByRole('checkbox', {name: `${language[i][0]}`})).toBeVisible();
+      await this.page.getByRole('checkbox', {name: `${language[i][0]}`}).click();
+      await expect(this.page.getByRole('checkbox', {name: `${language[i][0]}`})).toBeChecked();
     }
   }
 
@@ -686,5 +700,17 @@ export class SignUpPage {
   async saveProfileChanges() {
     await expect(this.saveButton).toBeVisible()
     await this.saveButton.click()
+  }
+
+  async fillHeadline(headline: string | undefined) {
+    if (!headline) return
+    await expect(this.headlineField).toBeVisible()
+    await this.headlineField.fill(headline)
+  }
+
+  async fillKeywords(keywords: string | undefined) {
+    if (!keywords) return
+    await expect(this.keywordsField).toBeVisible()
+    await this.keywordsField.fill(keywords)
   }
 }

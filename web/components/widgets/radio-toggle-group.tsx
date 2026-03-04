@@ -38,6 +38,7 @@ export function RadioToggleGroup(props: {
             aria-label={choiceKey}
             key={choiceKey}
             value={choice}
+            data-testid={`compatibility-question-importance-${choice}`}
             className={({disabled}) =>
               clsx(
                 disabled ? 'cursor-not-allowed' : 'cursor-pointer ',

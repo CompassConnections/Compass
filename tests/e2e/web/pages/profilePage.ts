@@ -1,5 +1,5 @@
 import {expect, Locator, Page} from '@playwright/test'
-import { ImportanceTuple } from "../../../../web/components/answers/answer-compatibility-question-content";
+import { ImportanceTuple } from "web/components/answers/answer-compatibility-question-content"
 import {Socials, Compatibility} from '../utils/accountInformation'
 
 type ProfileDropdownOptions = 'Public' | 'Private' | 'Disable'
@@ -62,42 +62,42 @@ export class ProfilePage {
   private readonly profileCompatibilityExplanation: Locator
 
   constructor(public readonly page: Page) {
-    this.startAnsweringButton = page.getByRole('button', {});
-    this.doThisLaterLink = page.getByRole('button', {});
-    this.closeButton = page.getByRole('button', {name: 'Close'});
-    this.shareButton = page.getByRole('button', {name: 'Share'});
-    this.editProfileButton = page.getByTestId('profile-edit');
-    this.profileOptionsDropdown = page.getByTestId('profile-options');
-    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true});
+    this.startAnsweringButton = page.getByRole('button', {})
+    this.doThisLaterLink = page.getByRole('button', {})
+    this.closeButton = page.getByRole('button', {name: 'Close'})
+    this.shareButton = page.getByRole('button', {name: 'Share'})
+    this.editProfileButton = page.getByTestId('profile-edit')
+    this.profileOptionsDropdown = page.getByTestId('profile-options')
+    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true})
     this.limitProfileToMembersDropdownOption = page.getByText('Limit to Members Only', {
       exact: true,
     });
-    this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true});
+    this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true})
     this.headlineSection = page.getByTestId('profile-headline')
     this.keywordsSection = page.getByTestId('profile-keywords')
-    this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age');
-    this.genderLocationHightInInchesSection = page.getByTestId(
+    this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age')
+this.genderLocationHightInInchesSection = page.getByTestId(
       'profile-gender-location-height-inches',
     );
-    this.politicalAboutSection = page.getByTestId('profile-about-political');
-    this.relegiousAboutSection = page.getByTestId('profile-about-religious');
-    this.interestsAboutSection = page.getByTestId('profile-about-interests');
-    this.causesAboutSection = page.getByTestId('profile-about-causes');
-    this.personalityAboutSection = page.getByTestId('profile-about-personality');
-    this.ethnicityAboutSection = page.getByTestId('profile-about-ethnicity');
-    this.dietAboutSection = page.getByTestId('profile-about-diet');
-    this.languagesAboutSection = page.getByTestId('profile-about-languages');
-    this.seekingAboutSection = page.getByTestId('profile-about-seeking');
-    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type');
-    this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status');
-    this.educationAboutSection = page.getByTestId('profile-about-education');
-    this.occupationAboutSection = page.getByTestId('profile-about-occupation');
-    this.workAreaAboutSection = page.getByTestId('profile-about-work-area');
-    this.smokerAboutSection = page.getByTestId('profile-about-smoker');
-    this.notDrinkerAboutSection = page.getByTestId('profile-about-not-drink');
-    this.drinkerAboutSection = page.getByTestId('profile-about-drinker');
-    this.wantsKidsAboutSection = page.getByTestId('profile-about-wants-kids');
-    this.lastOnlineAboutSection = page.getByTestId('profile-about-wants-last-online');
+    this.politicalAboutSection = page.getByTestId('profile-about-political')
+    this.relegiousAboutSection = page.getByTestId('profile-about-religious')
+    this.interestsAboutSection = page.getByTestId('profile-about-interests')
+    this.causesAboutSection = page.getByTestId('profile-about-causes')
+    this.personalityAboutSection = page.getByTestId('profile-about-personality')
+    this.ethnicityAboutSection = page.getByTestId('profile-about-ethnicity')
+    this.dietAboutSection = page.getByTestId('profile-about-diet')
+    this.languagesAboutSection = page.getByTestId('profile-about-languages')
+    this.seekingAboutSection = page.getByTestId('profile-about-seeking')
+    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type')
+    this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
+    this.educationAboutSection = page.getByTestId('profile-about-education')
+    this.occupationAboutSection = page.getByTestId('profile-about-occupation')
+    this.workAreaAboutSection = page.getByTestId('profile-about-work-area')
+    this.smokerAboutSection = page.getByTestId('profile-about-smoker')
+    this.notDrinkerAboutSection = page.getByTestId('profile-about-not-drink')
+    this.drinkerAboutSection = page.getByTestId('profile-about-drinker')
+    this.wantsKidsAboutSection = page.getByTestId('profile-about-wants-kids')
+    this.lastOnlineAboutSection = page.getByTestId('profile-about-wants-last-online')
     this.bigFivePersonalityTraitsAboutSection = page.getByTestId(
       'profile-about-big-five-personality-traits',
     )

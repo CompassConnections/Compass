@@ -220,6 +220,7 @@ Catches React errors and shows user-friendly message:
 
 ```tsx
 import {ErrorBoundary} from 'web/components/error-boundary'
+
 ;<ErrorBoundary>
   <MyComponent />
 </ErrorBoundary>
@@ -249,6 +250,7 @@ Keyboard users can skip to main content:
 
 ```tsx
 import {SkipLink, MainContent} from 'web/components/skip-link'
+
 ;<>
   <SkipLink />
   <MainContent>...</MainContent>

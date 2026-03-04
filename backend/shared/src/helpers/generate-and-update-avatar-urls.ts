@@ -1,4 +1,4 @@
-import {DOMAIN} from 'common/envs/constants'
+import {DOMAIN, FIREBASE_STORAGE_URL} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {Bucket} from 'shared/firebase-utils'
 
@@ -41,5 +41,5 @@ async function upload(userId: string, buffer: Buffer, bucket: Bucket) {
     public: true,
     metadata: {contentType: 'image/png'},
   })
-  return `https://storage.googleapis.com/${bucket.cloudStorageURI.hostname}/${filename}`
+  return `${FIREBASE_STORAGE_URL}/${bucket.cloudStorageURI.hostname}/${filename}`
 }

@@ -1,22 +1,18 @@
 'use client'
 
 import {debug} from 'common/logger'
-import {getProfileRow} from 'common/profiles/profile'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import Router from 'next/router'
-import React, {Suspense, useEffect, useState} from 'react'
+import React, {Suspense, useState} from 'react'
 import toast from 'react-hot-toast'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
 import FavIcon from 'web/components/FavIcon'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {useUser} from 'web/hooks/use-user'
 import {auth} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {db} from 'web/lib/supabase/db'
-import {signupThenMaybeRedirectToSignup} from 'web/lib/util/signup'
+import {googleSigninSignup, postSignupRedirect, setOnboardingFlag} from 'web/lib/util/signup'
 
 export default function RegisterPage() {
   return (
@@ -35,34 +31,23 @@ function RegisterComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const [registeredEmail, _] = useState('')
-  const user = useUser()
 
   // function redirect() {
   //   // Redirect to complete profile page
   //   window.location.href = href
   // }
 
-  useEffect(() => {
-    const checkProfileAndRedirect = async () => {
-      if (user) {
-        const profile = await getProfileRow(user.id, db)
-        if (profile) {
-          console.log("Router.push('/')")
-          await Router.push('/')
-        } else {
-          console.log("Router.push('/onboarding')")
-          await Router.push('/onboarding')
-        }
-        setIsLoading(false)
-      }
-    }
-    checkProfileAndRedirect()
-  }, [user])
+  const checkProfileAndRedirect = async (creds: any) => {
+    await postSignupRedirect(creds)
+    setIsLoading(false)
+  }
 
   const handleEmailPasswordSignUp = async (email: string, password: string) => {
     try {
+      setOnboardingFlag()
       const creds = await createUserWithEmailAndPassword(auth, email, password)
       debug('User signed up:', creds.user)
+      await checkProfileAndRedirect(creds)
     } catch (error: any) {
       console.error('Error signing up:', error)
       toast.error(t('register.toast.signup_failed', 'Failed to sign up: ') + (error?.message ?? ''))
@@ -253,7 +238,7 @@ function RegisterComponent() {
                       </span>
                     </div>
                   </div>
-                  <GoogleButton onClick={signupThenMaybeRedirectToSignup} isLoading={isLoading} />
+                  <GoogleButton onClick={googleSigninSignup} isLoading={isLoading} />
                 </div>
               </form>
               <div className="my-8" />

@@ -41,6 +41,12 @@ type APIGenericSchema = {
   summary?: string
   // Tag for grouping endpoints in documentation
   tag?: string
+  // Deprecation info for endpoints
+  deprecation?: {
+    deprecated: boolean
+    migrationPath?: string
+    sunsetDate?: string
+  }
 }
 
 let _apiTypeCheck: {[x: string]: APIGenericSchema}
@@ -152,6 +158,11 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
+    deprecation: {
+      deprecated: true,
+      migrationPath: '/create-user-and-profile',
+      sunsetDate: 'Sat, 01 Jun 2025 00:00:00 GMT',
+    },
     returns: {} as {user: User; privateUser: PrivateUser},
     props: z
       .object({
@@ -160,17 +171,42 @@ export const API = (_apiTypeCheck = {
         locale: z.string().optional(),
       })
       .strict(),
-    summary: 'Create a new user (admin or onboarding flow)',
+    summary:
+      'Create a new user (admin or onboarding flow) - DEPRECATED: use create-user-and-profile instead',
     tag: 'Users',
   },
   'create-profile': {
     method: 'POST',
     authed: true,
     rateLimited: true,
+    deprecation: {
+      deprecated: true,
+      migrationPath: '/create-user-and-profile',
+      sunsetDate: 'Sat, 01 Jun 2025 00:00:00 GMT',
+    },
     returns: {} as Row<'profiles'>,
     props: baseProfilesSchema,
-    summary: 'Create a new profile for the authenticated user',
+    summary:
+      'Create a new profile for the authenticated user - DEPRECATED: use create-user-and-profile instead',
     tag: 'Profiles',
+  },
+  'create-user-and-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {user: User; privateUser: PrivateUser},
+    props: z
+      .object({
+        deviceToken: z.string().optional(),
+        locale: z.string().optional(),
+        username: z.string().min(1),
+        name: z.string().min(1),
+        link: z.record(z.string().nullable()).optional(),
+        profile: combinedProfileSchema,
+      })
+      .strict(),
+    summary: 'Create a new user and profile in a single transaction',
+    tag: 'Users',
   },
   report: {
     method: 'POST',
@@ -1035,6 +1071,23 @@ export const API = (_apiTypeCheck = {
       .strict(),
     summary: 'Update an existing event',
     tag: 'Events',
+  },
+  'validate-username': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {
+      valid: boolean
+      message?: string | undefined
+      suggestedUsername?: string | undefined
+    },
+    props: z
+      .object({
+        username: z.string().min(1),
+      })
+      .strict(),
+    summary: 'Validate if a username is available',
+    tag: 'Users',
   },
 } as const)
 

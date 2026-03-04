@@ -1,6 +1,6 @@
 import {expect, Page, test as base} from '@playwright/test'
 
-import {signUp} from '../../utils/firebaseUtils'
+import {seedUser} from '../../utils/seedDatabase'
 import {AuthPage} from '../pages/AuthPage'
 import {config} from '../SPEC_CONFIG'
 
@@ -14,7 +14,7 @@ export const test = base.extend<{
     const password = config.USERS.DEV_1.PASSWORD
 
     try {
-      await signUp(email, password)
+      await seedUser(email, password)
     } catch (_e) {
       console.log('User already exists for signinFixture', email)
     }

@@ -19,8 +19,8 @@
     "dev:isolated": "./scripts/run_local_isolated.sh",
     "emulate": "firebase emulators:start --only auth,storage --project compass-57c3c",
     "postinstall": "./scripts/post_install.sh",
-    "lint": "yarn --cwd=web lint; yarn --cwd=common lint; yarn --cwd=backend/api lint; yarn --cwd=backend/shared lint; yarn --cwd=backend/email lint",
-    "lint-fix": "yarn --cwd=web lint-fix; yarn --cwd=common lint-fix; yarn --cwd=backend/api lint-fix; yarn --cwd=backend/shared lint-fix; yarn --cwd=backend/email lint-fix",
+    "lint": "yarn --cwd=web lint && yarn --cwd=common lint && yarn --cwd=backend/api lint && yarn --cwd=backend/shared lint && yarn --cwd=backend/email lint",
+    "lint-fix": "yarn --cwd=web lint-fix && yarn --cwd=common lint-fix && yarn --cwd=backend/api lint-fix && yarn --cwd=backend/shared lint-fix && yarn --cwd=backend/email lint-fix",
     "migrate": "./scripts/migrate.sh",
     "playwright": "playwright test",
     "playwright:debug": "playwright test --debug",
@@ -44,7 +44,7 @@
     "test:e2e:ui": "./scripts/e2e.sh --ui",
     "test:update": "yarn workspaces run test --updateSnapshot",
     "test:watch": "yarn workspaces run test --watch",
-    "typecheck": "yarn --cwd=web typecheck; yarn --cwd=backend/api typecheck; yarn --cwd=common typecheck; yarn --cwd=backend/shared typecheck; yarn --cwd=backend/email typecheck"
+    "typecheck": "yarn --cwd=web typecheck && yarn --cwd=backend/api typecheck && yarn --cwd=common typecheck && yarn --cwd=backend/shared typecheck && yarn --cwd=backend/email typecheck"
   },
   "resolutions": {
     "@tiptap/core": "2.10.4",

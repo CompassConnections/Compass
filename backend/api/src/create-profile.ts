@@ -29,7 +29,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
   if (!user) throw new APIError(401, 'Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {
     // If they just signed up, set their avatar to be their pinned photo
-    updateUser(pg, auth.uid, {avatarUrl: body.pinned_url})
+    updateUser(pg, auth.uid, {avatarUrl: body.pinned_url || undefined})
   }
 
   debug('body', body)

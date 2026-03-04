@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   },
   transpilePackages: ['common'],
   experimental: {
+    serverSourceMaps: true,
     scrollRestoration: true,
     turbopackFileSystemCacheForDev: true, // filesystem cache for faster dev rebuilds
   },

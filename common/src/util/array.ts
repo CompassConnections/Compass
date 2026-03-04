@@ -47,20 +47,3 @@ export function fallbackIfEmpty<T>(array: T[], fallback: any) {
   if (!Array.isArray(array)) return fallback
   return array.length > 0 ? array : fallback
 }
-
-export function nullifyDictValues(array: Record<any, any>) {
-  // Nullify all the values of the dict
-  return Object.entries(array).reduce((acc, [key, _]) => {
-    return {...acc, [key]: null}
-  }, {})
-}
-
-export function sampleDictByPrefix(array: Record<any, any>, prefix: string) {
-  // Extract the keys that start with the prefix
-  return Object.entries(array).reduce((acc, [key, value]) => {
-    if (key.startsWith(prefix)) {
-      return {...acc, [key]: value}
-    }
-    return acc
-  }, {})
-}

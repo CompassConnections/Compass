@@ -6,8 +6,7 @@ import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
-import {nullifyDictValues, sampleDictByPrefix} from 'common/util/array'
-import {removeNullOrUndefinedProps} from 'common/util/object'
+import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
   Big5Filters,

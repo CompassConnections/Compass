@@ -60,6 +60,10 @@ export const BACKEND_DOMAIN = IS_LOCAL ? LOCAL_BACKEND_DOMAIN : ENV_CONFIG.backe
 export const FIREBASE_CONFIG = ENV_CONFIG.firebaseConfig
 export const PROJECT_ID = ENV_CONFIG.firebaseConfig.projectId
 
+export const FIREBASE_STORAGE_URL = IS_FIREBASE_EMULATOR
+  ? 'http://localhost:9199'
+  : `https://firebasestorage.googleapis.com`
+
 export const REDIRECT_URI = `${WEB_URL}/auth/callback`
 
 export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(/-/g, '_')}`
@@ -70,7 +74,7 @@ export const VERIFIED_USERNAMES = ['Martin']
 
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 
-export const RESERVED_PATHS = [
+export const RESERVED_PATHS = new Set([
   '',
   '404',
   '_app',
@@ -110,6 +114,7 @@ export const RESERVED_PATHS = [
   'help',
   'home',
   'index',
+  'json',
   'link',
   'linkAccount',
   'links',
@@ -155,7 +160,7 @@ export const RESERVED_PATHS = [
   'users',
   'web',
   'welcome',
-]
+])
 
 export function getStorageBucketId() {
   return ENV_CONFIG.firebaseConfig.storageBucket

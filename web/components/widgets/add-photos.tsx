@@ -1,7 +1,6 @@
 import {CheckCircleIcon} from '@heroicons/react/24/outline'
 import {PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
 import {uniq} from 'lodash'
 import Image from 'next/image'
@@ -13,7 +12,7 @@ import {uploadImage} from 'web/lib/firebase/storage'
 import {useT} from 'web/lib/locale'
 
 export const AddPhotosWidget = (props: {
-  user: User
+  username: string
   image_descriptions: Record<string, string> | null
   photo_urls: string[] | null
   pinned_url: string | null
@@ -22,7 +21,7 @@ export const AddPhotosWidget = (props: {
   setDescription: (url: string, description: string) => void
 }) => {
   const {
-    user,
+    username,
     photo_urls,
     pinned_url,
     setPhotoUrls,
@@ -43,7 +42,7 @@ export const AddPhotosWidget = (props: {
     const selectedFiles = Array.from(files).slice(0, 6)
 
     const urls = await Promise.all(
-      selectedFiles.map((f) => uploadImage(user.username, f, 'love-images')),
+      selectedFiles.map((f) => uploadImage(username, f, 'love-images')),
     ).catch((e) => {
       console.error(e)
       return []

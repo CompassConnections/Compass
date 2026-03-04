@@ -14,17 +14,12 @@ import {
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
 } from 'common/choices'
-import {IS_PROD} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
-import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
+import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
-import {User} from 'common/user'
-import {removeUndefinedProps} from 'common/util/object'
-import {sleep} from 'common/util/time'
-import {tryCatch} from 'common/util/try-catch'
-import {isEqual, range} from 'lodash'
-import {useRouter} from 'next/router'
+import {BaseUser} from 'common/user'
+import {range} from 'lodash'
 import {Fragment, useEffect, useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
 import toast from 'react-hot-toast'
@@ -44,8 +39,6 @@ import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
 import {Title} from 'web/components/widgets/title'
 import {fetchChoices} from 'web/hooks/use-choices'
-import {useProfileDraft} from 'web/hooks/use-profile-draft'
-import {api, updateProfile, updateUser} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {db} from 'web/lib/supabase/db'
@@ -57,18 +50,18 @@ import {AddPhotosWidget} from './widgets/add-photos'
 export const OptionalProfileUserForm = (props: {
   profile: ProfileWithoutUser
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
-  user: User
+  user: BaseUser
+  setUser: <K extends keyof BaseUser>(key: K, value: BaseUser[K]) => void
   buttonLabel?: string
   bottomNavBarVisible?: boolean
-  fromSignup?: boolean
-  onSubmit?: () => Promise<void>
+  onSubmit: () => Promise<void>
 }) => {
   const {
     profile,
     user,
     buttonLabel,
     setProfile,
-    fromSignup,
+    setUser,
     onSubmit,
     bottomNavBarVisible = true,
   } = props
@@ -78,7 +71,6 @@ export const OptionalProfileUserForm = (props: {
     (profile.pref_relation_styles || []).includes('relationship'),
   )
   const [ageError, setAgeError] = useState<string | null>(null)
-  const router = useRouter()
   const t = useT()
   const [heightFeet, setHeightFeet] = useState<number | undefined>(
     profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) / 12) : undefined,
@@ -86,20 +78,6 @@ export const OptionalProfileUserForm = (props: {
   const [heightInches, setHeightInches] = useState<number | undefined>(
     profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) % 12) : undefined,
   )
-
-  // Keep local feet/inches inputs in sync when profile.height_in_inches updates
-  // This covers cases like hydration from localStorage where setProfile is called externally
-  const updateHeight = (h: any) => {
-    if (h == null || Number.isNaN(h as any)) {
-      setHeightFeet(undefined)
-      setHeightInches(undefined)
-      return
-    }
-    setHeightFeet(Math.floor(h / 12))
-    setHeightInches(Math.round(h % 12))
-  }
-
-  const [newLinks, setNewLinks] = useState<Record<string, string | null>>(user.link)
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
@@ -109,8 +87,6 @@ export const OptionalProfileUserForm = (props: {
   const {locale} = useLocale()
 
   const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
-
-  const {clearProfileDraft} = useProfileDraft(user.id, profile, setProfile, updateHeight)
 
   useEffect(() => {
     fetchChoices('interests', locale).then(setInterestChoices)
@@ -140,78 +116,16 @@ export const OptionalProfileUserForm = (props: {
     }
 
     setIsSubmitting(true)
-    const {
-      // bio: _bio,
-      // bio_text: _bio_text,
-      // bio_tsv: _bio_tsv,
-      // bio_length: _bio_length,
-      interests,
-      causes,
-      work,
-      ...otherProfileProps
-    } = profile
-    debug('otherProfileProps', removeUndefinedProps(otherProfileProps))
-    const promises: Promise<any>[] = [
-      tryCatch(updateProfile(removeUndefinedProps(otherProfileProps) as any)),
-    ]
-    if (interests) {
-      promises.push(api('update-options', {table: 'interests', values: interests}))
-    }
-    if (causes) {
-      promises.push(api('update-options', {table: 'causes', values: causes}))
-    }
-    if (work) {
-      promises.push(api('update-options', {table: 'work', values: work}))
-    }
-    try {
-      await Promise.all(promises)
-      // Clear profile draft from Zustand store after successful submission
-      clearProfileDraft(user.id)
-    } catch (error) {
-      console.error(error)
-      toast.error(
-        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`,
-      )
-      setIsSubmitting(false)
-      return
-    }
-    if (!isEqual(newLinks, user.link)) {
-      const {error} = await tryCatch(updateUser({link: newLinks}))
-      if (error) {
-        console.error(error)
-        return
-      }
-    }
-    if (onSubmit) {
-      await onSubmit()
-    }
+
     track('submit optional profile')
-    if (user) {
-      let profile
-      let i = 1
-      const start = Date.now()
-      while (Date.now() - start < 10000) {
-        profile = await getProfileRow(user.id, db)
-        if (profile) {
-          console.log(`Found profile after ${Date.now() - start} ms, ${i} attempts`)
-          break
-        }
-        await sleep(500)
-        i++
-      }
-      if (profile) {
-        if (IS_PROD) await sleep(5000) // attempt to mitigate profile not found at /${username} upon creation
-        router.push(`/${user.username}${fromSignup ? '?fromSignup=true' : ''}`)
-      } else {
-        console.log('Profile not found after fetching, going back home...')
-        router.push('/')
-      }
-    } else router.push('/')
+
+    await onSubmit()
+
     setIsSubmitting(false)
   }
 
   const updateUserLink = (platform: string, value: string | null) => {
-    setNewLinks((links) => ({...links, [platform]: value}))
+    setUser('link', {...user.link, [platform]: value})
   }
 
   const addNewLink = () => {
@@ -997,7 +911,7 @@ export const OptionalProfileUserForm = (props: {
           {/*</label>*/}
 
           <div className="grid w-full grid-cols-[8rem_1fr_auto] gap-2">
-            {Object.entries(newLinks)
+            {Object.entries(user.link)
               .filter(([_, value]) => value != null)
               .map(([platform, value]) => (
                 <Fragment key={platform}>
@@ -1084,7 +998,7 @@ export const OptionalProfileUserForm = (props: {
           {/*</div>*/}
 
           <AddPhotosWidget
-            user={user}
+            username={user.username}
             photo_urls={profile.photo_urls}
             pinned_url={profile.pinned_url}
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}

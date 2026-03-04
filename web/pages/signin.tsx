@@ -42,25 +42,26 @@ function RegisterComponent() {
     }
   }, [searchParams])
 
-  useEffect(() => {
-    const checkAndRedirect = async () => {
-      if (user) {
-        debug('User signed in:', user)
-        try {
-          const profile = await getProfileRow(user.id, db)
-          if (profile) {
-            await Router.push('/')
-          } else {
-            await Router.push('/onboarding')
-          }
-        } catch (error) {
-          console.error('Error fetching profile profile:', error)
+  const checkAndRedirect = async (userId: string | undefined) => {
+    if (userId) {
+      debug('User signed in:', userId)
+      try {
+        const profile = await getProfileRow(userId, db)
+        if (profile) {
+          await Router.push('/')
+        } else {
+          await Router.push('/onboarding')
         }
-        setIsLoading(false)
-        setIsLoadingGoogle(false)
+      } catch (error) {
+        console.error('Error fetching profile profile:', error)
       }
+      setIsLoading(false)
+      setIsLoadingGoogle(false)
     }
-    checkAndRedirect()
+  }
+
+  useEffect(() => {
+    checkAndRedirect(user?.id)
   }, [user])
 
   const handleGoogleSignIn = async () => {
@@ -72,6 +73,7 @@ function RegisterComponent() {
       if (creds) {
         setIsLoading(true)
         setIsLoadingGoogle(true)
+        await checkAndRedirect(creds?.user?.uid)
       }
     } catch (error) {
       console.error('Error signing in:', error)
@@ -85,6 +87,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password)
+      await checkAndRedirect(creds?.user?.uid)
       debug(creds)
     } catch (error) {
       console.error('Error signing in:', error)

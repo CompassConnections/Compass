@@ -64,8 +64,8 @@ export class ProfilePage {
   private readonly profileCompatibilityExplanation: Locator
 
   constructor(public readonly page: Page) {
-    this.startAnsweringButton = page.getByRole('button', { name: 'Start answering' })
-    this.doThisLaterLink = page.getByRole('button', { name: 'Do this later' })
+    this.startAnsweringButton = page.getByRole('button', {name: 'Start answering'})
+    this.doThisLaterLink = page.getByRole('button', {name: 'Do this later'})
     this.closeButton = page.getByRole('button', {name: 'Close'})
     this.shareButton = page.getByRole('button', {name: 'Share'})
     this.editProfileButton = page.getByTestId('profile-edit')
@@ -355,8 +355,10 @@ export class ProfilePage {
 
   async verifyRelationShipTypeAndInterest(type?: string[], interest?: string[]) {
     await expect(this.relationshipTypeAboutSection).toBeVisible()
-    if (type) await expect(this.relationshipTypeAboutSection).toContainText(type[0], {ignoreCase: true})
-    if (interest) await expect(this.relationshipTypeAboutSection).toContainText(interest[0], {ignoreCase: true})
+    if (type)
+      await expect(this.relationshipTypeAboutSection).toContainText(type[0], {ignoreCase: true})
+    if (interest)
+      await expect(this.relationshipTypeAboutSection).toContainText(interest[0], {ignoreCase: true})
   }
 
   async verifyRelationshipStatus(status: string[] | undefined) {
@@ -406,24 +408,29 @@ export class ProfilePage {
     await expect(this.educationAboutSection).toBeVisible()
     if (educationLevel)
       await expect(this.educationAboutSection).toContainText(educationLevel[0], {ignoreCase: true})
-    if (university) await expect(this.educationAboutSection).toContainText(university, {ignoreCase: true})
+    if (university)
+      await expect(this.educationAboutSection).toContainText(university, {ignoreCase: true})
   }
 
   async verifyJobInformation(jobTitle?: string, company?: string) {
     await expect(this.occupationAboutSection).toBeVisible()
-    if (jobTitle) await expect(this.occupationAboutSection).toContainText(jobTitle, {ignoreCase: true})
-    if (company) await expect(this.occupationAboutSection).toContainText(company, {ignoreCase: true})
+    if (jobTitle)
+      await expect(this.occupationAboutSection).toContainText(jobTitle, {ignoreCase: true})
+    if (company)
+      await expect(this.occupationAboutSection).toContainText(company, {ignoreCase: true})
   }
 
   async verifyPoliticalBeliefs(belief?: string[], details?: string) {
     await expect(this.politicalAboutSection).toBeVisible()
-    if (belief) await expect(this.politicalAboutSection).toContainText(belief[0], {ignoreCase: true})
+    if (belief)
+      await expect(this.politicalAboutSection).toContainText(belief[0], {ignoreCase: true})
     if (details) await expect(this.politicalAboutSection).toContainText(details, {ignoreCase: true})
   }
 
   async verifyReligiousBeliefs(belief?: string[], details?: string) {
     await expect(this.relegiousAboutSection).toBeVisible()
-    if (belief) await expect(this.relegiousAboutSection).toContainText(belief[0], {ignoreCase: true})
+    if (belief)
+      await expect(this.relegiousAboutSection).toContainText(belief[0], {ignoreCase: true})
     if (details) await expect(this.relegiousAboutSection).toContainText(details, {ignoreCase: true})
   }
 
@@ -450,7 +457,8 @@ export class ProfilePage {
 
   async verifySmoker(smoker: boolean | undefined) {
     await expect(this.smokerAboutSection).toBeVisible()
-    if (smoker === true) await expect(this.smokerAboutSection).toContainText('Smokes', {ignoreCase: true})
+    if (smoker === true)
+      await expect(this.smokerAboutSection).toContainText('Smokes', {ignoreCase: true})
     if (smoker === false)
       await expect(this.smokerAboutSection).toContainText("Doesn't smoke", {ignoreCase: true})
   }

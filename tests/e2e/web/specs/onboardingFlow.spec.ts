@@ -316,7 +316,9 @@ test.describe('when given valid input', () => {
     await signUpPage.clickNextButton()
     await signUpPage.clickNextButton() //Skip optional information
     await profilePage.clickStartAnsweringButton()
-    const compatTwoQuestionOne = await profilePage.answerCompatibilityQuestion(testAccount.compatibility)
+    const compatTwoQuestionOne = await profilePage.answerCompatibilityQuestion(
+      testAccount.compatibility,
+    )
     await profilePage.clickNextCompatibilityQuestionButton()
     await profilePage.clickCloseButton()
     await onboardingPage.clickRefineProfileButton()

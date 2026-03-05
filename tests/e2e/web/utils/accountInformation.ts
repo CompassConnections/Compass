@@ -111,7 +111,7 @@ export const onboarding: OnboardingConfig = {
       password: faker.internet.password(),
       display_name: faker.internet.displayName(),
       username: `user_${id}`,
-      gender: ["Man", "male"],
+      gender: ['Man', 'male'],
       age: '35',
       height: {
         feet: '5',

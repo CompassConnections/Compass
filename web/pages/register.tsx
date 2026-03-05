@@ -38,7 +38,7 @@ function RegisterComponent() {
   // }
 
   const checkProfileAndRedirect = async (creds: any) => {
-    await postSignupRedirect(creds)
+    await postSignupRedirect(creds?.user?.uid)
     setIsLoading(false)
   }
 

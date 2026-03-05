@@ -6,10 +6,13 @@ export type ProfileRow = Row<'profiles'>
 export type ProfileWithoutUser = ProfileRow & {[K in OptionTableKey]?: string[]}
 export type Profile = ProfileWithoutUser & {user: User}
 
-export const getProfileRow = async (
+export const getProfileRowWithFrontendSupabase = async (
   userId: string,
   db: SupabaseClient,
 ): Promise<ProfileWithoutUser | null> => {
+  // Do not use this method when running server-side (like in getStaticProps),
+  // use the direct connection through the API via getProfileRow instead.
+
   // Fetch profile
   const profileRes = await run(db.from('profiles').select('*').eq('user_id', userId))
   const profile = profileRes.data?.[0]

@@ -1267,6 +1267,7 @@
   "profile.connect.tips": "- Vous choisissez le type de relation auquel vous êtes ouvert.\n- Ils ne verront pas ceci à moins qu'ils ne choisissent le même type que vous.\n- Si vous choisissez tous les deux le même type de relation, vous serez tous les deux notifiés.",
   "notifications.connection.mutual_title": "C’est mutuel 🎉",
   "notifications.connection.mutual_body": "{name} et vous êtes tous deux intéressés par un(e) {type}. Commencez la conversation.",
+  "userpage.profileNotFound": "Profil introuvable",
   "share_profile.on_x": "Partager sur X",
   "share_profile.on_linkedin": "Partager sur LinkedIn",
   "share_profile.view_profile_card": "Voir la carte de profil",

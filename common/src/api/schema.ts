@@ -239,6 +239,17 @@ export const API = (_apiTypeCheck = {
     summary: 'Get the authenticated user full data',
     tag: 'Users',
   },
+  'get-user-and-profile': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({
+      username: z.string().min(1),
+    }),
+    returns: {} as {user: User | null | undefined; profile: ProfileRow | null | undefined},
+    summary: 'Get user and profile data by username',
+    tag: 'Users',
+  },
   'me/data': {
     method: 'GET',
     authed: true,

@@ -1,5 +1,9 @@
 import {debug} from 'common/logger'
-import {getProfileRow, Profile, ProfileWithoutUser} from 'common/profiles/profile'
+import {
+  getProfileRowWithFrontendSupabase,
+  Profile,
+  ProfileWithoutUser,
+} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {useEffect} from 'react'
@@ -18,7 +22,7 @@ export const useProfile = () => {
   const refreshProfile = () => {
     if (user) {
       // logger.debug('Refreshing profile in useProfile for', user?.username, profile);
-      getProfileRow(user.id, db).then((profile) => {
+      getProfileRowWithFrontendSupabase(user.id, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)
       })
@@ -42,7 +46,7 @@ export const useProfileByUser = (user: User | undefined) => {
   function refreshProfile() {
     if (userId) {
       // console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
-      getProfileRow(userId, db)
+      getProfileRowWithFrontendSupabase(userId, db)
         .then((profile) => {
           if (!profile) setProfile(null)
           else setProfile({...profile, user})
@@ -72,7 +76,7 @@ export const useProfileByUserId = (userId: string | undefined) => {
   useEffect(() => {
     // console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
     if (userId)
-      getProfileRow(userId, db).then((profile) => {
+      getProfileRowWithFrontendSupabase(userId, db).then((profile) => {
         if (!profile) setProfile(null)
         else setProfile(profile)
       })

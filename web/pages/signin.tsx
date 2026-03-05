@@ -1,11 +1,9 @@
 'use client'
 
 import {debug} from 'common/logger'
-import {getProfileRow} from 'common/profiles/profile'
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import Router from 'next/router'
 import React, {Suspense, useEffect, useState} from 'react'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
 import FavIcon from 'web/components/FavIcon'
@@ -15,7 +13,7 @@ import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {auth, firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {db} from 'web/lib/supabase/db'
+import {postSignupRedirect} from 'web/lib/util/signup'
 
 export default function LoginPage() {
   return (
@@ -46,14 +44,9 @@ function RegisterComponent() {
     if (userId) {
       debug('User signed in:', userId)
       try {
-        const profile = await getProfileRow(userId, db)
-        if (profile) {
-          await Router.push('/')
-        } else {
-          await Router.push('/onboarding')
-        }
+        await postSignupRedirect(userId)
       } catch (error) {
-        console.error('Error fetching profile profile:', error)
+        console.error('Error fetching profile:', error)
       }
       setIsLoading(false)
       setIsLoadingGoogle(false)

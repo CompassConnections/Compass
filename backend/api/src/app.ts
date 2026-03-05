@@ -68,6 +68,7 @@ import {getNotifications} from './get-notifications'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
+import {getUserAndProfileHandler} from './get-user-and-profile'
 import {getUserDataExport} from './get-user-data-export'
 import {hasFreeLike} from './has-free-like'
 import {health} from './health'
@@ -398,6 +399,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-event': updateEvent,
   health: health,
   me: getMe,
+  'get-user-and-profile': getUserAndProfileHandler,
   report: report,
 }
 

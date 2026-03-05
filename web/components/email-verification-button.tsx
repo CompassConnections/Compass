@@ -6,20 +6,20 @@ import {sendVerificationEmail} from 'web/lib/firebase/email-verification'
 import {useT} from 'web/lib/locale'
 
 export function EmailVerificationButton() {
-  const user = useFirebaseUser()
+  const firebaseUser = useFirebaseUser()
   const t = useT()
 
-  const isEmailVerified = user?.emailVerified
+  const isEmailVerified = firebaseUser?.emailVerified
 
   async function reload() {
-    if (!user) return false
+    if (!firebaseUser) return false
 
     // Refresh user record from Firebase
-    await user.reload()
+    await firebaseUser.reload()
 
-    if (user.emailVerified) {
+    if (firebaseUser.emailVerified) {
       // IMPORTANT: force a new ID token with updated claims
-      await user.getIdToken(true)
+      await firebaseUser.getIdToken(true)
       console.log('User email verified')
       return true
     } else {
@@ -31,7 +31,7 @@ export function EmailVerificationButton() {
     <Col className={'gap-2'}>
       <Button
         color={'gray-outline'}
-        onClick={() => sendVerificationEmail(user, t)}
+        onClick={() => sendVerificationEmail(firebaseUser, t)}
         disabled={isEmailVerified}
         className={'w-fit'}
       >

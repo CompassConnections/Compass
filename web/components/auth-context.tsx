@@ -20,10 +20,7 @@ import {isOnboardingFlag} from 'web/lib/util/signup'
 
 // Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
-export type AuthUser =
-  | undefined
-  | null
-  | (UserAndPrivateUser & {authLoaded: boolean; firebaseUser: FirebaseUser})
+export type AuthUser = undefined | null | (UserAndPrivateUser & {authLoaded: boolean})
 const CACHED_USER_KEY = 'CACHED_USER_KEY_V2'
 
 export const ensureDeviceToken = () => {
@@ -85,7 +82,7 @@ export const clearUserCookie = () => {
  * - ID token changes (after `getIdToken(true)` or `user.reload()`),
  *   which is important for reflecting `emailVerified` changes without a hard refresh.
  */
-export function useAndSetupFirebaseUser() {
+function useAndSetupFirebaseUser() {
   const [, forceRender] = useState(0)
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(auth.currentUser)
 
@@ -107,6 +104,7 @@ export function useAndSetupFirebaseUser() {
   return firebaseUser
 }
 
+export const FirebaseUserContext = createContext<FirebaseUser | null | undefined>(undefined)
 export const AuthContext = createContext<AuthUser>(undefined)
 
 // function getSupabaseAuthCall() {
@@ -133,7 +131,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     : !privateUser
       ? privateUser
       : firebaseUser
-        ? {user, privateUser, authLoaded, firebaseUser}
+        ? {user, privateUser, authLoaded}
         : undefined
 
   useEffect(() => {
@@ -246,5 +244,9 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     if (authLoaded && listenPrivateUser) setPrivateUser(listenPrivateUser)
   }, [authLoaded, listenPrivateUser])
 
-  return <AuthContext.Provider value={authUser}>{children}</AuthContext.Provider>
+  return (
+    <FirebaseUserContext.Provider value={firebaseUser}>
+      <AuthContext.Provider value={authUser}>{children}</AuthContext.Provider>
+    </FirebaseUserContext.Provider>
+  )
 }

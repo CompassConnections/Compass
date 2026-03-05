@@ -75,14 +75,14 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
   } = useForm<{newEmail: string}>()
   const t = useT()
 
-  const user = useFirebaseUser()
-  if (!user) return null
+  const firebaseUser = useFirebaseUser()
+  if (!firebaseUser) return null
 
   const changeUserEmail = async (newEmail: string) => {
-    if (!user) return
+    if (!firebaseUser) return
 
     try {
-      await updateEmail(user, newEmail)
+      await updateEmail(firebaseUser, newEmail)
       toast.success(t('settings.email.updated_success', 'Email updated successfully'))
       setIsChangingEmail(false)
       reset()
@@ -95,8 +95,8 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
   }
 
   const onSubmitEmailChange = (data: {newEmail: string}) => {
-    if (!user) return
-    if (data.newEmail === user.email) {
+    if (!firebaseUser) return
+    if (data.newEmail === firebaseUser.email) {
       toast.error(t('settings.email.same_as_current', 'New email is the same as current email'))
       return
     }
@@ -156,7 +156,7 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
                     message: t('settings.email.invalid', 'Invalid email address'),
                   },
                 })}
-                disabled={!user}
+                disabled={!firebaseUser}
               />
               {errors.newEmail && (
                 <span className="text-red-500 text-sm">

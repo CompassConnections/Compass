@@ -246,7 +246,7 @@ test.describe('when given valid input', () => {
       await authPage.clickSignUpWithEmailButton()
     })
 
-    test('the first time its an option', async ({
+    test("the first time it's an option", async ({
       onboardingPage,
       signUpPage,
       profilePage,
@@ -261,7 +261,6 @@ test.describe('when given valid input', () => {
       await signUpPage.fillDisplayName(fakerAccount.display_name)
       await signUpPage.fillUsername(fakerAccount.username)
       await signUpPage.clickNextButton()
-      await signUpPage.clickNextButton() //Skip bio
       await signUpPage.clickNextButton() //Skip optional information
       await profilePage.clickCloseButton()
       await onboardingPage.clickRefineProfileButton()
@@ -272,7 +271,7 @@ test.describe('when given valid input', () => {
       await expect(dbInfo.user.username).toContain(fakerAccount.username)
     })
 
-    test('the second time its an option', async ({
+    test("the second time it's an option", async ({
       onboardingPage,
       signUpPage,
       profilePage,
@@ -287,7 +286,6 @@ test.describe('when given valid input', () => {
       await signUpPage.fillDisplayName(fakerAccount.display_name)
       await signUpPage.fillUsername(fakerAccount.username)
       await signUpPage.clickNextButton()
-      await signUpPage.clickNextButton() //Skip bio
       await signUpPage.clickNextButton() //Skip optional information
       await profilePage.clickCloseButton()
       await onboardingPage.clickRefineProfileButton()

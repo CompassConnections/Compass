@@ -4,6 +4,10 @@ import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
+function validateTable(table: 'interests' | 'causes' | 'work') {
+  if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')
+}
+
 export async function setProfileOptions(
   tx: SupabaseDirectClient,
   profileId: number,
@@ -11,7 +15,7 @@ export async function setProfileOptions(
   table: 'interests' | 'causes' | 'work',
   values: string[] | undefined | null,
 ) {
-  if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')
+  validateTable(table)
 
   values = values ?? []
   const idsWithNumbers = values.map((id) => {
@@ -66,6 +70,7 @@ export async function setProfileOptions(
 }
 
 export const updateOptions: APIHandler<'update-options'> = async ({table, values}, auth) => {
+  validateTable(table)
   if (!values || !Array.isArray(values)) {
     throw new APIError(400, 'No ids provided')
   }

@@ -96,15 +96,13 @@ describe('updateOptions', () => {
   describe('when an error occurs', () => {
     it('should throw if the table param is invalid', async () => {
       const mockProps = {
-        table: 'causes' as const,
+        table: 'invalid_table' as any,
         values: ['mockNamesOne', 'mockNamesTwo'],
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
 
-      jest.spyOn(Array.prototype, 'includes').mockReturnValue(false)
-
-      expect(updateOptions(mockProps, mockAuth, mockReq)).rejects.toThrow('Invalid table')
+      await expect(updateOptions(mockProps, mockAuth, mockReq)).rejects.toThrow('Invalid table')
     })
 
     it('should throw if the names param is not provided', async () => {

@@ -11,6 +11,7 @@ import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
 import toast, {Toaster} from 'react-hot-toast'
 import {ensureDeviceToken} from 'web/components/auth-context'
+import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {initialRequiredState, RequiredProfileUserForm} from 'web/components/required-profile-form'
@@ -134,6 +135,7 @@ export default function SignupPage() {
         <CompassLoadingIndicator />
       ) : (
         <Col className={'w-full max-w-4xl px-6 py-4'}>
+          <BackButton className="-ml-2 mb-2 self-start" />
           {step === 0 ? (
             <RequiredProfileUserForm
               data={baseUser}

@@ -6,6 +6,7 @@ import {removeUndefinedProps} from 'common/util/object'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
+import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {PageBase} from 'web/components/page-base'
@@ -101,6 +102,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         url={`/profile`}
       />
       <Col className="items-center">
+        <BackButton className="-ml-2 mb-2 self-start" />
         <Col className={'w-full px-6 py-4'}>
           <RequiredProfileUserForm
             data={baseUser}

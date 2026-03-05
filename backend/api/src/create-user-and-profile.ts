@@ -42,8 +42,7 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   } = props
   await removePinnedUrlFromPhotoUrls(profile)
 
-  const host = req.get('referer')
-  log(`Create user and profile from: ${host}`)
+  // const host = req.get('referer')
 
   const ip = getIp(req)
 

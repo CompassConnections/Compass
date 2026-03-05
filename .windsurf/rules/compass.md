@@ -6,399 +6,267 @@ globs:
 
 ## Project Structure
 
-- next.js react tailwind frontend `/web`
-  - broken down into pages, components, hooks, lib
-- express node api server `/backend/api`
-- one off scripts, like migrations `/backend/scripts`
-- supabase postgres. schema in `/backend/supabase`
-  - supabase-generated types in `/backend/supabase/schema.ts`
-- files shared between backend directories `/backend/shared`
-  - anything in `/backend` can import from `shared`, but not vice versa
-- files shared between the frontend and backend in `/common`
-  - `/common` has lots of type definitions for our data structures, like User. It also contains many useful utility functions. We try not to add package dependencies to common. `/web` and `/backend` are allowed to import from `/common`, but not vice versa.
+Compass (compassmeet.com) is a transparent dating platform for forming deep, authentic 1-on-1 connections.
+
+- **Next.js React frontend** `/web`
+  - Pages, components, hooks, lib
+- **Express Node API server** `/backend/api`
+- **Shared backend utilities** `/backend/shared`
+- **Email functions** `/backend/email`
+- **Database schema** `/backend/supabase`
+  - Supabase-generated types in `/backend/supabase/schema.ts`
+- **Files shared between frontend and backend** `/common`
+  - Types (User, Profile, etc.) and utilities
+  - Try not to add package dependencies to common
+- **Android app** `/android`
 
 ## Deployment
 
-- The project has both dev and prod environments.
-- Backend is on GCP (Google Cloud Platform). Deployment handled by terraform.
-- Project ID is `compass-130ba`.
+- Both dev and prod environments
+- Backend on GCP (Google Cloud Platform)
+- Frontend on Vercel
+- Database on Supabase (PostgreSQL)
+- Firebase for authentication and storage
 
 ## Code Guidelines
 
----
-
-Here's an example component from web in our style:
+### Component Example
 
 ```tsx
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import {isAdminId, isModId} from 'common/envs/constants'
-import {type Headline} from 'common/news'
-import {EditNewsButton} from 'web/components/news/edit-news-button'
-import {Carousel} from 'web/components/widgets/carousel'
+import {User} from 'common/user'
+import {ProfileRow} from 'common/profiles/profile'
 import {useUser} from 'web/hooks/use-user'
-import {track} from 'web/lib/service/analytics'
-import {DashboardEndpoints} from 'web/components/dashboard/dashboard-page'
-import {removeEmojis} from 'common/util/string'
+import {useT} from 'web/lib/locale'
 
-export function HeadlineTabs(props: {
-  headlines: Headline[]
-  currentSlug: string
-  endpoint: DashboardEndpoints
-  hideEmoji?: boolean
-  notSticky?: boolean
-  className?: string
-}) {
-  const {headlines, endpoint, currentSlug, hideEmoji, notSticky, className} = props
-  const user = useUser()
+interface ProfileCardProps {
+  user: User
+  profile: ProfileRow
+}
+
+export function ProfileCard({user, profile}: ProfileCardProps) {
+  const t = useT()
 
   return (
-    <div className={clsx(className, 'bg-canvas-50 w-full', !notSticky && 'sticky top-0 z-50')}>
-      <Carousel labelsParentClassName="gap-px">
-        {headlines.map(({id, slug, title}) => (
-          <Tab
-            key={id}
-            label={hideEmoji ? removeEmojis(title) : title}
-            href={`/${endpoint}/${slug}`}
-            active={slug === currentSlug}
-          />
-        ))}
-        {user && <Tab label="More" href="/dashboard" />}
-        {user && (isAdminId(user.id) || isModId(user.id)) && (
-          <EditNewsButton endpoint={endpoint} defaultDashboards={headlines} />
-        )}
-      </Carousel>
+    <div className={clsx('bg-canvas-50 rounded-lg p-4')}>
+      <img src={user.avatarUrl} alt={user.name} />
+      <h3>{user.name}</h3>
+      <p>{profile.bio}</p>
     </div>
   )
 }
 ```
 
----
+We prefer many smaller components that each represent one logical unit, rather than one large component.
 
-We prefer to have many smaller components that each represent one logical unit, rather than one very large component that does everything. Then we compose and reuse the components.
+Export the main component at the top of the file. Name the component the same as the file (e.g., `profile-card.tsx` →
+`ProfileCard`).
 
-It's best to export the main component at the top of the file. We also try to name the component the same as the file name (headline-tabs.tsx) so that it's easy to find.
+### API Calls
 
-Here's another example in `home.tsx` that calls our api. We have an endpoint called 'headlines', which is being cached by NextJS:
+**Server-side (getStaticProps):**
 
-```ts
-import { api } from 'web/lib/api/api'
-// More imports...
+```typescript
+import {api} from 'web/lib/api'
 
 export async function getStaticProps() {
-  try {
-    const headlines = await api('headlines', {})
-    return {
-      props: {
-        headlines,
-        revalidate: 30 * 60, // 30 minutes
-      },
-    }
-  } catch (err) {
-    return { props: { headlines: [] }, revalidate: 60 }
+  const profiles = await api('get-profiles', {})
+  return {
+    props: {profiles},
+    revalidate: 30 * 60, // 30 minutes
   }
 }
-
-export default function Home(props: { headlines: Headline[] }) { ... }
 ```
 
----
+**Client-side - use hooks:**
 
-If we are calling the API on the client, prefer using the `useAPIGetter` hook:
+```typescript
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 
-```ts
-export const YourTopicsSection = (props: {
-  user: User
-  className?: string
-}) => {
-  const { user, className } = props
-  const { data, refresh } = useAPIGetter('get-followed-groups', {
-    userId: user.id,
-  })
-  const followedGroups = data?.groups ?? []
-  ...
-```
+function ProfileList() {
+    const {data, refresh} = useAPIGetter('get-profiles', {})
 
-This stores the result in memory, and allows you to call refresh() to get an updated version.
+    if (!data) return <Loading / >
 
----
-
-We frequently use `usePersistentInMemoryState` or `usePersistentLocalState` as an alternative to `useState`. These cache data. Most of the time you want in-memory caching so that navigating back to a page will preserve the same state and appear to load instantly.
-
-Here's the definition of usePersistentInMemoryState:
-
-```ts
-export const usePersistentInMemoryState = <T>(initialValue: T, key: string) => {
-  const [state, setState] = useStateCheckEquality<T>(safeJsonParse(store[key]) ?? initialValue)
-
-  useEffect(() => {
-    const storedValue = safeJsonParse(store[key]) ?? initialValue
-    setState(storedValue as T)
-  }, [key])
-
-  const saveState = useEvent((newState: T | ((prevState: T) => T)) => {
-    setState((prevState) => {
-      const updatedState = isFunction(newState) ? newState(prevState) : newState
-      store[key] = JSON.stringify(updatedState)
-      return updatedState
-    })
-  })
-
-  return [state, saveState] as const
+    return (
+        <div>
+            {
+                data.profiles.map((profile) => (
+                    <ProfileCard key = {profile.id} user = {profile.user} profile = {profile}
+    />
+))
+}
+    <button onClick = {refresh} > Refresh < /button>
+        < /div>
+)
 }
 ```
 
----
+### Database Access
 
-For live updates, we use websockets. In `use-api-subscription.ts`, we have this hook:
+**Backend (pg-promise):**
 
-```ts
-export function useApiSubscription(opts: SubscriptionOptions) {
-  useEffect(() => {
-    const ws = client
-    if (ws != null) {
-      if (opts.enabled ?? true) {
-        ws.subscribe(opts.topics, opts.onBroadcast).catch(opts.onError)
-        return () => {
-          ws.unsubscribe(opts.topics, opts.onBroadcast).catch(opts.onError)
-        }
-      }
-    }
-  }, [opts.enabled, JSON.stringify(opts.topics)])
-}
-```
-
-In `use-bets`, we have this hook to get live updates with useApiSubscription:
-
-```ts
-export const useContractBets = (
-  contractId: string,
-  opts?: APIParams<'bets'> & {enabled?: boolean},
-) => {
-  const {enabled = true, ...apiOptions} = {
-    contractId,
-    ...opts,
-  }
-  const optionsKey = JSON.stringify(apiOptions)
-
-  const [newBets, setNewBets] = usePersistentInMemoryState<Bet[]>([], `${optionsKey}-bets`)
-
-  const addBets = (bets: Bet[]) => {
-    setNewBets((currentBets) => {
-      const uniqueBets = sortBy(uniqBy([...currentBets, ...bets], 'id'), 'createdTime')
-      return uniqueBets.filter((b) => !betShouldBeFiltered(b, apiOptions))
-    })
-  }
-
-  const isPageVisible = useIsPageVisible()
-
-  useEffect(() => {
-    if (isPageVisible && enabled) {
-      api('bets', apiOptions).then(addBets)
-    }
-  }, [optionsKey, enabled, isPageVisible])
-
-  useApiSubscription({
-    topics: [`contract/${contractId}/new-bet`],
-    onBroadcast: (msg) => {
-      addBets(msg.data.bets as Bet[])
-    },
-    enabled,
-  })
-
-  return newBets
-}
-```
-
----
-
-Here are all the topics we broadcast, from `backend/shared/src/websockets/helpers.ts`
-
-```ts
-export function broadcastUpdatedPrivateUser(userId: string) {
-  // don't send private user info because it's private and anyone can listen
-  broadcast(`private-user/${userId}`, {})
-}
-
-export function broadcastUpdatedUser(user: Partial<User> & {id: string}) {
-  broadcast(`user/${user.id}`, {user})
-}
-
-export function broadcastUpdatedComment(comment: Comment) {
-  broadcast(`user/${comment.onUserId}/comment`, {comment})
-}
-```
-
----
-
-We have our scripts in the directory `/backend/scripts`.
-
-To write a script, run it inside the helper function called `runScript` that automatically fetches any secret keys and loads them into process.env.
-
-Example from `/backend/scripts/manicode.ts`
-
-```ts
-import { runScript } from 'run-script'
-
-runScript(async ({ pg }) => {
-  const userPrompt = process.argv[2]
-  await pg.none(...)
-})
-```
-
-Generally scripts should be run by me, especially if they modify backend state or schema.
-But if you need to run a script, you can use `bun`. For example:
-
-```sh
-bun run manicode.ts "Generate a page called cowp, which has cows that make noises!"
-```
-
-if that doesn't work, try
-
-```sh
-bun x ts-node manicode.ts "Generate a page called cowp, which has cows that make noises!"
-```
-
----
-
-Our backend is mostly a set of endpoints. We create new endpoints by adding to the schema in `/common/src/api/schema.ts`.
-
-E.g. Here is a hypothetical bet schema:
-
-```ts
-  bet: {
-    method: 'POST',
-    authed: true,
-    returns: {} as CandidateBet & { betId: string },
-    props: z
-      .object({
-        contractId: z.string(),
-        amount: z.number().gte(1),
-        replyToCommentId: z.string().optional(),
-        limitProb: z.number().gte(0.01).lte(0.99).optional(),
-        expiresAt: z.number().optional(),
-        // Used for binary and new multiple choice contracts (cpmm-multi-1).
-        outcome: z.enum(['YES', 'NO']).default('YES'),
-        //Multi
-        answerId: z.string().optional(),
-        dryRun: z.boolean().optional(),
-      })
-      .strict(),
-  }
-```
-
-Then, we define the bet endpoint in `backend/api/src/place-bet.ts`
-
-```ts
-export const placeBet: APIHandler<'bet'> = async (props, auth) => {
-  const isApi = auth.creds.kind === 'key'
-  return await betsQueue.enqueueFn(
-    () => placeBetMain(props, auth.uid, isApi),
-    [props.contractId, auth.uid],
-  )
-}
-```
-
-And finally, you need to register the handler in `backend/api/src/routes.ts`
-
-```ts
-import { placeBet } from './place-bet'
-...
-
-const handlers = {
-  bet: placeBet,
-  ...
-}
-```
-
----
-
-We have two ways to access our postgres database.
-
-```ts
-import {db} from 'web/lib/supabase/db'
-
-db.from('profiles').select('*').eq('user_id', userId)
-```
-
-and
-
-```ts
+```typescript
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 const pg = createSupabaseDirectClient()
-pg.oneOrNone<Row<'profiles'>>('select * from profiles where user_id = $1', [userId])
+const user = await pg.oneOrNone<User>('SELECT * FROM users WHERE username = $1', [username])
 ```
 
-The supabase client just uses the supabase client library, which is a wrapper around postgREST. It allows us to query and update the database directly from the frontend.
+**Frontend (Supabase client):**
 
-`createSupabaseDirectClient` is used on the backend. it lets us specify sql strings to run directly on our database, using the pg-promise library. The client (code in web) does not have permission to do this.
+```typescript
+import {db} from 'web/lib/supabase/db'
 
-Another example using the direct client:
+const {data} = await db.from('profiles').select('*').eq('user_id', userId)
+```
 
-```ts
-export const getUniqueBettorIds = async (contractId: string, pg: SupabaseDirectClient) => {
-  const res = await pg.manyOrNone(
-    'select distinct user_id from contract_bets where contract_id = $1',
-    [contractId],
-  )
-  return res.map((r) => r.user_id as string)
+### Translation
+
+```typescript
+import {useT} from 'web/lib/locale'
+
+function MyComponent() {
+  const t = useT()
+
+  return <h1>{t('welcome', 'Welcome to Compass')}</h1>
 }
 ```
 
-(you may notice we write sql in lowercase)
+Translation files are in `common/messages/` (en.json, fr.json, de.json).
 
-We have a few helper functions for updating and inserting data into the database.
+### Backend Endpoints
 
-```ts
-import {
-  buikInsert,
-  bulkUpdate,
-  bulkUpdateData,
-  bulkUpsert,
-  insert,
-  update,
-  updateData,
-} from 'shared/supabase/utils'
-
-...
-
-const pg = createSupabaseDirectClient()
-
-// you are encouraged to use tryCatch for these
-const { data, error } = await tryCatch(
-  insert(pg, 'profiles', { user_id: auth.uid, ...body })
-)
-
-if (error) throw APIError(500, 'Error creating profile: ' + error.message)
-
-await update(pg, 'profiles', 'user_id', { user_id: auth.uid, age: 99 })
-
-await updateData(pg, 'private_users', { id: userId, notifications: { ... } })
-```
-
-The sqlBuilder from `shared/supabase/sql-builder.ts` can be used to construct SQL queries with re-useable parts. All it does is sanitize and output sql query strings. It has several helper functions including:
-
-- `select`: Specifies the columns to select
-- `from`: Specifies the table to query
-- `where`: Adds WHERE clauses
-- `orderBy`: Specifies the order of results
-- `limit`: Limits the number of results
-- `renderSql`: Combines all parts into a final SQL string
-
-Example usage:
+1. Define schema in `common/src/api/schema.ts`:
 
 ```typescript
-const query = renderSql(
-  select('distinct user_id'),
-  from('contract_bets'),
-  where('contract_id = ${id}', {id}),
-  orderBy('created_time desc'),
-  limitValue != null && limit(limitValue),
-)
-
-const res = await pg.manyOrNone(query)
+'get-user-and-profile': {
+  method: 'GET',
+  authed: false,
+  rateLimited: true,
+  props: z.object({
+    username: z.string().min(1),
+  }),
+  returns: {} as {user: User; profile: ProfileRow | null},
+  summary: 'Get user and profile data by username',
+  tag: 'Users',
+},
 ```
 
-Use these functions instead of string concatenation.
+2. Create handler in `backend/api/src/`:
+
+```typescript
+import {APIError, APIHandler} from './helpers/endpoint'
+
+export const getUserAndProfile: APIHandler<'get-user-and-profile'> = async ({username}, _auth) => {
+  const user = await getUserByUsername(username)
+  if (!user) {
+    throw new APIError(404, 'User not found')
+  }
+
+  return {user, profile}
+}
+```
+
+3. Register in `backend/api/src/app.ts`:
+
+```typescript
+import {getUserAndProfile} from './get-user-and-profile'
+
+const handlers = {
+  'get-user-and-profile': getUserAndProfile,
+  // ...
+}
+```
+
+### Profile Options (Interests, Causes, Work)
+
+Options are stored in separate tables with many-to-many relationships:
+
+- `interests`, `causes`, `work` - option values
+- `profile_interests`, `profile_causes`, `profile_work` - junction tables
+
+Fetch in parallel:
+
+```typescript
+const [interestsRes, causesRes, workRes] = await Promise.all([
+  db.from('profile_interests').select('interests(name, id)').eq('profile_id', profile.id),
+  db.from('profile_causes').select('causes(name, id)').eq('profile_id', profile.id),
+  db.from('profile_work').select('work(name, id)').eq('profile_id', profile.id),
+])
+```
+
+### API Errors
+
+```typescript
+import {APIError} from './helpers/endpoint'
+
+throw new APIError(404, 'User not found')
+throw new APIError(400, 'Invalid input', {field: 'email'})
+```
+
+### Logging
+
+- Use `debug()` from `common/logger` for development
+- Use `log` from `shared/utils` for production
+
+## Testing
+
+### Running Tests
+
+```bash
+# Jest (unit + integration)
+yarn test
+
+# Playwright (E2E)
+yarn test:e2e
+```
+
+### Test Structure
+
+- Unit tests: `*.unit.test.ts` in `tests/unit/`
+- Integration tests: `*.integration.test.ts` in `tests/integration/`
+- E2E tests: `*.e2e.spec.ts` in `tests/e2e/`
+
+### Mocking Example
+
+```typescript
+jest.mock('shared/supabase/init')
+
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+const mockPg = {
+  oneOrNone: jest.fn(),
+  tx: jest.fn(async (cb) => cb(mockTx)),
+}
+;(createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+```
+
+## Important Patterns
+
+### User Registration
+
+- Create user + profile + options in single database transaction
+- Return full profile data from creation API
+- Don't use sleep() hacks - rely on transactional integrity
+
+## Things to Avoid
+
+- Don't use string concatenation for SQL queries
+- Don't add sleep() delays for "eventual consistency"
+- Don't create separate API calls when data can be batched in one transaction
+- Don't use console.log - use `debug()` or `log()`
+- Don't remove commented code
+
+## Key Dependencies
+
+- Node.js 20+
+- React 19
+- Next.js 16
+- Supabase (PostgreSQL)
+- Firebase (Auth, Storage)
+- Tailwind CSS
+- Jest (testing)
+- Playwright (E2E testing)

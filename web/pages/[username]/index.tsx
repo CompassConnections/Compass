@@ -4,7 +4,6 @@ import {debug} from 'common/logger'
 import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {ProfileRow} from 'common/profiles/profile'
 import {User} from 'common/user'
-import {unauthedApi} from 'common/util/api'
 import {parseJsonContentToText} from 'common/util/parse'
 import {GetStaticPropsContext} from 'next'
 import Head from 'next/head'
@@ -20,6 +19,7 @@ import {useProfileByUser} from 'web/hooks/use-profile'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {getPageData} from 'web/lib/util/page-data'
@@ -29,7 +29,7 @@ import Custom404 from '../404'
 
 async function getUserAndProfile(username: string) {
   try {
-    return await unauthedApi('get-user-and-profile', {username})
+    return await api('get-user-and-profile', {username})
   } catch (e) {
     console.error('Error in getUserAndProfile:', e)
   }

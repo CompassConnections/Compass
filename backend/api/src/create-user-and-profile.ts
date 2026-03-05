@@ -1,4 +1,5 @@
 import {setLastOnlineTimeUser} from 'api/set-last-online-time'
+import {setProfileOptions} from 'api/update-options'
 import {defaultLocale} from 'common/constants'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
@@ -9,7 +10,6 @@ import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
 import {cleanDisplayName} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
-import {MINUTE_MS, sleep} from 'common/util/time'
 import {sendWelcomeEmail} from 'email/functions/helpers'
 import * as admin from 'firebase-admin'
 import {getIp, track} from 'shared/analytics'
@@ -29,7 +29,17 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   req,
 ) => {
   trimStrings(props)
-  const {deviceToken, locale = defaultLocale, username, name, link, profile} = props
+  const {
+    deviceToken,
+    locale = defaultLocale,
+    username,
+    name,
+    link,
+    profile,
+    interests,
+    causes,
+    work,
+  } = props
   await removePinnedUrlFromPhotoUrls(profile)
 
   const host = req.get('referer')
@@ -57,7 +67,9 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
     }
   }
 
-  const {user, privateUser} = await pg.tx(async (tx) => {
+  // The pg.tx() call wraps several database operations in a single atomic transaction,
+  // ensuring they either all succeed or all fail together.
+  const {user, privateUser, newProfileRow} = await pg.tx(async (tx) => {
     const existingUser = await tx.oneOrNone('select id from users where id = $1', [auth.uid])
     if (existingUser) {
       throw new APIError(403, 'User already exists', {userId: auth.uid})
@@ -102,14 +114,21 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
     const profileData = removeUndefinedProps(profile)
 
-    await insert(tx, 'profiles', {
+    const newProfileRow = await insert(tx, 'profiles', {
       user_id: auth.uid,
       ...profileData,
     })
 
+    const profileId = newProfileRow.id
+
+    await setProfileOptions(tx, profileId, auth.uid, 'interests', interests)
+    await setProfileOptions(tx, profileId, auth.uid, 'causes', causes)
+    await setProfileOptions(tx, profileId, auth.uid, 'work', work)
+
     return {
       user: convertUser(newUserRow),
       privateUser: convertPrivateUser(newPrivateUserRow),
+      newProfileRow,
     }
   })
 
@@ -132,10 +151,6 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       console.error('Failed to set last online time', e)
     }
     try {
-      // Let the user fill in the optional form with all their info and pictures before notifying discord of their arrival.
-      // So we can sse their full profile as soon as we get the notif on discord. And that allows OG to pull their pic for the link preview.
-      // Regardless, you need to wait for at least 5 seconds that the profile is fully in the db—otherwise ISR may cache "profile not created yet"
-      await sleep(MINUTE_MS)
       const message: string = `[**${user.name}**](${DEPLOYED_WEB_URL}/${user.username}) just created a profile`
       await sendDiscordMessage(message, 'members')
     } catch (e) {
@@ -163,8 +178,15 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
   return {
     result: {
+      // include everything the frontend needs
       user,
       privateUser,
+      profile: {
+        ...newProfileRow,
+        interests: interests ?? [],
+        causes: causes ?? [],
+        work: work ?? [],
+      },
     },
     continue: continuation,
   }

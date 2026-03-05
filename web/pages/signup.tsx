@@ -1,12 +1,9 @@
 import {LOCALE_TO_LANGUAGE} from 'common/choices'
-import {IS_DEPLOYED} from 'common/hosting/constants'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
-import {filterDefined} from 'common/util/array'
 import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {randomString} from 'common/util/random'
-import {sleep} from 'common/util/time'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
 import toast, {Toaster} from 'react-hot-toast'
@@ -27,6 +24,7 @@ import {clearOnboardingFlag} from 'web/lib/util/signup'
 
 export default function SignupPage() {
   const [step, setStep] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   useTracking('view signup page')
 
@@ -76,6 +74,7 @@ export default function SignupPage() {
   }
 
   const handleFinalSubmit = async () => {
+    setIsSubmitting(true)
     const referredByUsername = safeLocalStorage
       ? (safeLocalStorage.getItem(CACHED_REFERRAL_USERNAME_KEY) ?? undefined)
       : undefined
@@ -95,44 +94,40 @@ export default function SignupPage() {
         deviceToken,
         link: baseUser.link,
         profile: otherProfileProps,
+        interests,
+        causes,
+        work,
       })
       if (!result.user) throw new Error('Failed to create user and profile')
-      const promises: Promise<any>[] = filterDefined([
-        interests && api('update-options', {table: 'interests', values: interests}),
-        causes && api('update-options', {table: 'causes', values: causes}),
-        work && api('update-options', {table: 'work', values: work}),
-      ])
-      await Promise.all(promises)
 
       track('complete registration')
 
       clearOnboardingFlag()
 
+      // Stash the fresh profile data so the next page can use it immediately
+      safeLocalStorage?.setItem('freshSignup', JSON.stringify(result))
+
       // Force onIdTokenChanged to re-fire — your AuthProvider listener
       // will then re-run getUserSafe, find the record, and call onAuthLoad
       await auth.currentUser?.getIdToken(true) // true = force refresh
-
-      // Just to be sure everything is in the db before the server calls in profile props
-      if (IS_DEPLOYED) await sleep(5000)
 
       router.push(`/${result.user.username}?fromSignup=true`)
     } catch (e) {
       console.error(e)
       toast.error('An error occurred during signup, try again later...')
+    } finally {
+      setIsSubmitting(false)
     }
   }
-
-  // if (user === null && !holdLoading && !isNewRegistration) {
-  //   return <CompassLoadingIndicator />
-  // }
-
-  const showLoading = false
 
   return (
     <Col className="items-center">
       <Toaster position={'top-center'} containerClassName="!bottom-[70px]" />
-      {showLoading ? (
-        <CompassLoadingIndicator />
+      {isSubmitting ? (
+        <Col className="flex-1 items-center justify-center py-20">
+          <CompassLoadingIndicator />
+          <div className="mt-4 text-gray-500">Creating your profile...</div>
+        </Col>
       ) : (
         <Col className={'w-full max-w-4xl px-6 py-4'}>
           <BackButton className="-ml-2 mb-2 self-start" />

@@ -6,7 +6,6 @@ import {getProfileRow, ProfileRow} from 'common/profiles/profile'
 import {getUserForStaticProps} from 'common/supabase/users'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
-import {sleep} from 'common/util/time'
 import {GetStaticPropsContext} from 'next'
 import Head from 'next/head'
 import {useRouter} from 'next/router'
@@ -22,7 +21,7 @@ import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {db} from 'web/lib/supabase/db'
-import {getPixelHeight} from 'web/lib/util/css'
+import {safeLocalStorage} from 'web/lib/util/local'
 import {getPageData} from 'web/lib/util/page-data'
 import {isNativeMobile} from 'web/lib/util/webview'
 
@@ -34,17 +33,7 @@ async function getUser(username: string) {
 }
 
 async function getProfile(userId: string) {
-  let profile
-  let i = 0
-  while (!profile) {
-    profile = await getProfileRow(userId, db)
-    if (i > 0) await sleep(500)
-    i++
-    if (i >= 40) {
-      break
-    }
-  }
-  debug(`Profile loaded after ${i} tries`)
+  const profile = await getProfileRow(userId, db)
   return profile
 }
 
@@ -95,8 +84,7 @@ export const getStaticProps = async (
     debug('No user')
     return {
       props: {
-        notFoundCustomText:
-          'The profile you are looking for is not on this site... or perhaps you just mistyped?',
+        notFoundCustomText: null,
       },
       revalidate: 1,
     }
@@ -163,18 +151,28 @@ type ActiveUserPageProps = {
 }
 
 export default function UserPage(props: UserPageProps) {
-  // console.log('Starting UserPage in /[username]')
-
-  useEffect(() => {
-    console.log('safe-area-inset-bottom:', getPixelHeight('safe-area-inset-bottom'))
-    console.log('safe-area-inset-top:', getPixelHeight('safe-area-inset-top'))
-  }, [])
-
   const nativeMobile = isNativeMobile()
   const router = useRouter()
   const username = (nativeMobile ? router.query.username : props.username) as string
-  const [fetchedProps, setFetchedProps] = useState(props)
   const [loading, setLoading] = useState(nativeMobile)
+  const fromSignup = router?.query?.fromSignup === 'true'
+
+  // Hydrate from localStorage if coming from registration,
+  // before any null checks that would block UserPageInner
+  const [fetchedProps, setFetchedProps] = useState<UserPageProps>(() => {
+    if (fromSignup) {
+      const fresh = safeLocalStorage?.getItem('freshSignup')
+      if (fresh) {
+        safeLocalStorage?.removeItem('freshSignup')
+        const {user, profile} = JSON.parse(fresh)
+        if (user && profile) {
+          debug('Using fresh profile from signup')
+          return {username: user.username, user, profile}
+        }
+      }
+    }
+    return props
+  })
 
   console.log(
     'UserPage state:',

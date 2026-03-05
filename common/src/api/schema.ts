@@ -194,7 +194,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    returns: {} as {user: User; privateUser: PrivateUser},
+    returns: {} as {user: User; privateUser: PrivateUser; profile: any},
     props: z
       .object({
         deviceToken: z.string().optional(),
@@ -203,6 +203,9 @@ export const API = (_apiTypeCheck = {
         name: z.string().min(1),
         link: z.record(z.string().nullable()).optional(),
         profile: combinedProfileSchema,
+        interests: arraybeSchema.optional(),
+        causes: arraybeSchema.optional(),
+        work: arraybeSchema.optional(),
       })
       .strict(),
     summary: 'Create a new user and profile in a single transaction',

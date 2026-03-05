@@ -15,30 +15,21 @@ export const getProfileRow = async (
   const profile = profileRes.data?.[0]
   if (!profile) return null
 
-  // Fetch interests
-  const interestsRes = await run(
-    db.from('profile_interests').select('interests(name, id)').eq('profile_id', profile.id),
-  )
-  const interests = interestsRes.data?.map((row: any) => String(row.interests.id)) || []
+  // Parallel instead of sequential
+  const [interestsRes, causesRes, workRes] = await Promise.all([
+    run(db.from('profile_interests').select('interests(name, id)').eq('profile_id', profile.id)),
+    run(db.from('profile_causes').select('causes(name, id)').eq('profile_id', profile.id)),
+    run(db.from('profile_work').select('work(name, id)').eq('profile_id', profile.id)),
+  ])
 
-  // Fetch causes
-  const causesRes = await run(
-    db.from('profile_causes').select('causes(name, id)').eq('profile_id', profile.id),
-  )
-  const causes = causesRes.data?.map((row: any) => String(row.causes.id)) || []
-
-  // Fetch causes
-  const workRes = await run(
-    db.from('profile_work').select('work(name, id)').eq('profile_id', profile.id),
-  )
-  const work = workRes.data?.map((row: any) => String(row.work.id)) || []
-
-  // console.debug({work, interests, causes})
-
-  return {
+  const result = {
     ...profile,
-    interests,
-    causes,
-    work,
+    interests: interestsRes.data?.map((r: any) => String(r.interests.id)) ?? [],
+    causes: causesRes.data?.map((r: any) => String(r.causes.id)) ?? [],
+    work: workRes.data?.map((r: any) => String(r.work.id)) ?? [],
   }
+
+  // console.debug(result)
+
+  return result
 }

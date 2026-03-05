@@ -64,8 +64,8 @@ export class ProfilePage {
   private readonly profileCompatibilityExplanation: Locator
 
   constructor(public readonly page: Page) {
-    this.startAnsweringButton = page.getByRole('button', {})
-    this.doThisLaterLink = page.getByRole('button', {})
+    this.startAnsweringButton = page.getByRole('button', { name: 'Start answering' })
+    this.doThisLaterLink = page.getByRole('button', { name: 'Do this later' })
     this.closeButton = page.getByRole('button', {name: 'Close'})
     this.shareButton = page.getByRole('button', {name: 'Share'})
     this.editProfileButton = page.getByTestId('profile-edit')
@@ -343,62 +343,54 @@ export class ProfilePage {
 
   async verifyEthnicityOrigin(origin: string) {
     await expect(this.ethnicityAboutSection).toBeVisible()
-    const textContent = await this.ethnicityAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(origin.toLowerCase())
+    await expect(this.ethnicityAboutSection).toContainText(origin, {ignoreCase: true})
   }
 
   async verifyInterestedInConnectingWith(gender?: string[], minAge?: string, maxAge?: string) {
     await expect(this.seekingAboutSection).toBeVisible()
-    const textContent = await this.seekingAboutSection.textContent()
-    if (gender) await expect(textContent?.toLowerCase()).toContain(gender[0].toLowerCase())
-    if (minAge) await expect(textContent?.toLowerCase()).toContain(minAge.toLowerCase())
-    if (maxAge) await expect(textContent?.toLowerCase()).toContain(maxAge.toLowerCase())
+    if (gender) await expect(this.seekingAboutSection).toContainText(gender[0], {ignoreCase: true})
+    if (minAge) await expect(this.seekingAboutSection).toContainText(minAge)
+    if (maxAge) await expect(this.seekingAboutSection).toContainText(maxAge)
   }
 
   async verifyRelationShipTypeAndInterest(type?: string[], interest?: string[]) {
     await expect(this.relationshipTypeAboutSection).toBeVisible()
-    const textContent = await this.relationshipTypeAboutSection.textContent()
-    if (type) await expect(textContent?.toLowerCase()).toContain(type[0].toLowerCase())
-    if (interest) await expect(textContent?.toLowerCase()).toContain(interest[0].toLowerCase())
+    if (type) await expect(this.relationshipTypeAboutSection).toContainText(type[0], {ignoreCase: true})
+    if (interest) await expect(this.relationshipTypeAboutSection).toContainText(interest[0], {ignoreCase: true})
   }
 
   async verifyRelationshipStatus(status: string[] | undefined) {
     if (!status) return
     await expect(this.relationshipStatusAboutSection).toBeVisible()
-    const textContent = await this.relationshipStatusAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(status[0].toLowerCase())
+    await expect(this.relationshipStatusAboutSection).toContainText(status[0], {ignoreCase: true})
   }
 
   async verifyCurrentNumberOfKids(numberOfKids: string | undefined) {
     if (!numberOfKids) return
     await expect(this.hasKidsAboutSection).toBeVisible()
-    const textContent = await this.hasKidsAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(numberOfKids.toLowerCase())
+    await expect(this.hasKidsAboutSection).toContainText(numberOfKids)
   }
 
   async verifyWantChildrenExpectation(expectation: [string, number] | undefined) {
     if (!expectation) return
     const [label, _value] = expectation
     await expect(this.wantsKidsAboutSection).toBeVisible()
-    const textContent = await this.wantsKidsAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(label.toLowerCase())
+    await expect(this.wantsKidsAboutSection).toContainText(label, {ignoreCase: true})
   }
 
   async verifyInterests(interest: string[] | undefined) {
     if (!interest || interest.length === 0) return
     await expect(this.interestsAboutSection).toBeVisible()
-    const textContent = await this.interestsAboutSection.textContent()
     for (let i = 0; i < interest.length; i++) {
-      await expect(textContent?.toLowerCase()).toContain(interest[i].toLowerCase())
+      await expect(this.interestsAboutSection).toContainText(interest[i], {ignoreCase: true})
     }
   }
 
   async verifyCauses(causes: string[] | undefined) {
     if (!causes || causes.length === 0) return
     await expect(this.causesAboutSection).toBeVisible()
-    const textContent = await this.causesAboutSection.textContent()
     for (let i = 0; i < causes.length; i++) {
-      await expect(textContent?.toLowerCase()).toContain(causes[i].toLowerCase())
+      await expect(this.causesAboutSection).toContainText(causes[i], {ignoreCase: true})
     }
   }
 
@@ -412,86 +404,76 @@ export class ProfilePage {
 
   async verifyEducationLevelAndUniversity(educationLevel?: string[], university?: string) {
     await expect(this.educationAboutSection).toBeVisible()
-    const textContent = await this.educationAboutSection.textContent()
     if (educationLevel)
-      await expect(textContent?.toLowerCase()).toContain(educationLevel[0].toLowerCase())
-    if (university) await expect(textContent?.toLowerCase()).toContain(university.toLowerCase())
+      await expect(this.educationAboutSection).toContainText(educationLevel[0], {ignoreCase: true})
+    if (university) await expect(this.educationAboutSection).toContainText(university, {ignoreCase: true})
   }
 
   async verifyJobInformation(jobTitle?: string, company?: string) {
     await expect(this.occupationAboutSection).toBeVisible()
-    const textContent = await this.occupationAboutSection.textContent()
-    if (jobTitle) await expect(textContent?.toLowerCase()).toContain(jobTitle.toLowerCase())
-    if (company) await expect(textContent?.toLowerCase()).toContain(company.toLowerCase())
+    if (jobTitle) await expect(this.occupationAboutSection).toContainText(jobTitle, {ignoreCase: true})
+    if (company) await expect(this.occupationAboutSection).toContainText(company, {ignoreCase: true})
   }
 
   async verifyPoliticalBeliefs(belief?: string[], details?: string) {
     await expect(this.politicalAboutSection).toBeVisible()
-    const textContent = await this.politicalAboutSection.textContent()
-    if (belief) await expect(textContent?.toLowerCase()).toContain(belief[0].toLowerCase())
-    if (details) await expect(textContent?.toLowerCase()).toContain(details.toLowerCase())
+    if (belief) await expect(this.politicalAboutSection).toContainText(belief[0], {ignoreCase: true})
+    if (details) await expect(this.politicalAboutSection).toContainText(details, {ignoreCase: true})
   }
 
   async verifyReligiousBeliefs(belief?: string[], details?: string) {
     await expect(this.relegiousAboutSection).toBeVisible()
-    const textContent = await this.relegiousAboutSection.textContent()
-    if (belief) await expect(textContent?.toLowerCase()).toContain(belief[0].toLowerCase())
-    if (details) await expect(textContent?.toLowerCase()).toContain(details.toLowerCase())
+    if (belief) await expect(this.relegiousAboutSection).toContainText(belief[0], {ignoreCase: true})
+    if (details) await expect(this.relegiousAboutSection).toContainText(details, {ignoreCase: true})
   }
 
   async verifyPersonalityType(personalityType: string | undefined) {
     if (!personalityType) return
     await expect(this.personalityAboutSection).toBeVisible()
-    const textContent = await this.personalityAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(personalityType.toLowerCase())
+    await expect(this.personalityAboutSection).toContainText(personalityType, {ignoreCase: true})
   }
 
   async verifyBigFivePersonalitySection(personalityType: Record<string, number> | undefined) {
     if (!personalityType) return
     await expect(this.bigFivePersonalityTraitsAboutSection).toBeVisible()
-    const textContent = await this.bigFivePersonalityTraitsAboutSection.textContent()
     for (const [key, value] of Object.entries(personalityType)) {
-      await expect(textContent?.toLowerCase()).toContain(key.toLowerCase())
-      await expect(textContent?.toLowerCase()).toContain(String(value))
+      await expect(this.bigFivePersonalityTraitsAboutSection).toContainText(key, {ignoreCase: true})
+      await expect(this.bigFivePersonalityTraitsAboutSection).toContainText(String(value))
     }
   }
 
   async verifyDiet(diet: string[] | undefined) {
     if (!diet) return
     await expect(this.dietAboutSection).toBeVisible()
-    const textContent = await this.dietAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(diet[0].toLowerCase())
+    await expect(this.dietAboutSection).toContainText(diet[0], {ignoreCase: true})
   }
 
   async verifySmoker(smoker: boolean | undefined) {
     await expect(this.smokerAboutSection).toBeVisible()
-    const textContent = await this.smokerAboutSection.textContent()
-    if (smoker === true) await expect(textContent?.toLowerCase()).toContain('Smokes'.toLowerCase())
+    if (smoker === true) await expect(this.smokerAboutSection).toContainText('Smokes', {ignoreCase: true})
     if (smoker === false)
-      await expect(textContent?.toLowerCase()).toContain("Doesn't smoke".toLowerCase())
+      await expect(this.smokerAboutSection).toContainText("Doesn't smoke", {ignoreCase: true})
   }
 
   async verifyDrinksPerMonth(drinks: string | undefined) {
+    if (!drinks) return
     await expect(this.drinkerAboutSection).toBeVisible()
-    const textContent = await this.drinkerAboutSection.textContent()
-    await expect(textContent?.toLowerCase()).toContain(drinks)
+    await expect(this.drinkerAboutSection).toContainText(drinks)
   }
 
   async verifyLanguages(languages: LanguageTuple[] | undefined) {
     if (!languages || languages.length === 0) return
     await expect(this.languagesAboutSection).toBeVisible()
-    const textContent = await this.languagesAboutSection.textContent()
     for (const language of languages) {
-      await expect(textContent?.toLowerCase()).toContain(language[0].toLowerCase())
+      await expect(this.languagesAboutSection).toContainText(language[0], {ignoreCase: true})
     }
   }
 
   async verifySocialMedia(socialMedia: Socials[] | undefined) {
     if (!socialMedia || socialMedia.length === 0) return
     await expect(this.socialMediaSection).toBeVisible()
-    const textContent = await this.socialMediaSection.textContent()
     for (const {urlOrUsername} of socialMedia) {
-      await expect(textContent?.toLowerCase()).toContain(urlOrUsername.toLowerCase())
+      await expect(this.socialMediaSection).toContainText(urlOrUsername, {ignoreCase: true})
     }
   }
 

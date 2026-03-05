@@ -179,9 +179,9 @@ export class SignUpPage {
 
   async chooseGender(gender: GenderTuple | undefined) {
     if (!gender) return
-    await expect(this.page.locator(`span:has-text("${gender[0]}")`)).toBeVisible()
-    await this.page.locator(`span:has-text("${gender[0]}")`).click()
-    await expect(this.page.locator(`span:has-text("${gender[0]}")`)).toBeChecked()
+    await expect(this.page.locator(`:text-is("${gender[0]}")`)).toBeVisible()
+    await this.page.locator(`:text-is("${gender[0]}")`).click()
+    await expect(this.page.locator(`:text-is("${gender[0]}")`)).toBeChecked()
   }
 
   async fillAge(age: string | undefined) {

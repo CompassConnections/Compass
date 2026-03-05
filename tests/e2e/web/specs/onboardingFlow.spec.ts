@@ -232,6 +232,100 @@ test.describe('when given valid input', () => {
     await profilePage.clickCloseButton()
     await onboardingPage.clickRefineProfileButton()
 
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
+
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+  })
+
+  test('should successfully enter optional information after completing flow', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    fakerAccount,
+  }) => {
+    console.log(
+      `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
+    )
+    await homePage.gotToHomePage()
+    await homePage.clickSignUpButton()
+    await authPage.fillEmailField(fakerAccount.email)
+    await authPage.fillPasswordField(fakerAccount.password)
+    await authPage.clickSignUpWithEmailButton()
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(fakerAccount.display_name)
+    await signUpPage.fillUsername(fakerAccount.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+    await profilePage.clickEditProfileButton()
+    await signUpPage.chooseGender(fakerAccount.gender)
+    await signUpPage.fillAge(fakerAccount.age)
+    await signUpPage.fillHeight({
+      feet: fakerAccount.height?.feet,
+      inches: fakerAccount.height?.inches,
+    })
+    await signUpPage.saveProfileChanges()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name, fakerAccount.age)
+    await profilePage.verifyGenderLocationHeight(
+      fakerAccount.gender,
+      undefined,
+      fakerAccount.height?.feet,
+      fakerAccount.height?.inches,
+    )
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
+
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    await expect(dbInfo.profile.gender).toEqual(fakerAccount.gender?.[1])
+    await expect(String(dbInfo.profile.age)).toEqual(fakerAccount.age)
+    await expect(dbInfo.profile.height_in_inches).toEqual(Number(fakerAccount.height?.feet) * 12)
+  })
+
+  test('should successfully use the start answering option', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    fakerAccount,
+    testAccount,
+  }) => {
+    console.log(
+      `Starting "should successfully use the start answering option" with ${fakerAccount.username}`,
+    )
+    await homePage.gotToHomePage()
+    await homePage.clickSignUpButton()
+    await authPage.fillEmailField(fakerAccount.email)
+    await authPage.fillPasswordField(fakerAccount.password)
+    await authPage.clickSignUpWithEmailButton()
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(fakerAccount.display_name)
+    await signUpPage.fillUsername(fakerAccount.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickStartAnsweringButton()
+    const compatTwoQuestionOne = await profilePage.answerCompatibilityQuestion(testAccount.compatibility)
+    await profilePage.clickNextCompatibilityQuestionButton()
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+    await profilePage.verifyCompatibilityAnswers(compatTwoQuestionOne)
+
+    //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
 
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
@@ -267,6 +361,10 @@ test.describe('when given valid input', () => {
       await profilePage.clickCloseButton()
       await onboardingPage.clickRefineProfileButton()
 
+      //Verify displayed information is correct
+      await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+
+      //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)
 
       await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
@@ -292,6 +390,10 @@ test.describe('when given valid input', () => {
       await profilePage.clickCloseButton()
       await onboardingPage.clickRefineProfileButton()
 
+      //Verify displayed information is correct
+      await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+
+      //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)
 
       await expect(dbInfo.user.name).toContain(fakerAccount.display_name)

@@ -28,7 +28,12 @@ import {isNativeMobile} from 'web/lib/util/webview'
 import Custom404 from '../404'
 
 async function getUserAndProfile(username: string) {
-  return await unauthedApi('get-user-and-profile', {username})
+  try {
+    return await unauthedApi('get-user-and-profile', {username})
+  } catch (e) {
+    console.error('Error in getUserAndProfile:', e)
+  }
+  return {profile: null, user: null}
 }
 
 // getServerSideProps is a Next.js function that can be used to fetch data and render the contents of a page at request time.

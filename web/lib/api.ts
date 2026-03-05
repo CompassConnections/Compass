@@ -11,14 +11,7 @@ export async function api<P extends APIPath>(path: P, params: APIParams<P> = {})
 
   try {
     if (authed) {
-      if (auth.currentUser === undefined) {
-        // Auth hasn't resolved yet — this is a bug in the caller, not a recoverable state
-        console.error(
-          `api('${path}') called before auth resolved — check the calling hook/component`,
-        )
-        throw new APIError(401, 'Auth not resolved yet')
-      }
-
+      await auth.authStateReady()
       if (auth.currentUser === null) {
         // User is definitely not logged in
         console.error(`api('${path}') called while unauthenticated`)

@@ -131,7 +131,7 @@ function CreateCompatibilityModalContent(props: {
       const data = {
         question: question,
         options: generateJson(),
-      }
+      } as any
       const newQuestion = await api('create-compatibility-question', data)
       debug('create-compatibility-question', newQuestion, data)
       const q = newQuestion?.question

@@ -105,6 +105,7 @@ function useAndSetupFirebaseUser() {
 }
 
 export const FirebaseUserContext = createContext<FirebaseUser | null | undefined>(undefined)
+
 export const AuthContext = createContext<AuthUser>(undefined)
 
 // function getSupabaseAuthCall() {

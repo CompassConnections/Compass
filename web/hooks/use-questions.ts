@@ -1,8 +1,8 @@
 import {Row} from 'common/supabase/utils'
 import {sortBy} from 'lodash'
 import {useEffect, useState} from 'react'
+import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale} from 'web/lib/locale'
 import {
@@ -97,14 +97,14 @@ export const useFRQuestionsWithAnswerCount = () => {
 
 export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
   const {locale} = useLocale()
-  const user = useUser()
+  const firebaseUser = useFirebaseUser()
   const [compatibilityQuestions, setCompatibilityQuestions] = usePersistentInMemoryState<
     QuestionWithCountType[]
   >([], `compatibility-questions-with-count`)
   const [isLoading, setIsLoading] = useState(true)
 
   async function refreshCompatibilityQuestions() {
-    if (!user) return
+    if (!firebaseUser) return
     setIsLoading(true)
     return api('get-compatibility-questions', {locale, keyword}).then((res) => {
       setCompatibilityQuestions(res.questions)
@@ -114,7 +114,7 @@ export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
 
   useEffect(() => {
     refreshCompatibilityQuestions()
-  }, [user, locale, keyword])
+  }, [firebaseUser, locale, keyword])
 
   return {
     refreshCompatibilityQuestions,

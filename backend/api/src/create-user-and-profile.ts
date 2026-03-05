@@ -59,12 +59,10 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
   let finalUsername = username
   const validation = await validateUsername(username)
-  if (!validation.valid) {
-    if (validation.suggestedUsername) {
-      finalUsername = validation.suggestedUsername
-    } else {
-      throw new APIError(400, validation.message || 'Invalid username')
-    }
+  if (validation.suggestedUsername) {
+    finalUsername = validation.suggestedUsername
+  } else if (!validation.valid) {
+    throw new APIError(400, validation.message || 'Invalid username')
   }
 
   // The pg.tx() call wraps several database operations in a single atomic transaction,

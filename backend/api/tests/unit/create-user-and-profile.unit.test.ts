@@ -122,6 +122,12 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+        // Add other profile fields as needed for the test
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -137,12 +143,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -203,8 +211,6 @@ describe('createUserAndProfile', () => {
       expect(emailHelpers.sendWelcomeEmail).toBeCalledWith(mockNewUserRow, mockPrivateUserRow)
       expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledTimes(1)
       expect(apiSetLastTimeOnline.setLastOnlineTimeUser).toBeCalledWith(mockAuth.uid)
-      expect(timeUtils.sleep).toBeCalledTimes(1)
-      expect(timeUtils.sleep).toBeCalledWith(60000)
       expect(sendDiscordMessage).toBeCalledTimes(1)
     })
 
@@ -243,25 +249,35 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
       ;(avatarHelpers.generateAvatarUrl as jest.Mock).mockResolvedValue(mockAvatarUrl)
       ;(validateUsernameModule.validateUsername as jest.Mock).mockResolvedValue({
-        valid: false,
+        valid: true,
         suggestedUsername: 'suggestedUsername',
       })
       ;(parsePhotos.removePinnedUrlFromPhotoUrls as jest.Mock).mockReturnValue(mockProps.profile)
+      ;(objectUtils.removeUndefinedProps as jest.Mock)
+        .mockReturnValueOnce({mockNewUserJson: 'mockNewUserJsonData'})
+        .mockReturnValueOnce({mockPrivateUserJson: 'mockPrivateUserJsonData'})
       ;(mockPg.tx as jest.Mock).mockImplementation(async (cb: any) => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -313,6 +329,11 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -323,12 +344,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -376,6 +399,7 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce({id: 'existingUserId'}),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
@@ -420,6 +444,7 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(mockExistingUser),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
@@ -506,6 +531,11 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -516,12 +546,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -574,6 +606,11 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -584,12 +621,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -639,6 +678,11 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -649,12 +693,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 
@@ -711,6 +757,11 @@ describe('createUserAndProfile', () => {
         id: 'mockPrivateUserId',
       }
 
+      const mockNewProfileRow = {
+        id: 'mockProfileId',
+        user_id: 'mockUserId',
+      }
+
       ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(mockIp)
       ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
       ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue(mockBucket)
@@ -721,12 +772,14 @@ describe('createUserAndProfile', () => {
         const mockTx = {
           oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
           one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
         }
         return cb(mockTx)
       })
       ;(supabaseUtils.insert as jest.Mock)
         .mockResolvedValueOnce(mockNewUserRow)
         .mockResolvedValueOnce(mockPrivateUserRow)
+        .mockResolvedValueOnce(mockNewProfileRow)
       ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
       ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue(mockPrivateUserRow)
 

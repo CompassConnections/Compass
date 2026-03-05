@@ -82,7 +82,7 @@ export const getStaticProps = async (
   debug('getStaticProps', {user})
 
   if (!user) {
-    debug('No user')
+    debug('No user', username)
     return {
       props: {
         notFoundCustomText: null,
@@ -92,7 +92,7 @@ export const getStaticProps = async (
   }
 
   if (user.username !== username) {
-    debug('Found a case-insensitive match')
+    debug('Found a case-insensitive match', username)
     // Found a case-insensitive match, redirect to correct casing
     return {
       redirect: {
@@ -103,7 +103,7 @@ export const getStaticProps = async (
   }
 
   if (user.userDeleted) {
-    debug('User deleted')
+    debug('User deleted', username)
     return {
       props: {
         username,
@@ -115,7 +115,7 @@ export const getStaticProps = async (
   const profile = await getProfile(user.id)
 
   if (!profile) {
-    debug('No profile', `${user.username} hasn't created a profile yet.`)
+    debug('No profile', user.username)
     return {
       props: {
         notFoundCustomText: null,
@@ -176,21 +176,8 @@ export default function UserPage(props: UserPageProps) {
     return props
   })
 
-  console.log(
-    'UserPage state:',
-    JSON.stringify(
-      {
-        username,
-        fetchedProps,
-        loading,
-        nativeMobile,
-      },
-      null,
-      2,
-    ),
-  )
-
   useEffect(() => {
+    if (fromSignup) return
     if (nativeMobile) {
       // Mobile/WebView scenario: fetch profile dynamically from the remote web server (to benefit from SSR and ISR)
       async function load() {
@@ -215,6 +202,20 @@ export default function UserPage(props: UserPageProps) {
     }
     // On web, initialProfile from SSR/ISR is already loaded
   }, [username, nativeMobile])
+
+  console.log(
+    'UserPage state:',
+    JSON.stringify(
+      {
+        username,
+        fetchedProps,
+        loading,
+        nativeMobile,
+      },
+      null,
+      2,
+    ),
+  )
 
   if (loading) {
     return (

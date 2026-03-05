@@ -20,6 +20,7 @@ import {useProfileByUser} from 'web/hooks/use-profile'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
+import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {getPageData} from 'web/lib/util/page-data'
@@ -117,7 +118,7 @@ export const getStaticProps = async (
     debug('No profile', `${user.username} hasn't created a profile yet.`)
     return {
       props: {
-        notFoundCustomText: `${user.username} hasn't created a profile yet.`,
+        notFoundCustomText: null,
       },
       revalidate: 1,
     }
@@ -135,7 +136,7 @@ export const getStaticProps = async (
 
 // Runs at build time for SSG (native mobile), or at runtime for ISR fallback in web
 export const getStaticPaths = () => {
-  console.log('Starting getStaticPaths in /[username]', isNativeMobile())
+  // console.log('Starting getStaticPaths in /[username]', isNativeMobile())
   return {paths: [], fallback: 'blocking'}
 }
 
@@ -153,6 +154,7 @@ type ActiveUserPageProps = {
 export default function UserPage(props: UserPageProps) {
   const nativeMobile = isNativeMobile()
   const router = useRouter()
+  const t = useT()
   const username = (nativeMobile ? router.query.username : props.username) as string
   const [loading, setLoading] = useState(nativeMobile)
   const fromSignup = router?.query?.fromSignup === 'true'
@@ -201,7 +203,7 @@ export default function UserPage(props: UserPageProps) {
           console.error('Failed to fetch profile for native mobile', e)
           setFetchedProps({
             username,
-            notFoundCustomText: 'Failed to fetch profile.',
+            notFoundCustomText: t('userpage.failedToFetch', 'Failed to fetch profile.'),
           })
         }
         setLoading(false)
@@ -231,7 +233,7 @@ export default function UserPage(props: UserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            This account has been deleted.
+            {t('userpage.accountDeleted', 'This account has been deleted.')}
           </div>
         </Col>
       </PageBase>
@@ -243,7 +245,7 @@ export default function UserPage(props: UserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            This account has been suspended.
+            {t('userpage.accountSuspended', 'This account has been suspended.')}
           </div>
         </Col>
       </PageBase>
@@ -255,7 +257,7 @@ export default function UserPage(props: UserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            This user hasn't created a profile yet.
+            {t('userpage.profileNotCreated', "This user hasn't created a profile yet.")}
           </div>
         </Col>
       </PageBase>
@@ -269,6 +271,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   // debug('Starting UserPageInner in /[username]')
   const {user, username} = props
   const router = useRouter()
+  const t = useT()
   const {query} = router
   const fromSignup = query.fromSignup === 'true'
 
@@ -289,7 +292,7 @@ function UserPageInner(props: ActiveUserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            The user disabled their profile.
+            {t('userpage.profileDisabled', 'The user disabled their profile.')}
           </div>
         </Col>
       </PageBase>

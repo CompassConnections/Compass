@@ -1271,5 +1271,10 @@
   "share_profile.on_x": "Auf X teilen",
   "share_profile.on_linkedin": "Auf LinkedIn teilen",
   "share_profile.view_profile_card": "Profilkarte ansehen",
-  "profile_card.loading": "Ihre Karte wird geladen, es kann ein paar Sekunden dauern..."
+  "profile_card.loading": "Ihre Karte wird geladen, es kann ein paar Sekunden dauern...",
+  "userpage.failedToFetch": "Profil konnte nicht geladen werden.",
+  "userpage.accountDeleted": "Dieses Konto wurde gelöscht.",
+  "userpage.accountSuspended": "Dieses Konto wurde gesperrt.",
+  "userpage.profileNotCreated": "Dieser Benutzer hat noch kein Profil erstellt.",
+  "userpage.profileDisabled": "Der Benutzer hat sein Profil deaktiviert."
 }

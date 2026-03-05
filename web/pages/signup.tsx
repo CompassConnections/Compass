@@ -115,7 +115,6 @@ export default function SignupPage() {
     } catch (e) {
       console.error(e)
       toast.error('An error occurred during signup, try again later...')
-    } finally {
       setIsSubmitting(false)
     }
   }

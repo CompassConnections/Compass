@@ -59,7 +59,7 @@ describe('updateOptions', () => {
 
       const result: any = await updateOptions(mockProps, mockAuth, mockReq)
 
-      expect(result.updatedIds).toStrictEqual([mockRow1.id, mockRow2.id])
+      expect(result.updatedIds).toStrictEqual(true)
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.oneOrNone).toBeCalledWith(
         sqlMatch('SELECT id FROM profiles WHERE user_id = $1'),

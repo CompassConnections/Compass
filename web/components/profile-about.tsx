@@ -172,7 +172,7 @@ export default function ProfileAbout(props: {
       <HasKids profile={profile} />
       <WantsKids profile={profile} />
       {!isCurrentUser && <LastOnline lastOnlineTime={userActivity?.last_online_time} />}
-      <UserHandles links={profile.links as Socials} />
+      <UserHandles links={(profile.links ?? {}) as Socials} />
     </Col>
   )
 }

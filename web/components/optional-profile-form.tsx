@@ -904,7 +904,7 @@ export const OptionalProfileUserForm = (props: {
           {/*</label>*/}
 
           <div className="grid w-full grid-cols-[8rem_1fr_auto] gap-2">
-            {Object.entries(profile.links as Socials)
+            {Object.entries((profile.links ?? {}) as Socials)
               .filter(([_, value]) => value != null)
               .map(([platform, value]) => (
                 <Fragment key={platform}>

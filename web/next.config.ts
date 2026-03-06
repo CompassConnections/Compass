@@ -134,7 +134,7 @@ export default withSentryConfig(nextConfig, {
   // side errors will fail.
   tunnelRoute: isAppBuild ? undefined : '/monitoring',
 
-  sourcemaps: {disable: true}, // prevents source maps being served to browser
+  // sourcemaps: {disable: true}, // prevents source maps being served to browser
 
   webpack: {
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)

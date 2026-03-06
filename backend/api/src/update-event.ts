@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {update} from 'shared/supabase/utils'
@@ -19,15 +19,15 @@ export const updateEvent: APIHandler<'update-event'> = async (body, auth) => {
   )
 
   if (!event) {
-    throw new APIError(404, 'Event not found')
+    throw APIErrors.notFound('Event not found')
   }
 
   if (event.creator_id !== auth.uid) {
-    throw new APIError(403, 'Only the event creator can edit this event')
+    throw APIErrors.forbidden('Only the event creator can edit this event')
   }
 
   if (event.status !== 'active') {
-    throw new APIError(400, 'Cannot edit a cancelled or completed event')
+    throw APIErrors.badRequest('Cannot edit a cancelled or completed event')
   }
 
   // Update event
@@ -46,7 +46,7 @@ export const updateEvent: APIHandler<'update-event'> = async (body, auth) => {
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to update event: ' + error.message)
+    throw APIErrors.internalServerError('Failed to update event: ' + error.message)
   }
 
   return {success: true}

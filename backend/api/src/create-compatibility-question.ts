@@ -3,14 +3,14 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {getUser} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const createCompatibilityQuestion: APIHandler<'create-compatibility-question'> = async (
   {question, options},
   auth,
 ) => {
   const creator = await getUser(auth.uid)
-  if (!creator) throw new APIError(401, 'Your account was not found')
+  if (!creator) throw APIErrors.unauthorized('Your account was not found')
 
   const pg = createSupabaseDirectClient()
 
@@ -23,7 +23,7 @@ export const createCompatibilityQuestion: APIHandler<'create-compatibility-quest
     }),
   )
 
-  if (error) throw new APIError(401, 'Error creating question')
+  if (error) throw APIErrors.internalServerError('Error creating question')
 
   return {question: data}
 }

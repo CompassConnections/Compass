@@ -1,7 +1,7 @@
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const reactToMessage: APIHandler<'react-to-message'> = async (
   {messageId, reaction, toDelete},
@@ -20,7 +20,7 @@ export const reactToMessage: APIHandler<'react-to-message'> = async (
   )
 
   if (!message) {
-    throw new APIError(403, 'Not authorized to react to this message')
+    throw APIErrors.forbidden('Not authorized to react to this message')
   }
 
   if (toDelete) {

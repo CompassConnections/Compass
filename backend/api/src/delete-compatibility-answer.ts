@@ -1,5 +1,4 @@
-import {APIHandler} from 'api/helpers/endpoint'
-import {APIError} from 'common/api/utils'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
@@ -19,7 +18,7 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
   )
 
   if (!item) {
-    throw new APIError(404, 'Item not found')
+    throw APIErrors.notFound('Item not found')
   }
 
   // Delete the answer

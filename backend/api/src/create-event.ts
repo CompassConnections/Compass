@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -8,22 +8,22 @@ export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
 
   // Validate location
   if (body.locationType === 'in_person' && !body.locationAddress) {
-    throw new APIError(400, 'In-person events require a location address')
+    throw APIErrors.badRequest('In-person events require a location address')
   }
   if (body.locationType === 'online' && !body.locationUrl) {
-    throw new APIError(400, 'Online events require a location URL')
+    throw APIErrors.badRequest('Online events require a location URL')
   }
 
   // Validate dates
   const startTime = new Date(body.eventStartTime)
   if (startTime < new Date()) {
-    throw new APIError(400, 'Event start time must be in the future')
+    throw APIErrors.badRequest('Event start time must be in the future')
   }
 
   if (body.eventEndTime) {
     const endTime = new Date(body.eventEndTime)
     if (endTime <= startTime) {
-      throw new APIError(400, 'Event end time must be after start time')
+      throw APIErrors.badRequest('Event end time must be after start time')
     }
   }
 
@@ -42,7 +42,7 @@ export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to create event: ' + error.message)
+    throw APIErrors.internalServerError('Failed to create event: ' + error.message)
   }
 
   return {success: true, event: data}

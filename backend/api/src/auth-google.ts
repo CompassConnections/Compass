@@ -26,7 +26,7 @@
 //   const tokens = await tokenRes.json();
 //   if (tokens.error) {
 //     console.error('Google token error:', tokens);
-//     throw new APIError(400, 'Google token error: ' + JSON.stringify(tokens))
+//     throw APIErrors.badRequest('Google token error: ' + JSON.stringify(tokens))
 //   }
 //   console.log('Google Tokens:', tokens);
 //

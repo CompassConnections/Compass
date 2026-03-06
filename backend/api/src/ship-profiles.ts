@@ -4,7 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {log} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => {
   const {targetUserId1, targetUserId2, remove} = props
@@ -25,7 +25,8 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
     ),
   )
 
-  if (existing.error) throw new APIError(500, 'Error when checking ship: ' + existing.error.message)
+  if (existing.error)
+    throw APIErrors.internalServerError('Error when checking ship: ' + existing.error.message)
 
   if (existing.data) {
     if (remove) {
@@ -33,7 +34,7 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
         pg.none('delete from profile_ships where ship_id = $1', [existing.data.ship_id]),
       )
       if (error) {
-        throw new APIError(500, 'Failed to remove ship: ' + error.message)
+        throw APIErrors.internalServerError('Failed to remove ship: ' + error.message)
       }
     } else {
       log('Ship already exists, do nothing')
@@ -51,7 +52,7 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to create ship: ' + error.message)
+    throw APIErrors.internalServerError('Failed to create ship: ' + error.message)
   }
 
   const continuation = async () => {

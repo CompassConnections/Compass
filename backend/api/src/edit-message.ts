@@ -2,7 +2,7 @@ import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {encryptMessage} from 'shared/encryption'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const editMessage: APIHandler<'edit-message'> = async ({messageId, content}, auth) => {
   const pg = createSupabaseDirectClient()
@@ -19,7 +19,7 @@ export const editMessage: APIHandler<'edit-message'> = async ({messageId, conten
   )
 
   if (!message) {
-    throw new APIError(404, 'Message not found or cannot be edited')
+    throw APIErrors.notFound('Message not found or cannot be edited')
   }
 
   const plaintext = JSON.stringify(content)

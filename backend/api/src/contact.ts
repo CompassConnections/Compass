@@ -4,7 +4,7 @@ import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 // Stores a contact message into the `contact` table
 // Web sends TipTap JSON in `content`; we store it as string in `description`.
@@ -19,7 +19,7 @@ export const contact: APIHandler<'contact'> = async ({content, userId}, _auth) =
     }),
   )
 
-  if (error) throw new APIError(500, 'Failed to submit contact message')
+  if (error) throw APIErrors.internalServerError('Failed to submit contact message')
 
   const continuation = async () => {
     try {

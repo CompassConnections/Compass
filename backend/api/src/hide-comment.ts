@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {isAdminId} from 'common/envs/constants'
 import {convertComment} from 'common/supabase/comment'
 import {Row} from 'common/supabase/utils'
@@ -12,11 +12,11 @@ export const hideComment: APIHandler<'hide-comment'> = async ({commentId, hide},
     [commentId],
   )
   if (!comment) {
-    throw new APIError(404, 'Comment not found')
+    throw APIErrors.notFound('Comment not found')
   }
 
   if (!isAdminId(auth.uid) && comment.user_id !== auth.uid && comment.on_user_id !== auth.uid) {
-    throw new APIError(403, 'You are not allowed to hide this comment')
+    throw APIErrors.forbidden('You are not allowed to hide this comment')
   }
 
   await pg.none(`update profile_comments set hidden = $2 where id = $1`, [commentId, hide])

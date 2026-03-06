@@ -1,7 +1,7 @@
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 // const DELETED_MESSAGE_CONTENT: JSONContent = {
 //   type: 'doc',
@@ -31,7 +31,7 @@ export const deleteMessage: APIHandler<'delete-message'> = async ({messageId}, a
   )
 
   if (!message) {
-    throw new APIError(404, 'Message not found')
+    throw APIErrors.notFound('Message not found')
   }
 
   // Soft delete the message

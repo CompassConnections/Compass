@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {sendDiscordMessage} from 'common/discord/core'
 import {debug} from 'common/logger'
 import {jsonToMarkdown} from 'common/md'
@@ -19,14 +19,14 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
     pg.oneOrNone<{id: string}>('select id from profiles where user_id = $1', [auth.uid]),
   )
   if (existingProfile) {
-    throw new APIError(400, 'Profile already exists')
+    throw APIErrors.badRequest('Profile already exists')
   }
 
   await removePinnedUrlFromPhotoUrls(body)
   trimStrings(body)
 
   const user = await getUser(auth.uid)
-  if (!user) throw new APIError(401, 'Your account was not found')
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {
     // If they just signed up, set their avatar to be their pinned photo
     updateUser(pg, auth.uid, {avatarUrl: body.pinned_url || undefined})
@@ -38,7 +38,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
 
   if (error) {
     log.error('Error creating user: ' + error.message)
-    throw new APIError(500, 'Error creating user')
+    throw APIErrors.internalServerError('Error creating user')
   }
 
   log('Created profile', data)

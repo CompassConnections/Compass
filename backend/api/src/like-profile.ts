@@ -5,7 +5,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
 import {getHasFreeLike} from './has-free-like'
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   const {targetUserId, remove} = props
@@ -22,7 +22,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
     )
 
     if (error) {
-      throw new APIError(500, 'Failed to remove like: ' + error.message)
+      throw APIErrors.internalServerError('Failed to remove like: ' + error.message)
     }
     return {status: 'success'}
   }
@@ -44,7 +44,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
 
   if (!hasFreeLike) {
     // Charge for like.
-    throw new APIError(403, 'You already liked someone today!')
+    throw APIErrors.forbidden('You already liked someone today!')
   }
 
   // Insert the new like
@@ -56,7 +56,7 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to add like: ' + error.message)
+    throw APIErrors.internalServerError('Failed to add like: ' + error.message)
   }
 
   const continuation = async () => {

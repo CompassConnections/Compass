@@ -1,5 +1,5 @@
 import {toUserAPIResponse} from 'common/api/user-types'
-import {APIError} from 'common/api/utils'
+import {APIErrors} from 'common/api/utils'
 import {convertUser} from 'common/supabase/users'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
@@ -11,7 +11,7 @@ export const getUser = async (props: {id: string} | {username: string}) => {
     ['id' in props ? props.id : props.username],
     (r) => (r ? convertUser(r) : null),
   )
-  if (!user) throw new APIError(404, 'User not found')
+  if (!user) throw APIErrors.notFound('User not found')
 
   return toUserAPIResponse(user)
 }
@@ -27,7 +27,7 @@ export const getUser = async (props: {id: string} | {username: string}) => {
 //             where ${'id' in props ? 'id' : 'username'} = $1`,
 //     ['id' in props ? props.id : props.username]
 //   )
-//   if (!liteUser) throw new APIError(404, 'User not found')
+//   if (!liteUser) throw APIErrors.notFound('User not found')
 //
 //   return removeNullOrUndefinedProps(liteUser)
 // }

@@ -1,11 +1,11 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const vote: APIHandler<'vote'> = async ({voteId, choice, priority}, auth) => {
   const user = await getUser(auth.uid)
-  if (!user) throw new APIError(401, 'Your account was not found')
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
 
   const pg = createSupabaseDirectClient()
 
@@ -17,7 +17,7 @@ export const vote: APIHandler<'vote'> = async ({voteId, choice, priority}, auth)
   }
   const choiceVal = choiceMap[choice]
   if (choiceVal === undefined) {
-    throw new APIError(400, 'Invalid choice')
+    throw APIErrors.badRequest('Invalid choice')
   }
 
   // Upsert the vote result to ensure one vote per user per vote
@@ -35,6 +35,6 @@ export const vote: APIHandler<'vote'> = async ({voteId, choice, priority}, auth)
     const result = await pg.one(query, [user.id, voteId, choiceVal, priority])
     return {data: result}
   } catch (e) {
-    throw new APIError(500, 'Error recording vote', e as any)
+    throw APIErrors.internalServerError('Error recording vote', {originalError: String(e)})
   }
 }

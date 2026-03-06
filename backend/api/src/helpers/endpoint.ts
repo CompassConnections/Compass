@@ -6,14 +6,14 @@ import {
   APISchema,
   ValidatedAPIParams,
 } from 'common/api/schema'
-import {APIError} from 'common/api/utils'
+import {APIErrors} from 'common/api/utils'
 import {PrivateUser} from 'common/user'
 import {NextFunction, Request, Response} from 'express'
 import * as admin from 'firebase-admin'
 import {getPrivateUserByKey, log} from 'shared/utils'
 import {z} from 'zod'
 
-export {APIError} from 'common/api/utils'
+export {APIErrors} from 'common/api/utils'
 
 // export type Json = Record<string, unknown> | Json[]
 // export type JsonHandler<T extends Json> = (
@@ -66,18 +66,18 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
   const auth = admin.auth()
   const authHeader = req.get('Authorization')
   if (!authHeader) {
-    throw new APIError(401, 'Missing Authorization header.')
+    throw APIErrors.unauthorized('Missing Authorization header.')
   }
   const authParts = authHeader.split(' ')
   if (authParts.length !== 2) {
-    throw new APIError(401, 'Invalid Authorization header.')
+    throw APIErrors.unauthorized('Invalid Authorization header.')
   }
 
   const [scheme, payload] = authParts
   switch (scheme) {
     case 'Bearer':
       if (payload === 'undefined') {
-        throw new APIError(401, 'Firebase JWT payload undefined.')
+        throw APIErrors.unauthorized('Firebase JWT payload undefined.')
       }
       try {
         return {kind: 'jwt', data: await auth.verifyIdToken(payload)}
@@ -91,12 +91,12 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
         Sentry.captureException(err, {
           extra: {jwtHeader: _header},
         })
-        throw new APIError(500, 'Error validating token.')
+        throw APIErrors.internalServerError('Error validating token.')
       }
     case 'Key':
       return {kind: 'key', data: payload}
     default:
-      throw new APIError(401, 'Invalid auth scheme; must be "Key" or "Bearer".')
+      throw APIErrors.unauthorized('Invalid auth scheme; must be "Key" or "Bearer".')
   }
 }
 
@@ -104,7 +104,7 @@ export const lookupUser = async (creds: Credentials): Promise<AuthedUser> => {
   switch (creds.kind) {
     case 'jwt': {
       if (typeof creds.data.user_id !== 'string') {
-        throw new APIError(401, 'JWT must contain user ID.')
+        throw APIErrors.unauthorized('JWT must contain user ID.')
       }
       return {uid: creds.data.user_id, creds}
     }
@@ -112,12 +112,12 @@ export const lookupUser = async (creds: Credentials): Promise<AuthedUser> => {
       const key = creds.data
       const privateUser = await getPrivateUserByKey(key)
       if (!privateUser) {
-        throw new APIError(401, `No private user exists with API key ${key}.`)
+        throw APIErrors.unauthorized(`No private user exists with API key ${key}.`)
       }
       return {uid: privateUser.id, creds: {privateUser, ...creds}}
     }
     default:
-      throw new APIError(401, 'Invalid credential type.')
+      throw APIErrors.unauthorized('Invalid credential type.')
   }
 }
 
@@ -128,13 +128,13 @@ export const validate = <T extends z.ZodTypeAny>(schema: T, val: unknown) => {
       const field = i.path.join('.')
       return {
         field: field === '' ? undefined : field,
-        error: i.message,
+        context: i.message,
       }
     })
     if (issues.length > 0) {
-      log.error(issues.map((i) => `${i.field}: ${i.error}`).join('\n'))
+      log.error(issues.map((i) => `${i.field}: ${i.context}`).join('\n'))
     }
-    throw new APIError(400, 'Error validating request.', issues)
+    throw APIErrors.validationFailed(issues)
   } else {
     return result.data as z.infer<T>
   }
@@ -234,7 +234,7 @@ function checkRateLimit(name: string, req: Request, res: Response, auth?: Authed
 
   if (state.count > limit) {
     res.setHeader('Retry-After', String(reset))
-    throw new APIError(429, 'Too Many Requests: rate limit exceeded.')
+    throw APIErrors.rateLimitExceeded('Too Many Requests: rate limit exceeded.')
   }
 }
 

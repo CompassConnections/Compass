@@ -1,5 +1,5 @@
 import {getConnectionInterests} from 'api/get-connection-interests'
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {filterDefined} from 'common/util/array'
 import * as admin from 'firebase-admin'
@@ -15,7 +15,7 @@ export const createPrivateUserMessageChannel: APIHandler<
   const user = await admin.auth().getUser(auth.uid)
   // console.log(JSON.stringify(user, null, 2))
   if (!user?.emailVerified) {
-    throw new APIError(403, 'You must verify your email to contact people.')
+    throw APIErrors.forbidden('You must verify your email to contact people.')
   }
 
   const userIds = uniq(body.userIds.concat(auth.uid))
@@ -24,13 +24,12 @@ export const createPrivateUserMessageChannel: APIHandler<
   const creatorId = auth.uid
 
   const creator = await getUser(creatorId)
-  if (!creator) throw new APIError(401, 'Your account was not found')
-  if (creator.isBannedFromPosting) throw new APIError(403, 'You are banned')
+  if (!creator) throw APIErrors.unauthorized('Your account was not found')
+  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
   const toPrivateUsers = filterDefined(await Promise.all(userIds.map((id) => getPrivateUser(id))))
 
   if (toPrivateUsers.length !== userIds.length)
-    throw new APIError(
-      404,
+    throw APIErrors.notFound(
       `Private user ${userIds.find(
         (uid) => !toPrivateUsers.map((p: any) => p.id).includes(uid),
       )} not found`,
@@ -41,7 +40,7 @@ export const createPrivateUserMessageChannel: APIHandler<
       user.blockedUserIds.some((blockedId: string) => userIds.includes(blockedId)),
     )
   ) {
-    throw new APIError(403, `One of the users has blocked another user in the list`)
+    throw APIErrors.forbidden('One of the users has blocked another user in the list')
   }
 
   for (const u of toPrivateUsers) {
@@ -54,7 +53,7 @@ export const createPrivateUserMessageChannel: APIHandler<
       const matches = interests.filter((interest: string[]) => targetInterests.includes(interest))
       if (matches.length > 0) continue
       const failedUser = await getUser(u.id)
-      throw new APIError(403, `${failedUser?.username} has disabled direct messaging`)
+      throw APIErrors.forbidden(`${failedUser?.username} has disabled direct messaging`)
     }
   }
 

@@ -16,7 +16,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {getUser, getUserByUsername, log} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 /**
  * Create User API Handler
@@ -76,7 +76,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
   const {user, privateUser} = await pg.tx(async (tx) => {
     const preexistingUser = await getUser(auth.uid, tx)
     if (preexistingUser)
-      throw new APIError(403, 'User already exists', {
+      throw APIErrors.forbidden('User already exists', {
         field: 'userId',
         context: `User with ID ${auth.uid} already exists`,
       })
@@ -84,7 +84,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     // Check exact username to avoid problems with duplicate requests
     const sameNameUser = await getUserByUsername(username, tx)
     if (sameNameUser)
-      throw new APIError(403, 'Username already taken', {
+      throw APIErrors.conflict('Username already taken', {
         field: 'username',
         context: `Username "${username}" is already taken`,
       })

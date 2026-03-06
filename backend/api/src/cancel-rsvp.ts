@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
@@ -17,7 +17,7 @@ export const cancelRsvp: APIHandler<'cancel-rsvp'> = async (body, auth) => {
   )
 
   if (!rsvp) {
-    throw new APIError(404, 'RSVP not found')
+    throw APIErrors.notFound('RSVP not found')
   }
 
   // Delete the RSVP
@@ -31,7 +31,7 @@ export const cancelRsvp: APIHandler<'cancel-rsvp'> = async (body, auth) => {
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to cancel RSVP: ' + error.message)
+    throw APIErrors.internalServerError('Failed to cancel RSVP: ' + error.message)
   }
 
   return {success: true}

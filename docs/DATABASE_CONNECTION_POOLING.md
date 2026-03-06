@@ -2,11 +2,13 @@
 
 ## Overview
 
-This guide explains the database connection pooling configuration and best practices for the Compass application. Proper connection pooling is critical for application performance and stability, especially under high load conditions.
+This guide explains the database connection pooling configuration and best practices for the Compass application. Proper
+connection pooling is critical for application performance and stability, especially under high load conditions.
 
 ## Understanding the Problem
 
-The error `MaxClientsInSessionMode: max clients reached - in Session mode max clients are limited to pool_size` indicates that the application has exhausted the database connection pool. This can happen due to:
+The error `MaxClientsInSessionMode: max clients reached - in Session mode max clients are limited to pool_size`
+indicates that the application has exhausted the database connection pool. This can happen due to:
 
 1. **Connection Leaks**: Database connections not properly released back to the pool
 2. **High Concurrent Load**: Too many simultaneous requests exceeding pool capacity
@@ -155,7 +157,7 @@ try {
 } catch (error) {
   if (error.message && error.message.includes('MaxClientsInSessionMode')) {
     // Pool exhaustion - return appropriate error
-    throw new APIError(503, 'Service temporarily unavailable due to high demand')
+    throw APIErrors.serviceUnavailable('Service temporarily unavailable due to high demand')
   }
   throw error
 }

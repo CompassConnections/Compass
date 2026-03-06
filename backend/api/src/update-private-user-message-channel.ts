@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {millisToTs} from 'common/supabase/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser, log} from 'shared/utils'
@@ -9,14 +9,14 @@ export const updatePrivateUserMessageChannel: APIHandler<
   const {channelId, notifyAfterTime} = body
   const pg = createSupabaseDirectClient()
   const user = await getUser(auth.uid)
-  if (!user) throw new APIError(401, 'Your account was not found')
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
 
   const membershipStatus = await pg.oneOrNone(
     `select status from private_user_message_channel_members
                 where channel_id = $1 and user_id = $2`,
     [channelId, auth.uid],
   )
-  if (!membershipStatus) throw new APIError(403, 'You are not authorized to this channel')
+  if (!membershipStatus) throw APIErrors.forbidden('You are not authorized to this channel')
   log('membershipStatus ' + membershipStatus)
 
   await pg.none(

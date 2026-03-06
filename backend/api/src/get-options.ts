@@ -1,11 +1,11 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {OPTION_TABLES} from 'common/profiles/constants'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
 export const getOptions: APIHandler<'get-options'> = async ({table}, _auth) => {
-  if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')
+  if (!OPTION_TABLES.includes(table)) throw APIErrors.badRequest('Invalid table')
 
   const pg = createSupabaseDirectClient()
 
@@ -16,7 +16,7 @@ export const getOptions: APIHandler<'get-options'> = async ({table}, _auth) => {
 
   if (result.error) {
     log('Error getting profile options', result.error)
-    throw new APIError(500, 'Error getting profile options')
+    throw APIErrors.internalServerError('Error getting profile options')
   }
 
   const names = result.data.map((row) => row.name)

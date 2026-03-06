@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert, update} from 'shared/supabase/utils'
@@ -19,11 +19,11 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
   )
 
   if (!event) {
-    throw new APIError(404, 'Event not found')
+    throw APIErrors.notFound('Event not found')
   }
 
   if (event.status !== 'active') {
-    throw new APIError(400, 'Cannot RSVP to a cancelled or completed event')
+    throw APIErrors.badRequest('Cannot RSVP to a cancelled or completed event')
   }
 
   // Check if already RSVPed
@@ -47,7 +47,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
     )
 
     if (error) {
-      throw new APIError(500, 'Failed to update RSVP: ' + error.message)
+      throw APIErrors.internalServerError('Failed to update RSVP: ' + error.message)
     }
   } else {
     // Check max participants limit
@@ -61,7 +61,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
       )
 
       if (Number(count.count) >= event.max_participants) {
-        throw new APIError(400, 'Event is at maximum capacity')
+        throw APIErrors.badRequest('Event is at maximum capacity')
       }
     }
 
@@ -75,7 +75,7 @@ export const rsvpEvent: APIHandler<'rsvp-event'> = async (body, auth) => {
     )
 
     if (error) {
-      throw new APIError(500, 'Failed to RSVP: ' + error.message)
+      throw APIErrors.internalServerError('Failed to RSVP: ' + error.message)
     }
   }
 

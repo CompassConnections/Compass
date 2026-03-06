@@ -4,16 +4,16 @@ import {deleteUserFiles} from 'shared/firebase-utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const deleteMe: APIHandler<'me/delete'> = async ({reasonCategory, reasonDetails}, auth) => {
   const user = await getUser(auth.uid)
   if (!user) {
-    throw new APIError(401, 'Your account was not found')
+    throw APIErrors.unauthorized('Your account was not found')
   }
   const userId = user.id
   if (!userId) {
-    throw new APIError(400, 'Invalid user ID')
+    throw APIErrors.badRequest('Invalid user ID')
   }
 
   const pg = createSupabaseDirectClient()

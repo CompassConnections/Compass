@@ -1,11 +1,11 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {OPTION_TABLES} from 'common/profiles/constants'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
 function validateTable(table: 'interests' | 'causes' | 'work') {
-  if (!OPTION_TABLES.includes(table)) throw new APIError(400, 'Invalid table')
+  if (!OPTION_TABLES.includes(table)) throw APIErrors.badRequest('Invalid table')
 }
 
 export async function setProfileOptions(
@@ -72,7 +72,7 @@ export async function setProfileOptions(
 export const updateOptions: APIHandler<'update-options'> = async ({table, values}, auth) => {
   validateTable(table)
   if (!values || !Array.isArray(values)) {
-    throw new APIError(400, 'No ids provided')
+    throw APIErrors.badRequest('No ids provided')
   }
 
   const pg = createSupabaseDirectClient()
@@ -81,7 +81,7 @@ export const updateOptions: APIHandler<'update-options'> = async ({table, values
     'SELECT id FROM profiles WHERE user_id = $1',
     [auth.uid],
   )
-  if (!profileIdResult) throw new APIError(404, 'Profile not found')
+  if (!profileIdResult) throw APIErrors.notFound('Profile not found')
   const profileId = profileIdResult.id
 
   const result = await tryCatch(
@@ -93,7 +93,7 @@ export const updateOptions: APIHandler<'update-options'> = async ({table, values
 
   if (result.error) {
     log('Error updating profile options', result.error)
-    throw new APIError(500, 'Error updating profile options')
+    throw APIErrors.internalServerError('Error updating profile options')
   }
 
   return {updatedIds: true}

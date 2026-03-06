@@ -2,7 +2,8 @@
 
 ## Overview
 
-This guide provides strategies and best practices for optimizing the performance of the Compass application. It covers frontend, backend, database, and infrastructure optimization techniques to ensure a fast, responsive user experience.
+This guide provides strategies and best practices for optimizing the performance of the Compass application. It covers
+frontend, backend, database, and infrastructure optimization techniques to ensure a fast, responsive user experience.
 
 ## Frontend Performance
 
@@ -13,9 +14,9 @@ This guide provides strategies and best practices for optimizing the performance
 1. **Memoization**: Use `React.memo` for components that render frequently with the same props
 
 ```typescript
-const ExpensiveComponent = React.memo(({data}: {data: UserProfile}) => {
-  // Expensive rendering logic
-  return <div>{/* ... */}</div>
+const ExpensiveComponent = React.memo(({data}: { data: UserProfile }) => {
+    // Expensive rendering logic
+    return <div>{/* ... */} < /div>
 })
 ```
 
@@ -37,15 +38,15 @@ const handleClick = useCallback(() => {
 // Use react-window or similar libraries for large data sets
 import {FixedSizeList as List} from 'react-window'
 
-const VirtualizedList = ({items}: {items: Profile[]}) => (
-  <List
-    height={600}
-    itemCount={items.length}
-    itemSize={120}
-    itemData={items}
-  >
+const VirtualizedList = ({items}: { items: Profile[] }) => (
+    <List
+        height = {600}
+itemCount = {items.length}
+itemSize = {120}
+itemData = {items}
+    >
     {Row}
-  </List>
+    < /List>
 )
 ```
 
@@ -92,12 +93,13 @@ yarn build && npx webpack-bundle-analyzer .next/static/chunks
 import Image from 'next/image'
 
 <Image
-  src={user.avatarUrl}
-  alt={`${user.name}'s profile`}
-  width={100}
-  height={100}
-  placeholder="blur"
-  blurDataURL={blurDataUrl}
+    src = {user.avatarUrl}
+alt = {`${user.name}'s profile`
+}
+width = {100}
+height = {100}
+placeholder = "blur"
+blurDataURL = {blurDataUrl}
 />
 ```
 
@@ -105,10 +107,16 @@ import Image from 'next/image'
 
 ```typescript
 <Image
-  src={photo.url}
-  alt="Profile photo"
-  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-  style={{ width: '100%', height: 'auto' }}
+    src = {photo.url}
+alt = "Profile photo"
+sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+style = {
+{
+    width: '100%', height
+:
+    'auto'
+}
+}
 />
 ```
 
@@ -216,6 +224,7 @@ const profileSummary = await pg.one(
 ```typescript
 // In Express configuration
 import compression from 'compression'
+
 app.use(compression())
 ```
 
@@ -239,6 +248,7 @@ export const rateLimitedHandler: APIHandler<'expensive-endpoint'> = withRateLimi
 
 ```typescript
 import redis from 'redis'
+
 const client = redis.createClient()
 
 async function getCachedProfile(userId: string) {
@@ -354,7 +364,7 @@ pool.connectionTimeoutMillis = 10000 // Timeout for acquiring connection
 ```typescript
 // Proper error handling for connection pool issues
 if (error.message && error.message.includes('MaxClientsInSessionMode')) {
-  throw new APIError(503, 'Service temporarily unavailable due to high demand')
+  throw APIErrors.serviceUnavailable('Service temporarily unavailable due to high demand')
 }
 ```
 
@@ -507,16 +517,16 @@ export default async function handler(req: Request) {
 
 ```yaml
 # terraform configuration for load balancer
-resource "google_compute_backend_service" "api_backend" {
-  name        = "api-backend"
-  protocol    = "HTTP"
-  timeout_sec = 30
+  resource "google_compute_backend_service" "api_backend" {
+    name        = "api-backend"
+    protocol    = "HTTP"
+    timeout_sec = 30
 
   # Health checks
-  health_checks = [google_compute_health_check.api.self_link]
+    health_checks = [google_compute_health_check.api.self_link]
 
   # Load balancing algorithm
-  balancing_mode = "UTILIZATION"
+    balancing_mode = "UTILIZATION"
 }
 ```
 

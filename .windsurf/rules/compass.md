@@ -129,9 +129,12 @@ const {data} = await db.from('profiles').select('*').eq('user_id', userId)
 import {useT} from 'web/lib/locale'
 
 function MyComponent() {
-  const t = useT()
+    const t = useT()
 
-  return <h1>{t('welcome', 'Welcome to Compass')}</h1>
+    return <h1>{t('welcome', 'Welcome to Compass'
+)
+}
+    </h1>
 }
 ```
 
@@ -142,17 +145,37 @@ Translation files are in `common/messages/` (en.json, fr.json, de.json).
 1. Define schema in `common/src/api/schema.ts`:
 
 ```typescript
-'get-user-and-profile': {
-  method: 'GET',
-  authed: false,
-  rateLimited: true,
-  props: z.object({
-    username: z.string().min(1),
-  }),
-  returns: {} as {user: User; profile: ProfileRow | null},
-  summary: 'Get user and profile data by username',
-  tag: 'Users',
-},
+'get-user-and-profile'
+:
+{
+    method: 'GET',
+        authed
+:
+    false,
+        rateLimited
+:
+    true,
+        props
+:
+    z.object({
+        username: z.string().min(1),
+    }),
+        returns
+:
+    {
+    }
+    as
+    {
+        user: User;
+        profile: ProfileRow | null
+    }
+,
+    summary: 'Get user and profile data by username',
+        tag
+:
+    'Users',
+}
+,
 ```
 
 2. Create handler in `backend/api/src/`:
@@ -163,7 +186,7 @@ import {APIError, APIHandler} from './helpers/endpoint'
 export const getUserAndProfile: APIHandler<'get-user-and-profile'> = async ({username}, _auth) => {
   const user = await getUserByUsername(username)
   if (!user) {
-    throw new APIError(404, 'User not found')
+    throw APIErrors.notFound('User not found')
   }
 
   return {user, profile}
@@ -203,8 +226,8 @@ const [interestsRes, causesRes, workRes] = await Promise.all([
 ```typescript
 import {APIError} from './helpers/endpoint'
 
-throw new APIError(404, 'User not found')
-throw new APIError(400, 'Invalid input', {field: 'email'})
+throw APIErrors.notFound('User not found')
+throw APIErrors.badRequest('Invalid input', {field: 'email'})
 ```
 
 ### Logging

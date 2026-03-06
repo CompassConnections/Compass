@@ -67,7 +67,8 @@ export function ProfileCard({user, profile}: ProfileCardProps) {
 
 We prefer many smaller components that each represent one logical unit, rather than one large component.
 
-Export the main component at the top of the file. Name the component the same as the file (e.g., `profile-card.tsx` → `ProfileCard`).
+Export the main component at the top of the file. Name the component the same as the file (e.g., `profile-card.tsx` →
+`ProfileCard`).
 
 ### API Calls
 
@@ -91,18 +92,21 @@ export async function getStaticProps() {
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 
 function ProfileList() {
-  const {data, refresh} = useAPIGetter('get-profiles', {})
+    const {data, refresh} = useAPIGetter('get-profiles', {})
 
-  if (!data) return <Loading />
+    if (!data) return <Loading / >
 
-  return (
-    <div>
-      {data.profiles.map((profile) => (
-        <ProfileCard key={profile.id} user={profile.user} profile={profile} />
-      ))}
-      <button onClick={refresh}>Refresh</button>
-    </div>
-  )
+    return (
+        <div>
+            {
+                data.profiles.map((profile) => (
+                    <ProfileCard key = {profile.id} user = {profile.user} profile = {profile}
+    />
+))
+}
+    <button onClick = {refresh} > Refresh < /button>
+        < /div>
+)
 }
 ```
 
@@ -131,9 +135,12 @@ const {data} = await db.from('profiles').select('*').eq('user_id', userId)
 import {useT} from 'web/lib/locale'
 
 function MyComponent() {
-  const t = useT()
+    const t = useT()
 
-  return <h1>{t('welcome', 'Welcome to Compass')}</h1>
+    return <h1>{t('welcome', 'Welcome to Compass'
+)
+}
+    </h1>
 }
 ```
 
@@ -144,28 +151,48 @@ Translation files are in `common/messages/` (en.json, fr.json, de.json).
 1. Define schema in `common/src/api/schema.ts`:
 
 ```typescript
-'get-user-and-profile': {
-  method: 'GET',
-  authed: false,
-  rateLimited: true,
-  props: z.object({
-    username: z.string().min(1),
-  }),
-  returns: {} as {user: User; profile: ProfileRow | null},
-  summary: 'Get user and profile data by username',
-  tag: 'Users',
-},
+'get-user-and-profile'
+:
+{
+    method: 'GET',
+        authed
+:
+    false,
+        rateLimited
+:
+    true,
+        props
+:
+    z.object({
+        username: z.string().min(1),
+    }),
+        returns
+:
+    {
+    }
+    as
+    {
+        user: User;
+        profile: ProfileRow | null
+    }
+,
+    summary: 'Get user and profile data by username',
+        tag
+:
+    'Users',
+}
+,
 ```
 
 2. Create handler in `backend/api/src/`:
 
 ```typescript
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const getUserAndProfile: APIHandler<'get-user-and-profile'> = async ({username}, _auth) => {
   const user = await getUserByUsername(username)
   if (!user) {
-    throw new APIError(404, 'User not found')
+    throw APIErrors.notFound('User not found')
   }
 
   return {user, profile}
@@ -243,10 +270,10 @@ const mockPg = {
 ### API Errors
 
 ```typescript
-import {APIError} from './helpers/endpoint'
+import {APIErrors} from './helpers/endpoint'
 
-throw new APIError(404, 'User not found')
-throw new APIError(400, 'Invalid input', {field: 'email'})
+throw APIErrors.notFound('User not found')
+throw APIErrors.badRequest('Invalid input', {field: 'email'})
 ```
 
 ### Logging

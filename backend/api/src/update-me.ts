@@ -10,13 +10,13 @@ import {updateUser} from 'shared/supabase/users'
 import {getUser, getUserByUsername} from 'shared/utils'
 import {broadcastUpdatedUser} from 'shared/websockets/helpers'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   const update = cloneDeep(props)
 
   const user = await getUser(auth.uid)
-  if (!user) throw new APIError(401, 'Your account was not found')
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
 
   if (update.name) {
     update.name = cleanDisplayName(update.name)
@@ -24,12 +24,12 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
 
   if (update.username) {
     const cleanedUsername = cleanUsername(update.username)
-    if (!cleanedUsername) throw new APIError(400, 'Invalid username')
+    if (!cleanedUsername) throw APIErrors.badRequest('Invalid username')
     const reservedName = RESERVED_PATHS.has(cleanedUsername)
-    if (reservedName) throw new APIError(403, 'This username is reserved')
+    if (reservedName) throw APIErrors.forbidden('This username is reserved')
     const otherUserExists = await getUserByUsername(cleanedUsername)
     if (otherUserExists && otherUserExists.id !== auth.uid)
-      throw new APIError(403, 'Username already taken')
+      throw APIErrors.conflict('Username already taken')
     update.username = cleanedUsername
   }
 

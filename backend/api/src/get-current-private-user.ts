@@ -3,7 +3,7 @@ import {PrivateUser} from 'common/user'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const getCurrentPrivateUser: APIHandler<'me/private'> = async (_, auth) => {
   const pg = createSupabaseDirectClient()
@@ -13,11 +13,11 @@ export const getCurrentPrivateUser: APIHandler<'me/private'> = async (_, auth) =
   )
 
   if (error) {
-    throw new APIError(500, 'Error fetching private user data: ' + error.message)
+    throw APIErrors.internalServerError('Error fetching private user data: ' + error.message)
   }
 
   if (!data) {
-    throw new APIError(401, 'Your account was not found')
+    throw APIErrors.unauthorized('Your account was not found')
   }
 
   return data.data as PrivateUser

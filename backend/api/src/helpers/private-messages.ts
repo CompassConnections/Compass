@@ -1,5 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
-import {APIError} from 'common/api/utils'
+import {APIErrors} from 'common/api/utils'
 import {ChatVisibility} from 'common/chat-message'
 import {debug} from 'common/logger'
 import {Json} from 'common/supabase/schema'
@@ -127,7 +127,7 @@ export const createPrivateUserMessageMain = async (
        and user_id = $2`,
     [channelId, creator.id],
   )
-  if (!authorized) throw new APIError(403, 'You are not authorized to post to this channel')
+  if (!authorized) throw APIErrors.forbidden('You are not authorized to post to this channel')
 
   await insertPrivateMessage(content, channelId, creator.id, visibility, pg)
 

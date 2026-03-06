@@ -4,7 +4,7 @@ import {groupBy, mapValues} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {convertPrivateChatMessage} from 'shared/supabase/messages'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const getChannelMemberships: APIHandler<'get-channel-memberships'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
@@ -127,12 +127,11 @@ export async function getChannelMessages(props: {
     console.error('Error getting messages:', error)
     // If it's a connection pool error, provide more specific error message
     if (error.message && error.message.includes('MaxClientsInSessionMode')) {
-      throw new APIError(
-        503,
+      throw APIErrors.serviceUnavailable(
         'Service temporarily unavailable due to high demand. Please try again in a moment.',
       )
     }
-    throw new APIError(500, 'Error getting messages', {
+    throw APIErrors.internalServerError('Error getting messages', {
       field: 'database',
       context: error.message || 'Unknown database error',
     })

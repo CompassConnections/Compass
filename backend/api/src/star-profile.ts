@@ -4,7 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {log} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
   const {targetUserId, remove} = props
@@ -21,7 +21,7 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
     )
 
     if (error) {
-      throw new APIError(500, 'Failed to remove star: ' + error.message)
+      throw APIErrors.internalServerError('Failed to remove star: ' + error.message)
     }
     return {status: 'success'}
   }
@@ -45,7 +45,7 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
   )
 
   if (error) {
-    throw new APIError(500, 'Failed to add star: ' + error.message)
+    throw APIErrors.internalServerError('Failed to add star: ' + error.message)
   }
 
   return {status: 'success'}

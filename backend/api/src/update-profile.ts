@@ -1,4 +1,4 @@
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {trimStrings} from 'common/parsing'
 import {type Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
@@ -35,7 +35,7 @@ export const updateProfile: APIHandler<'update-profile'> = async (parsedBody, au
   )
 
   if (!existingProfile) {
-    throw new APIError(404, 'Profile not found')
+    throw APIErrors.notFound('Profile not found')
   }
 
   log('Updating profile', {userId: auth.uid, parsedBody})
@@ -52,7 +52,7 @@ export const updateProfile: APIHandler<'update-profile'> = async (parsedBody, au
 
   if (error) {
     log('Error updating profile', error)
-    throw new APIError(500, 'Error updating profile')
+    throw APIErrors.internalServerError('Error updating profile')
   }
 
   return data

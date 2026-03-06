@@ -1,5 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
-import {APIError, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
 import {convertComment} from 'common/supabase/comment'
 import {type Row} from 'common/supabase/utils'
@@ -22,7 +22,7 @@ export const createComment: APIHandler<'create-comment'> = async (
   const {creator, content} = await validateComment(userId, auth.uid, submittedContent)
 
   const onUser = await getUser(userId)
-  if (!onUser) throw new APIError(404, 'User not found')
+  if (!onUser) throw APIErrors.notFound('User not found')
 
   const pg = createSupabaseDirectClient()
   const comment = await pg.one<Row<'profile_comments'>>(
@@ -54,18 +54,17 @@ export const createComment: APIHandler<'create-comment'> = async (
 const validateComment = async (userId: string, creatorId: string, content: JSONContent) => {
   const creator = await getUser(creatorId)
 
-  if (!creator) throw new APIError(401, 'Your account was not found')
-  if (creator.isBannedFromPosting) throw new APIError(403, 'You are banned')
+  if (!creator) throw APIErrors.unauthorized('Your account was not found')
+  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
 
   const otherUser = await getPrivateUser(userId)
-  if (!otherUser) throw new APIError(404, 'Other user not found')
+  if (!otherUser) throw APIErrors.notFound('Other user not found')
   if (otherUser.blockedUserIds.includes(creatorId)) {
-    throw new APIError(404, 'User has blocked you')
+    throw APIErrors.notFound('User has blocked you')
   }
 
   if (JSON.stringify(content).length > MAX_COMMENT_JSON_LENGTH) {
-    throw new APIError(
-      400,
+    throw APIErrors.badRequest(
       `Comment is too long; should be less than ${MAX_COMMENT_JSON_LENGTH} as a JSON string.`,
     )
   }

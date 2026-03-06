@@ -1,12 +1,12 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const saveSubscription: APIHandler<'save-subscription'> = async (body, auth) => {
   const {subscription} = body
 
   if (!subscription?.endpoint || !subscription?.keys) {
-    throw new APIError(400, `Invalid subscription object`)
+    throw APIErrors.badRequest('Invalid subscription object')
   }
 
   const userId = auth?.uid
@@ -37,6 +37,6 @@ export const saveSubscription: APIHandler<'save-subscription'> = async (body, au
     return {success: true}
   } catch (err) {
     console.error('Error saving subscription', err)
-    throw new APIError(500, `Failed to save subscription`)
+    throw APIErrors.internalServerError('Failed to save subscription')
   }
 }

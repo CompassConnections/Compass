@@ -5,7 +5,7 @@ import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIErrors, APIHandler} from './helpers/endpoint'
 
 // abusable: people can report the wrong person, that didn't write the comment
 // but in practice we check it manually and nothing bad happens to them automatically
@@ -27,7 +27,7 @@ export const report: APIHandler<'report'> = async (body, auth) => {
   )
 
   if (result.error) {
-    throw new APIError(500, 'Failed to create report: ' + result.error.message)
+    throw APIErrors.internalServerError('Failed to create report: ' + result.error.message)
   }
 
   const continuation = async () => {

@@ -163,7 +163,7 @@ import {APIError, APIHandler} from './helpers/endpoint'
 export const getUserAndProfile: APIHandler<'get-user-and-profile'> = async ({username}, _auth) => {
   const user = await getUserByUsername(username)
   if (!user) {
-    throw new APIError(404, 'User not found')
+    throw APIErrors.notFound('User not found')
   }
 
   return {user, profile}
@@ -243,8 +243,8 @@ const mockPg = {
 ```typescript
 import {APIError} from './helpers/endpoint'
 
-throw new APIError(404, 'User not found')
-throw new APIError(400, 'Invalid input', {field: 'email'})
+throw APIErrors.notFound('User not found')
+throw APIErrors.badRequest('Invalid input', {field: 'email'})
 ```
 
 ### Logging

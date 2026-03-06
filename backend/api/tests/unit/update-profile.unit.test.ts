@@ -49,17 +49,8 @@ describe('updateProfiles', () => {
       )
       expect(removePinnedUrlFromPhotoUrls).toBeCalledTimes(1)
       expect(removePinnedUrlFromPhotoUrls).toBeCalledWith(mockProps)
-      expect(supabaseUsers.updateUserData).toBeCalledTimes(1)
-      expect(supabaseUsers.updateUserData).toBeCalledWith(expect.any(Object), mockAuth.uid, {
-        avatarUrl: mockProps.pinned_url,
-      })
-      expect(supabaseUtils.update).toBeCalledTimes(1)
-      expect(supabaseUtils.update).toBeCalledWith(
-        expect.any(Object),
-        'profiles',
-        'user_id',
-        expect.any(Object),
-      )
+      expect(supabaseUsers.updateUserData).toBeCalledTimes(0)
+      expect(supabaseUtils.update).toBeCalledTimes(0)
     })
   })
 

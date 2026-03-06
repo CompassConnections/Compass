@@ -87,7 +87,7 @@ describe('createPrivateUserMessage', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        is_banned_from_posting: true,
+        isBannedFromPosting: true,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)

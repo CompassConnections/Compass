@@ -124,7 +124,7 @@ describe('loadProfiles', () => {
         expect(sqlBuilder.renderSql).toBeCalledTimes(3)
         expect(sqlBuilder.select).toBeCalledTimes(3)
         expect(sqlBuilder.from).toBeCalledTimes(2)
-        expect(sqlBuilder.where).toBeCalledTimes(8)
+        expect(sqlBuilder.where).toBeCalledTimes(7)
         expect(sqlBuilder.join).toBeCalledTimes(1)
       })
 

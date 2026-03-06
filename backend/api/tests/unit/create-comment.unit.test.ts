@@ -227,7 +227,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        is_banned_from_posting: true,
+        isBannedFromPosting: true,
       }
       const mockContent = {
         content: {

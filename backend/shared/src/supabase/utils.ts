@@ -3,6 +3,28 @@ import {sortBy} from 'lodash'
 
 import {pgp, SupabaseDirectClient} from './init'
 
+/**
+ * Insert a single record into a database table
+ *
+ * Inserts a new record with the provided values and returns the inserted row.
+ * Uses pg-promise helpers for efficient query generation.
+ *
+ * @template T - Database table name type
+ * @template ColumnValues - Type of values to insert (based on table schema)
+ * @param db - Supabase direct client instance
+ * @param table - Name of the table to insert into
+ * @param values - Object containing column-value pairs to insert
+ * @returns The inserted row with generated values populated
+ * @throws Will throw an error if insertion fails
+ *
+ * @example
+ * ```typescript
+ * const newUser = await insert(pg, 'users', {
+ *   name: 'John Doe',
+ *   email: 'john@example.com'
+ * })
+ * ```
+ */
 export async function insert<T extends TableName, ColumnValues extends Tables[T]['Insert']>(
   db: SupabaseDirectClient,
   table: T,
@@ -16,6 +38,28 @@ export async function insert<T extends TableName, ColumnValues extends Tables[T]
   return await db.one<Row<T>>(q + ` returning *`)
 }
 
+/**
+ * Bulk insert multiple records into a database table
+ *
+ * Efficiently inserts multiple records in a single query using pg-promise helpers.
+ * Returns all inserted rows with generated values populated.
+ *
+ * @template T - Database table name type
+ * @template ColumnValues - Type of values to insert (based on table schema)
+ * @param db - Supabase direct client instance
+ * @param table - Name of the table to insert into
+ * @param values - Array of objects containing column-value pairs to insert
+ * @returns Array of inserted rows with generated values populated
+ * @throws Will throw an error if insertion fails
+ *
+ * @example
+ * ```typescript
+ * const newUsers = await bulkInsert(pg, 'users', [
+ *   {name: 'John Doe', email: 'john@example.com'},
+ *   {name: 'Jane Smith', email: 'jane@example.com'}
+ * ])
+ * ```
+ */
 export async function bulkInsert<T extends TableName, ColumnValues extends Tables[T]['Insert']>(
   db: SupabaseDirectClient,
   table: T,
@@ -29,7 +73,8 @@ export async function bulkInsert<T extends TableName, ColumnValues extends Table
   const query = pgp.helpers.insert(values, cs)
   // Hack to properly cast values.
   const q = query.replace(/::(\w*)'/g, "'::$1")
-  return await db.many<Row<T>>(q + ` returning *`)
+  // Return ids, for fk linking in subsequent ops.
+  return await db.manyOrNone<Row<T>>(q + ` returning *`)
 }
 
 export async function update<T extends TableName, ColumnValues extends Tables[T]['Update']>(

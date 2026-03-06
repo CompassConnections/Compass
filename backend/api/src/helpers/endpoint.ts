@@ -125,8 +125,9 @@ export const validate = <T extends z.ZodTypeAny>(schema: T, val: unknown) => {
   const result = schema.safeParse(val)
   if (!result.success) {
     const issues = result.error.issues.map((i) => {
+      const field = i.path.join('.')
       return {
-        field: i.path.join('.') || null,
+        field: field === '' ? undefined : field,
         error: i.message,
       }
     })

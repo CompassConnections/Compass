@@ -8,6 +8,23 @@ import {updateUser} from 'shared/supabase/users'
 import {update} from 'shared/supabase/utils'
 import {log} from 'shared/utils'
 
+/**
+ * Update Profile API Handler
+ *
+ * Updates an existing user's profile information in the database.
+ * Performs validation and sanitization on input data before applying changes.
+ *
+ * Features:
+ * - Trims whitespace from string fields
+ * - Handles avatar/photo updates
+ * - Updates related user data when profile photo changes
+ * - Proper error handling with rollback support
+ *
+ * @param parsedBody - Profile data to update (validated against schema)
+ * @param auth - Authenticated user information
+ * @returns Updated profile data
+ * @throws {APIError} 404 if profile doesn't exist, 500 for database errors
+ */
 export const updateProfile: APIHandler<'update-profile'> = async (parsedBody, auth) => {
   trimStrings(parsedBody)
   log('Updating profile', parsedBody)

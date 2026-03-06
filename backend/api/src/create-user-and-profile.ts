@@ -1,5 +1,6 @@
 import {setLastOnlineTimeUser} from 'api/set-last-online-time'
 import {setProfileOptions} from 'api/update-options'
+import {APIErrors} from 'common/api/utils'
 import {defaultLocale} from 'common/constants'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
@@ -20,7 +21,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {getUserByUsername, log} from 'shared/utils'
 
-import {APIError, APIHandler} from './helpers/endpoint'
+import {APIHandler} from './helpers/endpoint'
 import {validateUsername} from './validate-username'
 
 export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async (
@@ -61,7 +62,11 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   if (validation.suggestedUsername) {
     finalUsername = validation.suggestedUsername
   } else if (!validation.valid) {
-    throw new APIError(400, validation.message || 'Invalid username')
+    throw APIErrors.badRequest(validation.message || 'Invalid username', {
+      field: 'username',
+      resolution:
+        'Usernames must be 3–25 characters and contain only letters, numbers, or underscores.',
+    })
   }
 
   // The pg.tx() call wraps several database operations in a single atomic transaction,
@@ -69,12 +74,18 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   const {user, privateUser, newProfileRow} = await pg.tx(async (tx) => {
     const existingUser = await tx.oneOrNone('select id from users where id = $1', [auth.uid])
     if (existingUser) {
-      throw new APIError(403, 'User already exists', {userId: auth.uid})
+      throw APIErrors.conflict('An account for this user already exists', {
+        resolution:
+          'If you already have an account, try logging in. If you believe this is a mistake, contact support.',
+      })
     }
 
     const sameNameUser = await getUserByUsername(finalUsername, tx)
     if (sameNameUser) {
-      throw new APIError(403, 'Username already taken', {username: finalUsername})
+      throw APIErrors.conflict('Username is already taken', {
+        field: 'username',
+        resolution: 'Please choose a different username.',
+      })
     }
 
     const userData = removeUndefinedProps({

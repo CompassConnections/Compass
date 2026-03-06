@@ -24,27 +24,77 @@ import {FullUser} from './user-types' // mqp: very unscientific, just balancing 
 // with user willingness to put up with stale data
 export const DEFAULT_CACHE_STRATEGY = 'public, max-age=5, stale-while-revalidate=10'
 
+/**
+ * Generic API endpoint schema configuration
+ *
+ * Defines the structure and behavior of API endpoints including HTTP method,
+ * authentication requirements, request/response schemas, and metadata.
+ */
 type APIGenericSchema = {
-  // GET is for retrieval, POST is to mutate something, PUT is idempotent mutation (can be repeated safely)
+  /**
+   * HTTP method for the endpoint
+   * - GET: For data retrieval operations
+   * - POST: For creating/updating resources or state-changing operations
+   * - PUT: For idempotent updates (can be safely repeated)
+   */
   method: 'GET' | 'POST' | 'PUT'
-  // whether the endpoint requires authentication
+
+  /**
+   * Authentication requirement flag
+   * - true: Endpoint requires valid authentication token
+   * - false: Endpoint is publicly accessible
+   */
   authed: boolean
-  // whether the endpoint requires authentication
+
+  /**
+   * Rate limiting flag
+   * When true, endpoint is subject to rate limiting based on configuration
+   * @default false
+   */
   rateLimited?: boolean
-  // zod schema for the request body (or for params for GET requests)
+
+  /**
+   * Zod schema for request validation
+   * - For GET requests: Validates query parameters
+   * - For POST/PUT requests: Validates request body
+   */
   props: z.ZodType
-  // note this has to be JSON serializable
+
+  /**
+   * Response type definition (JSON serializable)
+   * Used for TypeScript typing and API documentation generation
+   */
   returns?: Record<string, any>
-  // Cache-Control header. like, 'max-age=60'
+
+  /**
+   * Cache-Control header value
+   * Controls caching behavior for GET endpoints
+   * @example 'public, max-age=60'
+   */
   cache?: string
-  // Description of the endpoint
+
+  /**
+   * Human-readable summary of the endpoint
+   * Used in API documentation
+   */
   summary?: string
-  // Tag for grouping endpoints in documentation
+
+  /**
+   * Tag for organizing endpoints in documentation
+   * Groups related endpoints together
+   */
   tag?: string
-  // Deprecation info for endpoints
+
+  /**
+   * Deprecation information for legacy endpoints
+   * Provides migration guidance for deprecated APIs
+   */
   deprecation?: {
+    /** Flag indicating if endpoint is deprecated */
     deprecated: boolean
+    /** Path to replacement endpoint if available */
     migrationPath?: string
+    /** Date when endpoint will be removed */
     sunsetDate?: string
   }
 }
@@ -52,6 +102,23 @@ type APIGenericSchema = {
 let _apiTypeCheck: {[x: string]: APIGenericSchema}
 
 export const API = (_apiTypeCheck = {
+  /**
+   * Health check endpoint
+   * Returns server status information for monitoring and debugging
+   *
+   * @example
+   * ```json
+   * {
+   *   "message": "Server is working.",
+   *   "uid": "user123",
+   *   "version": "1.2.3",
+   *   "git": {
+   *     "revision": "abc123",
+   *     "commitDate": "2023-01-01T00:00:00Z"
+   *   }
+   * }
+   * ```
+   */
   health: {
     method: 'GET',
     authed: false,
@@ -71,6 +138,14 @@ export const API = (_apiTypeCheck = {
     summary: 'Check whether the API server is running',
     tag: 'General',
   },
+  /**
+   * Get Supabase JWT token
+   * Returns a JWT token for authenticated clients to access Supabase directly
+   * Requires Firebase authentication
+   *
+   * @returns JWT token string for Supabase authentication
+   * @security Requires Firebase authentication token
+   */
   'get-supabase-token': {
     method: 'GET',
     authed: true,
@@ -78,8 +153,15 @@ export const API = (_apiTypeCheck = {
     props: z.object({}),
     returns: {} as {jwt: string},
     summary: 'Return a Supabase JWT for authenticated clients',
-    tag: 'Tokens',
+    tag: 'Authentication',
   },
+  /**
+   * Mark all notifications as read
+   * Updates all unread notifications for the authenticated user to read status
+   *
+   * @security Requires user authentication
+   * @returns Success confirmation with count of notifications marked read
+   */
   'mark-all-notifs-read': {
     method: 'POST',
     authed: true,
@@ -106,6 +188,15 @@ export const API = (_apiTypeCheck = {
   //   props: z.object({username: z.string()}).strict(),
   //   summary: 'Get lightweight public profile by username',
   // },
+  /**
+   * Get user profile by ID
+   * Retrieves complete profile information for a specific user
+   *
+   * @param id - User ID to retrieve profile for
+   * @security Requires authentication (to protect user privacy)
+   * @returns Full user profile including public and member-only information
+   * @cache Publicly cacheable with revalidation
+   */
   'user/by-id/:id': {
     method: 'GET',
     authed: true,
@@ -125,6 +216,14 @@ export const API = (_apiTypeCheck = {
   //   props: z.object({id: z.string()}).strict(),
   //   summary: 'Get lightweight profile by user ID',
   // },
+  /**
+   * Block a user
+   * Prevents a user from contacting or viewing the authenticated user's profile
+   *
+   * @param id - User ID to block
+   * @security Requires user authentication
+   * @returns Confirmation of block action
+   */
   'user/by-id/:id/block': {
     method: 'POST',
     authed: true,
@@ -133,6 +232,15 @@ export const API = (_apiTypeCheck = {
     summary: 'Block a user by their ID',
     tag: 'Users',
   },
+
+  /**
+   * Unblock a user
+   * Removes blocking restriction on a previously blocked user
+   *
+   * @param id - User ID to unblock
+   * @security Requires user authentication
+   * @returns Confirmation of unblock action
+   */
   'user/by-id/:id/unblock': {
     method: 'POST',
     authed: true,
@@ -332,7 +440,7 @@ export const API = (_apiTypeCheck = {
       locale: z.string(),
     }),
     summary: "Update the user's preferred locale",
-    tag: 'User',
+    tag: 'Users',
   },
   'me/delete': {
     method: 'POST',
@@ -484,7 +592,7 @@ export const API = (_apiTypeCheck = {
       status: 'success'
     },
     summary: 'Like or unlike a profile',
-    tag: 'Profiles',
+    tag: 'Relations',
   },
   'ship-profiles': {
     method: 'POST',
@@ -499,7 +607,47 @@ export const API = (_apiTypeCheck = {
       status: 'success'
     },
     summary: 'Create or remove a ship between two profiles',
-    tag: 'Profiles',
+    tag: 'Relations',
+  },
+  'star-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      targetUserId: z.string(),
+      remove: z.boolean().optional(),
+    }),
+    returns: {} as {
+      status: 'success'
+    },
+    summary: 'Star or unstar a profile',
+    tag: 'Relations',
+  },
+  'hide-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      hiddenUserId: z.string(),
+    }),
+    returns: {} as {
+      status: 'success'
+    },
+    summary: 'Hide a profile for the current user',
+    tag: 'Relations',
+  },
+  'unhide-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      hiddenUserId: z.string(),
+    }),
+    returns: {} as {
+      status: 'success'
+    },
+    summary: 'Unhide a previously hidden profile for the current user',
+    tag: 'Relations',
   },
   'get-likes-and-ships': {
     method: 'GET',
@@ -529,46 +677,6 @@ export const API = (_apiTypeCheck = {
       hasFreeLike: boolean
     },
     summary: 'Check whether the user has a free like available',
-    tag: 'Profiles',
-  },
-  'star-profile': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    props: z.object({
-      targetUserId: z.string(),
-      remove: z.boolean().optional(),
-    }),
-    returns: {} as {
-      status: 'success'
-    },
-    summary: 'Star or unstar a profile',
-    tag: 'Profiles',
-  },
-  'hide-profile': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    props: z.object({
-      hiddenUserId: z.string(),
-    }),
-    returns: {} as {
-      status: 'success'
-    },
-    summary: 'Hide a profile for the current user',
-    tag: 'Profiles',
-  },
-  'unhide-profile': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    props: z.object({
-      hiddenUserId: z.string(),
-    }),
-    returns: {} as {
-      status: 'success'
-    },
-    summary: 'Unhide a previously hidden profile for the current user',
     tag: 'Profiles',
   },
   'get-hidden-profiles': {
@@ -674,7 +782,7 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Get profile options like interests',
-    tag: 'Profiles',
+    tag: 'Utilities',
   },
   'update-options': {
     method: 'POST',
@@ -688,7 +796,7 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Update profile options like interests',
-    tag: 'Profiles',
+    tag: 'Utilities',
   },
   'create-comment': {
     method: 'POST',
@@ -920,7 +1028,7 @@ export const API = (_apiTypeCheck = {
       limit: z.number().optional(),
     }),
     summary: 'Search for a location by text',
-    tag: 'Locations',
+    tag: 'Search',
   },
   'search-near-city': {
     method: 'POST',
@@ -932,7 +1040,7 @@ export const API = (_apiTypeCheck = {
       radius: z.number().min(1).max(500),
     }),
     summary: 'Find places near a GeoDB city ID within a radius',
-    tag: 'Locations',
+    tag: 'Search',
   },
   contact: {
     method: 'POST',
@@ -988,7 +1096,7 @@ export const API = (_apiTypeCheck = {
       search_name: z.string().nullable().optional(),
     }),
     summary: 'Create a bookmarked search for quick reuse',
-    tag: 'Searches',
+    tag: 'Search',
   },
   'delete-bookmarked-search': {
     method: 'POST',
@@ -999,7 +1107,7 @@ export const API = (_apiTypeCheck = {
       id: z.number(),
     }),
     summary: 'Delete a bookmarked search by ID',
-    tag: 'Searches',
+    tag: 'Search',
   },
   'cancel-event': {
     method: 'POST',

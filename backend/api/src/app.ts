@@ -26,8 +26,9 @@ import {updateConnectionInterests} from 'api/update-connection-interests'
 import {updateOptions} from 'api/update-options'
 import {vote} from 'api/vote'
 import {API, type APIPath} from 'common/api/schema'
-import {APIError, pathWithPrefix} from 'common/api/utils'
+import {APIError, APIErrors, pathWithPrefix} from 'common/api/utils'
 import {sendDiscordMessage} from 'common/discord/core'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
 import cors from 'cors'
 import * as crypto from 'crypto'
@@ -129,16 +130,16 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error instanceof APIError) {
     log.info(error)
     if (!res.headersSent) {
-      const output: {[k: string]: unknown} = {message: error.message}
-      if (error.details != null) {
-        output.details = error.details
-      }
-      res.status(error.code).json(output)
+      res.status(error.code).json(error.toJSON())
     }
   } else {
     log.error(error)
     if (!res.headersSent) {
-      res.status(500).json({message: error.stack, error})
+      const apiError = APIErrors.internalServerError(error.message || 'Internal server error', {
+        originalError: error.toString(),
+        context: 'Unhandled exception in request processing',
+      })
+      res.status(500).json(apiError.toJSON())
     }
   }
 }
@@ -224,6 +225,28 @@ export function zodToOpenApiSchema(zodObj: ZodTypeAny): any {
   return schema
 }
 
+function inferTag(route: string) {
+  let tag = 'General'
+  if (route.includes('user') || route.includes('profile')) tag = 'Profiles'
+  if (route.includes('auth') || route.includes('login') || route === 'me') tag = 'Authentication'
+  if (route.includes('search') || route.includes('location')) tag = 'Search'
+  if (route.includes('message') || route.includes('channel')) tag = 'Messaging'
+  if (route.includes('compatibility') || route.includes('question')) tag = 'Compatibility'
+  if (
+    route.includes('like') ||
+    route.includes('ship') ||
+    route.includes('star') ||
+    route.includes('block')
+  )
+    tag = 'Relations'
+  if (route.includes('event') || route.includes('rsvp')) tag = 'Events'
+  if (route.includes('notification') || route.includes('notif')) tag = 'Notifications'
+  if (route.includes('comment')) tag = 'Comments'
+  if (route.includes('report') || route.includes('ban')) tag = 'Moderation'
+  if (route.includes('option') || route.includes('locale')) tag = 'Utilities'
+  return tag
+}
+
 function generateSwaggerPaths(api: typeof API) {
   const paths: Record<string, any> = {}
 
@@ -232,16 +255,85 @@ function generateSwaggerPaths(api: typeof API) {
     const method = config.method.toLowerCase()
     const summary = (config as any).summary ?? route
 
-    // Include props in request body for POST/PUT
+    const tag = (config as any).tag ?? inferTag(route)
+
     const operation: any = {
       summary,
-      tags: [(config as any).tag ?? 'API'],
+      description: (config as any).description ?? '',
+      tags: [tag],
       responses: {
         200: {
-          description: 'OK',
+          description: 'Success',
           content: {
             'application/json': {
-              schema: {type: 'object'}, // could be improved by introspecting returns
+              schema: {type: 'object'},
+              example: (config as any).exampleResponse ?? {},
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request - Invalid input or malformed request',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {type: 'string'},
+                  details: {type: 'object'},
+                },
+              },
+            },
+          },
+        },
+        401: {
+          description: 'Unauthorized - Authentication required',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {type: 'string'},
+                },
+              },
+            },
+          },
+        },
+        403: {
+          description: 'Forbidden - Insufficient permissions',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {type: 'string'},
+                },
+              },
+            },
+          },
+        },
+        404: {
+          description: 'Not Found - Resource does not exist',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {type: 'string'},
+                },
+              },
+            },
+          },
+        },
+        500: {
+          description: 'Internal Server Error - Something went wrong on our end',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  message: {type: 'string'},
+                },
+              },
             },
           },
         },
@@ -255,6 +347,7 @@ function generateSwaggerPaths(api: typeof API) {
         content: {
           'application/json': {
             schema: zodToOpenApiSchema(config.props),
+            example: (config as any).exampleRequest ?? {},
           },
         },
       }
@@ -268,13 +361,16 @@ function generateSwaggerPaths(api: typeof API) {
           ZodString: 'string',
           ZodNumber: 'number',
           ZodBoolean: 'boolean',
+          ZodArray: 'array',
         }
         const t = zodType as z.ZodTypeAny // assert type to ZodTypeAny
+        const typeName = t._def.typeName
         return {
           name: key,
           in: 'query',
+          description: (config as any).paramDescriptions?.[key] ?? '',
           required: !(t.isOptional ?? false),
-          schema: {type: typeMap[t._def.typeName] ?? 'string'},
+          schema: {type: typeMap[typeName] ?? 'string'},
         }
       })
     }
@@ -295,10 +391,80 @@ const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
     title: 'Compass API',
-    description: `Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas, feedback, and donations. Unlike typical apps, Compass prioritizes values, interests, and personality over swipes and ads, giving you full control over who you discover and how you connect.\n Git: ${git.commitDate} (${git.revision}).`,
+    description: `
+Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. Our API provides programmatic access to core platform features including user profiles, messaging, compatibility scoring, and community features.
+
+## Access Tiers
+
+### Tier 1 — Public Access (no authentication required)
+Some endpoints are publicly accessible without authentication, such as events and server health. These are marked as **public** in the endpoint documentation.
+
+### Tier 2 — User Access (Firebase authentication required)
+Most endpoints require a valid Firebase JWT token. This gives you access to your own user data, profile, messages, and all interactive features.
+
+  To obtain a token:
+
+  **In your app (JavaScript/TypeScript):**
+\`\`\`js
+import { getAuth } from 'firebase/auth'
+const token = await getAuth().currentUser?.getIdToken()
+// Authorization: Bearer <token>
+\`\`\`
+
+**For testing (REST):**
+\`\`\`bash
+curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}' \\
+  -H 'Content-Type: application/json' \\
+  --data '{"email":"you@example.com","password":"yourpassword","returnSecureToken":true}'
+# Use the returned idToken as your Bearer token
+\`\`\`
+
+Tokens expire after **1 hour**. Refresh by calling \`getIdToken(true)\`.
+
+Pass the token in the Authorization header for all authenticated requests:
+\`\`\`
+Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
+\`\`\`
+
+**Don't have an account?** [Register on Compass](${DEPLOYED_WEB_URL}/register) to get started.
+
+## Rate Limiting
+
+API requests are subject to rate limiting to ensure fair usage and platform stability. Exceeding limits will result in a \`429 Too Many Requests\` response. Rate limits are applied per authenticated user. Unauthenticated requests are limited by IP.
+
+## Versioning
+
+This documentation reflects API version ${pkgVersion}. Endpoints marked as **deprecated** will include a \`Sunset\` header indicating when they will be removed, and a \`Link\` header pointing to the replacement endpoint. Breaking changes are avoided where possible.
+
+## Error Handling
+
+All API responses follow a consistent error format:
+\`\`\`json
+{
+  "message": "Human-readable error description",
+  "details": { /* Optional additional context */ }
+}
+\`\`\`
+
+Common HTTP status codes:
+- \`200\` Success
+- \`400\` Bad Request — invalid or missing input
+- \`401\` Unauthorized — missing or expired token
+- \`403\` Forbidden — valid token but insufficient permissions
+- \`404\` Not Found — resource does not exist
+- \`429\` Too Many Requests — rate limit exceeded
+- \`500\` Internal Server Error
+
+## Open Source
+
+Compass is open source. Contributions, bug reports, and feature requests are welcome on [GitHub](https://github.com/CompassConnections/Compass).
+
+## Git Information
+
+Commit: ${git.revision} (${git.commitDate})`,
     version: pkgVersion,
     contact: {
-      name: 'Compass',
+      name: 'Compass Team',
       email: 'hello@compassmeet.com',
       url: 'https://compassmeet.com',
     },
@@ -310,14 +476,86 @@ const swaggerDocument: OpenAPIV3.Document = {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        description: 'Firebase JWT token obtained through authentication',
       },
       ApiKeyAuth: {
         type: 'apiKey',
         in: 'header',
         name: 'x-api-key',
+        description: 'API key for internal/non-user endpoints',
       },
     },
   },
+  tags: [
+    {
+      name: 'General',
+      description: 'General endpoints and health checks',
+    },
+    {
+      name: 'Authentication',
+      description: 'User authentication and account management endpoints',
+    },
+    {
+      name: 'Users',
+      description: 'User accounts',
+    },
+    {
+      name: 'Profiles',
+      description: 'User profile creation, retrieval, updating, and deletion',
+    },
+    {
+      name: 'Search',
+      description: 'User discovery and search functionality',
+    },
+    {
+      name: 'Messages',
+      description: 'Direct messaging between users',
+    },
+    {
+      name: 'Compatibility',
+      description: 'Compatibility questions, answers, and scoring',
+    },
+    {
+      name: 'Relations',
+      description: 'User relationships (likes, ships, blocks, comments)',
+    },
+    {
+      name: 'Notifications',
+      description: 'User notifications and preferences',
+    },
+    {
+      name: 'Events',
+      description: 'Community events and RSVP management',
+    },
+    {
+      name: 'Votes',
+      description: 'Voting system for user content and polls',
+    },
+    {
+      name: 'Moderation',
+      description: 'Report system and user moderation',
+    },
+    {
+      name: 'Admin',
+      description: 'Administrative functions including user bans and moderation',
+    },
+    {
+      name: 'Contact',
+      description: 'Contact form and support requests',
+    },
+    {
+      name: 'Utilities',
+      description: 'Helper functions and utilities',
+    },
+    {
+      name: 'Internal',
+      description: 'Internal API endpoints for system operations',
+    },
+    {
+      name: 'Local',
+      description: 'Local development and testing endpoints',
+    },
+  ],
 } as OpenAPIV3.Document
 
 // Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info

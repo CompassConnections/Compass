@@ -18,6 +18,27 @@ import {getUser, getUserByUsername, log} from 'shared/utils'
 
 import {APIError, APIHandler} from './helpers/endpoint'
 
+/**
+ * Create User API Handler
+ *
+ * Creates a new user account with associated profile and private user data.
+ * This endpoint is called after Firebase authentication to initialize
+ * the user's presence in the Compass database.
+ *
+ * Process:
+ * 1. Validates Firebase authentication token
+ * 2. Creates user record in users table
+ * 3. Creates private user record in private_users table
+ * 4. Generates default profile data
+ * 5. Sends welcome email asynchronously
+ * 6. Tracks user creation event
+ *
+ * @param props - Request parameters including device token and locale
+ * @param auth - Authenticated user information from Firebase
+ * @param req - Express request object for accessing headers/IP
+ * @returns User and private user objects with continuation function for async tasks
+ * @throws {APIError} 403 if user already exists or username is taken
+ */
 export const createUser: APIHandler<'create-user'> = async (props, auth, req) => {
   const {deviceToken, locale = defaultLocale} = props
 
@@ -56,12 +77,17 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     const preexistingUser = await getUser(auth.uid, tx)
     if (preexistingUser)
       throw new APIError(403, 'User already exists', {
-        userId: auth.uid,
+        field: 'userId',
+        context: `User with ID ${auth.uid} already exists`,
       })
 
     // Check exact username to avoid problems with duplicate requests
     const sameNameUser = await getUserByUsername(username, tx)
-    if (sameNameUser) throw new APIError(403, 'Username already taken', {username})
+    if (sameNameUser)
+      throw new APIError(403, 'Username already taken', {
+        field: 'username',
+        context: `Username "${username}" is already taken`,
+      })
 
     const user = removeUndefinedProps({
       avatarUrl,

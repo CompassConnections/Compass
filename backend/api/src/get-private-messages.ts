@@ -124,8 +124,18 @@ export async function getChannelMessages(props: {
     ),
   )
   if (error) {
-    console.error(error)
-    throw new APIError(401, 'Error getting messages')
+    console.error('Error getting messages:', error)
+    // If it's a connection pool error, provide more specific error message
+    if (error.message && error.message.includes('MaxClientsInSessionMode')) {
+      throw new APIError(
+        503,
+        'Service temporarily unavailable due to high demand. Please try again in a moment.',
+      )
+    }
+    throw new APIError(500, 'Error getting messages', {
+      field: 'database',
+      context: error.message || 'Unknown database error',
+    })
   }
   // console.log('final messages', data)
   return data

@@ -202,7 +202,7 @@ export default function UserPage(props: UserPageProps) {
     load()
   }, [username, nativeMobile])
 
-  console.log(
+  debug(
     'UserPage state:',
     JSON.stringify(
       {
@@ -307,7 +307,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   }
 
   const seoImage = getProfileOgImageUrl(user, profile)
-  console.log('SEO image:', seoImage)
+  debug('SEO image:', seoImage)
   return (
     <PageBase
       trackPageView={'user page'}

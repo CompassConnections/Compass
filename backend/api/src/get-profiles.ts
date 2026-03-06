@@ -16,17 +16,35 @@ import {
   where,
 } from 'shared/supabase/sql-builder'
 
+/**
+ * Profile query parameters for filtering and pagination
+ *
+ * Defines the available filters and pagination options for retrieving
+ * user profiles from the database. Supports complex filtering based
+ * on demographics, preferences, and location.
+ */
 export type profileQueryType = {
+  /** Maximum number of profiles to return */
   limit?: number | undefined
+  /** Pagination cursor for retrieving next page of results */
   after?: string | undefined
+  /** Specific user ID to retrieve (for single profile lookups) */
   userId?: string | undefined
+  /** Name filter for profile search */
   name?: string | undefined
+  /** Filter by gender identity */
   genders?: string[] | undefined
+  /** Filter by education level */
   education_levels?: string[] | undefined
+  /** Filter by preferred gender for matches */
   pref_gender?: string[] | undefined
+  /** Minimum preferred age for matches */
   pref_age_min?: number | undefined
+  /** Maximum preferred age for matches */
   pref_age_max?: number | undefined
+  /** Minimum drinks consumed per month */
   drinks_min?: number | undefined
+  /** Maximum drinks consumed per month */
   drinks_max?: number | undefined
   big5_openness_min?: number | undefined
   big5_openness_max?: number | undefined

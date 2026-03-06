@@ -19,6 +19,8 @@ export const runScript = async (
 
   debug('[runScript] Running script...')
   await main({pg})
+
+  process.exit(0)
 }
 
 export async function initEnvVariables() {

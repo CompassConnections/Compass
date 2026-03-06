@@ -44,7 +44,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
       const mockContent = {
         content: {
@@ -143,7 +143,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
       const mockContent = {
         content: {
@@ -227,7 +227,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: true,
+        is_banned_from_posting: true,
       }
       const mockContent = {
         content: {
@@ -270,7 +270,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
       const mockContent = {
         content: {
@@ -316,7 +316,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
       const mockContent = {
         content: {
@@ -362,7 +362,7 @@ describe('createComment', () => {
         name: 'Mock Creator',
         username: 'mock.creator.username',
         avatarUrl: 'mock.creator.avatarurl',
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
       const mockContent = {
         content: {

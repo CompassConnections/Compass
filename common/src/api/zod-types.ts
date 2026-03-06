@@ -70,7 +70,6 @@ export const baseProfilesSchema = z.object({
 })
 
 const optionalProfilesSchema = z.object({
-  avatar_url: z.string().optional().nullable(),
   bio: contentSchema.optional().nullable(),
   big5_openness: z.number().min(0).max(100).optional().nullable(),
   big5_conscientiousness: z.number().min(0).max(100).optional().nullable(),
@@ -96,6 +95,7 @@ const optionalProfilesSchema = z.object({
   image_descriptions: z.any().optional().nullable(),
   interests: z.array(z.string()).optional().nullable(),
   is_smoker: zBoolean.optional().nullable(),
+  links: z.record(z.string().nullable()).optional(),
   mbti: z.string().optional().nullable(),
   occupation: z.string().optional().nullable(),
   occupation_title: z.string().optional().nullable(),

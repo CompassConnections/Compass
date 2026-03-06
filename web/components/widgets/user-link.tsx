@@ -149,7 +149,7 @@ function FreshBadge() {
 //     name: string
 //     username: string
 //     createdTime: number
-//     isBannedFromPosting?: boolean
+//     is_banned_from_posting?: boolean
 //   }
 //   followsYou?: boolean
 //   className?: string
@@ -167,7 +167,7 @@ function FreshBadge() {
 //             fresh={isFresh(user.createdTime)}
 //           />
 //         }
-//         {user.isBannedFromPosting && <BannedBadge/>}
+//         {user.is_banned_from_posting && <BannedBadge/>}
 //       </div>
 //       <Row className={'flex-shrink flex-wrap gap-x-2'}>
 //         <span className={clsx('text-ink-400 text-sm', usernameClassName)}>

@@ -58,7 +58,7 @@ describe('createPrivateUserMessageChannel', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
@@ -104,7 +104,7 @@ describe('createPrivateUserMessageChannel', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
@@ -183,7 +183,7 @@ describe('createPrivateUserMessageChannel', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        isBannedFromPosting: true,
+        is_banned_from_posting: true,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
@@ -207,7 +207,7 @@ describe('createPrivateUserMessageChannel', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
@@ -237,7 +237,7 @@ describe('createPrivateUserMessageChannel', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
-        isBannedFromPosting: false,
+        is_banned_from_posting: false,
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)

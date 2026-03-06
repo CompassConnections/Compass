@@ -239,9 +239,8 @@ export const loadProfiles = async (props: profileQueryType) => {
   const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
-    // where(`pinned_url is not null and pinned_url != ''`),
-    where(`(data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)`),
-    where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
+    where(`not users.is_banned_from_posting`),
+    // where(`data->>'userDeleted' != 'true' or data->>'userDeleted' is null`),
 
     ...keywords.map((word) =>
       where(

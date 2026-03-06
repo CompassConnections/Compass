@@ -67,12 +67,6 @@ export async function seedDbUser(userInfo: UserAccountInformation, profileType?:
   const profileData =
     profileType === 'basic' ? basicProfile : profileType === 'medium' ? mediumProfile : fullProfile
 
-  const user = {
-    // avatarUrl,
-    isBannedFromPosting: false,
-    link: {},
-  }
-
   const privateUser: PrivateUser = {
     id: userId,
     email: userInfo.email,
@@ -91,7 +85,7 @@ export async function seedDbUser(userInfo: UserAccountInformation, profileType?:
       id: userId,
       name: userInfo.name,
       username: cleanUsername(userInfo.name),
-      data: user,
+      data: {},
     })
 
     await insert(tx, 'private_users', {

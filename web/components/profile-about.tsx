@@ -14,6 +14,7 @@ import {convertGenderPlural, Gender} from 'common/gender'
 import {getLocationText} from 'common/geodb'
 import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
+import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
 import {Home} from 'lucide-react'
 import React, {ReactNode} from 'react'
@@ -171,7 +172,7 @@ export default function ProfileAbout(props: {
       <HasKids profile={profile} />
       <WantsKids profile={profile} />
       {!isCurrentUser && <LastOnline lastOnlineTime={userActivity?.last_online_time} />}
-      <UserHandles links={profile.user.link} />
+      <UserHandles links={profile.links as Socials} />
     </Col>
   )
 }

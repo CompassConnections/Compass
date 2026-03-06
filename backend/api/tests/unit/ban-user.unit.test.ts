@@ -45,9 +45,9 @@ describe('banUser', () => {
       expect(sharedAnalytics.trackPublicEvent).toBeCalledWith(mockAuth.uid, 'ban user', {
         userId: mockUser.userId,
       })
-      expect(supabaseUsers.updateUser).toBeCalledTimes(1)
-      expect(supabaseUsers.updateUser).toBeCalledWith(mockPg, mockUser.userId, {
-        isBannedFromPosting: true,
+      expect(supabaseUsers.updateUserData).toBeCalledTimes(1)
+      expect(supabaseUsers.updateUserData).toBeCalledWith(mockPg, mockUser.userId, {
+        is_banned_from_posting: true,
       })
     })
 
@@ -68,8 +68,8 @@ describe('banUser', () => {
       expect(sharedAnalytics.trackPublicEvent).toBeCalledWith(mockAuth.uid, 'ban user', {
         userId: mockUser.userId,
       })
-      expect(supabaseUsers.updateUser).toBeCalledWith(mockPg, mockUser.userId, {
-        isBannedFromPosting: false,
+      expect(supabaseUsers.updateUserData).toBeCalledWith(mockPg, mockUser.userId, {
+        is_banned_from_posting: false,
       })
     })
   })

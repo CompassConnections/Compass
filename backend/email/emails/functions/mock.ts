@@ -23,10 +23,6 @@ export const mockUser: User = {
   id: '0k1suGSJKVUnHbCPEhHNpgZPkUP2',
   username: 'Martin',
   name: 'Martin',
-  link: {
-    site: 'martinbraquet.com',
-    x: 'martin',
-  },
 }
 
 export const jamesUser: User = {
@@ -35,9 +31,6 @@ export const jamesUser: User = {
   id: '5LZ4LgYuySdL1huCWe7bti02ghx2',
   username: 'James',
   name: 'James',
-  link: {
-    x: 'james',
-  },
 }
 
 export const jamesProfile: PartialProfile = {

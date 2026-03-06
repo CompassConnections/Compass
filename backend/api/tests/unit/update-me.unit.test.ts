@@ -5,7 +5,6 @@ jest.mock('shared/websockets/helpers')
 
 import {AuthedUser} from 'api/helpers/endpoint'
 import {updateMe} from 'api/update-me'
-import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUsers from 'shared/supabase/users'
 import * as sharedUtils from 'shared/utils'
@@ -31,18 +30,16 @@ describe('updateMe', () => {
         name: 'mockName',
         username: 'mockUsername',
         avatarUrl: 'mockAvatarUrl',
-        link: {mockLink: 'mockLinkValue'},
       } as any
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockData = {link: mockProps.link}
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(true)
       ;(sharedUtils.getUserByUsername as jest.Mock).mockReturnValue(false)
-      ;(supabaseUsers.updateUser as jest.Mock)
+      ;(supabaseUsers.updateUserData as jest.Mock)
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(null)
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockData)
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({})
       ;(mockPg.none as jest.Mock).mockResolvedValueOnce(null).mockResolvedValueOnce(null)
       ;(websocketHelperModules.broadcastUpdatedUser as jest.Mock).mockReturnValue(null)
 
@@ -52,40 +49,14 @@ describe('updateMe', () => {
       expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid)
       expect(sharedUtils.getUserByUsername).toBeCalledTimes(1)
       expect(sharedUtils.getUserByUsername).toBeCalledWith(mockProps.username)
-      expect(supabaseUsers.updateUser).toBeCalledTimes(2)
-      expect(supabaseUsers.updateUser).toHaveBeenNthCalledWith(
-        1,
+      expect(supabaseUsers.updateUserData).toBeCalledTimes(1)
+      expect(supabaseUsers.updateUserData).toHaveBeenCalledWith(
         expect.any(Object),
         mockAuth.uid,
         {},
       )
-      expect(supabaseUsers.updateUser).toHaveBeenNthCalledWith(
-        2,
-        expect.any(Object),
-        mockAuth.uid,
-        {avatarUrl: mockProps.avatarUrl},
-      )
-      expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('update users'), {
-        adds: expect.any(Object),
-        removes: expect.any(Array),
-        id: mockAuth.uid,
-      })
-      expect(mockPg.none).toBeCalledTimes(2)
-      expect(mockPg.none).toHaveBeenNthCalledWith(
-        1,
-        sqlMatch(`update users
-                        set name = $1
-                        where id = $2`),
-        [mockProps.name, mockAuth.uid],
-      )
-      expect(mockPg.none).toHaveBeenNthCalledWith(
-        2,
-        sqlMatch(`update users
-                        set username = $1
-                        where id = $2`),
-        [mockProps.username, mockAuth.uid],
-      )
+      expect(supabaseUsers.updateUser).toBeCalledTimes(1)
+      expect(supabaseUsers.updateUser).toHaveBeenCalledWith(mockAuth.uid, mockProps)
       expect(websocketHelperModules.broadcastUpdatedUser).toBeCalledTimes(1)
       expect(websocketHelperModules.broadcastUpdatedUser).toBeCalledWith({
         ...mockProps,
@@ -149,7 +120,7 @@ describe('updateMe', () => {
       arraySpy.mockReturnValue(false)
       ;(sharedUtils.getUserByUsername as jest.Mock).mockReturnValue(true)
 
-      expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow('Username already taken')
+      expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow('Username is already taken')
     })
   })
 })

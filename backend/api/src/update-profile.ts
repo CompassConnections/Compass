@@ -4,8 +4,7 @@ import {type Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {updateUser} from 'shared/supabase/users'
-import {update} from 'shared/supabase/utils'
+import {updateProfile, updateUser} from 'shared/supabase/users'
 import {log} from 'shared/utils'
 
 /**
@@ -25,7 +24,7 @@ import {log} from 'shared/utils'
  * @returns Updated profile data
  * @throws {APIError} 404 if profile doesn't exist, 500 for database errors
  */
-export const updateProfile: APIHandler<'update-profile'> = async (parsedBody, auth) => {
+export const updateProfileEndpoint: APIHandler<'update-profile'> = async (parsedBody, auth) => {
   trimStrings(parsedBody)
   log('Updating profile', parsedBody)
   const pg = createSupabaseDirectClient()
@@ -43,12 +42,10 @@ export const updateProfile: APIHandler<'update-profile'> = async (parsedBody, au
   await removePinnedUrlFromPhotoUrls(parsedBody)
 
   if (parsedBody.pinned_url) {
-    await updateUser(pg, auth.uid, {avatarUrl: parsedBody.pinned_url})
+    await updateUser(auth.uid, {avatarUrl: parsedBody.pinned_url})
   }
 
-  const {data, error} = await tryCatch(
-    update(pg, 'profiles', 'user_id', {user_id: auth.uid, ...parsedBody}),
-  )
+  const {data, error} = await tryCatch(updateProfile(auth.uid, parsedBody))
 
   if (error) {
     log('Error updating profile', error)

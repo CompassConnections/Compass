@@ -114,7 +114,6 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
             profile={profile}
             setProfile={setProfileState}
             user={baseUser}
-            setUser={setBaseUserState}
             buttonLabel={t('profile.save', 'Save')}
             onSubmit={async () => await submitForm()}
           />

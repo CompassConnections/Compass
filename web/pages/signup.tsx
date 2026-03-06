@@ -92,7 +92,6 @@ export default function SignupPage() {
         name,
         locale,
         deviceToken,
-        link: baseUser.link,
         profile: otherProfileProps,
         interests,
         causes,
@@ -142,7 +141,6 @@ export default function SignupPage() {
                 profile={profileForm}
                 setProfile={setProfileState}
                 user={baseUser}
-                setUser={setBaseUserState}
                 bottomNavBarVisible={false}
                 onSubmit={handleFinalSubmit}
               />
@@ -168,7 +166,6 @@ function getInitialBaseUser() {
     id: auth.currentUser?.uid ?? '',
     username: cleanUsername(name),
     name: name,
-    link: {},
   }
   return initialState
 }

@@ -1,5 +1,6 @@
 import type {DisplayUser} from 'common/api/user-types'
 import {APIError} from 'common/api/utils'
+import {convertPartialUser} from 'common/supabase/users'
 import {run, TableName} from 'common/supabase/utils'
 import {MONTH_MS} from 'common/util/time'
 import {api} from 'web/lib/api'
@@ -51,11 +52,11 @@ export async function getDisplayUsers(userIds: string[]) {
   const {data} = await run(
     db
       .from('users')
-      .select(`id, name, username, data->avatarUrl, data->isBannedFromPosting`)
+      .select(`id, name, username, avatar_url, is_banned_from_posting`)
       .in('id', userIds),
   )
 
-  return data as unknown as DisplayUser[]
+  return data.map(convertPartialUser) as unknown as DisplayUser[]
 }
 
 export async function getProfilesCreations() {

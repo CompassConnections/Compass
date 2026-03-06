@@ -35,7 +35,6 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
     locale = defaultLocale,
     username,
     name,
-    link,
     profile,
     interests,
     causes,
@@ -55,7 +54,7 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   const email = fbUser.email
 
   const bucket = getBucket()
-  const avatarUrl = await generateAvatarUrl(auth.uid, cleanName, bucket)
+  const avatarUrl = profile.pinned_url ?? (await generateAvatarUrl(auth.uid, cleanName, bucket))
 
   let finalUsername = username
   const validation = await validateUsername(username)
@@ -88,15 +87,6 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       })
     }
 
-    const userData = removeUndefinedProps({
-      avatarUrl,
-      isBannedFromPosting: Boolean(
-        (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
-          (ip && bannedIpAddresses.includes(ip)),
-      ),
-      link: link,
-    })
-
     const privateUserData: PrivateUser = {
       id: auth.uid,
       email,
@@ -112,7 +102,12 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       id: auth.uid,
       name: cleanName,
       username: finalUsername,
-      data: userData,
+      avatar_url: avatarUrl,
+      is_banned_from_posting: Boolean(
+        (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
+          (ip && bannedIpAddresses.includes(ip)),
+      ),
+      data: {},
     })
 
     const newPrivateUserRow = await insert(tx, 'private_users', {

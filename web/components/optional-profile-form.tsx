@@ -17,7 +17,7 @@ import {
 import {debug} from 'common/logger'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
-import {PLATFORM_LABELS, type Site, SITE_ORDER} from 'common/socials'
+import {PLATFORM_LABELS, type Site, SITE_ORDER, Socials} from 'common/socials'
 import {BaseUser} from 'common/user'
 import {range} from 'lodash'
 import {Fragment, useEffect, useRef, useState} from 'react'
@@ -51,20 +51,11 @@ export const OptionalProfileUserForm = (props: {
   profile: ProfileWithoutUser
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
   user: BaseUser
-  setUser: <K extends keyof BaseUser>(key: K, value: BaseUser[K]) => void
   buttonLabel?: string
   bottomNavBarVisible?: boolean
   onSubmit: () => Promise<void>
 }) => {
-  const {
-    profile,
-    user,
-    buttonLabel,
-    setProfile,
-    setUser,
-    onSubmit,
-    bottomNavBarVisible = true,
-  } = props
+  const {profile, user, buttonLabel, setProfile, onSubmit, bottomNavBarVisible = true} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState(
@@ -125,7 +116,7 @@ export const OptionalProfileUserForm = (props: {
   }
 
   const updateUserLink = (platform: string, value: string | null) => {
-    setUser('link', {...user.link, [platform]: value})
+    setProfile('links', {...((profile.links as Socials) ?? {}), [platform]: value})
   }
 
   const addNewLink = () => {
@@ -913,7 +904,7 @@ export const OptionalProfileUserForm = (props: {
           {/*</label>*/}
 
           <div className="grid w-full grid-cols-[8rem_1fr_auto] gap-2">
-            {Object.entries(user.link)
+            {Object.entries(profile.links as Socials)
               .filter(([_, value]) => value != null)
               .map(([platform, value]) => (
                 <Fragment key={platform}>

@@ -161,7 +161,7 @@ describe('createUserAndProfile', () => {
       expect(usernameUtils.cleanDisplayName).toBeCalledTimes(1)
       expect(usernameUtils.cleanDisplayName).toHaveBeenCalledWith(mockProps.name)
       expect(firebaseUtils.getBucket).toBeCalledTimes(1)
-      expect(avatarHelpers.generateAvatarUrl).toBeCalledTimes(1)
+      expect(avatarHelpers.generateAvatarUrl).toBeCalledTimes(0)
       expect(validateUsernameModule.validateUsername).toBeCalledTimes(1)
       expect(validateUsernameModule.validateUsername).toHaveBeenCalledWith(mockProps.username)
       expect(parsePhotos.removePinnedUrlFromPhotoUrls).toBeCalledTimes(1)
@@ -318,11 +318,11 @@ describe('createUserAndProfile', () => {
       const mockAvatarUrl = 'mockGeneratedAvatarUrl'
       const mockNewUserRow = {
         created_time: 'mockCreatedTime',
-        data: {isBannedFromPosting: true},
         id: 'mockNewUserId',
         name: 'mockName',
         name_username_vector: 'mockNameUsernameVector',
         username: 'mockUsername',
+        is_banned_from_posting: true,
       }
       const mockPrivateUserRow = {
         data: {},
@@ -357,9 +357,11 @@ describe('createUserAndProfile', () => {
 
       await createUserAndProfile(mockProps, mockAuth, mockReq)
 
-      expect(objectUtils.removeUndefinedProps).toHaveBeenCalledWith(
+      expect(supabaseUtils.insert).toHaveBeenCalledWith(
+        expect.any(Object),
+        'users',
         expect.objectContaining({
-          isBannedFromPosting: true,
+          is_banned_from_posting: true,
         }),
       )
     })
@@ -405,7 +407,7 @@ describe('createUserAndProfile', () => {
       })
 
       await expect(createUserAndProfile(mockProps, mockAuth, mockReq)).rejects.toThrowError(
-        'User already exists',
+        'An account for this user already exists',
       )
     })
 
@@ -450,7 +452,7 @@ describe('createUserAndProfile', () => {
       })
 
       await expect(createUserAndProfile(mockProps, mockAuth, mockReq)).rejects.toThrowError(
-        'Username already taken',
+        'Username is already taken',
       )
     })
 

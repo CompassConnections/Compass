@@ -52,7 +52,7 @@ export const getEvents: APIHandler<'get-events'> = async () => {
           username: string
           avatar_url: string | null
         }>(
-          `SELECT id, name, username, data ->> 'avatarUrl' as avatar_url
+          `SELECT id, name, username, avatar_url
        FROM users
        WHERE id = ANY ($1)`,
           [creatorIds],

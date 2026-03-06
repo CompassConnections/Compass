@@ -76,7 +76,7 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
   const {user, privateUser} = await pg.tx(async (tx) => {
     const preexistingUser = await getUser(auth.uid, tx)
     if (preexistingUser)
-      throw APIErrors.forbidden('User already exists', {
+      throw APIErrors.forbidden('An account for this user already exists', {
         field: 'userId',
         context: `User with ID ${auth.uid} already exists`,
       })
@@ -84,14 +84,14 @@ export const createUser: APIHandler<'create-user'> = async (props, auth, req) =>
     // Check exact username to avoid problems with duplicate requests
     const sameNameUser = await getUserByUsername(username, tx)
     if (sameNameUser)
-      throw APIErrors.conflict('Username already taken', {
+      throw APIErrors.conflict('Username is already taken', {
         field: 'username',
         context: `Username "${username}" is already taken`,
       })
 
     const user = removeUndefinedProps({
       avatarUrl,
-      isBannedFromPosting: Boolean(
+      is_banned_from_posting: Boolean(
         (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
           (ip && bannedIpAddresses.includes(ip)),
       ),

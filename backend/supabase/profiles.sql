@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS profiles
     image_descriptions        jsonb,
     is_smoker                 BOOLEAN,
     last_modification_time    TIMESTAMPTZ        DEFAULT now()                        NOT NULL,
+    links                     JSONB              default '{}'::jsonb                  not null,
     looking_for_matches       BOOLEAN            DEFAULT TRUE                         NOT NULL,
     allow_direct_messaging    BOOLEAN            DEFAULT TRUE                         NOT NULL,
     allow_interest_indicating BOOLEAN            DEFAULT TRUE                         NOT NULL,
@@ -61,12 +62,10 @@ CREATE TABLE IF NOT EXISTS profiles
     religion                  TEXT[],
     religious_belief_strength INTEGER,
     religious_beliefs         TEXT,
-    twitter                   TEXT,
     university                TEXT,
     user_id                   TEXT                                                    NOT NULL,
     visibility                profile_visibility DEFAULT 'member'::profile_visibility NOT NULL,
     wants_kids_strength       INTEGER            DEFAULT 0,
-    website                   TEXT,
     CONSTRAINT profiles_pkey PRIMARY KEY (id)
 );
 

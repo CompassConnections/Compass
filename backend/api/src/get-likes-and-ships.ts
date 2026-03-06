@@ -25,7 +25,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
       where creator_id = $1
         and looking_for_matches
         and profiles.pinned_url is not null
-        and (data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)
+        and not is_banned_from_posting 
       order by created_time desc
     `,
     [userId],
@@ -47,7 +47,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
       where target_id = $1
         and looking_for_matches
         and profiles.pinned_url is not null
-        and (data->>'isBannedFromPosting' != 'true' or data->>'isBannedFromPosting' is null)
+        and not is_banned_from_posting
       order by created_time desc
     `,
     [userId],
@@ -74,7 +74,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
     where target2_id = $1
       and profiles.looking_for_matches
       and profiles.pinned_url is not null
-      and (users.data->>'isBannedFromPosting' != 'true' or users.data->>'isBannedFromPosting' is null)
+      and not is_banned_from_posting
 
     union all
 
@@ -87,7 +87,7 @@ export const getLikesAndShipsMain = async (userId: string) => {
     where target1_id = $1
       and profiles.looking_for_matches
       and profiles.pinned_url is not null
-      and (users.data->>'isBannedFromPosting' != 'true' or users.data->>'isBannedFromPosting' is null)
+      and not is_banned_from_posting
     `,
     [userId],
     (r) => ({

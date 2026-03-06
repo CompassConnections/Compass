@@ -92,7 +92,8 @@ export function selectFrom<
   return db.from(table).select<string, TResult>(query)
 }
 
-export function millisToTs(millis: number) {
+export function millisToTs(millis: number | undefined) {
+  if (!millis) return
   return new Date(millis).toISOString()
 }
 

@@ -1,4 +1,4 @@
-import {ENV_CONFIG, MOD_USERNAMES} from 'common/envs/constants'
+import {ENV_CONFIG, MOD_USERNAMES, WEB_URL} from 'common/envs/constants'
 import {User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
 
@@ -20,7 +20,7 @@ export type FullUser = User & {
 export function toUserAPIResponse(user: User): FullUser {
   return removeUndefinedProps({
     ...user,
-    url: `https://${ENV_CONFIG.domain}/${user.username}`,
+    url: `${WEB_URL}/${user.username}`,
     isAdmin: ENV_CONFIG.adminIds.includes(user.id),
     isTrustworthy: MOD_USERNAMES.includes(user.username),
   })

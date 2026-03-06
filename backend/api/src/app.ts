@@ -92,7 +92,7 @@ import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
-import {updateProfile} from './update-profile'
+import {updateProfileEndpoint} from './update-profile'
 import {updateUserLocale} from './update-user-locale'
 import {validateUsernameEndpoint} from './validate-username'
 
@@ -618,7 +618,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-options': updateOptions,
   'update-user-locale': updateUserLocale,
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
-  'update-profile': updateProfile,
+  'update-profile': updateProfileEndpoint,
   'get-connection-interests': getConnectionInterestsEndpoint,
   'update-connection-interest': updateConnectionInterests,
   'user/by-id/:id': getUser,

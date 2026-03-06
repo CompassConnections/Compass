@@ -1,12 +1,11 @@
 import {toUserAPIResponse} from 'common/api/user-types'
 import {RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
-import {strip} from 'common/socials'
 import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
-import {cloneDeep, mapValues} from 'lodash'
+import {cloneDeep} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {updateUser} from 'shared/supabase/users'
+import {updateUser, updateUserData} from 'shared/supabase/users'
 import {getUser, getUserByUsername} from 'shared/utils'
 import {broadcastUpdatedUser} from 'shared/websockets/helpers'
 
@@ -29,7 +28,7 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
     if (reservedName) throw APIErrors.forbidden('This username is reserved')
     const otherUserExists = await getUserByUsername(cleanedUsername)
     if (otherUserExists && otherUserExists.id !== auth.uid)
-      throw APIErrors.conflict('Username already taken')
+      throw APIErrors.conflict('Username is already taken')
     update.username = cleanedUsername
   }
 
@@ -37,69 +36,23 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
 
   debug({update})
 
-  const {name, username, avatarUrl, link = {}, ...rest} = update
-  await updateUser(pg, auth.uid, removeUndefinedProps(rest))
-
-  const stripped = mapValues(link, (value, site) => value && strip(site as any, value))
-
-  const adds = {} as {[key: string]: string}
-  const removes = []
-  for (const [key, value] of Object.entries(stripped)) {
-    if (value === null || value === '') {
-      removes.push(key)
-    } else if (value) {
-      adds[key] = value
-    }
-  }
-
-  let newLinks: any = null
-  if (Object.keys(adds).length > 0 || removes.length > 0) {
-    const data = await pg.oneOrNone(
-      `update users
-       set data = jsonb_set(
-               data, '{link}',
-               (data -> 'link' || $(adds)) - $(removes)
-                  )
-       where id = $(id)
-       returning data -> 'link' as link`,
-      {adds, removes, id: auth.uid},
-    )
-    newLinks = data?.link
-  }
-
-  if (name) {
-    await pg.none(
-      `update users
-                   set name = $1
-                   where id = $2`,
-      [name, auth.uid],
-    )
-  }
-  if (username) {
-    await pg.none(
-      `update users
-                   set username = $1
-                   where id = $2`,
-      [username, auth.uid],
-    )
-  }
-  if (avatarUrl) {
-    await updateUser(pg, auth.uid, {avatarUrl})
-  }
+  const {name, username, avatarUrl, ...rest} = update
+  await updateUserData(pg, auth.uid, removeUndefinedProps(rest))
 
   // Ensure clients listening on `user/{id}` (e.g. AuthContext via useWebsocketUser)
   // get notified about link-only changes as well.
-  if (name || username || avatarUrl || newLinks != null) {
+  if (name || username || avatarUrl) {
+    await updateUser(auth.uid, {name, username, avatarUrl})
+
     broadcastUpdatedUser(
       removeUndefinedProps({
         id: auth.uid,
         name,
         username,
         avatarUrl,
-        link: newLinks ?? undefined,
       }),
     )
   }
 
-  return toUserAPIResponse({...user, ...update, link: newLinks})
+  return toUserAPIResponse({...user, ...update})
 }

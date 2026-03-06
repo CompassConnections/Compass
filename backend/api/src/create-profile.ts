@@ -8,7 +8,7 @@ import {tryCatch} from 'common/util/try-catch'
 import {track} from 'shared/analytics'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {updateUser} from 'shared/supabase/users'
+import {updateUserData} from 'shared/supabase/users'
 import {insert} from 'shared/supabase/utils'
 import {getUser, log} from 'shared/utils'
 
@@ -29,7 +29,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
   if (!user) throw APIErrors.unauthorized('Your account was not found')
   if (user.createdTime > Date.now() - HOUR_MS) {
     // If they just signed up, set their avatar to be their pinned photo
-    updateUser(pg, auth.uid, {avatarUrl: body.pinned_url || undefined})
+    updateUserData(pg, auth.uid, {avatarUrl: body.pinned_url || undefined})
   }
 
   debug('body', body)

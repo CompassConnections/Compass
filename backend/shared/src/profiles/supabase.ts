@@ -66,8 +66,8 @@ export const getGenderCompatibleProfiles = async (profile: ProfileRow) => {
              users on users.id = profiles.user_id
         where user_id != $(user_id)
           and looking_for_matches
-          and (data ->> 'isBannedFromPosting' != 'true' or data ->> 'isBannedFromPosting' is null)
-          and (data ->> 'userDeleted' != 'true' or data ->> 'userDeleted' is null)
+          and not is_banned_from_posting
+--           and (data ->> 'userDeleted' != 'true' or data ->> 'userDeleted' is null)
           and profiles.pinned_url is not null
     `,
     {...profile},
@@ -86,8 +86,8 @@ export const getCompatibleProfiles = async (profile: ProfileRow, radiusKm: numbe
              users on users.id = profiles.user_id
         where user_id != $(user_id)
           and looking_for_matches
-          and (data ->> 'isBannedFromPosting' != 'true' or data ->> 'isBannedFromPosting' is null)
-          and (data ->> 'userDeleted' != 'true' or data ->> 'userDeleted' is null)
+          and not is_banned_from_posting
+--           and (data ->> 'userDeleted' != 'true' or data ->> 'userDeleted' is null)
 
           -- Gender
           and (profiles.gender = any ($(pref_gender)) or profiles.gender = 'non-binary')

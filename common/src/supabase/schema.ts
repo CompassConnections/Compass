@@ -1105,12 +1105,13 @@ export type Database = {
           has_kids: number | null
           headline: string | null
           height_in_inches: number | null
-          keywords: string[] | null
           id: number
           image_descriptions: Json | null
           is_smoker: boolean | null
+          keywords: string[] | null
           languages: string[] | null
           last_modification_time: string
+          links: Json
           looking_for_matches: boolean
           mbti: string | null
           messaging_status: string
@@ -1140,12 +1141,10 @@ export type Database = {
           religious_beliefs: string | null
           search_text: string | null
           search_tsv: unknown
-          twitter: string | null
           university: string | null
           user_id: string
           visibility: Database['public']['Enums']['lover_visibility']
           wants_kids_strength: number | null
-          website: string | null
         }
         Insert: {
           age?: number | null
@@ -1180,10 +1179,11 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null
-          keywords?: string[] | null
           is_smoker?: boolean | null
+          keywords?: string[] | null
           languages?: string[] | null
           last_modification_time?: string
+          links?: Json
           looking_for_matches?: boolean
           mbti?: string | null
           messaging_status?: string
@@ -1213,12 +1213,10 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
-          twitter?: string | null
           university?: string | null
           user_id: string
           visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number | null
-          website?: string | null
         }
         Update: {
           age?: number | null
@@ -1253,10 +1251,11 @@ export type Database = {
           height_in_inches?: number | null
           id?: number
           image_descriptions?: Json | null
-          keywords?: string[] | null
           is_smoker?: boolean | null
+          keywords?: string[] | null
           languages?: string[] | null
           last_modification_time?: string
+          links?: Json
           looking_for_matches?: boolean
           mbti?: string | null
           messaging_status?: string
@@ -1286,12 +1285,10 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
-          twitter?: string | null
           university?: string | null
           user_id?: string
           visibility?: Database['public']['Enums']['lover_visibility']
           wants_kids_strength?: number | null
-          website?: string | null
         }
         Relationships: [
           {
@@ -1538,25 +1535,31 @@ export type Database = {
       }
       users: {
         Row: {
+          avatar_url: string | null
           created_time: string
           data: Json
           id: string
+          is_banned_from_posting: boolean | null
           name: string
           name_username_vector: unknown
           username: string
         }
         Insert: {
+          avatar_url?: string | null
           created_time?: string
           data: Json
           id?: string
+          is_banned_from_posting?: boolean | null
           name: string
           name_username_vector?: unknown
           username: string
         }
         Update: {
+          avatar_url?: string | null
           created_time?: string
           data?: Json
           id?: string
+          is_banned_from_posting?: boolean | null
           name?: string
           name_username_vector?: unknown
           username?: string
@@ -1741,7 +1744,7 @@ export type Database = {
       is_admin: {Args: never; Returns: boolean} | {Args: {user_id: string}; Returns: boolean}
       millis_interval: {
         Args: {end_millis: number; start_millis: number}
-        Returns: unknown
+        Returns: string
       }
       millis_to_ts: {Args: {millis: number}; Returns: string}
       random_alphanumeric: {Args: {length: number}; Returns: string}

@@ -1,11 +1,9 @@
-import {Socials} from './socials'
 import {notification_preferences} from './user-notification-preferences'
 
 export type BaseUser = {
   id: string
   name: string
   username: string
-  link: Socials // Social links
 }
 
 export type User = BaseUser & {

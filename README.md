@@ -270,12 +270,15 @@ components or improving wording in some pages. You can find those files in `web/
 
 ##### Resources
 
-There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
+There is a lot of documentation in the [docs](docs) folder and across the repo, namely:
 
 - [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
 - [development.md](docs/development.md) for additional instructions, such as adding new profile fields or languages.
 - [TESTING.md](docs/TESTING.md) for how to write tests.
+- [PERFORMANCE_OPTIMIZATION.md](docs/PERFORMANCE_OPTIMIZATION.md) for frontend, backend, and database performance best practices.
+- [DATABASE_CONNECTION_POOLING.md](docs/DATABASE_CONNECTION_POOLING.md) for database connection management and troubleshooting.
+- [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for resolving common development issues.
 - [web](web) for the web.
 - [backend/api](backend/api) for the backend API.
 - [android](android) for the Android app.

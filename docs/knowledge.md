@@ -371,6 +371,11 @@ and update the database directly from the frontend.
 `createSupabaseDirectClient` is used on the backend. it lets us specify sql strings to run directly on our database,
 using the pg-promise library. The client (code in web) does not have permission to do this.
 
+For more information on database connection management and optimization, see:
+
+- [Database Connection Pooling Guide](DATABASE_CONNECTION_POOLING.md) for detailed configuration and troubleshooting
+- [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md) for database query optimization techniques
+
 Another example using the direct client:
 
 ```ts

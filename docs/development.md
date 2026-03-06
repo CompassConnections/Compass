@@ -12,6 +12,9 @@ See those other useful documents as well:
 - [README.md](../web/README.md) for the frontend / web server
 - [TESTING.md](TESTING.md) for testing guidance and direction
 - [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) for database schema and migrations
+- [PERFORMANCE_OPTIMIZATION.md](PERFORMANCE_OPTIMIZATION.md) for performance best practices
+- [DATABASE_CONNECTION_POOLING.md](DATABASE_CONNECTION_POOLING.md) for database connection management
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for resolving common development issues
 
 ### Adding a new profile field
 

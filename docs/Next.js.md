@@ -437,3 +437,9 @@ Fallback generation effectively behaves like **ISR** for pages not pre-rendered.
 ### Downtime
 
 To simulate downtime **you need the error to happen at runtime, not at build time**. That means the page must be **server-rendered**, not statically generated.
+
+### Performance Optimization Resources
+
+For detailed performance optimization strategies specific to Compass, see:
+
+- [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md) for frontend, backend, and infrastructure optimization techniques

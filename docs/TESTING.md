@@ -802,6 +802,8 @@ These are seeded automatically by `yarn test:db:seed`:
 
 ## Troubleshooting
 
+For comprehensive troubleshooting guidance beyond testing-specific issues, see the [Troubleshooting Guide](TROUBLESHOOTING.md) which covers development environment setup, database and emulator issues, API problems, and more.
+
 ### Port already in use
 
 ```bash
@@ -882,3 +884,5 @@ To download the Playwright report from a failed CI run:
 2. Click **Artifacts** at the bottom
 3. Download `playwright-report`
 4. Open `index.html` in your browser
+
+For performance testing guidance and benchmarking strategies, see the [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md).

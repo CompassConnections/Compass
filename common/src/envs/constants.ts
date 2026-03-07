@@ -128,6 +128,7 @@ export const RESERVED_PATHS = new Set([
   'members',
   'message',
   'messages',
+  'monitoring',
   'notifications',
   'og-test',
   'organization',

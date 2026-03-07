@@ -406,7 +406,7 @@ export function CompatibilityAnswerBlock(props: {
       }
     >
       <Row
-        className="text-ink-800 justify-between gap-1 font-semibold"
+        className="justify-between gap-1 font-semibold"
         data-testid="profile-compatibility-question"
       >
         {question.question}
@@ -494,7 +494,7 @@ export function CompatibilityAnswerBlock(props: {
       </Row>
       {distinctPreferredAnswersText.length > 0 && (
         <Col className="gap-2">
-          <div className="text-ink-800 text-sm">
+          <div className="text-sm">
             {preferredDoesNotIncludeAnswerText
               ? t('answers.display.acceptable', 'Acceptable')
               : t('answers.display.also_acceptable', 'Also acceptable')}

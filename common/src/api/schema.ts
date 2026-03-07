@@ -871,6 +871,17 @@ export const API = (_apiTypeCheck = {
     summary: 'Retrieve messages for a private channel',
     tag: 'Messages',
   },
+  'get-last-messages': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      channelIds: z.array(z.coerce.number()).optional(),
+    }),
+    returns: {} as Record<number, PrivateChatMessage>,
+    summary: 'Get last message for each channel',
+    tag: 'Messages',
+  },
   'get-channel-seen-time': {
     method: 'GET',
     authed: true,

@@ -1,5 +1,5 @@
 import {ProfileRow} from 'common/profiles/profile'
-import {convertUserToDb} from 'common/supabase/users'
+import {convertUserToSQL} from 'common/supabase/users'
 import {User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
@@ -20,7 +20,7 @@ export const updateUser = async (id: string, updated: Partial<User>) => {
   if (!updated) return
   const fullUpdate = {id, ...updated}
   const pg = createSupabaseDirectClient()
-  const result = await update(pg, 'users', 'id', convertUserToDb(fullUpdate))
+  const result = await update(pg, 'users', 'id', convertUserToSQL(fullUpdate))
   broadcastUpdatedUser(fullUpdate)
   return result
 }

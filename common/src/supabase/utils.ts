@@ -147,8 +147,9 @@ export const convertSQLtoTS = <R extends Selectable, T extends Record<string, an
   else return {...newRows} as T
 }
 
-export const convertObjectToSQLRow = <T extends Record<string, any>, R extends Selectable>(
+export const convertObjectToSQLRow = <R extends Selectable, T extends Record<string, any>>(
   objData: Partial<T>,
+  converters: TypeConverter<any, any>,
 ) => {
   const entries = Object.entries(objData)
 
@@ -156,9 +157,12 @@ export const convertObjectToSQLRow = <T extends Record<string, any>, R extends S
     .map((entry) => {
       const [key, val] = entry as [string, T[keyof T]]
 
+      const convert = converters[key]
+      if (convert === false) return null
       const decamelizeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase()
+      const jsVal = convert != null ? convert(val) : val
 
-      return [decamelizeKey, val]
+      return [decamelizeKey, jsVal]
     })
     .filter((x) => x != null)
 

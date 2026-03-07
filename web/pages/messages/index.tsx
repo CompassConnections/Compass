@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {PrivateChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
@@ -15,8 +16,8 @@ import {Avatar} from 'web/components/widgets/avatar'
 import {Title} from 'web/components/widgets/title'
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
+import {useLastPrivateMessages} from 'web/hooks/use-last-private-messages'
 import {
-  usePrivateMessages,
   useSortedPrivateMessageMemberships,
   useUnseenPrivateMessageChannels,
 } from 'web/hooks/use-private-messages'
@@ -54,6 +55,7 @@ export function MessagesContent(props: {currentUser: User}) {
   const t = useT()
   const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(currentUser.id, true)
+  const lastMessages = useLastPrivateMessages(currentUser.id)
 
   return (
     <>
@@ -76,6 +78,7 @@ export function MessagesContent(props: {currentUser: User}) {
               currentUser={currentUser}
               channel={channel}
               lastSeenTime={lastSeenChatTimeByChannelId[channel.channel_id]}
+              lastMessage={lastMessages[channel.channel_id]}
             />
           )
         })}
@@ -89,13 +92,12 @@ export const MessageChannelRow = (props: {
   currentUser: User
   channel: PrivateMessageChannel
   lastSeenTime: string
+  lastMessage?: PrivateChatMessage
 }) => {
-  const {otherUserIds, lastSeenTime, currentUser, channel} = props
+  const {otherUserIds, lastSeenTime, currentUser, channel, lastMessage} = props
   const channelId = channel.channel_id
   const otherUsers = useUsersInStore(otherUserIds, `${channelId}`, 100)
-  const {messages} = usePrivateMessages(channelId, 1, currentUser.id)
-  const unseen = (messages?.[0]?.createdTimeTs ?? '0') > lastSeenTime
-  const chat = messages?.[0]
+  const unseen = (lastMessage?.createdTimeTs ?? '0') > lastSeenTime
   const numOthers = otherUsers?.length ?? 0
   const t = useT()
 
@@ -146,7 +148,7 @@ export const MessageChannelRow = (props: {
               {isBanned && <BannedBadge />}
             </span>
             <span className={'text-ink-400 dark:text-ink-500 text-xs'}>
-              {chat && <RelativeTimestamp time={chat.createdTime} />}
+              {lastMessage && <RelativeTimestamp time={lastMessage.createdTime} />}
             </span>
           </Row>
           <Row className="items-center justify-between gap-1">
@@ -156,10 +158,10 @@ export const MessageChannelRow = (props: {
                 unseen ? '' : 'text-ink-500 dark:text-ink-600',
               )}
             >
-              {chat && (
+              {lastMessage && (
                 <>
-                  {chat.userId == currentUser.id && t('messages.you_prefix', 'You: ')}
-                  {parseJsonContentToText(chat.content)}
+                  {lastMessage.userId == currentUser.id && t('messages.you_prefix', 'You: ')}
+                  {parseJsonContentToText(lastMessage.content)}
                 </>
               )}
             </span>

@@ -139,6 +139,25 @@ export const API = (_apiTypeCheck = {
     tag: 'General',
   },
   /**
+   * Get platform statistics
+   * Returns public statistics about the platform including user count and other metrics
+   *
+   * @returns Object containing various platform statistics
+   */
+  stats: {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({}),
+    returns: {} as {
+      users: number
+      profiles: number
+      upcomingEvents: number
+    },
+    summary: 'Get platform statistics',
+    tag: 'General',
+  },
+  /**
    * Get Supabase JWT token
    * Returns a JWT token for authenticated clients to access Supabase directly
    * Requires Firebase authentication

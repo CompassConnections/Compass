@@ -89,6 +89,7 @@ import {setCompatibilityAnswer} from './set-compatibility-answer'
 import {setLastOnlineTime} from './set-last-online-time'
 import {shipProfiles} from './ship-profiles'
 import {starProfile} from './star-profile'
+import {stats} from './stats'
 import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
@@ -662,6 +663,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'rsvp-event': rsvpEvent,
   'update-event': updateEvent,
   health: health,
+  stats: stats,
   me: getMe,
   'get-user-and-profile': getUserAndProfileHandler,
   report: report,

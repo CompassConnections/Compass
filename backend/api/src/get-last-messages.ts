@@ -23,7 +23,7 @@ export const getLastMessages: APIHandler<'get-last-messages'> = async (props, au
     convertPrivateChatMessage,
   )
 
-  // Required to parse to number? If so, should prob create a helper to reuse in other places
+  // Required to parse to number? If so, should prob create a helper to reuse in other places?
   return messages.reduce(
     (acc, msg) => {
       acc[Number(msg.channelId)] = msg

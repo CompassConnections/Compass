@@ -94,7 +94,7 @@ export const usePaginatedScrollingMessages = (
         setShowMessages(true)
         initialScroll.current = false
       }
-    } else if (messages[0]?.userId === userId) {
+    } else if (messages[0]?.userId === userId && messages[0]?.createdTime > Date.now() - 5000) {
       debug('Sent message')
       // Sent a message, scroll to bottom
       outerDiv?.current?.scrollTo({

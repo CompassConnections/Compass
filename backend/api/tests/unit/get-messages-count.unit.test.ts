@@ -1,4 +1,4 @@
-import {getMessagesCount} from 'api/get-messages-count'
+import {getMessagesCountEndpoint} from 'api/get-messages-count'
 import {AuthedUser} from 'api/helpers/endpoint'
 import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
@@ -27,7 +27,7 @@ describe('getMessagesCount', () => {
 
       ;(mockPg.one as jest.Mock).mockResolvedValue(mockResults)
 
-      const result: any = await getMessagesCount(mockProps, mockAuth, mockReq)
+      const result: any = await getMessagesCountEndpoint(mockProps, mockAuth, mockReq)
 
       expect(result.count).toBe(Number(mockResults.count))
       expect(mockPg.one).toBeCalledTimes(1)

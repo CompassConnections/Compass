@@ -3,7 +3,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 import {APIHandler} from './helpers/endpoint'
 
-export const getMessagesCount: APIHandler<'get-messages-count'> = async (_, _auth) => {
+export async function getMessagesCount() {
   const pg = createSupabaseDirectClient()
   const result = await pg.one(
     `
@@ -17,4 +17,8 @@ export const getMessagesCount: APIHandler<'get-messages-count'> = async (_, _aut
   return {
     count: count,
   }
+}
+
+export const getMessagesCountEndpoint: APIHandler<'get-messages-count'> = async (_, _auth) => {
+  return await getMessagesCount()
 }

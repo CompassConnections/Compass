@@ -6,7 +6,7 @@ import {createVote} from 'api/create-vote'
 import {deleteMessage} from 'api/delete-message'
 import {editMessage} from 'api/edit-message'
 import {getHiddenProfiles} from 'api/get-hidden-profiles'
-import {getMessagesCount} from 'api/get-messages-count'
+import {getMessagesCountEndpoint} from 'api/get-messages-count'
 import {getOptions} from 'api/get-options'
 import {
   getChannelMemberships,
@@ -599,7 +599,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-channel-seen-time': getLastSeenChannelTime,
   'get-compatibility-questions': getCompatibilityQuestions,
   'get-likes-and-ships': getLikesAndShips,
-  'get-messages-count': getMessagesCount,
+  'get-messages-count': getMessagesCountEndpoint,
   'get-notifications': getNotifications,
   'get-options': getOptions,
   'get-profile-answers': getProfileAnswers,

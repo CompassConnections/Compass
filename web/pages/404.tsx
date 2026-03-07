@@ -5,6 +5,10 @@ import {SEO} from 'web/components/SEO'
 import {Title} from 'web/components/widgets/title'
 import {useT} from 'web/lib/locale'
 
+export const NOT_FOUND_TEXTS = {
+  profileNotFound: 'Profile not found.',
+} as const
+
 export default function Custom404(props: {customText?: string}) {
   // console.log('props:', props)
   return (
@@ -24,7 +28,12 @@ export function Custom404Content(props: {customText?: string}) {
       <Col className="mx-4">
         <Title>{t('404.title', '404: Oops!')}</Title>
         {customText ? (
-          <p>{customText}</p>
+          <p>
+            {t(
+              `custom404.${customText}`,
+              NOT_FOUND_TEXTS[customText as keyof typeof NOT_FOUND_TEXTS] ?? customText,
+            )}
+          </p>
         ) : (
           <p>{t('404.default_message', "I can't find that page.")}</p>
         )}

@@ -65,6 +65,7 @@ export const getStaticProps = async (
     return {
       props: {
         notFoundCustomText: null,
+        username,
       },
       revalidate: 1,
     }
@@ -96,6 +97,7 @@ export const getStaticProps = async (
     return {
       props: {
         notFoundCustomText: null,
+        username,
       },
       revalidate: 1,
     }
@@ -132,7 +134,7 @@ export default function UserPage(props: UserPageProps) {
   const nativeMobile = isNativeMobile()
   const router = useRouter()
   const t = useT()
-  const username = (nativeMobile ? router.query.username : props.username) as string
+  const username = (props.username ?? router.query.username) as string
   const fromSignup = router?.query?.fromSignup === 'true'
 
   // Hydrate from localStorage if coming from registration,
@@ -188,7 +190,7 @@ export default function UserPage(props: UserPageProps) {
         // All fallbacks exhausted
         setFetchedProps({
           ...props,
-          notFoundCustomText: t('userpage.profileNotFound', 'Profile not found.'),
+          notFoundCustomText: 'profileNotFound',
         })
         setLoading(false)
         return
@@ -257,7 +259,7 @@ export default function UserPage(props: UserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            {t('userpage.profileNotFound', 'Profile not found')}
+            {t('custom404.profileNotFound', 'Profile not found.')}
           </div>
         </Col>
       </PageBase>

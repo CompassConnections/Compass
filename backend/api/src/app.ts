@@ -30,6 +30,7 @@ import {APIError, APIErrors, pathWithPrefix} from 'common/api/utils'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
+import {filterDefined} from 'common/util/array'
 import cors from 'cors'
 import * as crypto from 'crypto'
 import express, {type ErrorRequestHandler, type RequestHandler} from 'express'
@@ -387,6 +388,8 @@ function generateSwaggerPaths(api: typeof API) {
   return paths
 }
 
+const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? 'API_KEY'
+
 const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
@@ -404,16 +407,37 @@ Most endpoints require a valid Firebase JWT token. This gives you access to your
 
   To obtain a token:
 
-  **In your app (JavaScript/TypeScript):**
+  **In your app or browser console while logged in (JavaScript/TypeScript):**
 \`\`\`js
-import { getAuth } from 'firebase/auth'
-const token = await getAuth().currentUser?.getIdToken()
-// Authorization: Bearer <token>
+const cookie = JSON.parse(decodeURIComponent(document.cookie.split('FBUSER_COMPASS_130BA=')[1].split(';')[0]))
+const refreshToken = cookie.stsTokenManager.refreshToken
+
+let API_KEY;
+for (const url of performance.getEntriesByType('resource')
+  .filter(r => r.initiatorType === 'script')
+  .map(r => r.name)) {
+  const text = await fetch(url).then(r => r.text())
+  const match = text.match(/AIza[A-Za-z0-9_-]{35}/)
+  if (match) { API_KEY = match[0]; break }
+}
+
+const res = await fetch(
+  'https://securetoken.googleapis.com/v1/token?key=' + API_KEY,
+  {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ grant_type: 'refresh_token', refresh_token: refreshToken })
+  }
+)
+const id_token = (await res.json()).id_token
+copy(id_token)
+console.log(id_token)
+'YOUR_FIREBASE_JWT_TOKEN is the string above'
 \`\`\`
 
 **For testing (REST):**
 \`\`\`bash
-curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}' \\
+curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}' \\
   -H 'Content-Type: application/json' \\
   --data '{"email":"you@example.com","password":"yourpassword","returnSecureToken":true}'
 # Use the returned idToken as your Bearer token
@@ -425,6 +449,8 @@ Pass the token in the Authorization header for all authenticated requests:
 \`\`\`
 Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
 \`\`\`
+
+In the API docs, authenticate through the green button at the bottom right of this section.
 
 **Don't have an account?** [Register on Compass](${DEPLOYED_WEB_URL}/register) to get started.
 
@@ -486,7 +512,7 @@ Commit: ${git.revision} (${git.commitDate})`,
       },
     },
   },
-  tags: [
+  tags: filterDefined([
     {
       name: 'General',
       description: 'General endpoints and health checks',
@@ -551,11 +577,11 @@ Commit: ${git.revision} (${git.commitDate})`,
       name: 'Internal',
       description: 'Internal API endpoints for system operations',
     },
-    {
+    IS_LOCAL && {
       name: 'Local',
       description: 'Local development and testing endpoints',
     },
-  ],
+  ]),
 } as OpenAPIV3.Document
 
 // Triggers Missing parameter name at index 3: *; visit https://git.new/pathToRegexpError for info

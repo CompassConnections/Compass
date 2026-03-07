@@ -149,6 +149,7 @@ export const API = (_apiTypeCheck = {
     authed: false,
     rateLimited: true,
     props: z.object({}),
+    cache: 'public, max-age=60',
     returns: {} as {
       users: number
       profiles: number

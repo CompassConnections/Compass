@@ -410,30 +410,18 @@ Most endpoints require a valid Firebase JWT token. This gives you access to your
 
   **In your app or browser console while logged in (JavaScript/TypeScript):**
 \`\`\`js
-const cookie = JSON.parse(decodeURIComponent(document.cookie.split('FBUSER_COMPASS_130BA=')[1].split(';')[0]))
-const refreshToken = cookie.stsTokenManager.refreshToken
-
-let API_KEY;
-for (const url of performance.getEntriesByType('resource')
-  .filter(r => r.initiatorType === 'script')
-  .map(r => r.name)) {
-  const text = await fetch(url).then(r => r.text())
-  const match = text.match(/AIza[A-Za-z0-9_-]{35}/)
-  if (match) { API_KEY = match[0]; break }
+const db = await new Promise((res, rej) => {
+  const req = indexedDB.open('firebaseLocalStorageDb')
+  req.onsuccess = () => res(req.result)
+  req.onerror = rej
+})
+const req = db.transaction('firebaseLocalStorage', 'readonly').objectStore('firebaseLocalStorage').getAll()
+req.onsuccess = () => {
+  const id_token = req.result[0].value.stsTokenManager.accessToken
+  console.log('YOUR_FIREBASE_JWT_TOKEN is the string below:')
+  console.log(id_token)
+  copy(id_token)
 }
-
-const res = await fetch(
-  'https://securetoken.googleapis.com/v1/token?key=' + API_KEY,
-  {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ grant_type: 'refresh_token', refresh_token: refreshToken })
-  }
-)
-const id_token = (await res.json()).id_token
-copy(id_token)
-console.log(id_token)
-'YOUR_FIREBASE_JWT_TOKEN is the string above'
 \`\`\`
 
 **For testing (REST):**

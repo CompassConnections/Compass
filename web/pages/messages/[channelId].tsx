@@ -109,16 +109,33 @@ export const PrivateChat = (props: {
 
   const totalMessagesToLoad = 100
   const {
-    messages: realtimeMessages,
+    messages: _messages,
     setMessages,
     fetchMessages,
   } = usePrivateMessages(channelId, totalMessagesToLoad, user.id)
-  // console.log('realtimeMessages', realtimeMessages)
+
+  const messages =
+    _messages?.map(
+      (m) =>
+        ({
+          ...m,
+          id: m.id,
+        }) as ChatMessage,
+    ) ?? []
+
+  console.log(messages)
+
+  const loadMoreMessages = useCallback(
+    (beforeId: number) => {
+      fetchMessages(undefined, beforeId)
+    },
+    [fetchMessages],
+  )
 
   const [showUsers, setShowUsers] = useState(false)
   const maxUsersToGet = 100
   const messageUserIds = uniq(
-    (realtimeMessages ?? [])
+    (messages ?? [])
       .filter((message) => message.userId !== user.id)
       .map((message) => message.userId),
   )
@@ -133,16 +150,10 @@ export const PrivateChat = (props: {
   const members = filterDefined(otherUsers?.filter((user) => memberIds.includes(user.id)) ?? [])
   const router = useRouter()
 
-  const {topVisibleRef, showMessages, messages, innerDiv, outerDiv} = usePaginatedScrollingMessages(
-    realtimeMessages?.map(
-      (m) =>
-        ({
-          ...m,
-          id: m.id,
-        }) as ChatMessage,
-    ),
-    200,
+  const {topVisibleRef, showMessages, innerDiv, outerDiv} = usePaginatedScrollingMessages(
+    messages,
     user?.id,
+    loadMoreMessages,
   )
 
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null)
@@ -239,7 +250,7 @@ export const PrivateChat = (props: {
     editor?.commands.focus()
   }, [editor])
 
-  const heightFromTop = 200
+  const SENTINEL_PREFETCH_PX = 1000 // how early to start loading
 
   const [replyToUserInfo, setReplyToUserInfo] = useState<any>()
 
@@ -366,11 +377,15 @@ export const PrivateChat = (props: {
               opacity: showMessages ? 1 : 0,
             }}
           >
-            {realtimeMessages === undefined ? (
+            {messages === undefined ? (
               <CompassLoadingIndicator />
             ) : (
               <>
-                <div className={'absolute h-1 '} ref={topVisibleRef} style={{top: heightFromTop}} />
+                <div
+                  className={'absolute h-1 '}
+                  ref={topVisibleRef}
+                  style={{top: SENTINEL_PREFETCH_PX}}
+                />
                 {groupedMessages.map((messages, i) => {
                   const firstMessage = messages[0]
                   if (firstMessage.visibility === 'system_status') {
@@ -407,7 +422,7 @@ export const PrivateChat = (props: {
                 })}
               </>
             )}
-            {realtimeMessages && messages.length === 0 && (
+            {messages && messages.length === 0 && (
               <div className="text-ink-500 dark:text-ink-600 p-2">
                 {t('messages.empty', 'No messages yet.')}
               </div>

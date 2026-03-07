@@ -1,4 +1,5 @@
 import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {debug} from 'common/logger'
 import {richTextToString} from 'common/util/parse'
 import {HOUR_MS, MINUTE_MS} from 'common/util/time'
 import {forEach, last, uniq} from 'lodash'
@@ -38,54 +39,59 @@ export function updateReactionUI(
 }
 
 export const usePaginatedScrollingMessages = (
-  realtimeMessages: ChatMessage[] | undefined,
-  heightFromTop: number,
+  messages: ChatMessage[] | undefined,
   userId: string | undefined,
+  loadMore?: (oldestMessageId: number) => void,
 ) => {
-  const messagesPerPage = 50
-  const initialScroll = useRef(realtimeMessages === undefined)
+  messages = messages ?? []
+  const initialScroll = useRef(messages === undefined)
   const outerDiv = useRef<HTMLDivElement | null>(null)
   const innerDiv = useRef<HTMLDivElement | null>(null)
   const scrollToOldTop = useRef(false)
-  const [page, setPage] = useState(1)
+  const isLoadingMore = useRef(false)
   const [prevInnerDivHeight, setPrevInnerDivHeight] = useState<number>()
+  const expectedLengthAfterLoad = useRef<number>(0)
   const {ref: topVisibleRef} = useIsVisible(() => {
+    if (loadMore && messages && messages.length > 0 && !isLoadingMore.current) {
+      isLoadingMore.current = true
+      loadMore(messages[messages.length - 1].id)
+    }
     scrollToOldTop.current = true
-    setPage(page + 1)
+    expectedLengthAfterLoad.current = messages.length + 5
   })
 
   const [showMessages, setShowMessages] = useState(false)
-  const messages = useMemo(
-    () => (realtimeMessages ?? []).slice(0, messagesPerPage * page).reverse(),
-    [JSON.stringify(realtimeMessages), page],
-  )
+  useEffect(() => {
+    isLoadingMore.current = false
+  }, [messages?.length])
   useEffect(() => {
     const outerDivHeight = outerDiv?.current?.clientHeight ?? 0
     const innerDivHeight = innerDiv?.current?.clientHeight ?? 0
     const outerDivScrollTop = outerDiv?.current?.scrollTop ?? 0
-    // For the private messages page a tolerance of 0 suffices, but for some reason the tv page requires a tolerance of 43
-    const tolerance = 43
     const difference = prevInnerDivHeight
       ? prevInnerDivHeight - outerDivHeight - outerDivScrollTop
       : 0
-    const isScrolledToBottom = difference <= tolerance
-    if ((!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) && realtimeMessages) {
-      outerDiv?.current?.scrollTo({
-        top: innerDivHeight! - outerDivHeight!,
-        left: 0,
-        behavior: prevInnerDivHeight ? 'smooth' : 'auto',
-      })
-      setShowMessages(true)
-      initialScroll.current = false
-    } else if (scrollToOldTop.current) {
-      // Loaded more messages, scroll to old top
-      const height = innerDivHeight! - prevInnerDivHeight! + heightFromTop
+    const isScrolledToBottom = difference <= 0
+
+    if (scrollToOldTop.current && messages?.length > expectedLengthAfterLoad.current) {
+      // Loaded more messages, scroll to old top position
+      const height = innerDivHeight! - prevInnerDivHeight!
       outerDiv?.current?.scrollTo({
         top: height,
         left: 0,
         behavior: 'auto',
       })
       scrollToOldTop.current = false
+    } else if (!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) {
+      if (messages) {
+        outerDiv?.current?.scrollTo({
+          top: innerDivHeight! - outerDivHeight!,
+          left: 0,
+          behavior: prevInnerDivHeight ? 'smooth' : 'auto',
+        })
+        setShowMessages(true)
+        initialScroll.current = false
+      }
     } else if (last(messages)?.userId === userId) {
       // Sent a message, scroll to bottom
       outerDiv?.current?.scrollTo({
@@ -97,12 +103,14 @@ export const usePaginatedScrollingMessages = (
 
     setPrevInnerDivHeight(innerDivHeight)
   }, [messages])
-  return {topVisibleRef, showMessages, messages, outerDiv, innerDiv}
+  return {topVisibleRef, showMessages, outerDiv, innerDiv}
 }
 
-export const useGroupedMessages = (messages: ChatMessage[]) => {
+export const useGroupedMessages = (messages: ChatMessage[] | undefined) => {
+  messages = messages ?? []
+  messages = messages.slice().reverse()
   // Create a string key that changes when any message's content or reactions change
-  console.log('messages in useGroupedMessages', messages[0]?.reactions)
+  debug('messages in useGroupedMessages', messages[0]?.reactions)
 
   return useMemo(() => {
     // Group messages created within a short time of each other.

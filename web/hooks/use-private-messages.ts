@@ -21,23 +21,32 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
     key,
   )
 
-  const fetchMessages = async (id?: number) => {
+  const fetchMessages = async (id?: number, beforeId?: number) => {
     const data = {
       channelId,
       limit,
-      // id filter is useful to pull up new messages (later than the last message in messages),
-      // but since messages can be deleted or edited, we can't rely on the id filter anymore (at least not in the same fashion)
-      // id: id ?? (messages?.length ? max(messages.map((m) => m.id)) : undefined),
+      id,
+      beforeId,
     }
     const newMessages = await api('get-channel-messages', data)
     // console.debug(key, {newMessages, messages, data})
-    setMessages((prevMessages) =>
-      orderBy(
-        uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
-        'createdTime',
-        'desc',
-      ),
-    )
+    if (beforeId) {
+      setMessages((prevMessages) =>
+        orderBy(
+          uniqBy([...(prevMessages ?? []), ...newMessages], (m) => m.id),
+          'createdTime',
+          'desc',
+        ),
+      )
+    } else {
+      setMessages((prevMessages) =>
+        orderBy(
+          uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
+          'createdTime',
+          'desc',
+        ),
+      )
+    }
   }
 
   useEffect(() => {

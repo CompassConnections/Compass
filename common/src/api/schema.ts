@@ -866,6 +866,7 @@ export const API = (_apiTypeCheck = {
       channelId: z.coerce.number(),
       limit: z.coerce.number(),
       id: z.coerce.number().optional(),
+      beforeId: z.coerce.number().optional(),
     }),
     returns: [] as PrivateChatMessage[],
     summary: 'Retrieve messages for a private channel',

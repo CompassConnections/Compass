@@ -100,10 +100,10 @@ export async function getChannelMessages(props: {
   channelId: number
   limit?: number
   id?: number | undefined
+  beforeId?: number | undefined
   userId: string
 }) {
-  // console.log('initial message request', props)
-  const {channelId, limit, id, userId} = props
+  const {channelId, limit, id, beforeId, userId} = props
   const pg = createSupabaseDirectClient()
   const {data, error} = await tryCatch(
     pg.map(
@@ -115,11 +115,12 @@ export async function getChannelMessages(props: {
                    where pumcm.user_id = $2
                      and pumcm.channel_id = $1)
        and ($4 is null or id > $4)
+       and ($5 is null or id < $5)
        and not visibility = 'system_status'
      order by created_time desc
          ${limit ? 'limit $3' : ''}
     `,
-      [channelId, userId, limit, id],
+      [channelId, userId, limit, id, beforeId],
       convertPrivateChatMessage,
     ),
   )

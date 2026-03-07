@@ -74,6 +74,7 @@ export const usePaginatedScrollingMessages = (
     const isScrolledToBottom = difference <= 0
 
     if (scrollToOldTop.current && messages?.length > expectedLengthAfterLoad.current) {
+      debug('Loaded more messages, holding position')
       // Loaded more messages, scroll to old top position
       const height = innerDivHeight! - prevInnerDivHeight!
       outerDiv?.current?.scrollTo({
@@ -84,6 +85,7 @@ export const usePaginatedScrollingMessages = (
       scrollToOldTop.current = false
     } else if (!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) {
       if (messages) {
+        debug('Scenario 2')
         outerDiv?.current?.scrollTo({
           top: innerDivHeight! - outerDivHeight!,
           left: 0,
@@ -93,6 +95,7 @@ export const usePaginatedScrollingMessages = (
         initialScroll.current = false
       }
     } else if (last(messages)?.userId === userId) {
+      debug('Sent message')
       // Sent a message, scroll to bottom
       outerDiv?.current?.scrollTo({
         top: innerDivHeight! - outerDivHeight!,

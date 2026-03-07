@@ -3,7 +3,7 @@ import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {millisToTs, tsToMillis} from 'common/supabase/utils'
 import {orderBy, uniq, uniqBy} from 'lodash'
 import {usePathname} from 'next/navigation'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useApiSubscription} from 'web/hooks/use-api-subscription'
 import {useIsPageVisible} from 'web/hooks/use-page-visible'
@@ -21,33 +21,30 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
     key,
   )
 
-  const fetchMessages = async (id?: number, beforeId?: number) => {
-    const data = {
-      channelId,
-      limit,
-      id,
-      beforeId,
-    }
-    const newMessages = await api('get-channel-messages', data)
-    // console.debug(key, {newMessages, messages, data})
-    if (beforeId) {
-      setMessages((prevMessages) =>
-        orderBy(
-          uniqBy([...(prevMessages ?? []), ...newMessages], (m) => m.id),
-          'createdTime',
-          'desc',
-        ),
-      )
-    } else {
-      setMessages((prevMessages) =>
-        orderBy(
-          uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
-          'createdTime',
-          'desc',
-        ),
-      )
-    }
-  }
+  const fetchMessages = useCallback(
+    async (id?: number, beforeId?: number) => {
+      const data = {channelId, limit, id, beforeId}
+      const newMessages = await api('get-channel-messages', data)
+      if (beforeId) {
+        setMessages((prevMessages) =>
+          orderBy(
+            uniqBy([...(prevMessages ?? []), ...newMessages], (m) => m.id),
+            'createdTime',
+            'desc',
+          ),
+        )
+      } else {
+        setMessages((prevMessages) =>
+          orderBy(
+            uniqBy([...newMessages, ...(prevMessages && id ? prevMessages : [])], (m) => m.id),
+            'createdTime',
+            'desc',
+          ),
+        )
+      }
+    },
+    [channelId, limit],
+  )
 
   useEffect(() => {
     fetchMessages()
@@ -95,11 +92,13 @@ export const useUnseenPrivateMessageChannels = (userId: string, ignorePageSeenTi
     const seenTimes = await api('get-channel-seen-time', {
       channelIds: forChannelIds,
     })
-    const newState = lastSeenChatTimeByChannelId ?? {}
-    seenTimes.forEach(([channelId, time]) => {
-      newState[channelId] = time
+    setLastSeenChatTimeByChannelId((prevState) => {
+      const newState = {...(prevState ?? {})}
+      seenTimes.forEach(([channelId, time]) => {
+        newState[channelId] = time
+      })
+      return newState
     })
-    setLastSeenChatTimeByChannelId(newState)
   }
 
   useEffect(() => {

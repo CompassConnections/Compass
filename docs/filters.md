@@ -1,0 +1,22 @@
+- Seeking — the type of connection someone is looking for (friendship, relationship, collaboration, etc.).
+- Living — where someone currently lives, with a selectable search radius.
+- Age — age range.
+- Gender — gender identity.
+- Status — current relationship status (e.g., single, in a relationship).
+- Style — preferred romantic relationship structure (e.g., monogamous, polyamorous).
+- Has Kids — whether someone currently has children.
+- Wants Kids — how strongly someone wants children in the future.
+- Grew Up — the location where someone was raised, with a selectable radius.
+- Education — highest level of education completed.
+- Work — based on professional field or occupation keywords.
+- Interests — hobbies or topics someone is interested in.
+- Causes — social, environmental, or ethical causes someone cares about.
+- Diet — dietary lifestyle (e.g., vegan, vegetarian, omnivore).
+- Drinks — typical alcohol consumption frequency.
+- Smoker — smoking status.
+- Languages — by languages spoken.
+- Politics — political beliefs or ideological alignment.
+- Religion — religious belief or affiliation.
+- MBTI — Myers–Briggs personality type.
+- Big Five — ranges of the Big Five personality traits.
+- Last Active — how recently they were active on the platform.

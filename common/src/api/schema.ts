@@ -18,7 +18,7 @@ import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
 import {LikeData, ShipData} from './profile-types'
-import {FullUser} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
+import {FullUser, HiddenProfile} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
@@ -709,13 +709,7 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {
       status: 'success'
-      hidden: {
-        id: string
-        name: string
-        username: string
-        avatarUrl?: string | null
-        createdTime?: string
-      }[]
+      hidden: HiddenProfile[]
       count: number
     },
     summary: 'Get the list of profiles the current user has hidden',

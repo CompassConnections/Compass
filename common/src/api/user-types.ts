@@ -25,3 +25,11 @@ export function toUserAPIResponse(user: User): FullUser {
     isTrustworthy: MOD_USERNAMES.includes(user.username),
   })
 }
+
+export type HiddenProfile = {
+  id: string
+  name: string
+  username: string
+  avatarUrl?: string | null
+  createdTime?: string
+}

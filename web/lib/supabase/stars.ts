@@ -1,4 +1,5 @@
 import {DisplayUser} from 'common/api/user-types'
+import {convertPartialUser} from 'common/supabase/users'
 import {run} from 'common/supabase/utils'
 import {db} from 'web/lib/supabase/db'
 
@@ -14,7 +15,9 @@ export const getStars = async (creatorId: string) => {
   if (!data) return []
 
   const ids = data.map((d) => d.target_id as string)
-  const {data: users} = await run(db.from('users').select(`id, name, username`).in('id', ids))
+  const {data: users} = await run(
+    db.from('users').select(`id, name, username, avatar_url`).in('id', ids),
+  )
 
-  return users as unknown as DisplayUser[]
+  return users.map(convertPartialUser) as unknown as DisplayUser[]
 }

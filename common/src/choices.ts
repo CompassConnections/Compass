@@ -227,6 +227,7 @@ export const GENDERS_PLURAL = {
 } as const
 
 export const LAST_ONLINE_CHOICES = {
+  now: 'Currently online',
   today: 'Today',
   '3days': 'Last 3 days',
   week: 'Last week',

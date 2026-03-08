@@ -437,15 +437,17 @@ export const loadProfiles = async (props: profileQueryType) => {
     last_active &&
       where(`user_activity.last_online_time >= NOW() - INTERVAL $(last_active_interval)`, {
         last_active_interval:
-          last_active === 'today'
-            ? '1 day'
-            : last_active === '3days'
-              ? '3 days'
-              : last_active === 'week'
-                ? '7 days'
-                : last_active === 'month'
-                  ? '30 days'
-                  : '90 days',
+          last_active === 'now'
+            ? '30 minutes'
+            : last_active === 'today'
+              ? '1 day'
+              : last_active === '3days'
+                ? '3 days'
+                : last_active === 'week'
+                  ? '7 days'
+                  : last_active === 'month'
+                    ? '30 days'
+                    : '90 days',
       }),
 
     // Exclude profiles that the requester has chosen to hide

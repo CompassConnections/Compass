@@ -2,29 +2,46 @@
 
 ## Preamble
 
-We, the community of Compass, commit to building and maintaining this project in the public interest, ensuring it remains open, collaborative, and resistant to centralized capture. We adopt this constitution to govern ourselves democratically, protect the integrity of the project, and ensure fair participation.
+We, the community of Compass, commit to building and maintaining this project in the public interest, ensuring it
+remains open, collaborative, and resistant to centralized capture. We adopt this constitution to govern ourselves
+democratically, protect the integrity of the project, and ensure fair participation.
 
 ## Article I: Purpose and Values
 
-1. **Purpose** — To develop and maintain Compass as an open-source project for the benefit of its users and contributors.
+1. **Purpose** — To develop and maintain Compass as an open-source platform for meaningful human connections, benefiting
+   users and contributors.
 2. **Core Values** — Openness, transparency, collaboration, democratic participation, anti-capture safeguards.
 
-## Article II: Membership Levels
+Here’s a revised section of your Compass Constitution to include a **paid “Supporting Member”** tier at $20/year, with
+advisory or voting rights. I’ve integrated it carefully so it aligns with your current governance structure:
+
+## Article II: Membership Levels (Revised)
 
 1. **Definition** —
    1. A _Member_ is any individual who has an account.
    2. A _Volunteer_ is a member with voting rights (also known as **voting member**).
-   3. An _Administrator_ is a specific type of _Volunteer_ which has more power and write access to the code.
+   3. An _Administrator_ is a specific type of _Volunteer_ with write access to the code and higher-level
+      responsibilities.
+   4. A _Supporting Member_ is a member who contributes **at least $20 USD per year** to the project and may have \*
+      \*advisory voting rights** or **full voting rights\*\* on proposals as determined by the Membership Committee.
+
 2. **Eligibility** —
    1. To become a Volunteer, an individual must:
       - Have a 1:1 with a current volunteer.
       - Contribute meaningfully to the project (code, documentation, design, outreach, community moderation) for a
-        minimum of 5 hours.
-      - Be approved by the Membership Committee (see Article IV) by a **supermajority vote**.
-      - To become an Administrator, all current Administrators must unanimously vote for them to have the role.
-3. **Provisional Volunteers** — New participants can join discussions but cannot vote until they have met the criteria.
-4. **Loss of Membership** — Volunteers may be removed for:
-   - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months).
+        minimum of 5 hours **or provide an equivalent financial contribution approved by the Membership Committee**.
+      - Be approved by the Membership Committee by a **supermajority vote**.
+
+   2. Supporting Members may gain **advisory or voting rights** by contributing $20 USD/year; the exact level of
+      participation is defined by the Membership Committee.
+   3. To become an Administrator, all current Administrators must unanimously vote for them to have the role.
+
+3. **Provisional Volunteers and Members** — New participants and Supporting Members can join discussions but cannot vote
+   until they have met the criteria or have been granted advisory/voting rights by the Membership Committee.
+
+4. **Loss of Membership** — Volunteers or Supporting Members may be removed for:
+   - Sustained inactivity (e.g., less than 10 hours of contribution for 12 months or lapsed financial support for
+     Supporting Members).
    - Proven bad-faith conduct (vote manipulation, harassment, sabotage). Removal requires a **2/3 vote** of Volunteers.
 
 [Current volunteers and administrators](/members)
@@ -33,50 +50,57 @@ We, the community of Compass, commit to building and maintaining this project in
 
 ### Section 1: Interim Governance
 
-- Until the community reaches **5 voting members**, governance decisions shall be made by the _Founding Maintainer_.
-- The Founding Maintainer may appoint temporary coordinators for specific tasks.
-- Once the community reaches **5 voting members**, leadership positions will be filled via community election as described below.
+- Until **5 voting members** exist, decisions are made by the _Founding Maintainer_.
+- Temporary coordinators may be appointed for specific tasks.
+- Once **5 voting members** exist, leadership positions are filled via community election.
 
 ### Section 2: Democratic Governance
 
 1. **Voting Power** — One Volunteer = one vote.
-2. **Quorum** — At least **40%** of active Volunteers must participate for a vote to be valid.
+2. **Quorum** — Minimum **40%** of active Volunteers must participate for a valid vote.
 3. **Decision Thresholds**:
    - **Simple majority (50%+1)** — Day-to-day operational decisions.
-   - **Supermajority (2/3)** — Constitutional amendments, membership approvals/removals, major funding decisions, and
+   - **Supermajority (2/3)** — Constitutional amendments, membership approvals/removals, major funding decisions, or
      changes to project scope.
-4. **Deliberation Period** — All proposals must be open for discussion for at least **7 days** before voting begins.
-5. All administrators have veto power on votes.
-6. Members can submit feedback and vote on our Feedback Form but this is not an official vote, it is for Volunteers and Administrators to consider.
+
+4. **Deliberation Period** — All proposals open for discussion at least **7 days** before voting.
+5. **Administrator Veto** — Administrators may veto any vote.
+6. **Advisory Votes** — Donor Advisory Members may vote on feature priorities and improvements but not governance,
+   constitutional amendments, or membership decisions.
 
 ## Article IV: Committees
 
-1. **Membership Committee** — Reviews volunteer applications, handles disputes over eligibility.
-2. **Technical Committee** — Oversees code quality, ensures open-source compliance.
-3. **Governance Committee** — Maintains the constitution, moderates community votes, investigates governance concerns.
-4. **Elections** — Committees are elected annually by Volunteers once the community reaches 5 voting members.
+1. **Membership Committee** — Reviews Volunteer applications and eligibility disputes.
+2. **Technical Committee** — Ensures code quality, compliance with open-source principles, and maintains the platform.
+3. **Governance Committee** — Maintains the constitution, moderates votes, investigates governance concerns.
+4. **Elections** — Committees elected annually by Volunteers once the community reaches **5 voting members**.
 
 ## Article V: Anti-Capture Safeguards
 
-1. **Contribution Thresholds** — Voting rights are earned through sustained contribution, not just joining.
-2. **Probation Period** — New Volunteers gain voting rights only after 1 month.
-3. **Identity Verification** — Each Volunteers must have a unique, verifiable identity to prevent sockpuppets.
-4. **Conflict of Interest Disclosure** — Any Volunteers with a direct financial interest in a competing or controlling entity must disclose before voting.
+1. **Contribution-Based Rights** — Voting rights earned through meaningful contribution or financial support equivalent
+   to volunteer hours.
+2. **Probation** — New Volunteers gain voting rights after 1 month of active contribution.
+3. **Identity Verification** — Volunteers must have unique, verifiable identities.
+4. **Conflict of Interest Disclosure** — Volunteers must disclose any direct financial interest in competing or
+   controlling entities before voting.
 
 ## Article VI: Transparency
 
-1. **Public Records** — All meeting minutes, code changes, and governance votes must be publicly available.
-2. **Open Deliberations** — Discussions take place in accessible public channels.
+1. **Public Records** — All minutes, code changes, and votes must be publicly available.
+2. **Open Deliberations** — Discussions take place in accessible, public channels.
 
 ## Article VII: Amendments
 
-1. **Proposal** — Amendments require co-signature by at least **10%** of Volunteers.
-2. **Approval** — A **2/3 majority vote** in favor. Any administrator can veto the vote.
-3. **Deliberation** — A minimum 7-day discussion period before voting.
+1. **Proposal** — Amendments require co-signature of **10% of Volunteers**.
+2. **Approval** — **2/3 majority** of Volunteers; Administrators may veto.
+3. **Deliberation** — Minimum **7-day discussion** period before voting.
 
 ## Article VIII: Dissolution
 
-If the project is dissolved, the platform will be shut down and made unavailable. The source code will always be publicly available on GitHub. The funds will be donated to a charity voted by the Members.
+- Upon dissolution, the platform will shut down.
+- The source code remains publicly available on GitHub.
+- Remaining funds are donated to a charity chosen by Volunteers.
 
-_Adopted on: August 11, 2025_  
-_Founding Maintainer: Martin Braquet_
+**Adopted on: August 11, 2025**
+
+**Founding Maintainer:** Martin Braquet

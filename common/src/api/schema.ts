@@ -154,6 +154,9 @@ export const API = (_apiTypeCheck = {
       users: number
       profiles: number
       upcomingEvents: number
+      messages: number
+      genderRatio: Record<string, number>
+      genderCounts: Record<string, number>
     },
     summary: 'Get platform statistics',
     tag: 'General',

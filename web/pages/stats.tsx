@@ -5,12 +5,14 @@ import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import ChartMembers from 'web/components/widgets/charts'
 import StatBox from 'web/components/widgets/stat-box'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {getCount} from 'web/lib/supabase/users'
 
 export default function Stats() {
   const t = useT()
   const [data, setData] = useState<Record<string, number | null>>({})
+  const [statsData, setStatsData] = useState<any>(null)
 
   useEffect(() => {
     async function load() {
@@ -27,14 +29,23 @@ export default function Stats() {
         'vote_results',
       ] as const
 
-      const settled = await Promise.allSettled(tables.map((t) => getCount(t)))
+      const [settled, statsResult] = await Promise.allSettled([
+        Promise.allSettled(tables.map((t) => getCount(t))),
+        api('stats', {}),
+      ])
 
       const result: Record<string, number | null> = {}
-      settled.forEach((res, i) => {
-        const key = tables[i]
-        if (res.status === 'fulfilled') result[key] = res.value
-        else result[key] = null
-      })
+      if (settled.status === 'fulfilled') {
+        settled.value.forEach((res, i) => {
+          const key = tables[i]
+          if (res.status === 'fulfilled') result[key] = res.value
+          else result[key] = null
+        })
+      }
+
+      if (statsResult.status === 'fulfilled') {
+        setStatsData(statsResult.value)
+      }
 
       setData(result)
     }
@@ -106,6 +117,12 @@ export default function Stats() {
             <StatBox
               value={data.profile_comments}
               label={t('stats.endorsements', 'Endorsements')}
+            />
+          )}
+          {!!statsData?.genderRatio && (
+            <StatBox
+              value={`${statsData.genderRatio.male} / ${statsData.genderRatio.female}`}
+              label={t('stats.gender_ratio', 'Male / Female Ratio')}
             />
           )}
         </Col>

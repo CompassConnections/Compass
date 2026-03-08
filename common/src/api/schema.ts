@@ -761,6 +761,7 @@ export const API = (_apiTypeCheck = {
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),
         shortBio: zBoolean.optional().optional(),
+        hasPhoto: zBoolean.optional().optional(),
         geodbCityIds: arraybeSchema.optional(),
         lat: z.coerce.number().optional(),
         lon: z.coerce.number().optional(),

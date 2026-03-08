@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/node'
 import {type APIHandler} from 'api/helpers/endpoint'
-import {debug} from 'common/logger'
 import {OptionTableKey} from 'common/profiles/constants'
 import {compact} from 'lodash'
 import {convertRow} from 'shared/profiles/supabase'
@@ -34,6 +33,8 @@ export type profileQueryType = {
   name?: string | undefined
   /** Filter by gender identity */
   genders?: string[] | undefined
+  /** Filter for profiles with photos */
+  hasPhoto?: boolean | undefined
   /** Filter by education level */
   education_levels?: string[] | undefined
   /** Filter by preferred gender for matches */
@@ -89,13 +90,14 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  debug('loadProfiles', props)
+  console.debug('get-profiles', props)
   const {
     limit: limitParam,
     after,
     name,
     userId,
     genders,
+    hasPhoto,
     education_levels,
     pref_gender,
     pref_age_min,
@@ -428,6 +430,8 @@ export const loadProfiles = async (props: profileQueryType) => {
        OR occupation_title IS NOT NULL
        `,
       ),
+
+    hasPhoto && where("pinned_url IS NOT NULL AND pinned_url != ''"),
 
     lastModificationWithin &&
       where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {

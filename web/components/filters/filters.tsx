@@ -17,6 +17,7 @@ import {
 } from 'web/components/filters/big5-filter'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
+import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
 import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
 import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
@@ -251,14 +252,6 @@ function Filters(props: {
       {/* Short Bios */}
       <Col className="p-4 pb-2">
         <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
-      </Col>
-
-      {/* Show Photos */}
-      <Col className="p-4 pt-0">
-        <ShowPhotosToggle
-          updateRenderingOptions={updateRenderingOptions}
-          renderingOptions={renderingOptions}
-        />
       </Col>
 
       {/* ALWAYS VISIBLE FILTERS */}
@@ -731,6 +724,38 @@ function Filters(props: {
         >
           <LastActiveFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
+
+        {/* HAS PHOTO */}
+        <FilterSection
+          title={t('filter.has_photo.title', 'Has photos')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={!!filters.hasPhoto}
+          selection={
+            <span className={clsx(!filters.hasPhoto ? 'text-ink-900' : 'text-primary-600')}>
+              {filters.hasPhoto
+                ? t('filter.has_photo', 'Has photos')
+                : t('filter.has_photo.photos', 'Photos')}
+            </span>
+          }
+        >
+          <HasPhotoFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+      </FilterGroup>
+
+      {/* Rendering */}
+      <FilterGroup
+        title={t('filter.group.rendering', 'Rendering')}
+        openGroup={openGroup}
+        setOpenGroup={setOpenGroup}
+      >
+        {/* Show Photos */}
+        <Col className="p-4 pt-0">
+          <ShowPhotosToggle
+            updateRenderingOptions={updateRenderingOptions}
+            renderingOptions={renderingOptions}
+          />
+        </Col>
       </FilterGroup>
     </Col>
   )

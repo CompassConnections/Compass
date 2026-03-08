@@ -37,6 +37,7 @@ const filterLabels: Record<string, string> = {
   work: '',
   religion: '',
   orderBy: '',
+  hasPhoto: '',
   diet: 'Diet',
   political_beliefs: 'Political views',
   languages: '',
@@ -148,6 +149,8 @@ export function formatFilters(
         `filter.last_active.${value}`,
         LAST_ONLINE_CHOICES[value as keyof typeof LAST_ONLINE_CHOICES] ?? value,
       )
+    else if (key === 'hasPhoto')
+      stringValue = value && translate('filter.has_photo.title', 'Has photos')
 
     if (Array.isArray(value)) {
       if (choicesIdsToLabels[key]) {

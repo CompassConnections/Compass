@@ -18,6 +18,7 @@ export type FilterFields = {
   mbti: string[] | null | undefined
   name: string | null | undefined
   shortBio: boolean | null | undefined
+  hasPhoto: boolean | null | undefined
   drinks_min: number | null | undefined
   drinks_max: number | null | undefined
   // Big Five personality filters (0-100 range)

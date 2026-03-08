@@ -1,3 +1,5 @@
+import {debug} from 'common/logger'
+
 export type RetryPolicy = {
   initialBackoffSec: number
   retries: number
@@ -17,7 +19,7 @@ export async function withRetries<T>(q: PromiseLike<T>, policy?: RetryPolicy) {
     } catch (e) {
       err = e as Error
       if (i < maxRetries) {
-        console.debug(`Error: ${err.message} - Retrying in ${delaySec}s.`)
+        debug(`Error: ${err.message} - Retrying in ${delaySec}s.`)
         await delay(delaySec * 1000)
         delaySec *= 2
       }

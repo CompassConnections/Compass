@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {debug} from 'common/logger'
 import {OptionTableKey} from 'common/profiles/constants'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {invert} from 'lodash'
@@ -28,7 +29,7 @@ export function AddOptionEntry(props: {
         selected={(profile[label] ?? []).map((s) => String(s))}
         onChange={(selected) => setProfile(label, selected as string[] | undefined)}
         addOption={(v: string) => {
-          console.log(`Adding ${label}:`, v)
+          debug(`Adding ${label}:`, v)
           setChoices((prev: string[]) => ({...prev, [v]: v}))
           setProfile(label, [...(profile[label] ?? []), v])
           return {key: v, value: v}

@@ -27,7 +27,7 @@ export const getConnectionInterests = async (props: any, userId: string) => {
     [userId, targetUserId],
   )
   const interests = _interests.map((i: {connection_type: string}) => i.connection_type) ?? []
-  console.log({_interests, interests})
+  // debug({_interests, interests})
 
   // Get what connection interest they have with me (filtering out the ones I haven't expressed interest in
   // so it's risk-free to express interest in them)

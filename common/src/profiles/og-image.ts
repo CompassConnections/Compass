@@ -34,7 +34,6 @@ export function getProfileOgImageUrl(
   profile?: Profile | null,
   // choicesIdsToLabels?: Record<string, any> | null,
 ) {
-  console.log({profile})
   const headline =
     profile?.headline ||
     parseJsonContentToText(profile?.bio as JSONContent) ||

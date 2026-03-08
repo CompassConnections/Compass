@@ -1,6 +1,7 @@
 'use client'
 
 import {APIError} from 'common/api/utils'
+import {debug} from 'common/logger'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
@@ -34,7 +35,7 @@ export default function EventsPage() {
     try {
       await api('rsvp-event', {eventId, status})
       refetch()
-      console.log('RSVPed to event', eventId)
+      debug('RSVPed to event', eventId)
     } catch (err) {
       if (err instanceof APIError) {
         toast.error(err.message)
@@ -53,7 +54,7 @@ export default function EventsPage() {
     try {
       await api('cancel-rsvp', {eventId})
       refetch()
-      console.log('Cancelled RSVP to event', eventId)
+      debug('Cancelled RSVP to event', eventId)
     } catch (err) {
       if (err instanceof APIError) {
         toast.error(err.message)
@@ -73,7 +74,7 @@ export default function EventsPage() {
       await api('cancel-event', {eventId})
       refetch()
       toast.success(t('events.event_cancelled', 'Event cancelled successfully!'))
-      console.log('Cancelled event', eventId)
+      debug('Cancelled event', eventId)
     } catch (err) {
       if (err instanceof APIError) {
         toast.error(err.message)

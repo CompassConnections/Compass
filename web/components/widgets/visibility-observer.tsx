@@ -29,9 +29,9 @@ export function LoadMoreUntilNotVisible(props: {
   const {loadMore} = props
   const isVisibleRef = useRef(false)
   const loadMoreIfVisible = useEvent(async () => {
-    console.log('loadMoreIfVisible called')
+    // debug('loadMoreIfVisible called')
     if (isVisibleRef.current && loadMore) {
-      console.log('loadMore calling')
+      // debug('loadMore calling')
       await loadMore()
       // const hasMoreResults = await loadMore()
       // if (hasMoreResults) {

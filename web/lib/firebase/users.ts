@@ -2,6 +2,7 @@ import {Capacitor} from '@capacitor/core'
 import {SocialLogin} from '@capgo/capacitor-social-login'
 import {GOOGLE_CLIENT_ID} from 'common/constants'
 import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
+import {debug} from 'common/logger'
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -86,8 +87,8 @@ export function writeReferralInfo(
  * @public
  */
 export async function googleNativeLogin() {
-  console.log('Platform:', Capacitor.getPlatform())
-  console.log('URL origin:', window.location.origin)
+  debug('Platform:', Capacitor.getPlatform())
+  debug('URL origin:', window.location.origin)
 
   await SocialLogin.initialize({google: {webClientId: GOOGLE_CLIENT_ID}})
 
@@ -97,7 +98,7 @@ export async function googleNativeLogin() {
     options: {},
   })
 
-  console.log('SocialLogin.login result:', JSON.stringify(result))
+  debug('SocialLogin.login result:', JSON.stringify(result))
 
   // Extract the tokens from the native result
   const idToken = result?.idToken
@@ -113,17 +114,17 @@ export async function googleNativeLogin() {
   // Sign in with Firebase using the credential
   const userCredential = await signInWithCredential(auth, credential)
 
-  console.log('Firebase user:', userCredential.user)
+  debug('Firebase user:', userCredential.user)
 
   return userCredential
 }
 
 export async function firebaseLogin() {
   if (isAndroidApp()) {
-    console.log('Running in APK')
+    debug('Running in APK')
     return await googleNativeLogin()
   }
-  console.log('Running in web')
+  debug('Running in web')
   const provider = new GoogleAuthProvider()
   return signInWithPopup(auth, provider).then(async (result) => {
     return result

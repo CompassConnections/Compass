@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -20,7 +21,7 @@ export function EmailVerificationButton() {
     if (firebaseUser.emailVerified) {
       // IMPORTANT: force a new ID token with updated claims
       await firebaseUser.getIdToken(true)
-      console.log('User email verified')
+      debug('User email verified')
       return true
     } else {
       toast.error(t('settings.email.not_verified', 'Email still not verified...'))

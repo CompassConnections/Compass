@@ -123,8 +123,6 @@ export const PrivateChat = (props: {
         }) as ChatMessage,
     ) ?? []
 
-  console.log(messages)
-
   const loadMoreMessages = useCallback(
     (beforeId: number) => {
       fetchMessages(undefined, beforeId)

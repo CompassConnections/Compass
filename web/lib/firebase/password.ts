@@ -18,6 +18,6 @@ export const sendPasswordReset = async (email: string | undefined) => {
         toast.error('No account found with that email.')
         return
       }
-      console.log('Failed to send password reset email', e)
+      console.error('Failed to send password reset email', e)
     })
 }

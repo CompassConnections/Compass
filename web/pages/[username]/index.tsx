@@ -54,7 +54,7 @@ export const getStaticProps = async (
     return {notFound: true}
   }
 
-  console.log('Starting getStaticProps in /[username]', username)
+  debug('Starting getStaticProps in /[username]', username)
 
   const {user, profile} = await getUserAndProfile(username)
 

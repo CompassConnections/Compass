@@ -50,7 +50,7 @@ export const useChoices = (label: OptionTableKey) => {
   }
 
   useEffect(() => {
-    console.log('Fetching choices in use effect...')
+    // debug('Fetching choices in use effect...')
     refreshChoices()
   }, [locale])
 

@@ -7,21 +7,17 @@
 // an administrator. By default a prompt is shown the first
 // time the clipboard is used (per session).
 
+import {debug} from 'common/logger'
+
 export function copyToClipboard(text: string) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text)
-  } else if (
-    (window as any).clipboardData &&
-    (window as any).clipboardData.setData
-  ) {
-    console.debug('copy 2')
+  } else if ((window as any).clipboardData && (window as any).clipboardData.setData) {
+    debug('copy 2')
     // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
     return (window as any).clipboardData.setData('Text', text)
-  } else if (
-    document.queryCommandSupported &&
-    document.queryCommandSupported('copy')
-  ) {
-    console.debug('copy 3')
+  } else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+    debug('copy 3')
     const textarea = document.createElement('textarea')
     textarea.textContent = text
     textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in Microsoft Edge.

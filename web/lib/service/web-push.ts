@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {urlBase64ToUint8Array} from 'common/util/parse'
 import {useEffect} from 'react'
 import {useUser} from 'web/hooks/use-user'
@@ -12,26 +13,26 @@ export default function WebPush() {
   const isWeb = typeof window !== 'undefined' && 'serviceWorker' in navigator && !isNativeMobile()
   useEffect(() => {
     if (!user?.id || !isWeb) return
-    console.log('WebPush', user)
+    debug('WebPush', user)
 
     const registerPush = async () => {
       navigator.serviceWorker
         .register('/service-worker.js')
         .then(async (registration) => {
-          console.log('Service worker registered:', registration)
+          debug('Service worker registered:', registration)
 
           // May need to ask for permission from a button the user clicks, per this error:
           // The Notification permission may only be requested from inside a short-running user-generated event handler.
           const permission = await Notification.requestPermission()
           if (permission !== 'granted') {
-            console.log('Notification permission denied')
+            debug('Notification permission denied')
             return
           }
 
           // Check if already subscribed
           const existing = await registration.pushManager.getSubscription()
           if (existing) {
-            console.log('Already subscribed:', existing)
+            debug('Already subscribed:', existing)
             return
           } // already subscribed
 
@@ -42,7 +43,7 @@ export default function WebPush() {
 
           // Send subscription to backend
           const {data} = await api('save-subscription', {subscription})
-          console.log('Subscription saved:', data)
+          debug('Subscription saved:', data)
         })
         .catch((err) => {
           console.error('SW registration failed:', err)

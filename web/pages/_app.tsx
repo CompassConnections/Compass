@@ -7,6 +7,7 @@ import {Keyboard} from '@capacitor/keyboard'
 import {StatusBar} from '@capacitor/status-bar'
 import clsx from 'clsx'
 import {IS_VERCEL} from 'common/hosting/constants'
+import {debug} from 'common/logger'
 import type {AppProps} from 'next/app'
 import {Major_Mono_Display} from 'next/font/google'
 import Head from 'next/head'
@@ -98,7 +99,7 @@ function MyApp(props: AppProps<PageProps>) {
   const [locale, setLocaleState] = useState<string>(getLocale())
   // console.log('_app locale', locale)
   const setLocale = (newLocale: string) => {
-    console.log('setLocale', newLocale)
+    debug('setLocale', newLocale)
     document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
     setLocaleState(newLocale)
     resetCachedLocale()
@@ -108,7 +109,7 @@ function MyApp(props: AppProps<PageProps>) {
   }
 
   useEffect(() => {
-    console.log('isAndroidWebView app:', isAndroidApp())
+    debug('isAndroidWebView app:', isAndroidApp())
     if (!Capacitor.isNativePlatform()) return
     const onShow = () => document.body.classList.add('keyboard-open')
     const onHide = () => document.body.classList.remove('keyboard-open')
@@ -147,7 +148,7 @@ function MyApp(props: AppProps<PageProps>) {
 
   useEffect(() => {
     const bridgeRedirect = (payload: any) => {
-      console.log('bridgeRedirect', payload)
+      debug('bridgeRedirect', payload)
       const {endpoint} = payload
       router.push(endpoint)
     }

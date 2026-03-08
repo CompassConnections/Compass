@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {debug} from 'common/logger'
 import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {debounce} from 'lodash'
@@ -88,7 +89,7 @@ export default function CompatibilityPage() {
   useEffect(() => {
     if (user?.id) {
       Promise.all([refreshCompatibilityAnswers(), refreshCompatibilityQuestions()]).finally(() =>
-        console.log('refreshed compatibility'),
+        debug('refreshed compatibility'),
       )
     }
   }, [user?.id])
@@ -202,16 +203,16 @@ function QuestionList({
 
   // Reset pagination when the questions list changes (e.g., switching tabs or refreshed data)
   useEffect(() => {
-    console.log('resetting pagination')
+    debug('resetting pagination')
     setVisibleCount(BATCH_SIZE)
   }, [questions])
 
   const loadMore = useCallback(async () => {
-    console.log('start loadMore')
+    debug('start loadMore')
     if (visibleCount >= questions.length) return false
-    console.log('loading more', visibleCount)
+    debug('loading more', visibleCount)
     setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, questions.length))
-    console.log('end loadMore')
+    debug('end loadMore')
     return true
   }, [visibleCount, questions.length])
 

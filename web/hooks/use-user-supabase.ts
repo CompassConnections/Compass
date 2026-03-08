@@ -20,7 +20,7 @@ export function useUserById(userId: string | undefined) {
           setUser(result)
         })
         .catch(() => {
-          console.log('Failed to fetch user')
+          console.error('Failed to fetch user')
         })
     }
   }, [userId])

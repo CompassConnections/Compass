@@ -40,8 +40,6 @@ function OgProfile(props: ogProps) {
 
   const isLargerPicLayout = totalChars < maxChars
 
-  console.log(props)
-
   const imgSize = isLargerPicLayout ? 400 : 250
   return (
     <div

@@ -44,7 +44,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
       const result = await api('get-connection-interests', {
         targetUserId: user.id,
       })
-      console.log('Preferences:', result)
+      // debug('Preferences:', result)
       setInterests(result.interests)
       setTargetInterests(result.targetInterests)
     } catch (e) {
@@ -139,6 +139,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
 
                   return (
                     <Tooltip
+                      key={'connection-type-key-' + type}
                       text={
                         isDisabled &&
                         t('profile.not_both_open_to_type', 'You are not both open to a {type}', {
@@ -147,7 +148,6 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
                       }
                     >
                       <button
-                        key={type}
                         disabled={isDisabled}
                         onClick={() => handleInterestChange(type, !isSelected)}
                         className={`

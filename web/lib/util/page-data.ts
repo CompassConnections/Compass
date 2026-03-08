@@ -1,4 +1,5 @@
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {debug} from 'common/logger'
 
 const buildIdKey = 'vercel-buildId'
 
@@ -19,7 +20,7 @@ export const getPageData = async (route = '/') => {
     }
     const cleanRoute = route.startsWith('/') ? route.slice(1) : route
     const url = `${DEPLOYED_WEB_URL}/api/proxy-data?path=${buildId}/${cleanRoute || 'index'}.json`
-    console.log('Fetching data from:', url)
+    debug('Fetching data from:', url)
     const res = await fetch(url, {
       cache: 'force-cache',
     })
@@ -47,6 +48,6 @@ export const getPageData = async (route = '/') => {
   }
 
   const result = await res.json()
-  console.log('Fetched Page data:', result)
+  debug('Fetched Page data:', result)
   return result.pageProps
 }

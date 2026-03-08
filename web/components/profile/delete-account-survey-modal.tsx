@@ -111,7 +111,7 @@ export function DeleteAccountSurveyModal() {
         )
         .catch(() => {
           setDeleteError(t('delete_survey.error_saving_reason', 'Error deleting account'))
-          console.log('Failed to delete account')
+          console.error('Failed to delete account')
         })
 
       return true

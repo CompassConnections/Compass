@@ -1,5 +1,6 @@
 'use client'
 
+import {debug} from 'common/logger'
 import {useEffect, useState} from 'react'
 import {api} from 'web/lib/api'
 
@@ -41,7 +42,7 @@ export const useEvents = () => {
     try {
       if (showLoading) setLoading(true)
       const data = await api('get-events', {})
-      console.log('Fetched events', data)
+      debug('Fetched events', data)
       setEvents(data)
       setError(null)
     } catch (err) {

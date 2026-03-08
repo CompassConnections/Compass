@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {useCallback, useEffect, useState} from 'react'
 
@@ -45,7 +46,6 @@ export const useProfileDraft = (
   )
 
   useEffect(() => {
-    console.log({profile})
     if (profile && Object.keys(profile).length > 0) {
       debouncedSaveProfile(profile)
     }
@@ -65,7 +65,7 @@ export const useProfileDraft = (
             const twentyFourHoursInMs = 24 * 60 * 60 * 1000
 
             if (now - savedTime > twentyFourHoursInMs) {
-              console.log('Skipping profile update: saved data is older than 24 hours')
+              debug('Skipping profile update: saved data is older than 24 hours')
               return
             }
           }
@@ -74,7 +74,7 @@ export const useProfileDraft = (
           Object.entries(savedProfile).forEach(([key, value]) => {
             const typedKey = key as keyof ProfileWithoutUser
             if (value !== profile[typedKey]) {
-              console.log(key, value)
+              debug(key, value)
               setProfile(typedKey, value)
               if (typedKey === 'height_in_inches' && updateHeight) {
                 updateHeight(value as number)

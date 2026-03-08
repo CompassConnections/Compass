@@ -41,7 +41,6 @@ export function getLocationText(
   const city = profile[`${prefix}city` as keyof ProfileRow]
   const country = profile[`${prefix}country` as keyof ProfileRow]
   const regionCode = profile[`${prefix}region_code` as keyof ProfileRow]
-  console.log({city, country, regionCode})
 
   const stateOrCountry = country === 'United States of America' ? regionCode : country
 

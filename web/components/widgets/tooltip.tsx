@@ -6,6 +6,7 @@ import {
   Placement,
   safePolygon,
   shift,
+  useClick,
   useFloating,
   useHover,
   useInteractions,
@@ -48,7 +49,7 @@ export function Tooltip(props: {
   // We keep a short global cooldown window during which tooltip "open" requests are ignored.
   // Additionally, we default hover behavior to mouse-only on touch-capable devices.
   const nowFn = () => Date.now()
-  const SUPPRESS_MS = 900
+  const SUPPRESS_MS = 400
   // Module-level shared state
 
   const g: any = globalThis as any
@@ -92,7 +93,7 @@ export function Tooltip(props: {
     }
   }, [])
 
-  const {x, y, refs, strategy, middlewareData, context, placement} = useFloating({
+  const {x, y, refs, strategy, context} = useFloating({
     open: open,
     onOpenChange: (next) => {
       if (next) {
@@ -107,23 +108,15 @@ export function Tooltip(props: {
     middleware: [offset(8), flip(), shift({padding: 4}), arrow({element: arrowRef})],
   })
 
-  const {x: arrowX, y: arrowY} = middlewareData.arrow ?? {}
-
   const {getReferenceProps, getFloatingProps} = useInteractions([
     useHover(context, {
       // On touch-capable devices, default to mouse-only hover unless explicitly overridden via noTap=false
       mouseOnly: noTap ?? isTouchCapable(),
       handleClose: hasSafePolygon ? safePolygon({buffer: -0.5}) : null,
     }),
+    useClick(context),
     useRole(context, {role: 'tooltip'}),
   ])
-  // which side of tooltip arrow is on. like: if tooltip is top-left, arrow is on bottom of tooltip
-  const arrowSide = {
-    top: 'bottom',
-    right: 'left',
-    bottom: 'top',
-    left: 'right',
-  }[placement.split('-')[0]] as string
 
   return text ? (
     <>
@@ -131,7 +124,14 @@ export function Tooltip(props: {
         data-testid={testId}
         suppressHydrationWarning={suppressHydrationWarning}
         className={className}
-        ref={refs.reference as any}
+        ref={refs.setReference as any}
+        onMouseEnter={() => {
+          const dt = Date.now() - g.__tooltipLastTapTs
+          if (!(dt >= 0 && dt < SUPPRESS_MS)) {
+            setOpen(true)
+          }
+        }}
+        onMouseLeave={() => setOpen(false)}
         {...getReferenceProps()}
       >
         {children}
@@ -147,24 +147,13 @@ export function Tooltip(props: {
         leaveTo="opacity-0"
         // div attributes
         as="div"
-        ref={refs.floating as any}
+        ref={refs.setFloating as any}
         style={{position: strategy, top: y ?? 0, left: x ?? 0}}
-        className="text-ink-1000 bg-canvas-50 z-20 w-max max-w-xs whitespace-normal rounded px-2 py-1 text-center text-sm font-medium"
+        className="text-ink-1000 bg-canvas-50 z-20 w-max max-w-xs whitespace-normal rounded-lg px-2 py-1 text-center text-sm font-medium border border-canvas-100 shadow shadow-canvas-100"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}
       >
         <div role="tooltip">{text}</div>
-        <div
-          ref={arrowRef}
-          className="bg-canvas-50 absolute h-2 w-2 rotate-45"
-          style={{
-            top: arrowY != null ? arrowY : '',
-            left: arrowX != null ? arrowX : '',
-            right: '',
-            bottom: '',
-            [arrowSide]: '-4px',
-          }}
-        />
       </Transition>
     </>
   ) : (

@@ -1,3 +1,4 @@
+import {MagnifyingGlassIcon} from '@heroicons/react/16/solid'
 import {PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {
@@ -120,6 +121,7 @@ export function CompatibilityQuestionsDisplay(props: {
     !isLooking && !fromProfilePage ? 'their-important' : 'your-important',
     `compatibility-sort-${user.id}`,
   )
+  const [searchTerm, setSearchTerm] = useState('')
 
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
   const {compatibilityAnswers: comparedAnswers} = useUserCompatibilityAnswers(comparedUserId)
@@ -127,6 +129,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const sortedAndFilteredAnswers = sortBy(
     answers.filter((a) => {
+      const question = compatibilityQuestions.find((q) => q.id === a.question_id)
       const comparedAnswer = questionIdToComparedAnswer[a.question_id]
       if (sort === 'disagree') {
         // Answered and not skipped.
@@ -136,6 +139,31 @@ export function CompatibilityQuestionsDisplay(props: {
       if (sort === 'your-unanswered') {
         // Answered and not skipped.
         return !comparedAnswer || comparedAnswer.importance === -1
+      }
+      if (searchTerm && question) {
+        const searchLower = searchTerm.toLowerCase()
+        const questionMatches = question.question?.toLowerCase().includes(searchLower)
+        const explanationMatches = a.explanation?.toLowerCase().includes(searchLower)
+        const answerText =
+          a.multiple_choice != null && question.multiple_choice_options
+            ? Object.entries(question.multiple_choice_options as Record<string, number>).find(
+                ([, val]) => val === a.multiple_choice,
+              )?.[0]
+            : null
+        const answerMatches = answerText?.toLowerCase().includes(searchLower)
+        const acceptableAnswersText = a.pref_choices
+          ?.map(
+            (choice) =>
+              Object.entries(question.multiple_choice_options as Record<string, number>).find(
+                ([, val]) => val === choice,
+              )?.[0],
+          )
+          .filter(Boolean) as string[] | undefined
+        const acceptableMatches = acceptableAnswersText?.some((text) =>
+          text.toLowerCase().includes(searchLower),
+        )
+        if (!questionMatches && !explanationMatches && !answerMatches && !acceptableMatches)
+          return false
       }
       return true
     }),
@@ -182,6 +210,21 @@ export function CompatibilityQuestionsDisplay(props: {
             <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'} />
           )}
         </Row>
+        {answeredQuestions.length > 0 && (
+          <div className="relative mt-3">
+            <MagnifyingGlassIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+            <input
+              type="text"
+              placeholder={t('answers.search_placeholder', 'Search prompts...')}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                setPage(0)
+              }}
+              className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-md bg-canvas-0 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"
+            />
+          </div>
+        )}
         {(!isCurrentUser || fromProfilePage) && (
           <CompatibilitySortWidget
             className="text-sm sm:flex mt-4"

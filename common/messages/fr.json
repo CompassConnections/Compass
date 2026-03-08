@@ -67,6 +67,7 @@
   "answers.display.none_answered_you": "Vous n'avez pas encore répondu aux questions de compatibilité !",
   "answers.display.user_prompts": "Questions de compatibilité de {name}",
   "answers.display.your_prompts": "Vos questions de compatibilité",
+  "answers.search_placeholder": "Rechercher...",
   "answers.finish": "Terminer",
   "answers.free.add_free_response": "Ajouter une réponse libre",
   "answers.free.choose_question": "Choisissez une question à laquelle répondre",

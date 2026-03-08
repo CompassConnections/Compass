@@ -67,6 +67,7 @@
   "answers.display.none_answered_you": "Sie haben noch keine Kompatibilitätsfragen beantwortet!",
   "answers.display.user_prompts": "Kompatibilitätsfragen von {name}",
   "answers.display.your_prompts": "Ihre Kompatibilitätsfragen",
+  "answers.search_placeholder": "Suchen...",
   "answers.finish": "Fertig",
   "answers.free.add_free_response": "Freie Antwort hinzufügen",
   "answers.free.choose_question": "Wählen Sie eine Frage zum Beantworten",

@@ -114,14 +114,13 @@ export const PrivateChat = (props: {
     fetchMessages,
   } = usePrivateMessages(channelId, totalMessagesToLoad, user.id)
 
-  const messages =
-    _messages?.map(
-      (m) =>
-        ({
-          ...m,
-          id: m.id,
-        }) as ChatMessage,
-    ) ?? []
+  const messages = _messages?.map(
+    (m) =>
+      ({
+        ...m,
+        id: m.id,
+      }) as ChatMessage,
+  )
 
   const loadMoreMessages = useCallback(
     (beforeId: number) => {
@@ -375,7 +374,7 @@ export const PrivateChat = (props: {
               opacity: showMessages ? 1 : 0,
             }}
           >
-            {messages === undefined ? (
+            {groupedMessages === undefined ? (
               <CompassLoadingIndicator />
             ) : (
               <>

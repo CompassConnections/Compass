@@ -110,15 +110,15 @@ export const usePaginatedScrollingMessages = (
 }
 
 export const useGroupedMessages = (messages: ChatMessage[] | undefined) => {
-  messages = messages ?? []
-  messages = messages.slice().reverse()
-  // Create a string key that changes when any message's content or reactions change
-  debug('messages in useGroupedMessages', messages[0]?.reactions)
-
   return useMemo(() => {
+    if (!messages) return
+
     // Group messages created within a short time of each other.
     const tempGrouped: ChatMessage[][] = []
     let systemStatusGroup: ChatMessage[] = []
+
+    messages = messages ?? []
+    messages = messages.slice().reverse()
 
     forEach(messages, (message, i) => {
       const isSystemStatus = message.visibility === 'system_status'
@@ -129,6 +129,7 @@ export const useGroupedMessages = (messages: ChatMessage[] | undefined) => {
         if (isSystemStatus) systemStatusGroup.push(message)
         else tempGrouped.push([message])
       } else {
+        if (!messages) return
         const prevMessage = messages[i - 1]
         const timeDifference = Math.abs(message.createdTime - prevMessage.createdTime)
         const creatorsMatch = message.userId === prevMessage.userId

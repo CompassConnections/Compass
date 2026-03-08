@@ -6,6 +6,7 @@ import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
+import {RenderingOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
@@ -27,6 +28,7 @@ import {
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
 import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
+import {ShowPhotosToggle} from 'web/components/filters/show-photos-toggle'
 import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
@@ -186,8 +188,8 @@ function SelectedFiltersSummary(props: {
 }
 
 function Filters(props: {
-  filters: Partial<FilterFields>
   youProfile: Profile | undefined | null
+  filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
   setYourFilters: (checked: boolean) => void
@@ -196,6 +198,8 @@ function Filters(props: {
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
+  renderingOptions: Partial<RenderingOptions>
+  updateRenderingOptions: (newState: Partial<RenderingOptions>) => void
 }) {
   const t = useT()
   const {
@@ -208,6 +212,8 @@ function Filters(props: {
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
+    renderingOptions,
+    updateRenderingOptions,
     choices,
   } = props
 
@@ -245,6 +251,14 @@ function Filters(props: {
       {/* Short Bios */}
       <Col className="p-4 pb-2">
         <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
+      </Col>
+
+      {/* Show Photos */}
+      <Col className="p-4 pt-0">
+        <ShowPhotosToggle
+          updateRenderingOptions={updateRenderingOptions}
+          renderingOptions={renderingOptions}
+        />
       </Col>
 
       {/* ALWAYS VISIBLE FILTERS */}
@@ -807,6 +821,8 @@ export function FiltersElement(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
+  renderingOptions: Partial<RenderingOptions>
+  updateRenderingOptions: (newState: Partial<RenderingOptions>) => void
 }) {
   const {
     filters,
@@ -817,6 +833,8 @@ export function FiltersElement(props: {
     isYourFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
+    renderingOptions,
+    updateRenderingOptions,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   const {choices: interestChoices} = useChoices('interests')
@@ -839,6 +857,8 @@ export function FiltersElement(props: {
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}
       choices={choices}
+      renderingOptions={renderingOptions}
+      updateRenderingOptions={updateRenderingOptions}
     />
   )
 }

@@ -23,10 +23,10 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     : {...initialFilters, orderBy: 'created_time' as const}
 
   const getInitialFilters = (): Partial<FilterFields> => {
-    if (fromSignup) {
-      return {...baseFilters, languages: [LOCALE_TO_LANGUAGE[getLocale()]]}
+    return {
+      ...baseFilters,
+      languages: fromSignup ? [LOCALE_TO_LANGUAGE[getLocale()]] : undefined,
     }
-    return baseFilters
   }
 
   const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(

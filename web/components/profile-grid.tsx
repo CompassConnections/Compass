@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {capitalize} from 'lodash'
+import Image from 'next/image'
 import Link from 'next/link'
 import {Row} from 'web/components/layout/row'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
@@ -28,6 +29,7 @@ export const ProfileGrid = (props: {
   onHide?: (userId: string) => void
   hiddenUserIds?: string[]
   onUndoHidden?: (userId: string) => void
+  showPhotos?: boolean | null
 }) => {
   const {
     profiles,
@@ -40,6 +42,7 @@ export const ProfileGrid = (props: {
     onHide,
     hiddenUserIds,
     onUndoHidden,
+    showPhotos,
   } = props
 
   const user = useUser()
@@ -65,6 +68,7 @@ export const ProfileGrid = (props: {
             onHide={onHide}
             isHidden={hiddenUserIds?.includes(profile.user_id) ?? false}
             onUndoHidden={onUndoHidden}
+            showPhotos={showPhotos}
           />
         ))}
       </div>
@@ -100,8 +104,9 @@ function ProfilePreview(props: {
   onHide?: (userId: string) => void
   isHidden?: boolean
   onUndoHidden?: (userId: string) => void
+  showPhotos?: boolean | null
 }) {
-  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden} = props
+  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden, showPhotos} = props
   const {user} = profile
   const choicesIdsToLabels = useAllChoices()
   const t = useT()
@@ -165,6 +170,7 @@ function ProfilePreview(props: {
   //   return null
   // }
 
+  const isPhotoRendered = showPhotos !== false && profile.pinned_url
   return (
     <Link
       // onClick={() => track('click profile preview')}
@@ -172,22 +178,6 @@ function ProfilePreview(props: {
       className="cursor-pointer group block rounded-lg overflow-hidden bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50 h-full border border-canvas-300"
     >
       <Col className="relative h-40 w-full overflow-hidden rounded transition-all">
-        {/*{pinned_url ? (*/}
-        {/*  <Image*/}
-        {/*    src={pinned_url}*/}
-        {/*    width={180}*/}
-        {/*    height={240}*/}
-        {/*    alt=""*/}
-        {/*    className="h-full w-full object-cover"*/}
-        {/*    loading="lazy"*/}
-        {/*    priority={false}*/}
-        {/*  />*/}
-        {/*) : (*/}
-        {/*  <Col className="bg-ink-300 h-full w-full items-center justify-center">*/}
-        {/*    <UserIcon className="h-20 w-20" />*/}
-        {/*  </Col>*/}
-        {/*)}*/}
-
         <Row className="absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10">
           {/*  {currentUser ? (*/}
           {/*    <StarButton*/}
@@ -215,7 +205,12 @@ function ProfilePreview(props: {
           )}
         </Row>
 
-        <Col className="absolute inset-x-0 top-[-15px] bg-gradient-to-b to-transparent px-4 pt-0">
+        <Col
+          className={clsx(
+            'absolute inset-x-0 top-[-15px] bg-gradient-to-b to-transparent px-4 pt-0',
+            isPhotoRendered && 'mr-24',
+          )}
+        >
           <div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
@@ -252,6 +247,21 @@ function ProfilePreview(props: {
           {/*  {city} • {capitalize(convertGender(gender as Gender))}*/}
           {/*</Row>*/}
         </Col>
+
+        {/* Profile image moved to bottom right */}
+        {isPhotoRendered && (
+          <div className="absolute bottom-4 right-2 w-24 h-24 rounded-xl overflow-hidden shadow-lg">
+            <Image
+              src={profile.pinned_url!}
+              width={128}
+              height={128}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+              priority={false}
+            />
+          </div>
+        )}
       </Col>
     </Link>
   )

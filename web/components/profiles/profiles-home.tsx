@@ -23,6 +23,7 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
+import {useRenderingOptions} from 'web/hooks/use-rendering-options'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
@@ -44,6 +45,8 @@ export function ProfilesHome() {
     locationFilterProps,
     raisedInLocationFilterProps,
   } = useFilters(you ?? undefined, fromSignup)
+
+  const {renderingOptions, updateRenderingOptions} = useRenderingOptions()
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
@@ -196,6 +199,8 @@ export function ProfilesHome() {
       isYourFilters={isYourFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
+      renderingOptions={renderingOptions}
+      updateRenderingOptions={updateRenderingOptions}
     />
   )
 
@@ -335,6 +340,7 @@ export function ProfilesHome() {
               onHide={onHide}
               hiddenUserIds={recentlyHiddenIds}
               onUndoHidden={onUndoHidden}
+              showPhotos={renderingOptions.showPhotos}
             />
           </>
         )}

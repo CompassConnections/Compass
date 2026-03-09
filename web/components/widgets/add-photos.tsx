@@ -19,6 +19,7 @@ export const AddPhotosWidget = (props: {
   setPhotoUrls: (urls: string[]) => void
   setPinnedUrl: (url: string) => void
   setDescription: (url: string, description: string) => void
+  onUpload?: (uploading: boolean) => void
 }) => {
   const {
     username,
@@ -28,6 +29,7 @@ export const AddPhotosWidget = (props: {
     setPinnedUrl,
     setDescription,
     image_descriptions,
+    onUpload,
   } = props
   const t = useT()
 
@@ -37,6 +39,7 @@ export const AddPhotosWidget = (props: {
     const files = e.target.files
     if (!files) return
     setUploadingImages(true)
+    onUpload?.(true)
 
     // Convert files to an array and take only the first 6 files
     const selectedFiles = Array.from(files).slice(0, 6)
@@ -50,6 +53,7 @@ export const AddPhotosWidget = (props: {
     if (!pinned_url) setPinnedUrl(urls[0])
     setPhotoUrls(uniq([...(photo_urls ?? []), ...urls]))
     setUploadingImages(false)
+    onUpload?.(false)
   }
 
   return (

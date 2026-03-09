@@ -58,6 +58,7 @@ export const OptionalProfileUserForm = (props: {
   const {profile, user, buttonLabel, setProfile, onSubmit, bottomNavBarVisible = true} = props
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadingImages, setUploadingImages] = useState(false)
   const [lookingRelationship, setLookingRelationship] = useState(
     (profile.pref_relation_styles || []).includes('relationship'),
   )
@@ -1003,6 +1004,7 @@ export const OptionalProfileUserForm = (props: {
               })
             }
             image_descriptions={profile.image_descriptions as Record<string, string>}
+            onUpload={(uploading) => setUploadingImages(uploading)}
           />
         </Col>
 
@@ -1014,7 +1016,7 @@ export const OptionalProfileUserForm = (props: {
                 ? 'bottom-[calc(90px+var(--bnh))]'
                 : 'bottom-[calc(30px+var(--bnh))]',
             )}
-            disabled={isSubmitting}
+            disabled={isSubmitting || uploadingImages}
             loading={isSubmitting}
             onClick={handleSubmit}
             color={'gray'}

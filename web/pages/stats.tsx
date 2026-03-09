@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {type Stats} from 'common/stats'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
@@ -12,7 +13,7 @@ import {getCount} from 'web/lib/supabase/users'
 export default function Stats() {
   const t = useT()
   const [data, setData] = useState<Record<string, number | null>>({})
-  const [statsData, setStatsData] = useState<any>(null)
+  const [statsData, setStatsData] = useState<Stats | undefined>(undefined)
 
   useEffect(() => {
     async function load() {
@@ -21,7 +22,6 @@ export default function Stats() {
         'active_members',
         'bookmarked_searches',
         'private_user_message_channels',
-        'private_user_messages',
         'profile_comments',
         'compatibility_prompts',
         'compatibility_answers',
@@ -88,8 +88,8 @@ export default function Stats() {
               label={t('stats.discussions', 'Discussions')}
             />
           )}
-          {!!data.private_user_messages && (
-            <StatBox value={data.private_user_messages} label={t('stats.messages', 'Messages')} />
+          {!!statsData?.messages && (
+            <StatBox value={statsData?.messages} label={t('stats.messages', 'Messages')} />
           )}
           {!!data.compatibility_prompts && (
             <StatBox
@@ -121,7 +121,7 @@ export default function Stats() {
           )}
           {!!statsData?.genderRatio && (
             <StatBox
-              value={`${statsData.genderRatio.male} / ${statsData.genderRatio.female}`}
+              value={`${statsData.genderRatio.male ?? 0} / ${statsData.genderRatio.female ?? 0}`}
               label={t('stats.gender_ratio', 'Male / Female Ratio')}
             />
           )}

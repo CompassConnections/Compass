@@ -10,6 +10,7 @@ import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
+import {Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
@@ -150,14 +151,7 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: z.object({}),
     cache: 'public, max-age=60',
-    returns: {} as {
-      users: number
-      profiles: number
-      upcomingEvents: number
-      messages: number
-      genderRatio: Record<string, number>
-      genderCounts: Record<string, number>
-    },
+    returns: {} as Stats,
     summary: 'Get platform statistics',
     tag: 'General',
   },

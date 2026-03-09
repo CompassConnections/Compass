@@ -179,40 +179,40 @@ export type Database = {
       }
       compatibility_prompts: {
         Row: {
+          answer_count: number | null
           answer_type: string
           category: string | null
+          community_importance_score: number | null
           created_time: string
           creator_id: string | null
           id: number
           importance_score: number
           multiple_choice_options: Json | null
           question: string
-          community_importance_score: number
-          answer_count: number
         }
         Insert: {
+          answer_count?: number | null
           answer_type?: string
           category?: string | null
+          community_importance_score?: number | null
           created_time?: string
           creator_id?: string | null
           id?: number
           importance_score?: number
           multiple_choice_options?: Json | null
           question: string
-          community_importance_score?: number
-          answer_count?: number
         }
         Update: {
+          answer_count?: number | null
           answer_type?: string
           category?: string | null
+          community_importance_score?: number | null
           created_time?: string
           creator_id?: string | null
           id?: number
           importance_score?: number
           multiple_choice_options?: Json | null
           question?: string
-          community_importance_score?: number
-          answer_count?: number
         }
         Relationships: [
           {
@@ -1758,6 +1758,10 @@ export type Database = {
       show_limit: {Args: never; Returns: number}
       show_trgm: {Args: {'': string}; Returns: string[]}
       to_jsonb: {Args: {'': Json}; Returns: Json}
+      update_compatibility_prompt_community_importance_score: {
+        Args: {p_question_id: number}
+        Returns: undefined
+      }
     }
     Enums: {
       lover_visibility: 'public' | 'member'

@@ -168,8 +168,6 @@ function AnswerCompatibilityQuestionModal(props: {
   const [sort, setSort] = useState<CompatibilitySort>('random')
 
   const sortedQuestions = useMemo(() => {
-    const isCore = otherQuestions.some((q) => q.importance_score === 0)
-    if (isCore) return otherQuestions
     return [...otherQuestions].sort((a, b) => {
       return compareBySort(a, b, sort)
     }) as QuestionWithCountType[]

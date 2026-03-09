@@ -132,6 +132,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const sortedAndFilteredAnswers = sortBy(
     answers.filter((a) => {
+      // if (a.id < 10) console.log({a, sort})
       const question = compatibilityQuestions.find((q) => q.id === a.question_id)
       const comparedAnswer = questionIdToComparedAnswer[a.question_id]
       if (question && !isMatchingSearch({...question, answer: a}, searchTerm)) return false

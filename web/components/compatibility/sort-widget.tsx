@@ -76,6 +76,7 @@ export function CompatibilitySortWidget(props: {
 }
 
 export function compareBySort(a: any, b: any, sort: CompatibilitySort) {
+  // if (a.id < 10) console.log({a, b, sort})
   if (sort === 'random') {
     return Math.random() - 0.5
   } else if (sort === 'community_importance') {
@@ -83,7 +84,7 @@ export function compareBySort(a: any, b: any, sort: CompatibilitySort) {
     const rateB = (b?.community_importance_score ?? 0) / Math.max(b?.answer_count ?? 1, 1)
     return rateB - rateA
   } else if (sort === 'most_answered') {
-    return b?.answer_count - a?.answer_count
+    return (b?.answer_count ?? 0) - (a?.answer_count ?? 0)
   } else if (sort === 'newest') {
     return (
       (b?.created_time ? new Date(b?.created_time).getTime() : 0) -
@@ -96,7 +97,6 @@ export function compareBySort(a: any, b: any, sort: CompatibilitySort) {
 }
 
 export function isMatchingSearch(question: any, searchTerm: string) {
-  console.log(searchTerm, question)
   if (searchTerm) {
     const searchLower = searchTerm.toLowerCase()
 

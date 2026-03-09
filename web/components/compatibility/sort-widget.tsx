@@ -80,8 +80,8 @@ export function compareBySort(a: any, b: any, sort: CompatibilitySort) {
   if (sort === 'random') {
     return Math.random() - 0.5
   } else if (sort === 'community_importance') {
-    const rateA = (a?.community_importance_score ?? 0) / Math.max(a?.answer_count ?? 1, 1)
-    const rateB = (b?.community_importance_score ?? 0) / Math.max(b?.answer_count ?? 1, 1)
+    const rateA = a?.community_importance_percent ?? 0
+    const rateB = b?.community_importance_percent ?? 0
     return rateB - rateA
   } else if (sort === 'most_answered') {
     return (b?.answer_count ?? 0) - (a?.answer_count ?? 0)

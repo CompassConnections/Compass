@@ -1,5 +1,6 @@
 import {ArrowLeftIcon, PlusIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {User} from 'common/user'
 import {TbMessage} from 'react-icons/tb'
 import {Button} from 'web/components/buttons/button'
@@ -7,7 +8,6 @@ import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 
 import {IndividualQuestionRow} from '../questions-form'
@@ -15,7 +15,7 @@ import {OtherProfileAnswers} from './other-profile-answers'
 
 export function AddQuestionButton(props: {
   isFirstQuestion?: boolean
-  questions: QuestionWithCountType[]
+  questions: QuestionWithStats[]
   user: User
   refreshAnswers: () => void
 }) {
@@ -44,20 +44,20 @@ export function AddQuestionButton(props: {
 function AddQuestionModal(props: {
   open: boolean
   setOpen: (open: boolean) => void
-  questions: QuestionWithCountType[]
+  questions: QuestionWithStats[]
   user: User
   refreshAnswers: () => void
 }) {
   const {open, setOpen, questions, user, refreshAnswers} = props
   const addableQuestions = questions.filter((q) => q.answer_type === 'free_response')
   const [selectedQuestion, setSelectedQuestion] =
-    usePersistentInMemoryState<QuestionWithCountType | null>(
+    usePersistentInMemoryState<QuestionWithStats | null>(
       null,
       `selected-added-question-${user.id}}`,
     )
 
   const [expandedQuestion, setExpandedQuestion] =
-    usePersistentInMemoryState<QuestionWithCountType | null>(
+    usePersistentInMemoryState<QuestionWithStats | null>(
       null,
       `selected-expanded-question-${user.id}}`,
     )

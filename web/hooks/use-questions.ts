@@ -1,3 +1,4 @@
+import {QuestionWithStats} from 'common/api/types'
 import {Row} from 'common/supabase/utils'
 import {sortBy} from 'lodash'
 import {useEffect, useState} from 'react'
@@ -75,12 +76,6 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
   return {refreshCompatibilityAnswers, compatibilityAnswers}
 }
 
-export type QuestionWithCountType = Row<'compatibility_prompts'> & {
-  answer_count: number
-  score: number
-  community_importance_score?: number
-}
-
 export const useFRQuestionsWithAnswerCount = () => {
   const [FRquestionsWithCount, setFRQuestionsWithCount] = usePersistentInMemoryState<any>(
     [],
@@ -93,14 +88,14 @@ export const useFRQuestionsWithAnswerCount = () => {
     })
   }, [])
 
-  return FRquestionsWithCount as QuestionWithCountType[]
+  return FRquestionsWithCount as QuestionWithStats[]
 }
 
 export const useCompatibilityQuestionsWithAnswerCount = () => {
   const {locale} = useLocale()
   const firebaseUser = useFirebaseUser()
   const [compatibilityQuestions, setCompatibilityQuestions] = usePersistentInMemoryState<
-    QuestionWithCountType[]
+    QuestionWithStats[]
   >([], `compatibility-questions-with-count`)
   const [isLoading, setIsLoading] = useState(true)
 

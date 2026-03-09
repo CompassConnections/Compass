@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {User} from 'common/user'
 import Link from 'next/link'
 import router from 'next/router'
@@ -8,14 +9,13 @@ import {Button} from 'web/components/buttons/button'
 import {compareBySort, CompatibilitySort} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 
 import {AnswerCompatibilityQuestionContent} from './answer-compatibility-question-content'
 
 export function AnswerCompatibilityQuestionButton(props: {
   user: User | null | undefined
-  otherQuestions: QuestionWithCountType[]
+  otherQuestions: QuestionWithStats[]
   refreshCompatibilityAll: () => void
   fromSignup?: boolean
   size?: 'sm' | 'md'
@@ -81,7 +81,7 @@ export function CompatibilityPageButton() {
 
 export function AnswerSkippedCompatibilityQuestionsButton(props: {
   user: User | null | undefined
-  skippedQuestions: QuestionWithCountType[]
+  skippedQuestions: QuestionWithStats[]
   refreshCompatibilityAll: () => void
   fromSignup?: boolean
 }) {
@@ -157,7 +157,7 @@ function AnswerCompatibilityQuestionModal(props: {
   open: boolean
   setOpen: (open: boolean) => void
   user: User
-  otherQuestions: QuestionWithCountType[]
+  otherQuestions: QuestionWithStats[]
   refreshCompatibilityAll: () => void
   onClose?: () => void
   fromSignup?: boolean
@@ -175,7 +175,7 @@ function AnswerCompatibilityQuestionModal(props: {
   const sortedQuestions = useMemo(() => {
     return [...otherQuestions].sort((a, b) => {
       return compareBySort(a, b, sort)
-    }) as QuestionWithCountType[]
+    }) as QuestionWithStats[]
   }, [otherQuestions, sort])
 
   const handleStartQuestions = () => {

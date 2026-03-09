@@ -1,4 +1,5 @@
 import {PlusIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {QuestionWithStats} from 'common/api/types'
 import {MAX_ANSWER_LENGTH} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH} from 'common/profiles/constants'
@@ -13,7 +14,6 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {ExpandingInput} from 'web/components/widgets/expanding-input'
 import {useEvent} from 'web/hooks/use-event'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -64,7 +64,7 @@ function AddCompatibilityQuestionModal(props: {
           <CreateCompatibilityModalContent afterAddQuestion={afterAddQuestion} setOpen={setOpen} />
         ) : (
           <AnswerCompatibilityQuestionContent
-            compatibilityQuestion={dbQuestion as QuestionWithCountType}
+            compatibilityQuestion={dbQuestion as QuestionWithStats}
             user={user}
             onSubmit={() => {
               // setOpen(false)

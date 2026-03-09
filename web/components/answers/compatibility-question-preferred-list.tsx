@@ -1,15 +1,15 @@
 import {CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {shortenName} from 'web/components/widgets/user-link'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 
 export function PreferredList(props: {
-  question: QuestionWithCountType
+  question: QuestionWithStats
   answer: rowFor<'compatibility_answers'>
   comparedAnswer: rowFor<'compatibility_answers'>
   comparedUser: User
@@ -65,7 +65,7 @@ export function PreferredList(props: {
 }
 
 export function PreferredListNoComparison(props: {
-  question: QuestionWithCountType
+  question: QuestionWithStats
   answer: rowFor<'compatibility_answers'>
 }) {
   const {question, answer} = props

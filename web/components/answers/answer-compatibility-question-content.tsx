@@ -1,6 +1,7 @@
 import {RadioGroup} from '@headlessui/react'
 import {UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
@@ -15,7 +16,6 @@ import {Row} from 'web/components/layout/row'
 import {ExpandingInput} from 'web/components/widgets/expanding-input'
 import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Tooltip} from 'web/components/widgets/tooltip'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
@@ -102,7 +102,7 @@ export function getEmptyAnswer(userId: string, questionId: number) {
 }
 
 export function AnswerCompatibilityQuestionContent(props: {
-  compatibilityQuestion: QuestionWithCountType
+  compatibilityQuestion: QuestionWithStats
   user: User
   index?: number
   total?: number
@@ -158,22 +158,8 @@ export function AnswerCompatibilityQuestionContent(props: {
     <Col className="min-h-0 w-full gap-4">
       <Col className="gap-1 shrink-0">
         <Row>
-          {shortenedPopularity && (
-            <Tooltip
-              text={t(
-                'answers.content.people_answered',
-                '{count} people have answered this question',
-                {count: String(shortenedPopularity)},
-              )}
-            >
-              <Row className="text-ink-500 select-none items-center text-sm">
-                {shortenedPopularity}
-                <UserIcon className="h-4 w-4" />
-              </Row>
-            </Tooltip>
-          )}
           {isFinite(index!) && isFinite(total!) && (
-            <span className={'ml-16 text-sm'}>
+            <span className={'text-sm'}>
               <span className="text-ink-600 font-semibold">{index! + 1}</span> / {total}
             </span>
           )}
@@ -185,6 +171,28 @@ export function AnswerCompatibilityQuestionContent(props: {
               user={user}
               ignore={['your_important']}
             />
+          )}
+        </Row>
+        <Row className={''}>
+          {shortenedPopularity && (
+            <Tooltip
+              text={t(
+                'answers.content.people_answered',
+                '{count} people have answered this question',
+                {count: String(shortenedPopularity)},
+              )}
+            >
+              <Row className="select-none items-center text-sm guidance">
+                {shortenedPopularity}
+                <UserIcon className="h-4 w-4" />
+              </Row>
+            </Tooltip>
+          )}
+          {isFinite(compatibilityQuestion.community_importance_percent) && (
+            <span className={'text-sm ml-auto guidance'}>
+              Community Importance: {Math.round(compatibilityQuestion.community_importance_percent)}
+              %
+            </span>
           )}
         </Row>
         <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>

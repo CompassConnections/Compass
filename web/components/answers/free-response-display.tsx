@@ -1,4 +1,5 @@
 import {PencilIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {QuestionWithStats} from 'common/api/types'
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
@@ -11,11 +12,7 @@ import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/
 import {Row} from 'web/components/layout/row'
 import {Linkify} from 'web/components/widgets/linkify'
 import {shortenName} from 'web/components/widgets/user-link'
-import {
-  QuestionWithCountType,
-  useFRQuestionsWithAnswerCount,
-  useUserAnswers,
-} from 'web/hooks/use-questions'
+import {useFRQuestionsWithAnswerCount, useUserAnswers} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 import {deleteAnswer} from 'web/lib/supabase/answers'
 
@@ -91,7 +88,7 @@ export function FreeResponseDisplay(props: {
 
 function AnswerBlock(props: {
   answer: rowFor<'compatibility_answers_free'>
-  questions: QuestionWithCountType[]
+  questions: QuestionWithStats[]
   isCurrentUser: boolean
   user: User
   refreshAnswers: () => void

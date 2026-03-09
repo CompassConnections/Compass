@@ -21,6 +21,7 @@ export function ProfileAnswers(props: {
         profile={profile}
         fromSignup={fromSignup}
         fromProfilePage={fromProfilePage}
+        showCommunityInfo={false}
       />
       {/*<FreeResponseDisplay*/}
       {/*  isCurrentUser={isCurrentUser}*/}

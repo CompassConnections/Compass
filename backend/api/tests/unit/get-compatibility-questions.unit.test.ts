@@ -50,7 +50,7 @@ describe('getCompatibilityQuestions', () => {
       expect(sql).toEqual(expect.stringContaining('cp.answer_count'))
       expect(sql).toEqual(
         expect.stringContaining(
-          'cp.community_importance_score * (cp.answer_count::float / (cp.answer_count + 20)) AS community_importance_score',
+          'cp.community_importance_score * (cp.answer_count::float / (cp.answer_count + 20)) AS community_importance_percent',
         ),
       )
     })

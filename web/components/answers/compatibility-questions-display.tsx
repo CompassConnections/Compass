@@ -1,5 +1,7 @@
 import {PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
+import {UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {
   getAnswerCompatibility,
   getScoredAnswerCompatibility,
@@ -7,6 +9,7 @@ import {
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
+import {shortenNumber} from 'common/util/format'
 import {keyBy, partition, sortBy} from 'lodash'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -24,13 +27,13 @@ import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Input} from 'web/components/widgets/input'
 import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
+import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {
-  QuestionWithCountType,
   useCompatibilityQuestionsWithAnswerCount,
   useUserCompatibilityAnswers,
 } from 'web/hooks/use-questions'
@@ -59,13 +62,13 @@ import {PreferredList, PreferredListNoComparison} from './compatibility-question
 const NUM_QUESTIONS_TO_SHOW = 8
 
 export function separateQuestionsArray(
-  questions: QuestionWithCountType[],
+  questions: QuestionWithStats[],
   skippedAnswerQuestionIds: Set<number>,
   answeredQuestionIds: Set<number>,
 ) {
-  const skippedQuestions: QuestionWithCountType[] = []
-  const answeredQuestions: QuestionWithCountType[] = []
-  const otherQuestions: QuestionWithCountType[] = []
+  const skippedQuestions: QuestionWithStats[] = []
+  const answeredQuestions: QuestionWithStats[] = []
+  const otherQuestions: QuestionWithStats[] = []
 
   questions.forEach((q) => {
     if (skippedAnswerQuestionIds.has(q.id)) {
@@ -86,8 +89,10 @@ export function CompatibilityQuestionsDisplay(props: {
   profile: Profile
   fromSignup?: boolean
   fromProfilePage?: Profile
+  showCommunityInfo?: boolean
 }) {
-  const {isCurrentUser, user, fromSignup, fromProfilePage, profile} = props
+  const {isCurrentUser, user, fromSignup, fromProfilePage, profile, showCommunityInfo} = props
+
   const t = useT()
 
   const currentUser = useUser()
@@ -274,6 +279,7 @@ export function CompatibilityQuestionsDisplay(props: {
                 refreshCompatibilityAll={refreshCompatibilityAll}
                 profile={profile}
                 fromProfilePage={fromProfilePage}
+                showCommunityInfo={showCommunityInfo}
               />
             )
           })}
@@ -318,13 +324,14 @@ export function CompatibilityQuestionsDisplay(props: {
 
 export function CompatibilityAnswerBlock(props: {
   answer?: rowFor<'compatibility_answers'>
-  yourQuestions: QuestionWithCountType[]
-  question?: QuestionWithCountType
+  yourQuestions: QuestionWithStats[]
+  question?: QuestionWithStats
   user: User
   isCurrentUser: boolean
   profile?: Profile
   refreshCompatibilityAll: () => void
   fromProfilePage?: Profile
+  showCommunityInfo?: boolean
 }) {
   const {
     answer,
@@ -335,6 +342,9 @@ export function CompatibilityAnswerBlock(props: {
     refreshCompatibilityAll,
     fromProfilePage,
   } = props
+
+  const showCommunityInfo = props.showCommunityInfo === undefined ? true : props.showCommunityInfo
+
   const question = props.question || yourQuestions.find((q) => q.id === answer?.question_id)
   const [editOpen, setEditOpen] = useState<boolean>(false)
   const currentUser = useUser()
@@ -377,6 +387,9 @@ export function CompatibilityAnswerBlock(props: {
 
   const isAnswered = answer && answer.multiple_choice > -1
   const isSkipped = answer && answer.importance == -1
+
+  const shortenedPopularity = question.answer_count ? shortenNumber(question.answer_count) : null
+
   return (
     <Col
       data-testid="profile-compatibility-section"
@@ -530,6 +543,29 @@ export function CompatibilityAnswerBlock(props: {
         )}
         {/*{question.importance_score == 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
       </Col>
+      {showCommunityInfo && (
+        <Row className={'mt-[-20px]'}>
+          {shortenedPopularity && (
+            <Tooltip
+              text={t(
+                'answers.content.people_answered',
+                '{count} people have answered this question',
+                {count: String(shortenedPopularity)},
+              )}
+            >
+              <Row className="select-none items-center text-sm guidance">
+                {shortenedPopularity}
+                <UserIcon className="h-4 w-4" />
+              </Row>
+            </Tooltip>
+          )}
+          {isFinite(question.community_importance_percent) && (
+            <span className={'text-sm ml-auto guidance'}>
+              Community Importance: {Math.round(question.community_importance_percent)}%
+            </span>
+          )}
+        </Row>
+      )}
       <Modal open={editOpen} setOpen={setEditOpen}>
         <Col className={MODAL_CLASS}>
           <AnswerCompatibilityQuestionContent
@@ -551,7 +587,7 @@ export function CompatibilityAnswerBlock(props: {
 }
 
 function CompatibilityDisplay(props: {
-  question: QuestionWithCountType
+  question: QuestionWithStats
   profile1?: Profile
   profile2: Profile
   answer1: rowFor<'compatibility_answers'>

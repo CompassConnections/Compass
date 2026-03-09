@@ -1,5 +1,5 @@
 import {type APIHandler} from 'api/helpers/endpoint'
-import {Row} from 'common/supabase/utils'
+import {QuestionWithStats} from 'common/api/types'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'> = async (
@@ -31,7 +31,7 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
     params.push(`%${keyword}%`)
   }
 
-  const questions = await pg.manyOrNone<Row<'compatibility_prompts'> & {score: number}>(
+  const questions = await pg.manyOrNone<QuestionWithStats>(
     `
         SELECT cp.id,
                cp.answer_type,
@@ -39,24 +39,22 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
                cp.created_time,
                cp.creator_id,
                cp.category,
-               cp.community_importance_score * (cp.answer_count::float / (cp.answer_count + 20)) AS community_importance_score,
-               cp.answer_count,
-
-               -- locale-aware fields
-               COALESCE(cpt.question, cp.question)                               AS question,
+               COALESCE(cpt.question, cp.question) AS question,
                COALESCE(cpt.multiple_choice_options, cp.multiple_choice_options) AS multiple_choice_options,
-               AVG(
-                       POWER(
-                               ca.importance + 1 +
-                               CASE WHEN ca.explanation IS NULL THEN 1 ELSE 0 END,
-                               2
-                       )
-               )                                                                 AS score
+               cp.answer_count,
+               CASE
+                 WHEN cp.answer_count IS NULL OR cp.answer_count = 0 THEN 0
+                 --- community_importance_score is a weighted sum: max val is 2 * answer_count if everyone marks at the highest level of importance
+                 --- So we divide by 2 * answer_count to ensure it's between and 0 and 1
+                 --- We damp by 20 to ensure questions with few responders don't get a high score
+                 --- The square root is to spread the percent of all questions, since in the early days they don't get higher than 50%.
+                 --- It does not impact ranking though.
+                 --- TODO: remove the square root when we get more answers
+                 ELSE SQRT(cp.community_importance_score::float / (cp.answer_count + 20) / 2) * 100
+                 END AS community_importance_percent,
+               0 AS score --- update later if needed
 
         FROM compatibility_prompts cp
-
-                 LEFT JOIN compatibility_answers ca
-                           ON cp.id = ca.question_id
 
                  LEFT JOIN compatibility_prompts_translations cpt
                            ON cp.id = cpt.question_id
@@ -75,7 +73,7 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
     params,
   )
 
-  // debug({questions})
+  // console.debug(questions.find((q) => q.id === 275))
 
   return {
     status: 'success',

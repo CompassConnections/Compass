@@ -7,7 +7,7 @@ export type QuestionWithAnswer = Question & {
   answer?: Row<'compatibility_answers'>
   answer_count: number
   score: number
-  community_importance_score?: number
+  community_importance_percent: number
 }
 
 export const getAllQuestions = async () => {

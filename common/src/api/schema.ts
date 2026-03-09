@@ -1,3 +1,4 @@
+import {QuestionWithStats} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
 import {
   arraybeSchema,
   baseProfilesSchema,
@@ -19,7 +20,7 @@ import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
 import {LikeData, ShipData} from './profile-types'
-import {FullUser, HiddenProfile} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
+import {FullUser, HiddenProfile} from './user-types'
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
@@ -574,11 +575,7 @@ export const API = (_apiTypeCheck = {
     }),
     returns: {} as {
       status: 'success'
-      questions: (Row<'compatibility_prompts'> & {
-        answer_count: number
-        score: number
-        community_importance_score?: number
-      })[]
+      questions: QuestionWithStats[]
     },
     summary: 'Retrieve compatibility questions and stats',
     tag: 'Compatibility',

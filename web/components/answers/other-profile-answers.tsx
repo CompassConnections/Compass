@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {QuestionWithStats} from 'common/api/types'
 import {convertGender, Gender} from 'common/gender'
 import {User} from 'common/user'
 import {capitalize} from 'lodash'
@@ -9,12 +10,11 @@ import {Linkify} from 'web/components/widgets/linkify'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {UserLink} from 'web/components/widgets/user-link'
 import {useOtherAnswers} from 'web/hooks/use-other-answers'
-import {QuestionWithCountType} from 'web/hooks/use-questions'
 import {useT} from 'web/lib/locale'
 import {shortenedFromNow} from 'web/lib/util/shortenedFromNow'
 
 export function OtherProfileAnswers(props: {
-  question: QuestionWithCountType
+  question: QuestionWithStats
   user?: User
   className?: string
 }) {

@@ -7,15 +7,13 @@ import {storage} from './init'
 const ONE_YEAR_SECS = 60 * 60 * 24 * 365
 
 const isHeic = (file: File) =>
-  file.type === 'image/heic' ||
-  file.type === 'image/heif' ||
-  /\.heic$/i.test(file.name)
+  file.type === 'image/heic' || file.type === 'image/heif' || /\.heic$/i.test(file.name)
 
 export const uploadImage = async (
   username: string,
   file: File,
   prefix?: string,
-  onProgress?: (progress: number, isRunning: boolean) => void
+  onProgress?: (progress: number, isRunning: boolean) => void,
 ) => {
   // Replace filename with a nanoid to avoid collisions
   let [, ext] = file.name.split('.')
@@ -35,26 +33,20 @@ export const uploadImage = async (
     console.warn('Likely unsupported image format', file.type)
   }
 
-  // Convert HEIC → JPEG immediately (as HEIC not rendered)
   if (isHeic(file) && typeof window !== 'undefined') {
-    // heic2any available in client only
-    const {default: heic2any} = await import('heic2any')
-    const converted = await heic2any({
-      blob: file,
-      toType: 'image/jpeg',
-      quality: 0.9,
-    })
+    file = await convertHeicToJpeg(file)
+    ext = 'jpg'
+  }
 
-    file = new File([converted as Blob], `${stem}.jpg`, {
-      type: 'image/jpeg',
-    })
+  if (file.type === 'image/webp') {
+    file = await convertWebpToJpeg(file)
     ext = 'jpg'
   }
 
   const filename = `${stem}.${ext}`
   const storageRef = ref(
     storage,
-    `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`
+    `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`,
   )
 
   if (file.size > 20 * 1024 ** 2) {
@@ -106,8 +98,49 @@ export const uploadImage = async (
       })
 
       unsubscribe()
-    }
+    },
   )
 
   return await promise
+}
+
+export async function convertWebpToJpeg(file: File): Promise<File> {
+  if (file.type !== 'image/webp') return file
+
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      canvas.getContext('2d')!.drawImage(img, 0, 0)
+      canvas.toBlob(
+        (blob) => {
+          URL.revokeObjectURL(url)
+          if (!blob) return reject(new Error('Conversion failed'))
+          resolve(new File([blob], file.name.replace(/\.webp$/, '.jpg'), {type: 'image/jpeg'}))
+        },
+        'image/jpeg',
+        0.92,
+      )
+    }
+    img.onerror = reject
+    img.src = url
+  })
+}
+
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  // Convert HEIC → JPEG immediately (as HEIC not rendered)
+  // heic2any available in client only
+  const {default: heic2any} = await import('heic2any')
+  const converted = await heic2any({
+    blob: file,
+    toType: 'image/jpeg',
+    quality: 0.9,
+  })
+
+  return new File([converted as Blob], file.name.replace(/\.heic$/, '.jpg'), {
+    type: 'image/jpeg',
+  })
 }

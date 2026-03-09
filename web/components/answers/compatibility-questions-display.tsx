@@ -561,7 +561,8 @@ export function CompatibilityAnswerBlock(props: {
           )}
           {isFinite(question.community_importance_percent) && (
             <span className={'text-sm ml-auto guidance'}>
-              Community Importance: {Math.round(question.community_importance_percent)}%
+              {t('compatibility.question.community_importance', 'Community Importance')}:{' '}
+              {Math.round(question.community_importance_percent)}%
             </span>
           )}
         </Row>

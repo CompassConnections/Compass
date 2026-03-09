@@ -144,6 +144,7 @@
   "compatibility.tooltip": "Compatibilité entre vous deux",
   "compatibility.sort.random": "Aléatoire",
   "compatibility.sort.importance": "Importance communautaire",
+  "compatibility.question.community_importance": "Importance communautaire",
   "compatibility.sort.most_answered": "Les plus répondues",
   "compatibility.sort.newest": "Plus récentes",
   "contact.editor.placeholder": "Contactez-nous ici...",

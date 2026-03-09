@@ -144,6 +144,7 @@
   "compatibility.tooltip": "Kompatibilitätswert zwischen Ihnen beiden",
   "compatibility.sort.random": "Zufällig",
   "compatibility.sort.importance": "Gesellschaftliche Wichtigkeit",
+  "compatibility.question.community_importance": "Gesellschaftliche Wichtigkeit",
   "compatibility.sort.most_answered": "Am meisten beantwortet",
   "compatibility.sort.newest": "Neueste",
   "contact.editor.placeholder": "Kontaktieren Sie uns hier...",

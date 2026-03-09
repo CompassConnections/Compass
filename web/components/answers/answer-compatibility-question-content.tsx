@@ -190,8 +190,8 @@ export function AnswerCompatibilityQuestionContent(props: {
           )}
           {isFinite(compatibilityQuestion.community_importance_percent) && (
             <span className={'text-sm ml-auto guidance'}>
-              Community Importance: {Math.round(compatibilityQuestion.community_importance_percent)}
-              %
+              {t('compatibility.question.community_importance', 'Community Importance')}:{' '}
+              {Math.round(compatibilityQuestion.community_importance_percent)}%
             </span>
           )}
         </Row>

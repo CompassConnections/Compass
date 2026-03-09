@@ -39,7 +39,7 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
                cp.created_time,
                cp.creator_id,
                cp.category,
-               cp.community_importance_score,
+               cp.community_importance_score * (cp.answer_count::float / (cp.answer_count + 20)) AS community_importance_score,
                cp.answer_count,
 
                -- locale-aware fields

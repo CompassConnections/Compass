@@ -200,7 +200,7 @@ export function CompatibilityQuestionsDisplay(props: {
             {/*    setSearchTerm(e.target.value)*/}
             {/*    setPage(0)*/}
             {/*  }}*/}
-            {/*  className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-md bg-canvas-0 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"*/}
+            {/*  className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-xl bg-canvas-0 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"*/}
             {/*/>*/}
             <Input
               value={searchTerm}
@@ -381,7 +381,7 @@ export function CompatibilityAnswerBlock(props: {
     <Col
       data-testid="profile-compatibility-section"
       className={
-        'bg-canvas-0 flex-grow gap-4 whitespace-pre-line rounded-md px-3 py-2 leading-relaxed'
+        'bg-canvas-0 flex-grow gap-4 whitespace-pre-line rounded-xl px-3 py-2 leading-relaxed'
       }
     >
       <Row
@@ -462,7 +462,7 @@ export function CompatibilityAnswerBlock(props: {
       </Row>
       {answerText && (
         <Row
-          className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm"
+          className="bg-canvas-100 w-fit gap-1 rounded-xl px-2 py-1 text-sm"
           data-testid="profile-compatibility-question-answer"
         >
           {answerText}
@@ -483,7 +483,7 @@ export function CompatibilityAnswerBlock(props: {
             data-testid="profile-compatibility-question-acceptable-answer"
           >
             {distinctPreferredAnswersText.map((text) => (
-              <Row key={text} className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm">
+              <Row key={text} className="bg-canvas-100 w-fit gap-1 rounded-xl px-2 py-1 text-sm">
                 {text}
               </Row>
             ))}
@@ -503,7 +503,7 @@ export function CompatibilityAnswerBlock(props: {
                   setNewAnswer(_answer)
                   setEditOpen(true)
                 }}
-                className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded px-2 py-1 text-sm"
+                className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded-xl px-2 py-1 text-sm"
               >
                 {label}
               </button>

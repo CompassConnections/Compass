@@ -1,3 +1,5 @@
+import {getChannelMemberships} from 'api/get-channel-memberships'
+import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
 import * as getPrivateMessages from 'api/get-private-messages'
 import {AuthedUser} from 'api/helpers/endpoint'
 import {sqlMatch} from 'common/test-utils'
@@ -49,11 +51,7 @@ describe('getChannelMemberships', () => {
         .mockResolvedValueOnce(mockChannels)
         .mockResolvedValueOnce(mockMembers)
 
-      const results: any = await getPrivateMessages.getChannelMemberships(
-        mockProps,
-        mockAuth,
-        mockReq,
-      )
+      const results: any = await getChannelMemberships(mockProps, mockAuth, mockReq)
 
       expect(results.channels).toBe(mockChannels)
       expect(Object.keys(results.memberIdsByChannelId)[0]).toBe(String(mockMembers[0].channel_id))
@@ -100,11 +98,7 @@ describe('getChannelMemberships', () => {
         .mockResolvedValueOnce(mockChannels)
         .mockResolvedValueOnce(mockMembers)
 
-      const results: any = await getPrivateMessages.getChannelMemberships(
-        mockProps,
-        mockAuth,
-        mockReq,
-      )
+      const results: any = await getChannelMemberships(mockProps, mockAuth, mockReq)
 
       expect(results.channels).toBe(mockChannels)
       expect(Object.keys(results.memberIdsByChannelId)[0]).toBe(String(mockMembers[0].channel_id))
@@ -139,11 +133,7 @@ describe('getChannelMemberships', () => {
 
       ;(mockPg.map as jest.Mock).mockResolvedValueOnce(null)
 
-      const results: any = await getPrivateMessages.getChannelMemberships(
-        mockProps,
-        mockAuth,
-        mockReq,
-      )
+      const results: any = await getChannelMemberships(mockProps, mockAuth, mockReq)
 
       console.log(results)
 
@@ -248,7 +238,7 @@ describe('getLastSeenChannelTime', () => {
 
       ;(mockPg.map as jest.Mock).mockResolvedValue(mockUnseens)
 
-      const result = await getPrivateMessages.getLastSeenChannelTime(mockProps, mockAuth, mockReq)
+      const result = await getLastSeenChannelTime(mockProps, mockAuth, mockReq)
 
       expect(result).toBe(mockUnseens)
       expect(mockPg.map).toBeCalledTimes(1)
@@ -284,7 +274,7 @@ describe('setChannelLastSeenTime', () => {
 
       ;(mockPg.none as jest.Mock).mockResolvedValue(null)
 
-      await getPrivateMessages.setChannelLastSeenTime(mockProps, mockAuth, mockReq)
+      await setChannelLastSeenTime(mockProps, mockAuth, mockReq)
 
       expect(mockPg.none).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledWith(

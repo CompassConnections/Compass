@@ -6,7 +6,7 @@ import {
   contentSchema,
   zBoolean,
 } from 'common/api/zod-types'
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
@@ -858,7 +858,7 @@ export const API = (_apiTypeCheck = {
       id: z.coerce.number().optional(),
       beforeId: z.coerce.number().optional(),
     }),
-    returns: [] as PrivateChatMessage[],
+    returns: [] as ChatMessage[],
     summary: 'Retrieve messages for a private channel',
     tag: 'Messages',
   },
@@ -869,7 +869,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       channelIds: z.array(z.coerce.number()).optional(),
     }),
-    returns: {} as Record<number, PrivateChatMessage>,
+    returns: {} as Record<number, ChatMessage>,
     summary: 'Get last message for each channel',
     tag: 'Messages',
   },

@@ -1,4 +1,4 @@
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {useEffect} from 'react'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {api} from 'web/lib/api'
@@ -6,11 +6,12 @@ import {api} from 'web/lib/api'
 export function useLastPrivateMessages(
   userId: string | undefined,
   channelIds?: number[] | undefined,
-): Record<number, PrivateChatMessage> {
+): Record<number, ChatMessage> {
   const key = `last-messages-${userId}`
-  const [lastMessages, setLastMessages] = usePersistentLocalState<
-    Record<number, PrivateChatMessage>
-  >({}, key)
+  const [lastMessages, setLastMessages] = usePersistentLocalState<Record<number, ChatMessage>>(
+    {},
+    key,
+  )
 
   useEffect(() => {
     if (!userId) {

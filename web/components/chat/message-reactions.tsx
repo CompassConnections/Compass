@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {Dispatch, SetStateAction, useMemo} from 'react'
 import {useUser} from 'web/hooks/use-user'
 import {updateReactionUI} from 'web/lib/supabase/chat-messages'
@@ -11,7 +11,7 @@ interface MessageReactionsProps {
     reactions?: Record<string, string[]>
   }
   className?: string
-  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>
+  setMessages?: Dispatch<SetStateAction<ChatMessage[] | undefined>>
 }
 
 export function MessageReactions({message, className, setMessages}: MessageReactionsProps) {

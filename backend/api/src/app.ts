@@ -5,16 +5,13 @@ import {contact} from 'api/contact'
 import {createVote} from 'api/create-vote'
 import {deleteMessage} from 'api/delete-message'
 import {editMessage} from 'api/edit-message'
+import {getChannelMemberships} from 'api/get-channel-memberships'
+import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
 import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
 import {getOptions} from 'api/get-options'
-import {
-  getChannelMemberships,
-  getChannelMessagesEndpoint,
-  getLastSeenChannelTime,
-  setChannelLastSeenTime,
-} from 'api/get-private-messages'
+import {getChannelMessagesEndpoint} from 'api/get-private-messages'
 import {getUser} from 'api/get-user'
 import {hideProfile} from 'api/hide-profile'
 import {reactToMessage} from 'api/react-to-message'

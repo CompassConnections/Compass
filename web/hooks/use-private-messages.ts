@@ -1,4 +1,4 @@
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {millisToTs, tsToMillis} from 'common/supabase/utils'
 import {orderBy, uniq, uniqBy} from 'lodash'
@@ -16,10 +16,7 @@ import {getSortedChatMessageChannels, getTotalChatMessages} from 'web/lib/supaba
 export function usePrivateMessages(channelId: number, limit: number, userId: string) {
   // console.debug('getWebsocketUrl', getWebsocketUrl())
   const key = `private-messages-${channelId}-${limit}-v1`
-  const [messages, setMessages] = usePersistentLocalState<PrivateChatMessage[] | undefined>(
-    undefined,
-    key,
-  )
+  const [messages, setMessages] = usePersistentLocalState<ChatMessage[] | undefined>(undefined, key)
 
   const fetchMessages = useCallback(
     async (id?: number, beforeId?: number) => {

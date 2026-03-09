@@ -1,4 +1,4 @@
-import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {debug} from 'common/logger'
 import {richTextToString} from 'common/util/parse'
 import {HOUR_MS, MINUTE_MS} from 'common/util/time'
@@ -16,7 +16,7 @@ export function updateReactionUI(
   message: any,
   user: any,
   reaction: string,
-  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>,
+  setMessages?: Dispatch<SetStateAction<ChatMessage[] | undefined>>,
   toDelete?: boolean,
 ) {
   if (!user) return

@@ -1,20 +1,15 @@
-import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {convertSQLtoTS, Row, tsToMillis} from 'common/supabase/utils'
 import {decryptMessage} from 'shared/encryption'
 
-export type DbPrivateChatMessage = PrivateChatMessage & {
+export type DbChatMessage = ChatMessage & {
   ciphertext: string
   iv: string
   tag: string
 }
 
-export const convertChatMessage = (row: Row<'private_user_messages'>) =>
-  convertSQLtoTS<'private_user_messages', ChatMessage>(row, {
-    created_time: tsToMillis as any,
-  })
-
 export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => {
-  const message = convertSQLtoTS<'private_user_messages', DbPrivateChatMessage>(row, {
+  const message = convertSQLtoTS<'private_user_messages', DbChatMessage>(row, {
     created_time: tsToMillis as any,
   })
   parseMessageObject(message)
@@ -29,17 +24,20 @@ type MessageObject = {
 }
 
 export function parseMessageObject(message: MessageObject) {
-  if (message.ciphertext && message.iv && message.tag) {
-    const plaintText = decryptMessage({
+  if (!(message.ciphertext && message.iv && message.tag)) {
+    console.warn('Cannot decrypt text (missing value):', message)
+    return
+  }
+  message.content = JSON.parse(
+    decryptMessage({
       ciphertext: message.ciphertext,
       iv: message.iv,
       tag: message.tag,
-    })
-    message.content = JSON.parse(plaintText)
-    delete (message as any).ciphertext
-    delete (message as any).iv
-    delete (message as any).tag
-  }
+    }),
+  )
+  delete (message as any).ciphertext
+  delete (message as any).iv
+  delete (message as any).tag
 }
 
 export function getDecryptedMessage(message: MessageObject) {

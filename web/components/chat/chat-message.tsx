@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
-import {ChatMessage, PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {compassUserId} from 'common/profiles/constants'
 import {first, last} from 'lodash'
 import {Dispatch, memo, SetStateAction, useRef, useState} from 'react'
@@ -24,7 +24,7 @@ export function ChatMessageItem(props: {
   firstOfUser: boolean
   hideAvatar: boolean
   onRequestEdit?: (chat: ChatMessage) => void
-  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>
+  setMessages?: Dispatch<SetStateAction<ChatMessage[] | undefined>>
 }) {
   const {
     chats,

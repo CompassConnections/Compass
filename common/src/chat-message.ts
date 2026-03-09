@@ -7,11 +7,8 @@ export type ChatMessage = {
   channelId: string
   content: JSONContent
   createdTime: number
+  createdTimeTs: number
   visibility: ChatVisibility
   isEdited: boolean
   reactions: any
-}
-export type PrivateChatMessage = Omit<ChatMessage, 'id'> & {
-  id: number
-  createdTimeTs: string
 }

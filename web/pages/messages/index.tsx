@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
@@ -92,7 +92,7 @@ export const MessageChannelRow = (props: {
   currentUser: User
   channel: PrivateMessageChannel
   lastSeenTime: string
-  lastMessage?: PrivateChatMessage
+  lastMessage?: ChatMessage
 }) => {
   const {otherUserIds, lastSeenTime, currentUser, channel, lastMessage} = props
   const channelId = channel.channel_id

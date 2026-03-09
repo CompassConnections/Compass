@@ -1,4 +1,4 @@
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {convertPrivateChatMessage} from 'shared/supabase/messages'
 
@@ -9,7 +9,7 @@ export const getLastMessages: APIHandler<'get-last-messages'> = async (props, au
   const {channelIds} = props
 
   const messages = await pg.map(
-    `select distinct on (channel_id) channel_id, id, user_id, content, created_time, visibility, ciphertext, iv, tag
+    `select distinct on (channel_id) channel_id, id, user_id, created_time, visibility, ciphertext, iv, tag
      from private_user_messages
      where visibility != 'system_status'
        and channel_id in (
@@ -29,6 +29,6 @@ export const getLastMessages: APIHandler<'get-last-messages'> = async (props, au
       acc[Number(msg.channelId)] = msg
       return acc
     },
-    {} as Record<number, PrivateChatMessage>,
+    {} as Record<number, ChatMessage>,
   )
 }

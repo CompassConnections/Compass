@@ -2,7 +2,7 @@ import {EllipsisHorizontalIcon, PencilIcon, TrashIcon} from '@heroicons/react/24
 import {FaceSmileIcon} from '@heroicons/react/24/solid'
 import {JSONContent} from '@tiptap/react'
 import clsx from 'clsx'
-import {PrivateChatMessage} from 'common/chat-message'
+import {ChatMessage} from 'common/chat-message'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
 import {toast} from 'react-hot-toast'
 import DropdownMenu, {DropdownItem} from 'web/components/comments/dropdown-menu'
@@ -25,7 +25,7 @@ export function MessageActions(props: {
     reactions?: Record<string, boolean>
   }
   onRequestEdit?: () => void
-  setMessages?: Dispatch<SetStateAction<PrivateChatMessage[] | undefined>>
+  setMessages?: Dispatch<SetStateAction<ChatMessage[] | undefined>>
   className?: string
   // If provided, when this key changes, the emoji picker will open
   openEmojiPickerKey?: number

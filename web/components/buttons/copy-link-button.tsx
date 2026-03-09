@@ -170,7 +170,9 @@ export async function mobileShare(url: string) {
     })
     return true
   } catch (e) {
-    console.error('Failed to share', e)
+    if (!(e instanceof Error && e.message.includes('navigator.share is not a function'))) {
+      console.error('Failed to share', e)
+    }
     return false
   }
 }

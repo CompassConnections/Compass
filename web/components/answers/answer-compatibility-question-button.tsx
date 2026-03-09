@@ -2,9 +2,10 @@ import clsx from 'clsx'
 import {User} from 'common/user'
 import Link from 'next/link'
 import router from 'next/router'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
+import {compareBySort, CompatibilitySort} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {QuestionWithCountType} from 'web/hooks/use-questions'
@@ -164,6 +165,15 @@ function AnswerCompatibilityQuestionModal(props: {
   const {open, setOpen, user, otherQuestions, refreshCompatibilityAll, onClose, fromSignup} = props
   const [questionIndex, setQuestionIndex] = useState(0)
   const [showOnboarding, setShowOnboarding] = useState(fromSignup ?? false)
+  const [sort, setSort] = useState<CompatibilitySort>('random')
+
+  const sortedQuestions = useMemo(() => {
+    const isCore = otherQuestions.some((q) => q.importance_score === 0)
+    if (isCore) return otherQuestions
+    return [...otherQuestions].sort((a, b) => {
+      return compareBySort(a, b, sort)
+    }) as QuestionWithCountType[]
+  }, [otherQuestions, sort])
 
   const handleStartQuestions = () => {
     if (otherQuestions.length === 0) {
@@ -198,22 +208,24 @@ function AnswerCompatibilityQuestionModal(props: {
           />
         ) : (
           <AnswerCompatibilityQuestionContent
-            key={otherQuestions[questionIndex].id}
+            key={sortedQuestions[questionIndex].id}
             index={questionIndex}
-            total={otherQuestions.length}
-            compatibilityQuestion={otherQuestions[questionIndex]}
+            total={sortedQuestions.length}
+            compatibilityQuestion={sortedQuestions[questionIndex]}
             user={user}
             onSubmit={() => {
               setOpen(false)
             }}
-            isLastQuestion={questionIndex === otherQuestions.length - 1}
+            isLastQuestion={questionIndex === sortedQuestions.length - 1}
             onNext={() => {
-              if (questionIndex === otherQuestions.length - 1) {
+              if (questionIndex === sortedQuestions.length - 1) {
                 setOpen(false)
               } else {
                 setQuestionIndex(questionIndex + 1)
               }
             }}
+            sort={sort}
+            setSort={setSort}
           />
         )}
       </Col>

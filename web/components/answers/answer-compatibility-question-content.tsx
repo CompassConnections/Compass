@@ -111,15 +111,26 @@ export function AnswerCompatibilityQuestionContent(props: {
   onNext?: () => void
   isLastQuestion: boolean
   noSkip?: boolean
+  sort?: CompatibilitySort
+  setSort?: (sort: CompatibilitySort) => void
 }) {
-  const {compatibilityQuestion, user, onSubmit, isLastQuestion, onNext, noSkip, index, total} =
-    props
+  const {
+    compatibilityQuestion,
+    user,
+    onSubmit,
+    isLastQuestion,
+    onNext,
+    noSkip,
+    index,
+    total,
+    sort,
+    setSort,
+  } = props
   const t = useT()
   const [answer, setAnswer] = useState<CompatibilityAnswerSubmitType>(
     (props.answer as CompatibilityAnswerSubmitType) ??
       getEmptyAnswer(user.id, compatibilityQuestion.id),
   )
-  const [sort, setSort] = useState<CompatibilitySort>('random')
 
   const [loading, setLoading] = useState(false)
   const [skipLoading, setSkipLoading] = useState(false)
@@ -177,13 +188,15 @@ export function AnswerCompatibilityQuestionContent(props: {
               </Row>
             </Tooltip>
           )}
-          <CompatibilitySortWidget
-            className="text-sm sm:flex ml-auto"
-            sort={sort}
-            setSort={setSort}
-            user={user}
-            ignore={['your_important']}
-          />
+          {sort && setSort && (
+            <CompatibilitySortWidget
+              className="text-sm sm:flex ml-auto"
+              sort={sort}
+              setSort={setSort}
+              user={user}
+              ignore={['your_important']}
+            />
+          )}
         </Row>
         <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>
       </Col>

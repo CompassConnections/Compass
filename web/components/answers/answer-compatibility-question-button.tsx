@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import {User} from 'common/user'
 import Link from 'next/link'
 import router from 'next/router'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {compareBySort, CompatibilitySort} from 'web/components/compatibility/sort-widget'
@@ -166,6 +166,11 @@ function AnswerCompatibilityQuestionModal(props: {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [showOnboarding, setShowOnboarding] = useState(fromSignup ?? false)
   const [sort, setSort] = useState<CompatibilitySort>('random')
+
+  useEffect(() => {
+    refreshCompatibilityAll()
+    setQuestionIndex(0)
+  }, [sort])
 
   const sortedQuestions = useMemo(() => {
     return [...otherQuestions].sort((a, b) => {

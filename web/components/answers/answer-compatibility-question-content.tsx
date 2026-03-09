@@ -157,22 +157,6 @@ export function AnswerCompatibilityQuestionContent(props: {
   return (
     <Col className="min-h-0 w-full gap-4">
       <Col className="gap-1 shrink-0">
-        {/*{compatibilityQuestion.importance_score > 0 && <Row className="text-blue-400 -mt-4 w-full justify-start text-sm">*/}
-        {/*  <span>*/}
-        {/*    Massive upgrade coming soon! More prompts, better predictive power, filtered by category, etc.*/}
-        {/*  </span>*/}
-        {/*</Row>}*/}
-        {index !== null &&
-          index !== undefined &&
-          total !== null &&
-          total !== undefined &&
-          total > 1 && (
-            <Row className="text-ink-500 -mt-4 w-full justify-end text-sm">
-              <span>
-                <span className="text-ink-600 font-semibold">{index + 1}</span> / {total}
-              </span>
-            </Row>
-          )}
         <Row>
           {shortenedPopularity && (
             <Tooltip
@@ -187,6 +171,11 @@ export function AnswerCompatibilityQuestionContent(props: {
                 <UserIcon className="h-4 w-4" />
               </Row>
             </Tooltip>
+          )}
+          {isFinite(index!) && isFinite(total!) && (
+            <span className={'ml-16 text-sm'}>
+              <span className="text-ink-600 font-semibold">{index! + 1}</span> / {total}
+            </span>
           )}
           {sort && setSort && (
             <CompatibilitySortWidget

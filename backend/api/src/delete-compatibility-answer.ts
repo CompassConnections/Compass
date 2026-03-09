@@ -21,6 +21,8 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
     throw APIErrors.notFound('Item not found')
   }
 
+  const questionId = item.question_id
+
   // Delete the answer
   await pg.none(
     `DELETE
@@ -31,12 +33,16 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
   )
 
   const continuation = async () => {
+    // Update importance counts for the question
+    await pg.oneOrNone('SELECT update_compatibility_prompt_community_importance_score($1)', [
+      questionId,
+    ])
     // Recompute precomputed compatibility scores for this user
     await recomputeCompatibilityScoresForUser(auth.uid, pg)
   }
 
   return {
-    status: 'success',
+    result: {status: 'success'},
     continue: continuation,
   }
 }

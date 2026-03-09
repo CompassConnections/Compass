@@ -1,11 +1,17 @@
 import clsx from 'clsx'
 import {debug} from 'common/logger'
-import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {debounce} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CompatibilityAnswerBlock} from 'web/components/answers/compatibility-questions-display'
+import {
+  compareBySort,
+  CompatibilitySort,
+  CompatibilitySortWidget,
+  isMatchingSearch,
+} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
@@ -21,50 +27,49 @@ import {
 } from 'web/hooks/use-questions'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
-import {Question} from 'web/lib/supabase/questions'
-
-type QuestionWithAnswer = Question & {
-  answer?: Row<'compatibility_answers'>
-  answer_count: number
-  score: number
-}
+import {QuestionWithAnswer} from 'web/lib/supabase/questions'
 
 export default function CompatibilityPage() {
   const user = useUser()
   const isMobile = useIsMobile()
   const sep = isMobile ? '\n' : ''
-  const [keyword, setKeyword] = useState('')
-  const [debouncedKeyword, setDebouncedKeyword] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  const [sort, setSort] = useState<CompatibilitySort>('random')
   const searchInputRef = useRef<HTMLInputElement>(null)
   const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
   const {compatibilityQuestions, refreshCompatibilityQuestions, isLoading} =
-    useCompatibilityQuestionsWithAnswerCount(debouncedKeyword || undefined)
+    useCompatibilityQuestionsWithAnswerCount()
   const t = useT()
 
   // Debounce keyword changes
   const debouncedSetKeyword = useMemo(
-    () => debounce((value: string) => setDebouncedKeyword(value), 500),
+    () => debounce((value: string) => setDebouncedSearchTerm(value), 500),
     [],
   )
 
   useEffect(() => {
-    debouncedSetKeyword(keyword)
+    debouncedSetKeyword(searchTerm)
     // Cleanup debounce on unmount
     return () => debouncedSetKeyword.cancel()
-  }, [keyword, debouncedSetKeyword])
+  }, [searchTerm, debouncedSetKeyword])
 
   const questionsWithAnswers = useMemo(() => {
     if (!compatibilityQuestions) return []
 
     const answerMap = new Map(compatibilityAnswers?.map((a) => [a.question_id, a]) ?? [])
 
-    return compatibilityQuestions
+    const withAnswers = compatibilityQuestions
       .map((q) => ({
         ...q,
         answer: answerMap.get(q.id),
       }))
-      .sort((a, b) => a.importance_score - b.importance_score) as QuestionWithAnswer[]
-  }, [compatibilityQuestions, compatibilityAnswers])
+      .filter((qna) => isMatchingSearch(qna, debouncedSearchTerm))
+
+    return withAnswers.sort((a, b) => {
+      return compareBySort(a, b, sort)
+    }) as QuestionWithAnswer[]
+  }, [compatibilityQuestions, compatibilityAnswers, sort, debouncedSearchTerm])
 
   const {answered, notAnswered, skipped} = useMemo(() => {
     const answered: QuestionWithAnswer[] = []
@@ -112,15 +117,23 @@ export default function CompatibilityPage() {
       {user ? (
         <Col className="w-full p-4">
           <Title className="mb-4">{t('compatibility.title', 'Your Compatibility Questions')}</Title>
-          <Input
-            ref={searchInputRef}
-            value={keyword}
-            placeholder={t('compatibility.search_placeholder', 'Search questions and answers...')}
-            className={'w-full max-w-xs mb-4'}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setKeyword(e.target.value)
-            }}
-          />
+          <Row className="flex-wrap gap-2 mb-4 items-start sm:items-center">
+            <Input
+              ref={searchInputRef}
+              value={searchTerm}
+              placeholder={t('compatibility.search_placeholder', 'Search questions and answers...')}
+              className={'w-full max-w-xs'}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearchTerm(e.target.value)
+              }}
+            />
+            <CompatibilitySortWidget
+              className="text-sm sm:flex mt-4 mr-4 ml-auto"
+              sort={sort}
+              setSort={setSort}
+              user={user}
+            />
+          </Row>
           <EnglishOnlyWarning />
           <UncontrolledTabs
             trackingName={'compatibility page'}
@@ -135,7 +148,7 @@ export default function CompatibilityPage() {
                     isLoading={isLoading}
                     user={user}
                     refreshCompatibilityAll={refreshCompatibilityAll}
-                    keyword={keyword}
+                    searchTerm={searchTerm}
                   />
                 ),
               },
@@ -148,7 +161,7 @@ export default function CompatibilityPage() {
                     isLoading={isLoading}
                     user={user}
                     refreshCompatibilityAll={refreshCompatibilityAll}
-                    keyword={keyword}
+                    searchTerm={searchTerm}
                   />
                 ),
               },
@@ -161,7 +174,7 @@ export default function CompatibilityPage() {
                     isLoading={isLoading}
                     user={user}
                     refreshCompatibilityAll={refreshCompatibilityAll}
-                    keyword={keyword}
+                    searchTerm={searchTerm}
                   />
                 ),
               },
@@ -188,14 +201,14 @@ function QuestionList({
   isLoading,
   user,
   refreshCompatibilityAll,
-  keyword,
+  searchTerm,
 }: {
   questions: QuestionWithAnswer[]
   status: 'answered' | 'not-answered' | 'skipped'
   isLoading: boolean
   user: User
   refreshCompatibilityAll: () => void
-  keyword: string
+  searchTerm: string
 }) {
   const t = useT()
   const BATCH_SIZE = 100
@@ -203,7 +216,7 @@ function QuestionList({
 
   // Reset pagination when the questions list changes (e.g., switching tabs or refreshed data)
   useEffect(() => {
-    debug('resetting pagination')
+    // debug('resetting pagination')
     setVisibleCount(BATCH_SIZE)
   }, [questions])
 
@@ -223,9 +236,9 @@ function QuestionList({
   if (!isLoading && questions.length === 0) {
     return (
       <div className="text-ink-500 p-4">
-        {keyword ? (
+        {searchTerm ? (
           t('compatibility.empty.no_results', 'No results for "{keyword}"', {
-            keyword,
+            keyword: searchTerm,
           })
         ) : (
           <>

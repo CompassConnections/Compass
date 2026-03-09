@@ -187,6 +187,8 @@ export type Database = {
           importance_score: number
           multiple_choice_options: Json | null
           question: string
+          community_importance_score: number
+          answer_count: number
         }
         Insert: {
           answer_type?: string
@@ -197,6 +199,8 @@ export type Database = {
           importance_score?: number
           multiple_choice_options?: Json | null
           question: string
+          community_importance_score?: number
+          answer_count?: number
         }
         Update: {
           answer_type?: string
@@ -207,6 +211,8 @@ export type Database = {
           importance_score?: number
           multiple_choice_options?: Json | null
           question?: string
+          community_importance_score?: number
+          answer_count?: number
         }
         Relationships: [
           {

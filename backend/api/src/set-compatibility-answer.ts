@@ -26,6 +26,10 @@ export const setCompatibilityAnswer: APIHandler<'set-compatibility-answer'> = as
   })
 
   const continuation = async () => {
+    // Update importance counts for the question
+    await pg.oneOrNone('SELECT update_compatibility_prompt_community_importance_score($1)', [
+      questionId,
+    ])
     // Recompute precomputed compatibility scores for this user
     await recomputeCompatibilityScoresForUser(auth.uid, pg)
   }

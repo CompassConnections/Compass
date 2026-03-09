@@ -2,15 +2,6 @@ import {type APIHandler} from 'api/helpers/endpoint'
 import {Row} from 'common/supabase/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export function shuffle<T>(array: T[]): T[] {
-  const arr = [...array] // copy to avoid mutating the original
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
-
 export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'> = async (
   props,
   _auth,
@@ -40,9 +31,7 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
     params.push(`%${keyword}%`)
   }
 
-  const questions = await pg.manyOrNone<
-    Row<'compatibility_prompts'> & {answer_count: number; score: number}
-  >(
+  const questions = await pg.manyOrNone<Row<'compatibility_prompts'> & {score: number}>(
     `
         SELECT cp.id,
                cp.answer_type,
@@ -50,12 +39,12 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
                cp.created_time,
                cp.creator_id,
                cp.category,
+               cp.community_importance_score,
+               cp.answer_count,
 
                -- locale-aware fields
                COALESCE(cpt.question, cp.question)                               AS question,
                COALESCE(cpt.multiple_choice_options, cp.multiple_choice_options) AS multiple_choice_options,
-
-               COUNT(ca.question_id)                                             AS answer_count,
                AVG(
                        POWER(
                                ca.importance + 1 +
@@ -86,14 +75,7 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
     params,
   )
 
-  // console.debug({questions})
-
-  // const questions = shuffle(dbQuestions)
-
-  // console.debug(
-  //   'got questions',
-  //   questions.map((q) => q.question + ' ' + q.score)
-  // )
+  // debug({questions})
 
   return {
     status: 'success',

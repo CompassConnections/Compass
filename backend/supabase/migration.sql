@@ -52,4 +52,5 @@ BEGIN;
 \i backend/supabase/migrations/20260223_add_notification_template_translations.sql
 \i backend/supabase/migrations/20260224_add_connection_preferences.sql
 \i backend/supabase/migrations/20260225_add_keywords_to_profiles.sql
+\i backend/supabase/migrations/20260308_add_importance_counts.sql
 COMMIT;

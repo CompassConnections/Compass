@@ -583,6 +583,7 @@ export const API = (_apiTypeCheck = {
       questions: (Row<'compatibility_prompts'> & {
         answer_count: number
         score: number
+        community_importance_score?: number
       })[]
     },
     summary: 'Retrieve compatibility questions and stats',

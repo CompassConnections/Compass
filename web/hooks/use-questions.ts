@@ -78,6 +78,7 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
 export type QuestionWithCountType = Row<'compatibility_prompts'> & {
   answer_count: number
   score: number
+  community_importance_score?: number
 }
 
 export const useFRQuestionsWithAnswerCount = () => {
@@ -95,7 +96,7 @@ export const useFRQuestionsWithAnswerCount = () => {
   return FRquestionsWithCount as QuestionWithCountType[]
 }
 
-export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
+export const useCompatibilityQuestionsWithAnswerCount = () => {
   const {locale} = useLocale()
   const firebaseUser = useFirebaseUser()
   const [compatibilityQuestions, setCompatibilityQuestions] = usePersistentInMemoryState<
@@ -106,7 +107,7 @@ export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
   async function refreshCompatibilityQuestions() {
     if (!firebaseUser) return
     setIsLoading(true)
-    return api('get-compatibility-questions', {locale, keyword}).then((res) => {
+    return api('get-compatibility-questions', {locale}).then((res) => {
       setCompatibilityQuestions(res.questions)
       setIsLoading(false)
     })
@@ -114,7 +115,7 @@ export const useCompatibilityQuestionsWithAnswerCount = (keyword?: string) => {
 
   useEffect(() => {
     refreshCompatibilityQuestions()
-  }, [firebaseUser, locale, keyword])
+  }, [firebaseUser, locale])
 
   return {
     refreshCompatibilityQuestions,

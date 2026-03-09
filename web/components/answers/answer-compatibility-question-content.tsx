@@ -8,6 +8,7 @@ import {sortBy} from 'lodash'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
+import {CompatibilitySort, CompatibilitySortWidget} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
 import {SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
@@ -118,6 +119,7 @@ export function AnswerCompatibilityQuestionContent(props: {
     (props.answer as CompatibilityAnswerSubmitType) ??
       getEmptyAnswer(user.id, compatibilityQuestion.id),
   )
+  const [sort, setSort] = useState<CompatibilitySort>('random')
 
   const [loading, setLoading] = useState(false)
   const [skipLoading, setSkipLoading] = useState(false)
@@ -160,9 +162,8 @@ export function AnswerCompatibilityQuestionContent(props: {
               </span>
             </Row>
           )}
-        <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>
-        {shortenedPopularity && (
-          <Row className="text-ink-500 select-none items-center text-sm">
+        <Row>
+          {shortenedPopularity && (
             <Tooltip
               text={t(
                 'answers.content.people_answered',
@@ -170,11 +171,21 @@ export function AnswerCompatibilityQuestionContent(props: {
                 {count: String(shortenedPopularity)},
               )}
             >
-              {shortenedPopularity}
+              <Row className="text-ink-500 select-none items-center text-sm">
+                {shortenedPopularity}
+                <UserIcon className="h-4 w-4" />
+              </Row>
             </Tooltip>
-            <UserIcon className="h-4 w-4" />
-          </Row>
-        )}
+          )}
+          <CompatibilitySortWidget
+            className="text-sm sm:flex ml-auto"
+            sort={sort}
+            setSort={setSort}
+            user={user}
+            ignore={['your_important']}
+          />
+        </Row>
+        <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>
       </Col>
       <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'w-full gap-4 flex-1 min-h-0 pr-2')}>
         <Col className="gap-2">

@@ -1,4 +1,3 @@
-import {MagnifyingGlassIcon} from '@heroicons/react/16/solid'
 import {PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {
@@ -8,15 +7,21 @@ import {
 import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {buildArray} from 'common/util/array'
 import {keyBy, partition, sortBy} from 'lodash'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
-import DropdownMenu, {DropdownButton} from 'web/components/comments/dropdown-menu'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
+import {
+  compareBySort,
+  CompatibilitySort,
+  CompatibilitySortWidget,
+  isMatchingSearch,
+} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
+import {Input} from 'web/components/widgets/input'
 import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
 import {shortenName} from 'web/components/widgets/user-link'
@@ -75,8 +80,6 @@ export function separateQuestionsArray(
   return {skippedQuestions, answeredQuestions, otherQuestions}
 }
 
-type CompatibilitySort = 'your-important' | 'their-important' | 'disagree' | 'your-unanswered'
-
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
   user: User
@@ -118,7 +121,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const isLooking = useIsLooking()
   const [sort, setSort] = usePersistentInMemoryState<CompatibilitySort>(
-    !isLooking && !fromProfilePage ? 'their-important' : 'your-important',
+    !isLooking && !fromProfilePage ? 'their_important' : 'your_important',
     `compatibility-sort-${user.id}`,
   )
   const [searchTerm, setSearchTerm] = useState('')
@@ -131,54 +134,30 @@ export function CompatibilityQuestionsDisplay(props: {
     answers.filter((a) => {
       const question = compatibilityQuestions.find((q) => q.id === a.question_id)
       const comparedAnswer = questionIdToComparedAnswer[a.question_id]
+      if (question && !isMatchingSearch({...question, answer: a}, searchTerm)) return false
       if (sort === 'disagree') {
         // Answered and not skipped.
         if (!comparedAnswer || comparedAnswer.importance < 0) return false
         return !getAnswerCompatibility(a, comparedAnswer)
       }
-      if (sort === 'your-unanswered') {
+      if (sort === 'your_unanswered') {
         // Answered and not skipped.
         return !comparedAnswer || comparedAnswer.importance === -1
-      }
-      if (searchTerm && question) {
-        const searchLower = searchTerm.toLowerCase()
-        const questionMatches = question.question?.toLowerCase().includes(searchLower)
-        const explanationMatches = a.explanation?.toLowerCase().includes(searchLower)
-        const answerText =
-          a.multiple_choice != null && question.multiple_choice_options
-            ? Object.entries(question.multiple_choice_options as Record<string, number>).find(
-                ([, val]) => val === a.multiple_choice,
-              )?.[0]
-            : null
-        const answerMatches = answerText?.toLowerCase().includes(searchLower)
-        const acceptableAnswersText = a.pref_choices
-          ?.map(
-            (choice) =>
-              Object.entries(question.multiple_choice_options as Record<string, number>).find(
-                ([, val]) => val === choice,
-              )?.[0],
-          )
-          .filter(Boolean) as string[] | undefined
-        const acceptableMatches = acceptableAnswersText?.some((text) =>
-          text.toLowerCase().includes(searchLower),
-        )
-        if (!questionMatches && !explanationMatches && !answerMatches && !acceptableMatches)
-          return false
       }
       return true
     }),
     (a) => {
       const comparedAnswer = questionIdToComparedAnswer[a.question_id]
-      if (sort === 'your-important') {
-        return comparedAnswer ? -comparedAnswer.importance : 0
-      } else if (sort === 'their-important') {
-        return -a.importance
+      if (sort === 'your_important') {
+        return compareBySort(comparedAnswer, undefined, sort)
       } else if (sort === 'disagree') {
         return comparedAnswer ? getScoredAnswerCompatibility(a, comparedAnswer) : Infinity
-      } else if (sort === 'your-unanswered') {
+      } else if (sort === 'your_unanswered') {
         // Not answered first, then skipped, then answered.
         return comparedAnswer ? (comparedAnswer.importance >= 0 ? 2 : 1) : 0
       }
+      const question = compatibilityQuestions.find((q) => q.id === a.question_id)
+      return compareBySort({...a, ...question}, undefined, sort)
     },
     // Break ties with their answer importance.
     (a) => -a.importance,
@@ -212,28 +191,33 @@ export function CompatibilityQuestionsDisplay(props: {
         </Row>
         {answeredQuestions.length > 0 && (
           <div className="relative mt-3">
-            <MagnifyingGlassIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
-            <input
-              type="text"
-              placeholder={t('answers.search_placeholder', 'Search prompts...')}
+            {/*<input*/}
+            {/*  type="text"*/}
+            {/*  placeholder={t('answers.search_placeholder', 'Search prompts...')}*/}
+            {/*  value={searchTerm}*/}
+            {/*  onChange={(e) => {*/}
+            {/*    setSearchTerm(e.target.value)*/}
+            {/*    setPage(0)*/}
+            {/*  }}*/}
+            {/*  className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-md bg-canvas-0 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"*/}
+            {/*/>*/}
+            <Input
               value={searchTerm}
-              onChange={(e) => {
+              placeholder={t('answers.search_placeholder', 'Search prompts...')}
+              className={'w-48 xs:w-64'}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearchTerm(e.target.value)
-                setPage(0)
               }}
-              className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-md bg-canvas-0 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"
             />
           </div>
         )}
-        {(!isCurrentUser || fromProfilePage) && (
-          <CompatibilitySortWidget
-            className="text-sm sm:flex mt-4"
-            sort={sort}
-            setSort={setSort}
-            user={user}
-            fromProfilePage={fromProfilePage}
-          />
-        )}
+        <CompatibilitySortWidget
+          className="text-sm sm:flex mt-4"
+          sort={sort}
+          setSort={setSort}
+          user={user}
+          profile={profile}
+        />
       </Row>
       {answeredQuestions.length <= 0 ? (
         <span className="text-ink-600 text-sm">
@@ -297,14 +281,16 @@ export function CompatibilityQuestionsDisplay(props: {
           )}
         </>
       )}
-      {(fromSignup || (otherQuestions.length >= 1 && isCurrentUser && !fromProfilePage)) && (
+      {isCurrentUser && (
         <Row className={'w-full justify-center gap-8'}>
-          <AnswerCompatibilityQuestionButton
-            user={user}
-            otherQuestions={otherQuestions}
-            refreshCompatibilityAll={refreshCompatibilityAll}
-            fromSignup={fromSignup}
-          />
+          {(fromSignup || (otherQuestions.length >= 1 && !fromProfilePage)) && (
+            <AnswerCompatibilityQuestionButton
+              user={user}
+              otherQuestions={otherQuestions}
+              refreshCompatibilityAll={refreshCompatibilityAll}
+              fromSignup={fromSignup}
+            />
+          )}
           <CompatibilityPageButton />
         </Row>
       )}
@@ -326,57 +312,6 @@ export function CompatibilityQuestionsDisplay(props: {
         />
       )}
     </Col>
-  )
-}
-
-function CompatibilitySortWidget(props: {
-  sort: CompatibilitySort
-  setSort: (sort: CompatibilitySort) => void
-  user: User
-  fromProfilePage: Profile | undefined
-  className?: string
-}) {
-  const {sort, setSort, user, fromProfilePage, className} = props
-  const currentUser = useUser()
-
-  const t = useT()
-  const sortToDisplay = {
-    'your-important': fromProfilePage
-      ? t('answers.sort.important_to_user', 'Important to {name}', {
-          name: fromProfilePage.user.name,
-        })
-      : t('answers.sort.important_to_you', 'Important to you'),
-    'their-important': t('answers.sort.important_to_them', 'Important to {name}', {
-      name: user.name,
-    }),
-    disagree: t('answers.sort.incompatible', 'Incompatible'),
-    'your-unanswered': t('answers.sort.unanswered_by_you', 'Unanswered by you'),
-  }
-
-  const shownSorts = buildArray(
-    'your-important',
-    'their-important',
-    'disagree',
-    (!fromProfilePage || fromProfilePage.user_id === currentUser?.id) && 'your-unanswered',
-  )
-
-  return (
-    <DropdownMenu
-      className={className}
-      items={shownSorts.map((sort) => ({
-        name: sortToDisplay[sort],
-        onClick: () => {
-          setSort(sort)
-        },
-      }))}
-      closeOnClick
-      buttonClass={'!text-ink-600 !hover:!text-ink-600'}
-      buttonContent={(open: boolean) => (
-        <DropdownButton content={sortToDisplay[sort]} open={open} />
-      )}
-      menuItemsClass={'bg-canvas-0'}
-      menuWidth="w-48"
-    />
   )
 }
 

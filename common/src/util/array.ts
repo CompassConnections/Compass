@@ -47,3 +47,12 @@ export function fallbackIfEmpty<T>(array: T[], fallback: any) {
   if (!Array.isArray(array)) return fallback
   return array.length > 0 ? array : fallback
 }
+
+export function shuffle<T>(array: T[]): T[] {
+  const arr = [...array] // copy to avoid mutating the original
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}

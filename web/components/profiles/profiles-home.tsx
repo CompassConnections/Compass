@@ -59,7 +59,7 @@ export function ProfilesHome() {
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
-  const [showSignupBanner, setShowSignupBanner] = useState(true)
+  const [showSignupBanner, setShowSignupBanner] = useState(fromSignup)
   const [showEarlyBanner, setShowEarlyBanner] = usePersistentLocalState<boolean>(
     true,
     'profiles-home-show-early-banner',
@@ -207,7 +207,7 @@ export function ProfilesHome() {
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-4">
       <Col className={'lg:col-span-9'}>
-        {showSignupBanner && fromSignup && (
+        {showSignupBanner && (
           <div className="w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
             <Col className="items-center justify-center gap-2">
               <span className={'mb-2'}>

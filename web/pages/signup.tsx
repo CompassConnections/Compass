@@ -17,6 +17,7 @@ import {useTracking} from 'web/hooks/use-tracking'
 import {api} from 'web/lib/api'
 import {auth, CACHED_REFERRAL_USERNAME_KEY} from 'web/lib/firebase/users'
 import {useLocale} from 'web/lib/locale'
+import {useT} from 'web/lib/locale'
 import {getLocale} from 'web/lib/locale-cookie'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -30,6 +31,7 @@ export default function SignupPage() {
 
   const {locale} = useLocale()
   const language = LOCALE_TO_LANGUAGE[locale]
+  const t = useT()
 
   const [baseUser, setBaseUser] = useState<BaseUser>(getInitialBaseUser())
 
@@ -124,7 +126,9 @@ export default function SignupPage() {
       {isSubmitting ? (
         <Col className="flex-1 items-center justify-center py-20">
           <CompassLoadingIndicator />
-          <div className="mt-4 text-gray-500">Creating your profile...</div>
+          <div className="mt-4 text-gray-500">
+            {t('signup.creating_profile', 'Creating your profile...')}
+          </div>
         </Col>
       ) : (
         <Col className={'w-full max-w-4xl px-6 py-4'}>

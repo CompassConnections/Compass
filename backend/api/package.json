@@ -1,6 +1,6 @@
 {
   "name": "@compass/api",
-  "version": "1.26.1",
+  "version": "1.26.2",
   "private": true,
   "description": "Backend API endpoints",
   "main": "src/serve.ts",

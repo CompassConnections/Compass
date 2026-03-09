@@ -4,7 +4,10 @@ jest.mock('shared/compatibility/compute-scores')
 import {AuthedUser} from 'api/helpers/endpoint'
 import {setCompatibilityAnswer} from 'api/set-compatibility-answer'
 import {sqlMatch} from 'common/test-utils'
-import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import {
+  recomputeCompatibilityScoresForUser,
+  updateCompatibilityPromptsMetrics,
+} from 'shared/compatibility/compute-scores'
 import * as supabaseInit from 'shared/supabase/init'
 
 describe('setCompatibilityAnswer', () => {
@@ -13,6 +16,7 @@ describe('setCompatibilityAnswer', () => {
     jest.resetAllMocks()
     mockPg = {
       one: jest.fn(),
+      oneOrNone: jest.fn(),
     }
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
   })
@@ -65,7 +69,10 @@ describe('setCompatibilityAnswer', () => {
       await result.continue()
 
       expect(recomputeCompatibilityScoresForUser).toBeCalledTimes(1)
-      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid, expect.any(Object))
+      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid)
+
+      expect(updateCompatibilityPromptsMetrics).toBeCalledTimes(1)
+      expect(updateCompatibilityPromptsMetrics).toBeCalledWith(mockProps.questionId)
     })
   })
 })

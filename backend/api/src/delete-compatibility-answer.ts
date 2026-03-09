@@ -1,5 +1,8 @@
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
-import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import {
+  recomputeCompatibilityScoresForUser,
+  updateCompatibilityPromptsMetrics,
+} from 'shared/compatibility/compute-scores'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'> = async (
@@ -33,12 +36,8 @@ export const deleteCompatibilityAnswer: APIHandler<'delete-compatibility-answer'
   )
 
   const continuation = async () => {
-    // Update importance counts for the question
-    await pg.oneOrNone('SELECT update_compatibility_prompt_community_importance_score($1)', [
-      questionId,
-    ])
-    // Recompute precomputed compatibility scores for this user
-    await recomputeCompatibilityScoresForUser(auth.uid, pg)
+    await updateCompatibilityPromptsMetrics(questionId)
+    await recomputeCompatibilityScoresForUser(auth.uid)
   }
 
   return {

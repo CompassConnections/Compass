@@ -47,7 +47,12 @@ describe('getCompatibilityQuestions', () => {
       expect(results.questions).toBe(mockQuestions)
       expect(sql).toEqual(expect.stringContaining('FROM compatibility_prompts'))
       expect(sql).toEqual(expect.stringContaining('LEFT JOIN compatibility_prompts_translations'))
-      expect(sql).toEqual(expect.stringContaining('COUNT(ca.question_id)'))
+      expect(sql).toEqual(expect.stringContaining('cp.answer_count'))
+      expect(sql).toEqual(
+        expect.stringContaining(
+          'cp.community_importance_score * (cp.answer_count::float / (cp.answer_count + 20)) AS community_importance_score',
+        ),
+      )
     })
   })
 })

@@ -4,7 +4,10 @@ jest.mock('shared/compatibility/compute-scores')
 import {deleteCompatibilityAnswer} from 'api/delete-compatibility-answer'
 import {AuthedUser} from 'api/helpers/endpoint'
 import {sqlMatch} from 'common/test-utils'
-import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
+import {
+  recomputeCompatibilityScoresForUser,
+  updateCompatibilityPromptsMetrics,
+} from 'shared/compatibility/compute-scores'
 import * as supabaseInit from 'shared/supabase/init'
 
 describe('deleteCompatibilityAnswers', () => {
@@ -28,22 +31,26 @@ describe('deleteCompatibilityAnswers', () => {
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
+      const mockAnswer = {question_id: 69}
 
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(true)
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockAnswer)
       ;(mockPg.none as jest.Mock).mockResolvedValue(null)
 
-      const results: any = await deleteCompatibilityAnswer(mockProps, mockAuth, mockReq)
+      const response: any = await deleteCompatibilityAnswer(mockProps, mockAuth, mockReq)
 
-      expect(results.status).toBe('success')
+      expect(response.result.status).toBe('success')
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch(`SELECT *`), [mockProps.id, mockAuth.uid])
       expect(mockPg.none).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledWith(sqlMatch('DELETE'), [mockProps.id, mockAuth.uid])
 
-      await results.continue()
+      await response.continue()
       ;(recomputeCompatibilityScoresForUser as jest.Mock).mockResolvedValue(null)
       expect(recomputeCompatibilityScoresForUser).toBeCalledTimes(1)
-      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid, expect.any(Object))
+      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid)
+
+      expect(updateCompatibilityPromptsMetrics).toBeCalledTimes(1)
+      expect(updateCompatibilityPromptsMetrics).toBeCalledWith(mockAnswer.question_id)
     })
   })
   describe('when an error occurs', () => {

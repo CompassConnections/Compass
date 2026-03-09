@@ -15,6 +15,7 @@ function canonicalPair(a: string, b: string) {
   return a < b ? ([a, b] as const) : ([b, a] as const)
 }
 
+// Recompute precomputed compatibility scores for this user
 export async function recomputeCompatibilityScoresForUser(
   userId: string,
   client?: SupabaseDirectClient,
@@ -99,4 +100,12 @@ export async function recomputeCompatibilityScoresForUser(
   console.log(`Done recomputing compatibility scores for user ${userId} (${dt.toFixed(1)}s).`)
 
   return rows
+}
+
+// Update community importance counts for the question
+export async function updateCompatibilityPromptsMetrics(questionId: number) {
+  const pg = createSupabaseDirectClient()
+  await pg.oneOrNone('SELECT update_compatibility_prompt_community_importance_score($1)', [
+    questionId,
+  ])
 }

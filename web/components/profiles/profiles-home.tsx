@@ -15,6 +15,7 @@ import {ProfileGrid} from 'web/components/profile-grid'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {useBookmarkedSearches} from 'web/hooks/use-bookmarked-searches'
+import {useDisplayOptions} from 'web/hooks/use-display-options'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
@@ -23,7 +24,6 @@ import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-sta
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
-import {useRenderingOptions} from 'web/hooks/use-rendering-options'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
@@ -46,7 +46,7 @@ export function ProfilesHome() {
     raisedInLocationFilterProps,
   } = useFilters(you ?? undefined, fromSignup)
 
-  const {renderingOptions, updateRenderingOptions} = useRenderingOptions()
+  const {displayOptions, updateDisplayOptions} = useDisplayOptions(you)
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
@@ -199,8 +199,8 @@ export function ProfilesHome() {
       isYourFilters={isYourFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
-      renderingOptions={renderingOptions}
-      updateRenderingOptions={updateRenderingOptions}
+      displayOptions={displayOptions}
+      updateDisplayOptions={updateDisplayOptions}
     />
   )
 
@@ -340,7 +340,7 @@ export function ProfilesHome() {
               onHide={onHide}
               hiddenUserIds={recentlyHiddenIds}
               onUndoHidden={onUndoHidden}
-              showPhotos={renderingOptions.showPhotos}
+              showPhotos={displayOptions.showPhotos}
             />
           </>
         )}

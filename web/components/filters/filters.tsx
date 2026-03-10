@@ -6,7 +6,7 @@ import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
-import {RenderingOptions} from 'common/profiles-rendering'
+import {displayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
@@ -199,8 +199,8 @@ function Filters(props: {
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
-  renderingOptions: Partial<RenderingOptions>
-  updateRenderingOptions: (newState: Partial<RenderingOptions>) => void
+  displayOptions: Partial<displayOptions>
+  updateDisplayOptions: (newState: Partial<displayOptions>) => void
 }) {
   const t = useT()
   const {
@@ -213,8 +213,8 @@ function Filters(props: {
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
-    renderingOptions,
-    updateRenderingOptions,
+    displayOptions,
+    updateDisplayOptions,
     choices,
   } = props
 
@@ -743,17 +743,19 @@ function Filters(props: {
         </FilterSection>
       </FilterGroup>
 
+      <hr className="border-gray-500 my-2 mx-4" />
+
       {/* Rendering */}
       <FilterGroup
-        title={t('filter.group.rendering', 'Rendering')}
+        title={t('filter.group.display', 'Display')}
         openGroup={openGroup}
         setOpenGroup={setOpenGroup}
       >
         {/* Show Photos */}
         <Col className="p-4 pt-0">
           <ShowPhotosToggle
-            updateRenderingOptions={updateRenderingOptions}
-            renderingOptions={renderingOptions}
+            updateDisplayOptions={updateDisplayOptions}
+            displayOptions={displayOptions}
           />
         </Col>
       </FilterGroup>
@@ -846,8 +848,8 @@ export function FiltersElement(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
-  renderingOptions: Partial<RenderingOptions>
-  updateRenderingOptions: (newState: Partial<RenderingOptions>) => void
+  displayOptions: Partial<displayOptions>
+  updateDisplayOptions: (newState: Partial<displayOptions>) => void
 }) {
   const {
     filters,
@@ -858,8 +860,8 @@ export function FiltersElement(props: {
     isYourFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
-    renderingOptions,
-    updateRenderingOptions,
+    displayOptions,
+    updateDisplayOptions,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   const {choices: interestChoices} = useChoices('interests')
@@ -882,8 +884,8 @@ export function FiltersElement(props: {
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}
       choices={choices}
-      renderingOptions={renderingOptions}
-      updateRenderingOptions={updateRenderingOptions}
+      displayOptions={displayOptions}
+      updateDisplayOptions={updateDisplayOptions}
     />
   )
 }

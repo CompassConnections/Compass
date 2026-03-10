@@ -1,7 +1,7 @@
-export type RenderingOptions = {
+export type displayOptions = {
   showPhotos: boolean | null | undefined
 }
 
-export const initialRenderingOptions: RenderingOptions = {
-  showPhotos: false,
+export const initialDisplayOptions: displayOptions = {
+  showPhotos: undefined,
 }

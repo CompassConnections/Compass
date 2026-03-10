@@ -10,6 +10,7 @@ import {EventsList} from 'web/components/events/events-list'
 import {Col} from 'web/components/layout/col'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
+import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Event, useEvents} from 'web/hooks/use-events'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
@@ -93,6 +94,11 @@ export default function EventsPage() {
 
   return (
     <PageBase trackPageView={'events'}>
+      <SEO
+        title={t('events.seo.title', 'Events - Compass')}
+        description={t('events.seo.description', 'Discover and join online or in-person events')}
+        url={`/events`}
+      />
       <Col className=" sm:mx-8 px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-4">

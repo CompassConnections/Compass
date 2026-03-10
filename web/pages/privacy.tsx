@@ -76,7 +76,7 @@ export default function PrivacyPage() {
         <p>
           {t(
             'privacy.rights.text',
-            'You can request deletion of your account and data at any time by contacting ',
+            'You can download or delete all your data in the settings. You can also request deletion of your account and data at any time by contacting ',
           )}
           {supportEmail}
           {'.'}

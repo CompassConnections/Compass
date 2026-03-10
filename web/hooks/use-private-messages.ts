@@ -116,10 +116,7 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean) => 
     }
   }, [channels?.length])
 
-  console.log({lastSeenChatTimeByChannelId})
-
   if (!lastSeenChatTimeByChannelId) return {unseenChannels: [], lastSeenChatTimeByChannelId: {}}
-  console.log('Got defined')
   const unseenChannels = channels.filter((channel) => {
     const channelId = channel.channel_id
     const notifyAfterTime = new Date(

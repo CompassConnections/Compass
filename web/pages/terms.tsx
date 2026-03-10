@@ -38,7 +38,7 @@ export default function TermsPage() {
         <p>
           {t(
             'terms.eligibility.text',
-            'You must be at least 15 years old to create an account and use Compass. By registering, you confirm that you meet this requirement.',
+            'You must be at least 18 years old to create an account and use Compass. By registering, you confirm that you meet this requirement.',
           )}
         </p>
 

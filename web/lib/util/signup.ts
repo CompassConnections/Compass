@@ -2,7 +2,7 @@ import {debug} from 'common/logger'
 import {getProfileRowWithFrontendSupabase} from 'common/profiles/profile'
 import Router from 'next/router'
 import toast from 'react-hot-toast'
-import {firebaseLogin} from 'web/lib/firebase/users'
+import {auth, firebaseLogin} from 'web/lib/firebase/users'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 
@@ -29,6 +29,7 @@ export const googleSigninSignup = async () => {
   } catch (e: any) {
     console.error(e)
     toast.error('Failed to sign in: ' + e.message)
+    clearOnboardingFlag()
   }
 }
 
@@ -37,10 +38,14 @@ export async function startSignup() {
 }
 
 export async function postSignupRedirect(userId: string | undefined) {
+  debug('postSignupRedirect', userId)
   if (userId) {
     const profile = await getProfileRowWithFrontendSupabase(userId, db)
     if (profile) {
       // Account already exists
+      clearOnboardingFlag()
+      // force refresh of AuthContext to load user and privateUser
+      await auth.currentUser?.getIdToken(true)
       await Router.push('/')
     } else {
       await Router.push('/onboarding')

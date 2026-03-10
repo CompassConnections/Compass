@@ -4,6 +4,7 @@ import {
   baseProfilesSchema,
   combinedProfileSchema,
   contentSchema,
+  dateSchema,
   zBoolean,
 } from 'common/api/zod-types'
 import {ChatMessage} from 'common/chat-message'
@@ -20,7 +21,7 @@ import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
 import {LikeData, ShipData} from './profile-types'
-import {FullUser, HiddenProfile} from './user-types'
+import {FullUser, HiddenProfile} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
@@ -32,7 +33,7 @@ export const DEFAULT_CACHE_STRATEGY = 'public, max-age=5, stale-while-revalidate
  * Defines the structure and behavior of API endpoints including HTTP method,
  * authentication requirements, request/response schemas, and metadata.
  */
-type APIGenericSchema = {
+export type APIGenericSchema = {
   /**
    * HTTP method for the endpoint
    * - GET: For data retrieval operations
@@ -66,7 +67,7 @@ type APIGenericSchema = {
    * Response type definition (JSON serializable)
    * Used for TypeScript typing and API documentation generation
    */
-  returns?: Record<string, any>
+  returns?: z.ZodType | Record<string, any>
 
   /**
    * Cache-Control header value
@@ -880,7 +881,12 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       channelIds: z.array(z.coerce.number()).or(z.coerce.number()).transform(arrify),
     }),
-    returns: [] as [number, string][],
+    returns: z.array(
+      z.tuple([
+        z.number(), // Channel ID
+        dateSchema, // This turns the ISO string into a JS Date object
+      ]),
+    ),
     summary: 'Get last seen times for one or more channels',
     tag: 'Messages',
   },
@@ -1239,13 +1245,26 @@ export type APISchema<N extends APIPath> = (typeof API)[N]
 export type APIParams<N extends APIPath> = z.input<APISchema<N>['props']>
 export type ValidatedAPIParams<N extends APIPath> = z.output<APISchema<N>['props']>
 
-export type APIResponse<N extends APIPath> =
-  APISchema<N> extends {
-    returns: Record<string, any>
-  }
-    ? APISchema<N>['returns']
-    : void
+/**
+ * A helper to extract either the Input (backend) or Output (frontend)
+ * while preserving the fallback logic for non-zod types.
+ */
+type ExtractAPIResult<N extends APIPath, TMode extends 'input' | 'output'> =
+  APISchema<N> extends {returns: z.ZodTypeAny}
+    ? TMode extends 'input'
+      ? z.input<APISchema<N>['returns']>
+      : z.output<APISchema<N>['returns']>
+    : APISchema<N> extends {returns: infer R}
+      ? R
+      : void
 
+// 1. Frontend: The "Output" (Dates)
+export type APIResponse<N extends APIPath> = ExtractAPIResult<N, 'output'>
+
+// 2. Backend: The "Input" (Strings/Dates)
+export type APIBackendReturn<N extends APIPath> = ExtractAPIResult<N, 'input'>
+
+// 3. Keep your wrapper using the Backend Return type
 export type APIResponseOptionalContinue<N extends APIPath> =
-  | {continue: () => Promise<void>; result: APIResponse<N>}
-  | APIResponse<N>
+  | {continue: () => Promise<void>; result: APIBackendReturn<N>}
+  | APIBackendReturn<N>

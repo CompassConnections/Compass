@@ -54,7 +54,7 @@ export function MessagesContent(props: {currentUser: User}) {
   const {currentUser} = props
   const t = useT()
   const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(currentUser.id)
-  const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(currentUser.id, true)
+  const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
 
   return (
@@ -91,13 +91,13 @@ export const MessageChannelRow = (props: {
   otherUserIds: string[]
   currentUser: User
   channel: PrivateMessageChannel
-  lastSeenTime: string
+  lastSeenTime: Date | undefined
   lastMessage?: ChatMessage
 }) => {
   const {otherUserIds, lastSeenTime, currentUser, channel, lastMessage} = props
   const channelId = channel.channel_id
   const otherUsers = useUsersInStore(otherUserIds, `${channelId}`, 100)
-  const unseen = (lastMessage?.createdTimeTs ?? '0') > lastSeenTime
+  const unseen = lastSeenTime ? new Date(lastMessage?.createdTime ?? 0) > lastSeenTime : false
   const numOthers = otherUsers?.length ?? 0
   const t = useT()
 

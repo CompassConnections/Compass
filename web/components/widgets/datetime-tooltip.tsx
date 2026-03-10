@@ -5,7 +5,7 @@ import {formatTime} from 'web/lib/util/time'
 import {Tooltip} from './tooltip'
 
 export function DateTimeTooltip(props: {
-  time: number
+  time: number | Date | string
   text?: string
   className?: string
   children: ReactNode
@@ -15,7 +15,7 @@ export function DateTimeTooltip(props: {
 }) {
   const {time, text, ...rest} = props
 
-  const formattedTime = formatTime(time)
+  const formattedTime = formatTime(new Date(time))
   const toolTip = text ? `${text} ${formattedTime}` : formattedTime
 
   return <Tooltip text={toolTip} {...rest} suppressHydrationWarning />

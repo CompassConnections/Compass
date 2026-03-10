@@ -28,6 +28,8 @@ export const contentSchema: z.ZodType<JSONContent> = z.lazy(() =>
   ),
 )
 
+export const dateSchema = z.union([z.string(), z.date(), z.number()]).pipe(z.coerce.date())
+
 const genderType = z.string()
 // z.union([
 //   z.literal('male'),

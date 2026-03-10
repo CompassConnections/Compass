@@ -6,8 +6,7 @@ export type ChatMessage = {
   userId: string
   channelId: string
   content: JSONContent
-  createdTime: number
-  createdTimeTs: number
+  createdTime: number // TODO: switch to Date
   visibility: ChatVisibility
   isEdited: boolean
   reactions: any

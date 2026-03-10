@@ -34,7 +34,7 @@ export async function api<P extends APIPath>(path: P, params: APIParams<P> = {})
     }
   }
 
-  return typedAPICall(path, params, auth.currentUser)
+  return await typedAPICall(path, params, auth.currentUser)
 }
 
 function curriedAPI<P extends APIPath>(path: P) {

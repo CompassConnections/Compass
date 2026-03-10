@@ -92,12 +92,12 @@ export function selectFrom<
   return db.from(table).select<string, TResult>(query)
 }
 
-export function millisToTs(millis: number | undefined) {
+export function millisToTs(millis: number | undefined): string | undefined {
   if (!millis) return
   return new Date(millis).toISOString()
 }
 
-export function tsToMillis(ts: string) {
+export function tsToMillis(ts: string): number {
   return Date.parse(ts)
 }
 

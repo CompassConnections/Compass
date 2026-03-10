@@ -58,11 +58,11 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
   return {messages, fetchMessages, setMessages}
 }
 
-export const useUnseenPrivateMessageChannels = (userId: string, ignorePageSeenTime: boolean) => {
+export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean) => {
   const pathName = usePathname()
-  const lastSeenMessagesPageTime = useLastSeenMessagesPageTime()
+  const lastSeenMessagesPageTime = useLastSeenMessagesPageTime() // ms for now
   const [lastSeenChatTimeByChannelId, setLastSeenChatTimeByChannelId] = useState<
-    Record<number, string> | undefined
+    Record<number, Date> | undefined
   >(undefined)
 
   const {data, refresh} = useAPIGetter(
@@ -116,16 +116,20 @@ export const useUnseenPrivateMessageChannels = (userId: string, ignorePageSeenTi
     }
   }, [channels?.length])
 
+  console.log({lastSeenChatTimeByChannelId})
+
   if (!lastSeenChatTimeByChannelId) return {unseenChannels: [], lastSeenChatTimeByChannelId: {}}
+  console.log('Got defined')
   const unseenChannels = channels.filter((channel) => {
     const channelId = channel.channel_id
-    const notifyAfterTime =
-      channels?.find((m) => m.channel_id === channelId)?.notify_after_time ?? '0'
+    const notifyAfterTime = new Date(
+      channels?.find((m) => m.channel_id === channelId)?.notify_after_time ?? '0',
+    )
 
-    const lastSeenTime = lastSeenChatTimeByChannelId[channelId] ?? 0
-    const lastSeenChatTime = notifyAfterTime > lastSeenTime ? notifyAfterTime : (lastSeenTime ?? 0)
+    const lastSeenTime = lastSeenChatTimeByChannelId[channelId]
+    const lastSeenChatTime = notifyAfterTime > lastSeenTime ? notifyAfterTime : lastSeenTime
     return (
-      channel.last_updated_time > lastSeenChatTime &&
+      new Date(channel.last_updated_time) > lastSeenChatTime &&
       (ignorePageSeenTime || tsToMillis(channel.last_updated_time) > lastSeenMessagesPageTime) &&
       !pathName?.endsWith(`/messages/${channelId}`)
     )

@@ -1,4 +1,5 @@
 import {IS_PROD} from 'common/envs/constants'
+import {IS_LOCAL} from 'common/hosting/constants'
 
 /**
  * Log level severity types
@@ -151,6 +152,7 @@ export function logPageView(path: string): void {
  * @returns Current log level threshold
  */
 const currentLevel = (): LogLevel => {
+  if (IS_LOCAL) return 'debug'
   if (IS_PROD || process.env.NODE_ENV == 'production') return 'info'
   return 'debug'
 }

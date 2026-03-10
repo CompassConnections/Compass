@@ -50,7 +50,7 @@ function InternalUnseenMessagesBubble(props: {
 }) {
   const {privateUser, className, bubbleClassName} = props
 
-  const {unseenChannels} = useUnseenPrivateMessageChannels(privateUser.id, false)
+  const {unseenChannels} = useUnseenPrivateMessageChannels(false)
   const pathName = usePathname()
 
   const {sendToBrowser} = getNotificationDestinationsForUser(privateUser, 'new_message')

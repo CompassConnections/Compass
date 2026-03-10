@@ -12,10 +12,13 @@ export const getLastSeenChannelTime: APIHandler<'get-channel-seen-time'> = async
      order by channel_id, created_time desc
     `,
     [channelIds, auth.uid],
-    (r) => [r.channel_id as number, r.created_time as string],
+    (r) => [r.channel_id, r.created_time] as [number, Date],
   )
-  return unseens as [number, string][]
+  // When this hits the network, JSON.stringify() turns the Date into an ISO string.
+  // Then the zod schema in the endpoint definition casts it back to front-end Date
+  return unseens
 }
+
 export const setChannelLastSeenTime: APIHandler<'set-channel-seen-time'> = async (props, auth) => {
   const pg = createSupabaseDirectClient()
   const {channelId} = props

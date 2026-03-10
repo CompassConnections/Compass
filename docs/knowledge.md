@@ -481,3 +481,29 @@ for (const id of betIds) {
 ...
 }
 ```
+
+---
+
+### Timestamps
+
+We use `Date` for timestamps everywhere, not strings or milliseconds. There are still a few non-date left-overs; we need
+to migrate them to Date.
+
+**Database:** `TIMESTAMPTZ` (PostgreSQL standard)
+
+**TypeScript:** `Date`
+
+Postgres automatically converts the timestamp to Date. Nothing needed in the code.
+
+```typescript
+// What we do:
+type User = {
+  id: string
+  createdTime: Date
+}
+```
+
+The only instance when Date is not good is that it is not serializable. So when moving between front and back end, we
+use zod in the endpoint definition to switch from Date to string, then request sent, then back to Date. Another issue is
+when JSON serializing to store in local storage. Storing the date does not need conversion as JSON.stringify() converts
+Date to string, but loading from local storage requires conversion from string to Date.

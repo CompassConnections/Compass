@@ -10,10 +10,11 @@ export type DbChatMessage = ChatMessage & {
 
 export const convertPrivateChatMessage = (row: Row<'private_user_messages'>) => {
   const message = convertSQLtoTS<'private_user_messages', DbChatMessage>(row, {
+    // TODO: do not convert, stick to Date everywhere (zod converts Date -> String -> Date between front and back end)
     created_time: tsToMillis as any,
   })
   parseMessageObject(message)
-  return message
+  return message as ChatMessage
 }
 
 type MessageObject = {

@@ -544,7 +544,7 @@ export function CompatibilityAnswerBlock(props: {
         {/*{question.importance_score == 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
       </Col>
       {showCommunityInfo && (
-        <Row className={'mt-[-20px]'}>
+        <Row className={'mt-[-10px]'}>
           {shortenedPopularity && (
             <Tooltip
               text={t(

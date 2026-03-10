@@ -73,10 +73,17 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   const {user, privateUser, newProfileRow} = await pg.tx(async (tx) => {
     const existingUser = await tx.oneOrNone('select id from users where id = $1', [auth.uid])
     if (existingUser) {
-      throw APIErrors.conflict('An account for this user already exists', {
-        resolution:
-          'If you already have an account, try logging in. If you believe this is a mistake, contact support.',
-      })
+      const existingProfile = await tx.oneOrNone('select id from profiles where user_id = $1', [
+        auth.uid,
+      ])
+      if (existingProfile) {
+        throw APIErrors.conflict('An account for this user already exists', {
+          resolution:
+            'If you already have an account, try logging in. If you believe this is a mistake, contact support.',
+        })
+      } else {
+        await pg.none('DELETE FROM users WHERE id = $1', [auth.uid])
+      }
     }
 
     const sameNameUser = await getUserByUsername(finalUsername, tx)

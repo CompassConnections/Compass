@@ -40,83 +40,56 @@ export function Tooltip(props: {
   } = props
 
   const arrowRef = useRef(null)
-
   const [open, setOpen] = useState(false)
-
-  // --- Mobile/tap guards to prevent accidental neighbor tooltips ---
-  // After a tap/click on touch devices, browsers may emit hover/focus-like events
-  // on elements that appear under the finger due to layout shifts (e.g., when a card is removed).
-  // We keep a short global cooldown window during which tooltip "open" requests are ignored.
-  // Additionally, we default hover behavior to mouse-only on touch-capable devices.
-  const nowFn = () => Date.now()
-  const SUPPRESS_MS = 400
-  // Module-level shared state
-
-  const g: any = globalThis as any
-  if (g.__tooltipLastTapTs === undefined) g.__tooltipLastTapTs = 0 as number
-  if (g.__tooltipListenersSetup === undefined) g.__tooltipListenersSetup = false as boolean
-
-  const isTouchCapable = () => {
-    if (typeof window === 'undefined') return false
-    // Prefer pointer hints
-    // noinspection JSUnresolvedReference
-    const nav: any = navigator as any
-    const hasMP = !!nav && typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 0
-    const hasTP = !!nav && typeof nav.msMaxTouchPoints === 'number' && nav.msMaxTouchPoints > 0
-    const mm =
-      typeof window.matchMedia === 'function'
-        ? window.matchMedia('(hover: none) and (pointer: coarse)')
-        : null
-    const mm2 =
-      typeof window.matchMedia === 'function' ? window.matchMedia('(any-hover: none)') : null
-    const hasOntouch = 'ontouchstart' in window
-    return hasMP || hasTP || !!mm?.matches || !!mm2?.matches || hasOntouch
-  }
-
-  useEffect(() => {
-    if (g.__tooltipListenersSetup) return
-    if (typeof window === 'undefined') return
-    const markTap = () => {
-      g.__tooltipLastTapTs = nowFn()
-    }
-    // Mark taps/pointerdowns (especially touch) globally
-    window.addEventListener('touchstart', markTap, {passive: true})
-    window.addEventListener('touchend', markTap, {passive: true})
-    window.addEventListener('pointerdown', markTap, {passive: true})
-    // Fallbacks for some browsers
-    window.addEventListener('mousedown', markTap, {passive: true})
-    window.addEventListener('click', markTap, {passive: true})
-    g.__tooltipListenersSetup = true
-    return () => {
-      // We intentionally do not remove listeners to avoid duplicating across many instances.
-      // If component unmounts entirely (hot reload), listeners will be garbage-collected with the page.
-    }
-  }, [])
+  const touchOpenRef = useRef(false) // tracks whether open was triggered by touch
 
   const {x, y, refs, strategy, context} = useFloating({
-    open: open,
-    onOpenChange: (next) => {
-      if (next) {
-        const dt = nowFn() - g.__tooltipLastTapTs
-        // Ignore open requests shortly after a tap/click (mobile gesture)
-        if (dt >= 0 && dt < SUPPRESS_MS) return
-      }
-      setOpen(next)
-    },
+    open,
+    onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     placement: props.placement ?? 'top',
     middleware: [offset(8), flip(), shift({padding: 4}), arrow({element: arrowRef})],
   })
 
+  // Close tooltip when tapping outside on touch devices
+  useEffect(() => {
+    if (!open || !touchOpenRef.current) return
+
+    const handleOutsideTouch = (e: TouchEvent) => {
+      const ref = refs.reference.current as Element | null
+      const floating = refs.floating.current as Element | null
+      if (
+        ref &&
+        !ref.contains(e.target as Node) &&
+        floating &&
+        !floating.contains(e.target as Node)
+      ) {
+        setOpen(false)
+        touchOpenRef.current = false
+      }
+    }
+
+    document.addEventListener('touchstart', handleOutsideTouch, {passive: true})
+    return () => document.removeEventListener('touchstart', handleOutsideTouch)
+  }, [open, refs.reference, refs.floating])
+
   const {getReferenceProps, getFloatingProps} = useInteractions([
     useHover(context, {
-      // On touch-capable devices, default to mouse-only hover unless explicitly overridden via noTap=false
-      mouseOnly: noTap ?? isTouchCapable(),
+      // Allow hover on all devices; touch devices will also use onTouchStart below
+      mouseOnly: noTap,
       handleClose: hasSafePolygon ? safePolygon({buffer: -0.5}) : null,
     }),
     useClick(context),
     useRole(context, {role: 'tooltip'}),
   ])
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (noTap) return
+    e.stopPropagation()
+    const next = !open
+    touchOpenRef.current = next
+    setOpen(next)
+  }
 
   return text ? (
     <>
@@ -126,12 +99,13 @@ export function Tooltip(props: {
         className={className}
         ref={refs.setReference as any}
         onMouseEnter={() => {
-          const dt = Date.now() - g.__tooltipLastTapTs
-          if (!(dt >= 0 && dt < SUPPRESS_MS)) {
-            setOpen(true)
-          }
+          touchOpenRef.current = false
+          setOpen(true)
         }}
-        onMouseLeave={() => setOpen(false)}
+        onMouseLeave={() => {
+          if (!touchOpenRef.current) setOpen(false)
+        }}
+        onTouchStart={handleTouchStart}
         {...getReferenceProps()}
       >
         {children}

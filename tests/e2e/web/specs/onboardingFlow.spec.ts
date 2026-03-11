@@ -91,14 +91,15 @@ test.describe('when given valid input', () => {
     await profilePage.clickSkipCompatibilityQuestionButton()
 
     //Verify information is correct
-    await profilePage.verifyDisplayNameAndAge(testAccount.display_name, testAccount.age)
+    await profilePage.verifyDisplayName(testAccount.display_name)
     await profilePage.verifyHeadline(testAccount.headline)
     await profilePage.verifyKeywords(testAccount.keywords)
-    await profilePage.verifyGenderLocationHeight(
+    await profilePage.verifyGenderLocationHeightAge(
       testAccount.gender,
       undefined,
       testAccount.height?.feet,
       testAccount.height?.inches,
+      testAccount.age,
     )
     await profilePage.verifyInterestedInConnectingWith(
       testAccount.interested_in,

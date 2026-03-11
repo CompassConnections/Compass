@@ -90,7 +90,7 @@ export class ProfilePage {
     this.dietAboutSection = page.getByTestId('profile-about-diet')
     this.languagesAboutSection = page.getByTestId('profile-about-languages')
     this.seekingAboutSection = page.getByTestId('profile-about-seeking')
-    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type')
+    this.relationshipTypeAboutSection = page.getByTestId('profile-about-seeking')
     this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
     this.educationAboutSection = page.getByTestId('profile-about-education')
     this.occupationAboutSection = page.getByTestId('profile-about-occupation')
@@ -319,18 +319,18 @@ export class ProfilePage {
     }
   }
 
-  async verifyDisplayNameAndAge(displayName?: string, age?: string) {
+  async verifyDisplayName(displayName?: string) {
     await expect(this.displayNameAndAgeSection).toBeVisible()
     const textContent = await this.displayNameAndAgeSection.textContent()
     if (displayName) await expect(textContent?.toLowerCase()).toContain(displayName.toLowerCase())
-    if (age) await expect(textContent?.toLowerCase()).toContain(age.toLowerCase())
   }
 
-  async verifyGenderLocationHeight(
+  async verifyGenderLocationHeightAge(
     gender?: string[],
     location?: string,
     heightFeet?: string,
     heightInches?: string,
+    age?: string,
   ) {
     await expect(this.genderLocationHightInInchesSection).toBeVisible()
     const textContent = await this.genderLocationHightInInchesSection.textContent()
@@ -338,6 +338,7 @@ export class ProfilePage {
     if (location) await expect(textContent?.toLowerCase()).toContain(location.toLowerCase())
     if (heightFeet) await expect(textContent?.toLowerCase()).toContain(heightFeet.toLowerCase())
     if (heightInches) await expect(textContent?.toLowerCase()).toContain(heightInches.toLowerCase())
+    if (age) await expect(textContent?.toLowerCase()).toContain(age.toLowerCase())
   }
 
   async verifyEthnicityOrigin(origin: string) {

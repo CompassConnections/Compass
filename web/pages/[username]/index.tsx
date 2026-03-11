@@ -334,7 +334,7 @@ function UserPageInner(props: ActiveUserPageProps) {
       <BackButton className="-ml-2 mb-2 self-start" />
 
       {currentUser !== undefined && (
-        <Col className={'gap-4'}>
+        <Col className={'gap-4 mx-2'}>
           {profile ? (
             <ProfileInfo
               key={profile.user_id}

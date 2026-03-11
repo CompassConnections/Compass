@@ -1,21 +1,23 @@
 import {INVERTED_ROMANTIC_CHOICES} from 'common/choices'
 import {Profile} from 'common/profiles/profile'
+import {capitalize} from 'lodash'
 import {convertRelationshipType, RelationshipType} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
-export function getSeekingGenderText(profile: Profile, t: any) {
+export function getSeekingConnectionText(profile: Profile, t: any, short?: boolean) {
   const relationshipTypes = profile.pref_relation_styles
-  if (!relationshipTypes?.length) return ''
   let seekingGenderText = stringOrStringArrayToText({
-    text: relationshipTypes
-      ?.map((rel) =>
-        t(
-          `profile.relationship.${rel}`,
-          convertRelationshipType(rel as RelationshipType),
-        ).toLowerCase(),
-      )
-      .sort(),
-    preText: t('profile.seeking', 'Seeking'),
+    text: relationshipTypes?.length
+      ? relationshipTypes
+          .map((rel) =>
+            t(
+              `profile.relationship.${rel}`,
+              convertRelationshipType(rel as RelationshipType),
+            ).toLowerCase(),
+          )
+          .sort()
+      : ['connection'],
+    preText: !short ? t('profile.seeking', 'Seeking') : undefined,
     asSentence: true,
     capitalizeFirstLetterOption: false,
     t: t,
@@ -30,5 +32,5 @@ export function getSeekingGenderText(profile: Profile, t: any) {
       seekingGenderText += ` (${romanticStyles.join(', ')})`
     }
   }
-  return seekingGenderText
+  return capitalize(seekingGenderText ?? undefined)
 }

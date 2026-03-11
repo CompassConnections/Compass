@@ -399,7 +399,10 @@ describe('createUserAndProfile', () => {
       ;(parsePhotos.removePinnedUrlFromPhotoUrls as jest.Mock).mockReturnValue(mockProps.profile)
       ;(mockPg.tx as jest.Mock).mockImplementation(async (cb: any) => {
         const mockTx = {
-          oneOrNone: jest.fn().mockResolvedValueOnce({id: 'existingUserId'}),
+          oneOrNone: jest
+            .fn()
+            .mockResolvedValueOnce({id: 'existingUserId'})
+            .mockResolvedValueOnce({id: 'existingProfileId'}),
           one: jest.fn(),
           manyOrNone: jest.fn().mockResolvedValue([]),
         }

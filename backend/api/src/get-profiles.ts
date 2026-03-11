@@ -169,8 +169,9 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   const userActivityJoin = 'user_activity on user_activity.user_id = profiles.user_id'
 
+  // Need them in the output for the profile card even we don't filter by them
   const joinInterests = true // !!interests?.length
-  const joinCauses = !!causes?.length
+  const joinCauses = true // !!causes?.length
   const joinWork = true // !!work?.length
 
   // Pre-aggregated interests per profile

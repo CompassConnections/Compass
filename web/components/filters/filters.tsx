@@ -18,6 +18,7 @@ import {
 import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
+import {FieldToggles} from 'web/components/filters/field-toggles'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
 import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
@@ -30,8 +31,6 @@ import {
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
 import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
-import {ShowAgeToggle} from 'web/components/filters/show-age-toggle'
-import {ShowPhotosToggle} from 'web/components/filters/show-photos-toggle'
 import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
@@ -753,22 +752,17 @@ function Filters(props: {
         openGroup={openGroup}
         setOpenGroup={setOpenGroup}
       >
-        {/* Show Photos */}
-        <Col className="p-4 pt-0">
-          <ShowPhotosToggle
+        <div className="px-4">
+          <CardSizeSelector
             updateDisplayOptions={updateDisplayOptions}
             displayOptions={displayOptions}
           />
-          <ShowAgeToggle
+        </div>
+        <Col className="p-4">
+          <FieldToggles
             updateDisplayOptions={updateDisplayOptions}
             displayOptions={displayOptions}
           />
-          <div className="mt-3">
-            <CardSizeSelector
-              updateDisplayOptions={updateDisplayOptions}
-              displayOptions={displayOptions}
-            />
-          </div>
         </Col>
       </FilterGroup>
     </Col>

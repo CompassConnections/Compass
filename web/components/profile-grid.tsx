@@ -1,13 +1,31 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
+import {INVERTED_DIET_CHOICES, INVERTED_LANGUAGE_CHOICES} from 'common/choices'
+import {Gender} from 'common/gender'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {capitalize} from 'lodash'
+import {
+  Brain,
+  Briefcase,
+  Calendar,
+  Cigarette,
+  HandHeart,
+  Languages,
+  Salad,
+  Sparkles,
+  Wine,
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, {useEffect, useRef, useState} from 'react'
+import {PiMagnifyingGlassBold} from 'react-icons/pi'
+import GenderIcon from 'web/components/gender-icon'
+import {IconWithInfo} from 'web/components/icons'
 import {Row} from 'web/components/layout/row'
+import {ProfileLocation} from 'web/components/profile/profile-location'
+import {getSeekingText} from 'web/components/profile-about'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Content} from 'web/components/widgets/editor'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
@@ -16,7 +34,7 @@ import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observe
 import {useAllChoices} from 'web/hooks/use-choices'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
-import {getSeekingGenderText} from 'web/lib/profile/seeking'
+import {getSeekingConnectionText} from 'web/lib/profile/seeking'
 
 import {Col} from './layout/col'
 
@@ -119,11 +137,42 @@ function ProfilePreview(props: {
 }) {
   const {profile, compatibilityScore, onHide, isHidden, onUndoHidden, displayOptions} = props
 
-  const {showPhotos, showAge, cardSize} = displayOptions ?? {}
+  const {
+    showPhotos,
+    showAge,
+    showGender,
+    showLanguages,
+    showHeadline,
+    showKeywords,
+    showCity,
+    showOccupation,
+    showSeeking,
+    showInterests,
+    showCauses,
+    showDiet,
+    showSmoking,
+    showDrinks,
+    showMBTI,
+    showBio,
+    cardSize,
+  } = displayOptions ?? {}
   const {user} = profile
   const choicesIdsToLabels = useAllChoices()
   const t = useT()
   // const currentUser = useUser()
+
+  // Show the bottom transparent gradient only if the text can't fit the card
+  const textRef = useRef<HTMLDivElement>(null)
+  const [isOverflowing, setIsOverflowing] = useState(false)
+  useEffect(() => {
+    const el = textRef.current
+    if (!el) return
+    const check = () => setIsOverflowing(el.scrollHeight > el.clientHeight)
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const bio = profile.bio as JSONContent
 
@@ -177,7 +226,11 @@ function ProfilePreview(props: {
     bio.content = newBio
   }
 
-  const seekingGenderText = getSeekingGenderText(profile, t)
+  const seekingText = profile.pref_relation_styles?.length
+    ? cardSize === 'large'
+      ? getSeekingText(profile, t, true)
+      : getSeekingConnectionText(profile, t, true)
+    : null
 
   // if (!profile.work?.length && !profile.occupation_title && !profile.interests?.length && (profile.bio_length || 0) < 100) {
   //   return null
@@ -232,50 +285,126 @@ function ProfilePreview(props: {
 
         <div className={clsx('flex lg:flex-row h-full lg:justify-between', cardClass)}>
           <div
+            ref={textRef}
             className={clsx(
-              'relative min-w-0 px-4 pt-2 overflow-hidden lg:flex-1',
+              'relative min-w-0 px-4 py-2 overflow-hidden lg:flex-1',
               textHeightClass,
             )}
           >
             <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate my-0">
               {user.name}
-              {showAge !== false && profile.age && `, ${profile.age}`}
             </h3>
-            <div className={''}>
-              {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
-              {profile.headline && <p>{profile.headline}</p>}
-              {!!profile.keywords?.length && (
-                <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
-                  {profile.keywords?.map(capitalize)?.map((tag, i) => (
+            <Row className={'flex-wrap gap-x-2'}>
+              {showCity !== false && <ProfileLocation profile={profile} />}
+              {showAge !== false && profile.age && (
+                <IconWithInfo
+                  text={t('profile.header.age', '{age} years old', {age: profile.age})}
+                  icon={<Calendar className="h-4 w-4 " />}
+                />
+              )}
+              {showGender !== false && profile.gender && (
+                <IconWithInfo
+                  text={''}
+                  icon={<GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />}
+                />
+              )}
+            </Row>
+            {showHeadline !== false && profile.headline && (
+              <p className="italic my-0">"{profile.headline}"</p>
+            )}
+            {showKeywords !== false && !!profile.keywords?.length && (
+              <Row className={'gap-x-2 flex-wrap py-2'} data-testid="profile-keywords">
+                {profile.keywords
+                  ?.slice(0, 10)
+                  ?.map(capitalize)
+                  ?.map((tag, i) => (
                     <span key={i} className={'bg-primary-100/50 text-sm px-3 py-2 rounded-full'}>
                       {tag.trim()}
                     </span>
                   ))}
-                </Row>
+              </Row>
+            )}
+            {showSeeking !== false && seekingText && (
+              <IconWithInfo
+                text={seekingText}
+                icon={<PiMagnifyingGlassBold className="h-4 w-4 " />}
+              />
+            )}
+            {showOccupation !== false && profile.occupation_title && (
+              <IconWithInfo
+                text={profile.occupation_title}
+                icon={<Briefcase className="h-4 w-4 " />}
+              />
+            )}
+            {showInterests !== false && !!profile.interests?.length && (
+              <IconWithInfo
+                text={profile.interests
+                  ?.slice(0, 5)
+                  .map((id) => choicesIdsToLabels['interests'][id])
+                  .join(' • ')}
+                icon={<Sparkles className="h-4 w-4 " />}
+              />
+            )}
+            {showCauses !== false && !!profile.causes?.length && (
+              <IconWithInfo
+                text={profile.causes
+                  ?.slice(0, 5)
+                  .map((id) => choicesIdsToLabels['causes'][id])
+                  .join(' • ')}
+                icon={<HandHeart className="h-4 w-4 " />}
+              />
+            )}
+            <Row className={'gap-2 flex-wrap'}>
+              {showDiet !== false && !!profile.diet?.length && (
+                <IconWithInfo
+                  text={profile.diet
+                    ?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))
+                    .join(' • ')}
+                  icon={<Salad className="h-4 w-4 " />}
+                />
               )}
-              <Content className="w-full" content={bio} />
-              {seekingGenderText && <p>{seekingGenderText}.</p>}
-              {(!!profile.work?.length || profile.occupation_title) && (
-                <p>
-                  {t('profile.optional.category.work', 'Work')}: {profile.occupation_title}
-                  {profile.occupation_title && !!profile.work?.length && ', '}
-                  {profile.work?.map((id) => choicesIdsToLabels['work'][id]).join(' • ')}
-                  {/*{(profile.work?.length || 0) > 3 && ',...'}*/}
-                </p>
+              {showSmoking !== false && profile.is_smoker && (
+                <IconWithInfo
+                  text={t('profile.optional.smoking', 'Smokes')}
+                  icon={<Cigarette className="h-4 w-4 " />}
+                />
               )}
-              {!!profile.interests?.length && (
-                <p>
-                  {t('profile.optional.interests', 'Interests')}:{' '}
-                  {profile.interests?.map((id) => choicesIdsToLabels['interests'][id]).join(' • ')}
-                </p>
+              {showDrinks !== false &&
+                profile.drinks_per_month !== null &&
+                profile.drinks_per_month !== undefined && (
+                  <IconWithInfo
+                    text={`${profile.drinks_per_month} ${t('profile.optional.drinks_per_month', 'per month')}`}
+                    icon={<Wine className="h-4 w-4 " />}
+                  />
+                )}
+              {showMBTI !== false && profile.mbti && (
+                <IconWithInfo
+                  text={profile.mbti.toUpperCase()}
+                  icon={<Brain className="h-4 w-4 " />}
+                />
               )}
-            </div>
-            <div
-              className={clsx(
-                'absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-canvas-0 to-transparent pointer-events-none',
-                'group-hover:from-gray-50 dark:group-hover:from-canvas-100',
+              {showLanguages !== false && !!profile.languages?.length && (
+                <IconWithInfo
+                  text={profile.languages
+                    ?.map((v) => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))
+                    .join(' • ')}
+                  icon={<Languages className="h-4 w-4 " />}
+                />
               )}
-            />
+            </Row>
+            {showBio !== false && bio && (
+              <div className="border-l-2 border-gray-200 dark:border-gray-600 pl-3 mt-1">
+                <Content className="w-full italic" content={bio} />
+              </div>
+            )}
+            {isOverflowing && (
+              <div
+                className={clsx(
+                  'absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-canvas-0 to-transparent pointer-events-none',
+                  'group-hover:from-gray-50 dark:group-hover:from-canvas-100',
+                )}
+              />
+            )}
           </div>
           {isPhotoRendered && (
             <div

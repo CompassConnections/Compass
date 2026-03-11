@@ -19,6 +19,7 @@ export function useDisplayOptions(profile?: any) {
       updateDisplayOptions({
         showPhotos: isLookingForRelationship,
         showAge: isLookingForRelationship,
+        showGender: isLookingForRelationship,
       })
     }
   }, [profile])

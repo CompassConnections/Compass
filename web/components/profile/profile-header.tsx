@@ -117,7 +117,6 @@ export default function ProfileHeader(props: {
                 ) : (
                   <span className="font-semibold">{user.name}</span>
                 )}
-                {profile.age && `, ${t('profile.header.age', '{age}', {age: profile.age})}`}
               </span>
             </Row>
             <ProfilePrimaryInfo profile={profile} />

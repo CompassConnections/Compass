@@ -19,7 +19,7 @@ import {UserActivity} from 'common/user'
 import {Home} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
-import {BsPersonHeart, BsPersonVcard} from 'react-icons/bs'
+import {BsPersonVcard} from 'react-icons/bs'
 import {FaBriefcase, FaHandsHelping, FaHeart, FaStar, FaUsers} from 'react-icons/fa'
 import {FaChild} from 'react-icons/fa6'
 import {FiUser} from 'react-icons/fi'
@@ -35,8 +35,8 @@ import {Row} from 'web/components/layout/row'
 import {UserHandles} from 'web/components/user/user-handles'
 import {useChoices} from 'web/hooks/use-choices'
 import {useLocale, useT} from 'web/lib/locale'
-import {getSeekingGenderText} from 'web/lib/profile/seeking'
-import {convertRace, type RelationshipType} from 'web/lib/util/convert-types'
+import {getSeekingConnectionText} from 'web/lib/profile/seeking'
+import {convertRace} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {fromNow} from 'web/lib/util/time'
 
@@ -91,7 +91,6 @@ export default function ProfileAbout(props: {
   return (
     <Col className={clsx('bg-canvas-0 relative gap-3 overflow-hidden rounded px-4')}>
       <Seeking profile={profile} />
-      <RelationshipType profile={profile} />
       <RelationshipStatus profile={profile} />
       <Education profile={profile} />
       <Occupation profile={profile} />
@@ -177,15 +176,13 @@ export default function ProfileAbout(props: {
   )
 }
 
-function Seeking(props: {profile: Profile}) {
-  const t = useT()
-  const {profile} = props
+export function getSeekingText(profile: Profile, t: any, short?: boolean | undefined) {
   const prefGender = profile.pref_gender
   const min = profile.pref_age_min
   const max = profile.pref_age_max
   const seekingGenderText = stringOrStringArrayToText({
     text:
-      prefGender?.length == 5
+      prefGender?.length == 0
         ? ['people']
         : prefGender?.map((gender) =>
             t(
@@ -193,7 +190,7 @@ function Seeking(props: {profile: Profile}) {
               convertGenderPlural(gender as Gender),
             ).toLowerCase(),
           ),
-    preText: t('profile.interested_in', 'Interested in'),
+    preText: t('common.with', 'with'),
     asSentence: true,
     capitalizeFirstLetterOption: false,
     t: t,
@@ -216,27 +213,18 @@ function Seeking(props: {profile: Profile}) {
                 max,
               })
 
-  if (!prefGender || prefGender.length < 1) {
-    return <></>
-  }
+  return `${getSeekingConnectionText(profile, t, short)} ${seekingGenderText} ${ageRangeText}`
+}
+
+function Seeking(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const text = getSeekingText(profile, t)
   return (
     <AboutRow
       icon={<PiMagnifyingGlassBold className="h-5 w-5" />}
-      text={`${seekingGenderText} ${ageRangeText}`}
+      text={text}
       testId="profile-about-seeking"
-    />
-  )
-}
-
-function RelationshipType(props: {profile: Profile}) {
-  const t = useT()
-  const {profile} = props
-  const seekingGenderText = getSeekingGenderText(profile, t)
-  return (
-    <AboutRow
-      icon={<BsPersonHeart className="h-5 w-5" />}
-      text={seekingGenderText}
-      testId="profile-about-relationship-type"
     />
   )
 }

@@ -1,22 +1,27 @@
-import {displayOptions, initialDisplayOptions} from 'common/profiles-rendering'
+import {DisplayOptions, initialDisplayOptions} from 'common/profiles-rendering'
 import {useEffect} from 'react'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 
 export function useDisplayOptions(profile?: any) {
-  const [displayOptions, setDisplayOptions] = usePersistentLocalState<displayOptions>(
+  const [displayOptions, setDisplayOptions] = usePersistentLocalState<DisplayOptions>(
     initialDisplayOptions,
     'rendering-options',
   )
 
-  useEffect(() => {
-    if (profile && displayOptions.showPhotos === undefined) {
-      setDisplayOptions({showPhotos: !!profile?.pref_relation_styles?.includes('relationship')})
-    }
-  }, [profile])
-
-  const updateDisplayOptions = (newState: Partial<displayOptions>) => {
+  const updateDisplayOptions = (newState: Partial<DisplayOptions>) => {
     const updatedState = {...newState}
     setDisplayOptions((prevState) => ({...prevState, ...updatedState}))
   }
+
+  useEffect(() => {
+    if (profile && displayOptions.showPhotos === undefined) {
+      const isLookingForRelationship = !!profile?.pref_relation_styles?.includes('relationship')
+      updateDisplayOptions({
+        showPhotos: isLookingForRelationship,
+        showAge: isLookingForRelationship,
+      })
+    }
+  }, [profile])
+
   return {displayOptions, updateDisplayOptions}
 }

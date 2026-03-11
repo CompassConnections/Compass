@@ -254,7 +254,7 @@ export default function ProfileHeader(props: {
         {profile.keywords?.map(capitalize)?.map((tag, i) => (
           <span
             key={i}
-            className={'bg-canvas-100'}
+            className={'bg-primary-100/50'}
             style={{
               padding: '6px 16px',
               borderRadius: '20px',

@@ -340,7 +340,7 @@ export function ProfilesHome() {
               onHide={onHide}
               hiddenUserIds={recentlyHiddenIds}
               onUndoHidden={onUndoHidden}
-              showPhotos={displayOptions.showPhotos}
+              displayOptions={displayOptions}
             />
           </>
         )}

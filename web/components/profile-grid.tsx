@@ -2,9 +2,11 @@ import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
+import {DisplayOptions} from 'common/profiles-rendering'
 import {capitalize} from 'lodash'
 import Image from 'next/image'
 import Link from 'next/link'
+import React from 'react'
 import {Row} from 'web/components/layout/row'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Content} from 'web/components/widgets/editor'
@@ -29,7 +31,7 @@ export const ProfileGrid = (props: {
   onHide?: (userId: string) => void
   hiddenUserIds?: string[]
   onUndoHidden?: (userId: string) => void
-  showPhotos?: boolean | null
+  displayOptions?: Partial<DisplayOptions>
 }) => {
   const {
     profiles,
@@ -42,20 +44,29 @@ export const ProfileGrid = (props: {
     onHide,
     hiddenUserIds,
     onUndoHidden,
-    showPhotos,
+    displayOptions,
   } = props
+
+  const {cardSize} = displayOptions ?? {}
 
   const user = useUser()
   const t = useT()
 
   const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id)
 
+  const gridCols = {
+    small: 'lg:grid-cols-2',
+    medium: '',
+    large: '',
+  }[cardSize ?? 'medium']
+
   return (
     <div className="relative">
       <div
         className={clsx(
-          'grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-6 py-4',
+          `grid gap-6 py-4 grid-cols-1`,
           isReloading && 'animate-pulse opacity-80',
+          gridCols,
         )}
       >
         {other_profiles.map((profile) => (
@@ -68,7 +79,7 @@ export const ProfileGrid = (props: {
             onHide={onHide}
             isHidden={hiddenUserIds?.includes(profile.user_id) ?? false}
             onUndoHidden={onUndoHidden}
-            showPhotos={showPhotos}
+            displayOptions={displayOptions}
           />
         ))}
       </div>
@@ -104,9 +115,11 @@ function ProfilePreview(props: {
   onHide?: (userId: string) => void
   isHidden?: boolean
   onUndoHidden?: (userId: string) => void
-  showPhotos?: boolean | null
+  displayOptions?: Partial<DisplayOptions>
 }) {
-  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden, showPhotos} = props
+  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden, displayOptions} = props
+
+  const {showPhotos, showAge, cardSize} = displayOptions ?? {}
   const {user} = profile
   const choicesIdsToLabels = useAllChoices()
   const t = useT()
@@ -171,29 +184,41 @@ function ProfilePreview(props: {
   // }
 
   const isPhotoRendered = showPhotos !== false && profile.pinned_url
+
+  const textHeightClass = {
+    small: 'max-h-40',
+    medium: 'max-h-60 lg:max-h-40',
+    large: 'max-h-80',
+  }[cardSize ?? 'medium']
+
+  const photoSizeClass = {
+    small: 'w-24 h-auto min-h-24 mt-12',
+    medium: 'w-20 lg:w-28 h-24 self-end lg:h-auto min-h-20 mt-12',
+    large: 'w-48 lg:w-48 h-60 lg:h-auto min-h-48 lg:mt-12',
+  }[cardSize ?? 'medium']
+
+  const cardClass = {
+    small: 'flex-row',
+    medium: 'flex-row',
+    large: 'flex-col',
+  }[cardSize ?? 'medium']
+
+  const hover = 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+
   return (
     <Link
       // onClick={() => track('click profile preview')}
       href={`/${user.username}`}
-      className="cursor-pointer group block rounded-lg overflow-hidden bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50 h-full border border-canvas-300"
+      className={clsx(
+        'cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
+        hover,
+      )}
     >
-      <Col className="relative h-40 w-full overflow-hidden rounded transition-all">
-        <Row className="absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10">
-          {/*  {currentUser ? (*/}
-          {/*    <StarButton*/}
-          {/*      className="!pt-0"*/}
-          {/*      isStarred={hasStar}*/}
-          {/*      refresh={refreshStars}*/}
-          {/*      targetProfile={profile}*/}
-          {/*      hideTooltip*/}
-          {/*    />*/}
-          {/*  ) : (*/}
-          {/*    <div />*/}
-          {/*  )}*/}
+      <Col className={clsx('relative w-full rounded transition-all')}>
+        <Row className={clsx('absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10')}>
           {compatibilityScore && (
             <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'} />
           )}
-          {/* Hide profile button */}
           {onHide && (
             <HideProfileButton
               hiddenUserId={profile.user_id}
@@ -205,63 +230,71 @@ function ProfilePreview(props: {
           )}
         </Row>
 
-        <Col
-          className={clsx(
-            'absolute inset-x-0 top-[-15px] bg-gradient-to-b to-transparent px-4 pt-0',
-            isPhotoRendered && 'mr-24',
-          )}
-        >
-          <div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate">
-                {user.name}
-                {profile.age && `, ${profile.age}`}
-                {/*{profile.gender && <GenderIcon gender={profile.gender} className={clsx('h-4 w-4')} hasColor />}*/}
-              </h3>
-              <div className="line-clamp-4">
-                {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
-                {profile.headline && <p>{profile.headline}</p>}
-                {profile.keywords?.map(capitalize)?.join(' • ')}
-                <Content className="w-full" content={bio} />
-                {seekingGenderText && <p>{seekingGenderText}.</p>}
-                {(!!profile.work?.length || profile.occupation_title) && (
-                  <p>
-                    {t('profile.optional.category.work', 'Work')}: {profile.occupation_title}
-                    {profile.occupation_title && !!profile.work?.length && ', '}
-                    {profile.work?.map((id) => choicesIdsToLabels['work'][id]).join(' • ')}
-                    {/*{(profile.work?.length || 0) > 3 && ',...'}*/}
-                  </p>
-                )}
-                {!!profile.interests?.length && (
-                  <p>
-                    {t('profile.optional.interests', 'Interests')}:{' '}
-                    {profile.interests
-                      ?.map((id) => choicesIdsToLabels['interests'][id])
-                      .join(' • ')}
-                  </p>
-                )}
-              </div>
+        <div className={clsx('flex lg:flex-row h-full lg:justify-between', cardClass)}>
+          <div
+            className={clsx(
+              'relative min-w-0 px-4 pt-2 overflow-hidden lg:flex-1',
+              textHeightClass,
+            )}
+          >
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate my-0">
+              {user.name}
+              {showAge !== false && profile.age && `, ${profile.age}`}
+            </h3>
+            <div className={''}>
+              {/*TODO: fix nested <a> links warning (one from Link above, one from link in bio below)*/}
+              {profile.headline && <p>{profile.headline}</p>}
+              {!!profile.keywords?.length && (
+                <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
+                  {profile.keywords?.map(capitalize)?.map((tag, i) => (
+                    <span key={i} className={'bg-primary-100/50 text-sm px-3 py-2 rounded-full'}>
+                      {tag.trim()}
+                    </span>
+                  ))}
+                </Row>
+              )}
+              <Content className="w-full" content={bio} />
+              {seekingGenderText && <p>{seekingGenderText}.</p>}
+              {(!!profile.work?.length || profile.occupation_title) && (
+                <p>
+                  {t('profile.optional.category.work', 'Work')}: {profile.occupation_title}
+                  {profile.occupation_title && !!profile.work?.length && ', '}
+                  {profile.work?.map((id) => choicesIdsToLabels['work'][id]).join(' • ')}
+                  {/*{(profile.work?.length || 0) > 3 && ',...'}*/}
+                </p>
+              )}
+              {!!profile.interests?.length && (
+                <p>
+                  {t('profile.optional.interests', 'Interests')}:{' '}
+                  {profile.interests?.map((id) => choicesIdsToLabels['interests'][id]).join(' • ')}
+                </p>
+              )}
             </div>
-          </div>
-          {/*<Row className="gap-1 text-xs">*/}
-          {/*  {city} • {capitalize(convertGender(gender as Gender))}*/}
-          {/*</Row>*/}
-        </Col>
-
-        {/* Profile image moved to bottom right */}
-        {isPhotoRendered && (
-          <div className="absolute bottom-4 right-2 w-24 h-24 rounded-xl overflow-hidden shadow-lg">
-            <Image
-              src={profile.pinned_url!}
-              width={128}
-              height={128}
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-              priority={false}
+            <div
+              className={clsx(
+                'absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-canvas-0 to-transparent pointer-events-none',
+                'group-hover:from-gray-50 dark:group-hover:from-canvas-100',
+              )}
             />
           </div>
-        )}
+          {isPhotoRendered && (
+            <div
+              className={clsx(
+                'relative shrink-0 rounded-xl lg:self-stretch overflow-hidden z-1 mx-auto',
+                photoSizeClass,
+              )}
+            >
+              <Image
+                src={profile.pinned_url!}
+                fill
+                alt=""
+                className="object-cover object-top"
+                loading="lazy"
+                priority={false}
+              />
+            </div>
+          )}
+        </div>
       </Col>
     </Link>
   )

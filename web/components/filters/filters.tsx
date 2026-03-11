@@ -6,7 +6,7 @@ import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile} from 'common/profiles/profile'
-import {displayOptions} from 'common/profiles-rendering'
+import {DisplayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
@@ -15,6 +15,7 @@ import {
   countBig5Filters,
   hasAnyBig5Filter,
 } from 'web/components/filters/big5-filter'
+import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
@@ -29,6 +30,7 @@ import {
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
 import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
+import {ShowAgeToggle} from 'web/components/filters/show-age-toggle'
 import {ShowPhotosToggle} from 'web/components/filters/show-photos-toggle'
 import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
@@ -199,8 +201,8 @@ function Filters(props: {
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
-  displayOptions: Partial<displayOptions>
-  updateDisplayOptions: (newState: Partial<displayOptions>) => void
+  displayOptions: Partial<DisplayOptions>
+  updateDisplayOptions: (newState: Partial<DisplayOptions>) => void
 }) {
   const t = useT()
   const {
@@ -757,6 +759,16 @@ function Filters(props: {
             updateDisplayOptions={updateDisplayOptions}
             displayOptions={displayOptions}
           />
+          <ShowAgeToggle
+            updateDisplayOptions={updateDisplayOptions}
+            displayOptions={displayOptions}
+          />
+          <div className="mt-3">
+            <CardSizeSelector
+              updateDisplayOptions={updateDisplayOptions}
+              displayOptions={displayOptions}
+            />
+          </div>
         </Col>
       </FilterGroup>
     </Col>
@@ -848,8 +860,8 @@ export function FiltersElement(props: {
   isYourFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
-  displayOptions: Partial<displayOptions>
-  updateDisplayOptions: (newState: Partial<displayOptions>) => void
+  displayOptions: Partial<DisplayOptions>
+  updateDisplayOptions: (newState: Partial<DisplayOptions>) => void
 }) {
   const {
     filters,

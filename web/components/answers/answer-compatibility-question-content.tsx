@@ -33,7 +33,6 @@ export const IMPORTANCE_CHOICES = {
   Important: 2,
   'Very Important': 3,
 } as const
-} as const
 
 type ImportanceColorsType = {
   [key: number]: string
@@ -176,9 +175,6 @@ export function AnswerCompatibilityQuestionContent(props: {
         </Row>
         <Row className={''}>
           {shortenedPopularity && (
-        <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>
-        {shortenedPopularity && (
-          <Row className="text-ink-500 select-none items-center text-sm">
             <Tooltip
               text={t(
                 'answers.content.people_answered',
@@ -244,7 +240,6 @@ export function AnswerCompatibilityQuestionContent(props: {
           </span>
           <ExpandingInput
             className={'w-full'}
-            data-testid="compatibility-question-thoughts"
             data-testid="compatibility-question-thoughts"
             rows={3}
             value={answer.explanation ?? ''}
@@ -314,7 +309,6 @@ export const SelectAnswer = (props: {
   return (
     <RadioGroup
       data-testid="compatibility-question-your-answer"
-      data-testid="compatibility-question-your-answer"
       className={
         'border-ink-300 text-ink-400 bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 text-sm shadow-sm'
       }
@@ -325,7 +319,6 @@ export const SelectAnswer = (props: {
         <RadioGroup.Option
           key={i}
           value={i}
-          data-testid={`compatibility-your-answer-${i}`}
           data-testid={`compatibility-your-answer-${i}`}
           className={({disabled}) =>
             clsx(
@@ -354,7 +347,6 @@ export const MultiSelectAnswers = (props: {
   return (
     <Col
       data-testid="compatibility-answers-you-accept"
-      data-testid="compatibility-answers-you-accept"
       className={
         'border-ink-300 text-ink-400 bg-canvas-0 inline-flex flex-col gap-2 rounded-md border p-1 text-sm shadow-sm main-font'
       }
@@ -362,7 +354,6 @@ export const MultiSelectAnswers = (props: {
       {options.map((label, i) => (
         <button
           key={i}
-          data-testid={`compatibility-answers-you-accept-${i}`}
           data-testid={`compatibility-answers-you-accept-${i}`}
           className={clsx(
             values.includes(i)
@@ -380,11 +371,6 @@ export const MultiSelectAnswers = (props: {
     </Col>
   )
 }
-
-//Exported types for test files to use when referencing the keys of the choices objects
-export type ImportanceTuple = {
-  [K in keyof typeof IMPORTANCE_CHOICES]: [K, (typeof IMPORTANCE_CHOICES)[K]]
-}[keyof typeof IMPORTANCE_CHOICES]
 
 //Exported types for test files to use when referencing the keys of the choices objects
 export type ImportanceTuple = {

@@ -24,7 +24,9 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
   const [userCount, profileCount, eventsCount, messagesCount, genderStats] = await Promise.all([
     pg.one(`SELECT COUNT(*)::int as count FROM users`),
     pg.one(`SELECT COUNT(*)::int as count FROM profiles`),
-    pg.one(`SELECT COUNT(*)::int as count FROM events WHERE event_start_time > now()`),
+    pg.one(
+      `SELECT COUNT(*)::int as count FROM events WHERE event_start_time > now() and status = 'active'`,
+    ),
     getMessagesCount(),
     pg.manyOrNone(
       `SELECT gender, COUNT(*)::int as count FROM profiles WHERE gender IS NOT NULL GROUP BY gender`,

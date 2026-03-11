@@ -373,7 +373,7 @@ function ProfilePreview(props: {
                 profile.drinks_per_month !== null &&
                 profile.drinks_per_month !== undefined && (
                   <IconWithInfo
-                    text={`${profile.drinks_per_month} ${t('profile.optional.drinks_per_month', 'per month')}`}
+                    text={`${profile.drinks_per_month} ${t('filter.drinks.per_month', 'per month')}`}
                     icon={<Wine className="h-4 w-4 " />}
                   />
                 )}

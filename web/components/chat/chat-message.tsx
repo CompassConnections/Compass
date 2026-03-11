@@ -42,6 +42,8 @@ export function ChatMessageItem(props: {
   const [emojiOpenForId, setEmojiOpenForId] = useState<number | null>(null)
   const [emojiKey, setEmojiKey] = useState(0)
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hasMovedRef = useRef(false)
+  const lastPositionRef = useRef<{x: number; y: number} | null>(null)
 
   if (!chat) return null
 
@@ -56,11 +58,15 @@ export function ChatMessageItem(props: {
         : {username: '', avatarUrl: undefined, id: ''}
 
   const startLongPress = (messageId: number) => {
+    hasMovedRef.current = false
+    lastPositionRef.current = null
     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current)
     longPressTimerRef.current = setTimeout(() => {
-      setEmojiOpenForId(messageId)
-      setEmojiKey((k) => k + 1)
-    }, 500)
+      if (!hasMovedRef.current) {
+        setEmojiOpenForId(messageId)
+        setEmojiKey((k) => k + 1)
+      }
+    }, 1000)
   }
 
   const cancelLongPress = () => {
@@ -68,6 +74,18 @@ export function ChatMessageItem(props: {
       clearTimeout(longPressTimerRef.current)
       longPressTimerRef.current = null
     }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const currentPos = {x: e.clientX, y: e.clientY}
+    if (lastPositionRef.current) {
+      const dx = Math.abs(currentPos.x - lastPositionRef.current.x)
+      const dy = Math.abs(currentPos.y - lastPositionRef.current.y)
+      if (dx > 5 || dy > 5) {
+        hasMovedRef.current = true
+      }
+    }
+    lastPositionRef.current = currentPos
   }
 
   return (
@@ -108,6 +126,7 @@ export function ChatMessageItem(props: {
                     onMouseDown={() => startLongPress(chat.id)}
                     onMouseUp={cancelLongPress}
                     onMouseLeave={cancelLongPress}
+                    onMouseMove={handleMouseMove}
                     onTouchStart={() => startLongPress(chat.id)}
                     onTouchEnd={cancelLongPress}
                     onTouchCancel={cancelLongPress}

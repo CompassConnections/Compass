@@ -16,7 +16,7 @@ export function getSeekingConnectionText(profile: Profile, t: any, short?: boole
             ).toLowerCase(),
           )
           .sort()
-      : ['connection'],
+      : [t('profile.connection.default', 'connection')],
     preText: !short ? t('profile.seeking', 'Seeking') : undefined,
     asSentence: true,
     capitalizeFirstLetterOption: false,

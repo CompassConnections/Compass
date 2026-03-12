@@ -313,7 +313,7 @@ function ProfilePreview(props: {
               <p className="italic my-0">"{profile.headline}"</p>
             )}
             {showKeywords !== false && !!profile.keywords?.length && (
-              <Row className={'gap-x-2 flex-wrap py-2'} data-testid="profile-keywords">
+              <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
                 {profile.keywords
                   ?.slice(0, 10)
                   ?.map(capitalize)

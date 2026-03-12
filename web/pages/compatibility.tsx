@@ -99,10 +99,10 @@ export default function CompatibilityPage() {
     }
   }, [user?.id])
 
-  const refreshCompatibilityAll = () => {
+  const refreshCompatibilityAll = useCallback(() => {
     refreshCompatibilityAnswers()
     refreshCompatibilityQuestions()
-  }
+  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions])
 
   return (
     <PageBase trackPageView={'compatibility'}>

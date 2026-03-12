@@ -176,7 +176,7 @@ function AnswerCompatibilityQuestionModal(props: {
     return [...otherQuestions].sort((a, b) => {
       return compareBySort(a, b, sort)
     }) as QuestionWithStats[]
-  }, [otherQuestions, sort])
+  }, [sort])
 
   const handleStartQuestions = () => {
     if (otherQuestions.length === 0) {

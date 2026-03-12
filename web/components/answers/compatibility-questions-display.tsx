@@ -2,6 +2,7 @@ import {PencilIcon, TrashIcon} from '@heroicons/react/24/outline'
 import {UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {QuestionWithStats} from 'common/api/types'
+import {debug} from 'common/logger'
 import {
   getAnswerCompatibility,
   getScoredAnswerCompatibility,
@@ -11,7 +12,7 @@ import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
 import {keyBy, partition, sortBy} from 'lodash'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {
@@ -66,6 +67,7 @@ export function separateQuestionsArray(
   skippedAnswerQuestionIds: Set<number>,
   answeredQuestionIds: Set<number>,
 ) {
+  debug('Refreshing questions array')
   const skippedQuestions: QuestionWithStats[] = []
   const answeredQuestions: QuestionWithStats[] = []
   const otherQuestions: QuestionWithStats[] = []
@@ -104,25 +106,26 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(user.id)
 
-  const [skippedAnswers, answers] = partition(
-    compatibilityAnswers,
-    (answer) => answer.importance == -1,
-  )
+  const {answers, skippedQuestions, answeredQuestions, otherQuestions} = useMemo(() => {
+    debug('Refreshing questions')
+    const [skippedAnswers, answers] = partition(
+      compatibilityAnswers,
+      (answer) => answer.importance == -1,
+    )
+    const answeredQuestionIds = new Set(answers.map((answer) => answer.question_id))
+    const skippedAnswerQuestionIds = new Set(skippedAnswers.map((answer) => answer.question_id))
+    const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
+      compatibilityQuestions,
+      skippedAnswerQuestionIds,
+      answeredQuestionIds,
+    )
+    return {answers, skippedQuestions, answeredQuestions, otherQuestions}
+  }, [compatibilityAnswers, compatibilityQuestions])
 
-  const answeredQuestionIds = new Set(answers.map((answer) => answer.question_id))
-
-  const skippedAnswerQuestionIds = new Set(skippedAnswers.map((answer) => answer.question_id))
-
-  const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
-    compatibilityQuestions,
-    skippedAnswerQuestionIds,
-    answeredQuestionIds,
-  )
-
-  const refreshCompatibilityAll = () => {
+  const refreshCompatibilityAll = useCallback(() => {
     refreshCompatibilityAnswers()
     refreshCompatibilityQuestions()
-  }
+  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions])
 
   const isLooking = useIsLooking()
   const [sort, setSort] = usePersistentInMemoryState<CompatibilitySort>(
@@ -133,43 +136,46 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
   const {compatibilityAnswers: comparedAnswers} = useUserCompatibilityAnswers(comparedUserId)
-  const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
 
-  const sortedAndFilteredAnswers = sortBy(
-    answers.filter((a) => {
-      // if (a.question_id < 10) console.log({a, sort})
-      const question = compatibilityQuestions.find((q) => q.id === a.question_id)
-      const comparedAnswer = questionIdToComparedAnswer[a.question_id]
-      if (question && !isMatchingSearch({...question, answer: a}, searchTerm)) return false
-      if (sort === 'disagree') {
-        // Answered and not skipped.
-        if (!comparedAnswer || comparedAnswer.importance < 0) return false
-        return !getAnswerCompatibility(a, comparedAnswer)
-      }
-      if (sort === 'your_unanswered') {
-        // Answered and not skipped.
-        return !comparedAnswer || comparedAnswer.importance === -1
-      }
-      return true
-    }),
-    (a) => {
-      const comparedAnswer = questionIdToComparedAnswer[a.question_id]
-      if (sort === 'your_important') {
-        return compareBySort(comparedAnswer, undefined, sort)
-      } else if (sort === 'disagree') {
-        return comparedAnswer ? getScoredAnswerCompatibility(a, comparedAnswer) : Infinity
-      } else if (sort === 'your_unanswered') {
-        // Not answered first, then skipped, then answered.
-        return comparedAnswer ? (comparedAnswer.importance >= 0 ? 2 : 1) : 0
-      }
-      const question = compatibilityQuestions.find((q) => q.id === a.question_id)
-      return compareBySort({...a, ...question}, undefined, sort)
-    },
-    // Break ties with their answer importance.
-    (a) => -a.importance,
-    // Then by whether they wrote an explanation.
-    (a) => (a.explanation ? 0 : 1),
-  )
+  const sortedAndFilteredAnswers = useMemo(() => {
+    debug('Refreshing sortedAndFilteredAnswers')
+    const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
+    return sortBy(
+      answers.filter((a) => {
+        // if (a.question_id < 10) console.log({a, sort})
+        const question = compatibilityQuestions.find((q) => q.id === a.question_id)
+        const comparedAnswer = questionIdToComparedAnswer[a.question_id]
+        if (question && !isMatchingSearch({...question, answer: a}, searchTerm)) return false
+        if (sort === 'disagree') {
+          // Answered and not skipped.
+          if (!comparedAnswer || comparedAnswer.importance < 0) return false
+          return !getAnswerCompatibility(a, comparedAnswer)
+        }
+        if (sort === 'your_unanswered') {
+          // Answered and not skipped.
+          return !comparedAnswer || comparedAnswer.importance === -1
+        }
+        return true
+      }),
+      (a) => {
+        const comparedAnswer = questionIdToComparedAnswer[a.question_id]
+        if (sort === 'your_important') {
+          return compareBySort(comparedAnswer, undefined, sort)
+        } else if (sort === 'disagree') {
+          return comparedAnswer ? getScoredAnswerCompatibility(a, comparedAnswer) : Infinity
+        } else if (sort === 'your_unanswered') {
+          // Not answered first, then skipped, then answered.
+          return comparedAnswer ? (comparedAnswer.importance >= 0 ? 2 : 1) : 0
+        }
+        const question = compatibilityQuestions.find((q) => q.id === a.question_id)
+        return compareBySort({...a, ...question}, undefined, sort)
+      },
+      // Break ties with their answer importance.
+      (a) => -a.importance,
+      // Then by whether they wrote an explanation.
+      (a) => (a.explanation ? 0 : 1),
+    )
+  }, [answers, compatibilityQuestions, comparedAnswers, searchTerm, sort])
 
   const [page, setPage] = useState(0)
   const currentSlice = page * NUM_QUESTIONS_TO_SHOW

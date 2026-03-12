@@ -233,7 +233,7 @@ test.describe('when given valid input', () => {
     await onboardingPage.clickRefineProfileButton()
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
@@ -275,12 +275,13 @@ test.describe('when given valid input', () => {
     await signUpPage.saveProfileChanges()
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name, fakerAccount.age)
-    await profilePage.verifyGenderLocationHeight(
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
+    await profilePage.verifyGenderLocationHeightAge(
       fakerAccount.gender,
       undefined,
       fakerAccount.height?.feet,
       fakerAccount.height?.inches,
+      fakerAccount.age,
     )
 
     //Verify database info
@@ -324,7 +325,7 @@ test.describe('when given valid input', () => {
     await onboardingPage.clickRefineProfileButton()
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
     await profilePage.verifyCompatibilityAnswers(compatTwoQuestionOne)
 
     //Verify database info
@@ -364,7 +365,7 @@ test.describe('when given valid input', () => {
       await onboardingPage.clickRefineProfileButton()
 
       //Verify displayed information is correct
-      await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+      await profilePage.verifyDisplayName(fakerAccount.display_name)
 
       //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)
@@ -393,7 +394,7 @@ test.describe('when given valid input', () => {
       await onboardingPage.clickRefineProfileButton()
 
       //Verify displayed information is correct
-      await profilePage.verifyDisplayNameAndAge(fakerAccount.display_name)
+      await profilePage.verifyDisplayName(fakerAccount.display_name)
 
       //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)

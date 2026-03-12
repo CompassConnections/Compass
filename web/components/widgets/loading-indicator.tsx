@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import {useEffect, useRef} from 'react'
-import FavIcon from 'web/components/FavIcon'
+import FavIconBlack from 'web/components/FavIcon'
 
 export type SpinnerSize = 'sm' | 'md' | 'lg'
 
@@ -79,7 +79,7 @@ export function CompassLoadingIndicator(props: {
         )}
         role="status"
       >
-        <FavIcon className="dark:invert w-20 h-20" />
+        <FavIconBlack className="dark:invert w-20 h-20" />
       </div>
     </div>
   )

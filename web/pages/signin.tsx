@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import React, {Suspense, useEffect, useState} from 'react'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
-import FavIcon from 'web/components/FavIcon'
+import FavIconBlack from 'web/components/FavIcon'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
@@ -131,7 +131,7 @@ function RegisterComponent() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <div className="flex justify-center mb-6">
-              <FavIcon className="dark:invert" />
+              <FavIconBlack className="dark:invert" />
             </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold ">
               {t('signin.title', 'Sign in')}

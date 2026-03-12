@@ -2,12 +2,12 @@ type FavIconProps = {
   className?: string
 }
 
-const FavIcon = ({className}: FavIconProps) => (
+const FavIconBlack = ({className}: FavIconProps) => (
   <img
-    src="https://www.compassmeet.com/favicon.svg"
+    src="https://www.compassmeet.com/favicon-black.svg"
     alt="Compass logo"
     className={`w-12 h-12 ${className ?? ''}`}
   />
 )
 
-export default FavIcon
+export default FavIconBlack

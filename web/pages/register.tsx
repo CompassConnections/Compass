@@ -7,7 +7,7 @@ import {useSearchParams} from 'next/navigation'
 import React, {Suspense, useState} from 'react'
 import toast from 'react-hot-toast'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
-import FavIcon from 'web/components/FavIcon'
+import FavIconBlack from 'web/components/FavIcon'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {auth} from 'web/lib/firebase/users'
@@ -169,7 +169,7 @@ function RegisterComponent() {
                 {/*  The project is still in development...*/}
                 {/*</h2>*/}
                 <div className="flex justify-center mb-6">
-                  <FavIcon className="dark:invert" />
+                  <FavIconBlack className="dark:invert" />
                 </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold ">
                   {t('register.get_started', 'Get Started')}

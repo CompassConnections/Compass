@@ -57,7 +57,7 @@ export const PROD_CONFIG: EnvConfig = {
   adminIds: [
     '0vaZsIJk9zLVOWY4gb61gTrRIU73', // Martin
   ],
-  faviconPath: '/favicon.ico',
+  faviconPath: '/favicon.svg',
 }
 
 export const refreshConfig = () => {

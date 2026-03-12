@@ -83,7 +83,7 @@ function OgProfile(props: ogProps) {
             </div>
           )}
           {/*<div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start'}}>*/}
-          {/*  <img src={'https://www.compassmeet.com/favicon.svg'} width={100} height={100} />*/}
+          {/*  <img src={'https://www.compassmeet.com/favicon-black.svg'} width={100} height={100} />*/}
           {/*</div>*/}
           {allTags && (
             <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>

@@ -1,14 +1,14 @@
 import clsx from 'clsx'
 import {IS_PROD} from 'common/envs/constants'
 import Link from 'next/link'
-import FavIcon from 'web/components/FavIcon'
+import FavIconBlack from 'web/components/FavIcon'
 import {Row} from 'web/components/layout/row'
 
 export default function SiteLogo(props: {noLink?: boolean; className?: string}) {
   const {noLink, className} = props
   const inner = (
     <>
-      <FavIcon className="dark:invert" />
+      <FavIconBlack className="dark:invert" />
       <div className={clsx('my-auto text-xl font-thin logo')}>
         {IS_PROD ? 'Compass' : 'Compass dev'}
       </div>

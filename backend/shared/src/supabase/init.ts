@@ -98,10 +98,10 @@ const newClient = (
 // Use one connection to avoid WARNING: Creating a duplicate database object for the same connection.
 let pgpDirect: IDatabase<object, IClient> | null = null
 
-export function createSupabaseDirectClient(instanceId?: string, password?: string) {
+export function createSupabaseDirectClient(password?: string) {
   if (pgpDirect) return pgpDirect
   const hasDatabaseUrl = !!process.env.DATABASE_URL
-  password = password ?? getSupabasePwd()
+  password = getSupabasePwd()
   if (!hasDatabaseUrl && !password) {
     throw new Error("Can't connect to Supabase; no process.env.SUPABASE_DB_PASSWORD.")
   }

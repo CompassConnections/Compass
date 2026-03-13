@@ -88,7 +88,6 @@ test.describe('when given valid input', () => {
     await profilePage.clickNextCompatibilityQuestionButton()
     await profilePage.clickSkipCompatibilityQuestionButton()
     await profilePage.clickSkipCompatibilityQuestionButton()
-    await profilePage.clickSkipCompatibilityQuestionButton()
 
     await profilePage.clickCloseButton()
 

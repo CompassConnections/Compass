@@ -1,7 +1,7 @@
 name: CD Android Live Update
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'android/capawesome.json'
       - '.github/workflows/cd-android-live-update.yml'
@@ -60,7 +60,6 @@ jobs:
       - name: Deploy Live Update
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_INSTANCE_ID: ${{ secrets.NEXT_PUBLIC_SUPABASE_INSTANCE_ID }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
           CAPAWESOME_TOKEN: ${{ secrets.CAPAWESOME_TOKEN }}
           commitRef: ${{ github.head_ref || github.ref_name }}

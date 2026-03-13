@@ -101,13 +101,6 @@ let pgpDirect: IDatabase<object, IClient> | null = null
 export function createSupabaseDirectClient(instanceId?: string, password?: string) {
   if (pgpDirect) return pgpDirect
   const hasDatabaseUrl = !!process.env.DATABASE_URL
-  // Only enforce Supabase credentials when not using DATABASE_URL
-  instanceId = instanceId ?? getInstanceId()
-  if (!hasDatabaseUrl && !instanceId) {
-    throw new Error(
-      "Can't connect to Supabase; no process.env.SUPABASE_INSTANCE_ID and no instance ID in config.",
-    )
-  }
   password = password ?? getSupabasePwd()
   if (!hasDatabaseUrl && !password) {
     throw new Error("Can't connect to Supabase; no process.env.SUPABASE_DB_PASSWORD.")

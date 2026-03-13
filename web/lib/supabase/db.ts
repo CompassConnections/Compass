@@ -22,7 +22,7 @@ export function initSupabaseClient() {
 
   if (urlOverride || anonKeyOverride) {
     console.warn(
-      'Supabase env override is partially set. Both URL and ANON_KEY are required. Falling back to ENV_CONFIG.',
+      'Supabase env override is partially set. Both SUPABASE_URL and ANON_KEY are required. Falling back to ENV_CONFIG.',
     )
   }
 

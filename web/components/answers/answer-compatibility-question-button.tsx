@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {QuestionWithStats} from 'common/api/types'
+import {debug} from 'common/logger'
 import {User} from 'common/user'
 import Link from 'next/link'
 import router from 'next/router'
@@ -23,12 +24,17 @@ export function AnswerCompatibilityQuestionButton(props: {
   const {user, otherQuestions, refreshCompatibilityAll, fromSignup, size = 'md'} = props
   const [open, setOpen] = useState(fromSignup ?? false)
   const t = useT()
+  const {isCore, questionsToAnswer} = useMemo(() => {
+    const isCore = otherQuestions.some((q) => q.importance_score === 0)
+    return {
+      isCore,
+      questionsToAnswer: isCore
+        ? otherQuestions.filter((q) => q.importance_score === 0)
+        : otherQuestions,
+    }
+  }, [otherQuestions])
   if (!user) return null
-  if (!fromSignup && otherQuestions.length === 0) return null
-  const isCore = otherQuestions.some((q) => q.importance_score === 0)
-  const questionsToAnswer = isCore
-    ? otherQuestions.filter((q) => q.importance_score === 0)
-    : otherQuestions
+  if (!fromSignup && questionsToAnswer.length === 0) return null
   return (
     <>
       {size === 'md' ? (
@@ -173,10 +179,11 @@ function AnswerCompatibilityQuestionModal(props: {
   }, [sort])
 
   const sortedQuestions = useMemo(() => {
+    debug('Refreshing sorted questions')
     return [...otherQuestions].sort((a, b) => {
       return compareBySort(a, b, sort)
     }) as QuestionWithStats[]
-  }, [sort])
+  }, [otherQuestions, sort])
 
   const handleStartQuestions = () => {
     if (otherQuestions.length === 0) {

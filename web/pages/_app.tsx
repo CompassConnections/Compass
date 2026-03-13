@@ -20,6 +20,7 @@ import {useEffect, useState} from 'react'
 import {AuthProvider, AuthUser} from 'web/components/auth-context'
 import {ErrorBoundary} from 'web/components/error-boundary'
 import {LiveRegionProvider} from 'web/components/live-region'
+import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
@@ -196,11 +197,13 @@ function MyApp(props: AppProps<PageProps>) {
             <I18nContext.Provider value={{locale, setLocale}}>
               <ErrorBoundary>
                 <AuthProvider serverUser={pageProps.auth}>
-                  <HiddenProfilesProvider>
-                    <WebPush />
-                    <AndroidPush />
-                    <Component {...pageProps} />
-                  </HiddenProfilesProvider>
+                  <ChoicesProvider>
+                    <HiddenProfilesProvider>
+                      <WebPush />
+                      <AndroidPush />
+                      <Component {...pageProps} />
+                    </HiddenProfilesProvider>
+                  </ChoicesProvider>
                 </AuthProvider>
               </ErrorBoundary>
             </I18nContext.Provider>

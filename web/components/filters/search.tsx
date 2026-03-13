@@ -15,7 +15,7 @@ import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -179,7 +179,7 @@ export const Search = forwardRef<
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false)
   const user = useUser()
   const isClearedFilters = useIsClearedFilters(filters)
-  const {choices: interestChoices} = useChoices('interests')
+  const choices = useChoicesContext()
 
   useEffect(() => {
     if (isHolding) return
@@ -195,7 +195,7 @@ export const Search = forwardRef<
           setTimeout(() => {
             setPlaceholder('')
             setCharIndex(0)
-            setTextToType(getRandomPair(Object.values(interestChoices))) // pick new pair
+            setTextToType(getRandomPair(Object.values(choices?.['interests']))) // pick new pair
             setIsHolding(false)
           }, HOLD_TIME)
           return prev

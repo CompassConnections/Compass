@@ -37,7 +37,7 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
-import {useAllChoices, useChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
@@ -76,7 +76,7 @@ function SelectedFiltersSummary(props: {
 }) {
   const {locationFilterProps, raisedInLocationFilterProps, updateFilter, clearFilters} = props
   const t = useT()
-  const choicesIdsToLabels = useAllChoices()
+  const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
 
   const filters = removeNullOrUndefinedProps({...props.filters, orderBy: undefined})
@@ -870,14 +870,8 @@ export function FiltersElement(props: {
     updateDisplayOptions,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
-  const {choices: interestChoices} = useChoices('interests')
-  const {choices: causeChoices} = useChoices('causes')
-  const {choices: workChoices} = useChoices('work')
-  const choices = {
-    interests: interestChoices,
-    causes: causeChoices,
-    work: workChoices,
-  }
+  const _choices = useChoicesContext()
+  const choices = {interests: _choices.interests, causes: _choices.causes, work: _choices.work}
   return (
     <Filters
       filters={filters}

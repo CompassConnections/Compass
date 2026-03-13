@@ -13,7 +13,7 @@ import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/
 import {Row} from 'web/components/layout/row'
 import {Avatar} from 'web/components/widgets/avatar'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useAllChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
@@ -68,7 +68,7 @@ function ButtonModal(props: {
 }) {
   const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches} = props
   const t = useT()
-  const choicesIdsToLabels = useAllChoices()
+  const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
   return (
     <Modal

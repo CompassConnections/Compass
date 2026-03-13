@@ -3,7 +3,7 @@ import {FilterFields} from 'common/filters'
 import {OptionTableKey} from 'common/profiles/constants'
 import {invert} from 'lodash'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
-import {useChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useLocale, useT} from 'web/lib/locale'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
@@ -15,7 +15,7 @@ export function InterestFilterText(props: {
   const {options, highlightedClass, label} = props
   const t = useT()
   const length = (options ?? []).length
-  const {choices} = useChoices(label)
+  const choices = useChoicesContext()?.[label]
 
   if (!options || length < 1) {
     return (

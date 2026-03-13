@@ -1,11 +1,26 @@
+import {debug} from 'common/logger'
 import {OptionTableKey} from 'common/profiles/constants'
 import {run} from 'common/supabase/utils'
-import {useEffect} from 'react'
+import {createContext, ReactNode, useContext, useEffect} from 'react'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {useLocale} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 
+const ChoicesContext = createContext<UseAllChoices | null>(null)
+
+export const ChoicesProvider = ({children}: {children: ReactNode}) => {
+  const choices = useAllChoices()
+  return <ChoicesContext.Provider value={choices}>{children}</ChoicesContext.Provider>
+}
+
+export const useChoicesContext = () => {
+  const ctx = useContext(ChoicesContext)
+  if (!ctx) throw new Error('useChoicesContext must be used within a ChoicesProvider')
+  return ctx
+}
+
 export async function fetchChoices(label: OptionTableKey, locale: string) {
+  debug('Fetching choices for', label)
   const choicesById: Record<string, string> = {}
   const {data} = await run(
     db
@@ -32,7 +47,7 @@ export async function fetchChoices(label: OptionTableKey, locale: string) {
   return choicesById
 }
 
-export const useChoices = (label: OptionTableKey) => {
+const useChoices = (label: OptionTableKey) => {
   const [choices, setChoices] = usePersistentInMemoryState<Record<string, string>>(
     {},
     `${label}-choices`,
@@ -40,24 +55,31 @@ export const useChoices = (label: OptionTableKey) => {
   const {locale} = useLocale()
 
   const refreshChoices = async () => {
-    try {
-      const results = await fetchChoices(label, locale)
-      setChoices(results)
-    } catch (err) {
-      console.error('Error fetching choices:', err)
-      return {}
-    }
+    fetchChoices(label, locale)
+      .then(setChoices)
+      .catch((err) => {
+        console.error('Error fetching choices:', err?.message ?? err)
+        return {}
+      })
   }
 
   useEffect(() => {
-    // debug('Fetching choices in use effect...')
     refreshChoices()
   }, [locale])
 
   return {choices, refreshChoices}
 }
 
-export const useAllChoices = () => {
+export type UseAllChoices = {
+  interests: Record<string, string>
+  causes: Record<string, string>
+  work: Record<string, string>
+  refreshInterests: () => void
+  refreshCauses: () => void
+  refreshWork: () => void
+}
+
+const useAllChoices = () => {
   const {choices: interests, refreshChoices: refreshInterests} = useChoices('interests')
   const {choices: causes, refreshChoices: refreshCauses} = useChoices('causes')
   const {choices: work, refreshChoices: refreshWork} = useChoices('work')

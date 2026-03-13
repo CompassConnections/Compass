@@ -33,7 +33,7 @@ import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {UserHandles} from 'web/components/user/user-handles'
-import {useChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useLocale, useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
 import {convertRace} from 'web/lib/util/convert-types'
@@ -83,9 +83,7 @@ export default function ProfileAbout(props: {
 }) {
   const {profile, userActivity, isCurrentUser} = props
   const t = useT()
-  const {choices: interestsById} = useChoices('interests')
-  const {choices: causesById} = useChoices('causes')
-  const {choices: workById} = useChoices('work')
+  const choices = useChoicesContext()
   const {locale} = useLocale()
 
   return (
@@ -98,7 +96,7 @@ export default function ProfileAbout(props: {
         icon={<FaBriefcase className="h-5 w-5" />}
         text={
           profile.work
-            ?.map((id) => workById[id])
+            ?.map((id) => choices?.['work']?.[id])
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }
@@ -124,7 +122,7 @@ export default function ProfileAbout(props: {
         icon={<FaStar className="h-5 w-5" />}
         text={
           profile.interests
-            ?.map((id) => interestsById[id])
+            ?.map((id) => choices?.['interests']?.[id])
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }
@@ -134,7 +132,7 @@ export default function ProfileAbout(props: {
         icon={<FaHandsHelping className="h-5 w-5" />}
         text={
           profile.causes
-            ?.map((id) => causesById[id])
+            ?.map((id) => choices?.['causes']?.[id])
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b, locale)) as string[]
         }

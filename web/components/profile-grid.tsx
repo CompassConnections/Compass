@@ -31,7 +31,7 @@ import {Content} from 'web/components/widgets/editor'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
-import {useAllChoices} from 'web/hooks/use-choices'
+import {useChoicesContext} from 'web/hooks/use-choices'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
@@ -157,7 +157,7 @@ function ProfilePreview(props: {
     cardSize,
   } = displayOptions ?? {}
   const {user} = profile
-  const choicesIdsToLabels = useAllChoices()
+  const choicesIdsToLabels = useChoicesContext()
   const t = useT()
   // const currentUser = useUser()
 

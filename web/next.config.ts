@@ -85,6 +85,29 @@ const nextConfig: NextConfig = {
         },
       ],
     })
+    if (!dev) {
+      // Find and disable source maps in CSS plugins
+      config.plugins.forEach((plugin: any) => {
+        if (plugin.constructor.name === 'MiniCssExtractPlugin') {
+          plugin.options = {...plugin.options, ignoreOrder: true}
+        }
+      })
+
+      config.module.rules.forEach((rule: any) => {
+        if (rule.oneOf) {
+          rule.oneOf.forEach((r: any) => {
+            if (r.use) {
+              const uses = Array.isArray(r.use) ? r.use : [r.use]
+              uses.forEach((u: any) => {
+                if (u.loader?.includes('css-loader') && u.options) {
+                  u.options.sourceMap = false
+                }
+              })
+            }
+          })
+        }
+      })
+    }
     return config
   },
   async redirects() {
@@ -112,7 +135,7 @@ export default withSentryConfig(nextConfig, {
 
   org: 'compass-0l',
 
-  project: 'javascript-nextjs',
+  project: 'compass',
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

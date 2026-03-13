@@ -5,6 +5,7 @@ import {
   IS_LOCAL_ANDROID,
   IS_WEBVIEW_DEV_PHONE,
 } from 'common/hosting/constants'
+import {debug} from 'common/logger'
 
 import {DEV_CONFIG} from './dev'
 import {PROD_CONFIG} from './prod'
@@ -48,7 +49,7 @@ console.debug(`Running in ${HOSTING_ENV} (${ENV})`)
 // }
 
 export const IS_FIREBASE_EMULATOR = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === 'true'
-// if (IS_FIREBASE_EMULATOR) console.log("Using Firebase emulator.")
+if (IS_FIREBASE_EMULATOR) debug('Using Firebase emulator.')
 
 export const LOCAL_WEB_DOMAIN = `localhost:3000`
 export const LOCAL_BACKEND_DOMAIN = `${IS_WEBVIEW_DEV_PHONE ? '192.168.1.3' : IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`

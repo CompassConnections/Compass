@@ -6,13 +6,7 @@ import {debug} from 'common/logger'
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {
-  connectAuthEmulator,
-  getAuth,
-  GoogleAuthProvider,
-  signInWithCredential,
-  signInWithPopup,
-} from 'firebase/auth'
+import {connectAuthEmulator, getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup,} from 'firebase/auth'
 import {isAndroidApp} from 'web/lib/util/webview'
 
 import {safeLocalStorage} from '../util/local'
@@ -28,7 +22,7 @@ if (IS_FIREBASE_EMULATOR) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', {disableWarnings: true})
 }
 
-// console.log('auth:', auth)
+// debug('auth:', auth.config)
 
 export const CACHED_REFERRAL_USERNAME_KEY = 'CACHED_REFERRAL_KEY'
 

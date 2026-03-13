@@ -44,6 +44,8 @@ print_status "Checking services..."
 check_services
 print_status "All services running ✅"
 
+npx playwright install chromium
+
 # Run tests - pass all args through to playwright
 # Examples:
 #   yarn test:e2e:dev                          → all e2e tests

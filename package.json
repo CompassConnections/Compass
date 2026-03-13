@@ -40,6 +40,7 @@
     "test:e2e": "./scripts/e2e.sh",
     "test:e2e:debug": "./scripts/e2e.sh --debug",
     "test:e2e:dev": "./scripts/e2e-dev.sh",
+    "test:e2e:dev:ui": "yarn test:e2e:dev --ui",
     "test:e2e:services": "./scripts/e2e_services.sh",
     "test:e2e:ui": "./scripts/e2e.sh --ui",
     "test:update": "yarn workspaces run test --updateSnapshot",

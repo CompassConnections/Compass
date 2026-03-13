@@ -20,7 +20,7 @@ import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {PLATFORM_LABELS, type Site, SITE_ORDER, Socials} from 'common/socials'
 import {BaseUser} from 'common/user'
 import {range} from 'lodash'
-import {Fragment, useEffect, useRef, useState} from 'react'
+import {Fragment, useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
 import toast from 'react-hot-toast'
 import {AddOptionEntry} from 'web/components/add-option-entry'
@@ -38,10 +38,9 @@ import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
 import {Title} from 'web/components/widgets/title'
-import {fetchChoices} from 'web/hooks/use-choices'
-import {useLocale, useT} from 'web/lib/locale'
+import {useChoicesContext} from 'web/hooks/use-choices'
+import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
-import {db} from 'web/lib/supabase/db'
 import {colClassName, labelClassName} from 'web/pages/signup'
 
 import {SocialIcon} from './user/social'
@@ -73,18 +72,13 @@ export const OptionalProfileUserForm = (props: {
 
   const [newLinkPlatform, setNewLinkPlatform] = useState('')
   const [newLinkValue, setNewLinkValue] = useState('')
-  const [interestChoices, setInterestChoices] = useState({})
-  const [causeChoices, setCauseChoices] = useState({})
-  const [workChoices, setWorkChoices] = useState({})
-  const {locale} = useLocale()
+
+  const choices = useChoicesContext()
+  const [interestChoices, setInterestChoices] = useState(choices.interests)
+  const [causeChoices, setCauseChoices] = useState(choices.causes)
+  const [workChoices, setWorkChoices] = useState(choices.work)
 
   const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
-
-  useEffect(() => {
-    fetchChoices('interests', locale).then(setInterestChoices)
-    fetchChoices('causes', locale).then(setCauseChoices)
-    fetchChoices('work', locale).then(setWorkChoices)
-  }, [db])
 
   const errorToast = () => {
     toast.error(t('profile.optional.error.invalid_fields', 'Some fields are incorrect...'))
@@ -112,6 +106,10 @@ export const OptionalProfileUserForm = (props: {
     track('submit optional profile')
 
     await onSubmit()
+
+    choices.refreshInterests()
+    choices.refreshCauses()
+    choices.refreshWork()
 
     setIsSubmitting(false)
   }

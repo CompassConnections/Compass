@@ -24,7 +24,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   info: 1,
   warn: 2,
   error: 3,
-}
+} as const
 
 function shouldLog(level: LogLevel): boolean {
   return LOG_LEVELS[level] >= LOG_LEVELS[currentLevel()]
@@ -151,6 +151,11 @@ export function logPageView(path: string): void {
  * @returns Current log level threshold
  */
 const currentLevel = (): LogLevel => {
+  const envLogLevel = process.env.NEXT_PUBLIC_LOG_LEVEL?.toLowerCase()
+  if (envLogLevel) {
+    if (envLogLevel in LOG_LEVELS) return envLogLevel as LogLevel
+    console.warn(`Invalid NEXT_PUBLIC_LOG_LEVEL: ${envLogLevel}`)
+  }
   if (IS_PROD || process.env.NODE_ENV == 'production') return 'info'
   return 'debug'
 }

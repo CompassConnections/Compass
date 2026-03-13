@@ -49,13 +49,25 @@ export const RequiredProfileUserForm = (props: {
   const [step, setStep] = useState<number>(0)
   const [loadingUsername, setLoadingUsername] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorUsername, setErrorUsername] = useState<string>('')
+  const [errorUsername, setErrorUsername] = useState<string | null>(null)
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null)
   const t = useT()
 
   const updateUsername = async () => {
     let success = true
     setLoadingUsername(true)
     try {
+      if (data.name.length === 0 || (data.name.length > 0 && data.name.length < 3)) {
+        setDisplayNameError('Minimum 3 characters for display names')
+      } else {
+        setDisplayNameError(null)
+      }
+      if (data.username.length === 0) {
+        setErrorUsername('Minimum 3 characters required for usernames')
+        success = false
+        setLoadingUsername(false)
+        return success
+      }
       const {
         valid,
         message = undefined,
@@ -94,13 +106,16 @@ export const RequiredProfileUserForm = (props: {
               <Input
                 disabled={false}
                 type="text"
+                minLength={3}
                 placeholder="Display name"
                 value={data.name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setData('name', e.target.value || '')
+                  const value = e.target.value || ''
+                  setData('name', value)
                 }}
               />
             </Row>
+            {displayNameError && <p className="text-error text-sm mt-1">{displayNameError}</p>}
           </Col>
         )}
 

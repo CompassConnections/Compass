@@ -868,7 +868,7 @@
   "profile.optional.gender": "Genre",
   "profile.optional.height": "Taille",
   "profile.optional.inches": "Pouces",
-  "profile.optional.interested_in": "Intéressé(e) par",
+  "profile.optional.interested_in": "Intéressé(e) par une relation avec",
   "profile.optional.interests": "Intérêts",
   "profile.optional.job_title": "Poste actuel",
   "profile.optional.job_title_at_company": "Poste actuel chez {company}",

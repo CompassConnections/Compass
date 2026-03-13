@@ -90,6 +90,8 @@ test.describe('when given valid input', () => {
     await profilePage.clickSkipCompatibilityQuestionButton()
     await profilePage.clickSkipCompatibilityQuestionButton()
 
+    await profilePage.clickCloseButton()
+
     //Verify information is correct
     await profilePage.verifyDisplayName(testAccount.display_name)
     await profilePage.verifyHeadline(testAccount.headline)

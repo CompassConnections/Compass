@@ -102,12 +102,10 @@ test.describe('when given valid input', () => {
       testAccount.height?.inches,
       testAccount.age,
     )
-    await profilePage.verifyInterestedInConnectingWith(
+    await profilePage.verifySeeking(
       testAccount.interested_in,
       testAccount.Interested_in_ages?.min,
       testAccount.Interested_in_ages?.max,
-    )
-    await profilePage.verifyRelationShipTypeAndInterest(
       testAccount.connection_type,
       testAccount.relationship_style,
     )

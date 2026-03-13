@@ -29,7 +29,6 @@ export class ProfilePage {
   private readonly dietAboutSection: Locator
   private readonly languagesAboutSection: Locator
   private readonly seekingAboutSection: Locator
-  private readonly relationshipTypeAboutSection: Locator
   private readonly relationshipStatusAboutSection: Locator
   private readonly educationAboutSection: Locator
   private readonly occupationAboutSection: Locator
@@ -90,7 +89,6 @@ export class ProfilePage {
     this.dietAboutSection = page.getByTestId('profile-about-diet')
     this.languagesAboutSection = page.getByTestId('profile-about-languages')
     this.seekingAboutSection = page.getByTestId('profile-about-seeking')
-    this.relationshipTypeAboutSection = page.getByTestId('profile-about-relationship-type')
     this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
     this.educationAboutSection = page.getByTestId('profile-about-education')
     this.occupationAboutSection = page.getByTestId('profile-about-occupation')
@@ -346,19 +344,13 @@ export class ProfilePage {
     await expect(this.ethnicityAboutSection).toContainText(origin, {ignoreCase: true})
   }
 
-  async verifyInterestedInConnectingWith(gender?: string[], minAge?: string, maxAge?: string) {
+  async verifySeeking(gender?: string[], minAge?: string, maxAge?: string, type?: string[], interest?: string[]) {
     await expect(this.seekingAboutSection).toBeVisible()
     if (gender) await expect(this.seekingAboutSection).toContainText(gender[0], {ignoreCase: true})
     if (minAge) await expect(this.seekingAboutSection).toContainText(minAge)
     if (maxAge) await expect(this.seekingAboutSection).toContainText(maxAge)
-  }
-
-  async verifyRelationShipTypeAndInterest(type?: string[], interest?: string[]) {
-    await expect(this.relationshipTypeAboutSection).toBeVisible()
-    if (type)
-      await expect(this.relationshipTypeAboutSection).toContainText(type[0], {ignoreCase: true})
-    if (interest)
-      await expect(this.relationshipTypeAboutSection).toContainText(interest[0], {ignoreCase: true})
+    if (type) await expect(this.seekingAboutSection).toContainText(type[0], {ignoreCase: true})
+    if (interest) await expect(this.seekingAboutSection).toContainText(interest[0], {ignoreCase: true})
   }
 
   async verifyRelationshipStatus(status: string[] | undefined) {

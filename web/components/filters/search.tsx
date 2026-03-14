@@ -6,7 +6,6 @@ import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
-import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
 import {RightModal} from 'web/components/layout/right-modal'
 import {Row} from 'web/components/layout/row'
@@ -252,7 +251,6 @@ export const Search = forwardRef<
           </Button>
         </Row>
       </Row>
-      <FilterGuide className={'hidden lg:inline'} />
       <RightModal
         className="bg-canvas-0 w-2/3 text-sm lg:hidden h-full max-h-screen overflow-y-auto"
         open={openFiltersModal}

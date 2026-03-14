@@ -57,12 +57,8 @@ export const RequiredProfileUserForm = (props: {
     let success = true
     setLoadingUsername(true)
     try {
-      if (data.name.length === 0 || (data.name.length > 0 && data.name.length < 3)) {
-        setDisplayNameError('Minimum 3 characters for display names')
-      } else {
-        setDisplayNameError(null)
-      }
-      if (data.username.length === 0) {
+      const usernameForErrorMsg = data.username.length
+      if (usernameForErrorMsg === 0 || (usernameForErrorMsg > 0 && usernameForErrorMsg < 3)) {
         setErrorUsername('Minimum 3 characters required for usernames')
         success = false
         setLoadingUsername(false)
@@ -111,6 +107,11 @@ export const RequiredProfileUserForm = (props: {
                 value={data.name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const value = e.target.value || ''
+                  if (value.length === 0 || (value.length > 0 && value.length < 3)) {
+                    setDisplayNameError('Minimum 3 characters for display names')
+                  } else {
+                    setDisplayNameError(null)
+                  }
                   setData('name', value)
                 }}
               />
@@ -133,7 +134,13 @@ export const RequiredProfileUserForm = (props: {
                     placeholder="Username"
                     value={data.username || ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setData('username', e.target.value || '')
+                      const value = e.target.value || ''
+                      if (value.length === 0 || (value.length > 0 && value.length < 3)) {
+                        setErrorUsername('Minimum 3 characters required for usernames')
+                      } else {
+                        setErrorUsername(null)
+                      }
+                      setData('username', value)
                     }}
                   />
                   {loadingUsername && <LoadingIndicator className={'ml-2'} />}

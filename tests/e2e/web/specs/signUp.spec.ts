@@ -1,8 +1,8 @@
 import {expect, test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
-  test('placeholder', async () => {});
-});
+  test('placeholder', async () => {})
+})
 
 test.describe('when an error occurs', () => {
   test('should disable the button "Next" when the display name field is empty', async ({
@@ -42,4 +42,4 @@ test.describe('when an error occurs', () => {
     await signUpPage.verifyUsernameError()
     await expect(signUpPage.nextButtonLocator).toBeDisabled()
   })
-});
+})

@@ -344,13 +344,20 @@ export class ProfilePage {
     await expect(this.ethnicityAboutSection).toContainText(origin, {ignoreCase: true})
   }
 
-  async verifySeeking(gender?: string[], minAge?: string, maxAge?: string, type?: string[], interest?: string[]) {
+  async verifySeeking(
+    gender?: string[],
+    minAge?: string,
+    maxAge?: string,
+    type?: string[],
+    interest?: string[],
+  ) {
     await expect(this.seekingAboutSection).toBeVisible()
     if (gender) await expect(this.seekingAboutSection).toContainText(gender[0], {ignoreCase: true})
     if (minAge) await expect(this.seekingAboutSection).toContainText(minAge)
     if (maxAge) await expect(this.seekingAboutSection).toContainText(maxAge)
     if (type) await expect(this.seekingAboutSection).toContainText(type[0], {ignoreCase: true})
-    if (interest) await expect(this.seekingAboutSection).toContainText(interest[0], {ignoreCase: true})
+    if (interest)
+      await expect(this.seekingAboutSection).toContainText(interest[0], {ignoreCase: true})
   }
 
   async verifyRelationshipStatus(status: string[] | undefined) {

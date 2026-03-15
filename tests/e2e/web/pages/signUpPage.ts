@@ -162,7 +162,7 @@ export class SignUpPage {
   get nextButtonLocator(): Locator {
     return this.nextButton
   }
-  
+
   async fillUsername(username: string) {
     await expect(this.usernameField).toBeVisible()
     await this.usernameField.fill(username)

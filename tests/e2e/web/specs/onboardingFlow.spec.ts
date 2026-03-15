@@ -59,7 +59,9 @@ test.describe('when given valid input', () => {
       onboardingAccount.beliefs?.religious?.details,
     )
     await signUpPage.setPersonalityType(onboardingAccount.personality_type)
-    await signUpPage.setOpennessPersonalityValue(onboardingAccount.big_five_personality_traits?.openness)
+    await signUpPage.setOpennessPersonalityValue(
+      onboardingAccount.big_five_personality_traits?.openness,
+    )
     await signUpPage.setAgreeablenessPersonalityValue(
       onboardingAccount.big_five_personality_traits?.agreeableness,
     )
@@ -151,18 +153,30 @@ test.describe('when given valid input', () => {
       expect.arrayContaining(onboardingAccount.keywords?.split(', ') ?? []),
     )
     await expect(String(dbInfo.profile.age)).toEqual(onboardingAccount.age)
-    await expect(dbInfo.profile.height_in_inches).toEqual(Number(onboardingAccount.height?.feet) * 12)
+    await expect(dbInfo.profile.height_in_inches).toEqual(
+      Number(onboardingAccount.height?.feet) * 12,
+    )
     await expect(dbInfo.profile.ethnicity).toContain(onboardingAccount.ethnicity_origin?.[1])
     await expect(dbInfo.profile.pref_gender).toContain(onboardingAccount.interested_in?.[1])
-    await expect(String(dbInfo.profile.pref_age_min)).toContain(onboardingAccount.Interested_in_ages?.min)
-    await expect(String(dbInfo.profile.pref_age_max)).toContain(onboardingAccount.Interested_in_ages?.max)
+    await expect(String(dbInfo.profile.pref_age_min)).toContain(
+      onboardingAccount.Interested_in_ages?.min,
+    )
+    await expect(String(dbInfo.profile.pref_age_max)).toContain(
+      onboardingAccount.Interested_in_ages?.max,
+    )
     await expect(dbInfo.profile.pref_relation_styles).toContain(
       `${onboardingAccount.connection_type?.[1]}`.toLowerCase(),
     )
-    await expect(dbInfo.profile.relationship_status).toContain(onboardingAccount.relationship_status?.[1])
-    await expect(dbInfo.profile.pref_romantic_styles).toContain(onboardingAccount.relationship_style?.[1])
+    await expect(dbInfo.profile.relationship_status).toContain(
+      onboardingAccount.relationship_status?.[1],
+    )
+    await expect(dbInfo.profile.pref_romantic_styles).toContain(
+      onboardingAccount.relationship_style?.[1],
+    )
     await expect(dbInfo.profile.has_kids).toEqual(Number(onboardingAccount.number_of_kids))
-    await expect(dbInfo.profile.wants_kids_strength).toEqual(onboardingAccount.children_expectation?.[1])
+    await expect(dbInfo.profile.wants_kids_strength).toEqual(
+      onboardingAccount.children_expectation?.[1],
+    )
     await expect(dbInfo.profile.education_level).toContain(
       `${onboardingAccount.education_level?.[1]}`.toLowerCase(),
     )
@@ -175,11 +189,15 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.profile.political_details).toContain(
       onboardingAccount.beliefs?.political?.details,
     )
-    await expect(dbInfo.profile.religion).toContain(onboardingAccount.beliefs?.religious?.belief?.[1])
+    await expect(dbInfo.profile.religion).toContain(
+      onboardingAccount.beliefs?.religious?.belief?.[1],
+    )
     await expect(dbInfo.profile.religious_beliefs).toContain(
       onboardingAccount.beliefs?.religious?.details,
     )
-    await expect(dbInfo.profile.mbti).toContain(`${onboardingAccount.personality_type}`.toLowerCase())
+    await expect(dbInfo.profile.mbti).toContain(
+      `${onboardingAccount.personality_type}`.toLowerCase(),
+    )
     await expect(dbInfo.profile.big5_openness).toEqual(
       onboardingAccount.big_five_personality_traits?.openness,
     )

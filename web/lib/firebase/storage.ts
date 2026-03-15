@@ -1,13 +1,10 @@
+import {captureMessage} from '@sentry/nextjs'
+import {YEAR_SECONDS} from 'common/util/time'
 import Compressor from 'compressorjs'
 import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage'
 import {nanoid} from 'nanoid'
 
 import {storage} from './init'
-
-const ONE_YEAR_SECS = 60 * 60 * 24 * 365
-
-const isHeic = (file: File) =>
-  file.type === 'image/heic' || file.type === 'image/heif' || /\.heic$/i.test(file.name)
 
 export const uploadImage = async (
   username: string,
@@ -15,11 +12,20 @@ export const uploadImage = async (
   prefix?: string,
   onProgress?: (progress: number, isRunning: boolean) => void,
 ) => {
+  const fileType = await getFileType(file)
+
+  const lastDot = file.name.lastIndexOf('.')
+  let ext = lastDot !== -1 ? file.name.slice(lastDot + 1) : undefined
+  ext ??= fileType?.split('/')[1]
+  ext ??= 'bin'
+  ext = ext.toLowerCase()
+
   // Replace filename with a nanoid to avoid collisions
-  let [, ext] = file.name.split('.')
   const stem = nanoid(10)
 
   const ALLOWED_TYPES = [
+    'video/mp4',
+    'video/webm',
     'image/jpeg',
     'image/png',
     'image/webp',
@@ -28,8 +34,8 @@ export const uploadImage = async (
     'image/heif',
   ]
 
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    // throw new Error('Unsupported image format')
+  if (!ALLOWED_TYPES.includes(fileType || '')) {
+    captureMessage('Likely unsupported image format', {attributes: {type: file.type}})
     console.warn('Likely unsupported image format', file.type)
   }
 
@@ -44,6 +50,7 @@ export const uploadImage = async (
   }
 
   const filename = `${stem}.${ext}`
+  console.log('filename', filename)
   const storageRef = ref(
     storage,
     `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`,
@@ -68,7 +75,7 @@ export const uploadImage = async (
   }
 
   const uploadTask = uploadBytesResumable(storageRef, file, {
-    cacheControl: `public, max-age=${ONE_YEAR_SECS}`,
+    cacheControl: `public, max-age=${YEAR_SECONDS}`,
   })
 
   let resolvePromise: (url: string) => void
@@ -130,6 +137,9 @@ export async function convertWebpToJpeg(file: File): Promise<File> {
   })
 }
 
+const isHeic = (file: File) =>
+  file.type === 'image/heic' || file.type === 'image/heif' || /\.heic$/i.test(file.name)
+
 export async function convertHeicToJpeg(file: File): Promise<File> {
   // Convert HEIC → JPEG immediately (as HEIC not rendered)
   // heic2any available in client only
@@ -143,4 +153,32 @@ export async function convertHeicToJpeg(file: File): Promise<File> {
   return new File([converted as Blob], file.name.replace(/\.heic$/, '.jpg'), {
     type: 'image/jpeg',
   })
+}
+
+async function getFileType(file: File): Promise<string | undefined> {
+  if (file.type) return file.type
+
+  const buf = await file.slice(0, 12).arrayBuffer()
+  const bytes = new Uint8Array(buf)
+
+  // MP4/MOV: bytes 4-8 = "ftyp"
+  if (bytes[4] === 0x66 && bytes[5] === 0x74 && bytes[6] === 0x79 && bytes[7] === 0x70)
+    return 'video/mp4'
+
+  // WebM: starts with 0x1A45DFA3
+  if (bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3)
+    return 'video/webm'
+
+  // JPEG: FF D8 FF
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg'
+
+  // PNG: 89 50 4E 47
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47)
+    return 'image/png'
+
+  return undefined
+}
+
+export function isVideo(url: string) {
+  return url.match(/\.(mp4|webm|mov|ogg)/)
 }

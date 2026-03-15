@@ -5,10 +5,11 @@ import {buildArray} from 'common/util/array'
 import {uniq} from 'lodash'
 import Image from 'next/image'
 import {useState} from 'react'
+import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {uploadImage} from 'web/lib/firebase/storage'
+import {isVideo, uploadImage} from 'web/lib/firebase/storage'
 import {useT} from 'web/lib/locale'
 
 export const AddPhotosWidget = (props: {
@@ -48,6 +49,7 @@ export const AddPhotosWidget = (props: {
       selectedFiles.map((f) => uploadImage(username, f, 'love-images')),
     ).catch((e) => {
       console.error(e)
+      toast.error(e)
       return []
     })
     if (!pinned_url) setPinnedUrl(urls[0])
@@ -116,13 +118,26 @@ export const AddPhotosWidget = (props: {
               >
                 <XMarkIcon className={'h-4 w-4'} />
               </Button>
-              <Image
-                src={url}
-                width={80}
-                height={80}
-                alt={`preview ${index}`}
-                className="h-[200px] w-[200px] object-cover"
-              />
+              {isVideo(url) ? (
+                <video
+                  src={url}
+                  width={80}
+                  height={80}
+                  className="h-[200px] w-[200px] object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              ) : (
+                <Image
+                  src={url}
+                  width={80}
+                  height={80}
+                  alt={`preview ${index}`}
+                  className="h-[200px] w-[200px] object-cover"
+                />
+              )}
 
               <textarea
                 // stop click bubbling so clicking/focusing the input doesn't pin the image

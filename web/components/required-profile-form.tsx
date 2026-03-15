@@ -52,14 +52,13 @@ export const RequiredProfileUserForm = (props: {
   const [errorMessageUsername, setErrorUsername] = useState<string | null>(null)
   const [errorMessageDisplayName, setErrorDisplayName] = useState<string | null>(null)
   const t = useT()
-  const isFormValid = !!(errorMessageDisplayName || errorMessageUsername || isSubmitting)
+  const isDisabled = !!errorMessageDisplayName || !!errorMessageUsername || isSubmitting
 
   const updateUsername = async () => {
     let success = true
     setLoadingUsername(true)
     try {
-      const usernameForErrorMsg = data.username.length
-      if (usernameForErrorMsg === 0 || (usernameForErrorMsg > 0 && usernameForErrorMsg < 3)) {
+      if (data.username.length < 3) {
         setErrorUsername('Minimum 3 characters required for usernames')
         success = false
         setLoadingUsername(false)
@@ -108,7 +107,7 @@ export const RequiredProfileUserForm = (props: {
                 value={data.name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const value = e.target.value || ''
-                  if (value.length === 0 || (value.length > 0 && value.length < 3)) {
+                  if (value.length < 3) {
                     setErrorDisplayName('Minimum 3 characters for display names')
                   } else {
                     setErrorDisplayName(null)
@@ -140,7 +139,7 @@ export const RequiredProfileUserForm = (props: {
                     value={data.username || ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const value = e.target.value || ''
-                      if (value.length === 0 || (value.length > 0 && value.length < 3)) {
+                      if (value.length < 3) {
                         setErrorUsername('Minimum 3 characters required for usernames')
                       } else {
                         setErrorUsername(null)
@@ -185,7 +184,7 @@ export const RequiredProfileUserForm = (props: {
         {onSubmit && (
           <Row className={'justify-end'}>
             <Button
-              disabled={isFormValid}
+              disabled={isDisabled}
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)

@@ -1,4 +1,8 @@
 import {expect, test} from '../fixtures/base'
+import {AuthPage} from '../pages/AuthPage'
+import {HomePage} from '../pages/homePage'
+import {OnboardingPage} from '../pages/onboardingPage'
+import {UserAccountInformation} from '../utils/accountInformation'
 
 test.describe('when given valid input', () => {
   test('placeholder', async () => {})
@@ -12,12 +16,7 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(specAccount.email)
-    await authPage.fillPasswordField(specAccount.password)
-    await authPage.clickSignUpWithEmailButton()
-    await onboardingPage.clickSkipOnboardingButton()
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
     await signUpPage.fillDisplayName('')
     await signUpPage.fillUsername(specAccount.username)
     await signUpPage.verifyDisplayNameError()
@@ -31,15 +30,24 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(specAccount.email)
-    await authPage.fillPasswordField(specAccount.password)
-    await authPage.clickSignUpWithEmailButton()
-    await onboardingPage.clickSkipOnboardingButton()
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
     await signUpPage.fillDisplayName(specAccount.display_name)
     await signUpPage.fillUsername('')
     await signUpPage.verifyUsernameError()
     await expect(signUpPage.nextButtonLocator).toBeDisabled()
   })
 })
+
+async function progressToRequiredForm(
+  homePage: HomePage,
+  authPage: AuthPage,
+  account: UserAccountInformation,
+  onboardingPage: OnboardingPage,
+) {
+  await homePage.gotToHomePage()
+  await homePage.clickSignUpButton()
+  await authPage.fillEmailField(account.email)
+  await authPage.fillPasswordField(account.password)
+  await authPage.clickSignUpWithEmailButton()
+  await onboardingPage.clickSkipOnboardingButton()
+}

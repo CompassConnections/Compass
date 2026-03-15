@@ -21,7 +21,6 @@ import {isOnboardingFlag} from 'web/lib/util/signup'
 // Either we haven't looked up the logged-in user yet (undefined), or we know
 // the user is not logged in (null), or we know the user is logged in.
 export type AuthUser = undefined | null | (UserAndPrivateUser & {authLoaded: boolean})
-const CACHED_USER_KEY = 'CACHED_USER_KEY_V3'
 
 export const ensureDeviceToken = () => {
   let deviceToken = safeLocalStorage?.getItem('device-token')
@@ -126,6 +125,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
   )
   const [authLoaded, setAuthLoaded] = useState(false)
   const firebaseUser = useAndSetupFirebaseUser()
+  const CACHED_USER_KEY = `CACHED_USER_KEY_V1-${firebaseUser?.uid}`
 
   const authUser = !user
     ? user
@@ -152,8 +152,6 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
       // Persist to local storage, to reduce login blink next time.
       // Note: Cap on localStorage size is ~5mb
       safeLocalStorage?.setItem(CACHED_USER_KEY, JSON.stringify(authUser))
-    } else if (authUser === null) {
-      safeLocalStorage?.removeItem(CACHED_USER_KEY)
     }
   }, [authUser])
 

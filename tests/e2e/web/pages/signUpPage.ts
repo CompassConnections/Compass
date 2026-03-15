@@ -733,3 +733,8 @@ export class SignUpPage {
     await expect(this.usernameError).toBeVisible()
   }
 }
+
+  async verifyUsernameError() {
+    await expect(this.usernameError).toBeVisible()
+  }
+}

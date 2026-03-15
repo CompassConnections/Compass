@@ -45,7 +45,9 @@ export type Platforms =
 
 export class SignUpPage {
   private readonly displayNameField: Locator
+  private readonly displayNameError: Locator
   private readonly usernameField: Locator
+  private readonly usernameError: Locator
   private readonly nextButton: Locator
   private readonly bioField: Locator
   private readonly locationField: Locator
@@ -101,7 +103,9 @@ export class SignUpPage {
 
   constructor(public readonly page: Page) {
     this.displayNameField = page.getByPlaceholder('Display name')
+    this.displayNameError = page.getByTestId('signup-display-name')
     this.usernameField = page.getByPlaceholder('Username')
+    this.usernameError = page.getByTestId('signup-username')
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
     this.bioField = page.locator('.tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
@@ -155,6 +159,10 @@ export class SignUpPage {
     this.saveButton = page.getByRole('button', {name: 'Save'})
   }
 
+  get nextButtonLocator(): Locator {
+    return this.nextButton
+  }
+  
   async fillUsername(username: string) {
     await expect(this.usernameField).toBeVisible()
     await this.usernameField.fill(username)
@@ -715,5 +723,13 @@ export class SignUpPage {
     if (!keywords) return
     await expect(this.keywordsField).toBeVisible()
     await this.keywordsField.fill(keywords)
+  }
+
+  async verifyDisplayNameError() {
+    await expect(this.displayNameError).toBeVisible()
+  }
+
+  async verifyUsernameError() {
+    await expect(this.usernameError).toBeVisible()
   }
 }

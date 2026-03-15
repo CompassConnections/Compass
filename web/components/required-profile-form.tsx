@@ -49,9 +49,10 @@ export const RequiredProfileUserForm = (props: {
   const [step, setStep] = useState<number>(0)
   const [loadingUsername, setLoadingUsername] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorUsername, setErrorUsername] = useState<string | null>(null)
-  const [displayNameError, setDisplayNameError] = useState<string | null>(null)
+  const [errorMessageUsername, setErrorUsername] = useState<string | null>(null)
+  const [errorMessageDisplayName, setErrorDisplayName] = useState<string | null>(null)
   const t = useT()
+  const isFormValid = !!(errorMessageDisplayName || errorMessageUsername || isSubmitting)
 
   const updateUsername = async () => {
     let success = true
@@ -108,15 +109,19 @@ export const RequiredProfileUserForm = (props: {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const value = e.target.value || ''
                   if (value.length === 0 || (value.length > 0 && value.length < 3)) {
-                    setDisplayNameError('Minimum 3 characters for display names')
+                    setErrorDisplayName('Minimum 3 characters for display names')
                   } else {
-                    setDisplayNameError(null)
+                    setErrorDisplayName(null)
                   }
                   setData('name', value)
                 }}
               />
             </Row>
-            {displayNameError && <p className="text-error text-sm mt-1">{displayNameError}</p>}
+            {errorMessageDisplayName && (
+              <p className="text-error text-sm mt-1" data-testid="signup-display-name">
+                {errorMessageDisplayName}
+              </p>
+            )}
           </Col>
         )}
 
@@ -153,7 +158,11 @@ export const RequiredProfileUserForm = (props: {
                     )}
                   </span>
                 }
-                {errorUsername && <span className="text-error text-sm">{errorUsername}</span>}
+                {errorMessageUsername && (
+                  <span className="text-error text-sm" data-testid="signup-username">
+                    {errorMessageUsername}
+                  </span>
+                )}
               </Col>
             )}
 
@@ -176,7 +185,7 @@ export const RequiredProfileUserForm = (props: {
         {onSubmit && (
           <Row className={'justify-end'}>
             <Button
-              disabled={isSubmitting}
+              disabled={isFormValid}
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)

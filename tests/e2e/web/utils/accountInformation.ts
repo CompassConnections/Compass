@@ -17,7 +17,7 @@ import {ImportanceTuple} from 'web/components/answers/answer-compatibility-quest
 
 import {Causes, ChildrenExpectation, Interests, Platforms} from '../pages/signUpPage'
 
-export type OnboardingUser = {
+export type UserAccountInformation = {
   email: string
   password: string
   display_name: string
@@ -97,12 +97,15 @@ type FiveBigPersonalityTraits = {
   neuroticism?: number
 }
 
-type OnboardingConfig = {
-  faker_account: () => OnboardingUser
-  account_one: () => OnboardingUser
+type AccountConfig = {
+  faker_account: () => UserAccountInformation
+  spec_account: () => UserAccountInformation
+  dev_one_account: () => UserAccountInformation
+  dev_two_account: () => UserAccountInformation
+  account_all_info: () => UserAccountInformation
 }
 
-export const onboarding: OnboardingConfig = {
+export const testAccounts: AccountConfig = {
   // Use a function so email is unique per test call
   faker_account: () => {
     const id = crypto.randomUUID().slice(0, 6)
@@ -121,11 +124,41 @@ export const onboarding: OnboardingConfig = {
     }
   },
 
-  account_one: () => {
+  spec_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `spec${id}@compass.com`,
+      password: 'compassConnections1!',
+      display_name: 'Spec.Compass',
+      username: `Spec.Connections_${id}`,
+    }
+  },
+
+  dev_one_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `dev_1_${id}@compass.com`,
+      password: 'dev_1Password',
+      display_name: 'Dev1.Compass',
+      username: `Dev1.Connections_${id}`,
+    }
+  },
+
+  dev_two_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: 'dev_2@compass.com',
+      password: 'dev_2Password',
+      display_name: 'Dev2.Compass',
+      username: `Dev2.Connections_${id}`,
+    }
+  },
+
+  account_all_info: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
       // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails
-      email: `onboarding${id}@test.compass`,
+      email: `testAccounts${id}@test.compass`,
       password: 'CompassTest',
       display_name: 'Compass Onboarding',
       username: `TheGreatOnboarding_${id}`, // username max length is 25 (see /create-user)

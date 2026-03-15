@@ -7,6 +7,7 @@ cd "$(dirname "$0")"/..
 
 export NEXT_PUBLIC_ISOLATED_ENV=true
 export CI=true
+#export NEXT_PUBLIC_LOG_LEVEL=debug
 
 # Colors for output
 RED='\033[0;31m'
@@ -61,9 +62,6 @@ print_status "Killing any stale processes..."
 ./scripts/firebase_stop.sh
 supabase stop --no-backup 2>/dev/null || true
 sleep 2  # Give ports time to free up
-
-# Build backend (required?)
-#./scripts/build_api.sh
 
 # Install Playwright browsers
 print_status "Installing Playwright browsers..."

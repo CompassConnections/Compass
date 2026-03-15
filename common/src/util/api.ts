@@ -50,7 +50,7 @@ export async function typedAPICall<P extends APIPath>(
     }
 
     if (!resp.ok) {
-      throw new APIError(resp.status as any, json?.message, json?.details)
+      throw new APIError(resp.status as any, json?.error?.message, json?.error?.details)
     }
     return json
   }) as APIResponse<P>

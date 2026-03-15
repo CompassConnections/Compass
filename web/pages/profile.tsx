@@ -1,3 +1,4 @@
+import {APIError} from 'common/api/utils'
 import {debug} from 'common/logger'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser, User} from 'common/user'
@@ -85,10 +86,12 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     try {
       await Promise.all(promises)
     } catch (error) {
-      console.error(error)
-      toast.error(
-        `We ran into an issue saving your profile. Please try again or contact us if the issue persists.`,
-      )
+      let message =
+        'We ran into an issue saving your profile. Please try again or contact us if the issue persists.'
+      if (error instanceof APIError) {
+        message = `Error: ` + JSON.stringify(error.toJSON().error.details)
+      }
+      toast.error(message)
       return
     }
     Router.push(`/${user.username}`)

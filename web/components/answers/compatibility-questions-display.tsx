@@ -456,7 +456,7 @@ export function CompatibilityAnswerBlock(props: {
       }
     >
       <Row
-        className="text-ink-800 justify-between gap-1 font-semibold"
+        className="justify-between gap-1 font-semibold"
         data-testid="profile-compatibility-question"
       >
         {question.question}
@@ -534,7 +534,7 @@ export function CompatibilityAnswerBlock(props: {
       </Row>
       {answerText && (
         <Row
-          className="bg-canvas-100 w-fit gap-1 rounded px-2 py-1 text-sm"
+          className="bg-canvas-100 w-fit gap-1 rounded-xl px-2 py-1 text-sm"
           data-testid="profile-compatibility-question-answer"
         >
           {answerText}

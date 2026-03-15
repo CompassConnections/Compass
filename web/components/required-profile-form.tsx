@@ -49,13 +49,21 @@ export const RequiredProfileUserForm = (props: {
   const [step, setStep] = useState<number>(0)
   const [loadingUsername, setLoadingUsername] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorUsername, setErrorUsername] = useState<string>('')
+  const [errorMessageUsername, setErrorUsername] = useState<string | null>(null)
+  const [errorMessageDisplayName, setErrorDisplayName] = useState<string | null>(null)
   const t = useT()
+  const isDisabled = !!errorMessageDisplayName || !!errorMessageUsername || isSubmitting
 
   const updateUsername = async () => {
     let success = true
     setLoadingUsername(true)
     try {
+      if (data.username.length < 3) {
+        setErrorUsername('Minimum 3 characters required for usernames')
+        success = false
+        setLoadingUsername(false)
+        return success
+      }
       const {
         valid,
         message = undefined,
@@ -94,13 +102,25 @@ export const RequiredProfileUserForm = (props: {
               <Input
                 disabled={false}
                 type="text"
+                minLength={3}
                 placeholder="Display name"
                 value={data.name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setData('name', e.target.value || '')
+                  const value = e.target.value || ''
+                  if (value.length < 3) {
+                    setErrorDisplayName('Minimum 3 characters for display names')
+                  } else {
+                    setErrorDisplayName(null)
+                  }
+                  setData('name', value)
                 }}
               />
             </Row>
+            {errorMessageDisplayName && (
+              <p className="text-error text-sm mt-1" data-testid="signup-display-name">
+                {errorMessageDisplayName}
+              </p>
+            )}
           </Col>
         )}
 
@@ -118,7 +138,13 @@ export const RequiredProfileUserForm = (props: {
                     placeholder="Username"
                     value={data.username || ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setData('username', e.target.value || '')
+                      const value = e.target.value || ''
+                      if (value.length < 3) {
+                        setErrorUsername('Minimum 3 characters required for usernames')
+                      } else {
+                        setErrorUsername(null)
+                      }
+                      setData('username', value)
                     }}
                   />
                   {loadingUsername && <LoadingIndicator className={'ml-2'} />}
@@ -131,7 +157,11 @@ export const RequiredProfileUserForm = (props: {
                     )}
                   </span>
                 }
-                {errorUsername && <span className="text-error text-sm">{errorUsername}</span>}
+                {errorMessageUsername && (
+                  <span className="text-error text-sm" data-testid="signup-username">
+                    {errorMessageUsername}
+                  </span>
+                )}
               </Col>
             )}
 
@@ -154,7 +184,7 @@ export const RequiredProfileUserForm = (props: {
         {onSubmit && (
           <Row className={'justify-end'}>
             <Button
-              disabled={isSubmitting}
+              disabled={isDisabled}
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)

@@ -1,22 +1,53 @@
-import {expect} from '@playwright/test'
-
-import {test} from '../fixtures/deleteUserFixture'
+import {expect, test} from '../fixtures/base'
 import {AuthPage} from '../pages/AuthPage'
-import {config} from '../SPEC_CONFIG'
+import {HomePage} from '../pages/homePage'
+import {OnboardingPage} from '../pages/onboardingPage'
+import {UserAccountInformation} from '../utils/accountInformation'
 
-test('user can sign up with email + password', async ({page}) => {
-  const auth = new AuthPage(page)
-
-  await page.goto('/')
-
-  await auth.clickSignUpButton()
-
-  await auth.fillEmailField(config.USERS.SPEC.EMAIL)
-  await auth.fillPasswordField(config.USERS.SPEC.PASSWORD)
-
-  await auth.clickSignUpWithEmailButton()
-
-  await page.waitForURL(/^(?!.*\/signup).*$/)
-
-  expect(page.url()).not.toContain('/signup')
+test.describe('when given valid input', () => {
+  test('placeholder', async () => {})
 })
+
+test.describe('when an error occurs', () => {
+  test('should disable the button "Next" when the display name field is empty', async ({
+    specAccount,
+    homePage,
+    authPage,
+    onboardingPage,
+    signUpPage,
+  }) => {
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await signUpPage.fillDisplayName('')
+    await signUpPage.fillUsername(specAccount.username)
+    await signUpPage.verifyDisplayNameError()
+    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+  })
+
+  test('should disable the button "Next" when the username field is empty', async ({
+    specAccount,
+    homePage,
+    authPage,
+    onboardingPage,
+    signUpPage,
+  }) => {
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await signUpPage.fillDisplayName(specAccount.display_name)
+    await signUpPage.fillUsername('')
+    await signUpPage.verifyUsernameError()
+    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+  })
+})
+
+async function progressToRequiredForm(
+  homePage: HomePage,
+  authPage: AuthPage,
+  account: UserAccountInformation,
+  onboardingPage: OnboardingPage,
+) {
+  await homePage.gotToHomePage()
+  await homePage.clickSignUpButton()
+  await authPage.fillEmailField(account.email)
+  await authPage.fillPasswordField(account.password)
+  await authPage.clickSignUpWithEmailButton()
+  await onboardingPage.clickSkipOnboardingButton()
+}

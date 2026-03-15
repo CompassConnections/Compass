@@ -6,7 +6,7 @@ import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
-import {onboarding, OnboardingUser} from '../utils/accountInformation'
+import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 
 export const test = base.extend<{
@@ -17,20 +17,27 @@ export const test = base.extend<{
   authPage: AuthPage
   compatabilityPage: ComatibilityPage
   cleanUpUsers: void
-  testAccount: OnboardingUser
-  fakerAccount: OnboardingUser
+  onboardingAccount: UserAccountInformation
+  fakerAccount: UserAccountInformation
+  specAccount: UserAccountInformation
 }>({
-  testAccount: async ({}, use) => {
-    const account = onboarding.account_one() // email captured here
+  onboardingAccount: async ({}, use) => {
+    const account = testAccounts.account_all_info() // email captured here
     await use(account)
     console.log('Cleaning up onboarding 1 account...')
     await deleteUser(account.email, account.password) // same account, guaranteed
   },
   fakerAccount: async ({}, use) => {
-    const account = onboarding.faker_account() // email captured here
+    const account = testAccounts.faker_account() // email captured here
     await use(account)
     console.log('Cleaning up faker account...')
     await deleteUser(account.email, account.password) // same account, guaranteed
+  },
+  specAccount: async ({}, use) => {
+    const account = testAccounts.spec_account()
+    await use(account)
+    console.log('Cleaning up spec account...')
+    await deleteUser(account.email, account.password)
   },
   onboardingPage: async ({page}, use) => {
     const onboardingPage = new OnboardingPage(page)

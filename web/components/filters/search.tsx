@@ -218,7 +218,7 @@ export const Search = forwardRef<
           placeholder={placeholder}
           className={'w-full max-w-xs'}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            updateFilter({name: e.target.value})
+            updateFilter({name: e.target.value || undefined})
           }}
         />
 

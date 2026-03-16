@@ -21,22 +21,27 @@ export class AuthPage {
   }
 
   async clickSignInLink() {
+    await expect(this.signInLink).toBeVisible()
     await this.signInLink.click()
   }
 
   async clickSignUpButton() {
+    await expect(this.signUpButton).toBeVisible()
     await this.signUpButton.click()
   }
 
   async clickSignInWithEmailButton() {
+    await expect(this.signInWithEmailButton).toBeVisible()
     await this.signInWithEmailButton.click()
   }
 
   async clickSignInWithGoogleButton() {
+    await expect(this.signInWithGoogleButton).toBeVisible()
     await this.signInWithGoogleButton.click()
   }
 
   async clickSignUpWithEmailButton() {
+    await expect(this.signUpWithEmailButton).toBeVisible()
     await this.signUpWithEmailButton.click()
   }
 

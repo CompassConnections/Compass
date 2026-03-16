@@ -1,22 +1,36 @@
-import {expect} from '@playwright/test'
+import {expect, test} from '../fixtures/base'
+import {progressToRequiredForm} from '../utils/testCleanupHelpers'
 
-import {test} from '../fixtures/deleteUserFixture'
-import {AuthPage} from '../pages/AuthPage'
-import {config} from '../SPEC_CONFIG'
+test.describe('when given valid input', () => {
+  test('placeholder', async () => {})
+})
 
-test('user can sign up with email + password', async ({page}) => {
-  const auth = new AuthPage(page)
+test.describe('when an error occurs', () => {
+  test('should disable the button "Next" when the display name field is empty', async ({
+    specAccount,
+    homePage,
+    authPage,
+    onboardingPage,
+    signUpPage,
+  }) => {
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await signUpPage.fillDisplayName('')
+    await signUpPage.fillUsername(specAccount.username)
+    await signUpPage.verifyDisplayNameError()
+    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+  })
 
-  await page.goto('/')
-
-  await auth.clickSignUpButton()
-
-  await auth.fillEmailField(config.USERS.SPEC.EMAIL)
-  await auth.fillPasswordField(config.USERS.SPEC.PASSWORD)
-
-  await auth.clickSignUpWithEmailButton()
-
-  await page.waitForURL(/^(?!.*\/signup).*$/)
-
-  expect(page.url()).not.toContain('/signup')
+  test('should disable the button "Next" when the username field is empty', async ({
+    specAccount,
+    homePage,
+    authPage,
+    onboardingPage,
+    signUpPage,
+  }) => {
+    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await signUpPage.fillDisplayName(specAccount.display_name)
+    await signUpPage.fillUsername('')
+    await signUpPage.verifyUsernameError()
+    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+  })
 })

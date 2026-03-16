@@ -4,8 +4,8 @@ import {deleteAccount, firebaseLogin} from '../../utils/firebaseUtils'
 export async function deleteUser(email: string, password: string) {
   try {
     const loginInfo = await firebaseLogin(email, password)
-    await deleteFromDb(loginInfo.data.localId)
     await deleteAccount(loginInfo)
+    await deleteFromDb(loginInfo.data.localId)
   } catch (err: any) {
     // Skip deletion if user doesn't exist or other auth errors occur
     if (

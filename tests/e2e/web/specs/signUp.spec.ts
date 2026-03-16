@@ -1,5 +1,5 @@
 import {expect, test} from '../fixtures/base'
-import { progressToRequiredForm } from "../utils/testCleanupHelpers";
+import {progressToRequiredForm} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('placeholder', async () => {})

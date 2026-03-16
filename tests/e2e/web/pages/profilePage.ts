@@ -319,7 +319,8 @@ export class ProfilePage {
 
   async verifyDisplayName(displayName?: string) {
     await expect(this.displayNameAndAgeSection).toBeVisible()
-    if (displayName) await expect(this.displayNameAndAgeSection).toContainText(displayName, {ignoreCase: true})
+    if (displayName)
+      await expect(this.displayNameAndAgeSection).toContainText(displayName, {ignoreCase: true})
   }
 
   async verifyGenderLocationHeightAge(
@@ -330,10 +331,17 @@ export class ProfilePage {
     age?: string,
   ) {
     await expect(this.genderLocationHightInInchesSection).toBeVisible()
-    if (gender) await expect(this.genderLocationHightInInchesSection).toContainText(gender[0], {ignoreCase: true})
-    if (location) await expect(this.genderLocationHightInInchesSection).toContainText(location, {ignoreCase: true})
+    if (gender)
+      await expect(this.genderLocationHightInInchesSection).toContainText(gender[0], {
+        ignoreCase: true,
+      })
+    if (location)
+      await expect(this.genderLocationHightInInchesSection).toContainText(location, {
+        ignoreCase: true,
+      })
     if (heightFeet) await expect(this.genderLocationHightInInchesSection).toContainText(heightFeet)
-    if (heightInches) await expect(this.genderLocationHightInInchesSection).toContainText(heightInches)
+    if (heightInches)
+      await expect(this.genderLocationHightInInchesSection).toContainText(heightInches)
     if (age) await expect(this.genderLocationHightInInchesSection).toContainText(age)
   }
 

@@ -1,8 +1,5 @@
 import {expect, test} from '../fixtures/base'
-import {AuthPage} from '../pages/AuthPage'
-import {HomePage} from '../pages/homePage'
-import {OnboardingPage} from '../pages/onboardingPage'
-import {UserAccountInformation} from '../utils/accountInformation'
+import { progressToRequiredForm } from "../utils/testCleanupHelpers";
 
 test.describe('when given valid input', () => {
   test('placeholder', async () => {})
@@ -37,17 +34,3 @@ test.describe('when an error occurs', () => {
     await expect(signUpPage.nextButtonLocator).toBeDisabled()
   })
 })
-
-async function progressToRequiredForm(
-  homePage: HomePage,
-  authPage: AuthPage,
-  account: UserAccountInformation,
-  onboardingPage: OnboardingPage,
-) {
-  await homePage.gotToHomePage()
-  await homePage.clickSignUpButton()
-  await authPage.fillEmailField(account.email)
-  await authPage.fillPasswordField(account.password)
-  await authPage.clickSignUpWithEmailButton()
-  await onboardingPage.clickSkipOnboardingButton()
-}

@@ -1,4 +1,5 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
+import { progressToRequiredForm } from "../utils/testCleanupHelpers";
 import {expect, test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
@@ -235,12 +236,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
     )
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(fakerAccount.email)
-    await authPage.fillPasswordField(fakerAccount.password)
-    await authPage.clickSignUpWithEmailButton()
-    await onboardingPage.clickSkipOnboardingButton()
+    await progressToRequiredForm(homePage,authPage,fakerAccount,onboardingPage)
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -269,12 +265,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
     )
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(fakerAccount.email)
-    await authPage.fillPasswordField(fakerAccount.password)
-    await authPage.clickSignUpWithEmailButton()
-    await onboardingPage.clickSkipOnboardingButton()
+    await progressToRequiredForm(homePage,authPage,fakerAccount,onboardingPage)
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -322,12 +313,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully use the start answering option" with ${fakerAccount.username}`,
     )
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(fakerAccount.email)
-    await authPage.fillPasswordField(fakerAccount.password)
-    await authPage.clickSignUpWithEmailButton()
-    await onboardingPage.clickSkipOnboardingButton()
+    await progressToRequiredForm(homePage,authPage,fakerAccount,onboardingPage)
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()

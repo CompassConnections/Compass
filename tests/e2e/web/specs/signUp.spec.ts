@@ -36,17 +36,3 @@ test.describe('when an error occurs', () => {
     await expect(signUpPage.nextButtonLocator).toBeDisabled()
   })
 })
-
-async function progressToRequiredForm(
-  homePage: HomePage,
-  authPage: AuthPage,
-  account: UserAccountInformation,
-  onboardingPage: OnboardingPage,
-) {
-  await homePage.gotToHomePage()
-  await homePage.clickSignUpButton()
-  await authPage.fillEmailField(account.email)
-  await authPage.fillPasswordField(account.password)
-  await authPage.clickSignUpWithEmailButton()
-  await onboardingPage.clickSkipOnboardingButton()
-}

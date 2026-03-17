@@ -69,8 +69,8 @@ export function AboutRow(props: {
     formattedText += formattedText ? ` (${suffix})` : suffix
   }
   return (
-    <Row className="items-center gap-2" data-testid={testId}>
-      <div className="text-ink-600 w-5">{icon}</div>
+    <Row className="items-start gap-2" data-testid={testId}>
+      <div className="text-ink-600 w-5 mt-0.5">{icon}</div>
       <div>{formattedText}</div>
     </Row>
   )

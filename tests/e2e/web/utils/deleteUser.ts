@@ -4,8 +4,8 @@ import {deleteAccount, firebaseLogin} from '../../utils/firebaseUtils'
 export async function deleteUser(email: string, password: string) {
   try {
     const loginInfo = await firebaseLogin(email, password)
-    console.log("Firebase Login: ",loginInfo);
-    
+    console.log('Firebase Login: ', loginInfo)
+
     await deleteAccount(loginInfo)
     await deleteFromDb(loginInfo.data.localId)
   } catch (err: any) {

@@ -33,7 +33,15 @@ export class HomePage {
   }
 
   async gotToHomePage() {
-    await this.page.goto('/')
+    await this.page.goto('/home')
+  }
+
+  async gotToRegisterPage() {
+    await this.page.goto('/register')
+  }
+
+  async gotToSigninPage() {
+    await this.page.goto('/signin')
   }
 
   async clickAboutLink() {

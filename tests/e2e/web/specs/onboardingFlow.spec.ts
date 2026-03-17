@@ -1,9 +1,9 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
-import {progressToRequiredForm} from '../utils/testCleanupHelpers'
+import {registerWithEmail, registerWithGoogleAccount} from '../utils/testCleanupHelpers'
 import {expect, test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
-  test('should successfully complete the onboarding flow', async ({
+  test('should successfully complete the onboarding flow with email', async ({
     homePage,
     onboardingPage,
     signUpPage,
@@ -12,7 +12,7 @@ test.describe('when given valid input', () => {
     onboardingAccount,
   }) => {
     console.log(
-      `Starting "should successfully complete the onboarding flow" with ${onboardingAccount.username}`,
+      `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
     )
     await homePage.gotToHomePage()
     await homePage.clickSignUpButton()
@@ -225,6 +225,49 @@ test.describe('when given valid input', () => {
     )
   })
 
+  test('should successfully complete the onboarding flow with google account', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    googleAccount,
+    context,
+    page
+  }) => {
+    await homePage.gotToRegisterPage()
+    await authPage.fillEmailField(googleAccount.email)
+    await authPage.fillPasswordField(googleAccount.password)
+    const [popup] = await Promise.all([
+      context.waitForEvent('page'),
+      authPage.clickGoogleButton()
+    ])
+    await popup.waitForLoadState()
+    await popup.getByText('Add new account', { exact: true }).click()
+    await popup.getByLabel('Email').fill(googleAccount.email)
+    // await popup.getByLabel('Display name').fill(googleAccount.display_name)
+    // await popup.getByLabel('Screen name', { exact: true }).fill(googleAccount.username)
+    await popup.getByText('Sign in with Google.com', { exact: true }).click()
+    await popup.waitForEvent('close')
+    await expect(page).toHaveURL('/onboarding')
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(googleAccount.display_name)
+    await signUpPage.fillUsername(googleAccount.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(googleAccount.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccount)
+
+    await expect(dbInfo.user.name).toContain(googleAccount.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccount.username)
+  })
+
   test('should successfully skip the onboarding flow', async ({
     homePage,
     onboardingPage,
@@ -236,7 +279,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -265,7 +309,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -313,7 +358,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully use the start answering option" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -338,22 +384,16 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
-    test.beforeEach(async ({homePage, authPage, fakerAccount}) => {
-      console.log(`Before each with ${fakerAccount.username}`)
-      await homePage.gotToHomePage()
-      await homePage.clickSignUpButton()
-      await authPage.fillEmailField(fakerAccount.email)
-      await authPage.fillPasswordField(fakerAccount.password)
-      await authPage.clickSignUpWithEmailButton()
-    })
-
     test("the first time it's an option", async ({
+      homePage,
+      authPage,
       onboardingPage,
       signUpPage,
       profilePage,
       fakerAccount,
     }) => {
       console.log(`Starting "the first time its an option" with ${fakerAccount.username}`)
+      await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()
       await onboardingPage.clickContinueButton()
@@ -377,12 +417,15 @@ test.describe('when given valid input', () => {
     })
 
     test("the second time it's an option", async ({
+      homePage,
+      authPage,
       onboardingPage,
       signUpPage,
       profilePage,
       fakerAccount,
     }) => {
       console.log(`Starting "the second time its an option" with ${fakerAccount.username}`)
+      await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()

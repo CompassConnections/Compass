@@ -7,7 +7,7 @@ export class AuthPage {
   private readonly emailField: Locator
   private readonly passwordField: Locator
   private readonly signInWithEmailButton: Locator
-  private readonly signInWithGoogleButton: Locator
+  private readonly googleButton: Locator
   private readonly signUpWithEmailButton: Locator
 
   constructor(public readonly page: Page) {
@@ -16,7 +16,7 @@ export class AuthPage {
     this.emailField = page.getByLabel('Email')
     this.passwordField = page.getByLabel('Password')
     this.signInWithEmailButton = page.getByRole('button', {name: 'Sign in with Email'})
-    this.signInWithGoogleButton = page.getByRole('button', {name: 'Google'})
+    this.googleButton = page.getByRole('button', {name: 'Google'})
     this.signUpWithEmailButton = page.getByRole('button', {name: 'Sign up with Email'})
   }
 
@@ -35,9 +35,9 @@ export class AuthPage {
     await this.signInWithEmailButton.click()
   }
 
-  async clickSignInWithGoogleButton() {
-    await expect(this.signInWithGoogleButton).toBeVisible()
-    await this.signInWithGoogleButton.click()
+  async clickGoogleButton() {
+    await expect(this.googleButton).toBeVisible()
+    await this.googleButton.click()
   }
 
   async clickSignUpWithEmailButton() {

@@ -1,5 +1,5 @@
 import {expect, test} from '../fixtures/base'
-import {progressToRequiredForm} from '../utils/testCleanupHelpers'
+import {registerWithEmail} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('placeholder', async () => {})
@@ -13,7 +13,8 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, specAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName('')
     await signUpPage.fillUsername(specAccount.username)
     await signUpPage.verifyDisplayNameError()
@@ -27,7 +28,8 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    await progressToRequiredForm(homePage, authPage, specAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, specAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(specAccount.display_name)
     await signUpPage.fillUsername('')
     await signUpPage.verifyUsernameError()

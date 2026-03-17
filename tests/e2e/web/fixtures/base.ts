@@ -20,9 +20,10 @@ export const test = base.extend<{
   onboardingAccount: UserAccountInformation
   fakerAccount: UserAccountInformation
   specAccount: UserAccountInformation
+  googleAccount: UserAccountInformation
 }>({
   onboardingAccount: async ({}, use) => {
-    const account = testAccounts.account_all_info() // email captured here
+    const account = testAccounts.email_account_all_info() // email captured here
     await use(account)
     console.log('Cleaning up onboarding 1 account...')
     await deleteUser(account.email, account.password) // same account, guaranteed
@@ -31,6 +32,12 @@ export const test = base.extend<{
     const account = testAccounts.faker_account() // email captured here
     await use(account)
     console.log('Cleaning up faker account...')
+    await deleteUser(account.email, account.password) // same account, guaranteed
+  },
+  googleAccount: async ({}, use) => {
+    const account = testAccounts.google_account() // email captured here
+    await use(account)
+    console.log('Cleaning up google account...')
     await deleteUser(account.email, account.password) // same account, guaranteed
   },
   specAccount: async ({}, use) => {

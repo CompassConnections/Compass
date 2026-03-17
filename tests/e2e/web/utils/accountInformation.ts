@@ -102,7 +102,8 @@ type AccountConfig = {
   spec_account: () => UserAccountInformation
   dev_one_account: () => UserAccountInformation
   dev_two_account: () => UserAccountInformation
-  account_all_info: () => UserAccountInformation
+  google_account: () => UserAccountInformation
+  email_account_all_info: () => UserAccountInformation
 }
 
 export const testAccounts: AccountConfig = {
@@ -154,7 +155,17 @@ export const testAccounts: AccountConfig = {
     }
   },
 
-  account_all_info: () => {
+  google_account: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: 'google_compass@gmail.com',
+      password: 'GoogleCompassTest',
+      display_name: 'Google_Compass',
+      username: `Google_Connections_${id}`,
+    }
+  },
+
+  email_account_all_info: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
       // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails

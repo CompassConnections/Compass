@@ -152,7 +152,7 @@ export function CompatibilityQuestionsDisplay(props: {
           return !getAnswerCompatibility(a, comparedAnswer)
         }
         if (sort === 'your_unanswered') {
-          // Answered and not skipped.
+          // Not answered or skipped.
           return !comparedAnswer || comparedAnswer.importance === -1
         }
         return true

@@ -1,13 +1,21 @@
 import {deleteFromDb} from '../../utils/databaseUtils'
-import {deleteAccount, firebaseLogin} from '../../utils/firebaseUtils'
+import { AuthObject } from "../fixtures/base";
+import {deleteAccount, firebaseLoginEmailPassword} from '../../utils/firebaseUtils'
 
-export async function deleteUser(email: string, password: string) {
+type AuthType = "Email/Password" | "Google"
+export async function deleteUser(authType: AuthType, email?: string, password?: string, authInfo?: AuthObject) {
   try {
-    const loginInfo = await firebaseLogin(email, password)
-    console.log('Firebase Login: ', loginInfo)
+    let loginInfo;
+    if (authType === "Email/Password") {
+      loginInfo = await firebaseLoginEmailPassword(email, password)
+      await deleteAccount(loginInfo?.data.idToken)
+      await deleteFromDb(loginInfo?.data.localId)
+    }
+    if (authType === "Google" && authInfo) {
+      await deleteAccount(authInfo.idToken)
+      await deleteFromDb(authInfo.localId)
+    }
 
-    await deleteAccount(loginInfo)
-    await deleteFromDb(loginInfo.data.localId)
   } catch (err: any) {
     // Skip deletion if user doesn't exist or other auth errors occur
     if (

@@ -1,5 +1,5 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
-import {registerWithEmail, registerWithGoogleAccount} from '../utils/testCleanupHelpers'
+import {registerWithEmail} from '../utils/testCleanupHelpers'
 import {expect, test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
@@ -242,8 +242,8 @@ test.describe('when given valid input', () => {
     await popup.waitForLoadState()
     await popup.getByText('Add new account', {exact: true}).click()
     await popup.getByLabel('Email').fill(googleAccount.email)
-    // await popup.getByLabel('Display name').fill(googleAccount.display_name)
-    // await popup.getByLabel('Screen name', { exact: true }).fill(googleAccount.username)
+    await popup.getByLabel('Display name').fill(googleAccount.display_name)
+    await popup.getByLabel('Screen name', { exact: true }).fill(googleAccount.username)
     await popup.getByText('Sign in with Google.com', {exact: true}).click()
     await popup.waitForEvent('close')
     await expect(page).toHaveURL('/onboarding')

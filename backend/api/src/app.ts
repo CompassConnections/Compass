@@ -11,6 +11,7 @@ import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
 import {getOptions} from 'api/get-options'
+import {getPinnedCompatibilityQuestions} from 'api/get-pinned-compatibility-questions'
 import {getChannelMessagesEndpoint} from 'api/get-private-messages'
 import {getUser} from 'api/get-user'
 import {hideProfile} from 'api/hide-profile'
@@ -20,6 +21,7 @@ import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
 import {sendSearchNotifications} from 'api/send-search-notifications'
 import {localSendTestEmail} from 'api/test'
 import {unhideProfile} from 'api/unhide-profile'
+import {updateCompatibilityQuestionPin} from 'api/update-compatibility-question-pin'
 import {updateConnectionInterests} from 'api/update-connection-interests'
 import {updateOptions} from 'api/update-options'
 import {vote} from 'api/vote'
@@ -406,7 +408,7 @@ Most endpoints require a valid Firebase JWT token. This gives you access to your
 
   To obtain a token:
 
-  **In your app or browser console while logged in (JavaScript/TypeScript):**
+  **In your browser console while logged in (CTRL+SHIFT+C, then select the Console tab):**
 \`\`\`js
 const db = await new Promise((res, rej) => {
   const req = indexedDB.open('firebaseLocalStorageDb')
@@ -633,6 +635,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-user-locale': updateUserLocale,
   'update-private-user-message-channel': updatePrivateUserMessageChannel,
   'update-profile': updateProfileEndpoint,
+  'update-compatibility-question-pin': updateCompatibilityQuestionPin,
+  'get-pinned-compatibility-questions': getPinnedCompatibilityQuestions,
   'get-connection-interests': getConnectionInterestsEndpoint,
   'update-connection-interest': updateConnectionInterests,
   'user/by-id/:id': getUser,

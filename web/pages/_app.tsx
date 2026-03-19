@@ -24,6 +24,7 @@ import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
+import {PinnedQuestionIdsProvider} from 'web/hooks/use-pinned-question-ids'
 import {updateStatusBar} from 'web/hooks/use-theme'
 import {updateBackendLocale} from 'web/lib/api'
 import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
@@ -198,11 +199,13 @@ function MyApp(props: AppProps<PageProps>) {
               <ErrorBoundary>
                 <AuthProvider serverUser={pageProps.auth}>
                   <ChoicesProvider>
-                    <HiddenProfilesProvider>
-                      <WebPush />
-                      <AndroidPush />
-                      <Component {...pageProps} />
-                    </HiddenProfilesProvider>
+                    <PinnedQuestionIdsProvider>
+                      <HiddenProfilesProvider>
+                        <WebPush />
+                        <AndroidPush />
+                        <Component {...pageProps} />
+                      </HiddenProfilesProvider>
+                    </PinnedQuestionIdsProvider>
                   </ChoicesProvider>
                 </AuthProvider>
               </ErrorBoundary>

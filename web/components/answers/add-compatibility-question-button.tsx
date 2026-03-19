@@ -64,7 +64,7 @@ function AddCompatibilityQuestionModal(props: {
           <CreateCompatibilityModalContent afterAddQuestion={afterAddQuestion} setOpen={setOpen} />
         ) : (
           <AnswerCompatibilityQuestionContent
-            compatibilityQuestion={dbQuestion as QuestionWithStats}
+            question={dbQuestion as QuestionWithStats}
             user={user}
             onSubmit={() => {
               // setOpen(false)

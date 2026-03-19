@@ -12,8 +12,10 @@ import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
 import {keyBy, partition, sortBy} from 'lodash'
+import {PinIcon} from 'lucide-react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
+import {AddCompatibilityQuestionButton} from 'web/components/answers/add-compatibility-question-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {
   compareBySort,
@@ -32,6 +34,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {usePinnedQuestionIds} from 'web/hooks/use-pinned-question-ids'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {
@@ -43,7 +46,6 @@ import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 
 import {Subtitle} from '../widgets/profile-subtitle'
-import {AddCompatibilityQuestionButton} from './add-compatibility-question-button'
 import {
   AnswerCompatibilityQuestionButton,
   AnswerSkippedCompatibilityQuestionsButton,
@@ -59,8 +61,10 @@ import {
   submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
 import {PreferredList, PreferredListNoComparison} from './compatibility-question-preferred-list'
+import {PinQuestionButton} from './pin-question-button'
 
-const NUM_QUESTIONS_TO_SHOW = 8
+const NUM_QUESTIONS_TO_SHOW = 4
+const NUM_PINNED_QUESTIONS_TO_SHOW = 4
 
 export function separateQuestionsArray(
   questions: QuestionWithStats[],
@@ -101,6 +105,8 @@ export function CompatibilityQuestionsDisplay(props: {
   const compatibleProfiles = useCompatibleProfiles(currentUser?.id)
   const compatibilityScore = compatibleProfiles?.profileCompatibilityScores?.[profile.user_id]
 
+  const {pinnedQuestionIds, refreshPinnedQuestionIds} = usePinnedQuestionIds()
+
   const {refreshCompatibilityQuestions, compatibilityQuestions} =
     useCompatibilityQuestionsWithAnswerCount()
 
@@ -125,7 +131,8 @@ export function CompatibilityQuestionsDisplay(props: {
   const refreshCompatibilityAll = useCallback(() => {
     refreshCompatibilityAnswers()
     refreshCompatibilityQuestions()
-  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions])
+    refreshPinnedQuestionIds()
+  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions, refreshPinnedQuestionIds])
 
   const isLooking = useIsLooking()
   const [sort, setSort] = usePersistentInMemoryState<CompatibilitySort>(
@@ -184,23 +191,68 @@ export function CompatibilityQuestionsDisplay(props: {
     currentSlice + NUM_QUESTIONS_TO_SHOW,
   )
 
+  const pinnedAnswers = useMemo(() => {
+    if (!pinnedQuestionIds?.length) return []
+    const pinned = answers.filter((a) => pinnedQuestionIds.includes(a.question_id))
+    const idToIndex = new Map(pinnedQuestionIds.map((id, i) => [id, i] as const))
+    return sortBy(pinned, (a) => idToIndex.get(a.question_id) ?? Infinity)
+  }, [answers, pinnedQuestionIds])
+
+  const [pinnedPage, setPinnedPage] = useState(0)
+  const pinnedCurrentSlice = pinnedPage * NUM_PINNED_QUESTIONS_TO_SHOW
+  const shownPinnedAnswers = pinnedAnswers.slice(
+    pinnedCurrentSlice,
+    pinnedCurrentSlice + NUM_PINNED_QUESTIONS_TO_SHOW,
+  )
+
+  useEffect(() => {
+    setPinnedPage(0)
+  }, [user.id])
+
   if (!isCurrentUser && !answeredQuestions.length) return null
 
   return (
     <Col className="gap-4">
-      <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
-        <Row className={'gap-8'}>
-          <Subtitle>
-            {isCurrentUser
-              ? t('answers.display.your_prompts', 'Your Compatibility Prompts')
-              : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {
-                  name: shortenName(user.name),
-                })}
-          </Subtitle>
-          {compatibilityScore && (
-            <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'} />
+      <Row className={'gap-8'}>
+        <Subtitle>
+          {isCurrentUser
+            ? t('answers.display.your_prompts', 'Your Compatibility Prompts')
+            : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {
+                name: shortenName(user.name),
+              })}
+        </Subtitle>
+        {compatibilityScore && (
+          <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'} />
+        )}
+      </Row>
+      {pinnedAnswers.length > 0 && (
+        <Col className="gap-3">
+          <PinIcon />
+          {shownPinnedAnswers.map((answer) => (
+            <CompatibilityAnswerBlock
+              key={`pinned-${answer.question_id}`}
+              answer={answer}
+              yourQuestions={answeredQuestions}
+              user={user}
+              isCurrentUser={isCurrentUser}
+              refreshCompatibilityAll={refreshCompatibilityAll}
+              profile={profile}
+              fromProfilePage={fromProfilePage}
+              showCommunityInfo={showCommunityInfo}
+            />
+          ))}
+          {NUM_PINNED_QUESTIONS_TO_SHOW < pinnedAnswers.length && (
+            <Pagination
+              page={pinnedPage}
+              pageSize={NUM_PINNED_QUESTIONS_TO_SHOW}
+              totalItems={pinnedAnswers.length}
+              setPage={setPinnedPage}
+            />
           )}
-        </Row>
+          <div className="border-canvas-200 border-b" />
+        </Col>
+      )}
+      <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
         {answeredQuestions.length > 0 && (
           <div className="relative mt-3">
             {/*<input*/}
@@ -254,26 +306,6 @@ export function CompatibilityQuestionsDisplay(props: {
         </span>
       ) : (
         <>
-          {isCurrentUser && !fromProfilePage && (
-            <span className="custom-link">
-              {otherQuestions.length < 1 ? (
-                <span className="text-ink-600 text-sm">
-                  {t(
-                    'answers.display.already_answered_all',
-                    "You've already answered all the compatibility questions—",
-                  )}
-                </span>
-              ) : (
-                <span className="text-ink-600 text-sm">
-                  {t(
-                    'answers.display.answer_more',
-                    'Answer more questions to increase your compatibility scores—or ',
-                  )}
-                </span>
-              )}
-              <AddCompatibilityQuestionButton refreshCompatibilityAll={refreshCompatibilityAll} />
-            </span>
-          )}
           {shownAnswers.map((answer) => {
             return (
               <CompatibilityAnswerBlock
@@ -293,6 +325,34 @@ export function CompatibilityQuestionsDisplay(props: {
             <div className="text-ink-500">{t('answers.display.none', 'None')}</div>
           )}
         </>
+      )}
+      {NUM_QUESTIONS_TO_SHOW < answers.length && (
+        <Pagination
+          page={page}
+          pageSize={NUM_QUESTIONS_TO_SHOW}
+          totalItems={sortedAndFilteredAnswers.length}
+          setPage={setPage}
+        />
+      )}
+      {isCurrentUser && !fromProfilePage && (
+        <span className="custom-link">
+          {otherQuestions.length < 1 ? (
+            <span className="text-ink-600 text-sm">
+              {t(
+                'answers.display.already_answered_all',
+                "You've already answered all the compatibility questions—",
+              )}
+            </span>
+          ) : (
+            <span className="text-ink-600 text-sm">
+              {t(
+                'answers.display.answer_more',
+                'Answer more questions to increase your compatibility scores—or ',
+              )}
+            </span>
+          )}
+          <AddCompatibilityQuestionButton refreshCompatibilityAll={refreshCompatibilityAll} />
+        </span>
       )}
       {isCurrentUser && (
         <Row className={'w-full justify-center gap-8'}>
@@ -315,14 +375,6 @@ export function CompatibilityQuestionsDisplay(props: {
             refreshCompatibilityAll={refreshCompatibilityAll}
           />
         </Row>
-      )}
-      {NUM_QUESTIONS_TO_SHOW < answers.length && (
-        <Pagination
-          page={page}
-          pageSize={NUM_QUESTIONS_TO_SHOW}
-          totalItems={sortedAndFilteredAnswers.length}
-          setPage={setPage}
-        />
       )}
     </Col>
   )
@@ -421,6 +473,7 @@ export function CompatibilityAnswerBlock(props: {
               />
             </div>
           )}
+          {!!currentUser && <PinQuestionButton questionId={question.id} />}
           {isCurrentUser && isAnswered && (
             <>
               <ImportanceButton
@@ -577,7 +630,7 @@ export function CompatibilityAnswerBlock(props: {
         <Col className={MODAL_CLASS}>
           <AnswerCompatibilityQuestionContent
             key={`edit answer.id`}
-            compatibilityQuestion={question}
+            question={question}
             answer={newAnswer}
             user={user}
             onSubmit={() => {

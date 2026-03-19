@@ -224,6 +224,42 @@ export type Database = {
           },
         ]
       }
+      compatibility_prompts_pinned: {
+        Row: {
+          created_time: string
+          id: number
+          question_id: number
+          user_id: string
+        }
+        Insert: {
+          created_time?: string
+          id?: never
+          question_id: number
+          user_id: string
+        }
+        Update: {
+          created_time?: string
+          id?: never
+          question_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'compatibility_prompts_pinned_question_id_fkey'
+            columns: ['question_id']
+            isOneToOne: false
+            referencedRelation: 'compatibility_prompts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'compatibility_prompts_pinned_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       compatibility_prompts_translations: {
         Row: {
           locale: string

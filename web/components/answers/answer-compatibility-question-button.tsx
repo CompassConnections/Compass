@@ -221,7 +221,7 @@ function AnswerCompatibilityQuestionModal(props: {
             key={sortedQuestions[questionIndex].id}
             index={questionIndex}
             total={sortedQuestions.length}
-            compatibilityQuestion={sortedQuestions[questionIndex]}
+            question={sortedQuestions[questionIndex]}
             user={user}
             onSubmit={() => {
               setOpen(false)

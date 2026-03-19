@@ -8,6 +8,7 @@ import {shortenNumber} from 'common/util/format'
 import {sortBy} from 'lodash'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
+import {PinQuestionButton} from 'web/components/answers/pin-question-button'
 import {Button} from 'web/components/buttons/button'
 import {CompatibilitySort, CompatibilitySortWidget} from 'web/components/compatibility/sort-widget'
 import {Col} from 'web/components/layout/col'
@@ -102,7 +103,7 @@ export function getEmptyAnswer(userId: string, questionId: number) {
 }
 
 export function AnswerCompatibilityQuestionContent(props: {
-  compatibilityQuestion: QuestionWithStats
+  question: QuestionWithStats
   user: User
   index?: number
   total?: number
@@ -114,34 +115,24 @@ export function AnswerCompatibilityQuestionContent(props: {
   sort?: CompatibilitySort
   setSort?: (sort: CompatibilitySort) => void
 }) {
-  const {
-    compatibilityQuestion,
-    user,
-    onSubmit,
-    isLastQuestion,
-    onNext,
-    noSkip,
-    index,
-    total,
-    sort,
-    setSort,
-  } = props
+  const {question, user, onSubmit, isLastQuestion, onNext, noSkip, index, total, sort, setSort} =
+    props
   const t = useT()
   const [answer, setAnswer] = useState<CompatibilityAnswerSubmitType>(
-    (props.answer as CompatibilityAnswerSubmitType) ??
-      getEmptyAnswer(user.id, compatibilityQuestion.id),
+    (props.answer as CompatibilityAnswerSubmitType) ?? getEmptyAnswer(user.id, question.id),
   )
 
   const [loading, setLoading] = useState(false)
   const [skipLoading, setSkipLoading] = useState(false)
+
   if (
-    compatibilityQuestion.answer_type !== 'compatibility_multiple_choice' ||
-    !compatibilityQuestion.multiple_choice_options
+    question.answer_type !== 'compatibility_multiple_choice' ||
+    !question.multiple_choice_options
   ) {
     return null
   }
 
-  const optionOrder = sortBy(Object.entries(compatibilityQuestion.multiple_choice_options), 1).map(
+  const optionOrder = sortBy(Object.entries(question.multiple_choice_options), 1).map(
     ([label]) => label,
   )
 
@@ -151,13 +142,11 @@ export function AnswerCompatibilityQuestionContent(props: {
 
   const importanceValid = answer.importance !== null && answer.importance !== -1
 
-  const shortenedPopularity = compatibilityQuestion.answer_count
-    ? shortenNumber(compatibilityQuestion.answer_count)
-    : null
+  const shortenedPopularity = question.answer_count ? shortenNumber(question.answer_count) : null
   return (
     <Col className="min-h-0 w-full gap-4">
       <Col className="gap-1 shrink-0">
-        <Row>
+        <Row className={'gap-2'}>
           {isFinite(index!) && isFinite(total!) && (
             <span className={'text-sm'}>
               <span className="text-ink-600 font-semibold">{index! + 1}</span> / {total}
@@ -173,7 +162,8 @@ export function AnswerCompatibilityQuestionContent(props: {
             />
           )}
         </Row>
-        <Row className={''}>
+        <Row className={'gap-2'}>
+          <PinQuestionButton questionId={question.id} />
           {shortenedPopularity && (
             <Tooltip
               text={t(
@@ -188,14 +178,14 @@ export function AnswerCompatibilityQuestionContent(props: {
               </Row>
             </Tooltip>
           )}
-          {isFinite(compatibilityQuestion.community_importance_percent) && (
+          {isFinite(question.community_importance_percent) && (
             <span className={'text-sm ml-auto guidance'}>
               {t('compatibility.question.community_importance', 'Community Importance')}:{' '}
-              {Math.round(compatibilityQuestion.community_importance_percent)}%
+              {Math.round(question.community_importance_percent)}%
             </span>
           )}
         </Row>
-        <div data-testid="compatibility-question">{compatibilityQuestion.question}</div>
+        <div data-testid="compatibility-question">{question.question}</div>
       </Col>
       <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'w-full gap-4 flex-1 min-h-0 pr-2')}>
         <Col className="gap-2">
@@ -257,7 +247,7 @@ export function AnswerCompatibilityQuestionContent(props: {
             disabled={loading || skipLoading}
             onClick={() => {
               setSkipLoading(true)
-              submitCompatibilityAnswer(getEmptyAnswer(user.id, compatibilityQuestion.id))
+              submitCompatibilityAnswer(getEmptyAnswer(user.id, question.id))
                 .then(() => {
                   if (isLastQuestion) {
                     onSubmit()

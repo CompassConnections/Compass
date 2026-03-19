@@ -554,6 +554,35 @@ export const API = (_apiTypeCheck = {
     summary: 'Submit or update a compatibility answer',
     tag: 'Compatibility',
   },
+  'update-compatibility-question-pin': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        questionId: z.number(),
+        pinned: z.boolean(),
+      })
+      .strict(),
+    returns: {} as {
+      status: 'success'
+      pinnedQuestionIds: number[]
+    },
+    summary: 'Pin or unpin a compatibility question for your profile views',
+    tag: 'Compatibility',
+  },
+  'get-pinned-compatibility-questions': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as {
+      status: 'success'
+      pinnedQuestionIds: number[]
+    },
+    summary: 'Get pinned compatibility question ids for current user',
+    tag: 'Compatibility',
+  },
   'get-profile-answers': {
     method: 'GET',
     authed: true,

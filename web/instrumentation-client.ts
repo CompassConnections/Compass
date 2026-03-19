@@ -3,13 +3,15 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from '@sentry/nextjs'
-import {SENTRY_DSN} from 'common/hosting/constants'
+import {IS_LOCAL, SENTRY_DSN} from 'common/hosting/constants'
 
 const IS_NATIVE = !!process.env.NEXT_PUBLIC_WEBVIEW
 
 Sentry.init({
   // Skip tunneling in native app context
   dsn: SENTRY_DSN,
+
+  enabled: !IS_LOCAL,
 
   // Add optional integrations for additional features
   integrations: IS_NATIVE ? [] : [Sentry.replayIntegration()],

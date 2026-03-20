@@ -246,7 +246,7 @@ export default function ProfileHeader(props: {
       />
       {profile.headline && (
         <div className="italic max-w-3xl px-4 py-3" data-testid="profile-headline">
-          {profile.headline}
+          "{profile.headline}"
         </div>
       )}
       <Row className={'px-4 gap-2 flex-wrap py-2'} data-testid="profile-keywords">

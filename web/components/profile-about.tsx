@@ -16,6 +16,7 @@ import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
+import {capitalize} from 'lodash'
 import {Home} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
@@ -65,13 +66,13 @@ export function AboutRow(props: {
       t: t,
     })
   }
-  if (suffix) {
-    formattedText += formattedText ? ` (${suffix})` : suffix
-  }
   return (
     <Row className="items-start gap-2" data-testid={testId}>
       <div className="text-ink-600 w-5 mt-0.5">{icon}</div>
-      <div>{formattedText}</div>
+      <Col>
+        <div>{formattedText}</div>
+        {suffix && <div className={''}>"{capitalize(suffix)}"</div>}
+      </Col>
     </Row>
   )
 }

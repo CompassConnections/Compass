@@ -1,4 +1,5 @@
 import {createContext, ReactNode, useCallback, useContext, useEffect, useState} from 'react'
+import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 
 const PinnedQuestionIdsContext = createContext<{
@@ -8,17 +9,19 @@ const PinnedQuestionIdsContext = createContext<{
 } | null>(null)
 
 export function PinnedQuestionIdsProvider({children}: {children: ReactNode}) {
+  const user = useUser()
   const [pinnedQuestionIds, setPinnedQuestionIds] = useState<number[] | undefined>(undefined)
 
   const refreshPinnedQuestionIds = useCallback(() => {
+    if (!user) return
     api('get-pinned-compatibility-questions').then((res) => {
       setPinnedQuestionIds(res.pinnedQuestionIds ?? [])
     })
-  }, [])
+  }, [user?.id])
 
   useEffect(() => {
     refreshPinnedQuestionIds()
-  }, [])
+  }, [refreshPinnedQuestionIds])
 
   return (
     <PinnedQuestionIdsContext.Provider

@@ -135,6 +135,8 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
         ? {user, privateUser, authLoaded}
         : undefined
 
+  // debug({serverUser, user, authUser})
+
   useEffect(() => {
     if (serverUser === undefined) {
       const cachedUser = safeLocalStorage?.getItem(CACHED_USER_KEY)
@@ -193,6 +195,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
             debug(
               'Logged into firebase but onboarding, skipping auth load until onboarding is complete',
             )
+            setUser(null)
           } else {
             const [user, privateUser] = await Promise.all([
               getUserSafe(fbUser.uid),
@@ -204,6 +207,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
               onAuthLoad(fbUser, user, privateUser)
             } else {
               debug('Logged into firebase but user not found in db, should redirect to /onboarding')
+              setUser(null)
             }
           }
         } else {

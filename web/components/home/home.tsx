@@ -48,14 +48,12 @@ export function LoggedOutHome() {
 
   return (
     <>
-      {user === null && (
+      {!user && (
         <Col className="mb-4 gap-2 lg:hidden">
           <SignUpButton
             className="mt-4 flex-1 fixed bottom-[calc(55px+env(safe-area-inset-bottom))] w-full left-0 right-0 z-10 mx-auto px-4"
             size="xl"
-            text={t('home.sign_up', 'Sign up')}
           />
-          {/*<SignUpAsMatchmaker className="flex-1"/>*/}
         </Col>
       )}
       <h1 className="pt-12 pb-2 text-7xl md:text-8xl xs:text-6xl font-extrabold leading-tight xl:whitespace-nowrap md:whitespace-nowrap text-center">

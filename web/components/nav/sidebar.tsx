@@ -67,8 +67,7 @@ export default function Sidebar(props: {
           />
         )}
 
-        {user === null && <SignUpButton className="mt-4" text={t('nav.sign_up', 'Sign up')} />}
-        {/*{user === null && <SignUpAsMatchmaker className="mt-2" />}*/}
+        {!user && <SignUpButton className="mt-4" text={t('nav.sign_up', 'Sign up')} />}
 
         {user && profile === null && (
           <Button className="mt-2" onClick={() => router.push('signup')}>
@@ -77,7 +76,7 @@ export default function Sidebar(props: {
         )}
       </div>
       <div className="mb-[12px] mt-auto flex flex-col gap-1">
-        {user === null && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'} />}
+        {!user && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'} />}
         {bottomNavOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}
@@ -126,7 +125,7 @@ export const SignUpButton = (props: {
       onClick={startSignup}
       className={clsx('w-full', className)}
     >
-      {text ?? t('nav.sign_up_now', 'Sign up now')}
+      {text ?? t('home.sign_up', 'Sign up')}
     </Button>
   )
 }

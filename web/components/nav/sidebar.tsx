@@ -67,7 +67,7 @@ export default function Sidebar(props: {
           />
         )}
 
-        {!user && <SignUpButton className="mt-4" text={t('nav.sign_up', 'Sign up')} />}
+        {user === null && <SignUpButton className="mt-4" text={t('nav.sign_up', 'Sign up')} />}
 
         {user && profile === null && (
           <Button className="mt-2" onClick={() => router.push('signup')}>
@@ -76,7 +76,7 @@ export default function Sidebar(props: {
         )}
       </div>
       <div className="mb-[12px] mt-auto flex flex-col gap-1">
-        {!user && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'} />}
+        {user === null && <LanguagePicker className={'w-fit mx-3 pr-12 mb-2'} />}
         {bottomNavOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}

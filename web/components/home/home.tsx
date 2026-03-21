@@ -48,7 +48,7 @@ export function LoggedOutHome() {
 
   return (
     <>
-      {!user && (
+      {user === null && (
         <Col className="mb-4 gap-2 lg:hidden">
           <SignUpButton
             className="mt-4 flex-1 fixed bottom-[calc(55px+env(safe-area-inset-bottom))] w-full left-0 right-0 z-10 mx-auto px-4"

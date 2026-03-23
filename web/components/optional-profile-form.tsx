@@ -28,6 +28,7 @@ import {SignupBio} from 'web/components/bio/editable-bio'
 import {Button, IconButton} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {CustomLink} from 'web/components/links'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {City, CityRow, profileToCity, useCitySearch} from 'web/components/search-location'
 import {Carousel} from 'web/components/widgets/carousel'
@@ -768,11 +769,28 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         {/* Big Five personality traits (0–100) */}
-        <Col className={clsx(colClassName, 'max-w-[550px]')}>
+        <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>
             {t('profile.big5', 'Big Five Personality Traits')}
           </label>
-          <div className="space-y-4">
+          <p className="guidance custom-link">
+            {t(
+              'profile.big5_guidance',
+              'The Big Five personality trait model is a scientific model that groups variation in personality into five separate factors (',
+            )}
+            <CustomLink href={'https://en.wikipedia.org/wiki/Big_Five_personality_traits'}>
+              {t('profile.big5_wikipedia_link', 'Wikipedia article')}
+            </CustomLink>
+            {t(
+              'profile.big5_guidance_suffix',
+              '). You can take a well-cited public-domain approximate test ',
+            )}
+            <CustomLink href={'https://emilywilloughby.com/research/bfas'}>
+              {t('profile.big5_test_link', 'here')}
+            </CustomLink>
+            {t('profile.big5_guidance_end', '.')}
+          </p>
+          <div className={clsx('space-y-4', 'w-full max-w-[550px]')}>
             <Big5Slider
               label={t('profile.big5_openness', 'Openness')}
               value={profile.big5_openness ?? 50}
@@ -798,13 +816,13 @@ export const OptionalProfileUserForm = (props: {
               value={profile.big5_neuroticism ?? 50}
               onChange={(v) => setProfile('big5_neuroticism', v)}
             />
-            <p className="text-sm text-ink-500">
-              {t(
-                'profile.big5_hint',
-                'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
-              )}
-            </p>
           </div>
+          <p className="text-sm text-ink-500">
+            {t(
+              'profile.big5_hint',
+              'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
+            )}
+          </p>
         </Col>
 
         <Category title={t('profile.optional.diet', 'Diet')} />

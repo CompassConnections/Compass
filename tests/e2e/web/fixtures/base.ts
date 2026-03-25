@@ -1,4 +1,5 @@
 import {test as base} from '@playwright/test'
+import { getAuthAccountInfo } from "../utils/networkUtils";
 import {AuthPage} from '../pages/AuthPage'
 import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
@@ -52,7 +53,6 @@ export const test = base.extend<{
     const account = testAccounts.google_account_two()
     const getAuthObject = await getAuthAccountInfo(page)
     await use(account)
-
     console.log('Cleaning up google account...')
     await deleteUser('Google', undefined, getAuthObject())
   },

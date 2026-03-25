@@ -1,4 +1,5 @@
 import {test as base} from '@playwright/test'
+import { getAuthAccountInfo } from "../utils/networkUtils";
 import {AuthPage} from '../pages/AuthPage'
 import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
@@ -7,11 +8,6 @@ import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
-
-export type AuthObject = {
-  idToken: string,
-  localId: string,
-}
 
 export const test = base.extend<{
   homePage: HomePage
@@ -40,20 +36,10 @@ export const test = base.extend<{
   },
   googleAccount: async ({page}, use) => {
     const account = testAccounts.google_account()
-    let accountIdTokenAndLocalId: AuthObject | undefined
-    await page.route("**/accounts:signInWithIdp**", async(route) => {
-      const response = await route.fetch()
-      const body = await response.json()
-      accountIdTokenAndLocalId = {idToken: body.idToken, localId: body.localId}
-      await route.fulfill({response})
-    })
+    const getAuthObject = await getAuthAccountInfo(page)
     await use(account)
-
     console.log('Cleaning up google account...')
-    if (!accountIdTokenAndLocalId) {
-      throw new Error("Sign-in was never intercepted — did the test actually sign in?");
-    }
-    await deleteUser('Google', undefined, undefined, accountIdTokenAndLocalId)
+    await deleteUser('Google', undefined, undefined, getAuthObject())
   },
   specAccount: async ({}, use) => {
     const account = testAccounts.spec_account()

@@ -12,8 +12,9 @@ import {
   SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
 
-class UserAccountInformation {
+class UserAccountInformationForSeeding {
   name = faker.person.fullName()
+  userName = faker.internet.displayName()
   email = faker.internet.email()
   user_id = faker.string.alpha(28)
   password = faker.internet.password()
@@ -54,4 +55,4 @@ class UserAccountInformation {
   }
 }
 
-export default UserAccountInformation
+export default UserAccountInformationForSeeding

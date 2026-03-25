@@ -3,6 +3,7 @@ import {LocaleTuple} from 'common/constants'
 
 export class HomePage {
   private readonly homePageLink: Locator
+  private readonly profileLink: Locator
   private readonly aboutLink: Locator
   private readonly faqLink: Locator
   private readonly voteLink: Locator
@@ -18,6 +19,7 @@ export class HomePage {
 
   constructor(public readonly page: Page) {
     this.homePageLink = page.getByText('Compass', {exact: true})
+    this.profileLink = page.getByTestId('sidebar-username')
     this.aboutLink = page.getByTestId('sidebar-about')
     this.faqLink = page.getByTestId('sidebar-faq')
     this.voteLink = page.getByTestId('sidebar-vote')
@@ -98,5 +100,10 @@ export class HomePage {
   async clickSignInLink() {
     await expect(this.signInLink).toBeVisible()
     await this.signInLink.click()
+  }
+
+  async verifyProfileDisplayName(displayName: string) {
+    await expect(this.profileLink).toBeVisible()
+    await expect(this.profileLink).toContainText(displayName)
   }
 }

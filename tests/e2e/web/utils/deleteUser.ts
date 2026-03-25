@@ -1,5 +1,5 @@
 import {deleteFromDb} from '../../utils/databaseUtils'
-import { AuthObject } from "../fixtures/base";
+import { AuthObject } from "./networkUtils";
 import {deleteAccount, firebaseLoginEmailPassword} from '../../utils/firebaseUtils'
 
 type AuthType = "Email/Password" | "Google"

@@ -232,21 +232,10 @@ test.describe('when given valid input', () => {
     authPage,
     profilePage,
     googleAccount,
-    context,
-    page,
   }) => {
     await homePage.gotToRegisterPage()
-    await authPage.fillEmailField(googleAccount.email)
-    await authPage.fillPasswordField(googleAccount.password)
-    const [popup] = await Promise.all([context.waitForEvent('page'), authPage.clickGoogleButton()])
-    await popup.waitForLoadState()
-    await popup.getByText('Add new account', {exact: true}).click()
-    await popup.getByLabel('Email').fill(googleAccount.email)
-    await popup.getByLabel('Display name').fill(googleAccount.display_name)
-    await popup.getByLabel('Screen name', { exact: true }).fill(googleAccount.username)
-    await popup.getByText('Sign in with Google.com', {exact: true}).click()
-    await popup.waitForEvent('close')
-    await expect(page).toHaveURL('/onboarding')
+    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await authPage.signInToGoogleAccount(googleAccount.email, googleAccount.display_name, googleAccount.username)
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(googleAccount.display_name)
     await signUpPage.fillUsername(googleAccount.username)

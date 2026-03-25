@@ -138,10 +138,10 @@ export const testAccounts: AccountConfig = {
   dev_one_account: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: `dev_1_${id}@compass.com`,
+      email: `dev_1@compass.com`,
       password: 'dev_1Password',
       display_name: 'Dev1.Compass',
-      username: `Dev1.Connections_${id}`,
+      username: `Dev1.Connections`,
     }
   },
 
@@ -151,7 +151,7 @@ export const testAccounts: AccountConfig = {
       email: 'dev_2@compass.com',
       password: 'dev_2Password',
       display_name: 'Dev2.Compass',
-      username: `Dev2.Connections_${id}`,
+      username: `Dev2.Connections_`,
     }
   },
 

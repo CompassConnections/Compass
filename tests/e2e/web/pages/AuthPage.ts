@@ -40,6 +40,25 @@ export class AuthPage {
     await this.googleButton.click()
   }
 
+  async getGooglePopupPage(): Promise<Page> {
+    const [popup] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.clickGoogleButton(),
+    ])
+    await popup.waitForLoadState()
+    return popup
+  }
+
+  async signInToGoogleAccount(email: string, display_name?: string, username?: string) {
+    const popup = await this.getGooglePopupPage()
+    await popup.getByText('Add new account', { exact: true }).click()
+    await popup.getByLabel('Email').fill(email)
+    if (display_name) await popup.getByLabel('Display name').fill(display_name)
+    if (username) await popup.getByLabel('Screen name', { exact: true }).fill(username)
+    await popup.getByText('Sign in with Google.com', { exact: true }).click()
+    await popup.waitForEvent('close')
+  }
+
   async clickSignUpWithEmailButton() {
     await expect(this.signUpWithEmailButton).toBeVisible()
     await this.signUpWithEmailButton.click()

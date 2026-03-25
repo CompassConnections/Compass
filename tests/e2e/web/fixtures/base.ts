@@ -35,7 +35,6 @@ export const test = base.extend<{
     const account = testAccounts.google_account_two()
     const getAuthObject = await getAuthAccountInfo(page)
     await use(account)
-
     console.log('Cleaning up google account...')
     await deleteUser('Google', undefined, getAuthObject())
   },

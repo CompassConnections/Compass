@@ -85,7 +85,7 @@ export async function seedDbUser(userInfo: UserAccountInformationForSeeding, pro
 
   await pg.tx(async (tx: any) => {
     const preexistingUser = await getUser(userId, tx)
-    if (preexistingUser) throw new Error("User already Exists")
+    if (preexistingUser) throw new Error('User already Exists')
 
     await insert(tx, 'users', {
       id: userId,

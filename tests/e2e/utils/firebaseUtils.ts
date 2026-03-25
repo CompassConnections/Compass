@@ -1,7 +1,10 @@
 import axios from 'axios'
 import {config} from '../web/SPEC_CONFIG'
 
-export async function firebaseLoginEmailPassword(email: string | undefined, password: string | undefined) {
+export async function firebaseLoginEmailPassword(
+  email: string | undefined,
+  password: string | undefined,
+) {
   const login = await axios.post(
     `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SIGN_IN_PASSWORD}`,
     {

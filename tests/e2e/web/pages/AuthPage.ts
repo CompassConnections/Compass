@@ -51,11 +51,11 @@ export class AuthPage {
 
   async signInToGoogleAccount(email: string, display_name?: string, username?: string) {
     const popup = await this.getGooglePopupPage()
-    await popup.getByText('Add new account', { exact: true }).click()
+    await popup.getByText('Add new account', {exact: true}).click()
     await popup.getByLabel('Email').fill(email)
     if (display_name) await popup.getByLabel('Display name').fill(display_name)
-    if (username) await popup.getByLabel('Screen name', { exact: true }).fill(username)
-    await popup.getByText('Sign in with Google.com', { exact: true }).click()
+    if (username) await popup.getByLabel('Screen name', {exact: true}).fill(username)
+    await popup.getByText('Sign in with Google.com', {exact: true}).click()
     await popup.waitForEvent('close')
   }
 

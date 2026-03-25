@@ -235,7 +235,11 @@ test.describe('when given valid input', () => {
   }) => {
     await homePage.gotToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-    await authPage.signInToGoogleAccount(googleAccount.email, googleAccount.display_name, googleAccount.username)
+    await authPage.signInToGoogleAccount(
+      googleAccount.email,
+      googleAccount.display_name,
+      googleAccount.username,
+    )
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(googleAccount.display_name)
     await signUpPage.fillUsername(googleAccount.username)

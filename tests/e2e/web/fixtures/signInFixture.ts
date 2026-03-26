@@ -6,47 +6,37 @@ import {HomePage} from '../pages/homePage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 
 export const test = base.extend<{
-  authenticatedPage: Page
-  signedInPage: AuthPage
+  signedInPage: Page
   authPage: AuthPage
   homePage: HomePage
   dev_one_account: UserAccountInformation
 }>({
-  authenticatedPage: async ({page, homePage, authPage}, use) => {
-    const dev_1_Account = testAccounts.dev_one_account()
-    // const authPage = new AuthPage(page)
-
-    try {
-      await seedUser(
-        dev_1_Account.email,
-        dev_1_Account.password,
-        undefined,
-        dev_1_Account.display_name,
-        dev_1_Account.username,
-      )
-    } catch (_e) {
-      console.log('User already exists for signinFixture', dev_1_Account.email)
-    }
+  signedInPage: async ({
+    page,
+    authPage,
+    homePage,
+    dev_one_account
+  }, use) => {
     await homePage.gotToSigninPage()
-    // await page.goto('/signin')
-    await authPage.fillEmailField(dev_1_Account.email)
-    await authPage.fillPasswordField(dev_1_Account.password)
+    await authPage.fillEmailField(dev_one_account.email)
+    await authPage.fillPasswordField(dev_one_account.password)
     await authPage.clickSignInWithEmailButton()
-
-    await page.waitForURL(/^(?!.*signin).*$/)
-
-    expect(page.url()).not.toContain('/signin')
+    await homePage.goToHomePage()
+    await homePage.verifySignedInHomePage(dev_one_account.display_name)
 
     await use(page)
   },
+  
   homePage: async ({page}, use) => {
     const homePage = new HomePage(page)
     await use(homePage)
   },
+
   authPage: async ({page}, use) => {
     const authPage = new AuthPage(page)
     await use(authPage)
   },
+
   dev_one_account: async ({}, use) => {
     const account = testAccounts.dev_one_account()
     await use(account)

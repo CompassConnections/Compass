@@ -6,6 +6,7 @@ import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
+import { SettingsPage } from "../pages/settingsPage";
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 
@@ -15,12 +16,14 @@ export const test = base.extend<{
   signUpPage: SignUpPage
   profilePage: ProfilePage
   authPage: AuthPage
+  settingsPage: SettingsPage
   compatabilityPage: ComatibilityPage
   cleanUpUsers: void
   onboardingAccount: UserAccountInformation
   fakerAccount: UserAccountInformation
   specAccount: UserAccountInformation
-  googleAccount: UserAccountInformation
+  googleAccountOne: UserAccountInformation
+  googleAccountTwo: UserAccountInformation
 }>({
   onboardingAccount: async ({}, use) => {
     const account = testAccounts.email_account_all_info() // email captured here
@@ -34,8 +37,15 @@ export const test = base.extend<{
     console.log('Cleaning up faker account...')
     await deleteUser('Email/Password', account.email, account.password)
   },
-  googleAccount: async ({page}, use) => {
-    const account = testAccounts.google_account()
+  googleAccountOne: async ({page}, use) => {
+    const account = testAccounts.google_account_one()
+    const getAuthObject = await getAuthAccountInfo(page)
+    await use(account)
+    console.log('Cleaning up google account...')
+    await deleteUser('Google', undefined, undefined, getAuthObject())
+  },
+  googleAccountTwo: async ({page}, use) => {
+    const account = testAccounts.google_account_two()
     const getAuthObject = await getAuthAccountInfo(page)
     await use(account)
     console.log('Cleaning up google account...')
@@ -70,6 +80,10 @@ export const test = base.extend<{
   compatabilityPage: async ({page}, use) => {
     const compatibilityPage = new ComatibilityPage(page)
     await use(compatibilityPage)
+  },
+  settingsPage: async ({page}, use) => {
+    const settingsPage = new SettingsPage(page)
+    await use(settingsPage)
   },
 })
 

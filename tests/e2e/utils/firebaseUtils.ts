@@ -25,6 +25,13 @@ export async function getUserId(email: string, password: string) {
   }
 }
 
+export async function findUser(idToken: string) {
+    const response = await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.ACCOUNT_LOOKUP}`, {
+      idToken,
+    })
+    return response
+}
+
 export async function firebaseSignUp(email: string, password: string) {
   try {
     const response = await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SIGNUP}`, {

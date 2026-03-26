@@ -102,7 +102,8 @@ type AccountConfig = {
   spec_account: () => UserAccountInformation
   dev_one_account: () => UserAccountInformation
   dev_two_account: () => UserAccountInformation
-  google_account: () => UserAccountInformation
+  google_account_one: () => UserAccountInformation
+  google_account_two: () => UserAccountInformation
   email_account_all_info: () => UserAccountInformation
 }
 
@@ -155,13 +156,23 @@ export const testAccounts: AccountConfig = {
     }
   },
 
-  google_account: () => {
+  google_account_one: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: 'google_compass@gmail.com',
-      password: 'GoogleCompassTest',
-      display_name: 'Google_Compass',
-      username: `Google_Connections_${id}`,
+      email: 'google_one_compass@gmail.com',
+      password: 'Google_oneCompassTest',
+      display_name: 'Google_one_Compass',
+      username: `G_one_Connections_${id}`,
+    }
+  },
+
+  google_account_two: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: 'google_two_compass@gmail.com',
+      password: 'Google_twoCompassTest',
+      display_name: 'Google_two_Compass',
+      username: `G_two_Connections_${id}`,
     }
   },
 

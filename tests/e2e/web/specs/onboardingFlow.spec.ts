@@ -14,7 +14,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
     )
-    await homePage.gotToHomePage()
+    await homePage.goToHomePage()
     await homePage.clickSignUpButton()
     await authPage.fillEmailField(onboardingAccount.email)
     await authPage.fillPasswordField(onboardingAccount.password)
@@ -231,31 +231,34 @@ test.describe('when given valid input', () => {
     signUpPage,
     authPage,
     profilePage,
-    googleAccount,
+    googleAccountOne,
   }) => {
+    console.log(
+      `Starting "should successfully complete the onboarding flow with google account" with ${googleAccountOne.username}`,
+    )
     await homePage.gotToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
     await authPage.signInToGoogleAccount(
-      googleAccount.email,
-      googleAccount.display_name,
-      googleAccount.username,
+      googleAccountOne.email,
+      googleAccountOne.display_name,
+      googleAccountOne.username,
     )
     await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(googleAccount.display_name)
-    await signUpPage.fillUsername(googleAccount.username)
+    await signUpPage.fillDisplayName(googleAccountOne.display_name)
+    await signUpPage.fillUsername(googleAccountOne.username)
     await signUpPage.clickNextButton()
     await signUpPage.clickNextButton() //Skip optional information
     await profilePage.clickCloseButton()
     await onboardingPage.clickRefineProfileButton()
-
+    
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(googleAccount.display_name)
+    await profilePage.verifyDisplayName(googleAccountOne.display_name)
 
     //Verify database info
-    const dbInfo = await userInformationFromDb(googleAccount)
+    const dbInfo = await userInformationFromDb(googleAccountOne)
 
-    await expect(dbInfo.user.name).toContain(googleAccount.display_name)
-    await expect(dbInfo.user.username).toContain(googleAccount.username)
+    await expect(dbInfo.user.name).toContain(googleAccountOne.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountOne.username)
   })
 
   test('should successfully skip the onboarding flow', async ({
@@ -286,6 +289,86 @@ test.describe('when given valid input', () => {
 
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
+  })
+
+  test('should successfully delete an account created via email and password', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    settingsPage,
+    fakerAccount,
+  }) => {
+    console.log(
+      `Starting "should successfully delete an account created via email and password" with ${fakerAccount.username}`,
+    )
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(fakerAccount.display_name)
+    await signUpPage.fillUsername(fakerAccount.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
+    
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
+  })
+
+  test('should successfully delete an account created via google auth', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    settingsPage,
+    googleAccountTwo,
+  }) => {
+    console.log(
+      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
+    )
+    await homePage.gotToRegisterPage()
+    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await authPage.signInToGoogleAccount(
+      googleAccountTwo.email,
+      googleAccountTwo.display_name,
+      googleAccountTwo.username,
+    )
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(googleAccountTwo.display_name)
+    await signUpPage.fillUsername(googleAccountTwo.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccountTwo)
+
+    await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
+    
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
   })
 
   test('should successfully enter optional information after completing flow', async ({
@@ -441,5 +524,8 @@ test.describe('when given valid input', () => {
 })
 
 test.describe('when an error occurs', () => {
-  test('placeholder', async () => {})
+  test('placeholder', async ({homePage}) => {
+    await homePage.goToHomePage()
+    await homePage.clickAboutLink()
+  })
 })

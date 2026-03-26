@@ -18,54 +18,54 @@ export class HomePage {
     this.signUpButton = page.locator('button').filter({hasText: 'Sign up'}).first()
     this.localePicker = page.getByTestId('sidebar-locale-picker')
     this.signInLink = page.getByTestId('sidebar-signin')
-    this.signOutLink = page.getByText('Sign out', { exact: true })
+    this.signOutLink = page.getByText('Sign out', {exact: true})
     this.closeButton = page.getByRole('button', {name: 'Close'})
   }
-  
+
   get sidebarAbout() {
     return this.sidebar.getByText('About')
   }
-  
+
   get sidebarFaq() {
     return this.sidebar.getByText('FAQ')
   }
-  
+
   get sidebarVote() {
     return this.sidebar.getByText('Vote')
   }
-  
+
   get sidebarEvents() {
     return this.sidebar.getByText('Events')
   }
-  
+
   get sidebarWhatsNew() {
     return this.sidebar.getByText("What's new")
   }
-  
+
   get sidebarSocials() {
     return this.sidebar.getByText('Socials')
   }
-  
+
   get sidebarOrganization() {
     return this.sidebar.getByText('Organization')
   }
-  
+
   get sidebarSettings() {
     return this.sidebar.getByText('Settings')
   }
-  
+
   get sidebarPeople() {
-    return  this.sidebar.getByText('People')
+    return this.sidebar.getByText('People')
   }
-  
+
   get sidebarNotifs() {
     return this.sidebar.getByText('Notifs')
   }
-  
+
   get sidebarMessages() {
     return this.sidebar.getByText('Messages')
   }
-  
+
   get sidebarContact() {
     return this.sidebar.getByText('Contact')
   }

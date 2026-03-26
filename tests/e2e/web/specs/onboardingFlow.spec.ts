@@ -250,7 +250,7 @@ test.describe('when given valid input', () => {
     await signUpPage.clickNextButton() //Skip optional information
     await profilePage.clickCloseButton()
     await onboardingPage.clickRefineProfileButton()
-    
+
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(googleAccountOne.display_name)
 
@@ -317,13 +317,13 @@ test.describe('when given valid input', () => {
 
     //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
-    
+
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
-    
+
     await homePage.clickSettingsLink()
     await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.fillDeleteAccountSurvey('Delete me')
     await settingsPage.clickDeleteAccountButton()
     await homePage.verifyHomePageLinks()
   })
@@ -363,10 +363,10 @@ test.describe('when given valid input', () => {
 
     await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
     await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
-    
+
     await homePage.clickSettingsLink()
     await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.fillDeleteAccountSurvey('Delete me')
     await settingsPage.clickDeleteAccountButton()
     await homePage.verifyHomePageLinks()
   })

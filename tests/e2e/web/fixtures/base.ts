@@ -6,7 +6,7 @@ import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
-import { SettingsPage } from "../pages/settingsPage";
+import {SettingsPage} from '../pages/settingsPage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 

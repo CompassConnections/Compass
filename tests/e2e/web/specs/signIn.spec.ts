@@ -1,6 +1,6 @@
 import {test, expect} from '../fixtures/signInFixture'
-import { seedUser } from "../../utils/seedDatabase";
-import { testAccounts } from "../utils/accountInformation";
+import {seedUser} from '../../utils/seedDatabase'
+import {testAccounts} from '../utils/accountInformation'
 
 //Seed the account
 test.beforeAll(async () => {
@@ -22,7 +22,7 @@ test.describe('when given valid input', () => {
   test('should be able to sign in to an available account', async ({
     homePage,
     authPage,
-    dev_one_account
+    dev_one_account,
   }) => {
     await homePage.gotToSigninPage()
     await authPage.fillEmailField(dev_one_account.email)
@@ -32,9 +32,7 @@ test.describe('when given valid input', () => {
     await homePage.verifySignedInHomePage(dev_one_account.display_name)
   })
 
-  test('login check', async ({}) => {
-    
-  });
+  test('login check', async ({}) => {})
 })
 
 test.describe('when an error occurs', () => {

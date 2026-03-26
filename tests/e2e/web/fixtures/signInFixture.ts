@@ -11,12 +11,7 @@ export const test = base.extend<{
   homePage: HomePage
   dev_one_account: UserAccountInformation
 }>({
-  signedInPage: async ({
-    page,
-    authPage,
-    homePage,
-    dev_one_account
-  }, use) => {
+  signedInPage: async ({page, authPage, homePage, dev_one_account}, use) => {
     await homePage.gotToSigninPage()
     await authPage.fillEmailField(dev_one_account.email)
     await authPage.fillPasswordField(dev_one_account.password)
@@ -26,7 +21,7 @@ export const test = base.extend<{
 
     await use(page)
   },
-  
+
   homePage: async ({page}, use) => {
     const homePage = new HomePage(page)
     await use(homePage)

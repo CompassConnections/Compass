@@ -19,7 +19,7 @@ export async function deleteUser(
     if (authType === 'Google' && authInfo) {
       const googleAuthUser = await findUser(authInfo.idToken)
       if (!googleAuthUser) return
-      
+
       await deleteAccount(authInfo.idToken)
       await deleteFromDb(authInfo.localId)
     }

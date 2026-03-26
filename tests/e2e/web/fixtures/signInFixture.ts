@@ -43,6 +43,7 @@ export const test = base.extend<{
     const authPage = new AuthPage(page)
     await use(authPage)
   },
+
   dev_one_account: async ({}, use) => {
     const account = testAccounts.dev_one_account()
     await use(account)

@@ -268,6 +268,77 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
   })
 
+  test('should successfully delete an account created via email and password', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    settingsPage,
+    fakerAccount,
+  }) => {
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
+    
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
+  })
+
+  test('should successfully delete an account created via google auth', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    settingsPage,
+    googleAccountTwo,
+  }) => {
+    console.log(
+      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
+    )
+    await homePage.gotToRegisterPage()
+    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await authPage.signInToGoogleAccount(
+      googleAccountTwo.email,
+      googleAccountTwo.display_name,
+      googleAccountTwo.username,
+    )
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(googleAccountTwo.display_name)
+    await signUpPage.fillUsername(googleAccountTwo.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccountTwo)
+
+    await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
+    
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey("Delete me")
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
+  })
+
   test('should successfully enter optional information after completing flow', async ({
     homePage,
     onboardingPage,

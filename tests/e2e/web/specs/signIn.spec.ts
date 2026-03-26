@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {seedUser} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
@@ -8,6 +9,11 @@ import {
   signinWithEmail,
   skipOnboardingHeadToProfile,
 } from '../utils/testCleanupHelpers'
+=======
+import {test, expect} from '../fixtures/signInFixture'
+import { seedUser } from "../../utils/seedDatabase";
+import { testAccounts } from "../utils/accountInformation";
+>>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
 
 //Seed the account
 test.beforeAll(async () => {
@@ -29,13 +35,23 @@ test.describe('when given valid input', () => {
   test('should be able to sign in to an available account', async ({
     homePage,
     authPage,
+<<<<<<< HEAD
     dev_one_account,
   }) => {
     await signinWithEmail(homePage, authPage, dev_one_account)
+=======
+    dev_one_account
+  }) => {
+    await homePage.gotToSigninPage()
+    await authPage.fillEmailField(dev_one_account.email)
+    await authPage.fillPasswordField(dev_one_account.password)
+    await authPage.clickSignInWithEmailButton()
+>>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
     await homePage.goToHomePage()
     await homePage.verifySignedInHomePage(dev_one_account.display_name)
   })
 
+<<<<<<< HEAD
   test('should successfully delete an account created via email and password', async ({
     homePage,
     onboardingPage,
@@ -105,4 +121,13 @@ test.describe('when given invalid input', () => {
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()
   })
+=======
+  test('login check', async ({}) => {
+    
+  });
+})
+
+test.describe('when an error occurs', () => {
+  test('placeholder', async () => {})
+>>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
 })

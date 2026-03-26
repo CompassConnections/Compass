@@ -22,4 +22,12 @@ test.describe('when given invalid input', () => {
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()
   })
+
+  test('login check', async ({}) => {
+    
+  });
+})
+
+test.describe('when an error occurs', () => {
+  test('placeholder', async () => {})
 })

@@ -38,8 +38,8 @@ grounded in **shared values, trust, and understanding**, Compass is for you.
 
 ### Is Compass for dating or friendship?
 
-Both, and others things. You can specify whether you’re looking for **platonic, romantic, or collaborative connections
-**.
+Both, and others things. You can specify whether you’re looking for **platonic, romantic, or collaborative
+connections**.
 
 ### Who started Compass?
 

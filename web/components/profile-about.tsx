@@ -181,7 +181,7 @@ export function getSeekingText(profile: Profile, t: any, short?: boolean | undef
   const max = profile.pref_age_max
   const seekingGenderText = stringOrStringArrayToText({
     text:
-      prefGender?.length == 0 || (prefGender?.includes('male') && prefGender?.includes('female'))
+      !prefGender?.length || (prefGender?.includes('male') && prefGender?.includes('female'))
         ? [t('profile.gender.plural.people', 'people')]
         : prefGender?.map((gender) =>
             t(

@@ -249,7 +249,7 @@ TASK: Extract structured profile data and return it as a single valid JSON objec
 
 RULES:
 - Only extract information that is EXPLICITLY stated — do not infer, guess, or hallucinate
-- Return null for missing scalar fields, [] for missing array fields
+- Return null for missing fields
 - For taxonomy fields (interests, causes, work): match existing labels first; only add a new label if truly no existing one is close
 - For big5 scores: only populate if the person explicitly states a test result — never infer from personality description
 - Return valid JSON only — no markdown, no explanation, no extra text
@@ -310,7 +310,8 @@ TEXT TO ANALYZE:
     const sites = Object.keys(parsed.links).filter((key) => SITE_ORDER.includes(key as any))
     parsed.links = sites.reduce(
       (acc, key) => {
-        acc[key] = (parsed.links as Record<string, any>)[key]
+        const link = (parsed.links as Record<string, any>)[key]
+        if (link) acc[key] = link
         return acc
       },
       {} as Record<string, any>,

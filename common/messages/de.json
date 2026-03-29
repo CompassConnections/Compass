@@ -1327,5 +1327,10 @@
   "userpage.accountDeleted": "Dieses Konto wurde gelöscht.",
   "userpage.accountSuspended": "Dieses Konto wurde gesperrt.",
   "userpage.profileNotCreated": "Dieser Benutzer hat noch kein Profil erstellt.",
-  "userpage.profileDisabled": "Der Benutzer hat sein Profil deaktiviert."
+  "userpage.profileDisabled": "Der Benutzer hat sein Profil deaktiviert.",
+  "profile.llm.extract.description": "Füllen Sie Ihr Profil automatisch aus, indem Sie einen Link (LinkedIn, Notion, Google Docs, persönliche Website usw.) einfügen oder Ihren Inhalt direkt einfügen.",
+  "profile.llm.extract.guidance": "Achtung: Wir verwenden Google AI, um Ihre Informationen zu extrahieren. Google kann diesen Inhalt verwenden, um seine Modelle zu verbessern. Bevorzugen Sie Privatsphäre? Füllen Sie das Formular einfach manuell aus — keine KI beteiligt.",
+  "profile.llm.extract.placeholder": "Fügen Sie eine URL ein oder fügen Sie hier Ihren Profilinhalt ein.",
+  "profile.llm.extract.button_url": "Profildaten aus URL extrahieren",
+  "profile.llm.extract.button_text": "Profildaten aus Text extrahieren"
 }

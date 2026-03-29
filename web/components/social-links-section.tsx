@@ -2,6 +2,7 @@ import {PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {PLATFORM_LABELS, type Site, SITE_ORDER, Socials} from 'common/socials'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {Fragment, useState} from 'react'
 import {Button, IconButton} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -22,7 +23,10 @@ export function SocialLinksSection({profile, setProfile}: SocialLinksSectionProp
   const [newLinkValue, setNewLinkValue] = useState('')
 
   const updateUserLink = (platform: string, value: string | null) => {
-    setProfile('links', {...((profile.links as Socials) ?? {}), [platform]: value})
+    setProfile(
+      'links',
+      removeNullOrUndefinedProps({...((profile.links as Socials) ?? {}), [platform]: value}),
+    )
   }
 
   const addNewLink = () => {

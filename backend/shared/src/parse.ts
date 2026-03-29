@@ -1,4 +1,3 @@
-import {Readability} from '@mozilla/readability'
 import {JSONContent} from '@tiptap/core'
 import {debug} from 'common/logger'
 import {JSDOM} from 'jsdom'
@@ -8,15 +7,15 @@ export function htmlToJSONContent(html: string, url: string): JSONContent {
   const originalDom = new JSDOM(html, {url})
   const classStyles = extractClassStyles(originalDom.window.document)
 
-  const isGoogleDoc = !!extractGoogleDocId(url)
-  if (!isGoogleDoc) {
-    const reader = new Readability(originalDom.window.document)
-    const article = reader.parse()
-    if (article?.content) {
-      const cleanDom = new JSDOM(article.content)
-      return parseHtmlBodyToJSONContent(cleanDom.window.document, classStyles)
-    }
-  }
+  // const isGoogleDoc = !!extractGoogleDocId(url)
+  // if (!isGoogleDoc) {
+  //   const reader = new Readability(originalDom.window.document)
+  //   const article = reader.parse()
+  //   if (article?.content) {
+  //     const cleanDom = new JSDOM(article.content)
+  //     return parseHtmlBodyToJSONContent(cleanDom.window.document, classStyles)
+  //   }
+  // }
 
   return parseHtmlBodyToJSONContent(originalDom.window.document, classStyles)
 }

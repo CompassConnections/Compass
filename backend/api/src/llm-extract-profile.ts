@@ -17,6 +17,7 @@ import {
 } from 'common/choices'
 import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
+import {SITE_ORDER} from 'common/socials'
 import {parseJsonContentToText} from 'common/util/parse'
 import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
@@ -79,42 +80,52 @@ async function callGemini(text: string) {
     throw APIErrors.internalServerError('Profile extraction service is not configured')
   }
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: text.slice(0, MAX_CONTEXT_LENGTH),
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0,
-          topP: 0.95,
-          topK: 40,
-          responseMimeType: 'application/json',
+  const models = [
+    'gemini-2.5-flash',
+    'gemini-3-flash-preview',
+    'gemini-2.5-flash-lite',
+    'gemini-3.1-flash-preview',
+  ]
+
+  for (const model of models) {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }),
-    },
-  )
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: text.slice(0, MAX_CONTEXT_LENGTH),
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0,
+            topP: 0.95,
+            topK: 40,
+            responseMimeType: 'application/json',
+          },
+        }),
+      },
+    )
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    log('Gemini API error', {status: response.status, error: errorText})
-    throw APIErrors.internalServerError('Failed to extract profile data')
+    if (!response.ok) {
+      const errorText = await response.text()
+      log(`Gemini API error with ${model}`, {status: response.status, error: errorText})
+      if (model !== models[models.length - 1]) continue
+      throw APIErrors.internalServerError('Failed to extract profile data')
+    }
+
+    const data = await response.json()
+    const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text
+    return outputText
   }
-
-  const data = await response.json()
-  const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text
-  return outputText
 }
 
 async function _callClaude(text: string) {
@@ -224,7 +235,7 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     headline:
       'String. Summary of who they are, in their own voice (first person). Maximum 200 characters total. Cannot be null.',
     keywords: 'Array of 3–6 short tags summarising the person.',
-    links: 'Object. Any personal URLs found (site, github, linkedin, twitter, etc.).',
+    links: `Object. Key is any of: ${SITE_ORDER.join(', ')}.`,
 
     // Taxonomies — match existing labels first, only add new if truly no close match exists
     interests: `Array. Prefer existing labels, only add new if no close match. Any of: ${INTERESTS.join(', ')}`,
@@ -294,6 +305,16 @@ TEXT TO ANALYZE:
       parsed.raised_in_lon = locations?.[0]?.longitude
       parsed.raised_in_country ??= locations?.[0]?.country
     }
+  }
+  if (parsed.links) {
+    const sites = Object.keys(parsed.links).filter((key) => SITE_ORDER.includes(key as any))
+    parsed.links = sites.reduce(
+      (acc, key) => {
+        acc[key] = (parsed.links as Record<string, any>)[key]
+        return acc
+      },
+      {} as Record<string, any>,
+    )
   }
 
   await setCachedResult(cacheKey, parsed)

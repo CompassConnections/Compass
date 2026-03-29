@@ -43,7 +43,7 @@ import {Slider} from 'web/components/widgets/slider'
 import {Title} from 'web/components/widgets/title'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {api} from 'web/lib/api'
-import {useT} from 'web/lib/locale'
+import {useLocale, useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {colClassName, labelClassName} from 'web/pages/signup'
 
@@ -63,6 +63,7 @@ export const OptionalProfileUserForm = (props: {
   const [uploadingImages, setUploadingImages] = useState(false)
   const [ageError, setAgeError] = useState<string | null>(null)
   const t = useT()
+  const {locale} = useLocale()
 
   const choices = useChoicesContext()
   const [interestChoices, setInterestChoices] = useState(choices.interests)
@@ -93,7 +94,10 @@ export const OptionalProfileUserForm = (props: {
     setIsExtracting(true)
     try {
       const isInputUrl = isUrl(llmContent)
-      const payload = isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}
+      const payload = {
+        locale,
+        ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
+      }
 
       const extracted = await api('llm-extract-profile', payload)
       for (const data of Object.entries(removeNullOrUndefinedProps(extracted))) {

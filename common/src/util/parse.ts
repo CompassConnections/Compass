@@ -2,6 +2,11 @@ import {getSchema, getText, getTextSerializersFromSchema, JSONContent} from '@ti
 import {Image} from '@tiptap/extension-image'
 import {Link} from '@tiptap/extension-link'
 import {Mention} from '@tiptap/extension-mention'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
+import Underline from '@tiptap/extension-underline'
 import {Node as ProseMirrorNode} from '@tiptap/pm/model'
 import {StarterKit} from '@tiptap/starter-kit'
 import {find} from 'linkifyjs'
@@ -49,6 +54,11 @@ export const extensions = [
   Iframe.extend({
     renderText: ({node}) => ('[embed]' + node.attrs.src ? `(${node.attrs.src})` : ''),
   }),
+  Table.configure({resizable: false}),
+  TableRow,
+  TableCell,
+  TableHeader,
+  Underline,
 ]
 
 const extensionSchema = getSchema(extensions)

@@ -5,3 +5,8 @@ export function removeEmojis(str: string) {
     '',
   )
 }
+
+export function urlize(s: string) {
+  if (s.startsWith('http://') || s.startsWith('https://')) return s
+  return `https://${s}`
+}

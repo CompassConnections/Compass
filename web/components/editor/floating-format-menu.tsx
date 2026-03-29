@@ -29,7 +29,15 @@ export function FloatingFormatMenu(props: {
   const unsetLink = () => editor.chain().focus().unsetLink().run()
 
   return (
-    <BubbleMenu editor={editor} className="text-ink-0 bg-ink-700 flex gap-2 rounded-sm p-1">
+    <BubbleMenu
+      editor={editor}
+      shouldShow={({state}) => {
+        // CellSelection has $anchorCell, regular selections don't
+        if ('$anchorCell' in state.selection) return false
+        return !state.selection.empty
+      }}
+      className="text-ink-0 bg-ink-700 flex gap-2 rounded-sm p-1"
+    >
       {url === null ? (
         <>
           {advanced && (

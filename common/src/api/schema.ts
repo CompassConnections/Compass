@@ -11,7 +11,7 @@ import {ChatMessage} from 'common/chat-message'
 import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
-import {Profile, ProfileRow} from 'common/profiles/profile'
+import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
@@ -1265,6 +1265,21 @@ export const API = (_apiTypeCheck = {
       .strict(),
     summary: 'Validate if a username is available',
     tag: 'Users',
+  },
+  'llm-extract-profile': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        content: z.string().min(1).optional(),
+        url: z.string().url().optional(),
+        locale: z.string().optional(),
+      })
+      .strict(),
+    returns: {} as Partial<ProfileWithoutUser>,
+    summary: 'Extract profile information from text using LLM',
+    tag: 'Profiles',
   },
 } as const)
 

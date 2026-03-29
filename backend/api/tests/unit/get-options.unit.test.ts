@@ -1,7 +1,7 @@
 jest.mock('shared/supabase/init')
 jest.mock('common/util/try-catch')
 
-import {getOptions} from 'api/get-options'
+import {getOptionsEndpoint} from 'api/get-options'
 import {AuthedUser} from 'api/helpers/endpoint'
 import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
@@ -31,7 +31,7 @@ describe('getOptions', () => {
       ;(mockPg.manyOrNone as jest.Mock).mockResolvedValue(null)
       ;(tryCatch as jest.Mock).mockResolvedValue({data: mockData, error: null})
 
-      const result: any = await getOptions({table: mockTable}, mockAuth, mockReq)
+      const result: any = await getOptionsEndpoint({table: mockTable}, mockAuth, mockReq)
 
       expect(result.names).toContain(mockData[0].name)
       expect(mockPg.manyOrNone).toBeCalledTimes(1)
@@ -48,7 +48,9 @@ describe('getOptions', () => {
 
       jest.spyOn(Array.prototype, 'includes').mockReturnValue(false)
 
-      expect(getOptions({table: mockTable}, mockAuth, mockReq)).rejects.toThrow('Invalid table')
+      expect(getOptionsEndpoint({table: mockTable}, mockAuth, mockReq)).rejects.toThrow(
+        'Invalid table',
+      )
     })
 
     it('should throw if unable to get profile options', async () => {
@@ -60,7 +62,7 @@ describe('getOptions', () => {
       ;(mockPg.manyOrNone as jest.Mock).mockResolvedValue(null)
       ;(tryCatch as jest.Mock).mockResolvedValue({data: null, error: Error})
 
-      expect(getOptions({table: mockTable}, mockAuth, mockReq)).rejects.toThrow(
+      expect(getOptionsEndpoint({table: mockTable}, mockAuth, mockReq)).rejects.toThrow(
         'Error getting profile options',
       )
     })

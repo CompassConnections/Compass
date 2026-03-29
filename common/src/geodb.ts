@@ -1,9 +1,12 @@
 import {debug} from 'common/logger'
 import {ProfileRow} from 'common/profiles/profile'
+import {sleep} from 'common/util/time'
 
 export const geodbHost = 'wft-geo-db.p.rapidapi.com'
 
-export const geodbFetch = async (endpoint: string) => {
+export const geodbFetch = async (
+  endpoint: string,
+): Promise<{status: 'success' | 'failure'; data: any}> => {
   const apiKey = process.env.GEODB_API_KEY
   if (!apiKey) {
     return {status: 'failure', data: 'Missing GEODB API key'}
@@ -21,6 +24,11 @@ export const geodbFetch = async (endpoint: string) => {
     })
 
     if (!res.ok) {
+      if (res.status === 429) {
+        debug('geodbFetch', endpoint, 'Rate limited')
+        await sleep(1100)
+        return geodbFetch(endpoint)
+      }
       throw new Error(`HTTP error! Status: ${res.status} ${await res.text()}`)
     }
 

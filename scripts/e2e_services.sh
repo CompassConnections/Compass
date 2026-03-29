@@ -10,6 +10,7 @@ cd "$(dirname "$0")"/..
 
 export NEXT_PUBLIC_ISOLATED_ENV=true
 
+export $(cat .env.local | grep -v '^#' | xargs)
 export $(cat .env.test | grep -v '^#' | xargs)
 
 # Ensure Supabase local stack is running; if not, reset/start it

@@ -1,4 +1,3 @@
-import {PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
@@ -15,36 +14,38 @@ import {
   ROMANTIC_CHOICES,
 } from 'common/choices'
 import {debug} from 'common/logger'
+import {isUrl} from 'common/parsing'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
-import {PLATFORM_LABELS, type Site, SITE_ORDER, Socials} from 'common/socials'
 import {BaseUser} from 'common/user'
-import {range} from 'lodash'
-import {Fragment, useRef, useState} from 'react'
+import {urlize} from 'common/util/string'
+import {invert, range} from 'lodash'
+import {useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
 import toast from 'react-hot-toast'
 import {AddOptionEntry} from 'web/components/add-option-entry'
 import {SignupBio} from 'web/components/bio/editable-bio'
-import {Button, IconButton} from 'web/components/buttons/button'
+import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {CustomLink} from 'web/components/links'
+import {LLMExtractSection} from 'web/components/llm-extract-section'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {City, CityRow, profileToCity, useCitySearch} from 'web/components/search-location'
+import {SocialLinksSection} from 'web/components/social-links-section'
 import {Carousel} from 'web/components/widgets/carousel'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {Input} from 'web/components/widgets/input'
-import {PlatformSelect} from 'web/components/widgets/platform-select'
 import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
 import {Title} from 'web/components/widgets/title'
 import {useChoicesContext} from 'web/hooks/use-choices'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {colClassName, labelClassName} from 'web/pages/signup'
 
-import {SocialIcon} from './user/social'
 import {AddPhotosWidget} from './widgets/add-photos'
 
 export const OptionalProfileUserForm = (props: {
@@ -59,20 +60,8 @@ export const OptionalProfileUserForm = (props: {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
-  const [lookingRelationship, setLookingRelationship] = useState(
-    (profile.pref_relation_styles || []).includes('relationship'),
-  )
   const [ageError, setAgeError] = useState<string | null>(null)
   const t = useT()
-  const [heightFeet, setHeightFeet] = useState<number | undefined>(
-    profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) / 12) : undefined,
-  )
-  const [heightInches, setHeightInches] = useState<number | undefined>(
-    profile.height_in_inches ? Math.floor((profile['height_in_inches'] ?? 0) % 12) : undefined,
-  )
-
-  const [newLinkPlatform, setNewLinkPlatform] = useState('')
-  const [newLinkValue, setNewLinkValue] = useState('')
 
   const choices = useChoicesContext()
   const [interestChoices, setInterestChoices] = useState(choices.interests)
@@ -81,13 +70,92 @@ export const OptionalProfileUserForm = (props: {
 
   const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
 
+  const lookingRelationship = (profile.pref_relation_styles || []).includes('relationship')
+
+  const heightFeet =
+    typeof profile.height_in_inches === 'number'
+      ? Math.floor(profile.height_in_inches / 12)
+      : undefined
+
+  const heightInches =
+    typeof profile.height_in_inches === 'number' ? profile.height_in_inches % 12 : undefined
+
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [parsingEditor, setParsingEditor] = useState<any>(null)
+
+  const handleLLMExtract = async () => {
+    const llmContent = parsingEditor?.getText?.() ?? ''
+    if (!llmContent) {
+      toast.error(t('profile.llm.extract.error_empty', 'Please enter content to extract from'))
+      return
+    }
+    setIsExtracting(true)
+    try {
+      const isInputUrl = isUrl(llmContent)
+      const payload = isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}
+
+      const extracted = await api('llm-extract-profile', payload)
+      for (const data of Object.entries(extracted)) {
+        const key = data[0]
+        let value = data[1]
+        let choices, setChoices: any
+        if (key === 'interests') {
+          choices = interestChoices
+          setChoices = setInterestChoices
+        } else if (key === 'causes') {
+          choices = causeChoices
+          setChoices = setCauseChoices
+        } else if (key === 'work') {
+          choices = workChoices
+          setChoices = setWorkChoices
+        }
+        if (choices && setChoices) {
+          const newFields: string[] = []
+          const converter = invert(choices)
+          value = (value as string[]).map((interest: string) => {
+            if (!converter[interest]) newFields.push(interest)
+            return converter[interest] ?? interest
+          })
+          if (newFields.length) {
+            setChoices((prev: any) => ({
+              ...prev,
+              ...Object.fromEntries(newFields.map((e) => [e, e])),
+            }))
+          }
+          debug({value, converter})
+        } else if (key === 'keywords') setKeywordsString((value as string[]).join(', '))
+        setProfile(
+          key as keyof ProfileWithoutUser,
+          value as ProfileWithoutUser[keyof ProfileWithoutUser],
+        )
+      }
+      if (!isInputUrl) setProfile('bio', parsingEditor?.getJSON?.())
+      debug({text: parsingEditor?.getText?.(), json: parsingEditor?.getJSON?.(), extracted})
+
+      parsingEditor?.commands?.clearContent?.()
+
+      toast.success(
+        t('profile.llm.extract.success', 'Profile data extracted! Please review below.'),
+      )
+    } catch (error) {
+      console.error(error)
+      toast.error(t('profile.llm.extract.error', 'Failed to extract profile data'))
+    } finally {
+      setIsExtracting(false)
+    }
+  }
+
   const errorToast = () => {
     toast.error(t('profile.optional.error.invalid_fields', 'Some fields are incorrect...'))
   }
 
   const handleSubmit = async () => {
+    if (parsingEditor?.getText?.()?.trim()) {
+      await handleLLMExtract()
+    }
+
     // Validate age before submitting
-    if (profile['age'] !== null && profile['age'] !== undefined) {
+    if (typeof profile['age'] === 'number') {
       if (profile['age'] < 18) {
         setAgeError(t('profile.optional.age.error_min', 'You must be at least 18 years old'))
         setIsSubmitting(false)
@@ -113,18 +181,6 @@ export const OptionalProfileUserForm = (props: {
     choices.refreshWork()
 
     setIsSubmitting(false)
-  }
-
-  const updateUserLink = (platform: string, value: string | null) => {
-    setProfile('links', {...((profile.links as Socials) ?? {}), [platform]: value})
-  }
-
-  const addNewLink = () => {
-    if (newLinkPlatform && newLinkValue) {
-      updateUserLink(newLinkPlatform.toLowerCase().trim(), newLinkValue.trim())
-      setNewLinkPlatform('')
-      setNewLinkValue('')
-    }
   }
 
   function setProfileCity(inputCity: City | undefined) {
@@ -189,19 +245,20 @@ export const OptionalProfileUserForm = (props: {
 
   return (
     <>
-      {/*<Row className={'justify-end'}>*/}
-      {/*  <Button*/}
-      {/*    disabled={isSubmitting}*/}
-      {/*    loading={isSubmitting}*/}
-      {/*    onClick={handleSubmit}*/}
-      {/*  >*/}
-      {/*    {buttonLabel ?? t('common.next', 'Next')} / {t('common.skip', 'Skip')}*/}
-      {/*  </Button>*/}
-      {/*</Row>*/}
-
       <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
 
       <Col className={'gap-8'}>
+        <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
+        <LLMExtractSection
+          parsingEditor={parsingEditor}
+          setParsingEditor={setParsingEditor}
+          isExtracting={isExtracting}
+          isSubmitting={isSubmitting}
+          onExtract={handleLLMExtract}
+        />
+
+        <hr className="border border-b my-4" />
+
         <Category
           title={t('profile.optional.category.personal_info', 'Personal Information')}
           className={'mt-0'}
@@ -286,13 +343,8 @@ export const OptionalProfileUserForm = (props: {
                 type="number"
                 data-testid="height-feet"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.value === '') {
-                    setHeightFeet(undefined)
-                  } else {
-                    setHeightFeet(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) * 12 + (heightInches ?? 0)
-                    setProfile('height_in_inches', heightInInches)
-                  }
+                  const heightInInches = Number(e.target.value || 0) * 12 + (heightInches ?? 0)
+                  setProfile('height_in_inches', heightInInches)
                 }}
                 className={'w-16'}
                 value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
@@ -305,13 +357,8 @@ export const OptionalProfileUserForm = (props: {
                 type="number"
                 data-testid="height-inches"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.value === '') {
-                    setHeightInches(undefined)
-                  } else {
-                    setHeightInches(Number(e.target.value))
-                    const heightInInches = Number(e.target.value) + 12 * (heightFeet ?? 0)
-                    setProfile('height_in_inches', heightInInches)
-                  }
+                  const heightInInches = Number(e.target.value || 0) + 12 * (heightFeet ?? 0)
+                  setProfile('height_in_inches', heightInInches)
                 }}
                 className={'w-16'}
                 value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
@@ -328,14 +375,10 @@ export const OptionalProfileUserForm = (props: {
                 data-testid="height-centimeters"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.value === '') {
-                    setHeightFeet(undefined)
-                    setHeightInches(undefined)
                     setProfile('height_in_inches', null)
                   } else {
                     // Convert cm to inches
                     const totalInches = Number(e.target.value) / 2.54
-                    setHeightFeet(Math.floor(totalInches / 12))
-                    setHeightInches(totalInches % 12)
                     setProfile('height_in_inches', totalInches)
                   }
                 }}
@@ -449,7 +492,7 @@ export const OptionalProfileUserForm = (props: {
                 .filter(Boolean)
               setProfile('keywords', keywords)
             }}
-            className={'w-full sm:w-96'}
+            className={'w-full sm:w-[600px]'}
             value={keywordsString}
             placeholder={t(
               'profile.optional.keywords_placeholder',
@@ -534,7 +577,6 @@ export const OptionalProfileUserForm = (props: {
             translationPrefix={'profile.relationship'}
             onChange={(selected) => {
               setProfile('pref_relation_styles', selected)
-              setLookingRelationship((selected || []).includes('relationship'))
             }}
           />
         </Col>
@@ -915,70 +957,7 @@ export const OptionalProfileUserForm = (props: {
 
         <Category title={t('profile.optional.socials', 'Socials')} />
 
-        <Col className={clsx(colClassName, 'pb-4')}>
-          {/*<label className={clsx(labelClassName)}>*/}
-          {/*  {t('profile.optional.socials', 'Socials')}*/}
-          {/*</label>*/}
-
-          <div className="grid w-full grid-cols-[8rem_1fr_auto] gap-2">
-            {Object.entries((profile.links ?? {}) as Socials)
-              .filter(([_, value]) => value != null)
-              .map(([platform, value]) => (
-                <Fragment key={platform}>
-                  <div className="col-span-3 mt-2 flex items-center gap-2 self-center sm:col-span-1">
-                    <SocialIcon site={platform as any} className="text-primary-700 h-4 w-4" />
-                    {PLATFORM_LABELS[platform as Site] ?? platform}
-                  </div>
-                  <Input
-                    type="text"
-                    value={value!}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      updateUserLink(platform, e.target.value)
-                    }
-                    className="col-span-2 sm:col-span-1"
-                  />
-                  <IconButton onClick={() => updateUserLink(platform, null)}>
-                    <XMarkIcon className="h-6 w-6" />
-                    <div className="sr-only">{t('common.remove', 'Remove')}</div>
-                  </IconButton>
-                </Fragment>
-              ))}
-
-            {/* Spacer */}
-            <div className="col-span-3 h-4" />
-
-            <PlatformSelect
-              value={newLinkPlatform}
-              onChange={setNewLinkPlatform}
-              className="h-full !w-full"
-            />
-            <Input
-              type="text"
-              placeholder={
-                SITE_ORDER.includes(newLinkPlatform as any) && newLinkPlatform != 'site'
-                  ? t('profile.optional.username_or_url', 'Username or URL')
-                  : t('profile.optional.site_url', 'Site URL')
-              }
-              value={newLinkValue}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewLinkValue(e.target.value)}
-              // disable password managers
-              autoComplete="off"
-              data-1p-ignore
-              data-lpignore="true"
-              data-bwignore="true"
-              data-protonpass-ignore="true"
-              className="w-full"
-            />
-            <Button
-              color="gray-outline"
-              onClick={addNewLink}
-              disabled={!newLinkPlatform || !newLinkValue}
-            >
-              <PlusIcon className="h-6 w-6" />
-              <div className="sr-only">{t('common.add', 'Add')}</div>
-            </Button>
-          </div>
-        </Col>
+        <SocialLinksSection profile={profile} setProfile={setProfile} />
 
         <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
         <label className={clsx('guidance')}>

@@ -1,25 +1,31 @@
 import CharacterCount from '@tiptap/extension-character-count'
 import {Link} from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
+import Underline from '@tiptap/extension-underline'
+import {TextSelection} from '@tiptap/pm/state'
 import type {Content, JSONContent} from '@tiptap/react'
 import {Editor, EditorContent, Extensions, mergeAttributes, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import {richTextToString} from 'common/util/parse'
 import Iframe from 'common/util/tiptap-iframe'
-import {debounce, noop} from 'lodash'
-import {ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {debounce} from 'lodash'
+import {createElement, ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {CustomLink} from 'web/components/links'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
-import {BasicImage, DisplayImage, MediumDisplayImage} from '../editor/image'
+import {BasicImage, DisplayImage} from '../editor/image'
 import {nodeViewMiddleware} from '../editor/nodeview-middleware'
 import {StickyFormatMenu} from '../editor/sticky-format-menu'
 import {Upload, useUploadMutation} from '../editor/upload-extension'
 import {DisplayMention} from '../editor/user-mention/mention-extension'
-import {generateReact} from '../editor/utils'
 import {Linkify} from './linkify'
 import {linkClass} from './site-link'
 
@@ -49,6 +55,11 @@ const editorExtensions = (simple = false): Extensions =>
     DisplayMention,
     Iframe,
     Upload,
+    Table.configure({resizable: false}),
+    TableRow,
+    TableCell,
+    TableHeader,
+    Underline,
   ])
 
 const proseClass = (size: 'sm' | 'md' | 'lg') =>
@@ -72,8 +83,9 @@ export function useTextEditor(props: {
   key?: string // unique key for autosave. If set, plz call `editor.commands.clearContent(true)` on submit to clear autosave
   extensions?: Extensions
   className?: string
+  onChange?: () => void
 }) {
-  const {placeholder, className, max, defaultValue, size = 'md', key} = props
+  const {placeholder, className, max, defaultValue, size = 'md', key, onChange} = props
   const simple = size === 'sm'
 
   const [content, setContent] = usePersistentLocalState<JSONContent | undefined>(
@@ -109,13 +121,29 @@ export function useTextEditor(props: {
   })
 
   const editor = useEditor({
-    editorProps: getEditorProps(),
+    editorProps: {
+      ...getEditorProps(),
+      handleDOMEvents: {},
+      transformPastedHTML: (html) => html,
+    },
     immediatelyRender: false,
-    onUpdate: !key
-      ? noop
-      : ({editor}) => {
-          save(editor.getJSON())
-        },
+    onUpdate: ({editor}) => {
+      if (key) {
+        save(editor.getJSON())
+      }
+      onChange?.()
+    },
+    onTransaction({transaction, editor}) {
+      const {selection} = transaction
+      // If CellSelection sneaks through, convert to TextSelection
+      if ('$anchorCell' in selection) {
+        const {$anchorCell} = selection as any
+        const tr = editor.state.tr.setSelection(
+          TextSelection.create(editor.state.doc, $anchorCell.pos),
+        )
+        editor.view.dispatch(tr)
+      }
+    },
     extensions: [
       ...editorExtensions(simple),
       Placeholder.configure({
@@ -204,13 +232,7 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
 
   const jsxContent = useMemo(() => {
     try {
-      return generateReact(content, [
-        StarterKit as any,
-        size === 'sm' ? DisplayImage : size === 'md' ? MediumDisplayImage : BasicImage,
-        DisplayLink,
-        DisplayMention,
-        Iframe,
-      ])
+      return renderJSONContent(content, size)
     } catch (e) {
       console.error('Error generating react', e, 'for content', content)
       return ''
@@ -230,6 +252,105 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
     >
       {jsxContent}
     </div>
+  )
+}
+
+function renderJSONContent(doc: JSONContent, size: 'sm' | 'md' | 'lg'): ReactNode {
+  return recurse(doc, 0, size)
+}
+
+function recurse(node: JSONContent, key: number, size: 'sm' | 'md' | 'lg'): ReactNode {
+  const children = node.content?.map((n, i) => recurse(n, i, size))
+
+  switch (node.type) {
+    case 'doc':
+      return <>{children}</>
+    case 'paragraph':
+      return <p key={key}>{children}</p>
+    case 'heading':
+      return createElement(`h${node.attrs?.level ?? 1}`, {key}, children)
+    case 'bulletList':
+      return <ul key={key}>{children}</ul>
+    case 'orderedList':
+      return (
+        <ol key={key} start={node.attrs?.start ?? 1}>
+          {children}
+        </ol>
+      )
+    case 'listItem':
+      return <li key={key}>{children}</li>
+    case 'blockquote':
+      return <blockquote key={key}>{children}</blockquote>
+    case 'codeBlock':
+      return (
+        <pre key={key}>
+          <code>{children}</code>
+        </pre>
+      )
+    case 'horizontalRule':
+      return <hr key={key} />
+    case 'hardBreak':
+      return <br key={key} />
+    case 'image':
+      return (
+        <img
+          key={key}
+          src={node.attrs?.src}
+          alt={node.attrs?.alt ?? ''}
+          title={node.attrs?.title ?? undefined}
+          className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+        />
+      )
+    case 'table':
+      return (
+        <table key={key}>
+          <tbody>{children}</tbody>
+        </table>
+      )
+    case 'tableRow':
+      return <tr key={key}>{children}</tr>
+    case 'tableHeader':
+      return (
+        <th key={key} colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
+          {children}
+        </th>
+      )
+    case 'tableCell':
+      return (
+        <td key={key} colSpan={node.attrs?.colspan ?? 1} rowSpan={node.attrs?.rowspan ?? 1}>
+          {children}
+        </td>
+      )
+    case 'text':
+      return applyMarks(node.text ?? '', node.marks ?? [], key)
+    default:
+      return null
+  }
+}
+
+function applyMarks(text: string, marks: JSONContent[], key: number): ReactNode {
+  return marks.reduce(
+    (node, mark) => {
+      switch (mark.type) {
+        case 'bold':
+          return <strong>{node}</strong>
+        case 'italic':
+          return <em>{node}</em>
+        case 'underline':
+          return <u>{node}</u>
+        case 'strike':
+          return <s>{node}</s>
+        case 'code':
+          return <code>{node}</code>
+        case 'highlight':
+          return <mark>{node}</mark>
+        case 'link':
+          return <CustomLink href={mark.attrs?.href}>{node}</CustomLink>
+        default:
+          return node
+      }
+    },
+    (<span key={key}>{text}</span>) as ReactNode,
   )
 }
 

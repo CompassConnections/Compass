@@ -203,3 +203,33 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
     </div>
   )
 }
+
+interface BaseTextEditorProps {
+  placeholder?: any
+  defaultValue?: any
+  onBlur?: (editor: any) => void
+  onEditor?: (editor: any) => void
+  onChange?: () => void
+}
+
+export function BaseTextEditor({
+  placeholder,
+  defaultValue,
+  onBlur,
+  onEditor,
+  onChange,
+}: BaseTextEditorProps) {
+  const t = useT()
+  const editor = useTextEditor({
+    max: MAX_DESCRIPTION_LENGTH,
+    defaultValue: defaultValue,
+    placeholder: placeholder ?? t('common.text_editor.placeholder', 'Write here...'),
+    onChange: onChange,
+  })
+
+  useEffect(() => {
+    onEditor?.(editor)
+  }, [editor, onEditor])
+
+  return <TextEditor editor={editor} onBlur={() => onBlur?.(editor)} />
+}

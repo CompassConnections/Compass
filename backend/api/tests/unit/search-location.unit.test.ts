@@ -1,7 +1,7 @@
 jest.mock('common/geodb')
 
 import {AuthedUser} from 'api/helpers/endpoint'
-import {searchLocation} from 'api/search-location'
+import {searchLocationEndpoint} from 'api/search-location'
 import * as geodbModules from 'common/geodb'
 
 describe('searchLocation', () => {
@@ -24,7 +24,7 @@ describe('searchLocation', () => {
 
       ;(geodbModules.geodbFetch as jest.Mock).mockResolvedValue(mockReturn)
 
-      const result = await searchLocation(mockBody, mockAuth, mockReq)
+      const result = await searchLocationEndpoint(mockBody, mockAuth, mockReq)
 
       expect(result).toBe(mockReturn)
       expect(geodbModules.geodbFetch).toBeCalledTimes(1)

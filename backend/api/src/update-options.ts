@@ -1,18 +1,15 @@
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
-import {OPTION_TABLES} from 'common/profiles/constants'
+import {OptionTableKey} from 'common/profiles/constants'
+import {validateTable} from 'common/profiles/options'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
-
-function validateTable(table: 'interests' | 'causes' | 'work') {
-  if (!OPTION_TABLES.includes(table)) throw APIErrors.badRequest('Invalid table')
-}
 
 export async function setProfileOptions(
   tx: SupabaseDirectClient,
   profileId: number,
   userId: string,
-  table: 'interests' | 'causes' | 'work',
+  table: OptionTableKey,
   values: string[] | undefined | null,
 ) {
   validateTable(table)

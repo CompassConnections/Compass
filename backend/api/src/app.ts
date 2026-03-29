@@ -10,7 +10,7 @@ import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-se
 import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
-import {getOptions} from 'api/get-options'
+import {getOptionsEndpoint} from 'api/get-options'
 import {getPinnedCompatibilityQuestions} from 'api/get-pinned-compatibility-questions'
 import {getChannelMessagesEndpoint} from 'api/get-private-messages'
 import {getUser} from 'api/get-user'
@@ -78,11 +78,12 @@ import {type APIHandler, typedEndpoint} from './helpers/endpoint'
 import {hideComment} from './hide-comment'
 import {leavePrivateUserMessageChannel} from './leave-private-user-message-channel'
 import {likeProfile} from './like-profile'
+import {llmExtractProfileEndpoint} from './llm-extract-profile'
 import {markAllNotifsRead} from './mark-all-notifications-read'
 import {removePinnedPhoto} from './remove-pinned-photo'
 import {report} from './report'
 import {rsvpEvent} from './rsvp-event'
-import {searchLocation} from './search-location'
+import {searchLocationEndpoint} from './search-location'
 import {searchNearCity} from './search-near-city'
 import {searchUsers} from './search-users'
 import {setCompatibilityAnswer} from './set-compatibility-answer'
@@ -602,7 +603,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-likes-and-ships': getLikesAndShips,
   'get-messages-count': getMessagesCountEndpoint,
   'get-notifications': getNotifications,
-  'get-options': getOptions,
+  'get-options': getOptionsEndpoint,
   'get-profile-answers': getProfileAnswers,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,
@@ -622,7 +623,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'remove-pinned-photo': removePinnedPhoto,
   'save-subscription': saveSubscription,
   'save-subscription-mobile': saveSubscriptionMobile,
-  'search-location': searchLocation,
+  'search-location': searchLocationEndpoint,
   'search-near-city': searchNearCity,
   'search-users': searchUsers,
   'set-channel-seen-time': setChannelLastSeenTime,
@@ -644,6 +645,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'user/by-id/:id/unblock': unblockUser,
   vote: vote,
   'validate-username': validateUsernameEndpoint,
+  'llm-extract-profile': llmExtractProfileEndpoint,
   // 'user/:username': getUser,
   // 'user/:username/lite': getDisplayUser,
   // 'user/by-id/:id/lite': getDisplayUser,

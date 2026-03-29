@@ -4,15 +4,15 @@ import {
   DietTuple,
   EducationTuple,
   EthnicityTuple,
+  GenderTuple,
+  InterestedInGenderTuple,
   LanguageTuple,
   PersonalityKey,
   PoliticalTuple,
   RelationshipStatusTuple,
   RelationshipStyleTuple,
   ReligionTuple,
-  GenderTuple,
-  InterestedInGenderTuple,
-} from '../../../../common/src/choices'
+} from 'common/choices'
 
 export type ChildrenExpectation =
   | ['Strongly against', 0]
@@ -107,7 +107,7 @@ export class SignUpPage {
     this.usernameField = page.getByPlaceholder('Username')
     this.usernameError = page.getByTestId('signup-username')
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
-    this.bioField = page.locator('.tiptap')
+    this.bioField = page.locator('h3:has-text("Bio") ~ * .tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
     this.headlineField = page.getByTestId('headline')
     this.keywordsField = page.getByTestId('keywords')

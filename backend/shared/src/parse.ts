@@ -196,7 +196,7 @@ function parseBlockElement(
 
   // Container elements — recurse into children
   if (['div', 'section', 'article', 'main', 'header', 'footer', 'aside'].includes(tag)) {
-    const inner = parseBlockElements(el.children, classStyles)
+    const inner = parseBlockElementsWithText(el, classStyles)
     if (inner.length === 0) return null
     if (inner.length === 1) return inner[0]
 
@@ -205,6 +205,44 @@ function parseBlockElement(
   }
 
   return null
+}
+
+function parseBlockElementsWithText(
+  el: Element,
+  classStyles: Map<string, Record<string, string>>,
+): JSONContent[] {
+  const content: JSONContent[] = []
+
+  for (const child of el.childNodes) {
+    // Bare text node directly in a div — wrap in paragraph
+    if (child.nodeType === 3) {
+      const text = (child.textContent ?? '').trim()
+      if (text) content.push({type: 'paragraph', content: [{type: 'text', text}]})
+      continue
+    }
+
+    if (child.nodeType !== 1) continue
+    const childEl = child as Element
+    const tag = childEl.tagName.toLowerCase()
+
+    // Treat span.section-header as a heading
+    if (tag === 'span' && childEl.classList.contains('section-header')) {
+      const text = childEl.textContent?.trim()
+      if (text) content.push({type: 'heading', attrs: {level: 2}, content: [{type: 'text', text}]})
+      continue
+    }
+
+    const node = parseBlockElement(childEl, tag, classStyles)
+    if (!node) continue
+
+    if ((node as any).type === '__fragment') {
+      content.push(...flattenFragment(node as any))
+    } else {
+      content.push(node)
+    }
+  }
+
+  return content
 }
 
 function parseStyleString(style: string): Record<string, string> {

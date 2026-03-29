@@ -18,6 +18,7 @@ import {isUrl} from 'common/parsing'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {urlize} from 'common/util/string'
 import {invert, range} from 'lodash'
 import {useRef, useState} from 'react'
@@ -95,7 +96,7 @@ export const OptionalProfileUserForm = (props: {
       const payload = isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}
 
       const extracted = await api('llm-extract-profile', payload)
-      for (const data of Object.entries(extracted)) {
+      for (const data of Object.entries(removeNullOrUndefinedProps(extracted))) {
         const key = data[0]
         let value = data[1]
         let choices, setChoices: any

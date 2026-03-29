@@ -18,6 +18,7 @@ import {
 import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
+import {removeNullOrUndefinedProps} from 'common/util/object'
 import {parseJsonContentToText} from 'common/util/parse'
 import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
@@ -249,7 +250,7 @@ TASK: Extract structured profile data and return it as a single valid JSON objec
 
 RULES:
 - Only extract information that is EXPLICITLY stated — do not infer, guess, or hallucinate
-- Return null for missing fields
+- Omit the key in the output for missing fields
 - For taxonomy fields (interests, causes, work): match existing labels first; only add a new label if truly no existing one is close
 - For big5 scores: only populate if the person explicitly states a test result — never infer from personality description
 - Return valid JSON only — no markdown, no explanation, no extra text
@@ -282,7 +283,8 @@ TEXT TO ANALYZE:
 
   let parsed: Partial<ProfileWithoutUser>
   try {
-    parsed = JSON.parse(outputText)
+    parsed = typeof outputText === 'string' ? JSON.parse(outputText) : outputText
+    parsed = removeNullOrUndefinedProps(parsed)
   } catch (parseError) {
     log('Failed to parse LLM response as JSON', {outputText, parseError})
     throw APIErrors.internalServerError('Failed to parse extracted data')

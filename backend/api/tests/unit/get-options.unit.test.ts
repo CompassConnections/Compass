@@ -3,7 +3,6 @@ jest.mock('common/util/try-catch')
 
 import {getOptionsEndpoint} from 'api/get-options'
 import {AuthedUser} from 'api/helpers/endpoint'
-import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
 import * as supabaseInit from 'shared/supabase/init'
 
@@ -35,7 +34,7 @@ describe('getOptions', () => {
 
       expect(result.names).toContain(mockData[0].name)
       expect(mockPg.manyOrNone).toBeCalledTimes(1)
-      expect(mockPg.manyOrNone).toBeCalledWith(sqlMatch('SELECT interests.name'))
+      expect(mockPg.manyOrNone).toBeCalledWith('SELECT name FROM causes ORDER BY id', [])
       expect(tryCatch).toBeCalledTimes(1)
     })
   })

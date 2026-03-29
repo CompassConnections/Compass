@@ -346,8 +346,8 @@ export const OptionalProfileUserForm = (props: {
                   const heightInInches = Number(e.target.value || 0) * 12 + (heightInches ?? 0)
                   setProfile('height_in_inches', heightInInches)
                 }}
-                className={'w-16'}
-                value={typeof heightFeet === 'number' ? Math.floor(heightFeet) : ''}
+                className={'w-20'}
+                value={typeof heightFeet === 'number' && heightFeet ? Math.floor(heightFeet) : ''}
                 min={0}
               />
             </Col>
@@ -360,8 +360,10 @@ export const OptionalProfileUserForm = (props: {
                   const heightInInches = Number(e.target.value || 0) + 12 * (heightFeet ?? 0)
                   setProfile('height_in_inches', heightInInches)
                 }}
-                className={'w-16'}
-                value={typeof heightInches === 'number' ? Math.floor(heightInches) : ''}
+                className={'w-20'}
+                value={
+                  typeof heightInches === 'number' && heightInches ? Math.floor(heightInches) : ''
+                }
                 min={0}
               />
             </Col>
@@ -382,7 +384,7 @@ export const OptionalProfileUserForm = (props: {
                     setProfile('height_in_inches', totalInches)
                   }
                 }}
-                className={'w-20'}
+                className={'w-24'}
                 value={
                   heightFeet !== undefined && profile['height_in_inches']
                     ? Math.round(profile['height_in_inches'] * 2.54)

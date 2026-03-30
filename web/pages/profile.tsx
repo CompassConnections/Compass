@@ -93,9 +93,9 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         message = `Error: ` + JSON.stringify(error.toJSON().error.details)
       }
       Sentry.captureException(error, {
-        extra: {baseUser, parsedProfile, interests, causes, work, message},
-        contexts: {userProfile: {baseUser, parsedProfile, interests, causes, work}}, // searchable
-        user: {id: baseUser.id}, // shows in the User section
+        user: baseUser, // shows in the User section
+        contexts: {errorInfo: {message}}, // only strings as values (not nested objects)
+        extra: {parsedProfile, interests, causes, work}, // for the rest (nested, etc.)
       })
       toast.error(message)
       return

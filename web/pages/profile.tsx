@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {APIError} from 'common/api/utils'
 import {debug} from 'common/logger'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
@@ -91,6 +92,9 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
       if (error instanceof APIError) {
         message = `Error: ` + JSON.stringify(error.toJSON().error.details)
       }
+      Sentry.captureException(error, {
+        extra: {baseUser, parsedProfile, interests, causes, work},
+      })
       toast.error(message)
       return
     }

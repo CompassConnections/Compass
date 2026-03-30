@@ -94,7 +94,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
       }
       Sentry.captureException(error, {
         extra: {baseUser, parsedProfile, interests, causes, work, message},
-        contexts: {profile: {profile_id: baseUser.id, parsedProfile, interests}}, // searchable
+        contexts: {userProfile: {baseUser, parsedProfile, interests, causes, work}}, // searchable
         user: {id: baseUser.id}, // shows in the User section
       })
       toast.error(message)

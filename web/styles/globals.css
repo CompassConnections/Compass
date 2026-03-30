@@ -555,7 +555,8 @@ input {
   cursor: pointer;
 }
 
-.hover-bold:hover {
+.hover-bold:hover,
+.force-bold {
   text-shadow:
     0.01em 0 currentColor,
     -0.01em 0 currentColor,

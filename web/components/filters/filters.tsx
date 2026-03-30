@@ -842,7 +842,13 @@ export function FilterSection(props: {
         onClick={() => (isOpen ? setOpenFilter(undefined) : setOpenFilter(title))}
       >
         {showNewBadge && <NewBadge classes={newBadgeClassName} />}
-        <Row className={clsx('items-center gap-2', isActive && 'font-semibold')}>
+        <Row
+          className={clsx(
+            'items-center gap-2',
+            isActive && 'font-semibold',
+            isOpen && 'force-bold',
+          )}
+        >
           {icon}
           {selection}
         </Row>
@@ -870,7 +876,12 @@ function FilterGroup(props: {
         className="flex w-full flex-row items-center justify-between px-4 py-3 text-ink-600"
         onClick={() => (isOpen ? setOpenGroup(undefined) : setOpenGroup(title))}
       >
-        <Row className="items-center gap-2 font-semibold">
+        <Row
+          className={clsx(
+            'items-center gap-2 hover-bold',
+            isOpen && 'font-semibold text-primary-700',
+          )}
+        >
           {icon}
           {title}
         </Row>

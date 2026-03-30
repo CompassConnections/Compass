@@ -161,6 +161,27 @@ function ProfilePreview(props: {
   const t = useT()
   // const currentUser = useUser()
 
+  const [isLoading, setIsLoading] = useState(false)
+  const [showRing, setShowRing] = useState(false)
+  const ringTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handlePointerDown = () => {
+    setIsLoading(true)
+    setShowRing(true)
+    ringTimeoutRef.current = setTimeout(() => {
+      setShowRing(true)
+    }, 200)
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (ringTimeoutRef.current) {
+        clearTimeout(ringTimeoutRef.current)
+      }
+    }
+  }, [])
+
   // Show the bottom transparent gradient only if the text can't fit the card
   const textRef = useRef<HTMLDivElement>(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
@@ -259,172 +280,214 @@ function ProfilePreview(props: {
   const hover = 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
 
   return (
-    <Link
-      // onClick={() => track('click profile preview')}
-      href={`/${user.username}`}
+    <div
       className={clsx(
-        'cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
-        hover,
+        'relative overflow-hidden rounded-lg',
+        isLoading && 'scale-[0.94] transition-transform duration-[80ms] ease-out',
+        !isLoading && 'transition-transform duration-[120ms] ease-in',
       )}
     >
-      <Col className={clsx('relative w-full rounded transition-all')}>
-        <Row className={clsx('absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10')}>
-          {compatibilityScore && (
-            <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'} />
-          )}
-          {onHide && (
-            <HideProfileButton
-              hiddenUserId={profile.user_id}
-              onHidden={onHide}
-              className="ml-2"
-              stopPropagation
-              eyeOff
-            />
-          )}
-        </Row>
-
-        <div className={clsx('flex lg:flex-row h-full lg:justify-between', cardClass)}>
+      {/* Phase 2: Animated ring - appears after 200ms */}
+      {isLoading && showRing && (
+        <>
           <div
-            ref={textRef}
-            className={clsx(
-              'relative min-w-0 px-4 py-2 overflow-hidden lg:flex-1',
-              textHeightClass,
+            className="absolute -inset-[200%] z-0 animate-spin"
+            style={{
+              background: 'conic-gradient(from 0deg, #000000, #000000, #3b82f6)',
+              animationDuration: '1s',
+            }}
+          />
+          {/* Mask to show only the ring strip */}
+          <div className="absolute inset-[4px] rounded-lg bg-canvas-0 z-0" />
+        </>
+      )}
+      <Link
+        href={`/${user.username}`}
+        onPointerDown={handlePointerDown}
+        onClick={() => {
+          // Cancel ring if navigation completes quickly
+          if (ringTimeoutRef.current) {
+            clearTimeout(ringTimeoutRef.current)
+          }
+        }}
+        className={clsx(
+          'relative z-10 cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
+          hover,
+        )}
+      >
+        {/* Phase 1: Dim overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/[0.32] rounded-lg z-20 pointer-events-none" />
+        )}
+        <Col className={clsx('relative w-full rounded transition-all')}>
+          <Row className={clsx('absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10')}>
+            {compatibilityScore && (
+              <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'} />
             )}
-          >
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate my-0">
-              {user.name}
-            </h3>
-            <Row className={'flex-wrap gap-x-2'}>
-              {showCity !== false && <ProfileLocation profile={profile} />}
-              {showAge !== false && profile.age && (
-                <IconWithInfo
-                  text={t('profile.header.age', '{age} years old', {age: profile.age})}
-                  icon={<Calendar className="h-4 w-4 " />}
-                />
-              )}
-              {showGender !== false && profile.gender && (
-                <IconWithInfo
-                  text={''}
-                  icon={<GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />}
-                />
-              )}
-            </Row>
-            {showHeadline !== false && profile.headline && (
-              <p className="italic my-0">"{profile.headline}"</p>
-            )}
-            {showKeywords !== false && !!profile.keywords?.length && (
-              <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
-                {profile.keywords
-                  ?.slice(0, 10)
-                  ?.map(capitalize)
-                  ?.map((tag, i) => (
-                    <span key={i} className={'bg-primary-100/50 text-sm px-3 py-2 rounded-full'}>
-                      {tag.trim()}
-                    </span>
-                  ))}
-              </Row>
-            )}
-            {showSeeking !== false && seekingText && (
-              <IconWithInfo
-                text={seekingText}
-                icon={<PiMagnifyingGlassBold className="h-4 w-4 " />}
+            {onHide && (
+              <HideProfileButton
+                hiddenUserId={profile.user_id}
+                onHidden={onHide}
+                className="ml-2"
+                stopPropagation
+                eyeOff
               />
             )}
-            {showOccupation !== false && profile.occupation_title && (
-              <IconWithInfo
-                text={profile.occupation_title}
-                icon={<Briefcase className="h-4 w-4 " />}
-              />
-            )}
-            {showInterests !== false && !!profile.interests?.length && (
-              <IconWithInfo
-                text={profile.interests
-                  ?.slice(0, 5)
-                  .map((id) => choicesIdsToLabels['interests'][id])
-                  .join(' • ')}
-                icon={<Sparkles className="h-4 w-4 " />}
-              />
-            )}
-            {showCauses !== false && !!profile.causes?.length && (
-              <IconWithInfo
-                text={profile.causes
-                  ?.slice(0, 5)
-                  .map((id) => choicesIdsToLabels['causes'][id])
-                  .join(' • ')}
-                icon={<HandHeart className="h-4 w-4 " />}
-              />
-            )}
-            <Row className={'gap-2 flex-wrap'}>
-              {showDiet !== false && !!profile.diet?.length && (
-                <IconWithInfo
-                  text={profile.diet
-                    ?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))
-                    .join(' • ')}
-                  icon={<Salad className="h-4 w-4 " />}
-                />
-              )}
-              {showSmoking !== false && profile.is_smoker && (
-                <IconWithInfo
-                  text={t('profile.optional.smoking', 'Smokes')}
-                  icon={<Cigarette className="h-4 w-4 " />}
-                />
-              )}
-              {showDrinks !== false &&
-                profile.drinks_per_month !== null &&
-                profile.drinks_per_month !== undefined && (
-                  <IconWithInfo
-                    text={`${profile.drinks_per_month} ${t('filter.drinks.per_month', 'per month')}`}
-                    icon={<Wine className="h-4 w-4 " />}
-                  />
-                )}
-              {showMBTI !== false && profile.mbti && (
-                <IconWithInfo
-                  text={profile.mbti.toUpperCase()}
-                  icon={<Brain className="h-4 w-4 " />}
-                />
-              )}
-              {showLanguages !== false && !!profile.languages?.length && (
-                <IconWithInfo
-                  text={profile.languages
-                    ?.map((v) => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))
-                    .join(' • ')}
-                  icon={<Languages className="h-4 w-4 " />}
-                />
-              )}
-            </Row>
-            {showBio !== false && bio && (
-              <div className="border-l-2 border-gray-200 dark:border-gray-600 pl-3 mt-1">
-                <Content className="w-full italic" content={bio} />
-              </div>
-            )}
-            {isOverflowing && (
-              <div
-                className={clsx(
-                  'absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-canvas-0 to-transparent pointer-events-none',
-                  'group-hover:from-gray-50 dark:group-hover:from-canvas-100',
-                )}
-              />
-            )}
-          </div>
-          {isPhotoRendered && (
+          </Row>
+
+          <div className={clsx('flex lg:flex-row h-full lg:justify-between', cardClass)}>
             <div
+              ref={textRef}
               className={clsx(
-                'relative shrink-0 rounded-xl lg:self-stretch overflow-hidden z-1 mx-auto',
-                photoSizeClass,
+                'relative min-w-0 px-4 py-2 overflow-hidden lg:flex-1',
+                textHeightClass,
               )}
             >
-              <Image
-                src={profile.pinned_url!}
-                fill
-                alt=""
-                className="object-cover object-top"
-                loading="lazy"
-                priority={false}
-              />
+              <h3
+                className={clsx(
+                  'text-lg font-medium text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
+                  isLoading && 'opacity-50',
+                )}
+              >
+                {user.name}
+              </h3>
+              <Row
+                className={clsx(
+                  'flex-wrap gap-x-2 transition-opacity duration-75',
+                  isLoading && 'opacity-50',
+                )}
+              >
+                {showCity !== false && <ProfileLocation profile={profile} />}
+                {showAge !== false && profile.age && (
+                  <IconWithInfo
+                    text={t('profile.header.age', '{age} years old', {age: profile.age})}
+                    icon={<Calendar className="h-4 w-4 " />}
+                  />
+                )}
+                {showGender !== false && profile.gender && (
+                  <IconWithInfo
+                    text={''}
+                    icon={<GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />}
+                  />
+                )}
+              </Row>
+              {showHeadline !== false && profile.headline && (
+                <p className="italic my-0">"{profile.headline}"</p>
+              )}
+              {showKeywords !== false && !!profile.keywords?.length && (
+                <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
+                  {profile.keywords
+                    ?.slice(0, 10)
+                    ?.map(capitalize)
+                    ?.map((tag, i) => (
+                      <span key={i} className={'bg-primary-100/50 text-sm px-3 py-2 rounded-full'}>
+                        {tag.trim()}
+                      </span>
+                    ))}
+                </Row>
+              )}
+              {showSeeking !== false && seekingText && (
+                <IconWithInfo
+                  text={seekingText}
+                  icon={<PiMagnifyingGlassBold className="h-4 w-4 " />}
+                />
+              )}
+              {showOccupation !== false && profile.occupation_title && (
+                <IconWithInfo
+                  text={profile.occupation_title}
+                  icon={<Briefcase className="h-4 w-4 " />}
+                />
+              )}
+              {showInterests !== false && !!profile.interests?.length && (
+                <IconWithInfo
+                  text={profile.interests
+                    ?.slice(0, 5)
+                    .map((id) => choicesIdsToLabels['interests'][id])
+                    .join(' • ')}
+                  icon={<Sparkles className="h-4 w-4 " />}
+                />
+              )}
+              {showCauses !== false && !!profile.causes?.length && (
+                <IconWithInfo
+                  text={profile.causes
+                    ?.slice(0, 5)
+                    .map((id) => choicesIdsToLabels['causes'][id])
+                    .join(' • ')}
+                  icon={<HandHeart className="h-4 w-4 " />}
+                />
+              )}
+              <Row className={'gap-2 flex-wrap'}>
+                {showDiet !== false && !!profile.diet?.length && (
+                  <IconWithInfo
+                    text={profile.diet
+                      ?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))
+                      .join(' • ')}
+                    icon={<Salad className="h-4 w-4 " />}
+                  />
+                )}
+                {showSmoking !== false && profile.is_smoker && (
+                  <IconWithInfo
+                    text={t('profile.optional.smoking', 'Smokes')}
+                    icon={<Cigarette className="h-4 w-4 " />}
+                  />
+                )}
+                {showDrinks !== false &&
+                  profile.drinks_per_month !== null &&
+                  profile.drinks_per_month !== undefined && (
+                    <IconWithInfo
+                      text={`${profile.drinks_per_month} ${t('filter.drinks.per_month', 'per month')}`}
+                      icon={<Wine className="h-4 w-4 " />}
+                    />
+                  )}
+                {showMBTI !== false && profile.mbti && (
+                  <IconWithInfo
+                    text={profile.mbti.toUpperCase()}
+                    icon={<Brain className="h-4 w-4 " />}
+                  />
+                )}
+                {showLanguages !== false && !!profile.languages?.length && (
+                  <IconWithInfo
+                    text={profile.languages
+                      ?.map((v) => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))
+                      .join(' • ')}
+                    icon={<Languages className="h-4 w-4 " />}
+                  />
+                )}
+              </Row>
+              {showBio !== false && bio && (
+                <div className="border-l-2 border-gray-200 dark:border-gray-600 pl-3 mt-1">
+                  <Content className="w-full italic" content={bio} />
+                </div>
+              )}
+              {isOverflowing && (
+                <div
+                  className={clsx(
+                    'absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-canvas-0 to-transparent pointer-events-none',
+                    'group-hover:from-gray-50 dark:group-hover:from-canvas-100',
+                  )}
+                />
+              )}
             </div>
-          )}
-        </div>
-      </Col>
-    </Link>
+            {isPhotoRendered && (
+              <div
+                className={clsx(
+                  'relative shrink-0 rounded-xl lg:self-stretch overflow-hidden z-1 mx-auto',
+                  photoSizeClass,
+                )}
+              >
+                <Image
+                  src={profile.pinned_url!}
+                  fill
+                  alt=""
+                  className="object-cover object-top"
+                  loading="lazy"
+                  priority={false}
+                />
+              </div>
+            )}
+          </div>
+        </Col>
+      </Link>
+    </div>
   )
 }

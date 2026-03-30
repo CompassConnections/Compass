@@ -236,6 +236,40 @@ export const LAST_ONLINE_CHOICES = {
   any: 'Any time',
 } as const
 
+export const PSYCHEDELICS_CHOICES = {
+  'Never, not interested': 'never_not_interested',
+  'Never, but curious': 'never_curious',
+  'Rarely (tried it / a few times)': 'rarely',
+  'Occasionally (a few times a year)': 'occasionally',
+  'Regularly (weekly+)': 'regularly',
+} as const
+
+export const CANNABIS_CHOICES = {
+  'Never, not interested': 'never_not_interested',
+  'Never, but curious': 'never_curious',
+  'Rarely (tried it / a few times)': 'rarely',
+  'Occasionally (a few times a year)': 'occasionally',
+  'Regularly (weekly+)': 'regularly',
+} as const
+
+export const SUBSTANCE_INTENTION_CHOICES = {
+  Recreational: 'recreational',
+  Therapeutic: 'therapeutic',
+  'Ceremonial / spiritual': 'ceremonial_spiritual',
+} as const
+
+export const SUBSTANCE_PREFERENCE_CHOICES = {
+  "Prefer they don't use it": 'not',
+  "Prefer they're curious / open to it": 'open',
+  'Prefer they use it': 'use',
+} as const
+
+export const SUBSTANCE_PREFERENCE_ABOUT = {
+  not: "don't use it",
+  open: 'are open to it',
+  use: 'use it',
+} as const
+
 export const INVERTED_RELATIONSHIP_CHOICES = invert(RELATIONSHIP_CHOICES)
 export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_CHOICES)
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
@@ -248,6 +282,10 @@ export const INVERTED_RACE_CHOICES = invert(RACE_CHOICES)
 export const INVERTED_MBTI_CHOICES = invert(MBTI_CHOICES)
 export const INVERTED_GENDERS = invert(GENDERS)
 export const INVERTED_LAST_ONLINE_CHOICES = invert(LAST_ONLINE_CHOICES)
+export const INVERTED_PSYCHEDELICS_CHOICES = invert(PSYCHEDELICS_CHOICES)
+export const INVERTED_CANNABIS_CHOICES = invert(CANNABIS_CHOICES)
+export const INVERTED_SUBSTANCE_INTENTION_CHOICES = invert(SUBSTANCE_INTENTION_CHOICES)
+export const INVERTED_SUBSTANCE_PREFERENCE_CHOICES = invert(SUBSTANCE_PREFERENCE_CHOICES)
 
 //Exported types for test files to use when referencing the keys of the choices objects
 export type PersonalityKey = keyof typeof MBTI_CHOICES
@@ -284,3 +322,19 @@ export type GenderTuple = {
 export type InterestedInGenderTuple = {
   [K in keyof typeof GENDERS_PLURAL]: [K, (typeof GENDERS_PLURAL)[K]]
 }[keyof typeof GENDERS_PLURAL]
+
+export type PsychedelicsTuple = {
+  [K in keyof typeof PSYCHEDELICS_CHOICES]: [K, (typeof PSYCHEDELICS_CHOICES)[K]]
+}[keyof typeof PSYCHEDELICS_CHOICES]
+
+export type CannabisTuple = {
+  [K in keyof typeof CANNABIS_CHOICES]: [K, (typeof CANNABIS_CHOICES)[K]]
+}[keyof typeof CANNABIS_CHOICES]
+
+export type SubstanceIntentionTuple = {
+  [K in keyof typeof SUBSTANCE_INTENTION_CHOICES]: [K, (typeof SUBSTANCE_INTENTION_CHOICES)[K]]
+}[keyof typeof SUBSTANCE_INTENTION_CHOICES]
+
+export type SubstancePreferenceTuple = {
+  [K in keyof typeof SUBSTANCE_PREFERENCE_CHOICES]: [K, (typeof SUBSTANCE_PREFERENCE_CHOICES)[K]]
+}[keyof typeof SUBSTANCE_PREFERENCE_CHOICES]

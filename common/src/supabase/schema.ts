@@ -1127,6 +1127,9 @@ export type Database = {
           bio_text: string | null
           bio_tsv: unknown
           born_in_location: string | null
+          cannabis: string | null
+          cannabis_intention: string[] | null
+          cannabis_pref: string[] | null
           city: string | null
           city_latitude: number | null
           city_longitude: number | null
@@ -1165,6 +1168,9 @@ export type Database = {
           pref_gender: string[] | null
           pref_relation_styles: string[] | null
           pref_romantic_styles: string[] | null
+          psychedelics: string | null
+          psychedelics_intention: string[] | null
+          psychedelics_pref: string[] | null
           raised_in_city: string | null
           raised_in_country: string | null
           raised_in_geodb_city_id: string | null
@@ -1199,6 +1205,9 @@ export type Database = {
           bio_text?: string | null
           bio_tsv?: unknown
           born_in_location?: string | null
+          cannabis?: string | null
+          cannabis_intention?: string[] | null
+          cannabis_pref?: string[] | null
           city?: string | null
           city_latitude?: number | null
           city_longitude?: number | null
@@ -1237,6 +1246,9 @@ export type Database = {
           pref_gender?: string[] | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
+          psychedelics?: string | null
+          psychedelics_intention?: string[] | null
+          psychedelics_pref?: string[] | null
           raised_in_city?: string | null
           raised_in_country?: string | null
           raised_in_geodb_city_id?: string | null
@@ -1271,6 +1283,9 @@ export type Database = {
           bio_text?: string | null
           bio_tsv?: unknown
           born_in_location?: string | null
+          cannabis?: string | null
+          cannabis_intention?: string[] | null
+          cannabis_pref?: string[] | null
           city?: string | null
           city_latitude?: number | null
           city_longitude?: number | null
@@ -1309,6 +1324,9 @@ export type Database = {
           pref_gender?: string[] | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
+          psychedelics?: string | null
+          psychedelics_intention?: string[] | null
+          psychedelics_pref?: string[] | null
           raised_in_city?: string | null
           raised_in_country?: string | null
           raised_in_geodb_city_id?: string | null

@@ -59,6 +59,12 @@ export async function seedDbUser(userInfo: UserAccountInformation, profileType?:
   const fullProfile = {
     ...mediumProfile,
     occupation_title: userInfo.occupation_title,
+    cannabis: userInfo.randomElement(userInfo.cannabis),
+    psychedelics: userInfo.randomElement(userInfo.psychedelics),
+    cannabis_intention: [userInfo.randomElement(userInfo.cannabis_intention)],
+    psychedelics_intention: [userInfo.randomElement(userInfo.psychedelics_intention)],
+    cannabis_pref: [userInfo.randomElement(userInfo.cannabis_pref)],
+    psychedelics_pref: [userInfo.randomElement(userInfo.psychedelics_pref)],
     political_beliefs: [userInfo.randomElement(userInfo.political_beliefs)],
     pref_relation_styles: [userInfo.randomElement(userInfo.pref_relation_styles)],
     religion: [userInfo.randomElement(userInfo.religion)],

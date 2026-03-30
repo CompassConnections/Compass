@@ -1,14 +1,17 @@
 import {
+  INVERTED_CANNABIS_CHOICES,
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
   INVERTED_GENDERS,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
   INVERTED_POLITICAL_CHOICES,
+  INVERTED_PSYCHEDELICS_CHOICES,
   INVERTED_RELATIONSHIP_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES,
+  INVERTED_SUBSTANCE_INTENTION_CHOICES,
   LAST_ONLINE_CHOICES,
 } from 'common/choices'
 import {FilterFields, initialFilters} from 'common/filters'
@@ -43,6 +46,8 @@ const filterLabels: Record<string, string> = {
   languages: '',
   mbti: 'MBTI',
   last_active: 'Active',
+  Psychedelics_intention: 'Psychedelics (intentions)',
+  Cannabis_intention: 'Cannabis (intentions)',
 }
 
 export type locationType = {
@@ -129,7 +134,7 @@ export function formatFilters(
     let translatedLabel = label
     if (label && t) {
       const labelKey = `filter.label.${typedKey}`
-      translatedLabel = t(labelKey, label)
+      translatedLabel = t(labelKey, capitalize(label))
     }
 
     // console.log(key, value)
@@ -181,6 +186,16 @@ export function formatFilters(
         value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
       } else if (key === 'genders') {
         value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
+      } else if (key === 'cannabis') {
+        value = value.map((s) => translate(`profile.cannabis.${s}`, INVERTED_CANNABIS_CHOICES[s]))
+      } else if (key === 'psychedelics') {
+        value = value.map((s) =>
+          translate(`profile.psychedelics.${s}`, INVERTED_PSYCHEDELICS_CHOICES[s]),
+        )
+      } else if (['cannabis_intention', 'psychedelics_intention'].includes(key)) {
+        value = value.map((s) =>
+          translate(`profile.substance_intention.${s}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[s]),
+        )
       }
       stringValue = value.join(', ')
     }

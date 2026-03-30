@@ -69,6 +69,12 @@ export type profileQueryType = {
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
   shortBio?: boolean | undefined
+  psychedelics?: string[] | undefined
+  cannabis?: string[] | undefined
+  psychedelics_intention?: string[] | undefined
+  cannabis_intention?: string[] | undefined
+  psychedelics_pref?: string[] | undefined
+  cannabis_pref?: string[] | undefined
   geodbCityIds?: string[] | undefined
   lat?: number | undefined
   lon?: number | undefined
@@ -129,6 +135,12 @@ export const loadProfiles = async (props: profileQueryType) => {
     work,
     is_smoker,
     shortBio,
+    psychedelics,
+    cannabis,
+    psychedelics_intention,
+    cannabis_intention,
+    psychedelics_pref,
+    cannabis_pref,
     geodbCityIds,
     lat,
     lon,
@@ -386,6 +398,43 @@ export const loadProfiles = async (props: profileQueryType) => {
           `is_smoker = $(is_smoker)`,
         {is_smoker},
       ),
+
+    psychedelics?.length &&
+      where(
+        (psychedelics.includes('never_not_interested') ? 'psychedelics IS NULL OR ' : '') +
+          `psychedelics = ANY($(psychedelics))`,
+        {psychedelics},
+      ),
+
+    cannabis?.length &&
+      where(
+        (cannabis.includes('never_not_interested') ? 'cannabis IS NULL OR ' : '') +
+          `cannabis = ANY($(cannabis))`,
+        {cannabis},
+      ),
+
+    psychedelics_intention?.length &&
+      where(
+        `(psychedelics IS NOT NULL AND psychedelics != 'never_not_interested') AND (psychedelics_intention IS NULL OR psychedelics_intention = '{}') OR psychedelics_intention && $(psychedelics_intention)`,
+        {psychedelics_intention},
+      ),
+
+    cannabis_intention?.length &&
+      where(
+        `(cannabis IS NOT NULL AND cannabis != 'never_not_interested') AND (cannabis_intention IS NULL OR cannabis_intention = '{}') OR cannabis_intention && $(cannabis_intention)`,
+        {cannabis_intention},
+      ),
+
+    psychedelics_pref?.length &&
+      where(
+        `psychedelics_pref IS NULL OR psychedelics_pref = '{}' OR psychedelics_pref && $(psychedelics_pref)`,
+        {psychedelics_pref},
+      ),
+
+    cannabis_pref?.length &&
+      where(`cannabis_pref IS NULL OR cannabis_pref = '{}' OR cannabis_pref && $(cannabis_pref)`, {
+        cannabis_pref,
+      }),
 
     geodbCityIds?.length && where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 

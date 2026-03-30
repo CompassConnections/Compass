@@ -1,17 +1,21 @@
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
+  CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
   POLITICAL_CHOICES,
+  PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
+  SUBSTANCE_INTENTION_CHOICES,
+  SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
@@ -920,6 +924,98 @@ export const OptionalProfileUserForm = (props: {
             className={'w-20'}
             min={0}
             value={profile['drinks_per_month'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.psychedelics', 'Psychedelics / plant medicine')}
+          </label>
+          <Select
+            value={profile['psychedelics'] ?? ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setProfile('psychedelics', e.target.value || null)
+            }
+            className={'w-full sm:w-80'}
+          >
+            <option value=""></option>
+            {Object.entries(PSYCHEDELICS_CHOICES).map(([label, value]) => (
+              <option key={value} value={value}>
+                {t(`profile.psychedelics.${value}`, label)}
+              </option>
+            ))}
+          </Select>
+        </Col>
+
+        {profile['psychedelics'] && profile['psychedelics'] !== 'never_not_interested' && (
+          <Col className={clsx(colClassName)}>
+            <label className={clsx(labelClassName)}>
+              {t('profile.optional.psychedelics_intention', 'Intention (psychedelics)')}
+            </label>
+            <MultiCheckbox
+              choices={SUBSTANCE_INTENTION_CHOICES}
+              selected={profile['psychedelics_intention'] ?? []}
+              translationPrefix={'profile.substance_intention'}
+              onChange={(selected) => setProfile('psychedelics_intention', selected)}
+            />
+          </Col>
+        )}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.psychedelics_pref', 'Preference for partner (psychedelics)')}
+          </label>
+          <MultiCheckbox
+            choices={SUBSTANCE_PREFERENCE_CHOICES}
+            selected={profile['psychedelics_pref'] ?? []}
+            translationPrefix={'profile.substance_pref'}
+            onChange={(selected) => setProfile('psychedelics_pref', selected)}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.cannabis', 'Cannabis')}
+          </label>
+          <Select
+            value={profile['cannabis'] ?? ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setProfile('cannabis', e.target.value || null)
+            }
+            className={'w-full sm:w-80'}
+          >
+            <option value=""></option>
+            {Object.entries(CANNABIS_CHOICES).map(([label, value]) => (
+              <option key={value} value={value}>
+                {t(`profile.cannabis.${value}`, label)}
+              </option>
+            ))}
+          </Select>
+        </Col>
+
+        {profile['cannabis'] && profile['cannabis'] !== 'never_not_interested' && (
+          <Col className={clsx(colClassName)}>
+            <label className={clsx(labelClassName)}>
+              {t('profile.optional.cannabis_intention', 'Intention (cannabis)')}
+            </label>
+            <MultiCheckbox
+              choices={SUBSTANCE_INTENTION_CHOICES}
+              selected={profile['cannabis_intention'] ?? []}
+              translationPrefix={'profile.substance_intention'}
+              onChange={(selected) => setProfile('cannabis_intention', selected)}
+            />
+          </Col>
+        )}
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.cannabis_pref', 'Preference for partner (cannabis)')}
+          </label>
+          <MultiCheckbox
+            choices={SUBSTANCE_PREFERENCE_CHOICES}
+            selected={profile['cannabis_pref'] ?? []}
+            translationPrefix={'profile.substance_pref'}
+            onChange={(selected) => setProfile('cannabis_pref', selected)}
           />
         </Col>
 

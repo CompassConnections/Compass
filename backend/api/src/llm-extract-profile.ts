@@ -3,17 +3,21 @@ import {getOptions} from 'api/get-options'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {searchLocation} from 'api/search-location'
 import {
+  CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
   POLITICAL_CHOICES,
+  PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
+  SUBSTANCE_INTENTION_CHOICES,
+  SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
 import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
@@ -204,6 +208,14 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
       'Number 0–4. How strongly they want kids (0 = definitely not, 4 = definitely yes).',
     diet: `Array. Any of: ${Object.values(DIET_CHOICES).join(', ')}`,
     ethnicity: `Array. Any of: ${Object.values(RACE_CHOICES).join(', ')}`,
+
+    // Substances
+    psychedelics: `One of: ${Object.values(PSYCHEDELICS_CHOICES).join(', ')}. Usage frequency of psychedelics/plant medicine.`,
+    cannabis: `One of: ${Object.values(CANNABIS_CHOICES).join(', ')}. Usage frequency of cannabis.`,
+    psychedelics_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use psychedelics.`,
+    cannabis_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use cannabis.`,
+    psychedelics_pref: `Array. Any of: ${Object.values(SUBSTANCE_PREFERENCE_CHOICES).join(', ')}. Partner preference for psychedelics use.`,
+    cannabis_pref: `Array. Any of: ${Object.values(SUBSTANCE_PREFERENCE_CHOICES).join(', ')}. Partner preference for cannabis use.`,
 
     // Identity — big5 only if person explicitly states a score, never infer from personality description
     mbti: `One of: ${Object.values(MBTI_CHOICES).join(', ')}`,

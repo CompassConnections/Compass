@@ -43,12 +43,14 @@ import {useT} from 'web/lib/locale'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
 
 import {AgeFilter, AgeFilterText, getNoMinMaxAge} from './age-filter'
+import {CannabisFilter, CannabisFilterText} from './cannabis-filter'
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from './drinks-filter'
 import {GenderFilter, GenderFilterText} from './gender-filter'
 import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
 import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
+import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
 
@@ -603,6 +605,40 @@ function Filters(props: {
           }
         >
           <SmokerFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.psychedelics', 'Psychedelics')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.psychedelics || undefined)}
+          selection={
+            <PsychedelicsFilterText
+              options={filters.psychedelics as string[] | undefined}
+              highlightedClass={
+                hasAny(filters.psychedelics || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <PsychedelicsFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.cannabis', 'Cannabis')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.cannabis || undefined)}
+          selection={
+            <CannabisFilterText
+              options={filters.cannabis as string[] | undefined}
+              highlightedClass={
+                hasAny(filters.cannabis || undefined) ? 'text-primary-600' : 'text-ink-900'
+              }
+            />
+          }
+        >
+          <CannabisFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
 
         <FilterSection

@@ -1,11 +1,15 @@
 import {faker} from '@faker-js/faker'
 import {
+  CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
   POLITICAL_CHOICES,
+  PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELIGION_CHOICES,
+  SUBSTANCE_INTENTION_CHOICES,
+  SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
 
 class UserAccountInformation {
@@ -37,6 +41,13 @@ class UserAccountInformation {
   company = faker.company.name()
   occupation_title = faker.person.jobTitle()
   university = faker.company.name()
+
+  cannabis = Object.values(CANNABIS_CHOICES)
+  psychedelics = Object.values(PSYCHEDELICS_CHOICES)
+  cannabis_intention = Object.values(SUBSTANCE_INTENTION_CHOICES)
+  cannabis_pref = Object.values(SUBSTANCE_PREFERENCE_CHOICES)
+  psychedelics_intention = Object.values(SUBSTANCE_INTENTION_CHOICES)
+  psychedelics_pref = Object.values(SUBSTANCE_PREFERENCE_CHOICES)
 
   randomElement(array: Array<string>) {
     return array[Math.floor(Math.random() * array.length)].toLowerCase()

@@ -1,13 +1,17 @@
 import {ClockIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {
+  INVERTED_CANNABIS_CHOICES,
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
   INVERTED_POLITICAL_CHOICES,
+  INVERTED_PSYCHEDELICS_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
+  INVERTED_SUBSTANCE_INTENTION_CHOICES,
+  SUBSTANCE_PREFERENCE_ABOUT,
 } from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {convertGenderPlural, Gender} from 'common/gender'
@@ -17,7 +21,7 @@ import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
 import {capitalize} from 'lodash'
-import {Home} from 'lucide-react'
+import {Home, Leaf} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonVcard} from 'react-icons/bs'
@@ -35,6 +39,7 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {UserHandles} from 'web/components/user/user-handles'
 import {useChoicesContext} from 'web/hooks/use-choices'
+import {CustomMushroom} from 'web/lib/icons/mushroom'
 import {useLocale, useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
 import {convertRace} from 'web/lib/util/convert-types'
@@ -71,7 +76,7 @@ export function AboutRow(props: {
       <div className="text-ink-600 w-5 mt-0.5">{icon}</div>
       <Col>
         <div>{formattedText}</div>
-        {suffix && <div className={''}>"{capitalize(suffix)}"</div>}
+        {suffix && <div className={'guidance'}>{capitalize(suffix)}</div>}
       </Col>
     </Row>
   )
@@ -108,7 +113,7 @@ export default function ProfileAbout(props: {
         text={profile.political_beliefs?.map((belief) =>
           t(`profile.political.${belief}`, INVERTED_POLITICAL_CHOICES[belief]),
         )}
-        suffix={profile.political_details}
+        suffix={profile.political_details && `"${profile.political_details}"`}
         testId="profile-about-political"
       />
       <AboutRow
@@ -116,7 +121,7 @@ export default function ProfileAbout(props: {
         text={profile.religion?.map((belief) =>
           t(`profile.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]),
         )}
-        suffix={profile.religious_beliefs}
+        suffix={profile.religious_beliefs && `"${profile.religious_beliefs}"`}
         testId="profile-about-religious"
       />
       <AboutRow
@@ -155,6 +160,8 @@ export default function ProfileAbout(props: {
       <RaisedIn profile={profile} />
       <Smoker profile={profile} />
       <Drinks profile={profile} />
+      <Cannabis profile={profile} />
+      <Psychedelics profile={profile} />
       <AboutRow
         icon={<GiFruitBowl className="h-5 w-5" />}
         text={profile.diet?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))}
@@ -342,6 +349,98 @@ function Drinks(props: {profile: Profile}) {
             })
       }
       testId="profile-about-drinker"
+    />
+  )
+}
+
+function Cannabis(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const cannabis = profile.cannabis
+  if (!cannabis) return null
+
+  const parts: string[] = []
+
+  // Name
+  parts.push(t('profile.cannabis.label', 'Cannabis:'))
+
+  // Frequency
+  parts.push(t(`profile.cannabis.${cannabis}`, INVERTED_CANNABIS_CHOICES[cannabis]))
+
+  // Intention (if not "never" and has intentions)
+  if (cannabis !== 'never_not_interested' && profile.cannabis_intention?.length) {
+    const intentions = profile.cannabis_intention
+      .map((i) => t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i]))
+      .join(', ')
+    parts.push(`(${intentions})`)
+  }
+
+  // Preference for partner
+  let suffix: string | undefined
+  if (profile.cannabis_pref?.length) {
+    const prefs = profile.cannabis_pref.map((p) =>
+      t(
+        `profile.substance_pref_viewer.${p}`,
+        SUBSTANCE_PREFERENCE_ABOUT[p as keyof typeof SUBSTANCE_PREFERENCE_ABOUT],
+      ),
+    )
+    const formatted =
+      prefs.length > 1 ? `${prefs.slice(0, -1).join(', ')} or ${prefs[prefs.length - 1]}` : prefs[0]
+    suffix = `${t('profile.pref_you', 'Prefers you')} ${formatted}`
+  }
+
+  return (
+    <AboutRow
+      icon={<Leaf className="h-5 w-5" />}
+      text={parts.join(' ')}
+      testId="profile-about-cannabis"
+      suffix={suffix}
+    />
+  )
+}
+
+function Psychedelics(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const psychedelics = profile.psychedelics
+  if (!psychedelics) return null
+
+  const parts: string[] = []
+
+  // Name
+  parts.push(t('profile.psychedelics.label', 'Psychedelics:'))
+
+  // Frequency
+  parts.push(t(`profile.psychedelics.${psychedelics}`, INVERTED_PSYCHEDELICS_CHOICES[psychedelics]))
+
+  // Intention (if not "never" and has intentions)
+  if (psychedelics !== 'never_not_interested' && profile.psychedelics_intention?.length) {
+    const intentions = profile.psychedelics_intention
+      .map((i) => t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i]))
+      .join(', ')
+    parts.push(`(${intentions})`)
+  }
+
+  // Preference for partner
+  let suffix: string | undefined
+  if (profile.psychedelics_pref?.length) {
+    const prefs = profile.psychedelics_pref.map((p) =>
+      t(
+        `profile.substance_pref_viewer.${p}`,
+        SUBSTANCE_PREFERENCE_ABOUT[p as keyof typeof SUBSTANCE_PREFERENCE_ABOUT],
+      ),
+    )
+    const formatted =
+      prefs.length > 1 ? `${prefs.slice(0, -1).join(', ')} or ${prefs[prefs.length - 1]}` : prefs[0]
+    suffix = `${t('profile.pref_you', 'Prefers you')} ${formatted}`
+  }
+
+  return (
+    <AboutRow
+      icon={<CustomMushroom className="h-5 w-5" />}
+      text={parts.join(' ')}
+      testId="profile-about-psychedelics"
+      suffix={suffix}
     />
   )
 }

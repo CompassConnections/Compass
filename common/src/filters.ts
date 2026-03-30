@@ -14,6 +14,8 @@ export type FilterFields = {
   raised_in_lon: number | null | undefined
   raised_in_radius: number | null | undefined
   genders: string[] | null | undefined
+  cannabis: string[] | null | undefined
+  psychedelics: string[] | null | undefined
   education_levels: string[] | null | undefined
   mbti: string[] | null | undefined
   name: string | null | undefined
@@ -44,6 +46,10 @@ export type FilterFields = {
     | 'relationship_status'
     | 'languages'
     | 'is_smoker'
+    | 'psychedelics_intention'
+    | 'cannabis_intention'
+    | 'psychedelics_pref'
+    | 'cannabis_pref'
     | 'has_kids'
     | 'pref_gender'
     | 'pref_age_min'
@@ -83,6 +89,12 @@ export const initialFilters: Partial<FilterFields> = {
   has_kids: undefined,
   wants_kids_strength: undefined,
   is_smoker: undefined,
+  psychedelics: undefined,
+  cannabis: undefined,
+  psychedelics_intention: undefined,
+  cannabis_intention: undefined,
+  psychedelics_pref: undefined,
+  cannabis_pref: undefined,
   pref_relation_styles: undefined,
   pref_romantic_styles: undefined,
   diet: undefined,

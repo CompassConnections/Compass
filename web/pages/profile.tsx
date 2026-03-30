@@ -94,7 +94,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
       }
       Sentry.captureException(error, {
         user: baseUser, // shows in the User section
-        contexts: {errorInfo: {message}}, // only strings as values (not nested objects)
+        contexts: {'Error Info': {message}}, // only strings as values (not nested objects)
         extra: {parsedProfile, interests, causes, work}, // for the rest (nested, etc.)
       })
       toast.error(message)

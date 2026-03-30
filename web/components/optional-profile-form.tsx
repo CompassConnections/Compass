@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
@@ -96,13 +97,12 @@ export const OptionalProfileUserForm = (props: {
       return
     }
     setIsExtracting(true)
+    const isInputUrl = isUrl(llmContent)
+    const payload = {
+      locale,
+      ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
+    }
     try {
-      const isInputUrl = isUrl(llmContent)
-      const payload = {
-        locale,
-        ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
-      }
-
       const extracted = await api('llm-extract-profile', payload)
       for (const data of Object.entries(removeNullOrUndefinedProps(extracted))) {
         const key = data[0]
@@ -148,7 +148,17 @@ export const OptionalProfileUserForm = (props: {
       )
     } catch (error) {
       console.error(error)
-      toast.error(t('profile.llm.extract.error', 'Failed to extract profile data'))
+      toast.error(
+        t(
+          'profile.llm.extract.error',
+          'Failed to extract profile data. Try again later or contact support.',
+        ),
+      )
+      Sentry.captureException(error, {
+        user, // shows in the User section
+        // contexts: {'Error Info': {}}, // only strings as values (not nested objects)
+        extra: {payload}, // for the rest (nested, etc.)
+      })
     } finally {
       setIsExtracting(false)
     }

@@ -93,7 +93,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         message = `Error: ` + JSON.stringify(error.toJSON().error.details)
       }
       Sentry.captureException(error, {
-        extra: {baseUser, parsedProfile, interests, causes, work},
+        extra: {baseUser, parsedProfile, interests, causes, work, message},
         contexts: {profile: {profile_id: baseUser.id, parsedProfile, interests}}, // searchable
         user: {id: baseUser.id}, // shows in the User section
       })

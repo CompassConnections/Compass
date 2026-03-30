@@ -79,7 +79,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     debug('parsedProfile', parsedProfile)
     const promises: Promise<any>[] = filterDefined([
       updateProfile(parsedProfile),
-      baseUser && updateUser(baseUser),
+      baseUser && updateUser({name: baseUser.name, username: baseUser.username}),
       interests && api('update-options', {table: 'interests', values: interests}),
       causes && api('update-options', {table: 'causes', values: causes}),
       work && api('update-options', {table: 'work', values: work}),

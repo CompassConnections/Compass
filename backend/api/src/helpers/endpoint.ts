@@ -134,6 +134,10 @@ export const validate = <T extends z.ZodTypeAny>(schema: T, val: unknown) => {
     if (issues.length > 0) {
       log.error(issues.map((i) => `${i.field}: ${i.context}`).join('\n'))
     }
+    console.error('Validation failed', {issues, schema, val})
+    Sentry.captureException(APIErrors.validationFailed(issues), {
+      extra: {issues, schema, val},
+    })
     throw APIErrors.validationFailed(issues)
   } else {
     return result.data as z.infer<T>

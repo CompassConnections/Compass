@@ -164,23 +164,35 @@ function ProfilePreview(props: {
   const [isLoading, setIsLoading] = useState(false)
   const [showRing, setShowRing] = useState(false)
   const ringTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const pointerStartRef = useRef<{x: number; y: number} | null>(null)
 
-  const handlePointerDown = () => {
-    setIsLoading(true)
-    setShowRing(true)
-    ringTimeoutRef.current = setTimeout(() => {
-      setShowRing(true)
-    }, 200)
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = {x: e.clientX, y: e.clientY}
   }
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (ringTimeoutRef.current) {
-        clearTimeout(ringTimeoutRef.current)
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (pointerStartRef.current) {
+      const dx = Math.abs(e.clientX - pointerStartRef.current.x)
+      const dy = Math.abs(e.clientY - pointerStartRef.current.y)
+      // If moved more than 10px, treat as drag/scroll - cancel loading
+      if (dx > 10 || dy > 10) {
+        setIsLoading(false)
+        setShowRing(false)
+        if (ringTimeoutRef.current) {
+          clearTimeout(ringTimeoutRef.current)
+          ringTimeoutRef.current = null
+        }
+      } else {
+        setIsLoading(true)
+        ringTimeoutRef.current = setTimeout(() => {
+          setShowRing(true)
+        }, 500)
       }
     }
-  }, [])
+    pointerStartRef.current = null
+  }
+
+  const handleClick = () => {}
 
   // Show the bottom transparent gradient only if the text can't fit the card
   const textRef = useRef<HTMLDivElement>(null)
@@ -287,29 +299,11 @@ function ProfilePreview(props: {
         !isLoading && 'transition-transform duration-[120ms] ease-in',
       )}
     >
-      {/* Phase 2: Animated ring - appears after 200ms */}
-      {isLoading && showRing && (
-        <>
-          <div
-            className="absolute -inset-[200%] z-0 animate-spin"
-            style={{
-              background: 'conic-gradient(from 0deg, #000000, #000000, #3b82f6)',
-              animationDuration: '1s',
-            }}
-          />
-          {/* Mask to show only the ring strip */}
-          <div className="absolute inset-[4px] rounded-lg bg-canvas-0 z-0" />
-        </>
-      )}
       <Link
         href={`/${user.username}`}
         onPointerDown={handlePointerDown}
-        onClick={() => {
-          // Cancel ring if navigation completes quickly
-          if (ringTimeoutRef.current) {
-            clearTimeout(ringTimeoutRef.current)
-          }
-        }}
+        onPointerUp={handlePointerUp}
+        onClick={handleClick}
         className={clsx(
           'relative z-10 cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
           hover,
@@ -488,6 +482,27 @@ function ProfilePreview(props: {
           </div>
         </Col>
       </Link>
+
+      {/* Phase 2: Animated ring - appears after 200ms */}
+      {isLoading && showRing && (
+        <div
+          className="absolute inset-0 z-20 pointer-events-none rounded-lg overflow-hidden"
+          style={{
+            padding: '4px',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }}
+        >
+          <div
+            className="absolute -inset-[200%] animate-spin"
+            style={{
+              background: 'conic-gradient(from 0deg, #000000, #000000, #3b82f6)',
+              animationDuration: '1s',
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

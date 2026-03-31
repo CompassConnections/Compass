@@ -70,10 +70,13 @@ const useChoices = (label: OptionTableKey) => {
   return {choices, refreshChoices}
 }
 
+export type ChoiceMap = Record<string, string>
+export type ChoiceSetter = React.Dispatch<React.SetStateAction<ChoiceMap>>
+
 export type UseAllChoices = {
-  interests: Record<string, string>
-  causes: Record<string, string>
-  work: Record<string, string>
+  interests: ChoiceMap
+  causes: ChoiceMap
+  work: ChoiceMap
   refreshInterests: () => void
   refreshCauses: () => void
   refreshWork: () => void

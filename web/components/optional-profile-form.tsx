@@ -46,7 +46,7 @@ import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
 import {Title} from 'web/components/widgets/title'
-import {useChoicesContext} from 'web/hooks/use-choices'
+import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
@@ -60,7 +60,7 @@ export const OptionalProfileUserForm = (props: {
   user: BaseUser
   buttonLabel?: string
   bottomNavBarVisible?: boolean
-  onSubmit: () => Promise<void>
+  onSubmit: (profile?: ProfileWithoutUser) => Promise<void>
 }) => {
   const {profile, user, buttonLabel, setProfile, onSubmit, bottomNavBarVisible = true} = props
 
@@ -90,11 +90,11 @@ export const OptionalProfileUserForm = (props: {
   const [isExtracting, setIsExtracting] = useState(false)
   const [parsingEditor, setParsingEditor] = useState<any>(null)
 
-  const handleLLMExtract = async () => {
+  const handleLLMExtract = async (): Promise<Partial<ProfileWithoutUser>> => {
     const llmContent = parsingEditor?.getText?.() ?? ''
     if (!llmContent) {
       toast.error(t('profile.llm.extract.error_empty', 'Please enter content to extract from'))
-      return
+      return {}
     }
     setIsExtracting(true)
     const isInputUrl = isUrl(llmContent)
@@ -103,11 +103,13 @@ export const OptionalProfileUserForm = (props: {
       ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
     }
     try {
-      const extracted = await api('llm-extract-profile', payload)
-      for (const data of Object.entries(removeNullOrUndefinedProps(extracted))) {
-        const key = data[0]
+      let extractedProfile = await api('llm-extract-profile', payload)
+      extractedProfile = removeNullOrUndefinedProps(extractedProfile)
+      for (const data of Object.entries(extractedProfile)) {
+        const key = data[0] as keyof ProfileWithoutUser
         let value = data[1]
-        let choices, setChoices: any
+        let choices: ChoiceMap | undefined
+        let setChoices: ChoiceSetter | undefined
         if (key === 'interests') {
           choices = interestChoices
           setChoices = setInterestChoices
@@ -133,19 +135,26 @@ export const OptionalProfileUserForm = (props: {
           }
           debug({value, converter})
         } else if (key === 'keywords') setKeywordsString((value as string[]).join(', '))
-        setProfile(
-          key as keyof ProfileWithoutUser,
-          value as ProfileWithoutUser[keyof ProfileWithoutUser],
-        )
+        ;(extractedProfile as Record<string, unknown>)[key] = value
       }
-      if (!isInputUrl) setProfile('bio', parsingEditor?.getJSON?.())
-      debug({text: parsingEditor?.getText?.(), json: parsingEditor?.getJSON?.(), extracted})
+      if (!isInputUrl) extractedProfile.bio = parsingEditor?.getJSON?.()
+      debug({
+        text: parsingEditor?.getText?.(),
+        json: parsingEditor?.getJSON?.(),
+        extracted: extractedProfile,
+      })
+
+      for (const key of Object.keys(extractedProfile) as (keyof ProfileWithoutUser)[]) {
+        setProfile(key, extractedProfile[key] as ProfileWithoutUser[typeof key])
+      }
 
       parsingEditor?.commands?.clearContent?.()
 
       toast.success(
         t('profile.llm.extract.success', 'Profile data extracted! Please review below.'),
       )
+
+      return extractedProfile
     } catch (error) {
       console.error(error)
       toast.error(
@@ -162,6 +171,7 @@ export const OptionalProfileUserForm = (props: {
     } finally {
       setIsExtracting(false)
     }
+    return {}
   }
 
   const errorToast = () => {
@@ -169,19 +179,22 @@ export const OptionalProfileUserForm = (props: {
   }
 
   const handleSubmit = async () => {
+    let finalProfile = profile
+
     if (parsingEditor?.getText?.()?.trim()) {
-      await handleLLMExtract()
+      const extractedProfile = await handleLLMExtract()
+      finalProfile = {...profile, ...extractedProfile}
     }
 
     // Validate age before submitting
-    if (typeof profile['age'] === 'number') {
-      if (profile['age'] < 18) {
+    if (typeof finalProfile['age'] === 'number') {
+      if (finalProfile['age'] < 18) {
         setAgeError(t('profile.optional.age.error_min', 'You must be at least 18 years old'))
         setIsSubmitting(false)
         errorToast()
         return
       }
-      if (profile['age'] > 100) {
+      if (finalProfile['age'] > 100) {
         setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
         setIsSubmitting(false)
         errorToast()
@@ -193,7 +206,7 @@ export const OptionalProfileUserForm = (props: {
 
     track('submit optional profile')
 
-    await onSubmit()
+    await onSubmit(finalProfile)
 
     choices.refreshInterests()
     choices.refreshCauses()

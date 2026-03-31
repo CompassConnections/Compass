@@ -16,8 +16,7 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useTracking} from 'web/hooks/use-tracking'
 import {api} from 'web/lib/api'
 import {auth, CACHED_REFERRAL_USERNAME_KEY} from 'web/lib/firebase/users'
-import {useLocale} from 'web/lib/locale'
-import {useT} from 'web/lib/locale'
+import {useLocale, useT} from 'web/lib/locale'
 import {getLocale} from 'web/lib/locale-cookie'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -75,7 +74,7 @@ export default function SignupPage() {
     scrollTo(0, 0)
   }
 
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (finalProfile?: ProfileWithoutUser) => {
     setIsSubmitting(true)
     const referredByUsername = safeLocalStorage
       ? (safeLocalStorage.getItem(CACHED_REFERRAL_USERNAME_KEY) ?? undefined)
@@ -85,7 +84,7 @@ export default function SignupPage() {
     const deviceToken = ensureDeviceToken()
     try {
       const profile = removeNullOrUndefinedProps({
-        ...profileForm,
+        ...(finalProfile ?? profileForm),
         referred_by_username: referredByUsername,
       }) as any
       const {interests, causes, work, ...otherProfileProps} = profile

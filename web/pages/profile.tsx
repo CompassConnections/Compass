@@ -73,8 +73,8 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     setBaseUser((prevState) => ({...prevState, [key]: value}))
   }
 
-  async function submitForm() {
-    const {interests, causes, work, ...otherProfileProps} = profile
+  async function submitForm(finalProfile?: ProfileWithoutUser) {
+    const {interests, causes, work, ...otherProfileProps} = finalProfile ?? profile
     const parsedProfile = removeUndefinedProps(otherProfileProps) as any
     debug('parsedProfile', parsedProfile)
     const promises: Promise<any>[] = filterDefined([
@@ -124,7 +124,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
             setProfile={setProfileState}
             user={baseUser}
             buttonLabel={t('profile.save', 'Save')}
-            onSubmit={async () => await submitForm()}
+            onSubmit={submitForm}
           />
         </Col>
       </Col>

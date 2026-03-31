@@ -32,6 +32,7 @@ import HideProfileButton from 'web/components/widgets/hide-profile-button'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {useChoicesContext} from 'web/hooks/use-choices'
+import {isDark, useTheme} from 'web/hooks/use-theme'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
@@ -165,6 +166,9 @@ function ProfilePreview(props: {
   const [showRing, setShowRing] = useState(false)
   const ringTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pointerStartRef = useRef<{x: number; y: number} | null>(null)
+
+  const {theme} = useTheme()
+  const isDarkTheme = isDark(theme)
 
   const handlePointerDown = (e: React.PointerEvent) => {
     pointerStartRef.current = {x: e.clientX, y: e.clientY}
@@ -311,7 +315,7 @@ function ProfilePreview(props: {
       >
         {/* Phase 1: Dim overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-black/[0.32] rounded-lg z-20 pointer-events-none" />
+          <div className="absolute inset-0 bg-canvas-0/[0.32] rounded-lg z-20 pointer-events-none" />
         )}
         <Col className={clsx('relative w-full rounded transition-all')}>
           <Row className={clsx('absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10')}>
@@ -497,7 +501,7 @@ function ProfilePreview(props: {
           <div
             className="absolute -inset-[200%] animate-spin"
             style={{
-              background: 'conic-gradient(from 0deg, #000000, #000000, #3b82f6)',
+              background: `conic-gradient(from 0deg, ${isDarkTheme ? '#000000' : '#ffffff'}, ${isDarkTheme ? '#000000' : '#ffffff'}, #3b82f6)`,
               animationDuration: '1s',
             }}
           />

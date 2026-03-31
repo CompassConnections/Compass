@@ -53,7 +53,8 @@ function getTheme() {
   return theme.value ?? theme
 }
 
-function isDark(theme: theme_option | null) {
+export function isDark(theme?: theme_option | null) {
+  theme ??= getTheme()
   return (
     theme === 'dark' ||
     (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)

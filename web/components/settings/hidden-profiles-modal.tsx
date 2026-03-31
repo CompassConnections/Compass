@@ -49,7 +49,10 @@ export function HiddenProfilesModal(props: {open: boolean; setOpen: (open: boole
           {t('settings.hidden_profiles.title', "Profiles you've hidden")}
         </Title>
         {hiddenProfiles && hiddenProfiles.length > 0 && (
-          <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
+          <Col
+            className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}
+            data-testid="hidden-profiles"
+          >
             {hiddenProfiles.map((u) => (
               <Row key={u.id} className="items-center justify-between py-2 gap-2">
                 <Link className="w-full rounded-md hover:bg-canvas-100 p-2" href={'/' + u.username}>

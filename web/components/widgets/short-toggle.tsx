@@ -10,8 +10,9 @@ export default function ShortToggle(props: {
   className?: string
   colorMode?: ToggleColorMode
   size?: 'sm'
+  testId?: string
 }) {
-  const {on, size, setOn, disabled, className, colorMode = 'primary'} = props
+  const {on, size, setOn, disabled, className, colorMode = 'primary', testId} = props
 
   const toggleBaseClasses =
     'group relative inline-flex flex-shrink-0 rounded-full border-2 border-transparent ring-offset-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2'
@@ -34,6 +35,7 @@ export default function ShortToggle(props: {
 
   return (
     <Switch
+      data-testid={testId}
       disabled={disabled}
       checked={on}
       onChange={setOn}

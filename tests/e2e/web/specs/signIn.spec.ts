@@ -24,6 +24,9 @@ test.describe('when given valid input', () => {
     authPage,
     dev_one_account,
   }) => {
+    console.log(
+      `Starting "should be able to sign in to an available account" with ${dev_one_account.username}`,
+    )
     await homePage.gotToSigninPage()
     await authPage.fillEmailField(dev_one_account.email)
     await authPage.fillPasswordField(dev_one_account.password)

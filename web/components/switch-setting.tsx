@@ -9,10 +9,11 @@ export const SwitchSetting = (props: {
   label?: 'Web' | 'Email' | 'Mobile'
   disabled: boolean
   colorMode?: ToggleColorMode
+  testId?: string
 }) => {
-  const {colorMode, checked, onChange, label, disabled} = props
+  const {colorMode, checked, onChange, label, disabled, testId} = props
   return (
-    <Switch.Group as="div" className="flex items-center gap-3">
+    <Switch.Group as="div" className="flex items-center gap-3" data-testid={testId}>
       <ShortToggle colorMode={colorMode} on={checked} setOn={onChange} disabled={disabled} />
       <Switch.Label
         className={clsx(

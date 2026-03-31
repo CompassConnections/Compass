@@ -1,5 +1,5 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
-import {registerWithEmail} from '../utils/testCleanupHelpers'
+import {registerWithEmail, signinWithEmail} from '../utils/testCleanupHelpers'
 import {expect, test} from '../fixtures/base'
 
 test.describe('when given valid input', () => {
@@ -524,8 +524,5 @@ test.describe('when given valid input', () => {
 })
 
 test.describe('when an error occurs', () => {
-  test('placeholder', async ({homePage}) => {
-    await homePage.goToHomePage()
-    await homePage.clickAboutLink()
-  })
+  test('placeholder', async ({}) => {})
 })

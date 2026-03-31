@@ -16,10 +16,19 @@ export async function registerWithEmail(
 export async function signinWithEmail(
   homePage: HomePage,
   authPage: AuthPage,
-  account: UserAccountInformation,
+  accountOrEmail: UserAccountInformation | string,
+  password?: string,
 ) {
+  const email = typeof accountOrEmail === 'string' ? accountOrEmail : accountOrEmail.email
+
+  const resolvedPassword = typeof accountOrEmail === 'string' ? password : accountOrEmail.password
+
+  if (!email || !resolvedPassword) {
+    throw new Error('Provide either an `account` or `email` and `password`.')
+  }
+
   await homePage.gotToSigninPage()
-  await authPage.fillEmailField(account.email)
-  await authPage.fillPasswordField(account.password)
+  await authPage.fillEmailField(email)
+  await authPage.fillPasswordField(resolvedPassword)
   await authPage.clickSignInWithEmailButton()
 }

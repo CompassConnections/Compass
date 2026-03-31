@@ -4,8 +4,10 @@ import {AuthPage} from '../pages/AuthPage'
 import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
+import {OrganizationPage} from '../pages/organizationPage'
 import {ProfilePage} from '../pages/profilePage'
 import {SignUpPage} from '../pages/signUpPage'
+import {SocialPage} from '../pages/socialPage'
 import {SettingsPage} from '../pages/settingsPage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
@@ -17,6 +19,8 @@ export const test = base.extend<{
   profilePage: ProfilePage
   authPage: AuthPage
   settingsPage: SettingsPage
+  socialPage: SocialPage
+  organizationPage: OrganizationPage
   compatabilityPage: ComatibilityPage
   cleanUpUsers: void
   onboardingAccount: UserAccountInformation
@@ -84,6 +88,14 @@ export const test = base.extend<{
   settingsPage: async ({page}, use) => {
     const settingsPage = new SettingsPage(page)
     await use(settingsPage)
+  },
+  socialPage: async ({page}, use) => {
+    const socialPage = new SocialPage(page)
+    await use(socialPage)
+  },
+  organizationPage: async ({page}, use) => {
+    const organizationPage = new OrganizationPage(page)
+    await use(organizationPage)
   },
 })
 

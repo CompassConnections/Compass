@@ -67,6 +67,7 @@ export function ConnectionPreferencesSettings() {
           </div>
         </div>
         <SwitchSetting
+          testId="settings-direct-message-toggle"
           checked={allowDirectMessaging}
           onChange={handleDirectMessagingChange}
           disabled={isUpdating}
@@ -87,6 +88,7 @@ export function ConnectionPreferencesSettings() {
           </div>
         </div>
         <SwitchSetting
+          testId="settings-private-interest-signal-toggle"
           checked={allowInterestIndicating}
           onChange={handleInterestIndicatingChange}
           disabled={isUpdating}

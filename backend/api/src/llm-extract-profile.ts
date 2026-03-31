@@ -210,8 +210,8 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     ethnicity: `Array. Any of: ${Object.values(RACE_CHOICES).join(', ')}`,
 
     // Substances
-    psychedelics: `One of: ${Object.values(PSYCHEDELICS_CHOICES).join(', ')}. Usage frequency of psychedelics/plant medicine.`,
-    cannabis: `One of: ${Object.values(CANNABIS_CHOICES).join(', ')}. Usage frequency of cannabis.`,
+    psychedelics: `One of: ${Object.values(PSYCHEDELICS_CHOICES).join(', ')}. Usage frequency of psychedelics/plant medicine, only if explicitly stated.`,
+    cannabis: `One of: ${Object.values(CANNABIS_CHOICES).join(', ')}. Usage frequency of cannabis, only if explicitly stated.`,
     psychedelics_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use psychedelics.`,
     cannabis_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use cannabis.`,
     psychedelics_pref: `Array. Any of: ${Object.values(SUBSTANCE_PREFERENCE_CHOICES).join(', ')}. Partner preference for psychedelics use.`,

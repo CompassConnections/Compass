@@ -181,6 +181,8 @@ function MyApp(props: AppProps<PageProps>) {
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
         <meta name="twitter:image" content={PNG_FAVICON} key="image2" />
         <meta property="og:image" content={PNG_FAVICON} key="image1" />
+        {/*<meta property="og:image:width" content="192" />*/}
+        {/*<meta property="og:image:height" content="192" />*/}
         <meta property="og:image:type" content="image/png" />
         <meta
           name="viewport"

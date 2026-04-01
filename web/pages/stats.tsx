@@ -56,8 +56,11 @@ export default function Stats() {
   return (
     <PageBase trackPageView={'stats'}>
       <SEO
-        title={t('stats.seo.title', 'Stats')}
-        description={t('stats.seo.description', 'Stats')}
+        title={t('stats.seo.title', 'Platform Statistics & Growth')}
+        description={t(
+          'stats.seo.description',
+          'Explore Compass platform growth metrics, member statistics, active discussions, and community engagement data.',
+        )}
         url={`/stats`}
       />
       <h1 className="text-3xl font-semibold text-center mb-6">

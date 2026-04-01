@@ -21,7 +21,7 @@ import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
 import {capitalize} from 'lodash'
-import {Home, Leaf} from 'lucide-react'
+import {BarChart2, Home, Leaf} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
 import {BsPersonVcard} from 'react-icons/bs'
@@ -52,30 +52,36 @@ export function AboutRow(props: {
   preText?: string
   suffix?: string | null
   testId?: string
+  children?: ReactNode
 }) {
   const {icon, text, preText, suffix, testId} = props
   const t = useT()
-  if (!text?.length && !preText && !suffix) {
-    return <></>
+  let children = props.children
+  if (!children) {
+    if (!text?.length && !preText && !suffix) {
+      return <></>
+    }
+    let formattedText = ''
+    if (preText) {
+      formattedText += preText
+    }
+    if (text?.length) {
+      formattedText += stringOrStringArrayToText({
+        text: text,
+        preText: preText,
+        asSentence: false,
+        capitalizeFirstLetterOption: true,
+        t: t,
+      })
+    }
+    children = <div>{formattedText}</div>
   }
-  let formattedText = ''
-  if (preText) {
-    formattedText += preText
-  }
-  if (text?.length) {
-    formattedText += stringOrStringArrayToText({
-      text: text,
-      preText: preText,
-      asSentence: false,
-      capitalizeFirstLetterOption: true,
-      t: t,
-    })
-  }
+
   return (
     <Row className="items-start gap-2" data-testid={testId}>
       <div className="text-ink-600 w-5 mt-0.5">{icon}</div>
-      <Col>
-        <div>{formattedText}</div>
+      <Col className={'w-full'}>
+        {children}
         {suffix && <div className={'guidance'}>{capitalize(suffix)}</div>}
       </Col>
     </Row>
@@ -530,38 +536,30 @@ function Big5Traits(props: {profile: Profile}) {
   }
 
   return (
-    <Col className="gap-2" data-testid="profile-about-big-five-personality-traits">
-      <div className="text-ink-600 font-medium">
-        {t('profile.big5', 'Big Five personality traits')}:
-      </div>
-      <div className="ml-6">
-        {traits.map((trait) => {
-          if (trait.value === null || trait.value === undefined) return null
+    <AboutRow icon={<BarChart2 className="h-5 w-5" />}>
+      <Col className="gap-2 w-full" data-testid="profile-about-big-five-personality-traits">
+        <div className="text-ink-600">{t('profile.big5', 'Big Five personality traits')}</div>
+        <div className="">
+          {traits.map((trait) => {
+            if (trait.value === null || trait.value === undefined) return null
 
-          let levelText: string
-          if (trait.value <= 20) {
-            levelText = t('profile.big5_very_low', 'Very low')
-          } else if (trait.value <= 40) {
-            levelText = t('profile.big5_low', 'Low')
-          } else if (trait.value <= 60) {
-            levelText = t('profile.big5_average', 'Average')
-          } else if (trait.value <= 80) {
-            levelText = t('profile.big5_high', 'High')
-          } else {
-            levelText = t('profile.big5_very_high', 'Very high')
-          }
-
-          return (
-            <Row key={trait.key} className="items-center gap-2">
-              <div className="text-ink-600 w-5">{trait.icon}</div>
-              <div>
-                {trait.label}: {levelText} ({trait.value})
-              </div>
-            </Row>
-          )
-        })}
-      </div>
-    </Col>
+            return (
+              <Row key={trait.key} className="items-center gap-1 py-1 text-sm">
+                {/*<div className="text-ink-600 w-5 shrink-0">{trait.icon}</div>*/}
+                <div className="text-ink-700 w-[120px] shrink-0">{trait.label}</div>
+                <div className="flex-1 max-w-32 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary-100 rounded-full"
+                    style={{width: `${trait.value}%`}}
+                  />
+                </div>
+                <div className="text-ink-600 w-8 text-right shrink-0">{trait.value}</div>
+              </Row>
+            )
+          })}
+        </div>
+      </Col>
+    </AboutRow>
   )
 }
 

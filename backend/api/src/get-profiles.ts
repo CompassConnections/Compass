@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node'
 import {type APIHandler} from 'api/helpers/endpoint'
 import {OptionTableKey} from 'common/profiles/constants'
 import {compact} from 'lodash'
+import {log} from 'shared/monitoring/log'
 import {convertRow} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
 import {
@@ -96,7 +97,7 @@ export type profileQueryType = {
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
-  console.debug('get-profiles', props)
+  log('get-profiles', props)
   const {
     limit: limitParam,
     after,

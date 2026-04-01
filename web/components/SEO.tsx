@@ -1,4 +1,5 @@
 import {IS_PROD} from 'common/envs/constants'
+import {PNG_FAVICON} from 'common/hosting/constants'
 import {removeUndefinedProps} from 'common/util/object'
 import {buildOgUrl} from 'common/util/og'
 import Head from 'next/head'
@@ -13,7 +14,9 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
   const {title, description, url, image, ogProps} = props
 
   const imageUrl =
-    image ?? (ogProps && buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint))
+    image ??
+    (ogProps && buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint)) ??
+    PNG_FAVICON
 
   const absUrl = 'https://compassmeet.com' + url
   const endTitle = IS_PROD ? 'Compass' : 'Compass dev'

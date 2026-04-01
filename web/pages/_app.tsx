@@ -7,7 +7,7 @@ import {Keyboard} from '@capacitor/keyboard'
 import {StatusBar} from '@capacitor/status-bar'
 import clsx from 'clsx'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {IS_VERCEL} from 'common/hosting/constants'
+import {IS_VERCEL, PNG_FAVICON} from 'common/hosting/constants'
 import {debug} from 'common/logger'
 import type {AppProps} from 'next/app'
 import {Major_Mono_Display} from 'next/font/google'
@@ -179,8 +179,8 @@ function MyApp(props: AppProps<PageProps>) {
         <meta property="og:site_name" content="Compass" />
         <meta name="twitter:card" content="summary" key="card" />
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
-        <meta name="twitter:image" content={'/icons/icon-192x192.png'} key="image2" />
-        <meta property="og:image" content={'/icons/icon-192x192.png'} key="image1" />
+        <meta name="twitter:image" content={PNG_FAVICON} key="image2" />
+        <meta property="og:image" content={PNG_FAVICON} key="image1" />
         <meta property="og:image:type" content="image/png" />
         <meta
           name="viewport"

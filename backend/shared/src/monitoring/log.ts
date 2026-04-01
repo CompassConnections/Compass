@@ -77,7 +77,7 @@ function writeLog(level: LogLevel, msg: unknown, opts?: {props?: LogDetails; res
         // record error properties in GCP if you just do log(err)
         output['error'] = msg
       }
-      console.debug(JSON.stringify(output, replacer))
+      console[level](JSON.stringify(output, replacer))
     } else {
       const category = Object.values(pick(data, DISPLAY_CATEGORY_KEYS)).join()
       const categoryLabel = category ? dim(category) + ' ' : ''

@@ -112,6 +112,12 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: '/((?!\\.well-known/assetlinks\\.json).*)',
+        has: [{type: 'host', value: 'compassmeet.com'}],
+        destination: 'https://www.compassmeet.com/:path*',
+        permanent: true,
+      },
       {source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false},
       {source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false},
       {

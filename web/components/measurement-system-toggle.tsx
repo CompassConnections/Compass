@@ -22,6 +22,7 @@ export default function MeasurementSystemToggle(props: {className?: string}) {
         onChange={(enabled: boolean) => setMeasurementSystem(enabled ? 'metric' : 'imperial')}
         className={clsx(
           isEnabled ? 'bg-primary-500' : 'bg-ink-300',
+          isEnabled ? 'hover:bg-primary-500/70' : 'hover:bg-ink-300/70',
           'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none',
         )}
       >

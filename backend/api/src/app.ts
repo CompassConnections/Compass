@@ -669,7 +669,7 @@ Object.entries(handlers).forEach(([path, handler]) => {
 
   const apiRoute = [
     url,
-    express.json(),
+    express.json({limit: '1mb'}),
     allowCorsUnrestricted,
     cache,
     typedEndpoint(path as any, handler as any),

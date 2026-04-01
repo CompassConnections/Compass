@@ -178,6 +178,18 @@ export function useTextEditor(props: {
           return true // Prevent image in text/html from getting pasted again
         }
 
+        if (max) {
+          event.preventDefault()
+          const text = event.clipboardData?.getData('text/plain') ?? ''
+          const currentLength = editor.getText().length
+          const available = Math.max(0, max - currentLength)
+          if (available > 0 && text.length > 0) {
+            const croppedText = text.slice(0, available)
+            editor.commands.insertContent(croppedText)
+          }
+          return true
+        }
+
         // Otherwise, use default paste handler
       },
       handleDrop(_view, event, _slice, moved) {

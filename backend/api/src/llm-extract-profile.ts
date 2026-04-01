@@ -274,8 +274,8 @@ TEXT TO ANALYZE:
 `
   const text = EXTRACTION_PROMPT + content
   if (text.length > MAX_CONTEXT_LENGTH) {
-    log('Content exceeds maximum length', {length: text.length})
-    throw APIErrors.badRequest('Content exceeds maximum length')
+    log('Content exceeds maximum length, will be cropped', {length: text.length})
+    // throw APIErrors.badRequest('Content exceeds maximum length')
   }
   debug({text})
 
@@ -403,6 +403,8 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   if (bio) {
     extracted.bio = bio
   }
+
+  debug(JSON.stringify(bio))
 
   log('Profile extracted successfully', {extracted})
 

@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.compassconnections.app",
+      "sha256_cert_fingerprints": [
+        "29:61:EB:C6:DE:D4:E3:50:FE:8B:56:D2:B5:F1:E7:1D:8D:6F:96:82:26:05:63:5B:44:BB:56:45:B1:D7:6A:EE"
+      ]
+    }
+  }
+]

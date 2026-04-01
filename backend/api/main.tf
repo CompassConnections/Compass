@@ -11,8 +11,8 @@ variable "env" {
 }
 
 locals {
-  project = "compass-130ba"
-  region  = "us-west1"
+  project      = "compass-130ba"
+  region       = "us-west1"
   zone         = "us-west1-b"
   service_name = "api"
   machine_type = "e2-small"
@@ -55,7 +55,7 @@ resource "google_storage_bucket" "public_storage" {
 
 # static IPs
 resource "google_compute_global_address" "api_lb_ip" {
-  name = "api-lb-ip-2"
+  name         = "api-lb-ip-2"
   address_type = "EXTERNAL"
 }
 
@@ -81,7 +81,7 @@ resource "google_compute_instance_template" "api_template" {
   }
 
   network_interface {
-    network = "default"
+    network    = "default"
     subnetwork = "default"
     access_config {
       network_tier = "PREMIUM"
@@ -105,6 +105,7 @@ spec:
       ports:
         - containerPort: 80
 EOF
+    google-logging-enabled    = "true"
   }
 
   lifecycle {
@@ -116,12 +117,12 @@ EOF
 resource "google_compute_region_instance_group_manager" "api_group" {
   name               = "${local.service_name}-group"
   base_instance_name = "${local.service_name}-group"
-  region               = local.region
+  region             = local.region
   target_size        = 1
 
   version {
     instance_template = google_compute_instance_template.api_template.id
-    name = "primary"
+    name              = "primary"
   }
 
   update_policy {
@@ -185,29 +186,29 @@ resource "google_compute_url_map" "api_url_map" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.api_backend.self_link
-  #
-  #   # Priority 0: passthrough /v0/* requests
-  #   route_rules {
-  #     priority = 1
-  #     match_rules {
-  #       prefix_match = "/v0"
-  #     }
-  #     service = google_compute_backend_service.api_backend.self_link
-  #   }
-  #
-  #   # Priority 1: rewrite everything else to /v0
-  #   route_rules {
-  #     priority = 2
-  #     match_rules {
-  #       prefix_match = "/"
-  #     }
-  #     route_action {
-  #       url_rewrite { # This may break websockets (the Upgrade and Connection headers must pass through untouched).
-  #         path_prefix_rewrite = "/v0/"
-  #       }
-  #     }
-  #     service = google_compute_backend_service.api_backend.self_link
-  #   }
+    #
+    #   # Priority 0: passthrough /v0/* requests
+    #   route_rules {
+    #     priority = 1
+    #     match_rules {
+    #       prefix_match = "/v0"
+    #     }
+    #     service = google_compute_backend_service.api_backend.self_link
+    #   }
+    #
+    #   # Priority 1: rewrite everything else to /v0
+    #   route_rules {
+    #     priority = 2
+    #     match_rules {
+    #       prefix_match = "/"
+    #     }
+    #     route_action {
+    #       url_rewrite { # This may break websockets (the Upgrade and Connection headers must pass through untouched).
+    #         path_prefix_rewrite = "/v0/"
+    #       }
+    #     }
+    #     service = google_compute_backend_service.api_backend.self_link
+    #   }
   }
 }
 
@@ -267,10 +268,10 @@ resource "google_compute_firewall" "allow_health_check" {
 }
 
 resource "google_compute_firewall" "default_allow_https" {
-  name        = "default-allow-http"
-  network     = "default"
-  priority    = 1000
-  direction   = "INGRESS"
+  name      = "default-allow-http"
+  network   = "default"
+  priority  = 1000
+  direction = "INGRESS"
 
   allow {
     protocol = "tcp"

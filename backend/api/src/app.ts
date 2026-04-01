@@ -123,6 +123,8 @@ const requestMonitoring: RequestHandler = (req, _res, next) => {
     log(`${req.method} ${req.url}`)
     metrics.inc('http/request_count', {endpoint: req.path})
     next()
+    // There's a bug worth flagging in that middleware. The timing/cleanup code after next() won't work as you expect:
+    // next() is synchronous — it just hands off to the next middleware. The response hasn't been sent by the time endTs is captured. To measure actual latency you'd want to hook into res.on('finish', ...)
     const endTs = hrtime.bigint()
     const latencyMs = Number(endTs - startTs) / 1e6
     metrics.push('http/request_latency', latencyMs, {endpoint: req.path})

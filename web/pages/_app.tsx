@@ -6,7 +6,7 @@ import {Capacitor} from '@capacitor/core'
 import {Keyboard} from '@capacitor/keyboard'
 import {StatusBar} from '@capacitor/status-bar'
 import clsx from 'clsx'
-import {DEPLOYED_WEB_URL, ENV_CONFIG} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_VERCEL} from 'common/hosting/constants'
 import {debug} from 'common/logger'
 import type {AppProps} from 'next/app'
@@ -179,8 +179,9 @@ function MyApp(props: AppProps<PageProps>) {
         <meta property="og:site_name" content="Compass" />
         <meta name="twitter:card" content="summary" key="card" />
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
-        <meta name="twitter:image" content={ENV_CONFIG.faviconPath} key="image2" />
-        <meta property="og:image" content={ENV_CONFIG.faviconPath} key="image1" />
+        <meta name="twitter:image" content={'/icons/icon-192x192.png'} key="image2" />
+        <meta property="og:image" content={'/icons/icon-192x192.png'} key="image1" />
+        <meta property="og:image:type" content="image/png" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no, viewport-fit=cover"

@@ -53,7 +53,7 @@ export default function Sidebar(props: {
 
       {user && !isMobile && <ProfileSummary user={user} className="mb-3" />}
 
-      <div className="mb-4 flex flex-col gap-1 !overflow-y-auto" data-testid="sidebar">
+      <div className="mb-4 flex flex-col gap-1 !overflow-y-auto">
         {navOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}

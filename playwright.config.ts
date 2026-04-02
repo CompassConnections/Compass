@@ -27,7 +27,7 @@ function getSupabaseEnv() {
 
 if (process.env.DIRECT_SUPABASE_SETUP_IN_PLAYWRIGHT !== 'false') {
   const supabaseEnv = getSupabaseEnv()
-  
+
   // Inject into process.env so Playwright and your app code can read them
   Object.assign(process.env, supabaseEnv)
 }

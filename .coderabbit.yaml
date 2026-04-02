@@ -9,6 +9,9 @@ description:
 
 # How aggressive and deep the reviews should be
 reviews:
+  auto_review:
+    enabled: true
+    
   # 'chill' (fewer comments, only critical bugs) or 'assertive' (strict, points out everything)
   profile: assertive
   

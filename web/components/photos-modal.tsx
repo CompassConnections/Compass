@@ -85,7 +85,7 @@ export const ViewProfileCardButton = (props: {
             src={src}
             width={width}
             height={height}
-            alt={t('profile_card.loading', 'Loading your card, it may take a few seconds...')}
+            alt={t('profile_card.loading', `${user.username}'s profile card`)}
             className={'rounded-2xl'}
           />
           <ShareProfileButtons

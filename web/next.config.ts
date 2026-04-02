@@ -51,6 +51,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {hostname: 'martinbraquet.com'},
       {hostname: 'compassmeet.com'},
+      {hostname: 'www.compassmeet.com'},
       {hostname: 'lh3.googleusercontent.com'},
       {hostname: 'i.imgur.com'},
       {hostname: 'firebasestorage.googleapis.com'},

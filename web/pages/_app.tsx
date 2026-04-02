@@ -150,13 +150,14 @@ function MyApp(props: AppProps<PageProps>) {
   }, [router])
 
   useEffect(() => {
-    const bridgeRedirect = (payload: any) => {
-      debug('bridgeRedirect', payload)
+    const handleAppLink = (payload: any) => {
+      debug('handleAppLink', payload)
       const {endpoint} = payload
-      router.push(endpoint)
+      if (endpoint) {
+        router.push(endpoint)
+      }
     }
-    // Expose globally for native bridge
-    ;(window as any).bridgeRedirect = bridgeRedirect
+    ;(window as any).handleAppLink = handleAppLink
   }, [])
 
   const title = 'Compass'

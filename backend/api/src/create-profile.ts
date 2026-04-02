@@ -54,7 +54,7 @@ export const createProfile: APIHandler<'create-profile'> = async (body, auth) =>
       // So we can sse their full profile as soon as we get the notif on discord. And that allows OG to pull their pic for the link preview.
       // Regardless, you need to wait for at least 5 seconds that the profile is fully in the db—otherwise ISR may cache "profile not created yet"
       await sleep(10 * MINUTE_MS)
-      let message: string = `[**${user.name}**](https://www.compassmeet.com/${user.username}) just created a profile`
+      let message: string = `[**${user.name}**](https://compassmeet.com/${user.username}) just created a profile`
       if (body.bio) {
         const bioText = jsonToMarkdown(body.bio)
         if (bioText) message += `\n${bioText}`

@@ -106,7 +106,7 @@ yarn dev # or prod
 
 ### Deployed mode
 
-If you want the webview to load from the deployed web version of Compass (like at www.compassmeet.com), no web app to
+If you want the webview to load from the deployed web version of Compass (like at compassmeet.com), no web app to
 run.
 
 ---

@@ -50,8 +50,8 @@ export const report: APIHandler<'report'> = async (body, auth) => {
       🚨 **New Report** 🚨
       **Type:** ${contentType}
       **Content ID:** ${contentId}
-      **Reporter:** ${reporter?.name} ([@${reporter?.username}](https://www.${DOMAIN}/${reporter?.username}))
-      **Reported:** ${reported?.name} ([@${reported?.username}](https://www.${DOMAIN}/${reported?.username}))
+      **Reporter:** ${reporter?.name} ([@${reporter?.username}](https://${DOMAIN}/${reporter?.username}))
+      **Reported:** ${reported?.name} ([@${reported?.username}](https://${DOMAIN}/${reported?.username}))
       `
       await sendDiscordMessage(message, 'reports')
     } catch (e) {

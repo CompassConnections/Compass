@@ -1,6 +1,6 @@
 export default async function handler(req: any, res: any) {
   const {path} = req.query // e.g. "v4FoTtuyX_XwjC3aS2_Y6/Martin.json"
-  const upstreamUrl = `https://compassmeet.com/_next/data/${path}`
+  const upstreamUrl = `https://www.compassmeet.com/_next/data/${path}`
 
   const upstream = await fetch(upstreamUrl)
   const body = await upstream.text()

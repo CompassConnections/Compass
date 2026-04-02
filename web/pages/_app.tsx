@@ -154,7 +154,7 @@ function MyApp(props: AppProps<PageProps>) {
     const handleAppLink = (payload: any) => {
       debug('handleAppLink', payload)
       const {endpoint} = payload
-      if (endpoint) {
+      if (endpoint && endpoint !== window.location.pathname) {
         router.push(endpoint)
       }
     }

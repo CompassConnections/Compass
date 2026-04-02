@@ -66,7 +66,9 @@ export async function run<T>(
 export async function run<T>(q: PromiseLike<PostgrestSingleResponse<T> | PostgrestResponse<T>>) {
   const {data, count, error} = await q
   if (error != null) {
-    throw error
+    const err = new Error(error.message)
+    Object.assign(err, error) // copies code, details, hint onto the Error
+    throw err
   } else {
     return {data, count}
   }

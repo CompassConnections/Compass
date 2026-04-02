@@ -1,0 +1,5 @@
+**/*.md
+package-lock.json
+yarn.lock
+dist/**
+test/mocks/**

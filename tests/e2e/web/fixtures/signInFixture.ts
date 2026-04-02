@@ -1,9 +1,8 @@
-import {expect, Page, test as base} from '@playwright/test'
-
-import {seedUser} from '../../utils/seedDatabase'
+import {Page, test as base} from '@playwright/test'
 import {AuthPage} from '../pages/AuthPage'
 import {HomePage} from '../pages/homePage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
+import {signinWithEmail} from '../utils/testCleanupHelpers'
 
 export const test = base.extend<{
   signedInPage: Page
@@ -12,10 +11,7 @@ export const test = base.extend<{
   dev_one_account: UserAccountInformation
 }>({
   signedInPage: async ({page, authPage, homePage, dev_one_account}, use) => {
-    await homePage.gotToSigninPage()
-    await authPage.fillEmailField(dev_one_account.email)
-    await authPage.fillPasswordField(dev_one_account.password)
-    await authPage.clickSignInWithEmailButton()
+    await signinWithEmail(homePage, authPage, dev_one_account)
     await homePage.goToHomePage()
     await homePage.verifySignedInHomePage(dev_one_account.display_name)
 

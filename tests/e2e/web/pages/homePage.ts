@@ -17,7 +17,7 @@ export class HomePage {
     this.profileLink = page.getByTestId('sidebar-username')
     this.signUpButton = page.locator('button').filter({hasText: 'Sign up'}).first()
     this.localePicker = page.getByTestId('sidebar-locale-picker')
-    this.signInLink = page.getByTestId('sidebar-signin')
+    this.signInLink = page.locator('a[href="/signin"]').first()
     this.signOutLink = page.getByText('Sign out', {exact: true})
     this.closeButton = page.getByRole('button', {name: 'Close'})
   }

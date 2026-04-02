@@ -7,7 +7,7 @@ export async function registerWithEmail(
   authPage: AuthPage,
   account: UserAccountInformation,
 ) {
-  await homePage.gotToRegisterPage()
+  await homePage.goToRegisterPage()
   await authPage.fillEmailField(account.email)
   await authPage.fillPasswordField(account.password)
   await authPage.clickSignUpWithEmailButton()
@@ -27,7 +27,7 @@ export async function signinWithEmail(
     throw new Error('Provide either an `account` or `email` and `password`.')
   }
 
-  await homePage.gotToSigninPage()
+  await homePage.goToSigninPage()
   await authPage.fillEmailField(email)
   await authPage.fillPasswordField(resolvedPassword)
   await authPage.clickSignInWithEmailButton()

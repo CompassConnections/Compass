@@ -41,6 +41,7 @@ export default function Sidebar(props: {
     <nav
       id="main-navigation"
       aria-label="Sidebar"
+      data-testid="sidebar"
       className={clsx(
         'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))]',
         className,
@@ -52,7 +53,7 @@ export default function Sidebar(props: {
 
       {user && !isMobile && <ProfileSummary user={user} className="mb-3" />}
 
-      <div className="mb-4 flex flex-col gap-1 !overflow-y-auto" data-testid="sidebar">
+      <div className="mb-4 flex flex-col gap-1 !overflow-y-auto">
         {navOptions.map((item) => (
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}
@@ -119,7 +120,6 @@ export const SignUpButton = (props: {
 
   return (
     <Button
-      data-testid="side-bar-sign-up-button"
       color={color ?? 'gradient'}
       size={size ?? 'xl'}
       onClick={startSignup}

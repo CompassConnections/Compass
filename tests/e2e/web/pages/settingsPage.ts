@@ -25,7 +25,7 @@ export class SettingsPage {
 
   constructor(public readonly page: Page) {
     this.localePicker = page.getByTestId('sidebar-locale-picker')
-    this.measurementSystemToggle = page.getByTestId('measuerment-system-toggle')
+    this.measurementSystemToggle = page.getByTestId('measurement-system-toggle')
     this.themeToggle = page.getByTestId('settings-dark-light-toggle')
     this.fontPicker = page.getByTestId('settings-font-picker')
     this.downloadProfileJSONDataButton = page.getByRole('button', {

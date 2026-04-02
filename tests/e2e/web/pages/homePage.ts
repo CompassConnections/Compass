@@ -74,11 +74,11 @@ export class HomePage {
     await this.page.goto('/home')
   }
 
-  async gotToRegisterPage() {
+  async goToRegisterPage() {
     await this.page.goto('/register')
   }
 
-  async gotToSigninPage() {
+  async goToSigninPage() {
     await this.page.goto('/signin')
   }
 

@@ -159,8 +159,8 @@ export const testAccounts: AccountConfig = {
   google_account_one: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: 'google_one_compass@gmail.com',
-      password: 'Google_oneCompassTest',
+      email: `g1_compass_${id}@gmail.com`,
+      password: 'G_oneCompassTest',
       display_name: 'Google_one_Compass',
       username: `G_one_Connections_${id}`,
     }
@@ -169,8 +169,8 @@ export const testAccounts: AccountConfig = {
   google_account_two: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: 'google_two_compass@gmail.com',
-      password: 'Google_twoCompassTest',
+      email: `g2_compass_${id}@gmail.com`,
+      password: 'G_twoCompassTest',
       display_name: 'Google_two_Compass',
       username: `G_two_Connections_${id}`,
     }

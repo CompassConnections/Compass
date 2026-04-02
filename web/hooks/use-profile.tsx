@@ -6,13 +6,15 @@ import {
 } from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {useEffect} from 'react'
+import {createContext, ReactNode, useContext, useEffect} from 'react'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useUser} from 'web/hooks/use-user'
 import {db} from 'web/lib/supabase/db'
 
-export const useProfile = () => {
+type OwnProfile = (Row<'profiles'> & {user: User}) | null | undefined
+
+const useOwnProfile = (): OwnProfile => {
   const user = useUser()
   const [profile, setProfile] = usePersistentLocalState<Row<'profiles'> | undefined | null>(
     undefined,
@@ -20,13 +22,11 @@ export const useProfile = () => {
   )
 
   const refreshProfile = () => {
-    if (user) {
-      // logger.debug('Refreshing profile in useProfile for', user?.username, profile);
-      getProfileRowWithFrontendSupabase(user.id, db).then((profile) => {
-        if (!profile) setProfile(null)
-        else setProfile(profile)
-      })
-    }
+    if (!user?.id) return
+    debug('Refreshing own profile for', user.username)
+    getProfileRowWithFrontendSupabase(user.id, db).then((p) => {
+      setProfile(p ?? null)
+    })
   }
 
   useEffect(() => {
@@ -34,6 +34,21 @@ export const useProfile = () => {
   }, [user?.id])
 
   return user && profile ? {...profile, user} : profile === null ? null : undefined
+}
+
+const MISSING = Symbol('missing')
+
+const ProfileContext = createContext<OwnProfile | typeof MISSING>(MISSING)
+
+export const useProfile = () => {
+  const ctx = useContext(ProfileContext)
+  if (ctx === MISSING) throw new Error('useProfile must be used within a ProfileProvider')
+  return ctx as OwnProfile
+}
+
+export const ProfileProvider = ({children}: {children: ReactNode}) => {
+  const profile = useOwnProfile()
+  return <ProfileContext.Provider value={profile}>{children}</ProfileContext.Provider>
 }
 
 export const useProfileByUser = (user: User | undefined) => {

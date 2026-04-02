@@ -129,89 +129,89 @@ test.describe('when given valid input', () => {
     await app.profile.verifyBio(onboardingAccount.bio)
     await app.profile.verifyCompatibilityAnswers(compatQuestionOne)
 
-      //Verify Database Information
-      const dbInfo = await userInformationFromDb(onboardingAccount)
-      console.log(dbInfo.profile)
+    //Verify Database Information
+    const dbInfo = await userInformationFromDb(onboardingAccount)
+    console.log(dbInfo.profile)
 
-      await expect(dbInfo.user.name).toBe(onboardingAccount.display_name)
-      await expect(dbInfo.user.username).toBe(onboardingAccount.username)
-      await expect(dbInfo.profile.bio_text).toBe(onboardingAccount.bio)
-      await expect(dbInfo.profile.gender).toEqual(onboardingAccount.gender?.[1])
-      await expect(dbInfo.profile.headline).toEqual(onboardingAccount.headline)
-      await expect(dbInfo.profile.keywords).toEqual(
-        expect.arrayContaining(onboardingAccount.keywords?.split(', ') ?? []),
-      )
-      await expect(String(dbInfo.profile.age)).toEqual(onboardingAccount.age)
-      await expect(dbInfo.profile.height_in_inches).toEqual(
-        Number(onboardingAccount.height?.feet) * 12,
-      )
-      await expect(dbInfo.profile.ethnicity).toContain(onboardingAccount.ethnicity_origin?.[1])
-      await expect(dbInfo.profile.pref_gender).toContain(onboardingAccount.interested_in?.[1])
-      await expect(String(dbInfo.profile.pref_age_min)).toContain(
-        onboardingAccount.Interested_in_ages?.min,
-      )
-      await expect(String(dbInfo.profile.pref_age_max)).toContain(
-        onboardingAccount.Interested_in_ages?.max,
-      )
-      await expect(dbInfo.profile.pref_relation_styles).toContain(
-        `${onboardingAccount.connection_type?.[1]}`.toLowerCase(),
-      )
-      await expect(dbInfo.profile.relationship_status).toContain(
-        onboardingAccount.relationship_status?.[1],
-      )
-      await expect(dbInfo.profile.pref_romantic_styles).toContain(
-        onboardingAccount.relationship_style?.[1],
-      )
-      await expect(dbInfo.profile.has_kids).toEqual(Number(onboardingAccount.number_of_kids))
-      await expect(dbInfo.profile.wants_kids_strength).toEqual(
-        onboardingAccount.children_expectation?.[1],
-      )
-      await expect(dbInfo.profile.education_level).toContain(
-        `${onboardingAccount.education_level?.[1]}`.toLowerCase(),
-      )
-      await expect(dbInfo.profile.university).toContain(onboardingAccount.university)
-      await expect(dbInfo.profile.occupation_title).toContain(onboardingAccount.job_title)
-      await expect(dbInfo.profile.company).toContain(onboardingAccount.company)
-      await expect(dbInfo.profile.political_beliefs).toContain(
-        onboardingAccount.beliefs?.political?.belief?.[1],
-      )
-      await expect(dbInfo.profile.political_details).toContain(
-        onboardingAccount.beliefs?.political?.details,
-      )
-      await expect(dbInfo.profile.religion).toContain(
-        onboardingAccount.beliefs?.religious?.belief?.[1],
-      )
-      await expect(dbInfo.profile.religious_beliefs).toContain(
-        onboardingAccount.beliefs?.religious?.details,
-      )
-      await expect(dbInfo.profile.mbti).toContain(
-        `${onboardingAccount.personality_type}`.toLowerCase(),
-      )
-      await expect(dbInfo.profile.big5_openness).toEqual(
-        onboardingAccount.big_five_personality_traits?.openness,
-      )
-      await expect(dbInfo.profile.big5_conscientiousness).toEqual(
-        onboardingAccount.big_five_personality_traits?.conscientiousness,
-      )
-      await expect(dbInfo.profile.big5_extraversion).toEqual(
-        onboardingAccount.big_five_personality_traits?.extraversion,
-      )
-      await expect(dbInfo.profile.big5_agreeableness).toEqual(
-        onboardingAccount.big_five_personality_traits?.agreeableness,
-      )
-      await expect(dbInfo.profile.big5_neuroticism).toEqual(
-        onboardingAccount.big_five_personality_traits?.neuroticism,
-      )
-      await expect(dbInfo.profile.diet).toContain(onboardingAccount.diet?.[1].toLowerCase())
-      await expect(dbInfo.profile.is_smoker).toEqual(onboardingAccount.is_smoker)
-      await expect(dbInfo.profile.languages).toHaveLength(2)
-      await expect(dbInfo.profile.languages).toEqual(
-        expect.arrayContaining(onboardingAccount.languages?.map(([_, l]) => l.toLowerCase()) ?? []),
-      )
-      await expect(String(dbInfo.profile.drinks_per_month)).toEqual(
-        onboardingAccount.alcohol_consumed_per_month,
-      )
-    })
+    await expect(dbInfo.user.name).toBe(onboardingAccount.display_name)
+    await expect(dbInfo.user.username).toBe(onboardingAccount.username)
+    await expect(dbInfo.profile.bio_text).toBe(onboardingAccount.bio)
+    await expect(dbInfo.profile.gender).toEqual(onboardingAccount.gender?.[1])
+    await expect(dbInfo.profile.headline).toEqual(onboardingAccount.headline)
+    await expect(dbInfo.profile.keywords).toEqual(
+      expect.arrayContaining(onboardingAccount.keywords?.split(', ') ?? []),
+    )
+    await expect(String(dbInfo.profile.age)).toEqual(onboardingAccount.age)
+    await expect(dbInfo.profile.height_in_inches).toEqual(
+      Number(onboardingAccount.height?.feet) * 12,
+    )
+    await expect(dbInfo.profile.ethnicity).toContain(onboardingAccount.ethnicity_origin?.[1])
+    await expect(dbInfo.profile.pref_gender).toContain(onboardingAccount.interested_in?.[1])
+    await expect(String(dbInfo.profile.pref_age_min)).toContain(
+      onboardingAccount.Interested_in_ages?.min,
+    )
+    await expect(String(dbInfo.profile.pref_age_max)).toContain(
+      onboardingAccount.Interested_in_ages?.max,
+    )
+    await expect(dbInfo.profile.pref_relation_styles).toContain(
+      `${onboardingAccount.connection_type?.[1]}`.toLowerCase(),
+    )
+    await expect(dbInfo.profile.relationship_status).toContain(
+      onboardingAccount.relationship_status?.[1],
+    )
+    await expect(dbInfo.profile.pref_romantic_styles).toContain(
+      onboardingAccount.relationship_style?.[1],
+    )
+    await expect(dbInfo.profile.has_kids).toEqual(Number(onboardingAccount.number_of_kids))
+    await expect(dbInfo.profile.wants_kids_strength).toEqual(
+      onboardingAccount.children_expectation?.[1],
+    )
+    await expect(dbInfo.profile.education_level).toContain(
+      `${onboardingAccount.education_level?.[1]}`.toLowerCase(),
+    )
+    await expect(dbInfo.profile.university).toContain(onboardingAccount.university)
+    await expect(dbInfo.profile.occupation_title).toContain(onboardingAccount.job_title)
+    await expect(dbInfo.profile.company).toContain(onboardingAccount.company)
+    await expect(dbInfo.profile.political_beliefs).toContain(
+      onboardingAccount.beliefs?.political?.belief?.[1],
+    )
+    await expect(dbInfo.profile.political_details).toContain(
+      onboardingAccount.beliefs?.political?.details,
+    )
+    await expect(dbInfo.profile.religion).toContain(
+      onboardingAccount.beliefs?.religious?.belief?.[1],
+    )
+    await expect(dbInfo.profile.religious_beliefs).toContain(
+      onboardingAccount.beliefs?.religious?.details,
+    )
+    await expect(dbInfo.profile.mbti).toContain(
+      `${onboardingAccount.personality_type}`.toLowerCase(),
+    )
+    await expect(dbInfo.profile.big5_openness).toEqual(
+      onboardingAccount.big_five_personality_traits?.openness,
+    )
+    await expect(dbInfo.profile.big5_conscientiousness).toEqual(
+      onboardingAccount.big_five_personality_traits?.conscientiousness,
+    )
+    await expect(dbInfo.profile.big5_extraversion).toEqual(
+      onboardingAccount.big_five_personality_traits?.extraversion,
+    )
+    await expect(dbInfo.profile.big5_agreeableness).toEqual(
+      onboardingAccount.big_five_personality_traits?.agreeableness,
+    )
+    await expect(dbInfo.profile.big5_neuroticism).toEqual(
+      onboardingAccount.big_five_personality_traits?.neuroticism,
+    )
+    await expect(dbInfo.profile.diet).toContain(onboardingAccount.diet?.[1].toLowerCase())
+    await expect(dbInfo.profile.is_smoker).toEqual(onboardingAccount.is_smoker)
+    await expect(dbInfo.profile.languages).toHaveLength(2)
+    await expect(dbInfo.profile.languages).toEqual(
+      expect.arrayContaining(onboardingAccount.languages?.map(([_, l]) => l.toLowerCase()) ?? []),
+    )
+    await expect(String(dbInfo.profile.drinks_per_month)).toEqual(
+      onboardingAccount.alcohol_consumed_per_month,
+    )
+  })
 
   test('should successfully complete the onboarding flow with google account', async ({
     app,
@@ -230,12 +230,12 @@ test.describe('when given valid input', () => {
     //Verify displayed information is correct
     await app.profile.verifyDisplayName(googleAccountOne.display_name)
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(googleAccountOne)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccountOne)
 
-      await expect(dbInfo.user.name).toContain(googleAccountOne.display_name)
-      await expect(dbInfo.user.username).toContain(googleAccountOne.username)
-    })
+    await expect(dbInfo.user.name).toContain(googleAccountOne.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountOne.username)
+  })
 
   test('should successfully skip the onboarding flow', async ({app, fakerAccount}) => {
     await app.registerWithEmail(fakerAccount)
@@ -244,12 +244,12 @@ test.describe('when given valid input', () => {
     //Verify displayed information is correct
     await app.profile.verifyDisplayName(fakerAccount.display_name)
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(fakerAccount)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
 
-      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-      await expect(dbInfo.user.username).toContain(fakerAccount.username)
-    })
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+  })
 
   test('should successfully delete an account created via email and password', async ({
     homePage,
@@ -263,64 +263,64 @@ test.describe('when given valid input', () => {
     await registerWithEmail(homePage, authPage, fakerAccount)
     await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
-      //Verify displayed information is correct
-      await profilePage.verifyDisplayName(fakerAccount.display_name)
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(fakerAccount.display_name)
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(fakerAccount)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
 
-      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-      await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
 
-      await homePage.clickSettingsLink()
-      await settingsPage.clickDeleteAccountButton()
-      await settingsPage.fillDeleteAccountSurvey('Delete me')
-      await settingsPage.clickDeleteAccountButton()
-      await homePage.verifyHomePageLinks()
-    })
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey('Delete me')
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
+  })
 
-    test('should successfully delete an account created via google auth', async ({
-      homePage,
-      onboardingPage,
-      signUpPage,
-      authPage,
-      profilePage,
-      settingsPage,
-      googleAccountTwo,
-    }) => {
-      console.log(
-        `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
-      )
-      await homePage.gotToRegisterPage()
-      await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-      await authPage.signInToGoogleAccount(
-        googleAccountTwo.email,
-        googleAccountTwo.display_name,
-        googleAccountTwo.username,
-      )
-      await onboardingPage.clickSkipOnboardingButton()
-      await signUpPage.fillDisplayName(googleAccountTwo.display_name)
-      await signUpPage.fillUsername(googleAccountTwo.username)
-      await signUpPage.clickNextButton()
-      await signUpPage.clickNextButton() //Skip optional information
-      await profilePage.clickCloseButton()
-      await onboardingPage.clickRefineProfileButton()
+  test('should successfully delete an account created via google auth', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    settingsPage,
+    googleAccountTwo,
+  }) => {
+    console.log(
+      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
+    )
+    await homePage.goToRegisterPage()
+    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await authPage.signInToGoogleAccount(
+      googleAccountTwo.email,
+      googleAccountTwo.display_name,
+      googleAccountTwo.username,
+    )
+    await onboardingPage.clickSkipOnboardingButton()
+    await signUpPage.fillDisplayName(googleAccountTwo.display_name)
+    await signUpPage.fillUsername(googleAccountTwo.username)
+    await signUpPage.clickNextButton()
+    await signUpPage.clickNextButton() //Skip optional information
+    await profilePage.clickCloseButton()
+    await onboardingPage.clickRefineProfileButton()
 
-      //Verify displayed information is correct
-      await profilePage.verifyDisplayName(googleAccountTwo.display_name)
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(googleAccountTwo)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccountTwo)
 
-      await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
-      await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
+    await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
 
-      await homePage.clickSettingsLink()
-      await settingsPage.clickDeleteAccountButton()
-      await settingsPage.fillDeleteAccountSurvey('Delete me')
-      await settingsPage.clickDeleteAccountButton()
-      await homePage.verifyHomePageLinks()
-    })
+    await homePage.clickSettingsLink()
+    await settingsPage.clickDeleteAccountButton()
+    await settingsPage.fillDeleteAccountSurvey('Delete me')
+    await settingsPage.clickDeleteAccountButton()
+    await homePage.verifyHomePageLinks()
+  })
 
   test('should successfully enter optional information after completing flow', async ({
     app,
@@ -347,15 +347,15 @@ test.describe('when given valid input', () => {
       fakerAccount.age,
     )
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(fakerAccount)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
 
-      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-      await expect(dbInfo.user.username).toContain(fakerAccount.username)
-      await expect(dbInfo.profile.gender).toEqual(fakerAccount.gender?.[1])
-      await expect(String(dbInfo.profile.age)).toEqual(fakerAccount.age)
-      await expect(dbInfo.profile.height_in_inches).toEqual(Number(fakerAccount.height?.feet) * 12)
-    })
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    await expect(dbInfo.profile.gender).toEqual(fakerAccount.gender?.[1])
+    await expect(String(dbInfo.profile.age)).toEqual(fakerAccount.age)
+    await expect(dbInfo.profile.height_in_inches).toEqual(Number(fakerAccount.height?.feet) * 12)
+  })
 
   test('should successfully use the start answering option', async ({
     app,
@@ -380,12 +380,12 @@ test.describe('when given valid input', () => {
     await app.profile.verifyDisplayName(fakerAccount.display_name)
     await app.profile.verifyCompatibilityAnswers(compatTwoQuestionOne)
 
-      //Verify database info
-      const dbInfo = await userInformationFromDb(fakerAccount)
+    //Verify database info
+    const dbInfo = await userInformationFromDb(fakerAccount)
 
-      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-      await expect(dbInfo.user.username).toContain(fakerAccount.username)
-    })
+    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+    await expect(dbInfo.user.username).toContain(fakerAccount.username)
+  })
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
     test("the first time it's an option", async ({app, fakerAccount}) => {
@@ -405,12 +405,12 @@ test.describe('when given valid input', () => {
       //Verify displayed information is correct
       await app.profile.verifyDisplayName(fakerAccount.display_name)
 
-        //Verify database info
-        const dbInfo = await userInformationFromDb(fakerAccount)
+      //Verify database info
+      const dbInfo = await userInformationFromDb(fakerAccount)
 
-        await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-        await expect(dbInfo.user.username).toContain(fakerAccount.username)
-      })
+      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+      await expect(dbInfo.user.username).toContain(fakerAccount.username)
+    })
 
     test("the second time it's an option", async ({app, fakerAccount}) => {
       await app.registerWithEmail(fakerAccount)
@@ -429,14 +429,14 @@ test.describe('when given valid input', () => {
       //Verify displayed information is correct
       await app.profile.verifyDisplayName(fakerAccount.display_name)
 
-        //Verify database info
-        const dbInfo = await userInformationFromDb(fakerAccount)
+      //Verify database info
+      const dbInfo = await userInformationFromDb(fakerAccount)
 
-        await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-        await expect(dbInfo.user.username).toContain(fakerAccount.username)
-      })
+      await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
+      await expect(dbInfo.user.username).toContain(fakerAccount.username)
     })
   })
+})
 
 // test.describe('when an error occurs', () => {
 //   test('placeholder', async ({}) => {})

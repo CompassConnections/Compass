@@ -3,7 +3,7 @@ import {NextResponse} from 'next/server'
 
 const DOMAIN = 'compassmeet.com'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = request.headers.get('host') || ''
   const url = request.nextUrl.clone()
 

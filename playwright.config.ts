@@ -25,10 +25,12 @@ function getSupabaseEnv() {
   }
 }
 
-const supabaseEnv = getSupabaseEnv()
-
-// Inject into process.env so Playwright and your app code can read them
-// Object.assign(process.env, supabaseEnv)
+if (process.env.DIRECT_SUPABASE_SETUP_IN_PLAYWRIGHT !== 'true') {
+  const supabaseEnv = getSupabaseEnv()
+  
+  // Inject into process.env so Playwright and your app code can read them
+  Object.assign(process.env, supabaseEnv)
+}
 
 export default defineConfig({
   testDir: './tests/e2e',

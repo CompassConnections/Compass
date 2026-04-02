@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import ee.forgr.capacitor.social.login.GoogleProvider;
@@ -49,6 +50,8 @@ import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 import ee.forgr.capacitor.social.login.SocialLoginPlugin;
 
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
+
+    private String pendingDeepLink = null;
 
     // Declare this at class level
     private final ActivityResultLauncher<String> requestPermissionLauncher =
@@ -177,50 +180,62 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-//        String data = intent.getDataString();
         String endpoint = intent.getStringExtra("endpoint");
         Log.i("CompassApp", "onNewIntent called with endpoint: " + endpoint);
         if (endpoint != null) {
             Log.i("CompassApp", "redirecting to endpoint: " + endpoint);
             try {
                 String payload = new JSONObject().put("endpoint", endpoint).toString();
-                Log.i("CompassApp", "Payload: " + payload);
-                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("bridgeRedirect(" + payload + ");", null));
+                Log.i("CompassApp", "Handling notif click: " + payload);
+                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("handleAppLink(" + payload + ");", null));
             } catch (JSONException e) {
                 Log.i("CompassApp", "Failed to encode JSON payload", e);
             }
         } else {
-            Log.i("CompassApp", "No relevant data");
+            Uri data = intent.getData();
+            if (data != null) {
+                handleDeepLink(data.toString());
+            } else {
+                Log.i("CompassApp", "No relevant data");
+            }
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         Log.i("CompassApp", "onCreate called");
         super.onCreate(savedInstanceState);
 
         WebView webView = this.bridge.getWebView();
-        webView.setWebViewClient(new BridgeWebViewClient(this.bridge));
+        webView.setWebViewClient(new BridgeWebViewClient(this.bridge) {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (pendingDeepLink != null) {
+                    handleDeepLink(pendingDeepLink);
+                    pendingDeepLink = null;
+                }
+            }
+        });
 
-        WebView.setWebContentsDebuggingEnabled(true);
+        Uri data = getIntent().getData();
+        if (data != null) pendingDeepLink = data.toString();
 
-        // Set a recognizable User-Agent (always reliable)
-        WebSettings settings = webView.getSettings();
-        settings.setUserAgentString(settings.getUserAgentString() + " CompassAppWebView");
+        if (pendingDeepLink != null) {
+            handleDeepLink(pendingDeepLink);
+            pendingDeepLink = null;
+        }
+    }
 
-        settings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new WebAppInterface(this), "AndroidBridge");
-
-        registerPlugin(PushNotificationsPlugin.class);
-        // Initialize the Bridge with Push Notifications plugin
-//       this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
-//           add(com.getcapacitor.plugin.PushNotifications.class);
-//       }});
-
-        askNotificationPermission();
-
-        appUpdateManager = AppUpdateManagerFactory.create(this);
-        checkForUpdates();
+    private void handleDeepLink(String url) {
+        try {
+            String path = new URL(url).getPath();
+            String payload = new JSONObject().put("url", url).put("endpoint", path).toString();
+            Log.i("CompassApp", "Handling deep link: " + url);
+            bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("handleAppLink(" + payload + ");", null));
+        } catch (Exception e) {
+            Log.e("CompassApp", "Failed to handle deep link for " + url, e);
+        }
     }
 
     @Override

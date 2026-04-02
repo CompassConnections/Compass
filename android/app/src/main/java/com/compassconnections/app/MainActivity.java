@@ -83,6 +83,13 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         }
 
         @JavascriptInterface
+        public String getPendingDeepLink() {
+            String link = pendingDeepLink;
+            pendingDeepLink = null; // consume it
+            return link;
+        }
+
+        @JavascriptInterface
         public void downloadFile(String filename, String content) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -202,29 +209,35 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         Log.i("CompassApp", "onCreate called");
         super.onCreate(savedInstanceState);
 
         WebView webView = this.bridge.getWebView();
-        webView.setWebViewClient(new BridgeWebViewClient(this.bridge) {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (pendingDeepLink != null) {
-                    handleDeepLink(pendingDeepLink);
-                    pendingDeepLink = null;
-                }
-            }
-        });
+        webView.setWebViewClient(new BridgeWebViewClient(this.bridge));
+
+//        WebView.setWebContentsDebuggingEnabled(true);
+
+        // Set a recognizable User-Agent (always reliable)
+        WebSettings settings = webView.getSettings();
+        settings.setUserAgentString(settings.getUserAgentString() + " CompassAppWebView");
+
+        settings.setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new WebAppInterface(this), "AndroidBridge");
+
+        registerPlugin(PushNotificationsPlugin.class);
+        // Initialize the Bridge with Push Notifications plugin
+//       this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
+//           add(com.getcapacitor.plugin.PushNotifications.class);
+//       }});
+
+        askNotificationPermission();
+
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        checkForUpdates();
 
         Uri data = getIntent().getData();
         if (data != null) pendingDeepLink = data.toString();
-
-        if (pendingDeepLink != null) {
-            handleDeepLink(pendingDeepLink);
-            pendingDeepLink = null;
-        }
     }
 
     private void handleDeepLink(String url) {

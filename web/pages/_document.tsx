@@ -8,6 +8,7 @@ declare global {
   interface Window {
     AndroidBridge?: {
       downloadFile: (filename: string, content: string) => void
+      getPendingDeepLink: () => string | null
     }
   }
 }

@@ -150,6 +150,7 @@ function MyApp(props: AppProps<PageProps>) {
   }, [router])
 
   useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
     const handleAppLink = (payload: any) => {
       debug('handleAppLink', payload)
       const {endpoint} = payload
@@ -158,6 +159,11 @@ function MyApp(props: AppProps<PageProps>) {
       }
     }
     ;(window as any).handleAppLink = handleAppLink
+
+    const link = window.AndroidBridge?.getPendingDeepLink?.()
+    if (link) {
+      handleAppLink({url: link, endpoint: new URL(link).pathname})
+    }
   }, [])
 
   const title = 'Compass'

@@ -49,8 +49,16 @@ sed -i.bak 's/\bgetStaticPaths\b/_getStaticPaths/g' $USERNAME_PAGE
 # rename getServerSideProps to _getServerSideProps
 sed -i.bak 's/\bgetServerSideProps\b/_getServerSideProps/g' $HOME_PAGE
 
+# rename proxy to _proxy
+mv proxy.ts _proxy.ts
+
 yarn build
 
 sed -i.bak 's/\b_getStaticProps\b/getStaticProps/g' $USERNAME_PAGE
 sed -i.bak 's/\b_getStaticPaths\b/getStaticPaths/g' $USERNAME_PAGE
 sed -i.bak 's/\b_getServerSideProps\b/getServerSideProps/g' $HOME_PAGE
+
+mv _proxy.ts proxy.ts
+
+# Remove backup files
+rm -f "$USERNAME_PAGE.bak" "$HOME_PAGE.bak"

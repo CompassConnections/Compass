@@ -216,8 +216,9 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         WebView webView = this.bridge.getWebView();
         webView.setWebViewClient(new BridgeWebViewClient(this.bridge));
 
-//        WebView.setWebContentsDebuggingEnabled(true);
-
+       if (BuildConfig.ENABLE_WEBVIEW_DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true);
+       }
         // Set a recognizable User-Agent (always reliable)
         WebSettings settings = webView.getSettings();
         settings.setUserAgentString(settings.getUserAgentString() + " CompassAppWebView");

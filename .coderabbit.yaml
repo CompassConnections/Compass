@@ -1,11 +1,4 @@
-# Automatically generated PR summaries
-description:
-  # Do you want CodeRabbit to actually edit the PR description body? (Highly recommended)
-  collapse_walkthrough: false
-  instructions: |
-    Summarize the changes clearly. 
-    Format the summary with bullet points.
-    Highlight any potential breaking changes for users.
+language: "en-US"
 
 # How aggressive and deep the reviews should be
 reviews:
@@ -21,18 +14,11 @@ reviews:
   
   # High-level rules for the AI to follow during review
   instructions: |
+    - Summarize the changes clearly. 
+    - Format the summary with bullet points.
+    - Highlight any potential breaking changes for users.
     - We use early returns to avoid deep nesting.
     - Ensure all public functions have docstrings.
     - Flag any hardcoded strings; they should be in the constants file.
     - Check for edge cases like null values or empty arrays.
     - Suggest performance optimizations where appropriate.
-
-# What files should the AI ignore? (Crucial to save time and avoid noise)
-path_filters:
-  # Files to ALWAYS ignore
-  exclude:
-    - "**/*.md"             # Ignore markdown docs
-    - "package-lock.json"   # Ignore lock files
-    - "yarn.lock"
-    - "dist/**"             # Ignore compiled output
-    - "test/mocks/**"       # Ignore mock data

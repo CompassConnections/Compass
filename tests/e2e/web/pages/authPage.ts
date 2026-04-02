@@ -55,8 +55,10 @@ export class AuthPage {
     await popup.getByLabel('Email').fill(email)
     if (display_name) await popup.getByLabel('Display name').fill(display_name)
     if (username) await popup.getByLabel('Screen name', {exact: true}).fill(username)
-    await popup.getByText('Sign in with Google.com', {exact: true}).click()
-    await popup.waitForEvent('close')
+    await Promise.all([
+      popup.waitForEvent('close'),
+      popup.getByText('Sign in with Google.com', {exact: true}).click(),
+    ])
   }
 
   async clickSignUpWithEmailButton() {

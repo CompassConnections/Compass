@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_VERCEL, PNG_FAVICON} from 'common/hosting/constants'
 import {debug} from 'common/logger'
+import {isUrl} from 'common/parsing'
 import type {AppProps} from 'next/app'
 import {Major_Mono_Display} from 'next/font/google'
 import Head from 'next/head'
@@ -164,7 +165,7 @@ function MyApp(props: AppProps<PageProps>) {
 
     const link = window.AndroidBridge?.getPendingDeepLink?.()
     if (link) {
-      handleAppLink({url: link, endpoint: new URL(link).pathname})
+      handleAppLink({endpoint: isUrl(link) ? new URL(link).pathname : link})
     }
   }, [])
 

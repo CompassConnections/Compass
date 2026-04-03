@@ -238,7 +238,16 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         checkForUpdates();
 
         Uri data = getIntent().getData();
-        if (data != null) pendingDeepLink = data.toString();
+        if (data != null) {
+            pendingDeepLink = data.toString();
+        } else {
+            // Check for notification endpoint when app is opened from cold start via notification click
+            String endpoint = getIntent().getStringExtra("endpoint");
+            if (endpoint != null) {
+                Log.i("CompassApp", "onCreate found endpoint from notification: " + endpoint);
+                pendingDeepLink = endpoint;
+            }
+        }
     }
 
     private void handleDeepLink(String url) {

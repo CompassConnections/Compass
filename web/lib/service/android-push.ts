@@ -1,7 +1,7 @@
 import {PushNotifications} from '@capacitor/push-notifications'
 import {debug} from 'common/logger'
-import {useRouter} from 'next/router'
 import {useEffect} from 'react'
+import toast from 'react-hot-toast'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {isAndroidApp} from 'web/lib/util/webview'
@@ -9,7 +9,6 @@ import {isAndroidApp} from 'web/lib/util/webview'
 export default function AndroidPush() {
   const user = useUser() // authenticated user
   const isAndroid = isAndroidApp()
-  const router = useRouter()
   useEffect(() => {
     if (!user?.id || !isAndroid) return
     debug('AndroidPush', user)
@@ -36,12 +35,14 @@ export default function AndroidPush() {
     })
 
     PushNotifications.addListener('pushNotificationReceived', (notif) => {
-      debug('Push received', notif)
-      const url = notif?.data?.url
-      if (url) {
-        router.push(url)
-        window.location.href = url
-      }
+      console.debug('Push received', notif, window.location.pathname)
+      const endpoint = notif?.data?.endpoint as string
+      if (!endpoint) return
+      if (!endpoint.startsWith('/messages/')) return
+      if (endpoint === window.location.pathname) return
+      const author = notif?.title
+      const message = notif?.body
+      toast.success(`${author}: "${message}"`)
     })
   }, [user?.id, isAndroid])
 

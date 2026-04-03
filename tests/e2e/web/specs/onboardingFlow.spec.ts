@@ -217,7 +217,7 @@ test.describe('when given valid input', () => {
       onboardingAccount.alcohol_consumed_per_month,
     )
   })
-
+  
   test('should successfully complete the onboarding flow with google account', async ({
     homePage,
     onboardingPage,
@@ -289,11 +289,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
 
-    await homePage.clickSettingsLink()
-    await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey('Delete me')
-    await settingsPage.clickDeleteAccountButton()
-    await homePage.verifyHomePageLinks()
+    await deleteProfileFromSettings(homePage, settingsPage)
   })
 
   test('should successfully delete an account created via google auth', async ({
@@ -304,10 +300,12 @@ test.describe('when given valid input', () => {
     profilePage,
     settingsPage,
     googleAccountTwo,
+    headless,
   }) => {
     console.log(
       `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
     )
+    test.skip(headless, 'Google popup auth test requires headed mode')
     await homePage.goToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
     await authPage.signInToGoogleAccount(
@@ -315,13 +313,7 @@ test.describe('when given valid input', () => {
       googleAccountTwo.display_name,
       googleAccountTwo.username,
     )
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(googleAccountTwo.display_name)
-    await signUpPage.fillUsername(googleAccountTwo.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountTwo)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(googleAccountTwo.display_name)
@@ -332,11 +324,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
     await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
 
-    await homePage.clickSettingsLink()
-    await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey('Delete me')
-    await settingsPage.clickDeleteAccountButton()
-    await homePage.verifyHomePageLinks()
+    await deleteProfileFromSettings(homePage, settingsPage)
   })
 
   test('should successfully enter optional information after completing flow', async ({

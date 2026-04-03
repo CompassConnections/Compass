@@ -5,6 +5,7 @@ import {App} from '@capacitor/app'
 import {Capacitor} from '@capacitor/core'
 import {Keyboard} from '@capacitor/keyboard'
 import {StatusBar} from '@capacitor/status-bar'
+import * as Sentry from '@sentry/node'
 import clsx from 'clsx'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_VERCEL, PNG_FAVICON} from 'common/hosting/constants'
@@ -165,6 +166,19 @@ function MyApp(props: AppProps<PageProps>) {
     if (link) {
       handleAppLink({url: link, endpoint: new URL(link).pathname})
     }
+  }, [])
+
+  useEffect(() => {
+    const fetchAppInfo = async () => {
+      if (!Capacitor.isNativePlatform()) return
+      const appInfo = await App.getInfo().catch((e) => debug('Could not load Android app info:', e))
+      const appVersion = appInfo?.version
+      if (appVersion) {
+        Sentry.setTag('android_version', appVersion)
+        Sentry.setTag('android_build_number', appInfo?.build)
+      }
+    }
+    fetchAppInfo()
   }, [])
 
   const title = 'Compass'

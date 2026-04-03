@@ -233,6 +233,7 @@ test.describe('when given valid input', () => {
     profilePage,
     googleAccountOne,
     page,
+    headless,
   }) => {
     console.log(
       `Starting "should successfully complete the onboarding flow with google account" with ${googleAccountOne.username}`,
@@ -244,6 +245,7 @@ test.describe('when given valid input', () => {
       googleAccountOne.display_name,
       googleAccountOne.username,
     )
+    test.skip(headless, 'Google popup auth test requires headed mode')
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(googleAccountOne.display_name)
     await signUpPage.fillUsername(googleAccountOne.username)

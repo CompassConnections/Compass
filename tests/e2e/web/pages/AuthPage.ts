@@ -56,7 +56,7 @@ export class AuthPage {
     if (display_name) await popup.getByLabel('Display name').fill(display_name)
     if (username) await popup.getByLabel('Screen name', {exact: true}).fill(username)
     await Promise.all([
-      popup.waitForEvent('close'),
+      // popup.waitForEvent('close'),
       popup.getByText('Sign in with Google.com', {exact: true}).click(),
     ])
   }

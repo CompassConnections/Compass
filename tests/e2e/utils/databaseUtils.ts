@@ -7,6 +7,7 @@ export async function deleteFromDb(user_id: string) {
 
   if (!result.length) {
     console.debug(`No user found with id: ${user_id}`)
+    return
   }
 
   console.log('Deleted data: ', {

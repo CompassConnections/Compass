@@ -1,5 +1,5 @@
-import {test, expect} from '../fixtures/signInFixture'
 import {seedUser} from '../../utils/seedDatabase'
+import {expect, test} from '../fixtures/signInFixture'
 import {testAccounts} from '../utils/accountInformation'
 import {signinWithEmail} from '../utils/testCleanupHelpers'
 

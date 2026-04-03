@@ -1,16 +1,17 @@
 import {test as base} from '@playwright/test'
-import {getAuthAccountInfo} from '../utils/networkUtils'
+
 import {AuthPage} from '../pages/AuthPage'
 import {ComatibilityPage} from '../pages/compatibilityPage'
 import {HomePage} from '../pages/homePage'
 import {OnboardingPage} from '../pages/onboardingPage'
 import {OrganizationPage} from '../pages/organizationPage'
 import {ProfilePage} from '../pages/profilePage'
+import {SettingsPage} from '../pages/settingsPage'
 import {SignUpPage} from '../pages/signUpPage'
 import {SocialPage} from '../pages/socialPage'
-import {SettingsPage} from '../pages/settingsPage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
+import {getAuthAccountInfo} from '../utils/networkUtils'
 
 export const test = base.extend<{
   homePage: HomePage

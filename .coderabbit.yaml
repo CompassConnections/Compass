@@ -1,0 +1,102 @@
+# Enables IDE autocompletion for this config file
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# Language for CodeRabbit's review comments
+language: en
+
+# Enable experimental features (currently not using any specific early_access features)
+early_access: true
+
+chat:
+  # CodeRabbit will automatically respond to @coderabbitai mentions in PR comments
+  auto_reply: true
+
+reviews:
+  auto_review:
+    # Automatically trigger reviews when PRs are opened or updated
+    enabled: true
+    # Skip auto-review if PR title contains these keywords
+    ignore_title_keywords:
+      - "WIP"
+    # Don't auto-review draft PRs
+    drafts: false
+    # Only auto-review PRs targeting these branches
+    base_branches:
+      - main
+      - develop
+
+  # Include a high-level summary at the start of each review
+  high_level_summary: true
+
+  # Generate sequence diagrams for complex code flows
+  sequence_diagrams: true
+
+  # Don't include poems in reviews (fun feature, but keeping it professional)
+  poem: false
+
+  # Show review completion status
+  review_status: true
+
+  # Keep the walkthrough section expanded by default
+  collapse_walkthrough: false
+
+  # Include summary of all changed files
+  changed_files_summary: true
+
+  # Don't automatically request changes on the PR (just leave comments)
+  request_changes_workflow: false
+
+  # Pre-merge checks to enforce before merging PRs
+  pre_merge_checks:
+    description:
+      # Validate that PR has a proper description
+      mode: warning # Options: off, warning, error
+    docstrings:
+      # Disable docstring coverage checks (let's assume we don't need them)
+      mode: off
+
+  # Exclude these paths from reviews (build artifacts and dependencies)
+  path_filters:
+    - "!**/node_modules/**" # npm dependencies
+    - "!**/android/**" # Native Android build files
+    - "!**/ios/**" # Native iOS build files
+    - "!**/.expo/**" # Expo build cache
+    - "!**/.expo-shared/**" # Expo shared config
+    - "!**/dist/**" # Build output
+
+  # Custom review instructions for specific file patterns
+  path_instructions:
+    # TypeScript/JavaScript files - main app code
+    - path: "**/*.{ts,tsx,js,jsx}"
+      instructions: |
+        General practices:
+        - Summarize the changes clearly. 
+        - Format the summary with bullet points.
+        - Highlight any potential breaking changes for users.
+        - We use early returns to avoid deep nesting.
+        - Ensure all public functions have docstrings.
+        - Flag any hardcoded strings; they should be in the constants file.
+        - Check for edge cases like null values or empty arrays.
+        - Suggest performance optimizations where appropriate.
+    
+        Mobile best practices:
+        - Proper use of hooks (useRouter, useFonts, useAssets)
+        - Accessibility: touch targets min 44x44, screen reader support
+        - Safe area handling and platform-specific code (iOS vs Android)
+        - Memory leaks in useEffect and event listeners
+
+        Performance:
+        - Use FlatList/SectionList for lists (never ScrollView with .map)
+        - React.memo, useMemo, useCallback where appropriate
+
+        TypeScript:
+        - Avoid 'any', use explicit types
+        - Prefer 'import type' for type imports
+
+        Security:
+        - No exposed API keys or sensitive data
+        - Use expo-secure-store for sensitive storage
+        - Validate deep linking configurations
+
+        Internationalization:
+        - User-visible strings should be externalized to resource files (useT())

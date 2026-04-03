@@ -174,8 +174,8 @@ function MyApp(props: AppProps<PageProps>) {
       const appInfo = await App.getInfo().catch((e) => debug('Could not load Android app info:', e))
       const appVersion = appInfo?.version
       if (appVersion) {
-        Sentry.setTag('android_version', appVersion)
-        Sentry.setTag('android_build_number', appInfo?.build)
+        Sentry.setTag('androidApp.version', appVersion)
+        Sentry.setTag('androidApp.buildNumber', appInfo?.build)
       }
     }
     fetchAppInfo()

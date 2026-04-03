@@ -1,6 +1,10 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {expect, test} from '../fixtures/base'
-import {registerWithEmail} from '../utils/testCleanupHelpers'
+import {
+  deleteProfileFromSettings,
+  registerWithEmail,
+  skipOnboardingHeadToProfile
+} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('should successfully complete the onboarding flow with email', async ({
@@ -14,11 +18,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
     )
-    await homePage.goToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(onboardingAccount.email)
-    await authPage.fillPasswordField(onboardingAccount.password)
-    await authPage.clickSignUpWithEmailButton()
+    await registerWithEmail(homePage,authPage,onboardingAccount)
     await onboardingPage.clickContinueButton() //First continue
     await onboardingPage.clickContinueButton() //Second continue
     await onboardingPage.clickGetStartedButton()
@@ -224,7 +224,7 @@ test.describe('when given valid input', () => {
       onboardingAccount.alcohol_consumed_per_month,
     )
   })
-
+  
   test('should successfully complete the onboarding flow with google account', async ({
     homePage,
     onboardingPage,
@@ -232,12 +232,12 @@ test.describe('when given valid input', () => {
     authPage,
     profilePage,
     googleAccountOne,
-    page,
     headless,
   }) => {
     console.log(
       `Starting "should successfully complete the onboarding flow with google account" with ${googleAccountOne.username}`,
     )
+    test.skip(headless, 'Google popup auth test requires headed mode')
     await homePage.goToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
     await authPage.signInToGoogleAccount(
@@ -245,14 +245,7 @@ test.describe('when given valid input', () => {
       googleAccountOne.display_name,
       googleAccountOne.username,
     )
-    test.skip(headless, 'Google popup auth test requires headed mode')
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(googleAccountOne.display_name)
-    await signUpPage.fillUsername(googleAccountOne.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountOne)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(googleAccountOne.display_name)
@@ -276,13 +269,7 @@ test.describe('when given valid input', () => {
       `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
     )
     await registerWithEmail(homePage, authPage, fakerAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(fakerAccount.display_name)
@@ -307,13 +294,7 @@ test.describe('when given valid input', () => {
       `Starting "should successfully delete an account created via email and password" with ${fakerAccount.username}`,
     )
     await registerWithEmail(homePage, authPage, fakerAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(fakerAccount.display_name)
@@ -324,11 +305,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
 
-    await homePage.clickSettingsLink()
-    await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey('Delete me')
-    await settingsPage.clickDeleteAccountButton()
-    await homePage.verifyHomePageLinks()
+    await deleteProfileFromSettings(homePage, settingsPage)
   })
 
   test('should successfully delete an account created via google auth', async ({
@@ -339,10 +316,12 @@ test.describe('when given valid input', () => {
     profilePage,
     settingsPage,
     googleAccountTwo,
+    headless,
   }) => {
     console.log(
       `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
     )
+    test.skip(headless, 'Google popup auth test requires headed mode')
     await homePage.goToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
     await authPage.signInToGoogleAccount(
@@ -350,13 +329,7 @@ test.describe('when given valid input', () => {
       googleAccountTwo.display_name,
       googleAccountTwo.username,
     )
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(googleAccountTwo.display_name)
-    await signUpPage.fillUsername(googleAccountTwo.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountTwo)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(googleAccountTwo.display_name)
@@ -367,11 +340,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
     await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
 
-    await homePage.clickSettingsLink()
-    await settingsPage.clickDeleteAccountButton()
-    await settingsPage.fillDeleteAccountSurvey('Delete me')
-    await settingsPage.clickDeleteAccountButton()
-    await homePage.verifyHomePageLinks()
+    await deleteProfileFromSettings(homePage, settingsPage)
   })
 
   test('should successfully enter optional information after completing flow', async ({
@@ -386,13 +355,7 @@ test.describe('when given valid input', () => {
       `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
     )
     await registerWithEmail(homePage, authPage, fakerAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage,profilePage, fakerAccount)
     await profilePage.clickEditProfileButton()
     await signUpPage.chooseGender(fakerAccount.gender)
     await signUpPage.fillAge(fakerAccount.age)

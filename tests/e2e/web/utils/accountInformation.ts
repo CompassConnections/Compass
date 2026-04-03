@@ -162,7 +162,7 @@ export const testAccounts: AccountConfig = {
       email: `g1_compass_${id}@gmail.com`,
       password: 'G_oneCompassTest',
       display_name: 'Google_one_Compass',
-      username: `G_one_Connections_${id}`,
+      username: `G1_Connect_${id}`,
     }
   },
 
@@ -172,7 +172,7 @@ export const testAccounts: AccountConfig = {
       email: `g2_compass_${id}@gmail.com`,
       password: 'G_twoCompassTest',
       display_name: 'Google_two_Compass',
-      username: `G_two_Connections_${id}`,
+      username: `G2_Connect_${id}`,
     }
   },
 

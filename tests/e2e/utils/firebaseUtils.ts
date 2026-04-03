@@ -60,7 +60,14 @@ export async function firebaseSignUp(email: string, password: string) {
 }
 
 export async function deleteAccount(idToken: any) {
-  await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.DELETE}`, {
-    idToken: idToken,
-  })
+  try {
+    await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.DELETE}`, {
+      idToken: idToken,
+    })
+  } catch (err: any) {
+    if (err.response?.data?.error?.message?.includes('USER_NOT_FOUND')) {
+      return
+    }
+    throw err
+  }
 }

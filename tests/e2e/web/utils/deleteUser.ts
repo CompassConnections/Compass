@@ -1,7 +1,7 @@
-import {deleteFromDb, userInformationFromDb} from '../../utils/databaseUtils'
-import {AuthObject} from './networkUtils'
-import {deleteAccount, firebaseLoginEmailPassword, findUser} from '../../utils/firebaseUtils'
+import {deleteFromDb} from '../../utils/databaseUtils'
+import {deleteAccount, firebaseLoginEmailPassword} from '../../utils/firebaseUtils'
 import {UserAccountInformation} from './accountInformation'
+import {AuthObject} from './networkUtils'
 
 type AuthType = 'Email/Password' | 'Google'
 export async function deleteUser(
@@ -13,18 +13,9 @@ export async function deleteUser(
     let loginInfo
     if (authType === 'Email/Password') {
       loginInfo = await firebaseLoginEmailPassword(account?.email, account?.password)
-      try {
-        await deleteAccount(loginInfo?.data.idToken)
-        const userDbCheck = await userInformationFromDb(account)
-        if (userDbCheck) {
-          await deleteFromDb(loginInfo?.data.localId)
-        }
-      } catch (dbError) {}
-    }
-    if (authType === 'Google' && authInfo) {
-      const googleAuthUser = await findUser(authInfo.idToken)
-      if (!googleAuthUser) return
-
+      await deleteAccount(loginInfo?.data.idToken)
+      await deleteFromDb(loginInfo?.data.localId)
+    } else if (authType === 'Google' && authInfo) {
       await deleteAccount(authInfo.idToken)
       await deleteFromDb(authInfo.localId)
     }

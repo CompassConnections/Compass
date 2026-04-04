@@ -316,7 +316,7 @@ describe('loadProfiles', () => {
   })
 
   describe('when an error occurs', () => {
-    it('throw if there is no compatability', async () => {
+    it('throw if there is no compatibility', async () => {
       const props = {
         orderBy: 'compatibility_score',
       }

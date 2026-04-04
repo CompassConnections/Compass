@@ -1,5 +1,4 @@
 import {expect, test} from '../fixtures/base'
-import {registerWithEmail} from '../utils/testCleanupHelpers'
 
 // test.describe('when given valid input', () => {
 //   test('placeholder', async () => {})
@@ -8,31 +7,25 @@ import {registerWithEmail} from '../utils/testCleanupHelpers'
 test.describe('when an error occurs', () => {
   test('should disable the button "Next" when the display name field is empty', async ({
     specAccount,
-    homePage,
-    authPage,
-    onboardingPage,
-    signUpPage,
+    app,
   }) => {
-    await registerWithEmail(homePage, authPage, specAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName('')
-    await signUpPage.fillUsername(specAccount.username)
-    await signUpPage.verifyDisplayNameError()
-    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+    await app.registerWithEmail(specAccount)
+    await app.onboarding.clickSkipOnboardingButton()
+    await app.signUp.fillDisplayName('')
+    await app.signUp.fillUsername(specAccount.username)
+    await app.signUp.verifyDisplayNameError()
+    await expect(app.signUp.nextButtonLocator).toBeDisabled()
   })
 
   test('should disable the button "Next" when the username field is empty', async ({
     specAccount,
-    homePage,
-    authPage,
-    onboardingPage,
-    signUpPage,
+    app,
   }) => {
-    await registerWithEmail(homePage, authPage, specAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(specAccount.display_name)
-    await signUpPage.fillUsername('')
-    await signUpPage.verifyUsernameError()
-    await expect(signUpPage.nextButtonLocator).toBeDisabled()
+    await app.registerWithEmail(specAccount)
+    await app.onboarding.clickSkipOnboardingButton()
+    await app.signUp.fillDisplayName(specAccount.display_name)
+    await app.signUp.fillUsername('')
+    await app.signUp.verifyUsernameError()
+    await expect(app.signUp.nextButtonLocator).toBeDisabled()
   })
 })

@@ -348,7 +348,6 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
-
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 

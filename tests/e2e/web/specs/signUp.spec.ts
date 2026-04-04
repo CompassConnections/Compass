@@ -9,9 +9,6 @@ test.describe('when an error occurs', () => {
     specAccount,
     app
   }) => {
-    console.log(
-      `Starting "should disable the button "Next" when the display name field is empty" with ${specAccount.username}`,
-    )
     await app.registerWithEmail(specAccount)
     await app.onboarding.clickSkipOnboardingButton()
     await app.signUp.fillDisplayName('')

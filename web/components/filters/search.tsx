@@ -2,6 +2,7 @@ import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
+import {debounce as debounceFn} from 'lodash'
 import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {IoFilterSharp} from 'react-icons/io5'
@@ -180,6 +181,22 @@ export const Search = forwardRef<
   const isClearedFilters = useIsClearedFilters(filters)
   const choices = useChoicesContext()
 
+  const [keywordInput, setKeywordInput] = useState(filters.name ?? '')
+
+  const debouncedUpdateFilter = useRef(
+    debounceFn((value: string) => {
+      updateFilter({name: value || undefined})
+    }, 500),
+  ).current
+
+  useEffect(() => {
+    debouncedUpdateFilter(keywordInput)
+  }, [keywordInput, debouncedUpdateFilter])
+
+  useEffect(() => {
+    setKeywordInput(filters.name ?? '')
+  }, [filters.name])
+
   useEffect(() => {
     if (isHolding) return
 
@@ -214,11 +231,11 @@ export const Search = forwardRef<
       <Row className={'mb-2 justify-between gap-2'}>
         <Input
           ref={ref}
-          value={filters.name ?? ''}
+          value={keywordInput}
           placeholder={placeholder}
           className={'w-full max-w-xs'}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            updateFilter({name: e.target.value || undefined})
+            setKeywordInput(e.target.value)
           }}
         />
 

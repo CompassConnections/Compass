@@ -1,19 +1,7 @@
-<<<<<<< HEAD
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {seedUser} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
 import {testAccounts} from '../utils/accountInformation'
-import {
-  deleteProfileFromSettings,
-  registerWithEmail,
-  signinWithEmail,
-  skipOnboardingHeadToProfile,
-} from '../utils/testCleanupHelpers'
-=======
-import {test, expect} from '../fixtures/signInFixture'
-import { seedUser } from "../../utils/seedDatabase";
-import { testAccounts } from "../utils/accountInformation";
->>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
 
 //Seed the account
 test.beforeAll(async () => {
@@ -32,40 +20,18 @@ test.beforeAll(async () => {
 })
 
 test.describe('when given valid input', () => {
-  test('should be able to sign in to an available account', async ({
-    homePage,
-    authPage,
-<<<<<<< HEAD
-    dev_one_account,
-  }) => {
-    await signinWithEmail(homePage, authPage, dev_one_account)
-=======
-    dev_one_account
-  }) => {
-    await homePage.gotToSigninPage()
-    await authPage.fillEmailField(dev_one_account.email)
-    await authPage.fillPasswordField(dev_one_account.password)
-    await authPage.clickSignInWithEmailButton()
->>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
-    await homePage.goToHomePage()
-    await homePage.verifySignedInHomePage(dev_one_account.display_name)
+  test('should be able to sign in to an available account', async ({app,dev_one_account,}) => {
+    await app.signinWithEmail(dev_one_account)
+    await app.home.goToHomePage()
+    await app.home.verifySignedInHomePage(dev_one_account.display_name)
   })
 
-<<<<<<< HEAD
-  test('should successfully delete an account created via email and password', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
-    fakerAccount,
-  }) => {
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
+  test('should successfully delete an account created via email and password', async ({app,fakerAccount,}) => {
+    await app.registerWithEmail(fakerAccount)
+    await app.skipOnboardingHeadToProfile(fakerAccount)
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
+    await app.profile.verifyDisplayName(fakerAccount.display_name)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
@@ -73,31 +39,26 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
 
-    await deleteProfileFromSettings(homePage, settingsPage)
+    await app.deleteProfileFromSettings()
   })
 
   test('should successfully delete an account created via google auth', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
+    app,
     googleAccountTwo,
     headless,
   }) => {
     test.skip(headless, 'Google popup auth test requires headed mode')
-    await homePage.goToRegisterPage()
-    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-    await authPage.signInToGoogleAccount(
+    await app.home.goToRegisterPage()
+    await app.auth.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await app.auth.signInToGoogleAccount(
       googleAccountTwo.email,
       googleAccountTwo.display_name,
       googleAccountTwo.username,
     )
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountTwo)
+    await app.skipOnboardingHeadToProfile(googleAccountTwo)
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
+    await app.profile.verifyDisplayName(googleAccountTwo.display_name)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(googleAccountTwo)
@@ -105,29 +66,19 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
     await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
 
-    await deleteProfileFromSettings(homePage, settingsPage)
+    await app.deleteProfileFromSettings()
   })
 })
 
 test.describe('when given invalid input', () => {
   test('should not be able to sign in to an available account', async ({
-    homePage,
-    authPage,
+    app,
     dev_one_account,
     page,
   }) => {
-    await signinWithEmail(homePage, authPage, dev_one_account.email, 'ThisPassword')
+    await app.signinWithEmail(dev_one_account.email, 'ThisPassword')
     await expect(
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()
   })
-=======
-  test('login check', async ({}) => {
-    
-  });
-})
-
-test.describe('when an error occurs', () => {
-  test('placeholder', async () => {})
->>>>>>> c092182d (Added checks to the deleteUser func to check if the accout exists)
 })

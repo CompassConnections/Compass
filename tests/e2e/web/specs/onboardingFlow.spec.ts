@@ -1,142 +1,133 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {expect, test} from '../fixtures/base'
-import {
-  registerWithEmail,
-  skipOnboardingHeadToProfile,
-  deleteProfileFromSettings,
-} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('should successfully complete the onboarding flow with email', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
+    app,
     onboardingAccount,
   }) => {
-    await registerWithEmail(homePage, authPage, onboardingAccount)
-    await onboardingPage.clickContinueButton() //First continue
-    await onboardingPage.clickContinueButton() //Second continue
-    await onboardingPage.clickGetStartedButton()
-    await signUpPage.fillDisplayName(onboardingAccount.display_name)
-    await signUpPage.fillUsername(onboardingAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.chooseGender(onboardingAccount.gender)
-    await signUpPage.fillAge(onboardingAccount.age)
-    await signUpPage.fillHeight({
+    await app.registerWithEmail(onboardingAccount)
+    await app.onboarding.clickContinueButton() //First continue
+    await app.onboarding.clickContinueButton() //Second continue
+    await app.onboarding.clickGetStartedButton()
+    await app.signUp.fillDisplayName(onboardingAccount.display_name)
+    await app.signUp.fillUsername(onboardingAccount.username)
+    await app.signUp.clickNextButton()
+    await app.signUp.chooseGender(onboardingAccount.gender)
+    await app.signUp.fillAge(onboardingAccount.age)
+    await app.signUp.fillHeight({
       feet: onboardingAccount.height?.feet,
       inches: onboardingAccount.height?.inches,
     })
-    await signUpPage.fillEthnicity(onboardingAccount.ethnicity_origin)
-    await signUpPage.fillHeadline(onboardingAccount.headline)
-    await signUpPage.fillKeywords(onboardingAccount.keywords)
-    await signUpPage.fillInterestedInConnectingWith(onboardingAccount.interested_in)
-    await signUpPage.fillAgeRangeInterest(
+    await app.signUp.fillEthnicity(onboardingAccount.ethnicity_origin)
+    await app.signUp.fillHeadline(onboardingAccount.headline)
+    await app.signUp.fillKeywords(onboardingAccount.keywords)
+    await app.signUp.fillInterestedInConnectingWith(onboardingAccount.interested_in)
+    await app.signUp.fillAgeRangeInterest(
       onboardingAccount.Interested_in_ages?.min,
       onboardingAccount.Interested_in_ages?.max,
     )
-    await signUpPage.setConnectionType(onboardingAccount.connection_type)
-    await signUpPage.setRelationshipStatus(onboardingAccount.relationship_status)
-    await signUpPage.setRelationshipStyle(onboardingAccount.relationship_style)
-    await signUpPage.fillCurrentNumberOfChildren(onboardingAccount.number_of_kids)
-    await signUpPage.setWantChildrenExpectation(onboardingAccount.children_expectation)
-    await signUpPage.setInterests(onboardingAccount.interests)
-    await signUpPage.setCauses(onboardingAccount.causes)
-    await signUpPage.setHighestEducationLevel(onboardingAccount.education_level)
-    await signUpPage.fillUniversity(onboardingAccount.university)
-    await signUpPage.fillJobTitle(onboardingAccount.job_title)
-    await signUpPage.fillCompany(onboardingAccount.company)
-    await signUpPage.setWorkArea(onboardingAccount.work_area)
-    await signUpPage.setPoliticalBeliefs(
+    await app.signUp.setConnectionType(onboardingAccount.connection_type)
+    await app.signUp.setRelationshipStatus(onboardingAccount.relationship_status)
+    await app.signUp.setRelationshipStyle(onboardingAccount.relationship_style)
+    await app.signUp.fillCurrentNumberOfChildren(onboardingAccount.number_of_kids)
+    await app.signUp.setWantChildrenExpectation(onboardingAccount.children_expectation)
+    await app.signUp.setInterests(onboardingAccount.interests)
+    await app.signUp.setCauses(onboardingAccount.causes)
+    await app.signUp.setHighestEducationLevel(onboardingAccount.education_level)
+    await app.signUp.fillUniversity(onboardingAccount.university)
+    await app.signUp.fillJobTitle(onboardingAccount.job_title)
+    await app.signUp.fillCompany(onboardingAccount.company)
+    await app.signUp.setWorkArea(onboardingAccount.work_area)
+    await app.signUp.setPoliticalBeliefs(
       onboardingAccount.beliefs?.political?.belief,
       onboardingAccount.beliefs?.political?.details,
     )
-    await signUpPage.setReligiousBeliefs(
+    await app.signUp.setReligiousBeliefs(
       onboardingAccount.beliefs?.religious?.belief,
       onboardingAccount.beliefs?.religious?.details,
     )
-    await signUpPage.setPersonalityType(onboardingAccount.personality_type)
-    await signUpPage.setOpennessPersonalityValue(
+    await app.signUp.setPersonalityType(onboardingAccount.personality_type)
+    await app.signUp.setOpennessPersonalityValue(
       onboardingAccount.big_five_personality_traits?.openness,
     )
-    await signUpPage.setAgreeablenessPersonalityValue(
+    await app.signUp.setAgreeablenessPersonalityValue(
       onboardingAccount.big_five_personality_traits?.agreeableness,
     )
-    await signUpPage.setConscientiousnessPersonalityValue(
+    await app.signUp.setConscientiousnessPersonalityValue(
       onboardingAccount.big_five_personality_traits?.conscientiousness,
     )
-    await signUpPage.setExtraversionPersonalityValue(
+    await app.signUp.setExtraversionPersonalityValue(
       onboardingAccount.big_five_personality_traits?.extraversion,
     )
-    await signUpPage.setNeuroticismPersonalityValue(
+    await app.signUp.setNeuroticismPersonalityValue(
       onboardingAccount.big_five_personality_traits?.neuroticism,
     )
-    await signUpPage.setDietType(onboardingAccount.diet)
-    await signUpPage.setIsSmoker(onboardingAccount.is_smoker)
-    await signUpPage.fillAlcoholPerMonth(onboardingAccount.alcohol_consumed_per_month)
-    await signUpPage.setLanguages(onboardingAccount.languages)
-    await signUpPage.addSocialMediaPlatform(onboardingAccount.social_media)
-    await signUpPage.fillBio(onboardingAccount.bio)
-    await signUpPage.clickNextButton()
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
-    await profilePage.clickAnswerQuestionsButton()
-    const compatQuestionOne = await profilePage.answerCompatibilityQuestion(
+    await app.signUp.setDietType(onboardingAccount.diet)
+    await app.signUp.setIsSmoker(onboardingAccount.is_smoker)
+    await app.signUp.fillAlcoholPerMonth(onboardingAccount.alcohol_consumed_per_month)
+    await app.signUp.setLanguages(onboardingAccount.languages)
+    await app.signUp.addSocialMediaPlatform(onboardingAccount.social_media)
+    await app.signUp.fillBio(onboardingAccount.bio)
+    await app.signUp.clickNextButton()
+    await app.profile.clickCloseButton()
+    await app.onboarding.clickRefineProfileButton()
+    await app.profile.clickAnswerQuestionsButton()
+    const compatQuestionOne = await app.profile.answerCompatibilityQuestion(
       onboardingAccount.compatibility,
     )
-    await profilePage.clickNextCompatibilityQuestionButton()
-    await profilePage.clickSkipCompatibilityQuestionButton()
-    await profilePage.clickSkipCompatibilityQuestionButton()
+    await app.profile.clickNextCompatibilityQuestionButton()
+    await app.profile.clickSkipCompatibilityQuestionButton()
+    await app.profile.clickSkipCompatibilityQuestionButton()
 
-    await profilePage.clickCloseButton()
+    await app.profile.clickCloseButton()
 
     //Verify information is correct
-    await profilePage.verifyDisplayName(onboardingAccount.display_name)
-    await profilePage.verifyHeadline(onboardingAccount.headline)
-    await profilePage.verifyKeywords(onboardingAccount.keywords)
-    await profilePage.verifyGenderLocationHeightAge(
+    await app.profile.verifyDisplayName(onboardingAccount.display_name)
+    await app.profile.verifyHeadline(onboardingAccount.headline)
+    await app.profile.verifyKeywords(onboardingAccount.keywords)
+    await app.profile.verifyGenderLocationHeightAge(
       onboardingAccount.gender,
       undefined,
       onboardingAccount.height?.feet,
       onboardingAccount.height?.inches,
       onboardingAccount.age,
     )
-    await profilePage.verifySeeking(
+    await app.profile.verifySeeking(
       onboardingAccount.interested_in,
       onboardingAccount.Interested_in_ages?.min,
       onboardingAccount.Interested_in_ages?.max,
       onboardingAccount.connection_type,
       onboardingAccount.relationship_style,
     )
-    await profilePage.verifyRelationshipStatus(onboardingAccount.relationship_status)
-    await profilePage.verifyCurrentNumberOfKids(onboardingAccount.number_of_kids)
-    await profilePage.verifyWantChildrenExpectation(onboardingAccount.children_expectation)
-    await profilePage.verifyInterests(onboardingAccount.interests)
-    await profilePage.verifyCauses(onboardingAccount.causes)
-    await profilePage.verifyEducationLevelAndUniversity(
+    await app.profile.verifyRelationshipStatus(onboardingAccount.relationship_status)
+    await app.profile.verifyCurrentNumberOfKids(onboardingAccount.number_of_kids)
+    await app.profile.verifyWantChildrenExpectation(onboardingAccount.children_expectation)
+    await app.profile.verifyInterests(onboardingAccount.interests)
+    await app.profile.verifyCauses(onboardingAccount.causes)
+    await app.profile.verifyEducationLevelAndUniversity(
       onboardingAccount.education_level,
       onboardingAccount.university,
     )
-    await profilePage.verifyJobInformation(onboardingAccount.job_title, onboardingAccount.company)
-    await profilePage.verifyWorkArea(onboardingAccount.work_area)
-    await profilePage.verifyPoliticalBeliefs(
+    await app.profile.verifyJobInformation(onboardingAccount.job_title, onboardingAccount.company)
+    await app.profile.verifyWorkArea(onboardingAccount.work_area)
+    await app.profile.verifyPoliticalBeliefs(
       onboardingAccount.beliefs?.political?.belief,
       onboardingAccount.beliefs?.political?.details,
     )
-    await profilePage.verifyReligiousBeliefs(
+    await app.profile.verifyReligiousBeliefs(
       onboardingAccount.beliefs?.religious?.belief,
       onboardingAccount.beliefs?.religious?.details,
     )
-    await profilePage.verifyPersonalityType(onboardingAccount.personality_type)
-    await profilePage.verifyBigFivePersonalitySection(onboardingAccount.big_five_personality_traits)
-    await profilePage.verifyDiet(onboardingAccount.diet)
-    await profilePage.verifySmoker(onboardingAccount.is_smoker)
-    await profilePage.verifyDrinksPerMonth(onboardingAccount.alcohol_consumed_per_month)
-    await profilePage.verifyLanguages(onboardingAccount.languages)
-    await profilePage.verifySocialMedia(onboardingAccount.social_media)
-    await profilePage.verifyBio(onboardingAccount.bio)
-    await profilePage.verifyCompatibilityAnswers(compatQuestionOne)
+    await app.profile.verifyPersonalityType(onboardingAccount.personality_type)
+    await app.profile.verifyBigFivePersonalitySection(onboardingAccount.big_five_personality_traits)
+    await app.profile.verifyDiet(onboardingAccount.diet)
+    await app.profile.verifySmoker(onboardingAccount.is_smoker)
+    await app.profile.verifyDrinksPerMonth(onboardingAccount.alcohol_consumed_per_month)
+    await app.profile.verifyLanguages(onboardingAccount.languages)
+    await app.profile.verifySocialMedia(onboardingAccount.social_media)
+    await app.profile.verifyBio(onboardingAccount.bio)
+    await app.profile.verifyCompatibilityAnswers(compatQuestionOne)
 
     //Verify Database Information
     const dbInfo = await userInformationFromDb(onboardingAccount)
@@ -223,26 +214,22 @@ test.describe('when given valid input', () => {
   })
   
   test('should successfully complete the onboarding flow with google account', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
+    app,
     googleAccountOne,
     headless,
   }) => {
     test.skip(headless, 'Google popup auth test requires headed mode')
-    await homePage.goToRegisterPage()
-    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-    await authPage.signInToGoogleAccount(
+    await app.home.goToRegisterPage()
+    await app.auth.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await app.auth.signInToGoogleAccount(
       googleAccountOne.email,
       googleAccountOne.display_name,
       googleAccountOne.username,
     )
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountOne)
+    await app.skipOnboardingHeadToProfile(googleAccountOne)
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(googleAccountOne.display_name)
+    await app.profile.verifyDisplayName(googleAccountOne.display_name)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(googleAccountOne)
@@ -252,107 +239,40 @@ test.describe('when given valid input', () => {
   })
 
   test('should successfully skip the onboarding flow', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
+    app,
     fakerAccount,
   }) => {
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
+    await app.registerWithEmail(fakerAccount)
+    await app.skipOnboardingHeadToProfile(fakerAccount)
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
+    await app.profile.verifyDisplayName(fakerAccount.display_name)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
 
     await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
-  })
-
-  test('should successfully delete an account created via email and password', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
-    fakerAccount,
-  }) => {
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
-
-    //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
-
-    //Verify database info
-    const dbInfo = await userInformationFromDb(fakerAccount)
-
-    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-    await expect(dbInfo.user.username).toContain(fakerAccount.username)
-
-    await deleteProfileFromSettings(homePage, settingsPage)
-  })
-
-  test('should successfully delete an account created via google auth', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
-    googleAccountTwo,
-    headless,
-  }) => {
-    console.log(
-      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
-    )
-    test.skip(headless, 'Google popup auth test requires headed mode')
-    await homePage.goToRegisterPage()
-    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-    await authPage.signInToGoogleAccount(
-      googleAccountTwo.email,
-      googleAccountTwo.display_name,
-      googleAccountTwo.username,
-    )
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountTwo)
-
-    //Verify displayed information is correct
-    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
-
-    //Verify database info
-    const dbInfo = await userInformationFromDb(googleAccountTwo)
-
-    await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
-    await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
-
-    await deleteProfileFromSettings(homePage, settingsPage)
   })
 
   test('should successfully enter optional information after completing flow', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
+    app,
     fakerAccount,
   }) => {
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
-    await profilePage.clickEditProfileButton()
-    await signUpPage.chooseGender(fakerAccount.gender)
-    await signUpPage.fillAge(fakerAccount.age)
-    await signUpPage.fillHeight({
+    await app.registerWithEmail(fakerAccount)
+    await app.skipOnboardingHeadToProfile(fakerAccount)
+    await app.profile.clickEditProfileButton()
+    await app.signUp.chooseGender(fakerAccount.gender)
+    await app.signUp.fillAge(fakerAccount.age)
+    await app.signUp.fillHeight({
       feet: fakerAccount.height?.feet,
       inches: fakerAccount.height?.inches,
     })
-    await signUpPage.saveProfileChanges()
+    await app.signUp.saveProfileChanges()
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
-    await profilePage.verifyGenderLocationHeightAge(
+    await app.profile.verifyDisplayName(fakerAccount.display_name)
+    await app.profile.verifyGenderLocationHeightAge(
       fakerAccount.gender,
       undefined,
       fakerAccount.height?.feet,
@@ -371,31 +291,27 @@ test.describe('when given valid input', () => {
   })
 
   test('should successfully use the start answering option', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
+    app,
     fakerAccount,
     onboardingAccount,
   }) => {
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await onboardingPage.clickSkipOnboardingButton()
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickStartAnsweringButton()
-    const compatTwoQuestionOne = await profilePage.answerCompatibilityQuestion(
+    await app.registerWithEmail(fakerAccount)
+    await app.onboarding.clickSkipOnboardingButton()
+    await app.signUp.fillDisplayName(fakerAccount.display_name)
+    await app.signUp.fillUsername(fakerAccount.username)
+    await app.signUp.clickNextButton()
+    await app.signUp.clickNextButton() //Skip optional information
+    await app.profile.clickStartAnsweringButton()
+    const compatTwoQuestionOne = await app.profile.answerCompatibilityQuestion(
       onboardingAccount.compatibility,
     )
-    await profilePage.clickNextCompatibilityQuestionButton()
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await app.profile.clickNextCompatibilityQuestionButton()
+    await app.profile.clickCloseButton()
+    await app.onboarding.clickRefineProfileButton()
 
     //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
-    await profilePage.verifyCompatibilityAnswers(compatTwoQuestionOne)
+    await app.profile.verifyDisplayName(fakerAccount.display_name)
+    await app.profile.verifyCompatibilityAnswers(compatTwoQuestionOne)
 
     //Verify database info
     const dbInfo = await userInformationFromDb(fakerAccount)
@@ -406,28 +322,24 @@ test.describe('when given valid input', () => {
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
     test("the first time it's an option", async ({
-      homePage,
-      authPage,
-      onboardingPage,
-      signUpPage,
-      profilePage,
+      app,
       fakerAccount,
     }) => {
-      await registerWithEmail(homePage, authPage, fakerAccount)
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickBackButton()
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickGetStartedButton()
-      await signUpPage.fillDisplayName(fakerAccount.display_name)
-      await signUpPage.fillUsername(fakerAccount.username)
-      await signUpPage.clickNextButton()
-      await signUpPage.clickNextButton() //Skip optional information
-      await profilePage.clickCloseButton()
-      await onboardingPage.clickRefineProfileButton()
+      await app.registerWithEmail(fakerAccount)
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickBackButton()
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickGetStartedButton()
+      await app.signUp.fillDisplayName(fakerAccount.display_name)
+      await app.signUp.fillUsername(fakerAccount.username)
+      await app.signUp.clickNextButton()
+      await app.signUp.clickNextButton() //Skip optional information
+      await app.profile.clickCloseButton()
+      await app.onboarding.clickRefineProfileButton()
 
       //Verify displayed information is correct
-      await profilePage.verifyDisplayName(fakerAccount.display_name)
+      await app.profile.verifyDisplayName(fakerAccount.display_name)
 
       //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)
@@ -437,28 +349,24 @@ test.describe('when given valid input', () => {
     })
 
     test("the second time it's an option", async ({
-      homePage,
-      authPage,
-      onboardingPage,
-      signUpPage,
-      profilePage,
+      app,
       fakerAccount,
     }) => {
-      await registerWithEmail(homePage, authPage, fakerAccount)
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickBackButton()
-      await onboardingPage.clickContinueButton()
-      await onboardingPage.clickGetStartedButton()
-      await signUpPage.fillDisplayName(fakerAccount.display_name)
-      await signUpPage.fillUsername(fakerAccount.username)
-      await signUpPage.clickNextButton()
-      await signUpPage.clickNextButton() //Skip optional information
-      await profilePage.clickCloseButton()
-      await onboardingPage.clickRefineProfileButton()
+      await app.registerWithEmail(fakerAccount)
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickBackButton()
+      await app.onboarding.clickContinueButton()
+      await app.onboarding.clickGetStartedButton()
+      await app.signUp.fillDisplayName(fakerAccount.display_name)
+      await app.signUp.fillUsername(fakerAccount.username)
+      await app.signUp.clickNextButton()
+      await app.signUp.clickNextButton() //Skip optional information
+      await app.profile.clickCloseButton()
+      await app.onboarding.clickRefineProfileButton()
 
       //Verify displayed information is correct
-      await profilePage.verifyDisplayName(fakerAccount.display_name)
+      await app.profile.verifyDisplayName(fakerAccount.display_name)
 
       //Verify database info
       const dbInfo = await userInformationFromDb(fakerAccount)

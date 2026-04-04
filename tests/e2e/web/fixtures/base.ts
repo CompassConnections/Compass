@@ -1,29 +1,11 @@
 import {test as base} from '@playwright/test'
-
-import {AuthPage} from '../pages/AuthPage'
-import {ComatibilityPage} from '../pages/compatibilityPage'
-import {HomePage} from '../pages/homePage'
-import {OnboardingPage} from '../pages/onboardingPage'
-import {OrganizationPage} from '../pages/organizationPage'
-import {ProfilePage} from '../pages/profilePage'
-import {SettingsPage} from '../pages/settingsPage'
-import {SignUpPage} from '../pages/signUpPage'
-import {SocialPage} from '../pages/socialPage'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 import {getAuthAccountInfo} from '../utils/networkUtils'
+import { App } from '../pages/app'
 
 export const test = base.extend<{
-  homePage: HomePage
-  onboardingPage: OnboardingPage
-  signUpPage: SignUpPage
-  profilePage: ProfilePage
-  authPage: AuthPage
-  settingsPage: SettingsPage
-  socialPage: SocialPage
-  organizationPage: OrganizationPage
-  compatabilityPage: ComatibilityPage
-  cleanUpUsers: void
+  app: App
   onboardingAccount: UserAccountInformation
   fakerAccount: UserAccountInformation
   specAccount: UserAccountInformation
@@ -62,41 +44,9 @@ export const test = base.extend<{
     console.log('Cleaning up spec account...')
     await deleteUser('Email/Password', account)
   },
-  onboardingPage: async ({page}, use) => {
-    const onboardingPage = new OnboardingPage(page)
-    await use(onboardingPage)
-  },
-  homePage: async ({page}, use) => {
-    const homePage = new HomePage(page)
-    await use(homePage)
-  },
-  signUpPage: async ({page}, use) => {
-    const signUpPage = new SignUpPage(page)
-    await use(signUpPage)
-  },
-  authPage: async ({page}, use) => {
-    const authPage = new AuthPage(page)
-    await use(authPage)
-  },
-  profilePage: async ({page}, use) => {
-    const profilePage = new ProfilePage(page)
-    await use(profilePage)
-  },
-  compatabilityPage: async ({page}, use) => {
-    const compatibilityPage = new ComatibilityPage(page)
-    await use(compatibilityPage)
-  },
-  settingsPage: async ({page}, use) => {
-    const settingsPage = new SettingsPage(page)
-    await use(settingsPage)
-  },
-  socialPage: async ({page}, use) => {
-    const socialPage = new SocialPage(page)
-    await use(socialPage)
-  },
-  organizationPage: async ({page}, use) => {
-    const organizationPage = new OrganizationPage(page)
-    await use(organizationPage)
+  app: async ({page}, use) => {
+    const appPage = new App(page)
+    await use(appPage)
   },
 })
 

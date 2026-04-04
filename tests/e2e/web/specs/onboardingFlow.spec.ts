@@ -220,7 +220,6 @@ test.describe('when given valid input', () => {
   }) => {
     test.skip(headless, 'Google popup auth test requires headed mode')
     await app.home.goToRegisterPage()
-    await app.auth.fillPasswordField('') //The test only passes when this is added...something is weird here
     await app.auth.signInToGoogleAccount(
       googleAccountOne.email,
       googleAccountOne.display_name,

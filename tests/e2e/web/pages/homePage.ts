@@ -2,78 +2,144 @@ import {expect, Locator, Page} from '@playwright/test'
 import {LocaleTuple} from 'common/constants'
 
 export class HomePage {
+  private readonly sidebar: Locator
   private readonly homePageLink: Locator
-  private readonly aboutLink: Locator
-  private readonly faqLink: Locator
-  private readonly voteLink: Locator
-  private readonly eventsLink: Locator
-  private readonly whatsNewLink: Locator
-  private readonly socialsLink: Locator
-  private readonly organizationLink: Locator
-  private readonly contactLink: Locator
+  private readonly profileLink: Locator
   private readonly signUpButton: Locator
   private readonly localePicker: Locator
   private readonly signInLink: Locator
+  private readonly signOutLink: Locator
   private readonly closeButton: Locator
 
   constructor(public readonly page: Page) {
-    this.homePageLink = page.getByText('Compass', {exact: true})
-    this.aboutLink = page.getByTestId('sidebar-about')
-    this.faqLink = page.getByTestId('sidebar-faq')
-    this.voteLink = page.getByTestId('sidebar-vote')
-    this.eventsLink = page.getByTestId('sidebar-events')
-    this.whatsNewLink = page.getByTestId('sidebar-news')
-    this.socialsLink = page.getByTestId('sidebar-social')
-    this.organizationLink = page.getByTestId('sidebar-organization')
-    this.contactLink = page.getByTestId('sidebar-contact')
+    this.sidebar = page.getByTestId('sidebar')
+    this.homePageLink = page.locator('a[href="/home"]')
+    this.profileLink = page.getByTestId('sidebar-username')
     this.signUpButton = page.locator('button').filter({hasText: 'Sign up'}).first()
     this.localePicker = page.getByTestId('sidebar-locale-picker')
-    this.signInLink = page.getByTestId('sidebar-signin')
+    this.signInLink = page.locator('a[href="/signin"]').first()
+    this.signOutLink = page.getByText('Sign out', {exact: true})
     this.closeButton = page.getByRole('button', {name: 'Close'})
   }
 
-  async gotToHomePage() {
-    await this.page.goto('/')
+  get sidebarAbout() {
+    return this.sidebar.getByText('About')
+  }
+
+  get sidebarFaq() {
+    return this.sidebar.getByText('FAQ')
+  }
+
+  get sidebarVote() {
+    return this.sidebar.getByText('Vote')
+  }
+
+  get sidebarEvents() {
+    return this.sidebar.getByText('Events')
+  }
+
+  get sidebarWhatsNew() {
+    return this.sidebar.getByText("What's new")
+  }
+
+  get sidebarSocials() {
+    return this.sidebar.getByText('Socials')
+  }
+
+  get sidebarOrganization() {
+    return this.sidebar.getByText('Organization')
+  }
+
+  get sidebarSettings() {
+    return this.sidebar.getByText('Settings')
+  }
+
+  get sidebarPeople() {
+    return this.sidebar.getByText('People')
+  }
+
+  get sidebarNotifs() {
+    return this.sidebar.getByText('Notifs')
+  }
+
+  get sidebarMessages() {
+    return this.sidebar.getByText('Messages')
+  }
+
+  get sidebarContact() {
+    return this.sidebar.getByText('Contact')
+  }
+
+  async goToHomePage() {
+    await this.page.goto('/home')
+  }
+
+  async goToRegisterPage() {
+    await this.page.goto('/register')
+  }
+
+  async goToSigninPage() {
+    await this.page.goto('/signin')
   }
 
   async clickAboutLink() {
-    await expect(this.aboutLink).toBeVisible()
-    await this.aboutLink.click()
+    await expect(this.sidebarAbout).toBeVisible()
+    await this.sidebarAbout.click()
   }
 
   async clickFaqLink() {
-    await expect(this.faqLink).toBeVisible()
-    await this.faqLink.click()
+    await expect(this.sidebarFaq).toBeVisible()
+    await this.sidebarFaq.click()
   }
 
   async clickVoteLink() {
-    await expect(this.voteLink).toBeVisible()
-    await this.voteLink.click()
+    await expect(this.sidebarVote).toBeVisible()
+    await this.sidebarVote.click()
   }
 
   async clickEventsLink() {
-    await expect(this.eventsLink).toBeVisible()
-    await this.eventsLink.click()
+    await expect(this.sidebarEvents).toBeVisible()
+    await this.sidebarEvents.click()
   }
 
   async clickWhatsNewLink() {
-    await expect(this.whatsNewLink).toBeVisible()
-    await this.whatsNewLink.click()
+    await expect(this.sidebarWhatsNew).toBeVisible()
+    await this.sidebarWhatsNew.click()
   }
 
   async clickSocialsLink() {
-    await expect(this.socialsLink).toBeVisible()
-    await this.socialsLink.click()
+    await expect(this.sidebarSocials).toBeVisible()
+    await this.sidebarSocials.click()
   }
 
   async clickOrganizationLink() {
-    await expect(this.organizationLink).toBeVisible()
-    await this.organizationLink.click()
+    await expect(this.sidebarOrganization).toBeVisible()
+    await this.sidebarOrganization.click()
   }
 
   async clickContactLink() {
-    await expect(this.contactLink).toBeVisible()
-    await this.contactLink.click()
+    await expect(this.sidebarContact).toBeVisible()
+    await this.sidebarContact.click()
+  }
+
+  async clickSettingsLink() {
+    await expect(this.sidebarSettings).toBeVisible()
+    await this.sidebarSettings.click()
+  }
+
+  async clickPeopleLink() {
+    await expect(this.sidebarPeople).toBeVisible()
+    await this.sidebarPeople.click()
+  }
+
+  async clickNotifsLink() {
+    await expect(this.sidebarNotifs).toBeVisible()
+    await this.sidebarNotifs.click()
+  }
+
+  async clickMessagesLink() {
+    await expect(this.sidebarMessages).toBeVisible()
+    await this.sidebarMessages.click()
   }
 
   async clickSignUpButton() {
@@ -88,7 +154,44 @@ export class HomePage {
   }
 
   async clickSignInLink() {
+    await expect(this.sidebar).toBeVisible()
+    await this.sidebar.getByText('Sign in').click()
+  }
+
+  async verifyHomePageLinks() {
+    await expect(this.homePageLink).toBeVisible()
+    await expect(this.sidebarAbout).toBeVisible()
+    await expect(this.sidebarFaq).toBeVisible()
+    await expect(this.sidebarVote).toBeVisible()
+    await expect(this.sidebarEvents).toBeVisible()
+    await expect(this.sidebarWhatsNew).toBeVisible()
+    await expect(this.sidebarSocials).toBeVisible()
+    await expect(this.sidebarOrganization).toBeVisible()
+    await expect(this.sidebarContact).toBeVisible()
+    await expect(this.signUpButton).toBeVisible()
     await expect(this.signInLink).toBeVisible()
-    await this.signInLink.click()
+    await expect(this.localePicker).toBeVisible()
+  }
+
+  async verifySignedInHomePage(displayName: string) {
+    await expect(this.homePageLink).toBeVisible()
+    await expect(this.profileLink).toBeVisible()
+    await expect(this.profileLink).toContainText(displayName)
+    await expect(this.sidebarPeople).toBeVisible()
+    await expect(this.sidebarNotifs).toBeVisible()
+    await expect(this.sidebarMessages).toBeVisible()
+    await expect(this.sidebarSettings).toBeVisible()
+    await expect(this.sidebarAbout).toBeVisible()
+    await expect(this.sidebarFaq).toBeVisible()
+    await expect(this.sidebarVote).toBeVisible()
+    await expect(this.sidebarEvents).toBeVisible()
+    await expect(this.sidebarWhatsNew).toBeVisible()
+    await expect(this.sidebarSocials).toBeVisible()
+    await expect(this.sidebarOrganization).toBeVisible()
+    await expect(this.sidebarContact).toBeVisible()
+    await expect(this.signOutLink).toBeVisible()
+    await expect(this.signUpButton).not.toBeVisible()
+    await expect(this.signInLink).not.toBeVisible()
+    await expect(this.localePicker).not.toBeVisible()
   }
 }

@@ -141,7 +141,7 @@ export function DeleteAccountSurveyModal() {
       onSubmitWithSuccess={handleDeleteAccount}
       disabled={false}
     >
-      <Col className="gap-4">
+      <Col className="gap-4" data-testid="delete-survey-modal">
         <Title>{t('delete_survey.title', 'Sorry to see you go')}</Title>
 
         <div>
@@ -157,7 +157,7 @@ export function DeleteAccountSurveyModal() {
               {t('delete_survey.reason_label', 'Why are you deleting your account?')}
             </RadioGroup.Label>
 
-            <div className="space-y-2 mt-2">
+            <div className="space-y-2 mt-2" data-testid="delete-account-survey-reasons">
               {Object.entries(reasonsMap).map(([key, value]) => (
                 <RadioGroup.Option
                   key={key}

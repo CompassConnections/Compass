@@ -7,7 +7,7 @@ export class AuthPage {
   private readonly emailField: Locator
   private readonly passwordField: Locator
   private readonly signInWithEmailButton: Locator
-  private readonly signInWithGoogleButton: Locator
+  private readonly googleButton: Locator
   private readonly signUpWithEmailButton: Locator
 
   constructor(public readonly page: Page) {
@@ -16,7 +16,7 @@ export class AuthPage {
     this.emailField = page.getByLabel('Email')
     this.passwordField = page.getByLabel('Password')
     this.signInWithEmailButton = page.getByRole('button', {name: 'Sign in with Email'})
-    this.signInWithGoogleButton = page.getByRole('button', {name: 'Google'})
+    this.googleButton = page.getByRole('button', {name: 'Google'})
     this.signUpWithEmailButton = page.getByRole('button', {name: 'Sign up with Email'})
   }
 
@@ -35,9 +35,28 @@ export class AuthPage {
     await this.signInWithEmailButton.click()
   }
 
-  async clickSignInWithGoogleButton() {
-    await expect(this.signInWithGoogleButton).toBeVisible()
-    await this.signInWithGoogleButton.click()
+  async clickGoogleButton() {
+    await expect(this.googleButton).toBeVisible()
+    await this.googleButton.click()
+  }
+
+  async getGooglePopupPage(): Promise<Page> {
+    const [popup] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.clickGoogleButton(),
+    ])
+    await popup.waitForLoadState()
+    return popup
+  }
+
+  async signInToGoogleAccount(email: string, display_name?: string, username?: string) {
+    const popup = await this.getGooglePopupPage()
+    await popup.getByText('Add new account', {exact: true}).click()
+    await popup.getByLabel('Email').fill(email)
+    if (display_name) await popup.getByLabel('Display name').fill(display_name)
+    if (username) await popup.getByLabel('Screen name', {exact: true}).fill(username)
+    await popup.getByText('Sign in with Google.com', {exact: true}).click()
+    await popup.waitForEvent('close')
   }
 
   async clickSignUpWithEmailButton() {

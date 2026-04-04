@@ -102,7 +102,9 @@ type AccountConfig = {
   spec_account: () => UserAccountInformation
   dev_one_account: () => UserAccountInformation
   dev_two_account: () => UserAccountInformation
-  account_all_info: () => UserAccountInformation
+  google_account_one: () => UserAccountInformation
+  google_account_two: () => UserAccountInformation
+  email_account_all_info: () => UserAccountInformation
 }
 
 export const testAccounts: AccountConfig = {
@@ -137,10 +139,10 @@ export const testAccounts: AccountConfig = {
   dev_one_account: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
-      email: `dev_1_${id}@compass.com`,
+      email: `dev_1@compass.com`,
       password: 'dev_1Password',
       display_name: 'Dev1.Compass',
-      username: `Dev1.Connections_${id}`,
+      username: `Dev1.Connections`,
     }
   },
 
@@ -150,11 +152,31 @@ export const testAccounts: AccountConfig = {
       email: 'dev_2@compass.com',
       password: 'dev_2Password',
       display_name: 'Dev2.Compass',
-      username: `Dev2.Connections_${id}`,
+      username: `Dev2.Connections_`,
     }
   },
 
-  account_all_info: () => {
+  google_account_one: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `g1_compass_${id}@gmail.com`,
+      password: 'G_oneCompassTest',
+      display_name: 'Google_one_Compass',
+      username: `G1_Connect_${id}`,
+    }
+  },
+
+  google_account_two: () => {
+    const id = crypto.randomUUID().slice(0, 6)
+    return {
+      email: `g2_compass_${id}@gmail.com`,
+      password: 'G_twoCompassTest',
+      display_name: 'Google_two_Compass',
+      username: `G2_Connect_${id}`,
+    }
+  },
+
+  email_account_all_info: () => {
     const id = crypto.randomUUID().slice(0, 6)
     return {
       // Use a non-real TLD like @test.compass to make it obvious these are test accounts and prevent accidental emails

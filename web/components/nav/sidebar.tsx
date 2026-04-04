@@ -41,6 +41,7 @@ export default function Sidebar(props: {
     <nav
       id="main-navigation"
       aria-label="Sidebar"
+      data-testid="sidebar"
       className={clsx(
         'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))]',
         className,
@@ -119,7 +120,6 @@ export const SignUpButton = (props: {
 
   return (
     <Button
-      data-testid="side-bar-sign-up-button"
       color={color ?? 'gradient'}
       size={size ?? 'xl'}
       onClick={startSignup}

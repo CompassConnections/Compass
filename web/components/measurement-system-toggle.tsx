@@ -18,6 +18,7 @@ export default function MeasurementSystemToggle(props: {className?: string}) {
       </span>
 
       <Switch
+        data-testid="measurement-system-toggle"
         checked={isEnabled}
         onChange={(enabled: boolean) => setMeasurementSystem(enabled ? 'metric' : 'imperial')}
         className={clsx(

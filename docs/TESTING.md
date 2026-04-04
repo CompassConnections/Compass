@@ -348,6 +348,7 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
+
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
@@ -705,6 +706,66 @@ Use this priority order for selecting elements in Playwright tests:
 
 This hierarchy mirrors how users actually interact with your application, making tests more reliable and meaningful.
 
+### Page Object Model (POM)
+
+Tests often receive multiple page objects as fixtures (e.g. `homePage`, `authPage`, `profilePage`). This is the **Page
+Object Model** pattern — a way to organize selectors and actions by the area of the app they belong to.
+
+**Page objects are not separate browser tabs.** They are all wrappers around the same underlying `page` instance. Each
+class simply encapsulates the selectors and actions relevant to one part of the UI:
+
+```typescript
+class ProfilePage {
+  constructor(private page: Page) {}
+
+  async verifyDisplayName(name: string) {
+    await expect(this.page.getByTestId('display-name')).toHaveText(name)
+  }
+}
+
+class SettingsPage {
+  constructor(private page: Page) {} // same page instance
+
+  async deleteAccount() {
+    await this.page.getByRole('button', {name: 'Delete account'}).click()
+  }
+}
+```
+
+**Why use POM instead of raw `page`?**
+
+Without it, tests are full of inline selectors that are brittle and hard to read. POM moves implementation details into
+dedicated classes so that the test itself reads like a plain-English description of user behavior. When a selector
+changes, you fix it in one place.
+
+```typescript
+// ❌ Without POM — noisy and brittle
+await page.locator('#email-input').fill(account.email)
+await page.locator('#submit-btn').click()
+await page.locator('[data-testid="skip-onboarding"]').click()
+// ...50 more lines of noise
+
+// ✅ With POM — readable and maintainable
+await registerWithEmail(homePage, authPage, fakerAccount)
+await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
+await profilePage.verifyDisplayName(fakerAccount.display_name)
+```
+
+**What happens if you call a method on the "wrong" page object?**
+
+Nothing special — it still runs. Since all page objects share the same `page`, the method simply acts on whatever is
+currently rendered in the browser. Page objects do not track which screen you're on; that's your responsibility as the
+test author. If you call `profilePage.verifyDisplayName()` while the browser is showing the settings screen, the locator
+won't find its element and the test will **time out**.
+
+```typescript
+// ⚠️ This fails at runtime if navigation hasn't happened yet
+await settingsPage.deleteAccount() // navigates away from profile
+await profilePage.verifyDisplayName(name) // locator not found → timeout
+```
+
+Always ensure navigation has completed before calling methods that depend on a specific screen being visible.
+
 ### Setting up test data
 
 Since the tests run in parallel (i.e., at the same time) and share the same database and Firebase emulator, it can
@@ -802,7 +863,9 @@ These are seeded automatically by `yarn test:db:seed`:
 
 ## Troubleshooting
 
-For comprehensive troubleshooting guidance beyond testing-specific issues, see the [Troubleshooting Guide](TROUBLESHOOTING.md) which covers development environment setup, database and emulator issues, API problems, and more.
+For comprehensive troubleshooting guidance beyond testing-specific issues, see
+the [Troubleshooting Guide](TROUBLESHOOTING.md) which covers development environment setup, database and emulator
+issues, API problems, and more.
 
 ### Port already in use
 
@@ -885,4 +948,5 @@ To download the Playwright report from a failed CI run:
 3. Download `playwright-report`
 4. Open `index.html` in your browser
 
-For performance testing guidance and benchmarking strategies, see the [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md).
+For performance testing guidance and benchmarking strategies, see
+the [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md).

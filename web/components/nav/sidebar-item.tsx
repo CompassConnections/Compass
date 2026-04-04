@@ -54,7 +54,6 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
     return (
       <Link
         href={item.href}
-        data-testid={`sidebar-${item.href?.replace('/', '')}`}
         aria-current={isCurrentPage ? 'page' : undefined}
         onClick={onClick}
         className={sidebarClass}

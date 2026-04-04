@@ -6,7 +6,8 @@ export async function deleteFromDb(user_id: string) {
   const result = await db.query(deleteEntryById, [user_id])
 
   if (!result.length) {
-    throw new Error(`No user found with id: ${user_id}`)
+    console.debug(`No user found with id: ${user_id}`)
+    return
   }
 
   console.log('Deleted data: ', {
@@ -19,8 +20,8 @@ export async function deleteFromDb(user_id: string) {
 export async function userInformationFromDb(account: any) {
   const db = createSupabaseDirectClient()
   const queryUserById = `
-                SELECT p.*
-                FROM users AS p
+                SELECT *
+                FROM users
                 WHERE username = $1
             `
   const userResults = await db.query(queryUserById, [account.username])

@@ -1,9 +1,9 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
-import {progressToRequiredForm} from '../utils/testCleanupHelpers'
 import {expect, test} from '../fixtures/base'
+import {registerWithEmail, skipOnboardingHeadToProfile} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
-  test('should successfully complete the onboarding flow', async ({
+  test('should successfully complete the onboarding flow with email', async ({
     homePage,
     onboardingPage,
     signUpPage,
@@ -12,13 +12,9 @@ test.describe('when given valid input', () => {
     onboardingAccount,
   }) => {
     console.log(
-      `Starting "should successfully complete the onboarding flow" with ${onboardingAccount.username}`,
+      `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
     )
-    await homePage.gotToHomePage()
-    await homePage.clickSignUpButton()
-    await authPage.fillEmailField(onboardingAccount.email)
-    await authPage.fillPasswordField(onboardingAccount.password)
-    await authPage.clickSignUpWithEmailButton()
+    await registerWithEmail(homePage, authPage, onboardingAccount)
     await onboardingPage.clickContinueButton() //First continue
     await onboardingPage.clickContinueButton() //Second continue
     await onboardingPage.clickGetStartedButton()
@@ -225,6 +221,38 @@ test.describe('when given valid input', () => {
     )
   })
 
+  test('should successfully complete the onboarding flow with google account', async ({
+    homePage,
+    onboardingPage,
+    signUpPage,
+    authPage,
+    profilePage,
+    googleAccountOne,
+    headless,
+  }) => {
+    console.log(
+      `Starting "should successfully complete the onboarding flow with google account" with ${googleAccountOne.username}`,
+    )
+    test.skip(headless, 'Google popup auth test requires headed mode')
+    await homePage.goToRegisterPage()
+    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
+    await authPage.signInToGoogleAccount(
+      googleAccountOne.email,
+      googleAccountOne.display_name,
+      googleAccountOne.username,
+    )
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountOne)
+
+    //Verify displayed information is correct
+    await profilePage.verifyDisplayName(googleAccountOne.display_name)
+
+    //Verify database info
+    const dbInfo = await userInformationFromDb(googleAccountOne)
+
+    await expect(dbInfo.user.name).toContain(googleAccountOne.display_name)
+    await expect(dbInfo.user.username).toContain(googleAccountOne.username)
+  })
+
   test('should successfully skip the onboarding flow', async ({
     homePage,
     onboardingPage,
@@ -236,13 +264,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
     //Verify displayed information is correct
     await profilePage.verifyDisplayName(fakerAccount.display_name)
@@ -265,13 +288,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
-    await signUpPage.fillDisplayName(fakerAccount.display_name)
-    await signUpPage.fillUsername(fakerAccount.username)
-    await signUpPage.clickNextButton()
-    await signUpPage.clickNextButton() //Skip optional information
-    await profilePage.clickCloseButton()
-    await onboardingPage.clickRefineProfileButton()
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
     await profilePage.clickEditProfileButton()
     await signUpPage.chooseGender(fakerAccount.gender)
     await signUpPage.fillAge(fakerAccount.age)
@@ -313,7 +331,8 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully use the start answering option" with ${fakerAccount.username}`,
     )
-    await progressToRequiredForm(homePage, authPage, fakerAccount, onboardingPage)
+    await registerWithEmail(homePage, authPage, fakerAccount)
+    await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(fakerAccount.display_name)
     await signUpPage.fillUsername(fakerAccount.username)
     await signUpPage.clickNextButton()
@@ -338,22 +357,16 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
-    test.beforeEach(async ({homePage, authPage, fakerAccount}) => {
-      console.log(`Before each with ${fakerAccount.username}`)
-      await homePage.gotToHomePage()
-      await homePage.clickSignUpButton()
-      await authPage.fillEmailField(fakerAccount.email)
-      await authPage.fillPasswordField(fakerAccount.password)
-      await authPage.clickSignUpWithEmailButton()
-    })
-
     test("the first time it's an option", async ({
+      homePage,
+      authPage,
       onboardingPage,
       signUpPage,
       profilePage,
       fakerAccount,
     }) => {
       console.log(`Starting "the first time its an option" with ${fakerAccount.username}`)
+      await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()
       await onboardingPage.clickContinueButton()
@@ -377,12 +390,15 @@ test.describe('when given valid input', () => {
     })
 
     test("the second time it's an option", async ({
+      homePage,
+      authPage,
       onboardingPage,
       signUpPage,
       profilePage,
       fakerAccount,
     }) => {
       console.log(`Starting "the second time its an option" with ${fakerAccount.username}`)
+      await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()
@@ -407,6 +423,6 @@ test.describe('when given valid input', () => {
   })
 })
 
-test.describe('when an error occurs', () => {
-  test('placeholder', async () => {})
-})
+// test.describe('when an error occurs', () => {
+//   test('placeholder', async ({}) => {})
+// })

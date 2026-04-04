@@ -19,6 +19,7 @@ export function FontPicker(props: {className?: string} = {}) {
 
   return (
     <select
+      data-testid="settings-font-picker"
       id="font-picker"
       value={font}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFont(e.target.value as FontOption)}
@@ -35,3 +36,8 @@ export function FontPicker(props: {className?: string} = {}) {
     </select>
   )
 }
+
+//Exported types for test files to use when referencing the keys of the choices objects
+export type FontsTuple = {
+  [K in keyof typeof EN_TRANSLATIONS]: [K, (typeof EN_TRANSLATIONS)[K]]
+}[keyof typeof EN_TRANSLATIONS]

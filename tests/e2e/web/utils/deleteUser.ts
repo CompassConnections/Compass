@@ -13,7 +13,7 @@ export async function deleteUser(
     let loginInfo
     if (authType === 'Email/Password') {
       loginInfo = await firebaseLoginEmailPassword(account?.email, account?.password)
-     await deleteAccount(loginInfo?.data.idToken)
+      await deleteAccount(loginInfo?.data.idToken)
       await deleteFromDb(loginInfo?.data.localId)
     } else if (authType === 'Google' && authInfo) {
       await deleteAccount(authInfo.idToken)

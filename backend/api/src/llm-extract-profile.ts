@@ -43,6 +43,144 @@ function getCacheKey(content: string): string {
   return hash.digest('hex')
 }
 
+async function validateProfileFields(
+  llmProfile: Partial<ProfileWithoutUser>,
+  validChoices: Record<string, string[]>,
+): Promise<Partial<ProfileWithoutUser>> {
+  const result: Partial<Record<keyof ProfileWithoutUser, any>> = {...llmProfile}
+
+  const toArray: (keyof ProfileWithoutUser)[] = [
+    'diet',
+    'ethnicity',
+    'interests',
+    'causes',
+    'work',
+    'languages',
+    'religion',
+    'political_beliefs',
+    'pref_gender',
+    'pref_relation_styles',
+    'pref_romantic_styles',
+    'relationship_status',
+    'keywords',
+  ]
+  for (const key of toArray) {
+    if (result[key] !== undefined) {
+      if (!Array.isArray(result[key])) {
+        result[key] = [String(result[key])]
+      } else {
+        result[key] = result[key].map(String)
+      }
+      // Filter out invalid values
+      if (validChoices[key]) {
+        result[key] = result[key].filter((v: string) => validChoices[key].includes(v))
+        if (result[key].length === 0) {
+          result[key] = undefined
+        }
+      }
+    }
+  }
+
+  const toString: (keyof ProfileWithoutUser)[] = [
+    'gender',
+    'education_level',
+    'mbti',
+    'psychedelics',
+    'cannabis',
+    'psychedelics_intention',
+    'cannabis_intention',
+    'psychedelics_pref',
+    'cannabis_pref',
+    'headline',
+    'city',
+    'country',
+    'raised_in_city',
+    'raised_in_country',
+    'university',
+    'company',
+    'occupation_title',
+    'religious_beliefs',
+    'political_details',
+  ]
+  for (const key of toString) {
+    if (result[key] !== undefined) {
+      if (Array.isArray(result[key])) {
+        result[key] = result[key][0] ?? ''
+      }
+      result[key] = String(result[key])
+      if (validChoices[key] && !validChoices[key].includes(result[key])) {
+        result[key] = undefined
+      }
+    }
+  }
+
+  const toNumber: (keyof ProfileWithoutUser)[] = [
+    'age',
+    'height_in_inches',
+    'drinks_per_month',
+    'has_kids',
+    'wants_kids_strength',
+    'big5_openness',
+    'big5_conscientiousness',
+    'big5_extraversion',
+    'big5_agreeableness',
+    'big5_neuroticism',
+    'pref_age_min',
+    'pref_age_max',
+    'city_latitude',
+    'city_longitude',
+    'raised_in_lat',
+    'raised_in_lon',
+  ]
+  for (const key of toNumber) {
+    if (result[key] !== undefined) {
+      const num = Number(result[key])
+      result[key] = isNaN(num) ? undefined : num
+    }
+  }
+
+  const toBoolean: (keyof ProfileWithoutUser)[] = ['is_smoker']
+  for (const key of toBoolean) {
+    if (result[key] !== undefined) {
+      result[key] = Boolean(result[key])
+    }
+  }
+
+  if (result.city) {
+    if (!result.city_latitude || !result.city_longitude) {
+      const response = await searchLocation({term: result.city, limit: 1})
+      const locations = response.data?.data
+      result.city_latitude = locations?.[0]?.latitude
+      result.city_longitude = locations?.[0]?.longitude
+      result.country ??= locations?.[0]?.country
+    }
+  }
+
+  if (result.raised_in_city) {
+    if (!result.raised_in_lat || !result.raised_in_lon) {
+      const response = await searchLocation({term: result.raised_in_city, limit: 1})
+      const locations = response.data?.data
+      result.raised_in_lat = locations?.[0]?.latitude
+      result.raised_in_lon = locations?.[0]?.longitude
+      result.raised_in_country ??= locations?.[0]?.country
+    }
+  }
+
+  if (result.links) {
+    const sites = Object.keys(result.links).filter((key) => SITE_ORDER.includes(key as any))
+    result.links = sites.reduce(
+      (acc, key) => {
+        const link = (result.links as Record<string, any>)[key]
+        if (link) acc[key] = link
+        return acc
+      },
+      {} as Record<string, any>,
+    )
+  }
+
+  return result
+}
+
 async function getCachedResult(cacheKey: string): Promise<Partial<ProfileWithoutUser> | null> {
   if (!USE_CACHE) return null
   try {
@@ -180,10 +318,34 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     getOptions('work', locale),
   ])
 
+  const validChoices: Partial<Record<keyof ProfileWithoutUser, string[]>> = {
+    interests: INTERESTS,
+    causes: CAUSE_AREAS,
+    work: WORK_AREAS,
+    diet: Object.values(DIET_CHOICES),
+    ethnicity: Object.values(RACE_CHOICES),
+    languages: Object.values(LANGUAGE_CHOICES),
+    religion: Object.values(RELIGION_CHOICES),
+    political_beliefs: Object.values(POLITICAL_CHOICES),
+    pref_gender: Object.values(GENDERS),
+    pref_relation_styles: Object.values(RELATIONSHIP_CHOICES),
+    pref_romantic_styles: Object.values(ROMANTIC_CHOICES),
+    relationship_status: Object.values(RELATIONSHIP_STATUS_CHOICES),
+    cannabis: Object.values(CANNABIS_CHOICES),
+    education_level: Object.values(EDUCATION_CHOICES),
+    gender: Object.values(GENDERS),
+    mbti: Object.values(MBTI_CHOICES),
+    psychedelics: Object.values(PSYCHEDELICS_CHOICES),
+    psychedelics_intention: Object.values(SUBSTANCE_INTENTION_CHOICES),
+    cannabis_intention: Object.values(SUBSTANCE_INTENTION_CHOICES),
+    psychedelics_pref: Object.values(SUBSTANCE_PREFERENCE_CHOICES),
+    cannabis_pref: Object.values(SUBSTANCE_PREFERENCE_CHOICES),
+  }
+
   const PROFILE_FIELDS: Partial<Record<keyof ProfileWithoutUser, any>> = {
     // Basic info
     age: 'Number. Age in years.',
-    gender: `One of: ${Object.values(GENDERS).join(', ')}. Infer if you have enough evidence`,
+    gender: `String. One of: ${validChoices.pref_gender?.join(', ')}. If multiple mentioned, use the most likely one. Infer if you have enough evidence`,
     height_in_inches: 'Number. Height converted to inches.',
     city: 'String. Current city of residence (English spelling).',
     country: 'String. Current country of residence (English spelling).',
@@ -196,7 +358,7 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     raised_in_lat: 'Number. Latitude of city where they grew up.',
     raised_in_lon: 'Number. Longitude of city where they grew up.',
     university: 'String. University or college attended.',
-    education_level: `One of: ${Object.values(EDUCATION_CHOICES).join(', ')}`,
+    education_level: `String. One of: ${validChoices.education_level?.join(', ')}. Highest level completed`,
     company: 'String. Current employer or company name.',
     occupation_title: 'String. Current job title.',
 
@@ -206,19 +368,19 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     has_kids: 'Number. 0 if no kids, otherwise number of kids.',
     wants_kids_strength:
       'Number 0–4. How strongly they want kids (0 = definitely not, 4 = definitely yes).',
-    diet: `Array. Any of: ${Object.values(DIET_CHOICES).join(', ')}`,
-    ethnicity: `Array. Any of: ${Object.values(RACE_CHOICES).join(', ')}`,
+    diet: `Array. Any of: ${validChoices.diet?.join(', ')}`,
+    ethnicity: `Array. Any of: ${validChoices.ethnicity?.join(', ')}`,
 
     // Substances
-    psychedelics: `One of: ${Object.values(PSYCHEDELICS_CHOICES).join(', ')}. Usage frequency of psychedelics/plant medicine, only if explicitly stated.`,
-    cannabis: `One of: ${Object.values(CANNABIS_CHOICES).join(', ')}. Usage frequency of cannabis, only if explicitly stated.`,
-    psychedelics_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use psychedelics.`,
-    cannabis_intention: `Array. Any of: ${Object.values(SUBSTANCE_INTENTION_CHOICES).join(', ')}. Only if they use cannabis.`,
-    psychedelics_pref: `Array. Any of: ${Object.values(SUBSTANCE_PREFERENCE_CHOICES).join(', ')}. Partner preference for psychedelics use.`,
-    cannabis_pref: `Array. Any of: ${Object.values(SUBSTANCE_PREFERENCE_CHOICES).join(', ')}. Partner preference for cannabis use.`,
+    psychedelics: `String. One of: ${validChoices.psychedelics?.join(', ')}. Usage frequency of psychedelics/plant medicine, only if explicitly stated.`,
+    cannabis: `String. One of: ${validChoices.cannabis?.join(', ')}. Usage frequency of cannabis, only if explicitly stated.`,
+    psychedelics_intention: `String. Array. Any of: ${validChoices.psychedelics_intention?.join(', ')}. Only if they use psychedelics.`,
+    cannabis_intention: `String. Array. Any of: ${validChoices.cannabis_intention?.join(', ')}. Only if they use cannabis.`,
+    psychedelics_pref: `String. Array. Any of: ${validChoices.psychedelics_pref?.join(', ')}. Partner preference for psychedelics use.`,
+    cannabis_pref: `String. Array. Any of: ${validChoices.cannabis_pref?.join(', ')}. Partner preference for cannabis use.`,
 
     // Identity — big5 only if person explicitly states a score, never infer from personality description
-    mbti: `One of: ${Object.values(MBTI_CHOICES).join(', ')}`,
+    mbti: `String. One of: ${validChoices.mbti?.join(', ')}`,
     big5_openness: 'Number 0–100. Only if explicitly self-reported, never infer.',
     big5_conscientiousness: 'Number 0–100. Only if explicitly self-reported, never infer.',
     big5_extraversion: 'Number 0–100. Only if explicitly self-reported, never infer.',
@@ -226,23 +388,23 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     big5_neuroticism: 'Number 0–100. Only if explicitly self-reported, never infer.',
 
     // Beliefs
-    religion: `Array. Any of: ${Object.values(RELIGION_CHOICES).join(', ')}`,
+    religion: `Array. Any of: ${validChoices.religion?.join(', ')}`,
     religious_beliefs:
       'String. Free-form elaboration on religious views, only if explicitly stated.',
-    political_beliefs: `Array. Any of: ${Object.values(POLITICAL_CHOICES).join(', ')}`,
+    political_beliefs: `Array. Any of: ${validChoices.political_beliefs?.join(', ')}`,
     political_details:
       'String. Free-form elaboration on political views, only if explicitly stated.',
 
     // Preferences
     pref_age_min: 'Number. Minimum preferred age of match.',
     pref_age_max: 'Number. Maximum preferred age of match.',
-    pref_gender: `Array. Any of: ${Object.values(GENDERS).join(', ')}`,
-    pref_relation_styles: `Array. Any of: ${Object.values(RELATIONSHIP_CHOICES).join(', ')}`,
-    pref_romantic_styles: `Array. Any of: ${Object.values(ROMANTIC_CHOICES).join(', ')}`,
-    relationship_status: `Array. Any of: ${Object.values(RELATIONSHIP_STATUS_CHOICES).join(', ')}`,
+    pref_gender: `Array. Any of: ${validChoices.pref_gender?.join(', ')}`,
+    pref_relation_styles: `Array. Any of: ${validChoices.pref_relation_styles?.join(', ')}`,
+    pref_romantic_styles: `Array. Any of: ${validChoices.pref_romantic_styles?.join(', ')}`,
+    relationship_status: `Array. Any of: ${validChoices.relationship_status?.join(', ')}`,
 
     // Languages
-    languages: `Array. Any of: ${Object.values(LANGUAGE_CHOICES).join(', ')}. If none, infer from text.`,
+    languages: `Array. Any of: ${validChoices.languages?.join(', ')}. If none, infer from text.`,
 
     // Free-form
     headline:
@@ -251,9 +413,9 @@ async function callLLM(content: string, locale?: string): Promise<Partial<Profil
     links: `Object. Key is any of: ${SITE_ORDER.join(', ')}.`,
 
     // Taxonomies — match existing labels first, only add new if truly no close match exists
-    interests: `Array. Prefer existing labels, only add new if no close match. Any of: ${INTERESTS.join(', ')}`,
-    causes: `Array. Prefer existing labels, only add new if no close match. Any of: ${CAUSE_AREAS.join(', ')}`,
-    work: `Array. Use only existing labels, do not add new if no close match. Any of: ${WORK_AREAS.join(', ')}`,
+    interests: `Array. Prefer existing labels, only add new if no close match. Any of: ${validChoices.interests?.join(', ')}`,
+    causes: `Array. Prefer existing labels, only add new if no close match. Any of: ${validChoices.causes?.join(', ')}`,
+    work: `Array. Use only existing labels, do not add new if no close match. Any of: ${validChoices.work?.join(', ')}`,
   }
 
   const EXTRACTION_PROMPT = `You are a profile information extraction expert analyzing text from a personal webpage, LinkedIn, bio, or similar source.
@@ -296,40 +458,11 @@ TEXT TO ANALYZE:
   let parsed: Partial<ProfileWithoutUser>
   try {
     parsed = typeof outputText === 'string' ? JSON.parse(outputText) : outputText
+    parsed = await validateProfileFields(parsed, validChoices)
     parsed = removeNullOrUndefinedProps(parsed)
   } catch (parseError) {
     log('Failed to parse LLM response as JSON', {outputText, parseError})
     throw APIErrors.internalServerError('Failed to parse extracted data')
-  }
-
-  if (parsed.city) {
-    if (!parsed.city_latitude || !parsed.city_longitude) {
-      const result = await searchLocation({term: parsed.city, limit: 1})
-      const locations = result.data?.data
-      parsed.city_latitude = locations?.[0]?.latitude
-      parsed.city_longitude = locations?.[0]?.longitude
-      parsed.country ??= locations?.[0]?.country
-    }
-  }
-  if (parsed.raised_in_city) {
-    if (!parsed.raised_in_lat || !parsed.raised_in_lon) {
-      const result = await searchLocation({term: parsed.raised_in_city, limit: 1})
-      const locations = result.data?.data
-      parsed.raised_in_lat = locations?.[0]?.latitude
-      parsed.raised_in_lon = locations?.[0]?.longitude
-      parsed.raised_in_country ??= locations?.[0]?.country
-    }
-  }
-  if (parsed.links) {
-    const sites = Object.keys(parsed.links).filter((key) => SITE_ORDER.includes(key as any))
-    parsed.links = sites.reduce(
-      (acc, key) => {
-        const link = (parsed.links as Record<string, any>)[key]
-        if (link) acc[key] = link
-        return acc
-      },
-      {} as Record<string, any>,
-    )
   }
 
   await setCachedResult(cacheKey, parsed)

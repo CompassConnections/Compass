@@ -104,3 +104,17 @@ reviews:
           const t = useT()
           const message = t('key', 'english string')
           ```
+
+    - path: "tests/e2e/**/*.ts"
+      instructions: |
+        Playwright E2E test guidelines for this repo:
+        - Page objects live in `tests/e2e/web/pages/`. Each class wraps one page/route, holds only `private readonly` Locators, and exposes action methods.
+        - All tests must use the `app` fixture (type `App`) from `tests/e2e/web/fixtures/base.ts`. Never instantiate page objects directly in a test.
+        - Cross-page flows (actions spanning multiple pages) belong as methods on the `App` class, not as standalone helper functions.
+        - Action methods in page objects must assert `expect(locator).toBeVisible()` before interacting.
+        - Never use `page.waitForTimeout()`. Use Playwright's built-in auto-waiting or `waitForURL` / `waitForSelector`.
+        - No hardcoded credentials in spec files; use `SPEC_CONFIG.ts` or account fixtures.
+        - Test account cleanup must be done in fixture teardown (after `await use(...)`), not in `afterEach` hooks.
+        - File and class names must use PascalCase (e.g., `CompatibilityPage.ts` / `class CompatibilityPage`).
+        - No DB or Firebase calls inside page object classes; those belong in `tests/e2e/utils/`.
+        - Flag any new page object not yet registered in `App`.

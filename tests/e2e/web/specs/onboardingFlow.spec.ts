@@ -1,6 +1,10 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {expect, test} from '../fixtures/base'
-import {registerWithEmail, skipOnboardingHeadToProfile} from '../utils/testCleanupHelpers'
+import {
+  registerWithEmail,
+  skipOnboardingHeadToProfile,
+  deleteProfileFromSettings,
+} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('should successfully complete the onboarding flow with email', async ({

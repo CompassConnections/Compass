@@ -1,5 +1,5 @@
-import {deleteFromDb, userInformationFromDb} from '../../utils/databaseUtils'
-import {deleteAccount, firebaseLoginEmailPassword, findUser} from '../../utils/firebaseUtils'
+import {deleteFromDb} from '../../utils/databaseUtils'
+import {deleteAccount, firebaseLoginEmailPassword} from '../../utils/firebaseUtils'
 import {UserAccountInformation} from './accountInformation'
 import {AuthObject} from './networkUtils'
 

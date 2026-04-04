@@ -7,7 +7,7 @@ import {expect, test} from '../fixtures/base'
 test.describe('when an error occurs', () => {
   test('should disable the button "Next" when the display name field is empty', async ({
     specAccount,
-    app
+    app,
   }) => {
     await app.registerWithEmail(specAccount)
     await app.onboarding.clickSkipOnboardingButton()
@@ -19,7 +19,7 @@ test.describe('when an error occurs', () => {
 
   test('should disable the button "Next" when the username field is empty', async ({
     specAccount,
-    app
+    app,
   }) => {
     await app.registerWithEmail(specAccount)
     await app.onboarding.clickSkipOnboardingButton()

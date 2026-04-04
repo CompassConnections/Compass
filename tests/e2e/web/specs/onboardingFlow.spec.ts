@@ -212,7 +212,7 @@ test.describe('when given valid input', () => {
       onboardingAccount.alcohol_consumed_per_month,
     )
   })
-  
+
   test('should successfully complete the onboarding flow with google account', async ({
     app,
     googleAccountOne,
@@ -238,10 +238,7 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.username).toContain(googleAccountOne.username)
   })
 
-  test('should successfully skip the onboarding flow', async ({
-    app,
-    fakerAccount,
-  }) => {
+  test('should successfully skip the onboarding flow', async ({app, fakerAccount}) => {
     await app.registerWithEmail(fakerAccount)
     await app.skipOnboardingHeadToProfile(fakerAccount)
 
@@ -321,10 +318,7 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('should successfully complete the onboarding flow after using the back button', () => {
-    test("the first time it's an option", async ({
-      app,
-      fakerAccount,
-    }) => {
+    test("the first time it's an option", async ({app, fakerAccount}) => {
       await app.registerWithEmail(fakerAccount)
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickBackButton()
@@ -348,10 +342,7 @@ test.describe('when given valid input', () => {
       await expect(dbInfo.user.username).toContain(fakerAccount.username)
     })
 
-    test("the second time it's an option", async ({
-      app,
-      fakerAccount,
-    }) => {
+    test("the second time it's an option", async ({app, fakerAccount}) => {
       await app.registerWithEmail(fakerAccount)
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickContinueButton()

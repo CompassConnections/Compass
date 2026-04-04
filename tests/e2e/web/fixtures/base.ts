@@ -2,7 +2,7 @@ import {test as base} from '@playwright/test'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
 import {deleteUser} from '../utils/deleteUser'
 import {getAuthAccountInfo} from '../utils/networkUtils'
-import { App } from '../pages/app'
+import {App} from '../pages/app'
 
 export const test = base.extend<{
   app: App

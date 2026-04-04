@@ -20,13 +20,16 @@ test.beforeAll(async () => {
 })
 
 test.describe('when given valid input', () => {
-  test('should be able to sign in to an available account', async ({app,dev_one_account,}) => {
+  test('should be able to sign in to an available account', async ({app, dev_one_account}) => {
     await app.signinWithEmail(dev_one_account)
     await app.home.goToHomePage()
     await app.home.verifySignedInHomePage(dev_one_account.display_name)
   })
 
-  test('should successfully delete an account created via email and password', async ({app,fakerAccount,}) => {
+  test('should successfully delete an account created via email and password', async ({
+    app,
+    fakerAccount,
+  }) => {
     await app.registerWithEmail(fakerAccount)
     await app.skipOnboardingHeadToProfile(fakerAccount)
 

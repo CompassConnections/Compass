@@ -1,9 +1,9 @@
 import {expect, test} from '../fixtures/base'
 import {registerWithEmail} from '../utils/testCleanupHelpers'
 
-test.describe('when given valid input', () => {
-  test('placeholder', async () => {})
-})
+// test.describe('when given valid input', () => {
+//   test('placeholder', async () => {})
+// })
 
 test.describe('when an error occurs', () => {
   test('should disable the button "Next" when the display name field is empty', async ({
@@ -13,9 +13,6 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    console.log(
-      `Starting "should disable the button "Next" when the display name field is empty" with ${specAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, specAccount)
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName('')
@@ -31,9 +28,6 @@ test.describe('when an error occurs', () => {
     onboardingPage,
     signUpPage,
   }) => {
-    console.log(
-      `Starting "should disable the button "Next" when the username field is empty" with ${specAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, specAccount)
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(specAccount.display_name)

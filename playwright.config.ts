@@ -38,7 +38,10 @@ export default defineConfig({
   // If there is a known intermittent browser timing issue for some tests, it's fine to give 1 retry to those flaky tests
   retries: process.env.CI ? 0 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', {outputFolder: `tests/reports/playwright-report`, open: 'on-failure'}]],
+  reporter: [
+    ['list'],
+    ['html', {outputFolder: `tests/reports/playwright-report`, open: 'on-failure'}],
+  ],
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',

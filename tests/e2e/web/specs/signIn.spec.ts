@@ -1,4 +1,4 @@
-import { userInformationFromDb } from '../../utils/databaseUtils'
+import {userInformationFromDb} from '../../utils/databaseUtils'
 import {seedUser} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
 import {testAccounts} from '../utils/accountInformation'
@@ -6,7 +6,7 @@ import {
   deleteProfileFromSettings,
   registerWithEmail,
   signinWithEmail,
-  skipOnboardingHeadToProfile
+  skipOnboardingHeadToProfile,
 } from '../utils/testCleanupHelpers'
 
 //Seed the account
@@ -31,9 +31,6 @@ test.describe('when given valid input', () => {
     authPage,
     dev_one_account,
   }) => {
-    console.log(
-      `Starting "should be able to sign in to an available account" with ${dev_one_account.username}`,
-    )
     await signinWithEmail(homePage, authPage, dev_one_account)
     await homePage.goToHomePage()
     await homePage.verifySignedInHomePage(dev_one_account.display_name)
@@ -48,9 +45,6 @@ test.describe('when given valid input', () => {
     settingsPage,
     fakerAccount,
   }) => {
-    console.log(
-      `Starting "should successfully delete an account created via email and password" with ${fakerAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, fakerAccount)
     await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
@@ -76,9 +70,6 @@ test.describe('when given valid input', () => {
     googleAccountTwo,
     headless,
   }) => {
-    console.log(
-      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
-    )
     test.skip(headless, 'Google popup auth test requires headed mode')
     await homePage.goToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
@@ -109,9 +100,6 @@ test.describe('when given invalid input', () => {
     dev_one_account,
     page,
   }) => {
-    console.log(
-      `Starting "should not be able to sign in to an available account" with ${dev_one_account.username}`,
-    )
     await signinWithEmail(homePage, authPage, dev_one_account.email, 'ThisPassword')
     await expect(
       page.getByText('Failed to sign in with your email and password', {exact: true}),

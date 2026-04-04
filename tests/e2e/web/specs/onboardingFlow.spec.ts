@@ -11,9 +11,6 @@ test.describe('when given valid input', () => {
     profilePage,
     onboardingAccount,
   }) => {
-    console.log(
-      `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, onboardingAccount)
     await onboardingPage.clickContinueButton() //First continue
     await onboardingPage.clickContinueButton() //Second continue
@@ -230,9 +227,6 @@ test.describe('when given valid input', () => {
     googleAccountOne,
     headless,
   }) => {
-    console.log(
-      `Starting "should successfully complete the onboarding flow with google account" with ${googleAccountOne.username}`,
-    )
     test.skip(headless, 'Google popup auth test requires headed mode')
     await homePage.goToRegisterPage()
     await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
@@ -261,9 +255,6 @@ test.describe('when given valid input', () => {
     profilePage,
     fakerAccount,
   }) => {
-    console.log(
-      `Starting "should successfully skip the onboarding flow" with ${fakerAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, fakerAccount)
     await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
 
@@ -285,9 +276,6 @@ test.describe('when given valid input', () => {
     profilePage,
     fakerAccount,
   }) => {
-    console.log(
-      `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, fakerAccount)
     await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
     await profilePage.clickEditProfileButton()
@@ -328,9 +316,6 @@ test.describe('when given valid input', () => {
     fakerAccount,
     onboardingAccount,
   }) => {
-    console.log(
-      `Starting "should successfully use the start answering option" with ${fakerAccount.username}`,
-    )
     await registerWithEmail(homePage, authPage, fakerAccount)
     await onboardingPage.clickSkipOnboardingButton()
     await signUpPage.fillDisplayName(fakerAccount.display_name)
@@ -365,7 +350,6 @@ test.describe('when given valid input', () => {
       profilePage,
       fakerAccount,
     }) => {
-      console.log(`Starting "the first time its an option" with ${fakerAccount.username}`)
       await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickBackButton()
@@ -397,7 +381,6 @@ test.describe('when given valid input', () => {
       profilePage,
       fakerAccount,
     }) => {
-      console.log(`Starting "the second time its an option" with ${fakerAccount.username}`)
       await registerWithEmail(homePage, authPage, fakerAccount)
       await onboardingPage.clickContinueButton()
       await onboardingPage.clickContinueButton()

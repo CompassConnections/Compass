@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 import {config} from '../web/SPEC_CONFIG'
 
 export async function firebaseLoginEmailPassword(
@@ -32,7 +33,9 @@ export async function findUser(idToken: string) {
       idToken,
     },
   )
-  return response
+  if (response?.data?.users?.length > 0) {
+    return response.data.users[0]
+  }
 }
 
 export async function firebaseSignUp(email: string, password: string) {

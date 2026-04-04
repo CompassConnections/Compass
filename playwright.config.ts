@@ -25,7 +25,6 @@ function getSupabaseEnv() {
   }
 }
 
-
 const supabaseEnv = getSupabaseEnv()
 
 // Inject into process.env so Playwright and your app code can read them

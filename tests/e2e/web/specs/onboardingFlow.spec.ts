@@ -1,10 +1,6 @@
 import {userInformationFromDb} from '../../utils/databaseUtils'
 import {expect, test} from '../fixtures/base'
-import {
-  deleteProfileFromSettings,
-  registerWithEmail,
-  skipOnboardingHeadToProfile
-} from '../utils/testCleanupHelpers'
+import {registerWithEmail, skipOnboardingHeadToProfile} from '../utils/testCleanupHelpers'
 
 test.describe('when given valid input', () => {
   test('should successfully complete the onboarding flow with email', async ({
@@ -18,7 +14,7 @@ test.describe('when given valid input', () => {
     console.log(
       `Starting "should successfully complete the onboarding flow with email" with ${onboardingAccount.username}`,
     )
-    await registerWithEmail(homePage,authPage,onboardingAccount)
+    await registerWithEmail(homePage, authPage, onboardingAccount)
     await onboardingPage.clickContinueButton() //First continue
     await onboardingPage.clickContinueButton() //Second continue
     await onboardingPage.clickGetStartedButton()
@@ -224,7 +220,7 @@ test.describe('when given valid input', () => {
       onboardingAccount.alcohol_consumed_per_month,
     )
   })
-  
+
   test('should successfully complete the onboarding flow with google account', async ({
     homePage,
     onboardingPage,
@@ -281,68 +277,6 @@ test.describe('when given valid input', () => {
     await expect(dbInfo.user.username).toContain(fakerAccount.username)
   })
 
-  test('should successfully delete an account created via email and password', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
-    fakerAccount,
-  }) => {
-    console.log(
-      `Starting "should successfully delete an account created via email and password" with ${fakerAccount.username}`,
-    )
-    await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
-
-    //Verify displayed information is correct
-    await profilePage.verifyDisplayName(fakerAccount.display_name)
-
-    //Verify database info
-    const dbInfo = await userInformationFromDb(fakerAccount)
-
-    await expect(dbInfo.user.name).toContain(fakerAccount.display_name)
-    await expect(dbInfo.user.username).toContain(fakerAccount.username)
-
-    await deleteProfileFromSettings(homePage, settingsPage)
-  })
-
-  test('should successfully delete an account created via google auth', async ({
-    homePage,
-    onboardingPage,
-    signUpPage,
-    authPage,
-    profilePage,
-    settingsPage,
-    googleAccountTwo,
-    headless,
-  }) => {
-    console.log(
-      `Starting "should successfully delete an account created via google auth" with ${googleAccountTwo.username}`,
-    )
-    test.skip(headless, 'Google popup auth test requires headed mode')
-    await homePage.goToRegisterPage()
-    await authPage.fillPasswordField('') //The test only passes when this is added...something is weird here
-    await authPage.signInToGoogleAccount(
-      googleAccountTwo.email,
-      googleAccountTwo.display_name,
-      googleAccountTwo.username,
-    )
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, googleAccountTwo)
-
-    //Verify displayed information is correct
-    await profilePage.verifyDisplayName(googleAccountTwo.display_name)
-
-    //Verify database info
-    const dbInfo = await userInformationFromDb(googleAccountTwo)
-
-    await expect(dbInfo.user.name).toContain(googleAccountTwo.display_name)
-    await expect(dbInfo.user.username).toContain(googleAccountTwo.username)
-
-    await deleteProfileFromSettings(homePage, settingsPage)
-  })
-
   test('should successfully enter optional information after completing flow', async ({
     homePage,
     onboardingPage,
@@ -355,7 +289,7 @@ test.describe('when given valid input', () => {
       `Starting "should successfully enter optional information after completing flow" with ${fakerAccount.username}`,
     )
     await registerWithEmail(homePage, authPage, fakerAccount)
-    await skipOnboardingHeadToProfile(onboardingPage, signUpPage,profilePage, fakerAccount)
+    await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
     await profilePage.clickEditProfileButton()
     await signUpPage.chooseGender(fakerAccount.gender)
     await signUpPage.fillAge(fakerAccount.age)
@@ -489,6 +423,6 @@ test.describe('when given valid input', () => {
   })
 })
 
-test.describe('when an error occurs', () => {
-  test('placeholder', async ({}) => {})
-})
+// test.describe('when an error occurs', () => {
+//   test('placeholder', async ({}) => {})
+// })

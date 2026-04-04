@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   lint:
@@ -39,7 +39,9 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: success()
+        if: success() && env.CODECOV_TOKEN != ''
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: |
@@ -49,5 +51,5 @@ jobs:
             common/coverage/lcov.info
             web/coverage/lcov.info
           flags: unit
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           slug: CompassConnections/Compass

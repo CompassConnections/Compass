@@ -212,7 +212,7 @@ test.describe('when given valid input', () => {
       onboardingAccount.alcohol_consumed_per_month,
     )
   })
-  
+
   test('should successfully complete the onboarding flow with google account', async ({
     app,
     googleAccountOne,

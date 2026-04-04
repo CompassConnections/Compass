@@ -1,47 +1,17 @@
 import {test as base} from '@playwright/test'
-import {AuthPage} from '../pages/AuthPage'
-import {HomePage} from '../pages/homePage'
+import {App} from '../pages/app'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
-import { OnboardingPage } from '../pages/onboardingPage'
-import { SignUpPage } from '../pages/signUpPage'
-import { ProfilePage } from '../pages/profilePage'
-import { SettingsPage } from '../pages/settingsPage'
 
 export const test = base.extend<{
-  homePage: HomePage
-  onboardingPage: OnboardingPage
-  signUpPage: SignUpPage
-  profilePage: ProfilePage
-  settingsPage: SettingsPage
-  authPage: AuthPage
+  app: App
   dev_one_account: UserAccountInformation
   fakerAccount: UserAccountInformation
   googleAccountOne: UserAccountInformation
   googleAccountTwo: UserAccountInformation
 }>({
-  homePage: async ({page}, use) => {
-    const homePage = new HomePage(page)
-    await use(homePage)
-  },
-  onboardingPage: async ({page}, use) => {
-    const onboardingPage = new OnboardingPage(page)
-    await use(onboardingPage)
-  },
-  signUpPage: async ({page}, use) => {
-    const signUpPage = new SignUpPage(page)
-    await use(signUpPage)
-  },
-  profilePage: async ({page}, use) => {
-    const profilePage = new ProfilePage(page)
-    await use(profilePage)
-  },
-  settingsPage: async ({page}, use) => {
-    const settingsPage = new SettingsPage(page)
-    await use(settingsPage)
-  },
-  authPage: async ({page}, use) => {
-    const authPage = new AuthPage(page)
-    await use(authPage)
+  app: async ({page}, use) => {
+    const appPage = new App(page)
+    await use(appPage)
   },
   dev_one_account: async ({}, use) => {
     const account = testAccounts.dev_one_account()

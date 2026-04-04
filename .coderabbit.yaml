@@ -17,7 +17,7 @@ reviews:
     enabled: true
     # Skip auto-review if PR title contains these keywords
     ignore_title_keywords:
-      - "WIP"
+      - 'WIP'
     # Don't auto-review draft PRs
     drafts: false
     # Only auto-review PRs targeting these branches
@@ -57,17 +57,17 @@ reviews:
 
   # Exclude these paths from reviews (build artifacts and dependencies)
   path_filters:
-    - "!**/node_modules/**" # npm dependencies
-    - "!**/android/**" # Native Android build files
-    - "!**/ios/**" # Native iOS build files
-    - "!**/.expo/**" # Expo build cache
-    - "!**/.expo-shared/**" # Expo shared config
-    - "!**/dist/**" # Build output
+    - '!**/node_modules/**' # npm dependencies
+    - '!**/android/**' # Native Android build files
+    - '!**/ios/**' # Native iOS build files
+    - '!**/.expo/**' # Expo build cache
+    - '!**/.expo-shared/**' # Expo shared config
+    - '!**/dist/**' # Build output
 
   # Custom review instructions for specific file patterns
   path_instructions:
     # TypeScript/JavaScript files - main app code
-    - path: "**/*.{ts,tsx,js,jsx}"
+    - path: '**/*.{ts,tsx,js,jsx}'
       instructions: |
         General practices:
         - Summarize the changes clearly. 
@@ -78,7 +78,7 @@ reviews:
         - Flag any hardcoded strings; they should be in the constants file.
         - Check for edge cases like null values or empty arrays.
         - Suggest performance optimizations where appropriate.
-        
+
         Mobile best practices:
         - Proper use of hooks (useRouter, useFonts, useAssets)
         - Accessibility: touch targets min 44x44, screen reader support
@@ -105,7 +105,7 @@ reviews:
           const message = t('key', 'english string')
           ```
 
-    - path: "tests/e2e/**/*.ts"
+    - path: 'tests/e2e/**/*.ts'
       instructions: |
         Playwright E2E test guidelines for this repo:
         - Page objects live in `tests/e2e/web/pages/`. Each class wraps one page/route, holds only `private readonly` Locators, and exposes action methods.

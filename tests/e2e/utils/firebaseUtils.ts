@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 import {config} from '../web/SPEC_CONFIG'
 
 export async function firebaseLoginEmailPassword(

@@ -1,9 +1,8 @@
-import {getProfileOgImageUrl} from 'common/profiles/og-image'
-import Image from 'next/image'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
+import {ProfileCardViewer} from 'web/components/profile-card-viewer'
 import {SEO} from 'web/components/SEO'
 import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
 import {useProfile} from 'web/hooks/use-profile'
@@ -40,13 +39,7 @@ export default function SoftGatePage() {
 
           {profile && user && (
             <Col className="gap-4 text-ink-700 items-center">
-              <Image
-                src={getProfileOgImageUrl(user, profile)}
-                alt="OG"
-                width={550}
-                height={325}
-                className="rounded-xl border border-md"
-              />
+              <ProfileCardViewer user={user} profile={profile} />
               <p>
                 {t(
                   'onboarding.soft-gate.profile_card',

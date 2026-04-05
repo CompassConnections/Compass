@@ -1,13 +1,13 @@
-import {getProfileOgImageUrl} from 'common/profiles/og-image'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
-import Image from 'next/image'
 import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
 import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
 import {useT} from 'web/lib/locale'
+
+import {ProfileCardViewer} from './profile-card-viewer'
 
 // export const PhotosModal = (props: {
 //   open: boolean
@@ -68,11 +68,10 @@ export const ViewProfileCardButton = (props: {
   width?: number
   height?: number
 }) => {
-  const {user, profile, width = 1000, height = 300} = props
+  const {user, profile, width, height} = props
   const [open, setOpen] = useState<boolean>(false)
   const t = useT()
   if (!user || !profile) return
-  const src = getProfileOgImageUrl(user, profile)
   const username = user.username
   return (
     <>
@@ -80,14 +79,8 @@ export const ViewProfileCardButton = (props: {
         {t('share_profile.view_profile_card', 'View Profile Card')}
       </Button>
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
-        <Col className="gap-4 bg-canvas-100/75 rounded-2xl">
-          <Image
-            src={src}
-            width={width}
-            height={height}
-            alt={t('profile_card.loading', `${user.username}'s profile card`)}
-            className={'rounded-2xl'}
-          />
+        <Col className="gap-4 bg-canvas-100/75 rounded-2xl justify-center">
+          <ProfileCardViewer user={user} profile={profile} width={width} height={height} />
           <ShareProfileButtons
             username={username}
             className={'justify-center gap-4 text-3xl pb-4'}

@@ -1042,6 +1042,8 @@
   "profile.wants_kids_3": "Neigt dazu, Kinder zu wollen",
   "profile.wants_kids_4": "Möchte Kinder",
   "profile.wont_be_notified_unless_mutual": "Sie werden nicht benachrichtigt, es sei denn, das Interesse ist gegenseitig.",
+  "profile_card.alt": "Profilkarte von {username}",
+  "profile_card.crafting": "Profilkarte wird erstellt...",
   "profile_card.loading": "Ihre Karte wird geladen, es kann ein paar Sekunden dauern...",
   "profile_grid.hidden_notice": "Du hast diese Person ausgeblendet, sie wird nicht mehr in deinen Suchergebnissen angezeigt.",
   "profile_grid.hide_profile": "Nicht mehr in den Suchergebnissen anzeigen",

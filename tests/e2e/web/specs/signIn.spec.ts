@@ -1,9 +1,13 @@
 import {expect, test} from '../fixtures/signInFixture'
 
 test.describe('when given valid input', () => {
-  test('should be able to sign in to an available account', async ({app, signedInAccount}) => {
+  test('should be able to sign in to an available account', async ({
+    app,
+    signedOutAccount: account,
+  }) => {
+    await app.signinWithEmail(account)
     await app.home.goToHomePage()
-    await app.home.verifySignedInHomePage(signedInAccount.display_name)
+    await app.home.verifySignedInHomePage(account.display_name)
   })
 })
 

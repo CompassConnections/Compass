@@ -1357,5 +1357,19 @@
   "vote.toast.created": "Proposition créée",
   "vote.urgent": "Urgente",
   "vote.voted": "Vote enregistré",
-  "vote.with_priority": "avec priorité"
+  "vote.with_priority": "avec priorité",
+  "game.whackabug.title": "WHACK-A-BUG",
+  "game.whackabug.subtitle": "// blâmez les bugs pour l'erreur",
+  "game.whackabug.instructions_lives": "Vous avez {lives} vies. Bugs qui s'échappent = vie perdue.",
+  "game.whackabug.instructions_time": "{seconds} secondes. Écrasez-en autant que possible.",
+  "game.whackabug.victory_title": "// VICTOIRE — le temps est écoulé",
+  "game.whackabug.victory_message": "Vous trouvez toujours des bugs dans la nature? Contactez-nous et nous les traquerons.",
+  "game.whackabug.play_again": "REJOUER",
+  "game.whackabug.gameover_title": "// GAME OVER — tous les bugs se sont échappés",
+  "game.whackabug.gameover_message": "Si les bugs sont trop difficiles à gérer, contactez-nous et nous les écraserons pour vous.",
+  "game.whackabug.retry": "RÉESSAYER",
+  "game.whackabug.start_game": "DÉMARRER",
+  "game.whackabug.time": "TEMPS",
+  "game.whackabug.seo_title": "Whack-A-Bug",
+  "game.whackabug.seo_description": "Blâmez les bugs pour l'erreur - un jeu amusant"
 }

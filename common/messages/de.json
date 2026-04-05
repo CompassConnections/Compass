@@ -1358,5 +1358,19 @@
   "vote.toast.created": "Vorschlag erstellt",
   "vote.urgent": "Dringend",
   "vote.voted": "Stimme gespeichert",
-  "vote.with_priority": "mit Priorität"
+  "vote.with_priority": "mit Priorität",
+  "game.whackabug.title": "WHACK-A-BUG",
+  "game.whackabug.subtitle": "// die Schuld für den Fehler",
+  "game.whackabug.instructions_lives": "Du hast {lives} Leben. Entkommende Bugs = Leben verloren.",
+  "game.whackabug.instructions_time": "{seconds} Sekunden. Zerstöre so viele wie möglich.",
+  "game.whackabug.victory_title": "// SIEG — Zeit abgelaufen",
+  "game.whackabug.victory_message": "Du findest immer noch Bugs in freier Wildbahn? Kontaktiere uns und wir werden sie aufspüren.",
+  "game.whackabug.play_again": "NOCHMAL SPIELEN",
+  "game.whackabug.gameover_title": "// GAME OVER — alle Bugs entkommen",
+  "game.whackabug.gameover_message": "Wenn die Bugs zu viel werden, kontaktiere uns und wir erledigen sie für dich.",
+  "game.whackabug.retry": "WIEDERHOLEN",
+  "game.whackabug.start_game": "SPIEL STARTEN",
+  "game.whackabug.time": "ZEIT",
+  "game.whackabug.seo_title": "Whack-A-Bug",
+  "game.whackabug.seo_description": "Schiebe die Schuld für den Fehler auf die Bugs - ein lustiges Spiel"
 }

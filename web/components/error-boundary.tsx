@@ -1,5 +1,6 @@
 import {Component, ErrorInfo, ReactNode} from 'react'
 import {Button} from 'web/components/buttons/button'
+import WhackABug from 'web/components/game/whack-a-bug'
 
 interface Props {
   children?: ReactNode
@@ -60,6 +61,9 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button color="gray" onClick={() => window.location.replace('/')}>
                 Go home
               </Button>
+            </div>
+            <div className="max-w-lg mx-auto mt-4">
+              <WhackABug />
             </div>
           </div>
         </div>

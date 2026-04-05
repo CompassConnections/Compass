@@ -2,10 +2,11 @@
 
 import {debug} from 'common/logger'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import {useT} from 'web/lib/locale'
 
 const GRID_SIZE = 9
 const MAX_LIVES = 3
-const GAME_DURATION = 30
+const GAME_DURATION = 20
 
 const BUG_TYPES = [
   {icon: '🐛', label: 'worm', duration: 1600},
@@ -72,7 +73,7 @@ const css = `
     align-items: center;
     width: 100%;
     max-width: 380px;
-    background: #0d170d;
+    background: canvas-100;
     border: 1px solid #1f3a1f;
     border-radius: 8px;
     padding: 8px 16px;
@@ -85,7 +86,7 @@ const css = `
   .wab-timer-bar-wrap {
     width: 100%;
     max-width: 380px;
-    background: #0d170d;
+    background: canvas-100;
     border: 1px solid #1f3a1f;
     border-radius: 4px;
     height: 6px;
@@ -109,7 +110,7 @@ const css = `
 
   .wab-hole {
     aspect-ratio: 1;
-    background: #050c05;
+    background: canvas-100;
     border: 2px solid #1a2e1a;
     border-radius: 50%;
     display: flex;
@@ -222,6 +223,7 @@ const css = `
 `
 
 export default function WhackABug() {
+  const t = useT()
   const [gameState, setGameState] = useState('idle')
   const [lives, setLives] = useState(MAX_LIVES)
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION)
@@ -233,6 +235,9 @@ export default function WhackABug() {
   const spawnRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const livesRef = useRef(MAX_LIVES)
   const gameRef = useRef('idle')
+  // Tracks IDs of bugs that were successfully whacked — checked synchronously
+  // in disappear timeouts to avoid the async state-updater mutation race.
+  const whackedIdsRef = useRef(new Set<number>())
 
   const clearAll = useCallback(() => {
     timersRef.current.forEach((t) => clearTimeout(t))
@@ -248,11 +253,20 @@ export default function WhackABug() {
     setHoles(Array(GRID_SIZE).fill(null))
   }, [clearAll])
 
+  const wonGame = useCallback(() => {
+    gameRef.current = 'won'
+    setGameState('won')
+    clearAll()
+    setHoles(Array(GRID_SIZE).fill(null))
+  }, [clearAll])
+
   const spawnBug = useCallback(() => {
     if (gameRef.current !== 'playing') return
 
     const type = BUG_TYPES[Math.floor(Math.random() * BUG_TYPES.length)]
     const index = Math.floor(Math.random() * GRID_SIZE)
+    // Stable ID created once per spawn so the disappear timeout can reference it
+    const bugId = Date.now() + Math.random()
 
     setHoles((prev) => {
       if (prev[index]) {
@@ -260,25 +274,23 @@ export default function WhackABug() {
         return prev
       }
       const next = [...prev]
-      next[index] = {type, id: Date.now() + Math.random(), whacked: false}
+      next[index] = {type, id: bugId, whacked: false}
       return next
     })
 
     const disappear = setTimeout(() => {
       if (gameRef.current !== 'playing') return
 
-      let wasWhacked = false
+      // If this specific bug was whacked, its ID is in the set — skip penalty.
+      if (whackedIdsRef.current.has(bugId)) return
+
+      // Bug escaped: clear the hole and deduct a life.
       setHoles((prev) => {
-        if (!prev[index] || prev[index].whacked) {
-          wasWhacked = true
-          return prev
-        }
+        if (!prev[index] || prev[index].id !== bugId) return prev
         const next = [...prev]
         next[index] = null
         return next
       })
-
-      if (wasWhacked) return
 
       livesRef.current -= 1
       setLives(livesRef.current)
@@ -299,6 +311,7 @@ export default function WhackABug() {
     clearAll()
     livesRef.current = MAX_LIVES
     gameRef.current = 'playing'
+    whackedIdsRef.current.clear()
     setLives(MAX_LIVES)
     setTimeLeft(GAME_DURATION)
     setHoles(Array(GRID_SIZE).fill(null))
@@ -308,7 +321,7 @@ export default function WhackABug() {
     timerRef.current = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
-          endGame()
+          wonGame()
           return 0
         }
         return t - 1
@@ -316,13 +329,15 @@ export default function WhackABug() {
     }, 1000)
 
     spawnRef.current = setTimeout(spawnBug, 400)
-  }, [clearAll, endGame, spawnBug])
+  }, [clearAll, endGame, spawnBug, wonGame])
 
   const whack = useCallback((index: number) => {
     debug('Wacked')
     setHoles((prev) => {
       const hole = prev[index]
       if (!hole || hole.whacked) return prev
+      // Register this bug as whacked before the disappear timeout can fire
+      whackedIdsRef.current.add(hole.id)
       const next = [...prev]
       next[index] = {...hole, whacked: true}
       const t = setTimeout(() => {
@@ -353,6 +368,12 @@ export default function WhackABug() {
     })
   }, [effects])
 
+  useEffect(() => {
+    setTimeout(() => {
+      startGame()
+    }, 5000)
+  }, [])
+
   const pct = (timeLeft / GAME_DURATION) * 100
   const barClass = pct <= 20 ? 'crit' : pct <= 40 ? 'warn' : ''
 
@@ -360,8 +381,10 @@ export default function WhackABug() {
     <>
       <style>{css}</style>
       <div className="wab-wrap">
-        <h2 className="wab-title">WHACK-A-BUG</h2>
-        <p className="wab-subtitle">// blame the bugs for the error</p>
+        <h2 className="wab-title">{t('game.whackabug.title', 'WHACK-A-BUG')}</h2>
+        <p className="wab-subtitle">
+          {t('game.whackabug.subtitle', '// blame the bugs for the error')}
+        </p>
 
         {
           <div className="wab-idle">
@@ -373,23 +396,54 @@ export default function WhackABug() {
               ))}
             </div>
             <p className={'text-ink-1000/75 text-sm'}>
-              You have {MAX_LIVES} lives. Bugs escape = lost life.
+              {t(
+                'game.whackabug.instructions_lives',
+                'You have {lives} lives. Bugs escape = lost life.',
+                {lives: MAX_LIVES},
+              )}
               <br />
-              30 seconds. Smash as many as you can.
+              {t(
+                'game.whackabug.instructions_time',
+                '{seconds} seconds. Smash as many as you can.',
+                {seconds: GAME_DURATION},
+              )}
             </p>
           </div>
         }
 
-        {gameState === 'gameover' ? (
+        {gameState === 'won' ? (
           <div className="wab-gameover">
-            <p style={{color: '#ff4444', fontSize: 14}}>// GAME OVER — all bugs escaped</p>
+            <p style={{color: '#39ff14', fontSize: 14}}>
+              {t('game.whackabug.victory_title', '// VICTORY — time is up')}
+            </p>
+            <p className={'guidance'}>
+              {t(
+                'game.whackabug.victory_message',
+                "Still finding bugs in the wild? Contact us and we'll track them down.",
+              )}
+            </p>
             <button className="wab-btn" onClick={startGame}>
-              RETRY
+              {t('game.whackabug.play_again', 'PLAY AGAIN')}
+            </button>
+          </div>
+        ) : gameState === 'gameover' ? (
+          <div className="wab-gameover">
+            <p style={{color: '#ff4444', fontSize: 14}}>
+              {t('game.whackabug.gameover_title', '// GAME OVER — all bugs escaped')}
+            </p>
+            <p className={'guidance'}>
+              {t(
+                'game.whackabug.gameover_message',
+                "If the bugs are too much to handle, contact us and we'll squash them for you.",
+              )}
+            </p>
+            <button className="wab-btn" onClick={startGame}>
+              {t('game.whackabug.retry', 'RETRY')}
             </button>
           </div>
         ) : (
           <button className="wab-btn" onClick={startGame}>
-            START GAME
+            {t('game.whackabug.start_game', 'START GAME')}
           </button>
         )}
 
@@ -402,7 +456,7 @@ export default function WhackABug() {
                 ))}
               </div>
               <div style={{textAlign: 'right'}}>
-                <span className="wab-hud-label">TIME</span>
+                <span className="wab-hud-label">{t('game.whackabug.time', 'TIME')}</span>
                 <span
                   className="wab-hud-val"
                   style={{color: timeLeft <= 6 ? '#ff4444' : '#39ff14'}}

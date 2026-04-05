@@ -261,6 +261,14 @@ function parseBlockElement(
     return {type: '__fragment', content: inner} as any
   }
 
+  // Unknown/custom elements — try to parse as container (e.g., <projectcontent>, <bodycopy>)
+  if (el.children.length > 0) {
+    const inner = parseBlockElements(el.children, classStyles)
+    if (inner.length === 0) return null
+    if (inner.length === 1) return inner[0]
+    return {type: '__fragment', content: inner} as any
+  }
+
   return null
 }
 

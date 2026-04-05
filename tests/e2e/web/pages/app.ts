@@ -59,7 +59,11 @@ export class App {
     await this.auth.clickSignUpWithEmailButton()
   }
 
-  async signinWithEmail(accountOrEmail: UserAccountInformation | string, password?: string) {
+  async signinWithEmail(
+    accountOrEmail: UserAccountInformation | string,
+    password?: string,
+    wait: boolean = true,
+  ) {
     const email = typeof accountOrEmail === 'string' ? accountOrEmail : accountOrEmail.email
 
     const resolvedPassword = typeof accountOrEmail === 'string' ? password : accountOrEmail.password
@@ -72,6 +76,8 @@ export class App {
     await this.auth.fillEmailField(email)
     await this.auth.fillPasswordField(resolvedPassword)
     await this.auth.clickSignInWithEmailButton()
-    await this.page.waitForURL('/')
+    if (wait) {
+      await this.page.waitForURL('/')
+    }
   }
 }

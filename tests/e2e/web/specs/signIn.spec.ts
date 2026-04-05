@@ -13,7 +13,7 @@ test.describe('when given invalid input', () => {
     signedOutAccount,
     page,
   }) => {
-    await app.signinWithEmail(signedOutAccount.email, 'ThisPassword')
+    await app.signinWithEmail(signedOutAccount.email, 'ThisPassword', false)
     await expect(
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()

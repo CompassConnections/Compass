@@ -31,7 +31,7 @@ export const test = base.extend<{
     await use(account)
     await deleteUser('Email/Password', account)
   },
-  signedOutAccount: async ({app}: {app: App}, use) => {
+  signedOutAccount: async ({}, use) => {
     const account = testAccounts.faker_account()
     await seedUser(
       account.email,

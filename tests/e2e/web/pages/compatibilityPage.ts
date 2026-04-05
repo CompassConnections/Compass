@@ -1,6 +1,6 @@
 import {expect, Locator, Page} from '@playwright/test'
 
-export class ComatibilityPage {
+export class CompatibilityPage {
   private readonly answeredQuestionsTab: Locator
   private readonly remaningQuestionsTab: Locator
   private readonly skippedQuestionsTab: Locator

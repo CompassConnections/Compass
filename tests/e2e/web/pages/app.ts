@@ -2,7 +2,7 @@ import {Page} from '@playwright/test'
 
 import {UserAccountInformation} from '../utils/accountInformation'
 import {AuthPage} from './authPage'
-import {ComatibilityPage} from './compatibilityPage'
+import {CompatibilityPage} from './compatibilityPage'
 import {HomePage} from './homePage'
 import {OnboardingPage} from './onboardingPage'
 import {OrganizationPage} from './organizationPage'
@@ -13,7 +13,7 @@ import {SocialPage} from './socialPage'
 
 export class App {
   readonly auth: AuthPage
-  readonly compatibility: ComatibilityPage
+  readonly compatibility: CompatibilityPage
   readonly home: HomePage
   readonly onboarding: OnboardingPage
   readonly organization: OrganizationPage
@@ -24,7 +24,7 @@ export class App {
 
   constructor(public readonly page: Page) {
     this.auth = new AuthPage(page)
-    this.compatibility = new ComatibilityPage(page)
+    this.compatibility = new CompatibilityPage(page)
     this.home = new HomePage(page)
     this.onboarding = new OnboardingPage(page)
     this.organization = new OrganizationPage(page)

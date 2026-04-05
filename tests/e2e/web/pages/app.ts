@@ -1,4 +1,5 @@
 import {Page} from '@playwright/test'
+
 import {UserAccountInformation} from '../utils/accountInformation'
 import {AuthPage} from './authPage'
 import {ComatibilityPage} from './compatibilityPage'
@@ -71,5 +72,6 @@ export class App {
     await this.auth.fillEmailField(email)
     await this.auth.fillPasswordField(resolvedPassword)
     await this.auth.clickSignInWithEmailButton()
+    await this.page.waitForURL('/')
   }
 }

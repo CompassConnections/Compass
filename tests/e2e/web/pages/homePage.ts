@@ -125,6 +125,7 @@ export class HomePage {
   async clickSettingsLink() {
     await expect(this.sidebarSettings).toBeVisible()
     await this.sidebarSettings.click()
+    await this.page.waitForURL('/settings')
   }
 
   async clickPeopleLink() {

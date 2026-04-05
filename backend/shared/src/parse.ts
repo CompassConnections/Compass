@@ -1,23 +1,80 @@
+import {Readability} from '@mozilla/readability'
 import {JSONContent} from '@tiptap/core'
 import {debug} from 'common/logger'
 import {JSDOM} from 'jsdom'
 import {marked} from 'marked'
 
 export function htmlToJSONContent(html: string, url: string): JSONContent {
-  const originalDom = new JSDOM(html, {url})
-  const classStyles = extractClassStyles(originalDom.window.document)
+  // Tier 1: Try __NEXT_DATA__ (Next.js, free, structured)
+  const nextData = extractNextData(html)
+  const nextContent = nextDataToJSONContent(nextData)
 
-  // const isGoogleDoc = !!extractGoogleDocId(url)
-  // if (!isGoogleDoc) {
-  //   const reader = new Readability(originalDom.window.document)
-  //   const article = reader.parse()
-  //   if (article?.content) {
-  //     const cleanDom = new JSDOM(article.content)
-  //     return parseHtmlBodyToJSONContent(cleanDom.window.document, classStyles)
-  //   }
-  // }
+  // Tier 2: Try Readability on raw HTML (works for ~75% of the web)
+  const result = tryReadability(html, url)
 
-  return parseHtmlBodyToJSONContent(originalDom.window.document, classStyles)
+  if (nextContent.content) result.content = [...nextContent.content, ...(result.content || [])]
+
+  return result
+
+  // Tier 3: Puppeteer fallback (CSR catch-all, expensive, high mem usage, and needs chrome deps in container — only if needed)
+  // To implement if really needed (i.e., lots of users want to extract profile info from client-side rendered pages)
+  // const renderedHtml = await fetchWithBrowser(url)
+  // return tryReadability(renderedHtml, url) ?? emptyContent()
+}
+
+function extractNextData(html: string): Record<string, any> | null {
+  const match = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
+  if (!match) return null
+  try {
+    return JSON.parse(match[1])
+  } catch {
+    return null
+  }
+}
+
+function extractContent(obj: unknown, depth = 0): JSONContent[] {
+  if (depth > 6) return []
+  if (typeof obj === 'string' && obj.trim().length > 0)
+    return [
+      {
+        type: 'paragraph',
+        content: [{type: 'text', text: obj.trim()}],
+      },
+    ]
+  if (Array.isArray(obj)) return obj.flatMap((v) => extractContent(v, depth + 1))
+  if (obj && typeof obj === 'object') {
+    const record = obj as Record<string, unknown>
+    if (record.type === 'doc' && Array.isArray(record.content)) {
+      return [obj] as JSONContent[]
+    }
+    return Object.values(obj).flatMap((v) => extractContent(v, depth + 1))
+  }
+  return []
+}
+
+function nextDataToJSONContent(nextData: Record<string, any> | null): JSONContent {
+  return {
+    type: 'doc',
+    content: extractContent(nextData?.props?.pageProps ?? {}),
+  }
+}
+
+function tryReadability(html: string, url: string): JSONContent {
+  const dom = new JSDOM(html, {url})
+  const document = dom.window.document
+
+  const reader = new Readability(document.cloneNode(true) as any, {
+    keepClasses: true,
+  })
+  const article = reader.parse()
+
+  if (article?.content) {
+    debug('Using readability content')
+    const cleanDom = new JSDOM(article.content)
+    const classStyles = extractClassStyles(document)
+    return parseHtmlBodyToJSONContent(cleanDom.window.document, classStyles)
+  }
+  return parseHtmlBodyToJSONContent(document)
 }
 
 function plainTextToJSONContent(text: string): JSONContent {

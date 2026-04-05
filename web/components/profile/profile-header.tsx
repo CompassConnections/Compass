@@ -221,6 +221,7 @@ export default function ProfileHeader(props: {
               <SendMessageButton
                 toUser={user}
                 currentUser={currentUser}
+                profile={profile}
                 tooltipText={tooltipText}
                 disabled={!profile.allow_direct_messaging}
               />

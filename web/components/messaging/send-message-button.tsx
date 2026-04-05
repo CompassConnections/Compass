@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH} from 'common/comment'
+import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
@@ -9,10 +10,8 @@ import {Button} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
-import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {useTextEditor} from 'web/components/widgets/editor'
-import {Title} from 'web/components/widgets/title'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
@@ -24,13 +23,15 @@ import {useT} from 'web/lib/locale'
 export const SendMessageButton = (props: {
   toUser: User
   currentUser: User | undefined | null
+  profile: Profile
   includeLabel?: boolean
   circleButton?: boolean
   text?: string
   tooltipText?: string
   disabled?: boolean
 }) => {
-  const {toUser, currentUser, includeLabel, circleButton, text, tooltipText, disabled} = props
+  const {toUser, currentUser, profile, includeLabel, circleButton, text, tooltipText, disabled} =
+    props
   const firebaseUser = useFirebaseUser()
   const router = useRouter()
   const privateUser = usePrivateUser()
@@ -60,7 +61,13 @@ export const SendMessageButton = (props: {
     key: `compose-new-message-${toUser.id}`,
     size: 'sm',
     max: MAX_COMMENT_LENGTH,
-    // placeholder: t('send_message.placeholder', '...'),
+    placeholder: t(
+      'send_message.placeholder',
+      `What genuinely resonated with you in {name}'s profile? What would you like to explore together?`,
+      {name: toUser.name},
+    ),
+    className: 'min-h-[150px]',
+    nRowsMin: 3,
   })
 
   useEffect(() => {
@@ -96,6 +103,36 @@ export const SendMessageButton = (props: {
 
     router.push(`/messages/${res.channelId}`)
   }
+
+  const [insertedChips, setInsertedChips] = useState<string[]>([])
+
+  const toggleChip = (label: string) => {
+    if (!editor) return
+
+    const alreadyInserted = insertedChips.includes(label)
+
+    if (alreadyInserted) {
+      // remove the token from the editor text
+      const current = editor.getText()
+      const cleaned = current.replace(new RegExp(`\\s?${label}`, 'gi'), '').trim()
+      editor.commands.setContent(cleaned)
+      setInsertedChips((prev) => prev.filter((c) => c !== label))
+    } else {
+      // append at cursor (or end)
+      editor.chain().focus().insertContent(` ${label}`).run()
+      setInsertedChips((prev) => [...prev, label])
+    }
+  }
+
+  const MIN_CHARS = 200
+
+  const charCount = editor?.getText().trim().length ?? 0
+  const pct = Math.min((charCount / MIN_CHARS) * 100, 100)
+  // Smooth color transition from red (0%) to green (100%)
+  const r = pct < 50 ? 255 : Math.round(((100 - pct) / 50) * 255)
+  const g = pct < 50 ? Math.round((pct / 50) * 255) : 255
+  const b = Math.round(0)
+  const barColor = `rgb(${r}, ${g}, ${b})`
 
   if (privateUser?.blockedByUserIds.includes(toUser.id)) return null
 
@@ -143,19 +180,78 @@ export const SendMessageButton = (props: {
 
       <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
         <Col className={MODAL_CLASS}>
-          <Row className={'w-full'}>
-            <Title className={'!mb-2'}>
-              {t('send_message.title', 'Message')} {toUser.name}
-            </Title>
-          </Row>
+          <Col className={'w-full'}>
+            <p className={'!mb-2 text-xl font-bold'}>
+              {t('send_message.title', 'Start a meaningful conversation')}
+            </p>
+            <p className={'guidance'}>
+              {t(
+                'send_message.guidance',
+                'Compass is about depth. Take a moment to write something genuine.',
+              )}
+            </p>
+          </Col>
+
           {firebaseUser?.emailVerified ? (
-            <CommentInputTextArea
-              editor={editor}
-              user={currentUser}
-              submit={sendMessage}
-              isSubmitting={!editor || submitting}
-              submitOnEnter={false}
-            />
+            <>
+              {!!profile.keywords?.length && (
+                <div className={'w-full border border-canvas-100 rounded-xl p-2'}>
+                  <p className={'text-ink-1000/55 mb-2 text-xs'}>
+                    {t(
+                      'send_message.keywords_hint',
+                      `Insert some of {name} topics in your message`,
+                      {name: toUser.name},
+                    )}
+                  </p>
+                  <div className={'flex flex-wrap gap-2'}>
+                    {profile.keywords.map((k) => (
+                      <button
+                        key={k}
+                        type={'button'}
+                        onClick={() => toggleChip(k)}
+                        className={clsx(
+                          'text-xs px-3 py-1 rounded-full transition-colors',
+                          insertedChips.includes(k)
+                            ? 'bg-primary-200 border border-primary-300'
+                            : 'bg-canvas-100 hover:bg-canvas-200',
+                        )}
+                      >
+                        {k}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <CommentInputTextArea
+                editor={editor}
+                user={currentUser}
+                submit={sendMessage}
+                isSubmitting={!editor || submitting}
+                isDisabled={charCount < MIN_CHARS}
+                submitOnEnter={false}
+              />
+
+              {/* quality meter */}
+              <div className={'mt-2 w-full flex items-center gap-3'}>
+                <div
+                  className={
+                    'h-1 flex-1 rounded-full bg-canvas-100 border border-canvas-300 overflow-hidden'
+                  }
+                >
+                  <div
+                    className={'h-full rounded-full transition-all duration-300'}
+                    style={{backgroundColor: barColor, width: `${pct}%`}}
+                  />
+                </div>
+                <span className={'tabular-nums guidance shrink-0'}>
+                  {charCount < MIN_CHARS
+                    ? t('send_message.more_chars', '{count} more characters', {
+                        count: MIN_CHARS - charCount,
+                      })
+                    : t('send_message.ready', 'Ready to send')}
+                </span>
+              </div>
+            </>
           ) : (
             <EmailVerificationPrompt t={t} className="max-w-xl" />
           )}

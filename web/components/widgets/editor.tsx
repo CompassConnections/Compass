@@ -84,9 +84,11 @@ export function useTextEditor(props: {
   extensions?: Extensions
   className?: string
   onChange?: () => void
+  nRowsMin?: number
 }) {
-  const {placeholder, className, max, defaultValue, size = 'md', key, onChange} = props
+  const {placeholder, className, max, defaultValue, size = 'md', key, onChange, nRowsMin} = props
   const simple = size === 'sm'
+  const minRows = nRowsMin ?? (simple ? 2 : 3)
 
   const [content, setContent] = usePersistentLocalState<JSONContent | undefined>(
     undefined,
@@ -116,7 +118,7 @@ export function useTextEditor(props: {
         'dark:[&_.ProseMirror-gapcursor]:after:border-white', // gap cursor
         className,
       ),
-      style: `min-height: ${1 + 1.625 * (simple ? 2 : 3)}em`, // 1em padding + 1.625 lines per row
+      style: `min-height: ${1 + 1.625 * minRows}em`, // 1em padding + 1.625 lines per row
     },
   })
 
@@ -149,7 +151,7 @@ export function useTextEditor(props: {
       Placeholder.configure({
         placeholder,
         emptyEditorClass:
-          'before:content-[attr(data-placeholder)] before:text-ink-500 before:float-left before:h-0 cursor-text',
+          'before:content-[attr(data-placeholder)] before:text-ink-1000/55 before:text-sm before:float-left before:h-0 cursor-text',
       }),
       CharacterCount.configure({limit: max}),
       ...(props.extensions ?? []),

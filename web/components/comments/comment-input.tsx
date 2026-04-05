@@ -131,6 +131,7 @@ export function CommentInputTextArea(props: {
   cancelEditing?: () => void
   isSubmitting: boolean
   submitOnEnter?: boolean
+  isDisabled?: boolean
   isEditing?: boolean
   commentTypes?: CommentType[]
 }) {
@@ -144,6 +145,7 @@ export function CommentInputTextArea(props: {
     replyTo,
     commentTypes = ['comment'],
     cancelEditing,
+    isDisabled,
   } = props
   const t = useT()
 
@@ -200,7 +202,7 @@ export function CommentInputTextArea(props: {
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>
             <button
-              disabled={!editor || editor.isEmpty}
+              disabled={isDisabled || !editor || editor.isEmpty}
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-2 transition-colors"
               onClick={() => submit('repost')}
             >
@@ -220,10 +222,10 @@ export function CommentInputTextArea(props: {
             </button>
           </Row>
         )}
-        {!isSubmitting && submit && commentTypes.includes('comment') && (
+        {!isSubmitting && !isDisabled && submit && commentTypes.includes('comment') && (
           <button
             className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
-            disabled={!editor || editor.isEmpty}
+            disabled={isDisabled || !editor || editor.isEmpty}
             onClick={() => submit('comment')}
           >
             <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />

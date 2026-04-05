@@ -45,7 +45,6 @@ import {Input} from 'web/components/widgets/input'
 import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
 import {Slider} from 'web/components/widgets/slider'
-import {Title} from 'web/components/widgets/title'
 import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
@@ -277,9 +276,13 @@ export const OptionalProfileUserForm = (props: {
 
   return (
     <>
-      <Title>{t('profile.optional.subtitle', 'Optional information')}</Title>
-
       <Col className={'gap-8'}>
+        <p className={'guidance'}>
+          {t(
+            'profile.optional.subtitle',
+            'Although all the fields below are optional, they will help people better understand you and connect with you.',
+          )}
+        </p>
         <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
         <LLMExtractSection
           parsingEditor={parsingEditor}

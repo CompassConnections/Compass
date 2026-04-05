@@ -46,3 +46,10 @@ export async function userInformationFromDb(account: any) {
     profile: profileResults[0],
   }
 }
+
+export async function dbUserExists(username: string): Promise<boolean> {
+  const db = createSupabaseDirectClient()
+  const query = `SELECT 1 FROM users WHERE username = $1 LIMIT 1`
+  const result = await db.query(query, [username])
+  return result.length > 0
+}

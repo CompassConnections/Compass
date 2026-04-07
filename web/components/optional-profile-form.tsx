@@ -90,6 +90,7 @@ export const OptionalProfileUserForm = (props: {
   const [isExtracting, setIsExtracting] = useState(false)
   const [parsingEditor, setParsingEditor] = useState<any>(null)
   const [extractionProgress, setExtractionProgress] = useState(0)
+  const [extractionError, setExtractionError] = useState<string | null>(null)
 
   const handleLLMExtract = async (): Promise<Partial<ProfileWithoutUser>> => {
     const llmContent = parsingEditor?.getText?.() ?? ''
@@ -99,6 +100,7 @@ export const OptionalProfileUserForm = (props: {
     }
     setIsExtracting(true)
     setExtractionProgress(0)
+    setExtractionError(null)
     const startTime = Date.now()
     setInterval(() => {
       const elapsed = (Date.now() - startTime) / 1000
@@ -185,10 +187,10 @@ export const OptionalProfileUserForm = (props: {
       return extractedProfile
     } catch (error) {
       console.error(error)
-      toast.error(
+      setExtractionError(
         t(
           'profile.llm.extract.error',
-          'Failed to extract profile data. Try again later or contact support.',
+          'Profile extraction failed. No worries — you can fill in your profile manually, or save it now and come back to extract later.',
         ),
       )
       Sentry.captureException(error, {
@@ -322,7 +324,11 @@ export const OptionalProfileUserForm = (props: {
           onExtract={handleLLMExtract}
           progress={extractionProgress}
         />
-
+        {extractionError && (
+          <p className="border rounded-xl border-red-900 text-red-600 text-sm p-2">
+            {extractionError}
+          </p>
+        )}
         <hr className="border border-b my-4" />
 
         <Category

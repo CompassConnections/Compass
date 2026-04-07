@@ -24,6 +24,7 @@ import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {parseJsonContentToText} from 'common/util/parse'
+import {HOUR_MS, MINUTE_MS} from 'common/util/time'
 import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
 import {tmpdir} from 'os'
@@ -34,8 +35,8 @@ import {convertToJSONContent, extractGoogleDocId} from 'shared/parse'
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
 const CACHE_DIR = join(tmpdir(), 'compass-llm-cache')
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
-const PROCESSING_TTL_MS = 10 * 60 * 1000 // 10 minutes
+const CACHE_TTL_MS = 24 * HOUR_MS
+const PROCESSING_TTL_MS = 10 * MINUTE_MS
 
 interface ParsedBody {
   content?: string
@@ -268,6 +269,11 @@ async function processAndCache(
   url?: string | undefined,
   locale?: string,
 ): Promise<void> {
+  log('Extracting profile from content', {
+    contentLength: content?.length,
+    url,
+    locale,
+  })
   try {
     let bio: JSONContent | undefined
     if (!content) {
@@ -570,19 +576,9 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
   }
 }
 
-export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (
-  parsedBody,
-  auth,
-) => {
+export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (parsedBody) => {
   const {url, locale} = parsedBody
   const content = parsedBody.content
-
-  log('Extracting profile from content', {
-    contentLength: content?.length,
-    url,
-    locale,
-    userId: auth.uid,
-  })
 
   if (content && url) {
     throw APIErrors.badRequest('Content and URL cannot be provided together')

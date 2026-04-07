@@ -11,6 +11,7 @@ interface LLMExtractSectionProps {
   isExtracting: boolean
   isSubmitting: boolean
   onExtract: () => void
+  progress: number
 }
 
 export function LLMExtractSection({
@@ -19,6 +20,7 @@ export function LLMExtractSection({
   isExtracting,
   isSubmitting,
   onExtract,
+  progress,
 }: LLMExtractSectionProps) {
   const t = useT()
   const parsingText = parsingEditor?.getText?.()
@@ -50,15 +52,25 @@ export function LLMExtractSection({
           'Insert a URL or paste your profile content here.',
         )}
       />
+      {isExtracting && (
+        <div className="w-full h-2 bg-canvas-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary-500 transition-all duration-100 ease-linear rounded-full"
+            style={{width: `${Math.min(progress, 100)}%`}}
+          />
+        </div>
+      )}
       <Button
         onClick={onExtract}
         disabled={isExtracting || !parsingEditor?.getJSON?.() || isSubmitting}
         loading={isExtracting}
         className="self-start"
       >
-        {isUrl(parsingText)
-          ? t('profile.llm.extract.button_url', 'Extract Profile Data from URL')
-          : t('profile.llm.extract.button_text', 'Extract Profile Data from Text')}
+        {isExtracting
+          ? t('profile.llm.extract.button_extracting', 'Extracting Profile Data')
+          : isUrl(parsingText)
+            ? t('profile.llm.extract.button_url', 'Extract Profile Data from URL')
+            : t('profile.llm.extract.button_text', 'Extract Profile Data from Text')}
       </Button>
     </Col>
   )

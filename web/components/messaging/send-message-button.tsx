@@ -245,9 +245,7 @@ export const SendMessageButton = (props: {
                 </div>
                 <span className={'tabular-nums guidance shrink-0'}>
                   {charCount < MIN_CHARS
-                    ? t('send_message.more_chars', '{count} more characters', {
-                        count: MIN_CHARS - charCount,
-                      })
+                    ? `${charCount} / ${MIN_CHARS} min`
                     : t('send_message.ready', 'Ready to send')}
                 </span>
               </div>

@@ -1283,7 +1283,10 @@ export const API = (_apiTypeCheck = {
         locale: z.string().optional(),
       })
       .strict(),
-    returns: {} as Partial<ProfileWithoutUser>,
+    returns: {} as {
+      profile: Partial<ProfileWithoutUser>
+      status: string
+    },
     summary: 'Extract profile information from text using LLM',
     tag: 'Profiles',
   },

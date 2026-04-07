@@ -102,7 +102,17 @@ export const OptionalProfileUserForm = (props: {
       ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
     }
     try {
-      let extractedProfile = await api('llm-extract-profile', payload)
+      let extractedProfile: Partial<ProfileWithoutUser> = {}
+      let status: string | undefined = 'pending'
+      while (status === 'pending') {
+        const response = await api('llm-extract-profile', payload)
+        status = response.status
+        console.log(status)
+        if (status === 'pending') {
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
+        extractedProfile = response.profile
+      }
       extractedProfile = removeNullOrUndefinedProps(extractedProfile)
       for (const data of Object.entries(extractedProfile)) {
         const key = data[0] as keyof ProfileWithoutUser

@@ -25,6 +25,7 @@ import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {urlize} from 'common/util/string'
+import {MINUTE_MS, sleep} from 'common/util/time'
 import {invert, range} from 'lodash'
 import {useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
@@ -88,6 +89,7 @@ export const OptionalProfileUserForm = (props: {
 
   const [isExtracting, setIsExtracting] = useState(false)
   const [parsingEditor, setParsingEditor] = useState<any>(null)
+  const [extractionProgress, setExtractionProgress] = useState(0)
 
   const handleLLMExtract = async (): Promise<Partial<ProfileWithoutUser>> => {
     const llmContent = parsingEditor?.getText?.() ?? ''
@@ -96,6 +98,16 @@ export const OptionalProfileUserForm = (props: {
       return {}
     }
     setIsExtracting(true)
+    setExtractionProgress(0)
+    const startTime = Date.now()
+    setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000
+      if (elapsed < 20) {
+        setExtractionProgress((elapsed / 30) * 100)
+      } else if (elapsed < 60) {
+        setExtractionProgress((2 / 3) * 100 + ((elapsed - 20) / 150) * 100)
+      }
+    }, 100)
     const isInputUrl = isUrl(llmContent)
     const payload = {
       locale,
@@ -105,11 +117,15 @@ export const OptionalProfileUserForm = (props: {
       let extractedProfile: Partial<ProfileWithoutUser> = {}
       let status: string | undefined = 'pending'
       while (status === 'pending') {
+        const elapsedMs = Date.now() - startTime
+        if (elapsedMs > 10 * MINUTE_MS) {
+          throw new Error('Extraction timed out after 10 minutes')
+        }
         const response = await api('llm-extract-profile', payload)
         status = response.status
-        console.log(status)
+        debug(response)
         if (status === 'pending') {
-          await new Promise((resolve) => setTimeout(resolve, 1000))
+          await sleep(1000)
         }
         extractedProfile = response.profile
       }
@@ -163,6 +179,9 @@ export const OptionalProfileUserForm = (props: {
         t('profile.llm.extract.success', 'Profile data extracted! Please review below.'),
       )
 
+      // clearInterval(progressInterval)
+      setExtractionProgress(100)
+
       return extractedProfile
     } catch (error) {
       console.error(error)
@@ -178,6 +197,7 @@ export const OptionalProfileUserForm = (props: {
         extra: {payload}, // for the rest (nested, etc.)
       })
     } finally {
+      // clearInterval(progressInterval)
       setIsExtracting(false)
     }
     return {}
@@ -300,6 +320,7 @@ export const OptionalProfileUserForm = (props: {
           isExtracting={isExtracting}
           isSubmitting={isSubmitting}
           onExtract={handleLLMExtract}
+          progress={extractionProgress}
         />
 
         <hr className="border border-b my-4" />

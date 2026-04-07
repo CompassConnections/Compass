@@ -54,7 +54,7 @@ export const LOCAL_WEB_DOMAIN = `localhost:3000`
 export const LOCAL_BACKEND_DOMAIN = `${IS_WEBVIEW_DEV_PHONE ? '192.168.1.3' : IS_LOCAL_ANDROID ? '10.0.2.2' : 'localhost'}:8088`
 
 export const DOMAIN = IS_LOCAL ? LOCAL_WEB_DOMAIN : ENV_CONFIG.domain
-export const DEPLOYED_WEB_URL = `https://www.${ENV_CONFIG.domain}`
+export const DEPLOYED_WEB_URL = `https://www.${PROD_CONFIG.domain}`
 
 // Careful: buildOgUrl uses WEB_URL and works only on https://www.compassmeet.com (not https://compassmeet.com)
 // x-vercel-error: INVALID_IMAGE_OPTIMIZE_REQUEST. Could work if needed though with some Vercel tweak

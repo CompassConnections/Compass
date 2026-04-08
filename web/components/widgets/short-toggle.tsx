@@ -21,7 +21,9 @@ export default function ShortToggle(props: {
     'ring-amber-500 ring-offset-canvas-50 bg-amber-500': on && colorMode === 'warning',
     'bg-ink-300': !on,
   })
-  const toggleEnabledClasses = !disabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+  const toggleEnabledClasses = !disabled
+    ? 'cursor-pointer hover:opacity-80'
+    : 'cursor-not-allowed opacity-30'
 
   const knobBaseClasses =
     'bg-canvas-0 pointer-events-none inline-block rounded-full ring-0 transition duration-200 ease-in-out'

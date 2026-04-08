@@ -173,6 +173,14 @@ export function UncontrolledTabs(props: TabProps & {defaultIndex?: number}) {
   if ((defaultIndex ?? 0) > props.tabs.length - 1) {
     console.error('default index greater than tabs length')
   }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && /^#\d+$/.test(window.location.hash)) {
+      const i = Number(window.location.hash.slice(1))
+      if (i < props.tabs.length) setActiveIndex(i)
+    }
+  }, [])
+
   return (
     <ControlledTabs
       {...rest}

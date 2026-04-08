@@ -19,6 +19,7 @@ import {useT} from 'web/lib/locale'
 export default function NotificationsPage() {
   useRedirectIfSignedOut()
   const t = useT()
+
   return (
     <PageBase trackPageView={'notifications page'} className={'mx-4'}>
       <NoSEO />

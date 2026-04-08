@@ -1,16 +1,24 @@
 import {PrivateUser} from 'common/user'
 import {
+  NOTIFICATION_DESTINATION_TYPES,
   notification_destination_types,
   notification_preference,
   notification_preferences,
 } from 'common/user-notification-preferences'
 import {debounce} from 'lodash'
 import {useCallback} from 'react'
-import {MultiSelectAnswers} from 'web/components/answers/answer-compatibility-question-content'
+import {Row} from 'web/components/layout/row'
+import {SwitchSetting} from 'web/components/switch-setting'
 import {WithPrivateUser} from 'web/components/user/with-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+
+// Right now, "email" means emails and "browser" means in-app notifications + push notifs
+// TODO: figure out what to do with "mobile"
+const SHOWN_NOTIFICATION_DESTINATION_TYPES = NOTIFICATION_DESTINATION_TYPES.filter(
+  (type) => type !== 'mobile',
+)
 
 export const NotificationSettings = () => (
   <WithPrivateUser>{(user) => <LoadedNotificationSettings privateUser={user} />}</WithPrivateUser>
@@ -30,50 +38,67 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
     question: string
   }[] = [
     {
-      type: 'new_match',
-      question: t('notifications.question.new_match', '... matches with you?'),
-    },
-    {
       type: 'new_message',
       question: t('notifications.question.new_message', '... sends you a new message?'),
     },
-    // {
-    //   type: 'new_profile_like',
-    //   question: '... likes your profile?',
-    // },
+    {
+      type: 'new_match',
+      question: t(
+        'notifications.question.new_match',
+        '... matches with you (private interest signals)?',
+      ),
+    },
     {
       type: 'new_endorsement',
       question: t('notifications.question.new_endorsement', '... endorses you?'),
     },
-    // {
-    //   type: 'new_profile_ship',
-    //   question: '... ships you?',
-    // },
     {
       type: 'tagged_user',
       question: t('notifications.question.tagged_user', '... mentions you?'),
     },
-    // {
-    //   type: 'on_new_follow',
-    //   question: '... follows you?',
-    // },
     {
       type: 'new_search_alerts',
       question: t('notifications.question.new_search_alerts', 'Alerts from bookmarked searches?'),
     },
     {
-      type: 'opt_out_all',
+      type: 'platform_updates',
       question: t(
-        'notifications.question.opt_out_all',
-        'Opt out of all notifications? (You can always change this later)',
+        'notifications.question.platform_updates',
+        'Platform updates (share, growth, new features, etc.)?',
       ),
     },
+    {
+      type: 'opt_out_all',
+      question: t('notifications.question.opt_out_all', 'Opt out of all notifications?'),
+    },
+    // {
+    //   type: 'new_profile_like',
+    //   question: '... likes your profile?',
+    // },
+    // {
+    //   type: 'new_profile_ship',
+    //   question: '... ships you?',
+    // },
+    // {
+    //   type: 'on_new_follow',
+    //   question: '... follows you?',
+    // },
   ]
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="flex flex-col gap-8 p-4">
-        <p className="text-ink-700 font-medium">
+    <Row className="mx-auto">
+      <div className="flex flex-col gap-8 p-2">
+        <Row className="justify-end gap-2">
+          {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
+            <span className="text-ink-600 max-w-12 w-fit">
+              {t(
+                `notifications.options.${destinationType}`,
+                destinationType === 'email' ? 'By email' : 'In the app',
+              )}
+            </span>
+          ))}
+        </Row>
+        <p className="text-ink-700 font-medium pr-32">
           {t('notifications.heading', 'Where do you want to be notified when someone')}
         </p>
         {notificationTypes.map(({type, question}) => (
@@ -85,10 +110,11 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
             onUpdate={(selected) => {
               setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
             }}
+            optOut={prefs.opt_out_all}
           />
         ))}
       </div>
-    </div>
+    </Row>
   )
 }
 
@@ -97,24 +123,27 @@ const NotificationOption = (props: {
   question: string
   selected: notification_destination_types[]
   onUpdate: (selected: notification_destination_types[]) => void
+  optOut: notification_destination_types[]
 }) => {
-  const {type, question, selected, onUpdate} = props
-  const t = useT()
+  const {type, question, selected, onUpdate, optOut} = props
 
-  const getSelectedValues = (destinations: string[]) => {
-    const values: number[] = []
-    if ((destinations ?? []).includes('email')) values.push(0)
-    if ((destinations ?? []).includes('browser')) values.push(1)
-    return values
-  }
+  const selectedValues = {
+    email: selected.includes('email'),
+    browser: selected.includes('browser'),
+  } as Record<notification_destination_types, boolean>
 
-  const setValue = async (value: number[]) => {
-    const newDestinations: notification_destination_types[] = []
-    if (value.includes(0)) newDestinations.push('email')
-    if (value.includes(1)) newDestinations.push('browser')
+  const setValue = async (checked: boolean, destinationType: notification_destination_types) => {
+    const newDestinations = new Set(selected)
+    if (checked) {
+      newDestinations.add(destinationType)
+    } else {
+      newDestinations.delete(destinationType)
+    }
 
-    onUpdate(newDestinations)
-    save(selected, newDestinations)
+    const result = Array.from(newDestinations)
+
+    onUpdate(result)
+    save(selected, result)
   }
 
   const save = useCallback(
@@ -143,16 +172,17 @@ const NotificationOption = (props: {
   )
 
   return (
-    <div className="flex flex-col gap-2">
+    <Row className="gap-2 w-full justify-between">
       <div className="text-ink-700 font-medium">{question}</div>
-      <MultiSelectAnswers
-        options={[
-          t('notifications.options.email', 'By email'),
-          t('notifications.options.page', 'On notifications page'),
-        ]}
-        values={getSelectedValues(selected)}
-        setValue={setValue}
-      />
-    </div>
+      <Row className="gap-3">
+        {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
+          <SwitchSetting
+            checked={selectedValues[destinationType]}
+            onChange={(checked) => setValue(checked, destinationType)}
+            disabled={optOut.includes(destinationType) && type !== 'opt_out_all'}
+          />
+        ))}
+      </Row>
+    </Row>
   )
 }

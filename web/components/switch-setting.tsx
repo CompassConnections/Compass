@@ -15,14 +15,16 @@ export const SwitchSetting = (props: {
   return (
     <Switch.Group as="div" className="flex items-center gap-3" data-testid={testId}>
       <ShortToggle colorMode={colorMode} on={checked} setOn={onChange} disabled={disabled} />
-      <Switch.Label
-        className={clsx(
-          'text-ink-900 text-sm',
-          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-        )}
-      >
-        {label}
-      </Switch.Label>
+      {label && (
+        <Switch.Label
+          className={clsx(
+            'text-ink-900 text-sm',
+            disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+          )}
+        >
+          {label}
+        </Switch.Label>
+      )}
     </Switch.Group>
   )
 }

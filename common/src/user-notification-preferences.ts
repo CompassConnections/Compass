@@ -3,7 +3,8 @@ import {DOMAIN} from 'common/envs/constants'
 import {PrivateUser} from './user'
 import {filterDefined} from './util/array'
 
-export type notification_destination_types = 'email' | 'browser' | 'mobile'
+export const NOTIFICATION_DESTINATION_TYPES = ['email', 'browser', 'mobile'] as const
+export type notification_destination_types = (typeof NOTIFICATION_DESTINATION_TYPES)[number]
 export type notification_preference = keyof notification_preferences
 export type notification_preferences = {
   new_match: notification_destination_types[]
@@ -21,6 +22,7 @@ export type notification_preferences = {
   // General
   onboarding_flow: notification_destination_types[] // unused
   thank_you_for_purchases: notification_destination_types[] // unused
+  platform_updates: notification_destination_types[]
   opt_out_all: notification_destination_types[]
 }
 
@@ -47,13 +49,14 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
     // General
     thank_you_for_purchases: constructPref(false, false, false),
     onboarding_flow: constructPref(true, true, false),
+    platform_updates: constructPref(true, true, false),
 
     opt_out_all: [],
   }
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = `https://${DOMAIN}/notifications`
+export const UNSUBSCRIBE_URL = `https://${DOMAIN}/notifications#1`
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference,

@@ -8,7 +8,6 @@ First, install the dependencies:
 
 ```sh
 yarn install
-yarn setup // to install the correct next config in the .react-email folder, with the right aliases
 ```
 
 Then, run the development server:
@@ -19,8 +18,8 @@ yarn dev
 
 Open [localhost:3001](http://localhost:3001) with your browser to see the result.
 
-## Useful commands
-
-```bash
-
-```
+[//]: # '## Useful commands'
+[//]: #
+[//]: # '```bash'
+[//]: #
+[//]: # '```'

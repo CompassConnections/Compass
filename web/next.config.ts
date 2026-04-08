@@ -115,6 +115,7 @@ const nextConfig: NextConfig = {
     return [
       {source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false},
       {source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false},
+      {source: '/x', destination: 'https://x.com/compassmeet', permanent: false},
       {
         source: '/paypal',
         destination: 'https://www.paypal.com/paypalme/CompassConnections',

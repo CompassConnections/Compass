@@ -160,7 +160,7 @@ export const RESERVED_PATHS = new Set([
   'terms',
   'tips-bio',
   'twitch',
-  'twitter',
+  'x',
   'user',
   'users',
   'web',

@@ -129,7 +129,7 @@ export function getXShareProfileUrl(
   const encodedText = encodeURIComponent(
     t(
       'share_profile.x_share_profile',
-      "I'm on a platform that matches people by values, not photos.\nNo ads. No algorithms. No swiping. Just depth.",
+      "There's a free, open-source alternative to dating and networking apps.\nNo swipes. No ads. No algorithms. Just search for people who share your values.",
     ) + '\n@compassmeet',
   )
   const encodedUrl = encodeURIComponent(`${DEPLOYED_WEB_URL}/${username}`)

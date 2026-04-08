@@ -1,6 +1,7 @@
 import {CheckIcon, ClipboardIcon, DocumentDuplicateIcon} from '@heroicons/react/24/outline'
 import {LinkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import {getXShareProfileUrl} from 'common/socials'
 import {ComponentProps, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
@@ -183,12 +184,7 @@ export const share = async (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 }
-export const shareOnX = (profileUrl: string, text: string) => {
-  const encodedText = encodeURIComponent(text)
-  const encodedUrl = encodeURIComponent(profileUrl)
-
-  const shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
-
+export const shareOnX = (shareUrl: string) => {
   window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
 export const shareOnLinkedIn = (profileUrl: string) => {
@@ -198,17 +194,13 @@ export const shareOnLinkedIn = (profileUrl: string) => {
 
   window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
+
 export const ShareProfileOnXButton = (props: {username: string; className?: string}) => {
   const {username, className} = props
   const t = useT()
 
   return (
-    <Button
-      className={className}
-      onClick={() =>
-        shareOnX(`https://compassmeet.com/${username}`, `Thoughtful connections > swiping.`)
-      }
-    >
+    <Button className={className} onClick={() => shareOnX(getXShareProfileUrl(username, t))}>
       {t('share_profile.on_x', 'Share on X')}
     </Button>
   )

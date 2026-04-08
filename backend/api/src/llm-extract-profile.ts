@@ -57,7 +57,9 @@ async function validateProfileFields(
   llmProfile: Partial<ProfileWithoutUser>,
   validChoices: Record<string, string[]>,
 ): Promise<Partial<ProfileWithoutUser>> {
-  const result: Partial<Record<keyof ProfileWithoutUser, any>> = {...llmProfile}
+  const result: Partial<Record<keyof ProfileWithoutUser, any>> = {
+    ...removeNullOrUndefinedProps(llmProfile),
+  }
 
   const toArray: (keyof ProfileWithoutUser)[] = [
     'diet',
@@ -188,6 +190,35 @@ async function validateProfileFields(
     )
   }
 
+  // Validate age preferences
+  if (result.pref_age_min !== undefined) {
+    if (
+      !Number.isFinite(result.pref_age_min) ||
+      result.pref_age_min < 18 ||
+      result.pref_age_min > 100
+    ) {
+      result.pref_age_min = undefined
+    }
+  }
+
+  if (result.pref_age_max !== undefined) {
+    if (
+      !Number.isFinite(result.pref_age_max) ||
+      result.pref_age_max < 18 ||
+      result.pref_age_max > 100
+    ) {
+      result.pref_age_max = undefined
+    }
+  }
+
+  // Ensure pref_age_max > pref_age_min when both are defined
+  if (result.pref_age_min !== undefined && result.pref_age_max !== undefined) {
+    if (result.pref_age_max <= result.pref_age_min) {
+      result.pref_age_max = undefined
+      result.pref_age_min = undefined
+    }
+  }
+
   return result
 }
 
@@ -215,7 +246,7 @@ async function setCachedResult(cacheKey: string, result: any): Promise<void> {
     await fs.mkdir(CACHE_DIR, {recursive: true})
     const cacheFile = join(CACHE_DIR, `${cacheKey}.json`)
     await fs.writeFile(cacheFile, JSON.stringify(result), 'utf-8')
-    debug('Cached LLM result', {cacheKey: cacheKey.substring(0, 8)})
+    debug('Cached LLM result', {cacheKey: cacheKey.substring(0, 8), result})
   } catch (error) {
     log('Failed to write cache', {cacheKey, error})
     // Don't throw - caching failure shouldn't break the main flow
@@ -307,6 +338,7 @@ async function callGemini(text: string) {
   ]
 
   for (const model of models) {
+    debug(`Calling Gemini ${model}...`)
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
@@ -423,7 +455,7 @@ export async function callLLM(
 
   const PROFILE_FIELDS: Partial<Record<keyof ProfileWithoutUser, any>> = {
     // Basic info
-    age: 'Number. Age in years.',
+    age: 'Number. Age in years (between 18 and 100).',
     gender: `String. One of: ${validChoices.pref_gender?.join(', ')}. If multiple mentioned, use the most likely one. Infer if you have enough evidence`,
     height_in_inches: 'Number. Height converted to inches.',
     city: 'String. Current city of residence (English spelling).',
@@ -475,8 +507,10 @@ export async function callLLM(
       'String. Free-form elaboration on political views, only if explicitly stated.',
 
     // Preferences
-    pref_age_min: 'Number. Minimum preferred age of match.',
-    pref_age_max: 'Number. Maximum preferred age of match.',
+    pref_age_min:
+      'Number. Minimum preferred age of match (higher than 18, only if mentioned, do NOT infer).',
+    pref_age_max:
+      'Number. Maximum preferred age of match (lower than 100, only if mentioned, do NOT infer).',
     pref_gender: `Array. Any of: ${validChoices.pref_gender?.join(', ')}`,
     pref_relation_styles: `Array. Any of: ${validChoices.pref_relation_styles?.join(', ')}`,
     pref_romantic_styles: `Array. Any of: ${validChoices.pref_romantic_styles?.join(', ')}`,
@@ -520,6 +554,7 @@ TEXT TO ANALYZE:
   debug({text})
 
   const outputText = await callGemini(text)
+  // const outputText = {pref_age_min: 0, pref_age_max: 120}
 
   if (!outputText) {
     throw APIErrors.internalServerError('Failed to parse LLM response')

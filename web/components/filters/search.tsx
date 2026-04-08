@@ -15,7 +15,6 @@ import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useChoicesContext} from 'web/hooks/use-choices'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -25,75 +24,6 @@ import {LocationFilterProps} from './location-filter'
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(input)
-}
-
-const TYPING_SPEED = 100 // ms per character
-const HOLD_TIME = 2000 // ms to hold the full word before deleting or switching
-export const WORDS: string[] = [
-  // Values
-  'Minimalism',
-  'Sustainability',
-  'Veganism',
-  'Meditation',
-  'Climate',
-  'Animal',
-  'Community living',
-  'Open source',
-  'Spirituality',
-
-  // Intellectual interests
-  'Philosophy',
-  'AI safety',
-  'Psychology',
-
-  // Arts & culture
-  'Indie film',
-  'Jazz',
-  'Contemporary art',
-  'Folk music',
-  'Poetry',
-  'Sci-fi',
-  'Board games',
-
-  // Relationship intentions
-  'Study buddy',
-  'Co-founder',
-
-  // Lifestyle
-  'Digital nomad',
-  'Permaculture',
-  'Yoga',
-
-  // Random human quirks (to make it feel alive)
-  'Chess',
-  'Rock climbing',
-  'Stargazing',
-
-  // Other
-  'Feminism',
-  'Coding',
-  'ENFP',
-  'INTP',
-  'Therapy',
-  'Science',
-  'Camus',
-  'Running',
-  'Writing',
-  'Reading',
-  'Anime',
-  'Drawing',
-  'Photography',
-  'Linux',
-  'History',
-  'Graphics design',
-  'Math',
-  'Ethereum',
-  'Finance',
-]
-
-function getRandomPair(words = WORDS, count = 3): string {
-  const shuffled = [...words].sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, count).join(', ')
 }
 
 const MAX_BOOKMARKED_SEARCHES = 10
@@ -144,6 +74,8 @@ export const Search = forwardRef<
 
   const sortSelectRef = useRef<HTMLSelectElement>(null)
 
+  const t = useT()
+
   const handleOpenFilters = () => {
     if (openFilters) {
       openFilters()
@@ -168,18 +100,18 @@ export const Search = forwardRef<
     }
   }, [highlightSort])
 
-  const [placeholder, setPlaceholder] = useState('')
-  const [textToType, setTextToType] = useState(getRandomPair())
-  const [_, setCharIndex] = useState(0)
-  const [isHolding, setIsHolding] = useState(false)
+  const placeholder = t('search.placeholder', 'Search anything...')
+
+  // const [textToType, setTextToType] = useState(getRandomPair())
+  // const [_, setCharIndex] = useState(0)
+  // const [isHolding, setIsHolding] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
   const [loadingBookmark, setLoadingBookmark] = useState(false)
-  const t = useT()
   const [openBookmarks, setOpenBookmarks] = useState(false)
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false)
   const user = useUser()
   const isClearedFilters = useIsClearedFilters(filters)
-  const choices = useChoicesContext()
+  // const choices = useChoicesContext()
 
   const [keywordInput, setKeywordInput] = useState(filters.name ?? '')
 
@@ -197,30 +129,32 @@ export const Search = forwardRef<
     setKeywordInput(filters.name ?? '')
   }, [filters.name])
 
-  useEffect(() => {
-    if (isHolding) return
-
-    const interval = setInterval(() => {
-      setCharIndex((prev) => {
-        if (prev < textToType.length) {
-          setPlaceholder(textToType.slice(0, prev + 1))
-          return prev + 1
-        } else {
-          setIsHolding(true)
-          clearInterval(interval)
-          setTimeout(() => {
-            setPlaceholder('')
-            setCharIndex(0)
-            setTextToType(getRandomPair(Object.values(choices?.['interests']))) // pick new pair
-            setIsHolding(false)
-          }, HOLD_TIME)
-          return prev
-        }
-      })
-    }, TYPING_SPEED)
-
-    return () => clearInterval(interval)
-  }, [textToType, isHolding])
+  // const TYPING_SPEED = 100 // ms per character
+  // const HOLD_TIME = 2000 // ms to hold the full word before deleting or switching
+  // useEffect(() => {
+  //   if (isHolding) return
+  //
+  //   const interval = setInterval(() => {
+  //     setCharIndex((prev) => {
+  //       if (prev < textToType.length) {
+  //         setPlaceholder(textToType.slice(0, prev + 1))
+  //         return prev + 1
+  //       } else {
+  //         setIsHolding(true)
+  //         clearInterval(interval)
+  //         setTimeout(() => {
+  //           setPlaceholder('')
+  //           setCharIndex(0)
+  //           setTextToType(getRandomPair(Object.values(choices?.['interests']))) // pick new pair
+  //           setIsHolding(false)
+  //         }, HOLD_TIME)
+  //         return prev
+  //       }
+  //     })
+  //   }, TYPING_SPEED)
+  //
+  //   return () => clearInterval(interval)
+  // }, [textToType, isHolding])
 
   useEffect(() => {
     setTimeout(() => setBookmarked(false), 2000)

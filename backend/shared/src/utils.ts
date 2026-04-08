@@ -1,4 +1,5 @@
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
+import {PrivateUser, User} from 'common/user'
 import {log, type Logger} from 'shared/monitoring/log'
 import {metrics} from 'shared/monitoring/metrics'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
@@ -60,4 +61,16 @@ export const getPrivateUserByKey = async (
     [apiKey],
     convertPrivateUser,
   )
+}
+
+export const getAllUsers = async (): Promise<User[]> => {
+  const pg: SupabaseDirectClient = createSupabaseDirectClient()
+  const res = await pg.manyOrNone(`select * from users`)
+  return res.map(convertUser)
+}
+
+export const getAllPrivateUsers = async (): Promise<PrivateUser[]> => {
+  const pg: SupabaseDirectClient = createSupabaseDirectClient()
+  const res = await pg.manyOrNone(`select * from private_users`)
+  return res.map(convertPrivateUser)
 }

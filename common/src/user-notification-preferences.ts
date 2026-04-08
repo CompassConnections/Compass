@@ -1,4 +1,4 @@
-import {DOMAIN} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 
 import {PrivateUser} from './user'
 import {filterDefined} from './util/array'
@@ -56,7 +56,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = `https://${DOMAIN}/notifications#1`
+export const UNSUBSCRIBE_URL = `${DEPLOYED_WEB_URL}/notifications#1`
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference,

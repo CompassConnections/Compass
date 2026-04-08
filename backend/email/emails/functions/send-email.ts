@@ -15,7 +15,7 @@ export const sendEmail = async (
   const resend = getResend()
   debug(resend, payload, options)
 
-  const skip = IS_LOCAL
+  const skip = IS_LOCAL && process.env.SEND_EMAIL_LOCALLY !== 'true'
   if (skip) {
     console.warn('Skipping email send')
     return null

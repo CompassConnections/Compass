@@ -1,5 +1,5 @@
-import {createSomeNotifications} from 'backend/api/src/create-notification'
 import {tryCatch} from 'common/util/try-catch'
+import {createSomeNotifications} from 'shared/create-notification'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 

@@ -2,9 +2,9 @@ jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/notifications')
 
-import * as createNotificationModules from 'api/create-notification'
 import {Notification} from 'common/notifications'
 import {tryCatch} from 'common/util/try-catch'
+import * as createNotificationModules from 'shared/create-notification'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseNotifications from 'shared/supabase/notifications'
 

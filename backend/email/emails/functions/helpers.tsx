@@ -1,4 +1,5 @@
 import {render} from '@react-email/render'
+import {debug} from 'common/logger'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
 import {
@@ -6,6 +7,7 @@ import {
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
 import NewSearchAlertsEmail from 'email/new-search_alerts'
+import ShareCompassEmail from 'email/share-compass'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'
 import React from 'react'
@@ -187,6 +189,41 @@ export const sendNewEndorsementEmail = async (
         endorsementText={text}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
+        locale={locale}
+      />,
+    ),
+  })
+}
+
+export const sendOutreachEmail = async (toUser: User, privateUser: PrivateUser) => {
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
+    privateUser,
+    'platform_updates',
+  )
+  const email = privateUser.email
+  if (!email || !sendToEmail) {
+    debug('No email or user turned off emails', toUser.username, toUser.id)
+    return
+  }
+
+  const locale = privateUser?.locale
+  const t = createT(locale)
+  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+
+  const subject = t(
+    'email.share.preview',
+    "600 people in 6 months — here's how you help write what's next",
+  )
+
+  return await sendEmail({
+    from: fromEmail,
+    subject,
+    to: email,
+    html: await render(
+      <ShareCompassEmail
+        toUser={toUser}
+        unsubscribeUrl={unsubscribeUrl}
+        email={email}
         locale={locale}
       />,
     ),

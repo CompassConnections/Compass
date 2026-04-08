@@ -1,7 +1,6 @@
 import {QuestionWithStats} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
 import {
   arraybeSchema,
-  baseProfilesSchema,
   combinedProfileSchema,
   contentSchema,
   dateSchema,
@@ -280,42 +279,6 @@ export const API = (_apiTypeCheck = {
       .strict(),
     summary: 'Ban or unban a user',
     tag: 'Admin',
-  },
-  'create-user': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    deprecation: {
-      deprecated: true,
-      migrationPath: '/create-user-and-profile',
-      sunsetDate: 'Sat, 01 Jun 2025 00:00:00 GMT',
-    },
-    returns: {} as {user: User; privateUser: PrivateUser},
-    props: z
-      .object({
-        deviceToken: z.string().optional(),
-        adminToken: z.string().optional(),
-        locale: z.string().optional(),
-      })
-      .strict(),
-    summary:
-      'Create a new user (admin or onboarding flow) - DEPRECATED: use create-user-and-profile instead',
-    tag: 'Users',
-  },
-  'create-profile': {
-    method: 'POST',
-    authed: true,
-    rateLimited: true,
-    deprecation: {
-      deprecated: true,
-      migrationPath: '/create-user-and-profile',
-      sunsetDate: 'Sat, 01 Jun 2025 00:00:00 GMT',
-    },
-    returns: {} as Row<'profiles'>,
-    props: baseProfilesSchema,
-    summary:
-      'Create a new profile for the authenticated user - DEPRECATED: use create-user-and-profile instead',
-    tag: 'Profiles',
   },
   'create-user-and-profile': {
     method: 'POST',

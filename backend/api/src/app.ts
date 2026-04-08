@@ -54,8 +54,6 @@ import {createCompatibilityQuestion} from './create-compatibility-question'
 import {createEvent} from './create-event'
 import {createPrivateUserMessage} from './create-private-user-message'
 import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
-import {createProfile} from './create-profile'
-import {createUser} from './create-user'
 import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
@@ -589,8 +587,6 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-compatibility-question': createCompatibilityQuestion,
   'create-private-user-message': createPrivateUserMessage,
   'create-private-user-message-channel': createPrivateUserMessageChannel,
-  'create-profile': createProfile,
-  'create-user': createUser,
   'create-user-and-profile': createUserAndProfile,
   'create-vote': createVote,
   'delete-bookmarked-search': deleteBookmarkedSearch,

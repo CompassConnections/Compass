@@ -175,17 +175,20 @@ const NotificationOption = (props: {
   if (!selected) return
 
   return (
-    <Row className="gap-2 w-full justify-between">
-      <div className="text-ink-700 font-medium">{question}</div>
-      <Row className="gap-3">
-        {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
-          <SwitchSetting
-            checked={selectedValues[destinationType]}
-            onChange={(checked) => setValue(checked, destinationType)}
-            disabled={optOut.includes(destinationType) && type !== 'opt_out_all'}
-          />
-        ))}
+    <>
+      {type === 'opt_out_all' && <div className="border-canvas-200 border-b"></div>}
+      <Row className="gap-4 sm:gap-16 w-full justify-between">
+        <div className="text-ink-700 font-medium">{question}</div>
+        <Row className="gap-3">
+          {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
+            <SwitchSetting
+              checked={selectedValues[destinationType]}
+              onChange={(checked) => setValue(checked, destinationType)}
+              disabled={optOut.includes(destinationType) && type !== 'opt_out_all'}
+            />
+          ))}
+        </Row>
       </Row>
-    </Row>
+    </>
   )
 }

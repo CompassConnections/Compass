@@ -30,6 +30,7 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
     privateUser.notificationPreferences,
     'notification-preferences',
   )
+  console.log({prefs})
 
   const t = useT()
 
@@ -128,8 +129,8 @@ const NotificationOption = (props: {
   const {type, question, selected, onUpdate, optOut} = props
 
   const selectedValues = {
-    email: selected.includes('email'),
-    browser: selected.includes('browser'),
+    email: selected?.includes('email'),
+    browser: selected?.includes('browser'),
   } as Record<notification_destination_types, boolean>
 
   const setValue = async (checked: boolean, destinationType: notification_destination_types) => {
@@ -170,6 +171,8 @@ const NotificationOption = (props: {
     ),
     [],
   )
+
+  if (!selected) return
 
   return (
     <Row className="gap-2 w-full justify-between">

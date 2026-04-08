@@ -107,7 +107,7 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
             key={type}
             type={type}
             question={question}
-            selected={prefs[type]}
+            selected={prefs[type] ?? NOTIFICATION_DESTINATION_TYPES}
             onUpdate={(selected) => {
               setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
             }}

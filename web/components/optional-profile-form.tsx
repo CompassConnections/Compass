@@ -131,6 +131,9 @@ export const OptionalProfileUserForm = (props: {
         }
         extractedProfile = response.profile
       }
+      if (status !== 'success') {
+        throw new Error('Failed to extract profile')
+      }
       extractedProfile = removeNullOrUndefinedProps(extractedProfile)
       for (const data of Object.entries(extractedProfile)) {
         const key = data[0] as keyof ProfileWithoutUser

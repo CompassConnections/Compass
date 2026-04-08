@@ -209,10 +209,7 @@ async function getCachedResult(cacheKey: string): Promise<Partial<ProfileWithout
   }
 }
 
-async function setCachedResult(
-  cacheKey: string,
-  result: Partial<ProfileWithoutUser>,
-): Promise<void> {
+async function setCachedResult(cacheKey: string, result: any): Promise<void> {
   if (!USE_CACHE) return
   try {
     await fs.mkdir(CACHE_DIR, {recursive: true})
@@ -285,9 +282,10 @@ async function processAndCache(
     if (bio) {
       profile.bio = bio
     }
-    await setCachedResult(cacheKey, profile)
+    await setCachedResult(cacheKey, {profile, status: 'success'})
   } catch (error) {
     log('Async LLM processing failed', {cacheKey, error})
+    await setCachedResult(cacheKey, {profile: {}, status: 'error'})
   } finally {
     await clearProcessing(cacheKey)
   }
@@ -589,7 +587,7 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   const cached = await getCachedResult(cacheKey)
   if (cached) {
     log('Returning cached profile', {cacheKey: cacheKey.substring(0, 8)})
-    return {profile: cached, status: 'success'}
+    return cached as {profile: Partial<ProfileWithoutUser>; status: 'success' | 'error' | 'pending'}
   }
 
   // Check if already processing

@@ -135,7 +135,7 @@ ShareCompassEmail.PreviewProps = {
   toUser: mockUser,
   email: 'someone@gmail.com',
   unsubscribeUrl: UNSUBSCRIBE_URL,
-  locale: 'fr',
+  // locale: 'fr',
 } as ShareCompassEmailProps
 
 export default ShareCompassEmail

@@ -1,6 +1,5 @@
 import {IS_LOCAL} from 'common/hosting/constants'
 import {debug} from 'common/logger'
-import {UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
 import {sleep} from 'common/util/time'
 import {type CreateEmailOptions, CreateEmailRequestOptions, Resend} from 'resend'
 import {log} from 'shared/utils'
@@ -27,7 +26,8 @@ export const sendEmail = async (
     {
       replyTo: 'Compass <hello@compassmeet.com>',
       headers: {
-        'List-Unsubscribe': UNSUBSCRIBE_URL,
+        'List-Unsubscribe': '<mailto:unsubscribe@compassmeet.com>, <${UNSUBSCRIBE_URL}>',
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
       ...payload,
     },

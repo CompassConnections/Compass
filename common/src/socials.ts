@@ -1,4 +1,5 @@
 import {discordLink} from 'common/constants'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 
 export const SITE_ORDER = [
   'site', // personal site
@@ -119,4 +120,19 @@ export const PLATFORM_LABELS: {[key in Site]: string} = {
   friendshipdoc: 'Friendship Doc',
   workdoc: 'Work Doc',
   connectiondoc: 'Connection Doc',
+}
+
+export function getXShareProfileUrl(
+  username: string,
+  t: (key: string, fallback: string, vars?: Record<string, string | number>) => string,
+) {
+  const encodedText = encodeURIComponent(
+    t(
+      'share_profile.x_share_profile',
+      "I'm on a platform that matches people by values, not photos.\nNo ads. No algorithms. No swiping. Just depth.",
+    ) + '\n@compassmeet',
+  )
+  const encodedUrl = encodeURIComponent(`${DEPLOYED_WEB_URL}/${username}`)
+
+  return `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
 }

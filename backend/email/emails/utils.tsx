@@ -1,5 +1,5 @@
 import {Column, Img, Link, Row, Section, Text} from '@react-email/components'
-import {DOMAIN} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -16,40 +16,49 @@ export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
       <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}} />
       <Row>
         <Column align="center">
-          <Link href={`https://${DOMAIN}/github`} target="_blank">
+          <Link href={`${DEPLOYED_WEB_URL}/github`} target="_blank">
             <Img
-              src={`https://${DOMAIN}/images/github-logo.png`}
+              src={`${DEPLOYED_WEB_URL}/images/github-logo.png`}
               width="24"
               height="24"
               alt="GitHub"
-              style={{display: 'inline-block', margin: '0 4px'}}
+              style={{display: 'inline-block', margin: '0 8px'}}
             />
           </Link>
-          <Link href={`https://${DOMAIN}/discord`} target="_blank">
+          <Link href={`${DEPLOYED_WEB_URL}/discord`} target="_blank">
             <Img
-              src={`https://${DOMAIN}/images/discord-logo.png`}
+              src={`${DEPLOYED_WEB_URL}/images/discord-logo.png`}
               width="24"
               height="24"
               alt="Discord"
-              style={{display: 'inline-block', margin: '0 4px'}}
+              style={{display: 'inline-block', margin: '0 8px'}}
             />
           </Link>
-          <Link href={`https://${DOMAIN}/patreon`} target="_blank">
+          <Link href={`${DEPLOYED_WEB_URL}/x`} target="_blank">
             <Img
-              src={`https://${DOMAIN}/images/patreon-logo.png`}
+              src={`${DEPLOYED_WEB_URL}/images/x-logo.png`}
+              width="24"
+              height="24"
+              alt="X"
+              style={{display: 'inline-block', margin: '0 8px'}}
+            />
+          </Link>
+          <Link href={`${DEPLOYED_WEB_URL}/patreon`} target="_blank">
+            <Img
+              src={`${DEPLOYED_WEB_URL}/images/patreon-logo.png`}
               width="24"
               height="24"
               alt="Patreon"
-              style={{display: 'inline-block', margin: '0 4px'}}
+              style={{display: 'inline-block', margin: '0 8px'}}
             />
           </Link>
-          <Link href={`https://${DOMAIN}/paypal`} target="_blank">
+          <Link href={`${DEPLOYED_WEB_URL}/paypal`} target="_blank">
             <Img
-              src={`https://${DOMAIN}/images/paypal-logo.png`}
+              src={`${DEPLOYED_WEB_URL}/images/paypal-logo.png`}
               width="24"
               height="24"
               alt="PayPal"
-              style={{display: 'inline-block', margin: '0 4px'}}
+              style={{display: 'inline-block', margin: '0 8px'}}
             />
           </Link>
         </Column>

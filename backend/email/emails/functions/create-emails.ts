@@ -1,12 +1,12 @@
 import {PrivateUser, User} from 'common/user'
 import {sleep} from 'common/util/time'
-import {sendOutreachEmail} from 'email/functions/helpers'
+import {sendShareCompassEmail} from 'email/functions/helpers'
 import {keyBy} from 'lodash'
 import {getAllPrivateUsers, getAllUsers, getUser} from 'shared/utils'
 
 export const createEmails = async (
   sendEmail: (toUser: User, privateUser: PrivateUser) => Promise<any>,
-  ids: string[],
+  {ids, startIndex, n}: {ids: string[]; startIndex: number; n: number},
 ) => {
   let users = []
   if (ids.length) {
@@ -17,6 +17,15 @@ export const createEmails = async (
   } else {
     users = await getAllUsers()
   }
+
+  if (startIndex) {
+    users = users.slice(startIndex)
+  }
+
+  if (n) {
+    users = users.slice(0, n)
+  }
+
   const _privateUsers = await getAllPrivateUsers()
   const privateUsers = keyBy(_privateUsers, 'id')
 
@@ -38,6 +47,6 @@ export const createEmails = async (
   }
 }
 
-export const createShareEmails = async ({ids}: {ids: string[]}) => {
-  return await createEmails(sendOutreachEmail, ids)
+export const createShareCompassEmails = async (options: any) => {
+  return await createEmails(sendShareCompassEmail, options)
 }

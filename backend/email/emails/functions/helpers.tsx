@@ -1,4 +1,5 @@
 import {render} from '@react-email/render'
+import {defaultLocale} from 'common/constants'
 import {debug} from 'common/logger'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
@@ -195,7 +196,7 @@ export const sendNewEndorsementEmail = async (
   })
 }
 
-export const sendOutreachEmail = async (toUser: User, privateUser: PrivateUser) => {
+export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUser) => {
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
     'platform_updates',
@@ -208,7 +209,7 @@ export const sendOutreachEmail = async (toUser: User, privateUser: PrivateUser) 
 
   const locale = privateUser?.locale
   const t = createT(locale)
-  console.log(`Sending email to ${privateUser.email} in ${locale}`)
+  console.log(`Sending email to ${privateUser.email} in ${locale ?? defaultLocale} (${toUser.id})`)
 
   const subject = t(
     'email.share.preview',

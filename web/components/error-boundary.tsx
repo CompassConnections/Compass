@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {Component, ErrorInfo, ReactNode} from 'react'
 import {Button} from 'web/components/buttons/button'
 import WhackABug from 'web/components/game/whack-a-bug'
@@ -23,6 +24,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    Sentry.captureException(error, {
+      contexts: {
+        react: {
+          componentStack: errorInfo.componentStack,
+        },
+      },
+    })
     console.error('ErrorBoundary caught an error:', error, errorInfo)
   }
 

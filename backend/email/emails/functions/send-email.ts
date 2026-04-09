@@ -25,10 +25,6 @@ export const sendEmail = async (
   const {data, error} = await resend.emails.send(
     {
       replyTo: 'Compass <hello@compassmeet.com>',
-      headers: {
-        'List-Unsubscribe': '<mailto:unsubscribe@compassmeet.com>, <${UNSUBSCRIBE_URL}>',
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-      },
       ...payload,
     },
     options,

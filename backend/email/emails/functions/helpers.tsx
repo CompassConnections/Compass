@@ -15,6 +15,7 @@ import React from 'react'
 import {createT} from 'shared/locale'
 import {getProfile} from 'shared/profiles/supabase'
 import {getOptionsIdsToLabels} from 'shared/supabase/options'
+import {createUnsubscribeToken, getUnsubscribeUrlOneClick} from 'shared/unsubscribe-tokens'
 
 import {NewEndorsementEmail} from '../new-endorsement'
 import {NewMessageEmail} from '../new-message'
@@ -197,9 +198,10 @@ export const sendNewEndorsementEmail = async (
 }
 
 export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUser) => {
+  const notificationType = 'platform_updates'
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
-    'platform_updates',
+    notificationType,
   )
   const email = privateUser.email
   if (!email || !sendToEmail) {
@@ -216,6 +218,9 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
     "600 people in 6 months — here's how you help write what's next",
   )
 
+  const token = await createUnsubscribeToken(toUser.id, notificationType)
+  const unsubscribeUrlOneClick = getUnsubscribeUrlOneClick(token)
+
   return await sendEmail({
     from: fromEmail,
     subject,
@@ -228,6 +233,11 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
         locale={locale}
       />,
     ),
+    headers: {
+      'List-Unsubscribe': `<mailto:unsubscribe@compassmeet.com?subject=${token}>, <${unsubscribeUrlOneClick}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      'List-ID': 'Compass <compassmeet.com>',
+    },
   })
 }
 

@@ -412,6 +412,18 @@ export const API = (_apiTypeCheck = {
     summary: 'Update a notification preference for the user',
     tag: 'Notifications',
   },
+  'unsubscribe/:token': {
+    method: 'POST',
+    authed: false,
+    rateLimited: true,
+    props: z.object({
+      token: z.string(),
+      'List-Unsubscribe': z.string().optional(),
+    }),
+    returns: {} as {success: boolean},
+    summary: 'Unsubscribe from email notifications using a token',
+    tag: 'Notifications',
+  },
   'update-user-locale': {
     method: 'POST',
     authed: true,

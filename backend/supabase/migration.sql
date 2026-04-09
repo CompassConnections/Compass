@@ -55,4 +55,5 @@ BEGIN;
 \i backend/supabase/migrations/20260308_add_importance_counts.sql
 \i backend/supabase/migrations/20260319_add_compatibility_prompts_pinned.sql
 \i backend/supabase/migrations/20260330_add_substance_fields_to_profiles.sql
+\i backend/supabase/email_unsubscribe_tokens.sql
 COMMIT;

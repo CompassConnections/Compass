@@ -34,5 +34,5 @@ export async function createUnsubscribeToken(
  * Get the unsubscribe URL for a token
  */
 export function getUnsubscribeUrlOneClick(token: string): string {
-  return `https://${PROD_CONFIG.backendDomain}/unsubscribe?token=${token}`
+  return `https://${PROD_CONFIG.backendDomain}/unsubscribe/${token}`
 }

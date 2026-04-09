@@ -1265,6 +1265,20 @@ export const API = (_apiTypeCheck = {
     summary: 'Extract profile information from text using LLM',
     tag: 'Profiles',
   },
+  'get-user-journeys': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      hoursFromNow: z.string(),
+    }),
+    returns: {} as {
+      users: User[]
+      events: Row<'user_events'>[]
+    },
+    summary: 'Get user journeys (events) for users created within the last N hours. Admin only.',
+    tag: 'Admin',
+  },
 } as const)
 
 export type APIPath = keyof typeof API

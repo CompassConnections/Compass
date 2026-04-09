@@ -70,6 +70,7 @@ import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
 import {getUserAndProfileHandler} from './get-user-and-profile'
 import {getUserDataExport} from './get-user-data-export'
+import {getUserJourneys} from './get-user-journeys'
 import {hasFreeLike} from './has-free-like'
 import {health} from './health'
 import {type APIHandler, typedEndpoint} from './helpers/endpoint'
@@ -606,6 +607,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-profile-answers': getProfileAnswers,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,
+  'get-user-journeys': getUserJourneys,
   'has-free-like': hasFreeLike,
   'hide-comment': hideComment,
   'hide-profile': hideProfile,

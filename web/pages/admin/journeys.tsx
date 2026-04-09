@@ -1,66 +1,41 @@
 import clsx from 'clsx'
-import {convertUser} from 'common/supabase/users'
-import {Row as rowfor, run} from 'common/supabase/utils'
-import {User} from 'common/user'
-import {HOUR_MS} from 'common/util/time'
+import {IS_LOCAL} from 'common/hosting/constants'
+import {Row as rowfor} from 'common/supabase/utils'
 import {groupBy, orderBy} from 'lodash'
-import {useEffect, useState} from 'react'
+import Router from 'next/router'
+import {useEffect} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NoSEO} from 'web/components/NoSEO'
 import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useAdmin} from 'web/hooks/use-admin'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {usePersistentQueryState} from 'web/hooks/use-persistent-query-state'
-import {useIsAuthorized} from 'web/hooks/use-user'
-import {db} from 'web/lib/supabase/db'
 
 export default function Journeys() {
-  const [eventsByUser, setEventsByUser] = useState<Record<string, rowfor<'user_events'>[]>>({})
   const [hoursFromNowQ, setHoursFromNowQ] = usePersistentQueryState('h', '5')
-  const hoursFromNow = parseInt(hoursFromNowQ ?? '5')
-  const [unBannedUsers, setUnBannedUsers] = useState<User[]>([])
-  const [bannedUsers, setBannedUsers] = useState<User[]>([])
-  const isAuthed = useIsAuthorized()
+  const hoursFromNow = hoursFromNowQ ?? '5'
 
-  const getEvents = async () => {
-    const start = Date.now() - hoursFromNow * HOUR_MS
-    const users = await run(db.from('users').select('id').gt('data->createdTime', start))
-    const events = await run(
-      db
-        .from('user_events')
-        .select('*')
-        .in(
-          'user_id',
-          users.data.map((u) => u.id),
-        ),
-    )
-    const eventsByUser = groupBy(
-      orderBy(events.data as rowfor<'user_events'>[], 'ts', 'asc'),
-      'user_id',
-    )
+  const {data} = useAPIGetter('get-user-journeys', {hoursFromNow})
 
-    setEventsByUser(eventsByUser)
-  }
+  const users = data?.users ?? []
+  const events = data?.events ?? []
 
-  const getUsers = async () => {
-    const userData = await run(db.from('users').select().in('id', Object.keys(eventsByUser)))
-    const users = userData.data.map(convertUser)
-    setBannedUsers(users.filter((u) => u.isBannedFromPosting))
-    setUnBannedUsers(users.filter((u) => !u.isBannedFromPosting))
-  }
+  const bannedUsers = users.filter((u) => u.isBannedFromPosting)
+  const unBannedUsers = users.filter((u) => !u.isBannedFromPosting)
 
-  useEffect(() => {
-    getUsers()
-  }, [JSON.stringify(Object.keys(eventsByUser))])
-
-  useEffect(() => {
-    if (!isAuthed) return
-    getEvents()
-  }, [hoursFromNow, isAuthed])
+  const eventsByUser = groupBy(orderBy(events as rowfor<'user_events'>[], 'ts', 'asc'), 'user_id')
 
   const isAdmin = useAdmin()
-  if (!isAdmin) return <></>
+
+  const authorized = isAdmin || IS_LOCAL
+
+  useEffect(() => {
+    if (!authorized) Router.push('/')
+  }, [])
+
+  if (!authorized) return <></>
 
   return (
     <Row>
@@ -68,8 +43,8 @@ export default function Journeys() {
       <div className="text-ink-900 mx-8">
         <div className={'text-primary-700 my-1 text-2xl'}>User Journeys</div>
         <Row className={'items-center gap-2'}>
-          Viewing journeys from {unBannedUsers.length} unbanned users ({bannedUsers.length} banned).
-          Showing users created: {hoursFromNow}h ago.
+          Viewing journeys from {unBannedUsers.length} users. Showing users created: {hoursFromNow}h
+          ago.
           <Button
             color={'indigo-outline'}
             size={'xs'}
@@ -115,11 +90,21 @@ export default function Journeys() {
                     const timePeriod =
                       new Date(group[times - 1].ts!).valueOf() - new Date(group[0].ts!).valueOf()
                     const duration = Math.round(timePeriod / 1000)
+                    const data = group
+                      .map((g) => {
+                        if (!Object.keys(g.data).length) return
+                        return Object.entries(g.data)
+                          .map(([_k, v]) => `${v}`)
+                          .join(' ')
+                      })
+                      .filter(Boolean)
+                      .join('. ')
 
                     return (
                       <li key={index}>
                         {name} {times > 1 ? `${times}x` : ' '}
                         {duration > 1 ? ` (${duration}s)` : ' '}
+                        {data && <ul>{data}</ul>}
                       </li>
                     )
                   })}

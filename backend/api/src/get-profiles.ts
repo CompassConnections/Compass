@@ -630,7 +630,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     limitParam && limit(limitParam),
   )
 
-  console.debug('query:', query)
+  // console.debug('query:', query)
 
   const profiles = await pg.map(query, [], convertRow)
 

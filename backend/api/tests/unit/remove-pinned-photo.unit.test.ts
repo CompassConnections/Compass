@@ -1,12 +1,12 @@
 jest.mock('shared/supabase/init')
-jest.mock('common/envs/constants')
+jest.mock('shared/helpers/auth')
 jest.mock('common/util/try-catch')
 
 import {AuthedUser} from 'api/helpers/endpoint'
 import {removePinnedPhoto} from 'api/remove-pinned-photo'
-import * as envConstants from 'common/envs/constants'
 import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
+import * as authHelpers from 'shared/helpers/auth'
 import * as supabaseInit from 'shared/supabase/init'
 
 describe('removePinnedPhoto', () => {
@@ -28,15 +28,15 @@ describe('removePinnedPhoto', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
 
-      jest.spyOn(envConstants, 'isAdminId').mockReturnValue(true)
+      jest.spyOn(authHelpers, 'throwErrorIfNotMod').mockResolvedValue(undefined)
       ;(mockPg.none as jest.Mock).mockResolvedValue(null)
       ;(tryCatch as jest.Mock).mockResolvedValue({error: null})
 
       const result: any = await removePinnedPhoto(mockBody, mockAuth, mockReq)
 
       expect(result.success).toBeTruthy()
-      expect(envConstants.isAdminId).toBeCalledTimes(1)
-      expect(envConstants.isAdminId).toBeCalledWith(mockAuth.uid)
+      expect(authHelpers.throwErrorIfNotMod).toBeCalledTimes(1)
+      expect(authHelpers.throwErrorIfNotMod).toBeCalledWith(mockAuth.uid)
       expect(mockPg.none).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledWith(
         sqlMatch('update profiles set pinned_url = null where user_id = $1'),
@@ -50,10 +50,14 @@ describe('removePinnedPhoto', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
 
-      jest.spyOn(envConstants, 'isAdminId').mockReturnValue(false)
+      jest
+        .spyOn(authHelpers, 'throwErrorIfNotMod')
+        .mockRejectedValue(
+          new Error('User 321 must be an admin or trusted to perform this action.'),
+        )
 
       expect(removePinnedPhoto(mockBody, mockAuth, mockReq)).rejects.toThrow(
-        'Only admins can remove pinned photo',
+        'User 321 must be an admin or trusted to perform this action.',
       )
     })
 
@@ -62,7 +66,7 @@ describe('removePinnedPhoto', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
 
-      jest.spyOn(envConstants, 'isAdminId').mockReturnValue(true)
+      jest.spyOn(authHelpers, 'throwErrorIfNotMod').mockResolvedValue(undefined)
       ;(mockPg.none as jest.Mock).mockResolvedValue(null)
       ;(tryCatch as jest.Mock).mockResolvedValue({error: Error})
 

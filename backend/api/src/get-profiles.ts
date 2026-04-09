@@ -1,5 +1,18 @@
 import * as Sentry from '@sentry/node'
 import {type APIHandler} from 'api/helpers/endpoint'
+import {
+  DIET_CHOICES,
+  EDUCATION_CHOICES,
+  GENDERS,
+  LANGUAGE_CHOICES,
+  MBTI_CHOICES,
+  POLITICAL_CHOICES,
+  RACE_CHOICES,
+  RELATIONSHIP_CHOICES,
+  RELATIONSHIP_STATUS_CHOICES,
+  RELIGION_CHOICES,
+  ROMANTIC_CHOICES,
+} from 'common/choices'
 import {OptionTableKey} from 'common/profiles/constants'
 import {compact} from 'lodash'
 import {log} from 'shared/monitoring/log'
@@ -92,6 +105,43 @@ export type profileQueryType = {
 } & {
   [K in OptionTableKey]?: string[] | undefined
 }
+
+// Define all text fields to search
+const textFields = [
+  'users.name',
+  'search_text',
+  'headline',
+  'occupation',
+  'occupation_title',
+  'company',
+  'university',
+  'city',
+  'country',
+  'born_in_location',
+  'raised_in_city',
+  'raised_in_country',
+  'political_details',
+  'religious_beliefs',
+]
+
+// Define choice fields to search
+const choiceFields = [
+  {field: 'gender', choices: GENDERS},
+  {field: 'education_level', choices: EDUCATION_CHOICES},
+  {field: 'mbti', choices: MBTI_CHOICES},
+]
+
+// Define array choice fields to search
+const arrayChoiceFields = [
+  {field: 'diet', choices: DIET_CHOICES},
+  {field: 'political_beliefs', choices: POLITICAL_CHOICES},
+  {field: 'relationship_status', choices: RELATIONSHIP_STATUS_CHOICES},
+  {field: 'religion', choices: RELIGION_CHOICES},
+  {field: 'pref_relation_styles', choices: RELATIONSHIP_CHOICES},
+  {field: 'pref_romantic_styles', choices: ROMANTIC_CHOICES},
+  {field: 'languages', choices: LANGUAGE_CHOICES},
+  {field: 'ethnicity', choices: RACE_CHOICES},
+]
 
 // const userActivityColumns = ['last_online_time']
 
@@ -252,6 +302,41 @@ export const loadProfiles = async (props: profileQueryType) => {
     )`
   }
 
+  function getTextFieldClauseKeyword(field: string) {
+    return `lower(${field}) ilike '%' || lower($(word)) || '%'`
+  }
+
+  // TODO: support locales (right now it only maps to english labels)
+  function getChoiceFieldClauseKeyword(field: string, choices: Record<string, string>) {
+    const choiceValues = Object.entries(choices)
+      .map(([key, value]) => `('${value}', '${key}')`)
+      .join(', ')
+    return `(
+      ${getTextFieldClauseKeyword(field)} OR
+      EXISTS (
+        SELECT 1 FROM (VALUES ${choiceValues}) AS t(choice_key, choice_value)
+        WHERE t.choice_key = ${field}
+          AND ${getTextFieldClauseKeyword('t.choice_value')}
+      )
+    )`
+  }
+
+  // TODO: support locales (right now it only maps to english labels)
+  function getArrayChoiceFieldClauseKeyword(arrayField: string, choices: Record<string, string>) {
+    const choiceValues = Object.entries(choices)
+      .map(([key, value]) => `('${value}', '${key}')`)
+      .join(', ')
+    return `EXISTS (
+      SELECT 1 FROM unnest(${arrayField}) AS choice_key
+      WHERE ${getTextFieldClauseKeyword('choice_key')} OR
+        EXISTS (
+          SELECT 1 FROM (VALUES ${choiceValues}) AS t(choice_k, choice_value)
+          WHERE t.choice_k = choice_key
+            AND ${getTextFieldClauseKeyword('t.choice_value')}
+        )
+    )`
+  }
+
   const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
@@ -260,15 +345,24 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     ...keywords.map((word) =>
       where(
-        `lower(users.name) ilike '%' || lower($(word)) || '%'
-       or lower(search_text) ilike '%' || lower($(word)) || '%'
-       or search_tsv @@ phraseto_tsquery('english', $(word))
-       OR ${getOptionClauseKeyword('interests')}
-       OR ${getOptionClauseKeyword('causes')}
-       OR ${getOptionClauseKeyword('work')}
-       OR lower(headline) ilike '%' || lower($(word)) || '%'
-       OR EXISTS ( SELECT 1 FROM unnest(keywords) AS kw WHERE kw ILIKE '%' || LOWER($(word)) || '%' )
-        `,
+        [
+          // Text field searches
+          ...textFields.map((field) => getTextFieldClauseKeyword(field)),
+          // Full-text search
+          "search_tsv @@ phraseto_tsquery('english', $(word))",
+          // Option table searches with translations
+          getOptionClauseKeyword('interests'),
+          getOptionClauseKeyword('causes'),
+          getOptionClauseKeyword('work'),
+          // Choice field searches
+          ...choiceFields.map(({field, choices}) => getChoiceFieldClauseKeyword(field, choices)),
+          // Array choice field searches
+          ...arrayChoiceFields.map(({field, choices}) =>
+            getArrayChoiceFieldClauseKeyword(field, choices),
+          ),
+          // Keywords search
+          `EXISTS ( SELECT 1 FROM unnest(keywords) AS kw WHERE ${getTextFieldClauseKeyword('kw')} )`,
+        ].join(' OR '),
         {word, locale},
       ),
     ),
@@ -536,7 +630,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     limitParam && limit(limitParam),
   )
 
-  // console.debug('query:', query)
+  console.debug('query:', query)
 
   const profiles = await pg.map(query, [], convertRow)
 

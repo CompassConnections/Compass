@@ -20,6 +20,7 @@ import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
 import {FieldToggles} from 'web/components/filters/field-toggles'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
+import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profiles-toggle'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
 import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
 import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
@@ -30,7 +31,6 @@ import {
 } from 'web/components/filters/relationship-status-filter'
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
-import {ShortBioToggle} from 'web/components/filters/short-bio-toggle'
 import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
@@ -241,20 +241,18 @@ function Filters(props: {
       />
       <FilterGuide className={'justify-between px-4 py-2'} />
 
-      <Row className="justify-between px-4">
-        <Col className="py-2">
-          <MyMatchesToggle
-            setYourFilters={setYourFilters}
-            youProfile={youProfile}
-            on={isYourFilters}
-            hidden={!youProfile}
-          />
-        </Col>
+      <Row className="justify-between px-2">
+        <MyMatchesToggle
+          setYourFilters={setYourFilters}
+          youProfile={youProfile}
+          checked={isYourFilters}
+          hidden={!youProfile}
+        />
       </Row>
 
       {/* Short Bios */}
-      <Col className="p-4 pb-2">
-        <ShortBioToggle updateFilter={updateFilter} filters={filters} hidden={false} />
+      <Col className="p-2">
+        <IncompleteProfilesToggle updateFilter={updateFilter} filters={filters} hidden={false} />
       </Col>
 
       {/* ALWAYS VISIBLE FILTERS */}

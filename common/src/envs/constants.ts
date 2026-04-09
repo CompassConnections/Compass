@@ -78,6 +78,8 @@ export const VERIFIED_USERNAMES = ['Martin']
 
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 
+export const endTitle = IS_PROD ? 'Compass' : 'Compass dev'
+
 export const RESERVED_PATHS = new Set([
   '',
   '404',

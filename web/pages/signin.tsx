@@ -7,13 +7,14 @@ import {useSearchParams} from 'next/navigation'
 import React, {Suspense, useEffect, useState} from 'react'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
 import FavIconBlack from 'web/components/FavIcon'
+import {InfoIcon} from 'web/components/icons'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {auth, firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {postSignupRedirect} from 'web/lib/util/signup'
+import {signinSignupRedirect} from 'web/lib/util/signup'
 
 export default function LoginPage() {
   return (
@@ -27,6 +28,7 @@ function RegisterComponent() {
   const t = useT()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
+  const [redirectPath, setRedirectPath] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [_, setIsLoadingGoogle] = useState(false)
   const user = useUser()
@@ -38,13 +40,14 @@ function RegisterComponent() {
     } else if (error) {
       setError('An error occurred during login')
     }
-  }, [searchParams])
+    setRedirectPath(searchParams.get('redirect'))
+  }, [searchParams, t])
 
   const checkAndRedirect = async (userId: string | undefined) => {
     if (userId) {
       debug('User signed in:', userId)
       try {
-        await postSignupRedirect(userId)
+        await signinSignupRedirect(userId, redirectPath)
       } catch (error) {
         console.error('Error fetching profile:', error)
       }
@@ -119,7 +122,6 @@ function RegisterComponent() {
     }
   }
 
-  // console.debug('Form rendering')
   return (
     <PageBase trackPageView={'signin'}>
       <SEO
@@ -129,6 +131,18 @@ function RegisterComponent() {
       />
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
+          {redirectPath && (
+            <div className="bg-primary-100 border border-primary-200 rounded-lg p-4 flex items-center gap-3">
+              <InfoIcon className="w-5 h-5 text-primary-700 flex-shrink-0" />
+              <p className="text-primary-700 text-sm">
+                {t(
+                  'signin.prompt.sign_in_to_access',
+                  'Please sign in to access the {redirectPath} page',
+                  {redirectPath: redirectPath.replace('/', '')},
+                )}
+              </p>
+            </div>
+          )}
           <div>
             <div className="flex justify-center mb-6">
               <FavIconBlack className="dark:invert" />

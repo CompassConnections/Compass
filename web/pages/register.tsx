@@ -12,7 +12,7 @@ import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {auth} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {googleSigninSignup, postSignupRedirect, setOnboardingFlag} from 'web/lib/util/signup'
+import {googleSigninSignup, setOnboardingFlag, signinSignupRedirect} from 'web/lib/util/signup'
 
 export default function RegisterPage() {
   return (
@@ -38,7 +38,7 @@ function RegisterComponent() {
   // }
 
   const checkProfileAndRedirect = async (creds: any) => {
-    await postSignupRedirect(creds?.user?.uid)
+    await signinSignupRedirect(creds?.user?.uid)
     setIsLoading(false)
   }
 

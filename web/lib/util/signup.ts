@@ -25,7 +25,7 @@ export const googleSigninSignup = async () => {
   try {
     setOnboardingFlag()
     const creds = await firebaseLogin()
-    await postSignupRedirect(creds?.user?.uid)
+    await signinSignupRedirect(creds?.user?.uid)
   } catch (e: any) {
     console.error(e)
     toast.error('Failed to sign in: ' + e.message)
@@ -37,7 +37,10 @@ export async function startSignup() {
   await Router.push('/register')
 }
 
-export async function postSignupRedirect(userId: string | undefined) {
+export async function signinSignupRedirect(
+  userId: string | undefined,
+  path?: string | null | undefined,
+) {
   debug('postSignupRedirect', userId)
   if (userId) {
     const profile = await getProfileRowWithFrontendSupabase(userId, db)
@@ -46,7 +49,7 @@ export async function postSignupRedirect(userId: string | undefined) {
       clearOnboardingFlag()
       // force refresh of AuthContext to load user and privateUser
       await auth.currentUser?.getIdToken(true)
-      await Router.push('/')
+      await Router.push(path ?? '/')
     } else {
       await Router.push('/onboarding')
     }

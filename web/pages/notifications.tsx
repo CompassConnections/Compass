@@ -22,7 +22,7 @@ export default function NotificationsPage() {
 
   return (
     <PageBase trackPageView={'notifications page'} className={'mx-4'}>
-      <NoSEO />
+      <NoSEO title={t('notifications.title', 'Updates')} />
       <Title>{t('notifications.title', 'Updates')}</Title>
       <UncontrolledTabs
         name={'notifications-page'}

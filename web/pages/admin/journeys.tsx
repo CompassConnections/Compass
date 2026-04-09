@@ -2,8 +2,6 @@ import clsx from 'clsx'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {Row as rowfor} from 'common/supabase/utils'
 import {groupBy, orderBy} from 'lodash'
-import Router from 'next/router'
-import {useEffect} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -31,11 +29,7 @@ export default function Journeys() {
 
   const authorized = isAdmin || IS_LOCAL
 
-  useEffect(() => {
-    if (!authorized) Router.push('/')
-  }, [])
-
-  if (!authorized) return <></>
+  if (!authorized) return <p>Not authorized</p>
 
   return (
     <Row>

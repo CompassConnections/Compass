@@ -16,11 +16,13 @@ import {UncontrolledTabs} from 'web/components/layout/tabs'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {Checkbox} from 'web/components/widgets/checkbox'
 import {Input} from 'web/components/widgets/input'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {Title} from 'web/components/widgets/title'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {usePinnedQuestionIds} from 'web/hooks/use-pinned-question-ids'
 import {
   useCompatibilityQuestionsWithAnswerCount,
   useUserCompatibilityAnswers,
@@ -36,10 +38,12 @@ export default function CompatibilityPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [sort, setSort] = useState<CompatibilitySort>('random')
+  const [pinnedOnly, setPinnedOnly] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
   const {compatibilityQuestions, refreshCompatibilityQuestions, isLoading} =
     useCompatibilityQuestionsWithAnswerCount()
+  const {pinnedQuestionIds, refreshPinnedQuestionIds} = usePinnedQuestionIds()
   const t = useT()
 
   // Debounce keyword changes
@@ -64,12 +68,23 @@ export default function CompatibilityPage() {
         ...q,
         answer: answerMap.get(q.id),
       }))
-      .filter((qna) => isMatchingSearch(qna, debouncedSearchTerm))
+      .filter((qna) => {
+        const matchesSearch = isMatchingSearch(qna, debouncedSearchTerm)
+        const isPinned = pinnedQuestionIds?.includes(qna.id)
+        return matchesSearch && (!pinnedOnly || isPinned)
+      })
 
     return withAnswers.sort((a, b) => {
       return compareBySort(a, b, sort)
     }) as QuestionWithAnswer[]
-  }, [compatibilityQuestions, compatibilityAnswers, sort, debouncedSearchTerm])
+  }, [
+    compatibilityQuestions,
+    compatibilityAnswers,
+    sort,
+    debouncedSearchTerm,
+    pinnedQuestionIds,
+    pinnedOnly,
+  ])
 
   const {answered, notAnswered, skipped} = useMemo(() => {
     const answered: QuestionWithAnswer[] = []
@@ -102,7 +117,8 @@ export default function CompatibilityPage() {
   const refreshCompatibilityAll = useCallback(() => {
     refreshCompatibilityAnswers()
     refreshCompatibilityQuestions()
-  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions])
+    refreshPinnedQuestionIds()
+  }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions, refreshPinnedQuestionIds])
 
   return (
     <PageBase trackPageView={'compatibility'}>
@@ -126,6 +142,11 @@ export default function CompatibilityPage() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearchTerm(e.target.value)
               }}
+            />
+            <Checkbox
+              label={t('compatibility.pinned_only', 'Pinned only')}
+              checked={pinnedOnly}
+              toggle={setPinnedOnly}
             />
             <CompatibilitySortWidget
               className="text-sm sm:flex mt-4 mr-4 ml-auto"

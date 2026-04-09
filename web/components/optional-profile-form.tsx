@@ -391,6 +391,7 @@ export const OptionalProfileUserForm = (props: {
             value={profile['age'] ?? undefined}
             min={18}
             max={100}
+            step={1}
             error={!!ageError}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value ? Number(e.target.value) : null
@@ -424,6 +425,7 @@ export const OptionalProfileUserForm = (props: {
                 className={'w-20'}
                 value={typeof heightFeet === 'number' && heightFeet ? Math.floor(heightFeet) : ''}
                 min={0}
+                step={1}
               />
             </Col>
             <Col>
@@ -440,6 +442,7 @@ export const OptionalProfileUserForm = (props: {
                   typeof heightInches === 'number' && heightInches ? Math.floor(heightInches) : ''
                 }
                 min={0}
+                step={1}
               />
             </Col>
             <div className="self-end mb-2 text-ink-700 mx-2">
@@ -466,6 +469,7 @@ export const OptionalProfileUserForm = (props: {
                     : ''
                 }
                 min={0}
+                step={1}
               />
             </Col>
           </Row>

@@ -87,6 +87,7 @@ export const LANGUAGE_CHOICES = {
   Bhojpuri: 'bhojpuri',
   Burmese: 'burmese',
   Cebuano: 'cebuano',
+  Chakma: 'chakma',
   Chewa: 'chewa',
   Chhattisgarhi: 'chhattisgarhi',
   Chittagonian: 'chittagonian',

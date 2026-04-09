@@ -187,16 +187,32 @@ CREATE OR REPLACE FUNCTION trg_profiles_rebuild_search()
     RETURNS trigger AS
 $$
 BEGIN
-    PERFORM rebuild_profile_search(NEW.id);
+    RAISE LOG 'trg_profiles_rebuild_search fired for profile id: %', NEW.id;
+
+    IF pg_trigger_depth() = 1 THEN -- only run on the first (real) trigger, not recursive ones
+        PERFORM rebuild_profile_search(NEW.id);
+    END IF;
+
+    RAISE LOG 'rebuild_profile_search completed for id: %', NEW.id;
     RETURN NEW;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE WARNING 'Error in trg_profiles_rebuild_search for id %: % %',
+            NEW.id, SQLERRM, SQLSTATE;
+        RETURN NEW; -- or RETURN NULL to suppress the row change
 END;
 $$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS update_bio_text;
 DROP TRIGGER IF EXISTS trg_update_bio_text ON profiles;
 
-CREATE TRIGGER trg_profiles_rebuild_search
-    AFTER INSERT OR UPDATE OF bio
+CREATE OR REPLACE TRIGGER trg_profiles_rebuild_search
+    AFTER INSERT OR UPDATE OF
+        headline, occupation, occupation_title, company,
+        university, city, country, born_in_location,
+        raised_in_city, raised_in_country, political_details,
+        religious_beliefs, bio
     ON profiles
     FOR EACH ROW
 EXECUTE FUNCTION trg_profiles_rebuild_search();

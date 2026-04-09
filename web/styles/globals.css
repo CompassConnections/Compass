@@ -251,17 +251,17 @@
     --color-canvas-200: 60 60 60;
     --color-canvas-300: 90 90 90;
 
-    --color-primary-950: 255 255 255;
-    --color-primary-900: 255 255 255;
-    --color-primary-800: 170 220 250;
-    --color-primary-700: 150 200 250;
-    --color-primary-600: 150 200 250;
-    --color-primary-500: 59 130 246; /* standard blue */
-    --color-primary-400: 37 99 235;
-    --color-primary-300: 29 78 216;
-    --color-primary-200: 60 60 60;
-    --color-primary-100: 60 60 60;
-    --color-primary-50: 23 37 84; /* very dark navy */
+    --color-primary-50: 10 14 26; /* Deepest Navy (Background-adjacent) */
+    --color-primary-100: 15 23 42; /* Dark Navy Layer */
+    --color-primary-200: 30 41 59; /* Slate Blue */
+    --color-primary-300: 30 58 138; /* Deep Brand Blue */
+    --color-primary-400: 29 78 216; /* Strong Royal Blue */
+    --color-primary-500: 59 130 246; /* Your Standard Blue (Anchor) */
+    --color-primary-600: 96 165 250; /* Bright Sky Blue */
+    --color-primary-700: 147 197 253; /* Light Luminous Blue */
+    --color-primary-800: 191 219 254; /* Soft Pastel Blue */
+    --color-primary-900: 219 234 254; /* Pale Ice Blue */
+    --color-primary-950: 240 247 255; /* Brightest Blue-White */
 
     --color-no-950: 255 255 255; /* white */
     --color-no-900: 242 242 242;

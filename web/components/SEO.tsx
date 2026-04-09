@@ -1,4 +1,4 @@
-import {endTitle} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL, endTitle} from 'common/envs/constants'
 import {removeUndefinedProps} from 'common/util/object'
 import {buildOgUrl} from 'common/util/og'
 import Head from 'next/head'
@@ -15,20 +15,21 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
   const imageUrl =
     image ?? (ogProps && buildOgUrl(removeUndefinedProps(ogProps.props) as any, ogProps.endpoint))
 
-  const absUrl = 'https://compassmeet.com' + url
+  const absUrl = DEPLOYED_WEB_URL + url
 
   return (
     <Head>
       <title>{`${title} | ${endTitle}`}</title>
 
-      <meta property="og:title" name="twitter:title" content={title} key="title" />
+      {/*OG tags (WhatsApp, Facebook, etc.)*/}
+      <meta property="og:title" content={title} key="title" />
+      <meta property="og:description" content={description} key="description3" />
+
+      {/*Twitter/X tags — separate!*/}
+      <meta name="twitter:title" content={title} key="title" />
+      <meta name="twitter:description" content={description} key="description2" />
+
       <meta name="description" content={description} key="description1" />
-      <meta
-        property="og:description"
-        name="twitter:description"
-        content={description}
-        key="description2"
-      />
 
       {url && <link rel="canonical" href={absUrl} />}
 

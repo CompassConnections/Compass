@@ -56,7 +56,7 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
   return defaults
 }
 
-export const UNSUBSCRIBE_URL = `${DEPLOYED_WEB_URL}/notifications#1`
+export const UNSUBSCRIBE_URL = `${DEPLOYED_WEB_URL}/settings#1`
 export const getNotificationDestinationsForUser = (
   privateUser: PrivateUser,
   type: notification_preference,

@@ -1,13 +1,10 @@
-import {APIErrors, APIHandler} from 'api/helpers/endpoint'
-import {isAdminId} from 'common/envs/constants'
+import {APIHandler} from 'api/helpers/endpoint'
 import {convertUser} from 'common/supabase/users'
+import {throwErrorIfNotMod} from 'shared/helpers/auth'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 export const getUserJourneys: APIHandler<'get-user-journeys'> = async ({hoursFromNow}, auth) => {
-  // Check if user is admin
-  if (!isAdminId(auth.uid)) {
-    throw APIErrors.forbidden('Only admins can access user journeys')
-  }
+  await throwErrorIfNotMod(auth.uid)
 
   const pg = createSupabaseDirectClient()
 

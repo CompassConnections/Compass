@@ -1,6 +1,6 @@
 import {APIErrors, type APIHandler} from 'api/helpers/endpoint'
-import {isAdminId} from 'common/envs/constants'
 import {tryCatch} from 'common/util/try-catch'
+import {throwErrorIfNotMod} from 'shared/helpers/auth'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
@@ -11,7 +11,7 @@ export const removePinnedPhoto: APIHandler<'remove-pinned-photo'> = async (
   const {userId} = body
   log('remove pinned url', {userId})
 
-  if (!isAdminId(auth.uid)) throw APIErrors.forbidden('Only admins can remove pinned photo')
+  await throwErrorIfNotMod(auth.uid)
 
   const pg = createSupabaseDirectClient()
   const {error} = await tryCatch(

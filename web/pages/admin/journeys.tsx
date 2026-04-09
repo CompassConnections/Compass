@@ -13,9 +13,9 @@ import {usePersistentQueryState} from 'web/hooks/use-persistent-query-state'
 
 export default function Journeys() {
   const [hoursFromNowQ, setHoursFromNowQ] = usePersistentQueryState('h', '5')
-  const hoursFromNow = hoursFromNowQ ?? '5'
+  const hoursFromNow = parseInt(hoursFromNowQ ?? '5')
 
-  const {data} = useAPIGetter('get-user-journeys', {hoursFromNow})
+  const {data} = useAPIGetter('get-user-journeys', {hoursFromNow: String(hoursFromNow)})
 
   const users = data?.users ?? []
   const events = data?.events ?? []

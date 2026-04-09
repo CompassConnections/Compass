@@ -1,13 +1,14 @@
-import {useRouter} from 'next/navigation'
+import {useRouter} from 'next/router'
 import {useEffect} from 'react'
 
 import {useUser} from './use-user'
 
-export const useRedirectIfSignedOut = () => {
+export const useRedirectIfSignedOut = (redirect?: string) => {
   const user = useUser()
   const router = useRouter()
   useEffect(() => {
     if (user !== null) return
-    else router.replace('/')
+    console.log(router, router.asPath)
+    router.replace(`/signin?redirect=${redirect ?? router.asPath}`)
   }, [user])
 }

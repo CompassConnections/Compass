@@ -22,7 +22,7 @@ import {WithPrivateUser} from 'web/components/user/with-user'
 import {Input} from 'web/components/widgets/input'
 import {Title} from 'web/components/widgets/title'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
-import {usePromptSigninIfSignedOut} from 'web/hooks/use-prompt-signin-if-signed-out'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {sendPasswordReset} from 'web/lib/firebase/password'
@@ -31,7 +31,7 @@ import {isNativeMobile} from 'web/lib/util/webview'
 
 export default function SettingsPage() {
   const t = useT()
-  usePromptSigninIfSignedOut()
+  useRedirectIfSignedOut()
   return (
     <PageBase trackPageView={'settings page'} className={'mx-4 mb-4'}>
       <NoSEO title={t('settings.title', 'Settings')} />

@@ -21,17 +21,26 @@ import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
 import {capitalize} from 'lodash'
-import {BarChart2, Home, Leaf} from 'lucide-react'
+import {
+  BarChart2,
+  Brain,
+  Briefcase,
+  HandHeart,
+  Home,
+  Languages,
+  Leaf,
+  Salad,
+  Sparkles,
+} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
-import {BsPersonVcard} from 'react-icons/bs'
-import {FaBriefcase, FaHandsHelping, FaHeart, FaStar, FaUsers} from 'react-icons/fa'
+import {FaHeart, FaUsers} from 'react-icons/fa'
 import {FaChild} from 'react-icons/fa6'
 import {FiUser} from 'react-icons/fi'
-import {GiFruitBowl, GiRing} from 'react-icons/gi'
+import {GiRing} from 'react-icons/gi'
 import {HiOutlineGlobe} from 'react-icons/hi'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap} from 'react-icons/lu'
-import {MdLanguage, MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
+import {MdNoDrinks, MdOutlineChildFriendly} from 'react-icons/md'
 import {PiHandsPrayingBold, PiMagnifyingGlassBold} from 'react-icons/pi'
 import {RiScales3Line} from 'react-icons/ri'
 import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
@@ -105,7 +114,7 @@ export default function ProfileAbout(props: {
       <Education profile={profile} />
       <Occupation profile={profile} />
       <AboutRow
-        icon={<FaBriefcase className="h-5 w-5" />}
+        icon={<Briefcase className="h-5 w-5" />}
         text={
           profile.work
             ?.map((id) => choices?.['work']?.[id])
@@ -131,7 +140,7 @@ export default function ProfileAbout(props: {
         testId="profile-about-religious"
       />
       <AboutRow
-        icon={<FaStar className="h-5 w-5" />}
+        icon={<Sparkles className="h-5 w-5" />}
         text={
           profile.interests
             ?.map((id) => choices?.['interests']?.[id])
@@ -141,7 +150,7 @@ export default function ProfileAbout(props: {
         testId="profile-about-interests"
       />
       <AboutRow
-        icon={<FaHandsHelping className="h-5 w-5" />}
+        icon={<HandHeart className="h-5 w-5" />}
         text={
           profile.causes
             ?.map((id) => choices?.['causes']?.[id])
@@ -151,7 +160,7 @@ export default function ProfileAbout(props: {
         testId="profile-about-causes"
       />
       <AboutRow
-        icon={<BsPersonVcard className="h-5 w-5" />}
+        icon={<Brain className="h-5 w-5" />}
         text={profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null}
         testId="profile-about-personality"
       />
@@ -169,12 +178,12 @@ export default function ProfileAbout(props: {
       <Cannabis profile={profile} />
       <Psychedelics profile={profile} />
       <AboutRow
-        icon={<GiFruitBowl className="h-5 w-5" />}
+        icon={<Salad className="h-5 w-5" />}
         text={profile.diet?.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e]))}
         testId="profile-about-diet"
       />
       <AboutRow
-        icon={<MdLanguage className="h-5 w-5" />}
+        icon={<Languages className="h-5 w-5" />}
         text={profile.languages?.map((v) =>
           t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]),
         )}

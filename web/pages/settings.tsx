@@ -29,7 +29,7 @@ import {sendPasswordReset} from 'web/lib/firebase/password'
 import {useT} from 'web/lib/locale'
 import {isNativeMobile} from 'web/lib/util/webview'
 
-export default function NotificationsPage() {
+export default function SettingsPage() {
   const t = useT()
   useRedirectIfSignedOut()
   return (

@@ -1,12 +1,15 @@
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {log} from 'shared/utils'
 
-import {APIErrors, APIHandler} from './helpers/endpoint'
+import {APIHandler} from './helpers/endpoint'
 
 export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _auth) => {
   // One-click check: if List-Unsubscribe header is present, it must be "One-Click"
   // if (listUnsubscribe && listUnsubscribe !== 'One-Click') {
   //   throw APIErrors.badRequest('Invalid List-Unsubscribe value')
   // }
+
+  log('Unsubscribe', token)
 
   const pg = createSupabaseDirectClient()
 
@@ -23,11 +26,15 @@ export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _au
   )
 
   if (!tokenRecord) {
-    throw APIErrors.notFound('Invalid or expired token')
+    // Return success to avoid token probing
+    log('Token not found', token)
+    return {success: true}
   }
 
   if (tokenRecord.used_at) {
-    throw APIErrors.badRequest('Token already used')
+    // Endpoint must be idempotent
+    log('Token already used', token, tokenRecord)
+    return {success: true}
   }
 
   // Mark token as used

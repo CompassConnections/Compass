@@ -10,7 +10,7 @@ export function Checkbox(props: {
   const {label, checked, toggle, className, disabled} = props
 
   return (
-    <div className={clsx(className, 'space-y-5 px-2 py-1')}>
+    <div className={clsx(className, 'space-y-5 px-2 py-1 text-sm')}>
       <label
         className={clsx(
           'relative flex items-center cursor-pointer select-none hover-bold',

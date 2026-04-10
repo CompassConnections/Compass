@@ -346,7 +346,7 @@ export function ProfilesHome() {
         )}
       </Col>
       {/* Desktop: filters sidebar on the right */}
-      <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-4 lg:h-fit text-sm bg-canvas-25 rounded-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+      <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-4 lg:h-fit text-sm bg-canvas-50 rounded-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
         {filtersElement}
       </div>
     </div>

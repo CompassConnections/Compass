@@ -93,7 +93,7 @@ export function PageBase(props: {
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
-            className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-25"
+            className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-50"
           />
         )}
         <main

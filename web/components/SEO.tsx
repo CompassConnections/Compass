@@ -22,18 +22,18 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
       <title>{`${title} | ${endTitle}`}</title>
 
       {/*OG tags (WhatsApp, Facebook, etc.)*/}
-      <meta property="og:title" content={title} key="title" />
-      <meta property="og:description" content={description} key="description3" />
+      <meta property="og:title" content={title} key="ogtitle" />
+      <meta property="og:description" content={description} key="og-description" />
 
       {/*Twitter/X tags — separate!*/}
-      <meta name="twitter:title" content={title} key="title" />
-      <meta name="twitter:description" content={description} key="description2" />
+      <meta name="twitter:title" content={title} key="twitter-title" />
+      <meta name="twitter:description" content={description} key="twitter-description" />
 
-      <meta name="description" content={description} key="description1" />
+      <meta name="description" content={description} key="description" />
 
       {url && <link rel="canonical" href={absUrl} />}
 
-      {url && <meta property="og:url" content={absUrl} key="url" />}
+      {url && <meta property="og:url" content={absUrl} key="og-url" />}
 
       {url && (
         <meta name="apple-itunes-app" content={'app-id=6444136749, app-argument=' + absUrl} />
@@ -41,9 +41,9 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
 
       {imageUrl && (
         <>
-          <meta property="og:image" content={imageUrl} key="image1" />
-          <meta name="twitter:card" content="summary_large_image" key="card" />
-          <meta name="twitter:image" content={imageUrl} key="image2" />
+          <meta property="og:image" content={imageUrl} key="og-image" />
+          <meta name="twitter:card" content="summary_large_image" key="twitter-card" />
+          <meta name="twitter:image" content={imageUrl} key="twitter-image" />
         </>
       )}
     </Head>

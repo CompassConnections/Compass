@@ -558,7 +558,7 @@ function Big5Traits(props: {profile: Profile}) {
                 <div className="text-ink-700 w-[120px] shrink-0">{trait.label}</div>
                 <div className="flex-1 max-w-32 h-2 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-primary-100 rounded-full"
+                    className="h-full bg-primary-200 rounded-full"
                     style={{width: `${trait.value}%`}}
                   />
                 </div>

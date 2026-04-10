@@ -137,7 +137,7 @@ export function PageNumbers(props: {
       onClick={() => setPage(pageNumber)}
       className={clsx(
         'select-none rounded-lg px-2',
-        page === pageNumber ? 'bg-primary-100 text-primary-700' : 'text-ink-600 hover:bg-ink-100',
+        page === pageNumber ? 'bg-primary-200 text-primary-700' : 'text-ink-600 hover:bg-ink-100',
       )}
     >
       {pageNumber + 1}

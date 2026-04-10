@@ -378,7 +378,7 @@ function ProfilePreview(props: {
                     ?.slice(0, 10)
                     ?.map(capitalize)
                     ?.map((tag, i) => (
-                      <span key={i} className={'bg-primary-100/50 text-sm px-3 py-2 rounded-full'}>
+                      <span key={i} className={'bg-primary-200 text-sm px-3 py-2 rounded-full'}>
                         {tag.trim()}
                       </span>
                     ))}

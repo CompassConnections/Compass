@@ -120,7 +120,7 @@ export function ChatMessageItem(props: {
                       chat.visibility === 'system_status'
                         ? 'bg-canvas-50 italic'
                         : isMe
-                          ? 'bg-primary-100 items-end self-end rounded-r-none group-first:rounded-tr-3xl'
+                          ? 'bg-primary-200 items-end self-end rounded-r-none group-first:rounded-tr-3xl'
                           : 'bg-canvas-0 items-start self-start rounded-l-none group-first:rounded-tl-3xl',
                     )}
                     onMouseDown={() => startLongPress(chat.id)}

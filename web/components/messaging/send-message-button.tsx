@@ -196,7 +196,7 @@ export const SendMessageButton = (props: {
             <>
               {!!profile.keywords?.length && (
                 <div className={'w-full border border-canvas-100 rounded-xl p-2'}>
-                  <p className={'text-ink-1000/55 mb-2 text-xs'}>
+                  <p className={'text-ink-1000/75 mb-2 text-xs'}>
                     {t(
                       'send_message.keywords_hint',
                       `Insert some of {name} topics in your message`,

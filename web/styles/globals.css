@@ -121,8 +121,8 @@
 
     /* Background / Canvas Grey Scale */
     --color-canvas-0: 255 255 255; /* white */
-    --color-canvas-25: 225 225 225;
-    --color-canvas-50: 225 225 225;
+    --color-canvas-25: 235 235 235;
+    --color-canvas-50: 235 235 235;
     --color-canvas-100: 220 220 220;
     --color-canvas-200: 210 210 210;
     --color-canvas-300: 190 190 190;

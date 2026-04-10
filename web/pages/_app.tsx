@@ -190,23 +190,26 @@ function MyApp(props: AppProps<PageProps>) {
       <Head>
         <title>{title}</title>
 
-        <meta property="og:title" name="twitter:title" content={title} key="title" />
-        <meta name="description" content={description} key="description1" />
-        <meta
-          property="og:description"
-          name="twitter:description"
-          content={description}
-          key="description2"
-        />
-        <meta property="og:url" content={DEPLOYED_WEB_URL} key="url" />
+        <meta name="description" content={description} key="description" />
+
+        {/*OG tags (WhatsApp, Facebook, etc.)*/}
         <meta property="og:site_name" content="Compass" />
-        <meta name="twitter:card" content="summary" key="card" />
+        <meta property="og:title" content={title} key="og-title" />
+        <meta property="og:description" content={description} key="og-description" />
+        <meta property="og:url" content={DEPLOYED_WEB_URL} key="og-url" />
+        <meta property="og:image" content={PNG_FAVICON} key="og-image" />
+        <meta property="og:image:type" content="image/png" key="og-image-type" />
+
+        {/*Twitter/X tags — separate!*/}
+        <meta name="twitter:title" content={title} key="twitter-title" />
+        <meta name="twitter:description" content={description} key="twitter-description" />
+        <meta name="twitter:card" content="summary" key="twitter-card" />
+        <meta name="twitter:image" content={PNG_FAVICON} key="twitter-image" />
+
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
-        <meta name="twitter:image" content={PNG_FAVICON} key="image2" />
-        <meta property="og:image" content={PNG_FAVICON} key="image1" />
         {/*<meta property="og:image:width" content="192" />*/}
         {/*<meta property="og:image:height" content="192" />*/}
-        <meta property="og:image:type" content="image/png" />
+
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no, viewport-fit=cover"

@@ -17,31 +17,33 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
 
   const absUrl = DEPLOYED_WEB_URL + url
 
+  const fullTitle = `${title} | ${endTitle}`
+
   return (
     <Head>
-      <title>{`${title} | ${endTitle}`}</title>
-
-      {/*OG tags (WhatsApp, Facebook, etc.)*/}
-      <meta property="og:title" content={title} key="ogtitle" />
-      <meta property="og:description" content={description} key="og-description" />
-
-      {/*Twitter/X tags — separate!*/}
-      <meta name="twitter:title" content={title} key="twitter-title" />
-      <meta name="twitter:description" content={description} key="twitter-description" />
+      <title>{fullTitle}</title>
 
       <meta name="description" content={description} key="description" />
-
-      {url && <link rel="canonical" href={absUrl} />}
-
-      {url && <meta property="og:url" content={absUrl} key="og-url" />}
-
+      {url && <link rel="canonical" href={absUrl} key="canonical" />}
       {url && (
-        <meta name="apple-itunes-app" content={'app-id=6444136749, app-argument=' + absUrl} />
+        <meta
+          name="apple-itunes-app"
+          content={'app-id=6444136749, app-argument=' + absUrl}
+          key="apple-itunes-app"
+        />
       )}
 
+      {/*OG tags (WhatsApp, Facebook, etc.)*/}
+      <meta property="og:title" content={fullTitle} key="og-title" />
+      <meta property="og:description" content={description} key="og-description" />
+      {url && <meta property="og:url" content={absUrl} key="og-url" />}
+      {imageUrl && <meta property="og:image" content={imageUrl} key="og-image" />}
+
+      {/*Twitter/X tags — separate!*/}
+      <meta name="twitter:title" content={fullTitle} key="twitter-title" />
+      <meta name="twitter:description" content={description} key="twitter-description" />
       {imageUrl && (
         <>
-          <meta property="og:image" content={imageUrl} key="og-image" />
           <meta name="twitter:card" content="summary_large_image" key="twitter-card" />
           <meta name="twitter:image" content={imageUrl} key="twitter-image" />
         </>

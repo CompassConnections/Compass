@@ -22,6 +22,7 @@ function capitalize(str: string) {
 }
 
 function OgProfile(props: ogProps) {
+  console.log(props)
   const {avatarUrl, name, city, country, age, interests, keywords} = props
   let headline = props.headline
 
@@ -167,7 +168,13 @@ export default async function handler(req: NextRequest) {
   try {
     const {searchParams} = new URL(req.url)
     const options = await getCardOptions()
-    const ogProps = Object.fromEntries(searchParams.entries()) as ogProps
+
+    // Clean search params by removing 'amp;' prefixes that occur due to URL encoding
+    const cleanedEntries = Array.from(searchParams.entries()).map(([key, value]) => [
+      key.replace(/^amp;/, ''),
+      value,
+    ])
+    const ogProps = Object.fromEntries(cleanedEntries) as ogProps
     const image = OgProfile(ogProps)
 
     return new ImageResponse(classToTw(image), options as ImageResponseOptions)

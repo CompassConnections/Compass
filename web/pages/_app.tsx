@@ -8,7 +8,7 @@ import {StatusBar} from '@capacitor/status-bar'
 import * as Sentry from '@sentry/node'
 import clsx from 'clsx'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {IS_VERCEL, PNG_FAVICON} from 'common/hosting/constants'
+import {IS_VERCEL, PNG_LOGO} from 'common/hosting/constants'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
 import type {AppProps} from 'next/app'
@@ -197,14 +197,14 @@ function MyApp(props: AppProps<PageProps>) {
         <meta property="og:title" content={title} key="og-title" />
         <meta property="og:description" content={description} key="og-description" />
         <meta property="og:url" content={DEPLOYED_WEB_URL} key="og-url" />
-        <meta property="og:image" content={PNG_FAVICON} key="og-image" />
+        <meta property="og:image" content={PNG_LOGO} key="og-image" />
         <meta property="og:image:type" content="image/png" key="og-image-type" />
 
         {/*Twitter/X tags — separate!*/}
         <meta name="twitter:title" content={title} key="twitter-title" />
         <meta name="twitter:description" content={description} key="twitter-description" />
         <meta name="twitter:card" content="summary" key="twitter-card" />
-        <meta name="twitter:image" content={PNG_FAVICON} key="twitter-image" />
+        <meta name="twitter:image" content={PNG_LOGO} key="twitter-image" />
 
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
         {/*<meta property="og:image:width" content="192" />*/}

@@ -121,7 +121,7 @@
 
     /* Background / Canvas Grey Scale */
     --color-canvas-0: 255 255 255; /* white */
-    --color-canvas-25: 235 235 235;
+    --color-canvas-25: 245 245 245;
     --color-canvas-50: 235 235 235;
     --color-canvas-100: 220 220 220;
     --color-canvas-200: 210 210 210;
@@ -542,7 +542,7 @@ ol > li::marker {
 }
 
 .guidance {
-  opacity: 0.55;
+  opacity: 0.7;
   font-size: 14px;
 }
 

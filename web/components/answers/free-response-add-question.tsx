@@ -97,7 +97,7 @@ function AddQuestionModal(props: {
                 return (
                   <Row
                     key={question.id}
-                    className="hover:bg-canvas-50 grow-y flex w-full items-center justify-between rounded"
+                    className="hover:bg-canvas-25 grow-y flex w-full items-center justify-between rounded"
                   >
                     <button
                       onClick={() => {

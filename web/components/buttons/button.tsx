@@ -56,7 +56,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
     color === 'indigo-outline' && [outline, 'text-primary-500 hover:bg-primary-500'],
     color === 'gray' &&
       'bg-canvas-200 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-canvas-300 hover:text-ink-1000',
-    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-100'],
+    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-25'],
     color === 'gradient' && [gradient, 'from-primary-500 to-blue-400'],
     color === 'gradient-pink' && [gradient, 'from-primary-500 to-fuchsia-500'],
     color === 'gray-white' &&

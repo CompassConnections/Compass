@@ -167,7 +167,8 @@ export function CommentInputTextArea(props: {
             // mention list is closed
             !(view.state as any).mention$.active &&
             // emoji list is closed
-            !emojiMenuActive(view)
+            !emojiMenuActive(view) &&
+            !isDisabled
           ) {
             // console.log('handleKeyDown')
             submit?.(commentTypes[0])

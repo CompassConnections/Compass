@@ -116,7 +116,7 @@ export const MessageChannelRow = (props: {
         <Avatar size="md" username="?" noLink />
       )}
       <Link
-        className="w-full rounded-md hover:bg-canvas-100 p-2"
+        className="w-full rounded-md hover:bg-canvas-25 p-2"
         key={channelId}
         href={'/messages/' + channelId}
       >

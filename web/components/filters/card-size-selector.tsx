@@ -27,7 +27,7 @@ export function CardSizeSelector(props: {
               key={size}
               className={clsx(
                 'px-3 py-1.5 text-sm rounded-xl border border-canvas-100 transition-colors',
-                isSelected ? 'bg-primary-100' : 'bg-canvas-0  hover:bg-canvas-100',
+                isSelected ? 'bg-primary-100' : 'bg-canvas-0  hover:bg-canvas-25',
               )}
               onClick={() => updateDisplayOptions({cardSize: size})}
             >

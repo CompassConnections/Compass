@@ -137,7 +137,7 @@ export function VoteButtons(props: {
                 key={p.value}
                 className={clsx(
                   'w-full text-left px-3 py-2 text-sm hover:bg-ink-100 bg-canvas-50',
-                  'dark:hover:bg-canvas-100',
+                  'dark:hover:bg-canvas-25',
                 )}
                 onClick={async () => {
                   setShowPriority(false)

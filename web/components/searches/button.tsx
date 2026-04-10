@@ -201,7 +201,7 @@ function StarModal(props: {
               {visibleUsers.map((u) => (
                 <Row key={u.id} className="items-center justify-between py-2 gap-2">
                   <Link
-                    className="w-full rounded-md hover:bg-canvas-100 p-2"
+                    className="w-full rounded-md hover:bg-canvas-25 p-2"
                     href={'/' + u.username}
                   >
                     <Row className="items-center gap-3">

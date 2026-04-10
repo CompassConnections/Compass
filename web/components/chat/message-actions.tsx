@@ -121,7 +121,7 @@ export function MessageActions(props: {
           closeOnClick={true}
           icon={<EllipsisHorizontalIcon className="h-5 w-5 text-gray-500" />}
           menuWidth="w-40"
-          className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-canvas-50"
+          className="text-ink-500 hover:text-ink-700 rounded-full p-1 hover:bg-canvas-25"
         />
       )}
       {/*{message.isEdited && (*/}

@@ -244,7 +244,8 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
 
 export const sendTestEmail = async (toEmail: string) => {
   return await sendEmail({
-    from: fromEmail,
+    from: 'Martin from Compass <martin@compassmeet.com>',
+    replyTo: 'martin@compassmeet.com',
     subject: 'Test email from Compass',
     to: toEmail,
     html: await render(<Test name="Test User" />),

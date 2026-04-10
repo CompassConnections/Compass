@@ -129,7 +129,7 @@ export const ShareCompassEmail = ({
             </Text>
 
             <Text style={{...paragraph, marginTop: '8px'}}>
-              {t('email.share.signature', 'Martin Braquet')}
+              Martin Braquet
               <br />
               <span style={{fontSize: '12px', color: '#888'}}>
                 {t('email.share.signature_title', 'Founder, Compass')}

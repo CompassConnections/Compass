@@ -166,6 +166,7 @@ function ProfilePreview(props: {
   const [showRing, setShowRing] = useState(false)
   const ringTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pointerStartRef = useRef<{x: number; y: number} | null>(null)
+  const hideButtonClickedRef = useRef(false)
 
   const {theme} = useTheme()
   const isDarkTheme = isDark(theme)
@@ -178,8 +179,17 @@ function ProfilePreview(props: {
     if (pointerStartRef.current) {
       const dx = Math.abs(e.clientX - pointerStartRef.current.x)
       const dy = Math.abs(e.clientY - pointerStartRef.current.y)
+
+      // Check if opening in new tab
+      const isNewTab = e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey
+
+      // Reset hide button click flag after checking
+      const wasHideButtonClicked = hideButtonClickedRef.current
+      hideButtonClickedRef.current = false
+
       // If moved more than 10px, treat as drag/scroll - cancel loading
-      if (dx > 10 || dy > 10) {
+      // Also cancel if clicking hide button or opening in new tab
+      if (dx > 10 || dy > 10 || wasHideButtonClicked || isNewTab) {
         setIsLoading(false)
         setShowRing(false)
         if (ringTimeoutRef.current) {
@@ -329,6 +339,9 @@ function ProfilePreview(props: {
                 className="ml-2"
                 stopPropagation
                 eyeOff
+                onPointerDown={() => {
+                  hideButtonClickedRef.current = true
+                }}
               />
             )}
           </Row>

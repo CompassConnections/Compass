@@ -15,6 +15,7 @@ export type HideProfileButtonProps = {
   ariaLabel?: string
   stopPropagation?: boolean
   eyeOff?: boolean
+  onPointerDown?: () => void
 }
 
 export function HideProfileButton(props: HideProfileButtonProps) {
@@ -27,6 +28,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     ariaLabel,
     stopPropagation,
     eyeOff,
+    onPointerDown,
   } = props
 
   const t = useT()
@@ -80,6 +82,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
         )}
         disabled={submitting}
         onClick={onClick}
+        onPointerDown={onPointerDown}
         aria-label={
           ariaLabel ??
           (hidden

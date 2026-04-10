@@ -869,7 +869,7 @@ function FilterGroup(props: {
   const {title, children, openGroup, setOpenGroup, icon} = props
   const isOpen = openGroup === title
   return (
-    <Col className="border-t border-ink-200">
+    <Col className="">
       <button
         className="flex w-full flex-row items-center justify-between px-4 py-3 text-ink-600"
         onClick={() => (isOpen ? setOpenGroup(undefined) : setOpenGroup(title))}

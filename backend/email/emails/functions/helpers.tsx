@@ -222,7 +222,8 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
   const unsubscribeUrlOneClick = getUnsubscribeUrlOneClick(token)
 
   return await sendEmail({
-    from: fromEmail,
+    from: 'Martin from Compass <martin@compassmeet.com>',
+    replyTo: 'martin@compassmeet.com',
     subject,
     to: email,
     html: await render(

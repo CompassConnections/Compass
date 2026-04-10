@@ -41,7 +41,7 @@ export const ShareCompassEmail = ({
             <Text style={paragraph}>
               {t(
                 'email.share.opening',
-                'You joined Compass because you believe human connection can be more than swipes and small talk.',
+                'I started Compass because I believe human connection can be so much more than swipes and small talk. You joined because you believe that too — and that means a lot to me.',
               )}
             </Text>
 
@@ -120,8 +120,20 @@ export const ShareCompassEmail = ({
             <Text style={{marginTop: '40px', fontSize: '12px', color: '#555'}}>
               {t(
                 'email.share.community_note',
-                "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical. Thank you for being part of it.",
+                "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical.",
               )}
+            </Text>
+
+            <Text style={paragraph}>
+              {t('email.share.signature_thanks', 'Thank you for being part of it.')}
+            </Text>
+
+            <Text style={{...paragraph, marginTop: '8px'}}>
+              {t('email.share.signature', 'Martin Braquet')}
+              <br />
+              <span style={{fontSize: '12px', color: '#888'}}>
+                {t('email.share.signature_title', 'Founder, Compass')}
+              </span>
             </Text>
           </Section>
           <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />

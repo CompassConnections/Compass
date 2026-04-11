@@ -199,7 +199,7 @@ export const SendMessageButton = (props: {
                   <p className={'text-ink-1000/75 mb-2 text-xs'}>
                     {t(
                       'send_message.keywords_hint',
-                      `Insert some of {name} topics in your message`,
+                      `Insert some of {name}'s topics in your message`,
                       {name: toUser.name},
                     )}
                   </p>

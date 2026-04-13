@@ -147,6 +147,9 @@ export const PrivateChat = (props: {
   const members = filterDefined(otherUsers?.filter((user) => memberIds.includes(user.id)) ?? [])
   const router = useRouter()
 
+  // Check ban status for messaging restrictions
+  const allUsersBanned = members.length > 0 && members.every((member) => member.isBannedFromPosting)
+
   const {topVisibleRef, showMessages, innerDiv, outerDiv} = usePaginatedScrollingMessages(
     messages,
     user?.id,
@@ -434,6 +437,18 @@ export const PrivateChat = (props: {
               'messages.cannot_message_deleted',
               "You can't text them as they deleted their account.",
             )}
+          </span>
+        </div>
+      ) : allUsersBanned ? (
+        <div className="border-ink-200 p-4 text-center">
+          <span className="text-ink-600">
+            {t('messages.cannot_message_banned', "You can't text them as they got banned.")}
+          </span>
+        </div>
+      ) : user.isBannedFromPosting ? (
+        <div className="border-ink-200 p-4 text-center">
+          <span className="text-ink-600">
+            {t('messages.cannot_message_you_banned', "You can't text them as you got banned.")}
           </span>
         </div>
       ) : (

@@ -466,6 +466,8 @@
   "messages.action.delete": "Supprimer",
   "messages.action.edit": "Modifier",
   "messages.cannot_message_deleted": "Vous ne pouvez pas leur envoyer de message car ils ont supprimé leur compte.",
+  "messages.cannot_message_banned": "Vous ne pouvez pas leur envoyer de message car ils ont été bannis.",
+  "messages.cannot_message_you_banned": "Vous ne pouvez pas leur envoyer de message car vous avez été banni.",
   "messages.create": "Créer",
   "messages.delete_confirm": "Êtes-vous sûr de vouloir supprimer ce message ?",
   "messages.delete_failed": "Échec de la suppression du message",

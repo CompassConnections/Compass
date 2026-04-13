@@ -92,6 +92,11 @@ export function ProfilesHome() {
   const id = useRef(0)
   useEffect(() => {
     if (!user) return
+    if (user.isBannedFromPosting) {
+      setProfiles([])
+      setProfileCount(0)
+      return
+    }
     setIsReloading(true)
     const current = ++id.current
     const args = removeNullOrUndefinedProps({
@@ -123,6 +128,12 @@ export function ProfilesHome() {
   const limit = 20
 
   const loadMore = useCallback(async () => {
+    if (!user) return false
+    if (user.isBannedFromPosting) {
+      setProfiles([])
+      setProfileCount(0)
+      return false
+    }
     if (!profiles || isLoadingMore) return false
     if (fromSignup && isClearedFilters && sendScrollWarning) {
       setSendScrollWarning(false)

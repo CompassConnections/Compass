@@ -111,16 +111,24 @@ export const ProfileGrid = (props: {
         </div>
       )}
 
-      {!isLoadingMore && !isReloading && other_profiles.length === 0 && (
+      {user?.isBannedFromPosting ? (
         <div className="py-8 text-center">
-          <p>{t('profile_grid.no_profiles', 'No profiles found.')}</p>
-          <p>
-            {t(
-              'profile_grid.notification_cta',
-              "Feel free to click on Get Notified and we'll notify you when new users match your search!",
-            )}
-          </p>
+          <p>You can't see profiles as you got banned.</p>
         </div>
+      ) : (
+        !isLoadingMore &&
+        !isReloading &&
+        other_profiles.length === 0 && (
+          <div className="py-8 text-center">
+            <p>{t('profile_grid.no_profiles', 'No profiles found.')}</p>
+            <p>
+              {t(
+                'profile_grid.notification_cta',
+                "Feel free to click on Get Notified and we'll notify you when new users match your search!",
+              )}
+            </p>
+          </div>
+        )
       )}
     </div>
   )

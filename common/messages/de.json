@@ -466,6 +466,8 @@
   "messages.action.delete": "Löschen",
   "messages.action.edit": "Bearbeiten",
   "messages.cannot_message_deleted": "Sie können ihnen keine Nachricht senden, da sie ihr Konto gelöscht haben.",
+  "messages.cannot_message_banned": "Sie können ihnen keine Nachricht senden, da sie gesperrt wurden.",
+  "messages.cannot_message_you_banned": "Sie können ihnen keine Nachricht senden, da Sie gesperrt wurden.",
   "messages.create": "Erstellen",
   "messages.delete_confirm": "Sind Sie sicher, dass Sie diese Nachricht löschen möchten?",
   "messages.delete_failed": "Löschen der Nachricht fehlgeschlagen",

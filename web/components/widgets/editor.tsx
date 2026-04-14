@@ -258,7 +258,7 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
   return (
     <div
       className={clsx(
-        'ProseMirror',
+        'ProseMirror custom-link',
         className,
         proseClass(size),
         String.raw`empty:prose-p:after:content-["\00a0"]`, // make empty paragraphs have height

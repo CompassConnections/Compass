@@ -98,13 +98,13 @@ const bottomNav = (loggedIn: boolean) =>
     !loggedIn && {
       key: 'nav.sign_in',
       name: 'Sign in',
-      icon: ArrowRightOnRectangleIcon,
+      icon: ArrowLeftOnRectangleIcon,
       href: '/signin',
     },
     loggedIn && {
       key: 'nav.sign_out',
       name: 'Sign out',
-      icon: ArrowLeftOnRectangleIcon,
+      icon: ArrowRightOnRectangleIcon,
       onClick: logout,
     },
   )

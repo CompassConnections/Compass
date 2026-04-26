@@ -57,7 +57,7 @@ export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _au
        SET data = jsonb_set(
          data,
          '{notificationPreferences,${notification_type}}',
-         (data->'notificationPreferences'->'${notification_type}' || '[]'::jsonb) - 'email'
+         (COALESCE(data->'notificationPreferences'->'${notification_type}', '["email", "browser", "mobile"]'::jsonb) - 'email')
        )
        WHERE id = $1`,
       [user_id],

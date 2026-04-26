@@ -9,6 +9,12 @@ CREATE TABLE IF NOT EXISTS email_unsubscribe_tokens
     CONSTRAINT email_unsubscribe_tokens_pkey PRIMARY KEY (token)
 );
 
+ALTER TABLE email_unsubscribe_tokens
+    ADD CONSTRAINT email_unsubscribe_tokens_user_id_fkey
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE email_unsubscribe_tokens
     ENABLE ROW LEVEL SECURITY;

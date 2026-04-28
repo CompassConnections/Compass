@@ -24,7 +24,7 @@ import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {parseJsonContentToText} from 'common/util/parse'
-import {HOUR_MS, MINUTE_MS} from 'common/util/time'
+import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
 import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
 import {tmpdir} from 'os'
@@ -583,16 +583,53 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
       url = `https://docs.google.com/document/d/${googleDocId}/export?format=html`
     }
 
-    // 2. Fetch with proper headers
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; bot/1.0)',
-        Accept: 'text/html,text/plain,*/*',
-      },
-    })
+    // 2. Fetch with realistic browser headers to avoid scraping detection
+    // Try multiple user agents for better success rate
+    const userAgents = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    ]
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
+    const baseHeaders = {
+      Accept:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Accept-Encoding': 'gzip, deflate, br',
+      DNT: '1',
+      Connection: 'keep-alive',
+      'Upgrade-Insecure-Requests': '1',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1',
+      'Cache-Control': 'max-age=0',
+    }
+
+    let lastError: Error | null = null
+    let response: Response | null = null
+
+    // Try different user agents until one works
+    for (const userAgent of userAgents) {
+      try {
+        const headers = {...baseHeaders, 'User-Agent': userAgent}
+        response = await fetch(url, {headers})
+
+        if (response.ok) {
+          break // Success, exit the loop
+        } else {
+          lastError = new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
+          await sleep(2000)
+        }
+      } catch (error) {
+        lastError = error as Error
+        // continue // Try next user agent
+      }
+    }
+
+    if (!response || !response.ok) {
+      throw lastError || new Error('Failed to fetch with all user agents')
     }
 
     const contentType = response.headers.get('content-type') ?? ''

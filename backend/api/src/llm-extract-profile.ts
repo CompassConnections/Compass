@@ -75,6 +75,10 @@ async function validateProfileFields(
     'pref_romantic_styles',
     'relationship_status',
     'keywords',
+    'psychedelics_intention',
+    'cannabis_intention',
+    'psychedelics_pref',
+    'cannabis_pref',
   ]
   for (const key of toArray) {
     if (result[key] !== undefined) {
@@ -99,10 +103,6 @@ async function validateProfileFields(
     'mbti',
     'psychedelics',
     'cannabis',
-    'psychedelics_intention',
-    'cannabis_intention',
-    'psychedelics_pref',
-    'cannabis_pref',
     'headline',
     'city',
     'country',
@@ -485,10 +485,10 @@ export async function callLLM(
     // Substances
     psychedelics: `String. One of: ${validChoices.psychedelics?.join(', ')}. Usage frequency of psychedelics/plant medicine, only if explicitly stated.`,
     cannabis: `String. One of: ${validChoices.cannabis?.join(', ')}. Usage frequency of cannabis, only if explicitly stated.`,
-    psychedelics_intention: `String. Array. Any of: ${validChoices.psychedelics_intention?.join(', ')}. Only if they use psychedelics.`,
-    cannabis_intention: `String. Array. Any of: ${validChoices.cannabis_intention?.join(', ')}. Only if they use cannabis.`,
-    psychedelics_pref: `String. Array. Any of: ${validChoices.psychedelics_pref?.join(', ')}. Partner preference for psychedelics use.`,
-    cannabis_pref: `String. Array. Any of: ${validChoices.cannabis_pref?.join(', ')}. Partner preference for cannabis use.`,
+    psychedelics_intention: `Array. Any of: ${validChoices.psychedelics_intention?.join(', ')}. Only if they use psychedelics.`,
+    cannabis_intention: `Array. Any of: ${validChoices.cannabis_intention?.join(', ')}. Only if they use cannabis.`,
+    psychedelics_pref: `Array. Any of: ${validChoices.psychedelics_pref?.join(', ')}. Partner preference for psychedelics use.`,
+    cannabis_pref: `Array. Any of: ${validChoices.cannabis_pref?.join(', ')}. Partner preference for cannabis use.`,
 
     // Identity — big5 only if person explicitly states a score, never infer from personality description
     mbti: `String. One of: ${validChoices.mbti?.join(', ')}`,

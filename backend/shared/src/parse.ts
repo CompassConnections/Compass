@@ -524,6 +524,7 @@ function cleanHref(href: string): string {
 export function extractGoogleDocId(url: string) {
   const patterns = [
     /\/document\/d\/([a-zA-Z0-9-_]+)\/edit/, // standard /d/{id}/edit format
+    /\/document\/d\/([a-zA-Z0-9-_]+)\/preview/, // standard /d/{id}/preview format
     // /id=([a-zA-Z0-9-_]+)/, // ?id= query param format (catches false negatives)
     // /^([a-zA-Z0-9-_]+)$/, // raw ID passed directly (catches false negatives)
   ]

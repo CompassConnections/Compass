@@ -531,7 +531,7 @@ export async function callLLM(
     work: `Array. Use only existing labels, do not add new if no close match. Any of: ${validChoices.work?.join(', ')}`,
   }
 
-  const EXTRACTION_PROMPT = `You are a profile information extraction expert analyzing text from a personal webpage, LinkedIn, bio, or similar source.
+  const EXTRACTION_PROMPT = `You are a profile information extraction expert analyzing text from a personal webpage, bio, or similar source.
 
 TASK: Extract structured profile data and return it as a single valid JSON object.
 

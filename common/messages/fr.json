@@ -924,7 +924,7 @@
   "profile.last_online": "Actif·ve {time}",
   "profile.llm.extract.button_text": "Extraire les données à partir du texte",
   "profile.llm.extract.button_url": "Extraire les données à ce lien",
-  "profile.llm.extract.description": "Remplissez automatiquement votre profil en déposant un lien (LinkedIn, Notion, Google Docs, site personnel, etc.) ou en collant directement votre contenu.",
+  "profile.llm.extract.description": "Remplissez automatiquement votre profil en déposant un lien (Notion, Google Docs, site personnel, etc.) ou en collant directement votre contenu.",
   "profile.llm.extract.guidance": "Attention : nous utilisons Google AI pour extraire vos informations. Comme nous payons pour leur service, Google ne devrait pas utiliser ce contenu pour améliorer ses modèles — mais on ne sait jamais. Vous préférez garder les choses privées ? Remplissez simplement le formulaire manuellement — aucune IA impliquée.",
   "profile.llm.extract.placeholder": "Insérez une URL ou collez le contenu de votre profil ici.",
   "profile.mutual": "Mutuel",

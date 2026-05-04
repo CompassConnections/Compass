@@ -30,7 +30,7 @@ export function LLMExtractSection({
       <div className="">
         {t(
           'profile.llm.extract.description',
-          'Auto-fill your profile by dropping a link (LinkedIn, Notion, Google Docs, personal website, etc.) or pasting your content directly.',
+          'Auto-fill your profile by dropping a link (Notion, Google Docs, personal website, etc.) or pasting your content directly.',
         )}
       </div>
       <div className="guidance">

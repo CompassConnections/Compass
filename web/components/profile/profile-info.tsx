@@ -10,9 +10,8 @@ import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
-import {ViewProfileCardButton} from 'web/components/photos-modal'
 import {ConnectActions} from 'web/components/profile/connect-actions'
-import ProfileHeader from 'web/components/profile/profile-header'
+import ProfileHeader, {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileAbout from 'web/components/profile-about'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
@@ -24,6 +23,8 @@ import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {getStars} from 'web/lib/supabase/stars'
+
+import {BackButton} from '../back-button'
 
 export function ProfileInfo(props: {
   profile: Profile
@@ -75,7 +76,27 @@ export function ProfileInfo(props: {
 
   return (
     <>
-      <div className="mx-auto w-full max-w-6xl px-4 pb-6 pt-4">
+      <div className="bg-canvas-50 border-canvas-300 mb-6 flex items-center gap-2 border-b px-8 py-3">
+        <div className="flex w-full items-center gap-2">
+          <BackButton />
+
+          <div className="ml-auto flex items-center gap-2">
+            <ProfileHeaderActions
+              user={user}
+              profile={profile}
+              starredUserIds={starredUserIds ?? []}
+              refreshStars={refreshStars}
+              showMessageButton={showMessageButton}
+              refreshProfile={refreshProfile}
+              isHiddenFromMe={isHiddenFromMe}
+              // no-op: the visibility modal lives inside ProfileHeader below
+              setShowVisibilityModal={() => {}}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto w-full px-8 pb-6 pt-0">
         <Row className="items-start gap-6">
           {profile.pinned_url && (
             <div className="h-[108px] w-[108px] flex-none">
@@ -96,10 +117,6 @@ export function ProfileInfo(props: {
               userActivity={userActivity}
               profile={profile}
               simpleView={!!fromProfilePage}
-              starredUserIds={starredUserIds ?? []}
-              refreshStars={refreshStars}
-              showMessageButton={showMessageButton}
-              refreshProfile={refreshProfile}
               isHiddenFromMe={isHiddenFromMe}
             />
           </div>
@@ -209,23 +226,7 @@ function ProfileContent(props: {
 
   return (
     <>
-      <Row className="mt-4 items-center justify-end">
-        <div className="w-fit">
-          <ViewProfileCardButton user={user} profile={profile} />
-        </div>
-      </Row>
-
-      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[320px_1fr]">
-        <Col className="gap-6">
-          <ProfileCard title="Details" className="p-5">
-            <ProfileAbout
-              profile={profile}
-              userActivity={userActivity}
-              isCurrentUser={isCurrentUser}
-            />
-          </ProfileCard>
-        </Col>
-
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_480px]">
         <Col className="gap-6">
           <ProfileCard className="p-5">
             <ProfileBio
@@ -262,6 +263,16 @@ function ProfileContent(props: {
               profile={profile}
               currentUser={currentUser}
               simpleView={!!fromProfilePage}
+            />
+          </ProfileCard>
+        </Col>
+
+        <Col className="gap-6">
+          <ProfileCard title="Details" className="p-5">
+            <ProfileAbout
+              profile={profile}
+              userActivity={userActivity}
+              isCurrentUser={isCurrentUser}
             />
           </ProfileCard>
         </Col>

@@ -9,7 +9,6 @@ import {GetStaticPropsContext} from 'next'
 import Head from 'next/head'
 import {useRouter} from 'next/router'
 import {useEffect, useMemo, useState} from 'react'
-import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {ProfileInfo} from 'web/components/profile/profile-info'
@@ -314,7 +313,7 @@ function UserPageInner(props: ActiveUserPageProps) {
     <PageBase
       trackPageView={'user page'}
       trackPageProps={{username: user.username}}
-      className={'relative p-2 sm:pt-0'}
+      className={'relative !px-0 sm:pt-0 !mt-0 col-span-10'}
     >
       <SEO
         title={`${user.name}`}
@@ -331,10 +330,9 @@ function UserPageInner(props: ActiveUserPageProps) {
           <meta name="robots" content="noindex, nofollow" />
         </Head>
       )}
-      <BackButton className="-ml-2 mb-2 self-start" />
 
       {currentUser !== undefined && (
-        <Col className={'gap-4 mx-2'}>
+        <Col className={'gap-4'}>
           {profile ? (
             <ProfileInfo
               key={profile.user_id}

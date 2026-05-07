@@ -5,7 +5,6 @@ import {Gender} from 'common/gender'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
-import {capitalize} from 'lodash'
 import {
   Brain,
   Briefcase,
@@ -36,6 +35,7 @@ import {isDark, useTheme} from 'web/hooks/use-theme'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
+import {capitalizePure} from 'web/lib/util/time'
 
 import {Col} from './layout/col'
 
@@ -403,7 +403,7 @@ function ProfilePreview(props: {
                 <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
                   {profile.keywords
                     ?.slice(0, 10)
-                    ?.map(capitalize)
+                    ?.map(capitalizePure)
                     ?.map((tag, i) => (
                       <span key={i} className={'bg-canvas-200 text-sm px-3 py-2 rounded-full'}>
                         {tag.trim()}

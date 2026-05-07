@@ -216,8 +216,8 @@ export function CompatibilityQuestionsDisplay(props: {
       <Row className={'gap-8'}>
         <Subtitle>
           {isCurrentUser
-            ? t('answers.display.your_prompts', 'Your Compatibility Prompts')
-            : t('answers.display.user_prompts', "{name}'s Compatibility Prompts", {
+            ? t('answers.display.your_prompts', 'Compatibility Prompts')
+            : t('answers.display.user_prompts', 'Compatibility Prompts', {
                 name: shortenName(user.name),
               })}
         </Subtitle>

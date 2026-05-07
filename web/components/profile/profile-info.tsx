@@ -1,8 +1,10 @@
 import {JSONContent} from '@tiptap/core'
+import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
 import Image from 'next/image'
+import React, {ReactNode} from 'react'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
@@ -73,62 +75,66 @@ export function ProfileInfo(props: {
 
   return (
     <>
-      <Row className={'gap-4'}>
-        {profile.pinned_url && (
-          <div className="h-[150px] w-[150px] flex-none snap-start">
-            <Image
-              priority={true}
-              src={profile.pinned_url}
-              height={300}
-              width={300}
-              sizes="(max-width: 640px) 100vw, 300px"
-              alt=""
-              className="h-full cursor-pointer rounded-3xl object-cover"
+      <div className="mx-auto w-full max-w-6xl px-4 pb-6 pt-4">
+        <Row className="items-start gap-6">
+          {profile.pinned_url && (
+            <div className="h-[108px] w-[108px] flex-none">
+              <Image
+                priority={true}
+                src={profile.pinned_url}
+                height={300}
+                width={300}
+                sizes="(max-width: 640px) 100vw, 300px"
+                alt=""
+                className="h-full w-full cursor-pointer rounded-2xl object-cover"
+              />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <ProfileHeader
+              user={user}
+              userActivity={userActivity}
+              profile={profile}
+              simpleView={!!fromProfilePage}
+              starredUserIds={starredUserIds ?? []}
+              refreshStars={refreshStars}
+              showMessageButton={showMessageButton}
+              refreshProfile={refreshProfile}
+              isHiddenFromMe={isHiddenFromMe}
             />
           </div>
-        )}
-        <ProfileHeader
-          user={user}
-          userActivity={userActivity}
-          profile={profile}
-          simpleView={!!fromProfilePage}
-          starredUserIds={starredUserIds ?? []}
-          refreshStars={refreshStars}
-          showMessageButton={showMessageButton}
-          refreshProfile={refreshProfile}
-          isHiddenFromMe={isHiddenFromMe}
-        />
-      </Row>
-      {isProfileVisible ? (
-        <ProfileContent
-          user={user}
-          userActivity={userActivity}
-          profile={profile}
-          refreshProfile={refreshProfile}
-          fromProfilePage={fromProfilePage}
-          fromSignup={fromSignup}
-          isProfileVisible={isProfileVisible}
-          // likesGiven={likesGiven ?? []}
-          // likesReceived={likesReceived ?? []}
-          // ships={ships ?? []}
-          // refreshShips={refresh}
-        />
-      ) : (
-        <Col className="bg-canvas-50 w-full gap-4 rounded p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />
-          </div>
-          <Col className="relative gap-4">
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
-            <div className="bg-ink-200 dark:bg-ink-400 h-4 w-1/2" />
-            <div className="from-canvas-50 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
+        </Row>
+        {isProfileVisible ? (
+          <ProfileContent
+            user={user}
+            userActivity={userActivity}
+            profile={profile}
+            refreshProfile={refreshProfile}
+            fromProfilePage={fromProfilePage}
+            fromSignup={fromSignup}
+            isProfileVisible={isProfileVisible}
+            // likesGiven={likesGiven ?? []}
+            // likesReceived={likesReceived ?? []}
+            // ships={ships ?? []}
+            // refreshShips={refresh}
+          />
+        ) : (
+          <Col className="bg-canvas-50 border-canvas-300 w-full gap-4 rounded-xl border p-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />
+            </div>
+            <Col className="relative gap-4">
+              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
+              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
+              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-1/2" />
+              <div className="from-canvas-50 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
+            </Col>
+            <Row className="gap-2">
+              <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')} />
+            </Row>
           </Col>
-          <Row className="gap-2">
-            <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')} />
-          </Row>
-        </Col>
-      )}
+        )}
+      </div>
       {/*{areCompatible &&*/}
       {/*  ((!fromProfilePage && !isCurrentUser) ||*/}
       {/*    (fromProfilePage && fromProfilePage.user_id === currentUser?.id)) && (*/}
@@ -149,6 +155,25 @@ export function ProfileInfo(props: {
       {/*    </Row>*/}
       {/*  )}*/}
     </>
+  )
+}
+
+function ProfileCard(props: {title?: ReactNode; children: ReactNode; className?: string}) {
+  const {title, children, className} = props
+  return (
+    <div className={clsx('bg-canvas-50 border-canvas-300 rounded-2xl border p-6', className)}>
+      {title != null && <CardTitle>{title}</CardTitle>}
+      {children}
+    </div>
+  )
+}
+
+function CardTitle(props: {children: ReactNode; className?: string}) {
+  const {children, className} = props
+  return (
+    <div className={clsx('text-ink-900 mb-4 text-lg font-semibold tracking-tight', className)}>
+      {children}
+    </div>
   )
 }
 
@@ -184,31 +209,63 @@ function ProfileContent(props: {
 
   return (
     <>
-      <div className={'w-fit mx-4 mb-2'}>
-        <ViewProfileCardButton user={user} profile={profile} />
+      <Row className="mt-4 items-center justify-end">
+        <div className="w-fit">
+          <ViewProfileCardButton user={user} profile={profile} />
+        </div>
+      </Row>
+
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[320px_1fr]">
+        <Col className="gap-6">
+          <ProfileCard title="Details" className="p-5">
+            <ProfileAbout
+              profile={profile}
+              userActivity={userActivity}
+              isCurrentUser={isCurrentUser}
+            />
+          </ProfileCard>
+        </Col>
+
+        <Col className="gap-6">
+          <ProfileCard className="p-5">
+            <ProfileBio
+              isCurrentUser={isCurrentUser}
+              profile={profile}
+              refreshProfile={refreshProfile}
+              fromProfilePage={fromProfilePage}
+            />
+          </ProfileCard>
+
+          {isProfileVisible && (
+            <ProfileCard className="p-5">
+              <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />
+            </ProfileCard>
+          )}
+
+          <ProfileCard className="p-5">
+            <ProfileAnswers
+              isCurrentUser={isCurrentUser}
+              user={user}
+              fromSignup={fromSignup}
+              fromProfilePage={fromProfilePage}
+              profile={profile}
+            />
+          </ProfileCard>
+
+          <ProfileCard className="p-5">
+            <ConnectActions user={user} profile={profile} />
+          </ProfileCard>
+
+          <ProfileCard className="p-5">
+            <ProfileCommentSection
+              onUser={user}
+              profile={profile}
+              currentUser={currentUser}
+              simpleView={!!fromProfilePage}
+            />
+          </ProfileCard>
+        </Col>
       </div>
-      <ProfileAbout profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
-      <ProfileBio
-        isCurrentUser={isCurrentUser}
-        profile={profile}
-        refreshProfile={refreshProfile}
-        fromProfilePage={fromProfilePage}
-      />
-      {isProfileVisible && <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />}
-      <ProfileAnswers
-        isCurrentUser={isCurrentUser}
-        user={user}
-        fromSignup={fromSignup}
-        fromProfilePage={fromProfilePage}
-        profile={profile}
-      />
-      <ConnectActions user={user} profile={profile} />
-      <ProfileCommentSection
-        onUser={user}
-        profile={profile}
-        currentUser={currentUser}
-        simpleView={!!fromProfilePage}
-      />
       {/*<LikesDisplay*/}
       {/*  likesGiven={likesGiven}*/}
       {/*  likesReceived={likesReceived}*/}

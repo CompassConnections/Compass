@@ -2,6 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
+import Image from 'next/image'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
@@ -72,17 +73,32 @@ export function ProfileInfo(props: {
 
   return (
     <>
-      <ProfileHeader
-        user={user}
-        userActivity={userActivity}
-        profile={profile}
-        simpleView={!!fromProfilePage}
-        starredUserIds={starredUserIds ?? []}
-        refreshStars={refreshStars}
-        showMessageButton={showMessageButton}
-        refreshProfile={refreshProfile}
-        isHiddenFromMe={isHiddenFromMe}
-      />
+      <Row className={'gap-4'}>
+        {profile.pinned_url && (
+          <div className="h-[150px] w-[150px] flex-none snap-start">
+            <Image
+              priority={true}
+              src={profile.pinned_url}
+              height={300}
+              width={300}
+              sizes="(max-width: 640px) 100vw, 300px"
+              alt=""
+              className="h-full cursor-pointer rounded-3xl object-cover"
+            />
+          </div>
+        )}
+        <ProfileHeader
+          user={user}
+          userActivity={userActivity}
+          profile={profile}
+          simpleView={!!fromProfilePage}
+          starredUserIds={starredUserIds ?? []}
+          refreshStars={refreshStars}
+          showMessageButton={showMessageButton}
+          refreshProfile={refreshProfile}
+          isHiddenFromMe={isHiddenFromMe}
+        />
+      </Row>
       {isProfileVisible ? (
         <ProfileContent
           user={user}

@@ -12,7 +12,7 @@ export function ShowMore(props: ShowMoreProps) {
   const [showMoreInfo, setShowMoreInfo] = useState(false)
 
   return (
-    <div className={`mt-2 mb-4 ${className ?? ''}`}>
+    <div className={`mt-0 mb-4 ${className ?? ''}`}>
       <button
         type="button"
         onClick={() => setShowMoreInfo(!showMoreInfo)}

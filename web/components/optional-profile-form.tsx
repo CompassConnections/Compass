@@ -906,7 +906,7 @@ export const OptionalProfileUserForm = (props: {
             </CustomLink>
             {t(
               'profile.big5_guidance_suffix',
-              '). You can take a well-cited public-domain approximate test ',
+              '). You can take a free well-cited public-domain approximate test ',
             )}
             <CustomLink href={'https://emilywilloughby.com/research/bfas'}>
               {t('profile.big5_test_link', 'here')}

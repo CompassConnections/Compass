@@ -234,7 +234,7 @@ function ProfilePreview(props: {
   // If this profile was just hidden, render a compact placeholder with Undo action.
   if (isHidden) {
     return (
-      <div className="block rounded-lg border border-canvas-300 bg-canvas-50 dark:bg-gray-800/50 p-3 text-sm">
+      <div className="block rounded-xl border border-canvas-300 bg-canvas-50 dark:bg-gray-800/50 p-3 text-sm">
         <Row className="items-center justify-between gap-2">
           <span className="text-ink-700 dark:text-ink-300">
             {t(
@@ -300,9 +300,9 @@ function ProfilePreview(props: {
   }[cardSize ?? 'medium']
 
   const photoSizeClass = {
-    small: 'w-24 h-auto min-h-24 mt-12',
-    medium: 'w-20 lg:w-28 h-24 self-end lg:h-auto min-h-20 mt-12',
-    large: 'w-48 lg:w-48 h-60 lg:h-auto min-h-48 lg:mt-12',
+    small: 'w-40 h-auto min-h-24',
+    medium: 'w-40 lg:w-40 h-auto lg:h-auto min-h-20',
+    large: 'w-60 lg:w-60 h-60 lg:h-auto min-h-48',
   }[cardSize ?? 'medium']
 
   const cardClass = {
@@ -314,7 +314,7 @@ function ProfilePreview(props: {
   return (
     <div
       className={clsx(
-        'relative overflow-hidden rounded-lg bg-canvas-50',
+        'relative overflow-hidden rounded-xl bg-canvas-50',
         isLoading && 'scale-[0.94] transition-transform duration-[80ms] ease-out',
         !isLoading && 'transition-transform duration-[120ms] ease-in',
       )}
@@ -325,7 +325,7 @@ function ProfilePreview(props: {
         onPointerUp={handlePointerUp}
         onClick={handleClick}
         className={clsx(
-          'relative overflow-hidden rounded-lg bg-canvas-50 person-card',
+          'relative overflow-hidden rounded-xl bg-canvas-50 person-card',
           'border-[1.5px] border-[#E4DDD4]',
           'transition-all duration-[120ms] ease-in',
           'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[4px]',
@@ -334,17 +334,22 @@ function ProfilePreview(props: {
           'hover:before:opacity-100',
           // 'hover:bg-canvas-100',
           'hover:border-primary-300 hover:shadow-lg',
-          'relative z-10 cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
+          'relative z-10 cursor-pointer group block rounded-xl overflow-hidden bg-transparent h-full border border-canvas-300',
           'text-ink-600',
           // hover,
         )}
       >
         {/* Phase 1: Dim overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-canvas-100/[0.32] rounded-lg z-20 pointer-events-none" />
+          <div className="absolute inset-0 bg-canvas-100/[0.32] rounded-xl z-20 pointer-events-none" />
         )}
-        <Col className={clsx('relative w-full rounded transition-all')}>
-          <Row className={clsx('absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10')}>
+        <Col className={clsx('relative w-full rounded-xl transition-all text-sm')}>
+          <Row
+            className={clsx(
+              'absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10',
+              isPhotoRendered && (cardSize === 'large' ? 'mr-0 sm:mr-60' : 'mr-40'),
+            )}
+          >
             {compatibilityScore && (
               <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'} />
             )}
@@ -488,7 +493,7 @@ function ProfilePreview(props: {
               </Row>
               {showBio !== false && bio && (
                 <div className="border-l-2 border-gray-200 dark:border-gray-600 pl-3 mt-1">
-                  <Content className="w-full italic" content={bio} />
+                  <Content className="w-full italic text-sm" content={bio} />
                 </div>
               )}
               {isOverflowing && (
@@ -503,7 +508,7 @@ function ProfilePreview(props: {
             {isPhotoRendered && (
               <div
                 className={clsx(
-                  'relative shrink-0 rounded-xl lg:self-stretch overflow-hidden z-1 mx-auto',
+                  'relative shrink-0 rounded-r-xl lg:self-stretch overflow-hidden z-1 mx-auto',
                   photoSizeClass,
                 )}
               >
@@ -524,7 +529,7 @@ function ProfilePreview(props: {
       {/* Phase 2: Animated ring - appears after 200ms */}
       {isLoading && showRing && (
         <div
-          className="absolute inset-0 z-20 pointer-events-none rounded-lg overflow-hidden"
+          className="absolute inset-0 z-20 pointer-events-none rounded-xl overflow-hidden"
           style={{
             padding: '4px',
             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',

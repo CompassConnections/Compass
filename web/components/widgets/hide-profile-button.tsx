@@ -91,9 +91,9 @@ export function HideProfileButton(props: HideProfileButtonProps) {
         }
       >
         {hidden || eyeOff ? (
-          <EyeSlashIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
+          <EyeSlashIcon className={clsx('h-4 w-4 guidance', iconClassName)} />
         ) : (
-          <EyeIcon className={clsx('h-5 w-5 guidance', iconClassName)} />
+          <EyeIcon className={clsx('h-4 w-4 guidance', iconClassName)} />
         )}
       </button>
     </Tooltip>

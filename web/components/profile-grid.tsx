@@ -332,7 +332,8 @@ function ProfilePreview(props: {
           'before:bg-[#C17F3E] before:rounded-l-lg',
           'before:opacity-0 before:transition-opacity before:duration-[120ms]',
           'hover:before:opacity-100',
-          'hover:bg-canvas-100',
+          // 'hover:bg-canvas-100',
+          'hover:border-primary-300 hover:shadow-lg',
           'relative z-10 cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
           'text-ink-600',
           // hover,
@@ -371,7 +372,7 @@ function ProfilePreview(props: {
             >
               <h3
                 className={clsx(
-                  'text-lg text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
+                  'main-font font-medium text-lg text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
                   isLoading && 'opacity-50',
                 )}
               >

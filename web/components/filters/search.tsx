@@ -3,6 +3,7 @@ import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
 import {debounce as debounceFn} from 'lodash'
+import {Bell} from 'lucide-react'
 import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {IoFilterSharp} from 'react-icons/io5'
@@ -233,9 +234,9 @@ export const Search = forwardRef<
             }}
             // size={'xs'}
             color={'none'}
-            className={'text-white bg-primary-500 hover:bg-primary-400 rounded-xl'}
+            className={'text-white bg-primary-500 hover:bg-primary-400 rounded-xl text-xs'}
           >
-            🔔{' '}
+            <Bell className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
             {bookmarked
               ? t('common.saved', 'Saved!')
               : loadingBookmark

@@ -4,6 +4,7 @@ import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {User} from 'common/user'
+import {Star, Users} from 'lucide-react'
 import Link from 'next/link'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
@@ -37,9 +38,10 @@ export function BookmarkSearchButton(props: {
         onClick={() => setOpen(true)}
         color="gray-outline"
         // size={'xs'}
-        className={'rounded-xl bg-canvas-50'}
+        className={'rounded-xl bg-canvas-50  text-xs'}
       >
-        ⭐ {t('saved_searches.button', 'Saved Searches')}
+        <Star className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
+        {t('saved_searches.button', 'Saved Searches')}
       </Button>
       <ButtonModal
         open={open}
@@ -165,9 +167,9 @@ export function BookmarkStarButton(props: {
         onClick={() => setOpen(true)}
         color="gray-outline"
         // size={'xs'}
-        className={'rounded-xl bg-canvas-50'}
+        className={'rounded-xl bg-canvas-50 text-xs'}
       >
-        👥 {t('saved_people.button', 'Saved People')}
+        <Users className="h-4 w-4 mr-1 hidden sm:flex" /> {t('saved_people.button', 'Saved People')}
       </Button>
       <StarModal
         open={open}

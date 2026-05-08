@@ -51,29 +51,65 @@ export const NewSearchAlertsEmail = ({
 
             {(matches || []).map((match) => (
               <Section key={match.id} style={{marginBottom: '20px'}}>
-                <Text style={{fontWeight: 'bold', marginBottom: '5px'}}>
-                  {formatFilters(
-                    match.description.filters as Partial<FilterFields>,
-                    match.description.location as locationType,
-                    optionIdsToLabels,
-                    measurementSystem,
-                    t,
-                  )?.join(' • ')}
-                </Text>
-                <Text style={{margin: 0}}>
-                  {match.matches.map((p, i) => (
-                    <span key={p.username}>
-                      {p.name} (
-                      <Link
-                        href={`https://${DOMAIN}/${p.username}`}
-                        style={{color: '#2563eb', textDecoration: 'none'}}
+                <div
+                  style={{
+                    backgroundColor: '#f7f4ef',
+                    border: '1px solid #dee5b2',
+                    borderRadius: '14px',
+                    padding: '0px 20px 10px 20px',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: '600',
+                      marginBottom: '14px',
+                      color: '#1e1a14',
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: '18px',
+                      letterSpacing: '0.01em',
+                      lineHeight: '1.3',
+                    }}
+                  >
+                    {formatFilters(
+                      match.description.filters as Partial<FilterFields>,
+                      match.description.location as locationType,
+                      optionIdsToLabels,
+                      measurementSystem,
+                      t,
+                    )?.join(' • ')}
+                  </Text>
+                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                    {match.matches.map((p) => (
+                      <div
+                        key={p.username}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          backgroundColor: '#faf3e9',
+                          border: '1px solid #e8c99e',
+                          borderRadius: '100px',
+                          fontSize: '13px',
+                        }}
                       >
-                        @{p.username}
-                      </Link>
-                      ){i < match.matches.length - 1 && ', '}
-                    </span>
-                  ))}
-                </Text>
+                        <span style={{color: '#1e1a14', fontWeight: '500'}}>{p.name}</span>
+                        <Link
+                          href={`https://${DOMAIN}/${p.username}`}
+                          style={{
+                            color: '#c17f3e',
+                            textDecoration: 'none',
+                            fontSize: '12px',
+                          }}
+                        >
+                          @{p.username}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </Section>
             ))}
 
@@ -88,12 +124,16 @@ export const NewSearchAlertsEmail = ({
                 href={`https://${DOMAIN}/messages`}
                 style={{
                   display: 'inline-block',
-                  backgroundColor: '#2563eb',
+                  backgroundColor: '#c17f3e',
                   color: '#ffffff',
-                  padding: '12px 20px',
-                  borderRadius: '6px',
+                  padding: '14px 24px',
+                  borderRadius: '10px',
                   textDecoration: 'none',
-                  fontWeight: 'bold',
+                  fontWeight: '600',
+                  fontSize: '15px',
+                  fontFamily: "'DM Sans', sans-serif",
+                  border: '1px solid #a6682e',
+                  transition: 'all 0.12s ease',
                 }}
               >
                 {t('email.search_alerts.startConversation', 'Start a Conversation')}
@@ -139,6 +179,7 @@ const matchSamples = [
     description: {
       filters: {
         genders: ['female'],
+        education: ['doctorate'],
         orderBy: 'created_time',
       },
       location: null,

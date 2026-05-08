@@ -13,7 +13,7 @@ import {ANDROID_APP_URL} from 'common/constants'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
-import {button, container, content, Footer, imageContainer, main, paragraph} from 'email/utils'
+import { container, content, Footer, main} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -62,29 +62,82 @@ export const NewMessageEmail = ({
           {/*</Section>*/}
 
           <Section style={content}>
-            <Text style={paragraph}>{t('email.new_message.greeting', 'Hi {name},', {name})}</Text>
+            <div
+              style={{
+                textAlign: 'center',
+                marginBottom: '32px',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: '28px',
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: '500',
+                  color: '#1e1a14',
+                  marginBottom: '8px',
+                  letterSpacing: '-0.01em',
+                  lineHeight: '1.1',
+                }}
+              >
+                {t('email.new_message.greeting', 'Hi {name},', {name})}
+              </Text>
+            </div>
 
-            <Text style={paragraph}>
-              {t('email.new_message.message', '{creatorName} just messaged you!', {creatorName})}
-            </Text>
+            <div
+              style={{
+                backgroundColor: '#f7f4ef',
+                border: '1px solid #dee5b2',
+                borderRadius: '14px',
+                padding: '24px',
+                margin: '24px 0',
+                textAlign: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: '18px',
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: '500',
+                  color: '#1e1a14',
+                  marginBottom: '20px',
+                  letterSpacing: '0.01em',
+                  lineHeight: '1.3',
+                }}
+              >
+                {t('email.new_message.message', '{creatorName} just messaged you!', {creatorName})}
+              </Text>
 
-            <Section style={imageContainer}>
-              {/*<Link href={messagesUrl}>*/}
-              {/*  <Img*/}
-              {/*    src={userImgSrc}*/}
-              {/*    width="375"*/}
-              {/*    height="200"*/}
-              {/*    alt={`${creatorName}'s profile`}*/}
-              {/*    style={profileImage}*/}
-              {/*  />*/}
-              {/*</Link>*/}
-
-              <Button href={messagesUrl} style={button}>
+              <Button
+                href={messagesUrl}
+                style={{
+                  backgroundColor: '#c17f3e',
+                  borderRadius: '10px',
+                  color: '#ffffff',
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  textAlign: 'center' as const,
+                  display: 'inline-block',
+                  padding: '14px 32px',
+                  margin: '0',
+                  border: '1px solid #a6682e',
+                  transition: 'all 0.12s ease',
+                }}
+              >
                 {t('email.new_message.viewButton', 'View message')}
               </Button>
-            </Section>
+            </div>
 
-            <Text style={{...paragraph, fontSize: '12px', color: '#888', marginTop: '32px'}}>
+            <Text
+              style={{
+                fontSize: '13px',
+                lineHeight: '1.75',
+                color: '#8c8070',
+                marginTop: '32px',
+                textAlign: 'center',
+              }}
+            >
               {t(
                 'email.new_message.daily_limit',
                 "To avoid overloading your inbox, you'll receive at most one email per day per conversation. If {creatorName} sends more messages today, you won't be notified by email.",
@@ -94,7 +147,14 @@ export const NewMessageEmail = ({
                 'email.new_message.app_prompt',
                 'Want real-time notifications? Download the Compass app for Android:',
               )}{' '}
-              <Link href={ANDROID_APP_URL} style={{color: '#2563eb', textDecoration: 'none'}}>
+              <Link
+                href={ANDROID_APP_URL}
+                style={{
+                  color: '#c17f3e',
+                  textDecoration: 'none',
+                  fontWeight: '500',
+                }}
+              >
                 {t('email.new_message.app_link', 'Get the app')}
               </Link>
               {'.'}

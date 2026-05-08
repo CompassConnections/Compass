@@ -12,72 +12,138 @@ interface Props {
 export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
   const t = createT(locale)
   return (
-    <Section style={footer}>
-      <hr style={{border: 'none', borderTop: '1px solid #e0e0e0', margin: '10px 0'}} />
-      <Row>
-        <Column align="center">
-          <Link href={`${DEPLOYED_WEB_URL}/github`} target="_blank">
-            <Img
-              src={`${DEPLOYED_WEB_URL}/images/github-logo.png`}
-              width="24"
-              height="24"
-              alt="GitHub"
-              style={{display: 'inline-block', margin: '0 8px'}}
-            />
-          </Link>
-          <Link href={`${DEPLOYED_WEB_URL}/discord`} target="_blank">
-            <Img
-              src={`${DEPLOYED_WEB_URL}/images/discord-logo.png`}
-              width="24"
-              height="24"
-              alt="Discord"
-              style={{display: 'inline-block', margin: '0 8px'}}
-            />
-          </Link>
-          <Link href={`${DEPLOYED_WEB_URL}/x`} target="_blank">
-            <Img
-              src={`${DEPLOYED_WEB_URL}/images/x-logo.png`}
-              width="24"
-              height="24"
-              alt="X"
-              style={{display: 'inline-block', margin: '0 8px'}}
-            />
-          </Link>
-          <Link href={`${DEPLOYED_WEB_URL}/patreon`} target="_blank">
-            <Img
-              src={`${DEPLOYED_WEB_URL}/images/patreon-logo.png`}
-              width="24"
-              height="24"
-              alt="Patreon"
-              style={{display: 'inline-block', margin: '0 8px'}}
-            />
-          </Link>
-          <Link href={`${DEPLOYED_WEB_URL}/paypal`} target="_blank">
-            <Img
-              src={`${DEPLOYED_WEB_URL}/images/paypal-logo.png`}
-              width="24"
-              height="24"
-              alt="PayPal"
-              style={{display: 'inline-block', margin: '0 8px'}}
-            />
-          </Link>
-        </Column>
-      </Row>
+    <Section
+      style={{
+        margin: '32px 0 20px 0',
+        textAlign: 'center' as const,
+        padding: '20px 0 0 0',
+      }}
+    >
+      <div
+        style={{
+          borderTop: '1px solid #dee5b2',
+          paddingTop: '24px',
+          marginBottom: '20px',
+        }}
+      >
+        <Row>
+          <Column align="center">
+            <Link href={`${DEPLOYED_WEB_URL}/github`} target="_blank">
+              <Img
+                src={`${DEPLOYED_WEB_URL}/images/github-logo.png`}
+                width="24"
+                height="24"
+                alt="GitHub"
+                style={{
+                  display: 'inline-block',
+                  margin: '0 6px',
+                  opacity: '0.7',
+                  transition: 'opacity 0.12s ease',
+                }}
+              />
+            </Link>
+            <Link href={`${DEPLOYED_WEB_URL}/discord`} target="_blank">
+              <Img
+                src={`${DEPLOYED_WEB_URL}/images/discord-logo.png`}
+                width="24"
+                height="24"
+                alt="Discord"
+                style={{
+                  display: 'inline-block',
+                  margin: '0 6px',
+                  opacity: '0.7',
+                  transition: 'opacity 0.12s ease',
+                }}
+              />
+            </Link>
+            <Link href={`${DEPLOYED_WEB_URL}/x`} target="_blank">
+              <Img
+                src={`${DEPLOYED_WEB_URL}/images/x-logo.png`}
+                width="24"
+                height="24"
+                alt="X"
+                style={{
+                  display: 'inline-block',
+                  margin: '0 6px',
+                  opacity: '0.7',
+                  transition: 'opacity 0.12s ease',
+                }}
+              />
+            </Link>
+            <Link href={`${DEPLOYED_WEB_URL}/patreon`} target="_blank">
+              <Img
+                src={`${DEPLOYED_WEB_URL}/images/patreon-logo.png`}
+                width="24"
+                height="24"
+                alt="Patreon"
+                style={{
+                  display: 'inline-block',
+                  margin: '0 6px',
+                  opacity: '0.7',
+                  transition: 'opacity 0.12s ease',
+                }}
+              />
+            </Link>
+            <Link href={`${DEPLOYED_WEB_URL}/paypal`} target="_blank">
+              <Img
+                src={`${DEPLOYED_WEB_URL}/images/paypal-logo.png`}
+                width="24"
+                height="24"
+                alt="PayPal"
+                style={{
+                  display: 'inline-block',
+                  margin: '0 6px',
+                  opacity: '0.7',
+                  transition: 'opacity 0.12s ease',
+                }}
+              />
+            </Link>
+          </Column>
+        </Row>
 
-      <Row>
-        <Text style={{fontSize: '12px', color: '#888', marginTop: '12px'}}>
-          © {new Date().getFullYear()} Compass
-        </Text>
+        <Row>
+          <Column align="center">
+            <Text
+              style={{
+                fontSize: '12px',
+                color: '#beaea2',
+                marginTop: '20px',
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: '400',
+              }}
+            >
+              © {new Date().getFullYear()} Compass
+            </Text>
 
-        <Text style={{fontSize: '10px', color: '#888', marginTop: '12px'}}>
-          {t(
-            'email.footer.sent_to',
-            'The email was sent to {email}. To no longer receive these emails, unsubscribe',
-            {email},
-          )}{' '}
-          <Link href={unsubscribeUrl}>{t('email.footer.unsubscribe_link', 'here')}</Link>.
-        </Text>
-      </Row>
+            <Text
+              style={{
+                fontSize: '11px',
+                color: '#beaea2',
+                marginTop: '8px',
+                lineHeight: '1.6',
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              {t(
+                'email.footer.sent_to',
+                'The email was sent to {email}. To no longer receive these emails, unsubscribe',
+                {email},
+              )}{' '}
+              <Link
+                href={unsubscribeUrl}
+                style={{
+                  color: '#c17f3e',
+                  textDecoration: 'none',
+                  fontWeight: '500',
+                }}
+              >
+                {t('email.footer.unsubscribe_link', 'here')}
+              </Link>
+              .
+            </Text>
+          </Column>
+        </Row>
+      </div>
     </Section>
   )
 }

@@ -1043,13 +1043,35 @@ function LastOnline(props: {lastOnlineTime?: string}) {
   const {lastOnlineTime} = props
   if (!lastOnlineTime) return null
   return (
-    <AboutRow
-      icon={<ClockIcon className="h-5 w-5" />}
-      text={t('profile.last_online', 'Active {time}', {
-        time: fromNow(lastOnlineTime, true, t, locale),
-      })}
-      testId="profile-about-last-online"
-    />
+    <>
+      <Row className="items-start gap-2.5" data-testid="profile-about-last-online">
+        <div
+          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
+          style={{width: '32px', height: '32px', marginTop: '1px'}}
+        >
+          <ClockIcon className="h-5 w-5" />
+        </div>
+        <Col className={'w-full'}>
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '500',
+              color: 'rgb(var(--color-ink-300))',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+              marginBottom: '1px',
+            }}
+          >
+            {t('profile.activity', 'Activity')}
+          </div>
+          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>
+            {t('profile.last_online', 'Active {time}', {
+              time: fromNow(lastOnlineTime, true, t, locale),
+            })}
+          </div>
+        </Col>
+      </Row>
+    </>
   )
 }
 

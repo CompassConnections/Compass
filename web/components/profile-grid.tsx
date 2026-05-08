@@ -371,7 +371,7 @@ function ProfilePreview(props: {
             >
               <h3
                 className={clsx(
-                  'text-lg font-medium text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
+                  'text-lg text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
                   isLoading && 'opacity-50',
                 )}
               >

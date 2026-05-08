@@ -31,6 +31,8 @@ shifted to a more general audience).
 donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help
 our community thrive!
 
+_Click the image below to watch a live demo:_
+
 [![Demo](https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/demo.png)](https://youtu.be/KxMK0tkhrts)
 
 ## To Do

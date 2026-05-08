@@ -27,6 +27,8 @@ module.exports = {
         'major-mono': ['var(--font-logo)', 'monospace'],
         figtree: ['icomoon', 'var(--font-main)', 'emoji', 'sans-serif'],
         'grenze-gotisch': ['var(--font-match-cards)', 'cursive'], // just for match card game
+        cormorant: ['Cormorant Garamond', 'serif'],
+        'dm-sans': ['DM Sans', 'sans-serif'],
       },
     ),
     extend: {

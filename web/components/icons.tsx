@@ -1,12 +1,17 @@
 import {ReactNode} from 'react'
 import {Row} from 'web/components/layout/row'
 
-export function IconWithInfo(props: {text: string; icon: ReactNode}) {
-  const {text, icon} = props
+export function IconWithInfo(props: {text?: string; icon: ReactNode; children?: ReactNode}) {
+  const {text, icon, children} = props
   return (
-    <Row className="items-start gap-1">
-      <div className="text-ink-500 mt-1">{icon}</div>
-      {text}
+    <Row className="items-center gap-1" style={{gap: '5px'}}>
+      <div className="mt-0.5" style={{width: '14px', height: '14px'}}>
+        {icon}
+      </div>
+      <span style={{fontSize: '13.5px'}}>
+        {text}
+        {children}
+      </span>
     </Row>
   )
 }

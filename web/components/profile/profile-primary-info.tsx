@@ -17,26 +17,36 @@ export default function ProfilePrimaryInfo(props: {profile: Profile; short?: boo
   const t = useT()
   const {measurementSystem} = useMeasurementSystem()
   return (
-    <Row className="text-ink-700 gap-4 text-sm" data-testid="profile-gender-location-height-inches">
+    <Row
+      className="text-ink-500 gap-4 flex-wrap"
+      data-testid="profile-gender-location-height-inches"
+      style={{fontSize: '13.5px', gap: '6px 18px'}}
+    >
       <ProfileLocation profile={profile} />
-      {!short && profile.gender && (
+      {profile.age && (
         <IconWithInfo
-          text={capitalize(
-            t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender)),
-          )}
-          icon={<GenderIcon gender={profile.gender as Gender} className="h-4 w-4 " />}
+          text={t('profile.header.age', '{age} years old', {age: profile.age})}
+          icon={<Calendar className="text-ink-300" style={{width: '14px', height: '14px'}} />}
         />
       )}
       {!short && profile.height_in_inches != null && (
         <IconWithInfo
           text={formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem)}
-          icon={<MdHeight className="h-4 w-4 " />}
+          icon={<MdHeight className="text-ink-300" style={{width: '14px', height: '14px'}} />}
         />
       )}
-      {profile.age && (
+      {!short && profile.gender && (
         <IconWithInfo
-          text={t('profile.header.age', '{age} years old', {age: profile.age})}
-          icon={<Calendar className="h-4 w-4 " />}
+          text={capitalize(
+            t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender)),
+          )}
+          icon={
+            <GenderIcon
+              gender={profile.gender as Gender}
+              className="text-ink-300"
+              // style={{width: '14px', height: '14px'}}
+            />
+          }
         />
       )}
     </Row>

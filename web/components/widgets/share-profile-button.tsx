@@ -25,12 +25,17 @@ export const ShareProfileButton = (props: {
 
   return (
     <CopyLinkOrShareButton
-      className={className}
+      className={clsx(
+        className,
+        'border-canvas-300 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm text-ink-500 transition-colors hover:border-primary-400 hover:bg-primary-50',
+      )}
       url={shareUrl}
       eventTrackingName="shareprofile"
       color={color}
+      size="sm"
+      iconClassName={'hidden sm:inline'}
     >
-      <div className="ml-2 text-sm">{t('button.share.label', 'Copy profile link')}</div>
+      <div className="text-sm">{t('button.share.label', 'Copy Link')}</div>
     </CopyLinkOrShareButton>
   )
 }

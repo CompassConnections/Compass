@@ -42,7 +42,7 @@ export function AnswerCompatibilityQuestionButton(props: {
           onClick={() => setOpen(true)}
           color="none"
           className={
-            'px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 hover:text-ink-900'
+            'px-3 py-2 rounded-md border border-primary-600 text-primary-800 hover:bg-primary-50'
           }
         >
           {t('answers.answer.cta', 'Answer{core} Questions', {
@@ -78,7 +78,7 @@ export function CompatibilityPageButton() {
   return (
     <Link
       href="/compatibility"
-      className="px-3 py-2 rounded-md border border-primary-600 text-ink-700 hover:bg-primary-50 flex items-center justify-center text-center"
+      className="px-3 py-2 rounded-md border border-primary-600 text-primary-800 hover:bg-primary-50 flex items-center justify-center text-center text-sm"
     >
       {t('answers.answer.view_list', 'View List of Questions')}
     </Link>

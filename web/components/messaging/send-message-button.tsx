@@ -142,7 +142,7 @@ export const SendMessageButton = (props: {
         {text ? (
           <Button
             className={clsx('h-fit gap-1', disabled && 'opacity-50 cursor-not-allowed')}
-            color={'gray-outline'}
+            color={'primary'}
             onClick={messageButtonClicked}
             disabled={disabled}
           >
@@ -162,19 +162,17 @@ export const SendMessageButton = (props: {
             />
           </button>
         ) : (
-          <Button
-            size={'sm'}
+          <button
             onClick={messageButtonClicked}
-            color={'none'}
+            disabled={disabled}
             className={clsx(
-              'bg-canvas-200 hover:bg-canvas-300',
+              'border-canvas-300 flex items-center gap-1.5 rounded-lg border px-2 py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50',
               disabled && 'opacity-50 cursor-not-allowed',
             )}
-            disabled={disabled}
           >
             <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
             {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
-          </Button>
+          </button>
         )}
       </Tooltip>
 

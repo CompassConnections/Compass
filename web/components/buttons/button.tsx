@@ -21,6 +21,7 @@ export type ColorType =
   | 'yellow-outline'
   | 'gold'
   | 'none'
+  | 'primary'
 
 const sizeClasses = {
   '2xs': 'px-2 py-1 text-xs',
@@ -65,6 +66,8 @@ export function buttonClass(size: SizeType, color: ColorType) {
       gradient,
       'enabled:!bg-gradient-to-br from-yellow-400 via-yellow-100 to-yellow-300 dark:from-yellow-600 dark:via-yellow-200 dark:to-yellow-400 !text-gray-900',
     ],
+    color === 'primary' &&
+      'w-fit border-canvas-300 text-primary-700 bg-canvas-200 hover:bg-canvas-300 mb-4 !rounded-full border px-4 py-2 text-sm transition-colors',
   )
 }
 

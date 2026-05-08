@@ -1,7 +1,6 @@
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {useState} from 'react'
-import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
 import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
@@ -75,9 +74,25 @@ export const ViewProfileCardButton = (props: {
   const username = user.username
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={'bg-canvas-50 '}>
-        {t('share_profile.view_profile_card', 'View Profile Card')}
-      </Button>
+      <button
+        onClick={() => setOpen(true)}
+        className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm text-ink-500 transition-colors hover:border-primary-400 hover:bg-primary-50"
+        style={{
+          fontSize: '13.5px',
+        }}
+      >
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="h-3.5 w-3.5 hidden sm:block"
+        >
+          <rect x="2.5" y="5" width="15" height="11" rx="2" />
+          <path d="M2.5 9h15" />
+        </svg>
+        {t('share_profile.view_profile_card', 'Profile Card')}
+      </button>
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
         <Col className="gap-4 bg-canvas-100/75 rounded-2xl justify-center">
           <ProfileCardViewer user={user} profile={profile} width={width} height={height} />

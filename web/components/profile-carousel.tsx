@@ -65,7 +65,7 @@ export default function ProfileCarousel(props: {profile: Profile; refreshProfile
                   src={url}
                   height={300}
                   width={300}
-                  className="h-full w-full cursor-pointer rounded object-cover"
+                  className="h-full w-full cursor-pointer rounded-xl object-cover"
                   autoPlay
                   muted
                   loop
@@ -83,7 +83,7 @@ export default function ProfileCarousel(props: {profile: Profile; refreshProfile
                   width={300}
                   sizes="(max-width: 640px) 100vw, 300px"
                   alt=""
-                  className="h-full cursor-pointer rounded object-cover"
+                  className="h-full cursor-pointer rounded-xl object-cover"
                   onClick={() => {
                     setLightboxUrl(url)
                     setLightboxOpen(true)
@@ -91,9 +91,11 @@ export default function ProfileCarousel(props: {profile: Profile; refreshProfile
                 />
               )}
             </div>
-            <p className="mt-2 px-4 py-1 text-sm w-[300px] whitespace-pre-wrap">
-              {(profile.image_descriptions as Record<string, string>)?.[url]}
-            </p>
+            {(profile.image_descriptions as Record<string, string>)?.[url] && (
+              <p className="mt-2 px-4 py-1 text-sm w-[300px] whitespace-pre-wrap">
+                {(profile.image_descriptions as Record<string, string>)?.[url]}
+              </p>
+            )}
           </Col>
         ))}
       </Carousel>

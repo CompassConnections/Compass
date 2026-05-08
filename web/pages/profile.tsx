@@ -111,7 +111,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         url={`/profile`}
       />
       <Col className="items-center">
-        <BackButton className="-ml-2 mb-2 self-start" />
+        <BackButton className="ml-2 mb-2 self-start" />
         <Col className={'w-full px-6 py-4'}>
           <RequiredProfileUserForm
             data={baseUser}

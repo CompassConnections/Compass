@@ -8,7 +8,6 @@ import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useT} from 'web/lib/locale'
 
-import {Subtitle} from '../widgets/profile-subtitle'
 import {BioBlock} from './profile-bio-block'
 
 export default function TooShortBio() {
@@ -39,7 +38,6 @@ export function ProfileBio(props: {
   const [edit, setEdit] = useState(false)
   const editor = useTextEditor({defaultValue: ''})
   const [textLength, setTextLength] = useState(MAX_INT)
-  const t = useT()
 
   useEffect(() => {
     if (!editor) return
@@ -53,7 +51,6 @@ export function ProfileBio(props: {
   return (
     <Col>
       {textLength < MIN_BIO_LENGTH && !edit && isCurrentUser && <TooShortBio />}
-      <Subtitle className="mb-4">{t('profile.bio.about_me', 'About Me')}</Subtitle>
       <BioBlock
         isCurrentUser={isCurrentUser}
         profile={profile}

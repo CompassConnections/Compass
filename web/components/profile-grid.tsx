@@ -334,6 +334,7 @@ function ProfilePreview(props: {
           'hover:before:opacity-100',
           'hover:bg-canvas-100',
           'relative z-10 cursor-pointer group block rounded-lg overflow-hidden bg-transparent h-full border border-canvas-300',
+          'text-ink-600',
           // hover,
         )}
       >
@@ -405,7 +406,12 @@ function ProfilePreview(props: {
                     ?.slice(0, 10)
                     ?.map(capitalizePure)
                     ?.map((tag, i) => (
-                      <span key={i} className={'bg-canvas-200 text-sm px-3 py-2 rounded-full'}>
+                      <span
+                        key={i}
+                        className={
+                          'bg-canvas-200 text-primary-700 text-sm px-3 p-1 rounded-full border border-canvas-300'
+                        }
+                      >
                         {tag.trim()}
                       </span>
                     ))}

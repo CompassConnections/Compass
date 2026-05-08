@@ -9,7 +9,15 @@ export default function SiteLogo(props: {noLink?: boolean; className?: string}) 
   const inner = (
     <>
       <FavIconBlack className={className?.includes('invert') ? '' : 'dark:invert'} />
-      <div className={clsx('my-auto text-xl font-thin logo')}>
+      <div
+        className={clsx('my-auto logo')}
+        style={{
+          fontFamily: 'Cormorant Garamond',
+          fontSize: '22px',
+          fontWeight: 500,
+          letterSpacing: '0.03em',
+        }}
+      >
         {IS_PROD ? 'Compass' : 'Compass dev'}
       </div>
     </>

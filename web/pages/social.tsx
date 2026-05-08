@@ -72,7 +72,7 @@ function SectionCard({icon, title, description, links}: SectionCardProps) {
       </div>
 
       {/* Title & description */}
-      <h2 className="text-base font-bold text-ink-900 mb-1.5">{title}</h2>
+      <h2 className="font-bold text-ink-900 mb-1.5">{title}</h2>
       <p className="text-sm text-ink-500 leading-relaxed mb-5">{description}</p>
 
       {/* Links */}

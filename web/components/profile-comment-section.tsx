@@ -12,8 +12,6 @@ import {useLiveCommentsOnProfile} from 'web/hooks/use-comments-on-profile'
 import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
-import {Subtitle} from './widgets/profile-subtitle'
-
 export const ProfileCommentSection = (props: {
   onUser: User
   profile: Profile
@@ -26,14 +24,14 @@ export const ProfileCommentSection = (props: {
   const parentComments = comments.filter((c) => !c.replyToCommentId)
   const commentsByParent = groupBy(comments, (c) => c.replyToCommentId ?? '_')
   const [profile, setProfile] = useState<Profile>(props.profile)
+  const [showCommentInput, setShowCommentInput] = useState(false)
   const isCurrentUser = currentUser?.id === onUser.id
 
   if (!currentUser && (!profile.comments_enabled || parentComments.length == 0)) return null
 
   return (
     <Col className={'rounded'}>
-      <Row className={'mb-4 justify-between'}>
-        <Subtitle>{t('profile.comments.section_title', 'Endorsements')}</Subtitle>
+      <Row className={'justify-between'}>
         {isCurrentUser && !simpleView && (
           <Tooltip
             text={(profile.comments_enabled ? 'Disable' : 'Enable') + ' endorsements from others'}
@@ -61,7 +59,7 @@ export const ProfileCommentSection = (props: {
         <>
           {currentUser && profile.comments_enabled && (
             <>
-              <div className="mb-4">
+              <div className="mb-4 text-ink-600">
                 {isCurrentUser ? (
                   <>
                     {t(
@@ -79,11 +77,30 @@ export const ProfileCommentSection = (props: {
                 )}
               </div>
               {!isCurrentUser && (
-                <ProfileCommentInput
-                  className="mb-4 mr-px mt-px"
-                  onUserId={onUser.id}
-                  trackingLocation={'contract page'}
-                />
+                <>
+                  {!showCommentInput ? (
+                    <button
+                      onClick={() => setShowCommentInput(true)}
+                      className="w-fit border-canvas-300 text-primary-700 bg-canvas-200 hover:bg-canvas-300 mb-4 rounded-full border px-4 py-2 text-sm transition-colors"
+                      style={{
+                        padding: '6px 16px',
+                        borderRadius: '100px',
+                        fontSize: '13px',
+                        fontWeight: '400',
+                        letterSpacing: '0.01em',
+                        borderWidth: '1px',
+                      }}
+                    >
+                      {t('profile.comments.write_button', 'Write public endorsement')}
+                    </button>
+                  ) : (
+                    <ProfileCommentInput
+                      className="mb-4 mr-px mt-px"
+                      onUserId={onUser.id}
+                      trackingLocation={'contract page'}
+                    />
+                  )}
+                </>
               )}
             </>
           )}

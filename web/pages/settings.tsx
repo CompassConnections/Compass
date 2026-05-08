@@ -265,7 +265,7 @@ const DataPrivacySettings = () => {
       >
         {isDownloading
           ? t('settings.data_privacy.downloading', 'Downloading...')
-          : t('settings.data_privacy.download', 'Download all my data (JSON)')}
+          : t('settings.data_privacy.download', 'Download all my data')}
       </Button>
     </div>
   )

@@ -139,7 +139,7 @@ export default function SignupPage() {
               onSubmit={async () => advanceToStep(1)}
             />
           ) : step === 1 ? (
-            <Col className={'w-full px-2 sm:px-6 py-4 mb-2'}>
+            <Col className={'w-full px-2 sm:px-6 py-4 mb-2 '}>
               <OptionalProfileUserForm
                 profile={profileForm}
                 setProfile={setProfileState}

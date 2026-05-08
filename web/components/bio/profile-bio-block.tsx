@@ -27,7 +27,7 @@ export function BioBlock(props: {
     <Col
       className={clsx(
         'flex-grow whitespace-pre-line rounded-md leading-relaxed',
-        !edit && 'px-3 py-2',
+        !edit && 'px-0 py-2',
       )}
     >
       <Row className="w-full">
@@ -51,6 +51,7 @@ export function BioBlock(props: {
             text={t('more_options_user.edit_bio', 'Bio options')}
             noTap
             testId="profile-bio-options"
+            className={'h-fit'}
           >
             <DropdownMenu
               items={[

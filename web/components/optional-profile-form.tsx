@@ -311,7 +311,7 @@ export const OptionalProfileUserForm = (props: {
 
   return (
     <>
-      <Col className={'gap-8'}>
+      <Col className={'gap-8 max-w-3xl'}>
         <p className={'guidance'}>
           {t(
             'profile.optional.subtitle',

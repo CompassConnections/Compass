@@ -41,7 +41,7 @@ export function CopyLinkOrShareButton(props: {
   return (
     <ToolTipOrDiv
       hasChildren={!!children}
-      text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')}
+      text={tooltip ?? t('copy_link_button.copy_link', 'Copy Link')}
       noTap
       placement="bottom"
     >
@@ -49,7 +49,7 @@ export function CopyLinkOrShareButton(props: {
         onClick={onClick}
         className={clsx(
           className,
-          'text-primary-700 hover:text-primary-800 gap-2',
+          'text-ink-500 hover:text-primary-800 gap-2',
           isSuccess && 'duration-[25ms]',
         )}
         disabled={!url}
@@ -59,13 +59,13 @@ export function CopyLinkOrShareButton(props: {
         {isSuccess ? (
           <CheckIcon
             strokeWidth={'3'}
-            className={clsx(iconClassName ?? 'h-[1.1rem]')}
+            className={clsx(iconClassName, 'h-[1.1rem]')}
             aria-hidden="true"
           />
         ) : (
           <LinkIcon
             strokeWidth={'2.5'}
-            className={clsx(iconClassName ?? 'h-[1.1rem]')}
+            className={clsx(iconClassName, 'h-[1.1rem]')}
             aria-hidden="true"
           />
         )}
@@ -157,7 +157,7 @@ export function SimpleCopyTextButton(props: {
   return (
     <IconButton onClick={onClick} className={className} disabled={!text}>
       <Tooltip
-        text={tooltip ?? t('copy_link_button.copy_link', 'Copy link')}
+        text={tooltip ?? t('copy_link_button.copy_link', 'Copy Link')}
         noTap
         placement="bottom"
       >

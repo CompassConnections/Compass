@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
-import {Subtitle} from 'web/components/widgets/profile-subtitle'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
@@ -83,10 +82,8 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   if (isCurrentUser || !currentUser) return null
 
   return (
-    <Col className="w-full gap-6 rounded-xl shadow-sm">
-      <div className="border-y border-canvas-200 p-2 pb-8">
-        <Subtitle className="mb-4">{t('profile.connect.title', 'Connect')}</Subtitle>
-
+    <Col className="w-full gap-6 rounded-xl">
+      <div className="py-2">
         {/* Primary Action */}
         <div className="mb-6">
           {profile.allow_direct_messaging || matches.length > 0 ? (
@@ -109,9 +106,9 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
 
         {/* Interest Section */}
         <div className="prose prose-neutral dark:prose-invert">
-          <div className="text-ink-700 font-medium text-lg">
+          <h2 className="font-medium text-xl">
             {t('profile.connect.private_connection_signal', 'Private connection signal')}
-          </div>
+          </h2>
 
           {profile.allow_interest_indicating ? (
             <>

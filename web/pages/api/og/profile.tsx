@@ -10,156 +10,303 @@ export const config = {runtime: 'edge'}
 const COMPASS_LOGO =
   'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/misc%2Fcompass-512.png?alt=media&token=d2fa566f-f443-4a94-90be-e50403f1805a'
 
-export const getCardOptions = async () => ({
-  width: 1200,
-  height: 630,
-})
+export const getCardOptions = async () => ({width: 1200, height: 630})
 
-// Edge-safe capitalize
 function capitalize(str: string) {
   if (!str) return ''
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
+// Palette
+const C = {
+  ink900: '#1E1A14',
+  ink600: '#786C5C',
+  ink500: '#8C8070',
+  ink300: '#BEB2A2',
+  canvas50: '#F7F4EF',
+  canvas100: '#EDE8E0',
+  canvas200: '#E8D5BC',
+  canvas300: '#DECBB2',
+  canvas950: '#2C2416',
+  primary50: '#FAF3E9',
+  primary100: '#F3E4CE',
+  primary200: '#E8C99D',
+  primary300: '#DCAB71',
+  primary400: '#D09352',
+  primary500: '#C17F3E',
+  primary600: '#A6682E',
+  primary700: '#855022',
+  primary800: '#653A18',
+}
+
 function OgProfile(props: ogProps) {
-  console.log(props)
   const {avatarUrl, name, city, country, age, interests, keywords} = props
   let headline = props.headline
 
-  const _interestsList =
-    typeof interests === 'string' ? (interests ? interests.split(',') : []) : (interests ?? [])
   const keywordsList =
     typeof keywords === 'string' ? (keywords ? keywords.split(',') : []) : (keywords ?? [])
-  const allTags = [...keywordsList].filter(Boolean).slice(0, 8)
+  const interestsList =
+    typeof interests === 'string' ? (interests ? interests.split(',') : []) : (interests ?? [])
+  const allTags = [...keywordsList, ...interestsList].filter(Boolean).slice(0, 6)
 
-  const maxChars = 220
+  const maxChars = 250
   if (headline && headline.length > maxChars) {
-    headline = headline.slice(0, maxChars) + '...'
+    headline = headline.slice(0, maxChars) + '…'
   }
 
-  const totalChars = (headline?.length || 0) + (allTags?.join(' ')?.length || 0) + name.length * 3
+  const hasLongContent = (headline?.length || 0) > 80 || allTags.length > 4
+  const imgSize = 300
 
-  const isLargerPicLayout = totalChars < maxChars
-
-  const imgSize = isLargerPicLayout ? 400 : 250
   return (
     <div
       style={{
         width: '1200px',
         height: '630px',
         display: 'flex',
-        flexDirection: 'column',
-        padding: '50px',
-        fontFamily: 'sans-serif',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: C.canvas100,
+        fontFamily: 'Georgia, serif',
+        position: 'relative',
       }}
     >
-      <div style={{display: 'flex', flex: isLargerPicLayout ? 1 : 3}}>
-        {/* Left Column: Text */}
+      {/* Left dark panel */}
+      <div
+        style={{
+          width: '340px',
+          height: '630px',
+          backgroundColor: C.canvas950,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '20px',
+          flexShrink: 0,
+          position: 'relative',
+        }}
+      >
+        {/* Amber ring behind avatar */}
         <div
           style={{
-            flex: isLargerPicLayout ? 1 : 3,
+            width: `${imgSize + 10}px`,
+            height: `${imgSize + 10}px`,
+            borderRadius: '50%',
+            backgroundColor: C.primary700,
             display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{display: 'flex', fontSize: '64px', fontWeight: 'bold'}}>
-            {name}
-            {age && `, ${age}`}
-          </div>
-          {city && (
-            <div
-              style={{
-                display: 'flex',
-                fontSize: '28px',
-                marginBottom: '20px',
-                marginTop: '20px',
-                opacity: 0.85,
-              }}
-            >
-              {city}
-              {country && `, ${country}`}
-            </div>
-          )}
-          {/*<div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start'}}>*/}
-          {/*  <img src={'https://www.compassmeet.com/favicon-black.svg'} width={100} height={100} />*/}
-          {/*</div>*/}
-          {allTags && (
-            <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-              {allTags?.map(capitalize).map((tag, i) => (
-                <span
-                  key={i}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: '#ddd',
-                    borderRadius: '20px',
-                    fontSize: '24px',
-                  }}
-                >
-                  {tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
-          {isLargerPicLayout && (
-            <div style={{display: 'flex'}}>
-              {headline && (
-                <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Avatar */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
             alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <img
             src={avatarUrl || COMPASS_LOGO}
             width={imgSize}
             height={imgSize}
-            style={{borderRadius: 50, objectFit: 'cover'}}
+            style={{borderRadius: '50%', objectFit: 'cover', display: 'flex'}}
             alt="Avatar"
           />
-          {isLargerPicLayout && (
-            <div
-              style={{
-                display: 'flex',
-                fontSize: '48px',
-                fontWeight: 'semibold',
-                fontFamily: 'Georgia',
-                marginTop: '20px',
-                fontStyle: 'italic',
-              }}
-            >
-              compassmeet.com
-            </div>
-          )}
         </div>
-      </div>
 
-      {!isLargerPicLayout && (
+        {/* Compass URL */}
         <div
           style={{
-            flex: 2,
             display: 'flex',
-            flexDirection: 'column',
-            marginBottom: '40px',
+            alignItems: 'center',
+            gap: '8px',
+            marginTop: '8px',
           }}
         >
-          {headline && (
-            <div style={{display: 'flex', fontSize: '36px', marginTop: '40px'}}>{headline}</div>
+          <div
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: C.primary400,
+              display: 'flex',
+            }}
+          />
+          <span
+            style={{
+              fontFamily: 'Georgia, serif',
+              fontStyle: 'italic',
+              fontSize: '22px',
+              color: C.primary300,
+              display: 'flex',
+            }}
+          >
+            compassmeet.com
+          </span>
+          <div
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: C.primary400,
+              display: 'flex',
+            }}
+          />
+        </div>
+
+        {/* Subtle bottom accent line */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '0',
+            left: '0',
+            right: '0',
+            height: '4px',
+            backgroundColor: C.primary500,
+            display: 'flex',
+          }}
+        />
+      </div>
+
+      {/* Right content area */}
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '52px 56px',
+          gap: '0px',
+          position: 'relative',
+        }}
+      >
+        {/* Top accent line */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            height: '4px',
+            backgroundColor: C.primary500,
+            display: 'flex',
+          }}
+        />
+
+        {/* Name + age */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '16px',
+            marginBottom: '10px',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Georgia, serif',
+              fontSize: hasLongContent ? '70px' : '80px',
+              fontWeight: 'bold',
+              color: C.ink900,
+              lineHeight: 1.05,
+              display: 'flex',
+            }}
+          >
+            {name}
+          </span>
+          {age && (
+            <span
+              style={{
+                fontSize: hasLongContent ? '38px' : '44px',
+                color: C.ink500,
+                fontFamily: 'Georgia, serif',
+                display: 'flex',
+              }}
+            >
+              {age}
+            </span>
           )}
         </div>
-      )}
+
+        {/* Location */}
+        {(city || country) && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '24px',
+            }}
+          >
+            <div
+              style={{
+                width: '5px',
+                height: '5px',
+                borderRadius: '50%',
+                backgroundColor: C.primary400,
+                display: 'flex',
+                flexShrink: 0,
+                marginTop: '2px',
+              }}
+            />
+            <span
+              style={{
+                fontSize: '26px',
+                color: C.ink500,
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                display: 'flex',
+              }}
+            >
+              {[city, country].filter(Boolean).join(', ')}
+            </span>
+          </div>
+        )}
+
+        {/* Tags */}
+        {allTags.length > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              gap: '10px',
+              flexWrap: 'wrap',
+              marginBottom: '24px',
+            }}
+          >
+            {allTags.map(capitalize).map((tag, i) => (
+              <span
+                key={i}
+                style={{
+                  padding: '6px 18px',
+                  backgroundColor: C.canvas200,
+                  color: C.primary700,
+                  borderRadius: '100px',
+                  fontSize: '22px',
+                  fontFamily: 'Georgia, serif',
+                  display: 'flex',
+                }}
+              >
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Headline */}
+        {headline && (
+          <div
+            style={{
+              display: 'flex',
+              borderLeft: `3px solid ${C.primary300}`,
+              paddingLeft: '20px',
+              marginTop: '4px',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '28px',
+                color: C.ink600,
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                lineHeight: 1.5,
+                display: 'flex',
+              }}
+            >
+              {headline}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -169,7 +316,6 @@ export default async function handler(req: NextRequest) {
     const {searchParams} = new URL(req.url)
     const options = await getCardOptions()
 
-    // Clean search params by removing 'amp;' prefixes that occur due to URL encoding
     const cleanedEntries = Array.from(searchParams.entries()).map(([key, value]) => [
       key.replace(/^amp;/, ''),
       value,

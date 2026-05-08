@@ -58,3 +58,9 @@ export function getLocationText(
 
   return `${city}${stateOrCountry && ', '}${stateOrCountry}`
 }
+
+export function getGoogleMapsUrl(locationText: string) {
+  let text = locationText.split(', ').join('+')
+  text = text.replace(' ', '+')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(text)}`
+}

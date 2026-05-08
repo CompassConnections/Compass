@@ -41,15 +41,18 @@ export function UserHandles(props: {links: Socials; className?: string}) {
 
   return (
     <Row
-      className={clsx('text-ink-400 flex-wrap items-center gap-2 sm:gap-x-4', className)}
+      className={clsx('flex-wrap items-center gap-2', className)}
       data-testid="profile-social-media-accounts"
     >
       {display.map(({platform, label, url}) => (
-        <a key={platform} target="_blank" href={url}>
-          <Row className="items-center gap-1">
-            <SocialIcon site={platform as any} className="text-primary-900 h-4 w-4" />
-            <span className="text-primary-700 text-sm hover:text-primary-500">{label}</span>
-          </Row>
+        <a
+          key={platform}
+          target="_blank"
+          href={url}
+          className="border-canvas-300 bg-canvas-0 flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[12.5px] text-ink-500 transition-colors hover:border-primary-300 hover:text-primary-600"
+        >
+          <SocialIcon site={platform as any} className="text-ink-500 h-[16px] w-[16px]" />
+          <span>{label}</span>
         </a>
       ))}
     </Row>

@@ -44,7 +44,7 @@ export function MoreOptionsUserButton(props: {user: User}) {
       <Tooltip text={t('more_options_user.more_options', 'More Options')} noTap>
         <Button
           color={'gray-white'}
-          className="rounded-none px-6"
+          className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-[8px] py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50"
           onClick={() => setIsModalOpen(true)}
         >
           <EllipsisHorizontalIcon className={clsx('h-5 w-5 flex-shrink-0')} aria-hidden="true" />

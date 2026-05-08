@@ -17,7 +17,7 @@ export function BackButton(props: {className?: string}) {
     <button
       type="button"
       className={clsx(
-        'text-ink-500 hover:text-ink-900 inline-flex items-center gap-2 text-sm',
+        'text-ink-500 hover:text-primary-700 inline-flex items-center gap-2 text-sm transition-all',
         className,
       )}
     >

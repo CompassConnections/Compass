@@ -267,9 +267,9 @@ function Filters(props: {
         selection={
           <RelationshipFilterText
             relationship={filters.pref_relation_styles as RelationshipType[]}
-            highlightedClass={
-              hasAny(filters.pref_relation_styles) ? 'text-primary-600' : 'text-ink-900'
-            }
+            // highlightedClass={
+            //   hasAny(filters.pref_relation_styles) ? 'text-primary-600' : 'text-ink-900'
+            // }
           />
         }
       >
@@ -287,7 +287,7 @@ function Filters(props: {
             location={locationFilterProps.location}
             radius={locationFilterProps.radius}
             youProfile={youProfile}
-            highlightedClass={!locationFilterProps.location ? 'text-ink-900' : 'text-primary-600'}
+            // highlightedClass={!locationFilterProps.location ? 'text-ink-900' : 'text-primary-600'}
           />
         }
       >
@@ -305,7 +305,7 @@ function Filters(props: {
           <AgeFilterText
             pref_age_min={filters.pref_age_min}
             pref_age_max={filters.pref_age_max}
-            highlightedClass={noMinAge && noMaxAge ? 'text-ink-900' : 'text-primary-600'}
+            // highlightedClass={noMinAge && noMaxAge ? 'text-ink-900' : 'text-primary-600'}
           />
         }
       >
@@ -321,7 +321,7 @@ function Filters(props: {
         selection={
           <GenderFilterText
             gender={filters.genders as Gender[]}
-            highlightedClass={hasAny(filters.genders) ? 'text-primary-600' : 'text-ink-900'}
+            // highlightedClass={hasAny(filters.genders) ? 'text-primary-600' : 'text-ink-900'}
           />
         }
       >
@@ -348,11 +348,11 @@ function Filters(props: {
               <RelationshipStatusFilterText
                 options={filters.relationship_status as string[]}
                 defaultLabel={t('filter.relationship_status.any', 'Any')}
-                highlightedClass={
-                  hasAny(filters.relationship_status || undefined)
-                    ? 'text-primary-600'
-                    : 'text-ink-900'
-                }
+                // highlightedClass={
+                //   hasAny(filters.relationship_status || undefined)
+                //     ? 'text-primary-600'
+                //     : 'text-ink-900'
+                // }
               />
             }
           >
@@ -368,11 +368,11 @@ function Filters(props: {
             selection={
               <RomanticFilterText
                 relationship={filters.pref_romantic_styles as RomanticType[]}
-                highlightedClass={
-                  hasAny(filters.pref_romantic_styles || undefined)
-                    ? 'text-primary-600'
-                    : 'text-ink-900'
-                }
+                // highlightedClass={
+                //   hasAny(filters.pref_romantic_styles || undefined)
+                //     ? 'text-primary-600'
+                //     : 'text-ink-900'
+                // }
               />
             }
           >
@@ -388,11 +388,11 @@ function Filters(props: {
             selection={
               <HasKidsLabel
                 has_kids={filters.has_kids ?? -1}
-                highlightedClass={
-                  filters.has_kids != null && filters.has_kids !== -1
-                    ? 'text-primary-600'
-                    : 'text-ink-900'
-                }
+                // highlightedClass={
+                //   filters.has_kids != null && filters.has_kids !== -1
+                //     ? 'text-primary-600'
+                //     : 'text-ink-900'
+                // }
               />
             }
           >
@@ -408,11 +408,11 @@ function Filters(props: {
             selection={
               <KidsLabel
                 strength={filters.wants_kids_strength ?? -1}
-                highlightedClass={
-                  filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
-                    ? 'text-primary-600'
-                    : 'text-ink-900'
-                }
+                // highlightedClass={
+                //   filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
+                //     ? 'text-primary-600'
+                //     : 'text-ink-900'
+                // }
               />
             }
           >
@@ -439,9 +439,9 @@ function Filters(props: {
               radius={raisedInLocationFilterProps.radius}
               labelPrefix={t('filter.raised_in', 'Grew up')}
               youProfile={youProfile}
-              highlightedClass={
-                !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
-              }
+              // highlightedClass={
+              //   !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
+              // }
             />
           }
         >
@@ -459,9 +459,9 @@ function Filters(props: {
           selection={
             <EducationFilterText
               options={filters.education_levels as string[]}
-              highlightedClass={
-                hasAny(filters.education_levels) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.education_levels) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -477,9 +477,9 @@ function Filters(props: {
             <InterestFilterText
               options={filters.work as string[] | undefined}
               label={'work'}
-              highlightedClass={
-                hasAny(filters.work || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.work || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -508,9 +508,9 @@ function Filters(props: {
             <InterestFilterText
               options={filters.interests as string[] | undefined}
               label={'interests'}
-              highlightedClass={
-                hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.interests || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -531,9 +531,9 @@ function Filters(props: {
             <InterestFilterText
               options={filters.causes as string[] | undefined}
               label={'causes'}
-              highlightedClass={
-                hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -553,9 +553,9 @@ function Filters(props: {
           selection={
             <DietFilterText
               options={filters.diet as DietType[] | undefined}
-              highlightedClass={
-                hasAny(filters.diet || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.diet || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -577,13 +577,13 @@ function Filters(props: {
             <DrinksFilterText
               drinks_min={filters.drinks_min}
               drinks_max={filters.drinks_max}
-              highlightedClass={(() => {
-                const [noMinDrinks, noMaxDrinks] = getNoMinMaxDrinks(
-                  filters.drinks_min,
-                  filters.drinks_max,
-                )
-                return noMinDrinks && noMaxDrinks ? 'text-ink-900' : 'text-primary-600'
-              })()}
+              //   highlightedClass={(() => {
+              //     const [noMinDrinks, noMaxDrinks] = getNoMinMaxDrinks(
+              //       filters.drinks_min,
+              //       filters.drinks_max,
+              //     )
+              //     return noMinDrinks && noMaxDrinks ? 'text-ink-900' : 'text-primary-600'
+              //   })()}
             />
           }
         >
@@ -598,7 +598,7 @@ function Filters(props: {
           selection={
             <SmokerFilterText
               is_smoker={filters.is_smoker}
-              highlightedClass={filters.is_smoker == null ? 'text-ink-900' : 'text-primary-600'}
+              // highlightedClass={filters.is_smoker == null ? 'text-ink-900' : 'text-primary-600'}
             />
           }
         >
@@ -613,9 +613,9 @@ function Filters(props: {
           selection={
             <PsychedelicsFilterText
               options={filters.psychedelics as string[] | undefined}
-              highlightedClass={
-                hasAny(filters.psychedelics || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.psychedelics || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -630,9 +630,9 @@ function Filters(props: {
           selection={
             <CannabisFilterText
               options={filters.cannabis as string[] | undefined}
-              highlightedClass={
-                hasAny(filters.cannabis || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.cannabis || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -647,9 +647,9 @@ function Filters(props: {
           selection={
             <LanguageFilterText
               options={filters.languages as string[] | undefined}
-              highlightedClass={
-                hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -672,9 +672,9 @@ function Filters(props: {
           selection={
             <PoliticalFilterText
               options={filters.political_beliefs as string[] | undefined}
-              highlightedClass={
-                hasAny(filters.political_beliefs || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.political_beliefs || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -689,9 +689,9 @@ function Filters(props: {
           selection={
             <ReligionFilterText
               options={filters.religion as string[] | undefined}
-              highlightedClass={
-                hasAny(filters.religion || undefined) ? 'text-primary-600' : 'text-ink-900'
-              }
+              // highlightedClass={
+              //   hasAny(filters.religion || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
             />
           }
         >
@@ -715,7 +715,7 @@ function Filters(props: {
             <MbtiFilterText
               options={filters.mbti as string[] | undefined}
               defaultLabel={t('filter.any_mbti', 'Any MBTI')}
-              highlightedClass={hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'}
+              // highlightedClass={hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'}
             />
           }
         >
@@ -730,7 +730,7 @@ function Filters(props: {
           selection={
             <Big5FilterText
               filters={filters}
-              highlightedClass={hasAnyBig5Filter(filters) ? 'text-primary-600' : 'text-ink-900'}
+              // highlightedClass={hasAnyBig5Filter(filters) ? 'text-primary-600' : 'text-ink-900'}
             />
           }
         >
@@ -753,7 +753,7 @@ function Filters(props: {
           selection={
             <LastActiveFilterText
               last_active={filters.last_active}
-              highlightedClass={!filters.last_active ? 'text-ink-900' : 'text-primary-600'}
+              // highlightedClass={!filters.last_active ? 'text-ink-900' : 'text-primary-600'}
             />
           }
         >
@@ -767,7 +767,7 @@ function Filters(props: {
           setOpenFilter={setOpenFilter}
           isActive={!!filters.hasPhoto}
           selection={
-            <span className={clsx(!filters.hasPhoto ? 'text-ink-900' : 'text-primary-600')}>
+            <span>
               {filters.hasPhoto
                 ? t('filter.has_photo', 'Has photos')
                 : t('filter.has_photo.photos', 'Photos')}

@@ -25,7 +25,7 @@ export function Carousel(props: {
       <Row
         className={clsx(
           'scrollbar-hide w-full snap-x overflow-x-auto scroll-smooth',
-          labelsParentClassName ?? 'gap-4',
+          labelsParentClassName ?? 'gap-2',
         )}
         ref={ref}
         onScroll={onScroll}

@@ -26,7 +26,6 @@ import {
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
-import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Input} from 'web/components/widgets/input'
 import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
@@ -45,6 +44,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 
+import {CompatibleBadge} from '../widgets/compatible-badge'
 import {Subtitle} from '../widgets/profile-subtitle'
 import {
   AnswerCompatibilityQuestionButton,
@@ -57,13 +57,12 @@ import {
   deleteCompatibilityAnswer,
   getEmptyAnswer,
   IMPORTANCE_CHOICES,
-  IMPORTANCE_DISPLAY_COLORS,
   submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
 import {PreferredList, PreferredListNoComparison} from './compatibility-question-preferred-list'
 import {PinQuestionButton} from './pin-question-button'
 
-const NUM_QUESTIONS_TO_SHOW = 4
+const NUM_QUESTIONS_TO_SHOW = 8
 const NUM_PINNED_QUESTIONS_TO_SHOW = 4
 
 export function separateQuestionsArray(
@@ -213,18 +212,6 @@ export function CompatibilityQuestionsDisplay(props: {
 
   return (
     <Col className="gap-4">
-      <Row className={'gap-8'}>
-        <Subtitle>
-          {isCurrentUser
-            ? t('answers.display.your_prompts', 'Compatibility Prompts')
-            : t('answers.display.user_prompts', 'Compatibility Prompts', {
-                name: shortenName(user.name),
-              })}
-        </Subtitle>
-        {compatibilityScore && (
-          <CompatibleBadge compatibility={compatibilityScore} className={'mt-7 mr-4'} />
-        )}
-      </Row>
       {pinnedAnswers.length > 0 && (
         <Col className="gap-3">
           <PinIcon />
@@ -254,7 +241,7 @@ export function CompatibilityQuestionsDisplay(props: {
       )}
       <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
         {answeredQuestions.length > 0 && (
-          <div className="relative mt-3 w-full max-w-[50%] xl:max-w-[600px]">
+          <div className="relative mt-3 w-full max-w-[50%] xl:max-w-[400px]">
             {/*<input*/}
             {/*  type="text"*/}
             {/*  placeholder={t('answers.search_placeholder', 'Search prompts...')}*/}
@@ -283,6 +270,9 @@ export function CompatibilityQuestionsDisplay(props: {
           user={user}
           profile={profile}
         />
+        {compatibilityScore && (
+          <CompatibleBadge compatibility={compatibilityScore} className={'mt-5 mr-4'} />
+        )}
       </Row>
       {answeredQuestions.length <= 0 ? (
         <span className="text-ink-600 text-sm">
@@ -391,6 +381,7 @@ export function CompatibilityAnswerBlock(props: {
   refreshCompatibilityAll: () => void
   fromProfilePage?: Profile
   showCommunityInfo?: boolean
+  className?: string
 }) {
   const {
     answer,
@@ -400,6 +391,7 @@ export function CompatibilityAnswerBlock(props: {
     isCurrentUser,
     refreshCompatibilityAll,
     fromProfilePage,
+    className,
   } = props
 
   const showCommunityInfo = props.showCommunityInfo === undefined ? true : props.showCommunityInfo
@@ -452,12 +444,13 @@ export function CompatibilityAnswerBlock(props: {
   return (
     <Col
       data-testid="profile-compatibility-section"
-      className={
-        'bg-canvas-50 border border-canvas-200 flex-grow gap-2 whitespace-pre-line rounded-xl p-4 leading-relaxed'
-      }
+      className={clsx(
+        'bg-canvas-200/20 border border-canvas-200 flex-grow gap-2 whitespace-pre-line rounded-xl p-4 leading-relaxed',
+        className,
+      )}
     >
       <Row
-        className="justify-between gap-1 font-semibold"
+        className="justify-between gap-1 font-medium"
         data-testid="profile-compatibility-question"
       >
         {question.question}
@@ -535,18 +528,21 @@ export function CompatibilityAnswerBlock(props: {
       </Row>
       {answerText && (
         <Row
-          className="bg-canvas-200 w-fit gap-1 rounded-xl px-2 py-1 text-sm"
+          className="border border-primary-200 bg-primary-50 text-primary-700 w-fit gap-1 rounded-full px-3 py-1 text-sm"
           data-testid="profile-compatibility-question-answer"
         >
           {answerText}
         </Row>
       )}
-      <Row className="px-2" data-testid="profile-compatibility-question-answer-explanation">
+      <Row
+        className="px-2 text-sm text-ink-500 leading-relaxed pl-2 border-l-2 border-canvas-300 ml-1"
+        data-testid="profile-compatibility-question-answer-explanation"
+      >
         {answer?.explanation && <Linkify className="" text={`"${answer.explanation}"`} />}
       </Row>
       {distinctPreferredAnswersText.length > 0 && (
         <Col className="gap-2">
-          <div className="text-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-ink-300">
             {preferredDoesNotIncludeAnswerText
               ? t('answers.display.acceptable', 'Acceptable')
               : t('answers.display.also_acceptable', 'Also acceptable')}
@@ -556,7 +552,10 @@ export function CompatibilityAnswerBlock(props: {
             data-testid="profile-compatibility-question-acceptable-answer"
           >
             {distinctPreferredAnswersText.map((text) => (
-              <Row key={text} className="bg-canvas-200 w-fit gap-1 rounded-xl px-2 py-1 text-sm">
+              <Row
+                key={text}
+                className="border border-canvas-200 bg-canvas-100 text-ink-500 w-fit gap-1 rounded-full px-3 py-1 text-sm"
+              >
                 {text}
               </Row>
             ))}
@@ -716,10 +715,10 @@ function CompatibilityDisplay(props: {
           <button
             onClick={() => setOpen(true)}
             className={clsx(
-              'text-ink-1000 h-fit w-28 rounded-full px-2 py-0.5 text-xs transition-colors',
+              'border text-ink-1000 h-fit w-28 rounded-full px-2 py-0.5 text-xs transition-colors',
               answerCompatibility
-                ? 'bg-green-500/20 hover:bg-green-500/30'
-                : 'bg-red-500/20 hover:bg-red-500/30',
+                ? 'bg-green-500/10 text-green-800 border-green-500/25 hover:bg-green-500/30'
+                : 'bg-red-500/20 text-red-800 border-red-500/25 hover:bg-red-500/30',
             )}
           >
             {answerCompatibility
@@ -803,16 +802,51 @@ function ImportanceDisplay(props: {importance: number}) {
 
 function ImportanceButton(props: {importance: number; onClick: () => void; className?: string}) {
   const {importance, onClick, className} = props
+
+  // Color scheme based on importance level
+  const importanceColors = {
+    3: {
+      // Very Important — full primary amber
+      background: 'rgb(var(--color-primary-50))',
+      color: 'rgb(var(--color-primary-700))',
+      border: 'rgb(var(--color-primary-200))',
+    },
+    2: {
+      // Important — softer amber, slightly stepped back
+      background: 'rgb(var(--color-primary-50))',
+      color: 'rgb(var(--color-primary-600))',
+      border: 'rgb(var(--color-primary-100))',
+    },
+    1: {
+      // Somewhat Important — warm neutral
+      background: 'rgb(var(--color-canvas-100))',
+      color: 'rgb(var(--color-ink-500))',
+      border: 'rgb(var(--color-canvas-300))',
+    },
+    0: {
+      // Not Important — near-invisible
+      background: 'rgb(var(--color-canvas-50))',
+      color: 'rgb(var(--color-ink-300))',
+      border: 'rgb(var(--color-canvas-200))',
+    },
+  }
+
+  const colors =
+    importanceColors[importance as keyof typeof importanceColors] || importanceColors[3]
+
   return (
     <button
       onClick={onClick}
       className={clsx(
-        'text-ink-1000 h-fit rounded-full px-2 py-0.5 text-xs transition-colors',
-        // Longer width for "Somewhat important"
+        'h-fit rounded-full px-2 py-0.5 text-xs font-medium transition-colors',
         importance === 1 ? 'w-36' : 'w-28',
-        IMPORTANCE_DISPLAY_COLORS[importance],
         className,
       )}
+      style={{
+        background: colors.background,
+        color: colors.color,
+        border: `1px solid ${colors.border}`,
+      }}
     >
       <ImportanceDisplay importance={importance} />
     </button>

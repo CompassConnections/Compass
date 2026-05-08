@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
-import Image from 'next/image'
 import React, {ReactNode} from 'react'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {ProfileBio} from 'web/components/bio/profile-bio'
@@ -12,10 +11,16 @@ import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import ProfileHeader, {ProfileHeaderActions} from 'web/components/profile/profile-header'
-import ProfileAbout from 'web/components/profile-about'
+import ProfileAbout, {
+  ProfileInterestsAndCauses,
+  ProfileLinks,
+  ProfilePersonality,
+} from 'web/components/profile-about'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
 import {Content} from 'web/components/widgets/editor'
+import {Subtitle} from 'web/components/widgets/subtitle'
+import {shortenName} from 'web/components/widgets/user-link'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useUser} from 'web/hooks/use-user'
@@ -74,11 +79,19 @@ export function ProfileInfo(props: {
 
   const {data: userActivity} = useUserActivity(user?.id)
 
+  // const isCurrentUser = currentUser?.id === user.id
+
   return (
     <>
-      <div className="bg-canvas-50 border-canvas-300 mb-6 flex items-center gap-2 border-b px-8 py-3">
+      <div
+        className="bg-canvas-50 border-canvas-300 mb-6 flex items-center border-b px-4 sm:px-9 py-4"
+        style={{
+          borderBottomWidth: '1px',
+          gap: '10px',
+        }}
+      >
         <div className="flex w-full items-center gap-2">
-          <BackButton />
+          <BackButton className={'hidden sm:flex'} />
 
           <div className="ml-auto flex items-center gap-2">
             <ProfileHeaderActions
@@ -96,22 +109,36 @@ export function ProfileInfo(props: {
         </div>
       </div>
 
-      <div className="mx-auto w-full px-8 pb-6 pt-0">
-        <Row className="items-start gap-6">
-          {profile.pinned_url && (
-            <div className="h-[108px] w-[108px] flex-none">
-              <Image
-                priority={true}
-                src={profile.pinned_url}
-                height={300}
-                width={300}
-                sizes="(max-width: 640px) 100vw, 300px"
-                alt=""
-                className="h-full w-full cursor-pointer rounded-2xl object-cover"
-              />
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
+      <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0">
+        <Row className="relative items-start gap-6">
+          {/* Gradient overlay */}
+          {/*<div*/}
+          {/*  style={{*/}
+          {/*    position: 'absolute',*/}
+          {/*    inset: 0,*/}
+          {/*    pointerEvents: 'none',*/}
+          {/*    background: `radial-gradient(ellipse 55% 70% at 100% 30%, rgba(193,127,62,0.07) 0%, transparent 65%), radial-gradient(ellipse 30% 40% at 0% 90%, rgba(193,127,62,0.05) 0%, transparent 55%)`,*/}
+          {/*  }}*/}
+          {/*/>*/}
+          {/* First letter of name */}
+          <div
+            style={{
+              position: 'absolute',
+              right: '0%',
+              top: '40%',
+              transform: 'translateY(-50%)',
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(7rem, 14vw, 16rem)',
+              fontWeight: 500,
+              color: 'rgba(193,127,62,0.04)',
+              lineHeight: 1,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            {user.name?.charAt(0).toUpperCase()}
+          </div>
+          <div className={clsx('min-w-0 flex-1', !profile.pinned_url && 'ml-6')}>
             <ProfileHeader
               user={user}
               userActivity={userActivity}
@@ -177,8 +204,15 @@ export function ProfileInfo(props: {
 
 function ProfileCard(props: {title?: ReactNode; children: ReactNode; className?: string}) {
   const {title, children, className} = props
+  // Check if children is null or undefined
+  if (children == null) {
+    return null
+  }
   return (
-    <div className={clsx('bg-canvas-50 border-canvas-300 rounded-2xl border p-6', className)}>
+    <div
+      className={clsx('bg-canvas-50 border-canvas-300 border', className)}
+      style={{borderRadius: '14px', padding: '22px 24px'}}
+    >
       {title != null && <CardTitle>{title}</CardTitle>}
       {children}
     </div>
@@ -188,9 +222,20 @@ function ProfileCard(props: {title?: ReactNode; children: ReactNode; className?:
 function CardTitle(props: {children: ReactNode; className?: string}) {
   const {children, className} = props
   return (
-    <div className={clsx('text-ink-900 mb-4 text-lg font-semibold tracking-tight', className)}>
+    // <div
+    //   className={clsx(
+    //     'text-ink-900 mb-3.5 font-cormorant text-xl font-medium tracking-wide',
+    //     className,
+    //   )}
+    //   style={{letterSpacing: '0.01em'}}
+    // >
+    //   {children}
+    // </div>
+    <Subtitle
+      className={clsx('!mt-0 !mb-4 font-cormorant text-xl font-medium tracking-wide', className)}
+    >
       {children}
-    </div>
+    </Subtitle>
   )
 }
 
@@ -223,12 +268,38 @@ function ProfileContent(props: {
 
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
+  const t = useT()
 
   return (
     <>
-      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_480px]">
+      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_800px]">
         <Col className="gap-6">
-          <ProfileCard className="p-5">
+          <ProfileCard title="Details" className="p-5">
+            <ProfileAbout
+              profile={profile}
+              userActivity={userActivity}
+              isCurrentUser={isCurrentUser}
+            />
+          </ProfileCard>
+
+          <ProfileCard title={t('profile.interests_and_causes', 'Interests')} className="p-5">
+            <ProfileInterestsAndCauses profile={profile} />
+          </ProfileCard>
+
+          {(profile.mbti || profile.big5_agreeableness) && (
+            <ProfileCard title={t('profile.personality', 'Personality')} className="p-5">
+              <ProfilePersonality profile={profile} />
+            </ProfileCard>
+          )}
+
+          {profile.links && Object.keys(profile.links).length > 0 && (
+            <ProfileCard title={t('profile.links', 'Links')} className="p-5">
+              <ProfileLinks profile={profile} />
+            </ProfileCard>
+          )}
+        </Col>
+        <Col className="gap-6">
+          <ProfileCard title={t('profile.bio.about_me', 'About Me')} className="p-0">
             <ProfileBio
               isCurrentUser={isCurrentUser}
               profile={profile}
@@ -238,12 +309,21 @@ function ProfileContent(props: {
           </ProfileCard>
 
           {isProfileVisible && (
-            <ProfileCard className="p-5">
-              <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />
-            </ProfileCard>
+            // <ProfileCard className="!p-0">
+            <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />
+            // </ProfileCard>
           )}
 
-          <ProfileCard className="p-5">
+          <ProfileCard
+            className="p-5"
+            title={
+              isCurrentUser
+                ? t('answers.display.your_prompts', 'Compatibility Prompts')
+                : t('answers.display.user_prompts', 'Compatibility Prompts', {
+                    name: shortenName(user.name),
+                  })
+            }
+          >
             <ProfileAnswers
               isCurrentUser={isCurrentUser}
               user={user}
@@ -253,11 +333,7 @@ function ProfileContent(props: {
             />
           </ProfileCard>
 
-          <ProfileCard className="p-5">
-            <ConnectActions user={user} profile={profile} />
-          </ProfileCard>
-
-          <ProfileCard className="p-5">
+          <ProfileCard className="p-5" title={t('profile.comments.section_title', 'Endorsements')}>
             <ProfileCommentSection
               onUser={user}
               profile={profile}
@@ -265,16 +341,12 @@ function ProfileContent(props: {
               simpleView={!!fromProfilePage}
             />
           </ProfileCard>
-        </Col>
 
-        <Col className="gap-6">
-          <ProfileCard title="Details" className="p-5">
-            <ProfileAbout
-              profile={profile}
-              userActivity={userActivity}
-              isCurrentUser={isCurrentUser}
-            />
-          </ProfileCard>
+          {!isCurrentUser && currentUser && (
+            <ProfileCard title={t('profile.connect.title', 'Connect')}>
+              <ConnectActions user={user} profile={profile} />
+            </ProfileCard>
+          )}
         </Col>
       </div>
       {/*<LikesDisplay*/}

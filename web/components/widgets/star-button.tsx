@@ -49,7 +49,7 @@ export const StarButton = (props: {
     >
       <StarIcon
         className={clsx(
-          'h-8 w-8 transition-colors group-hover:fill-yellow-400/70',
+          'h-7 w-7 transition-colors group-hover:fill-yellow-400/70',
           isStarred && 'fill-yellow-400 stroke-yellow-500 dark:stroke-yellow-600',
         )}
       />

@@ -34,7 +34,7 @@ export function EmailVerificationButton() {
         color={'gray-outline'}
         onClick={() => sendVerificationEmail(firebaseUser, t)}
         disabled={isEmailVerified}
-        className={'w-fit'}
+        className={'w-fit !text-ink-500'}
       >
         {isEmailVerified
           ? t('settings.email.verified', 'Email Verified ✔️')

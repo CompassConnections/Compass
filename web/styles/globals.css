@@ -66,7 +66,7 @@
 }
 
 .logo {
-  font-family: var(--font-main), serif;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 @layer base {
@@ -103,6 +103,7 @@
     /* Ink - Text Colors */
     --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
     --color-ink-500: 140 128 112; /* Muted Warm Gray (#8C8070) */
+    --color-ink-600: 120 108 92;
 
     /* Green - Accents */
     --color-green-500: 107 143 113; /* Accent - Sage Green (#6B8F71) */
@@ -138,7 +139,7 @@
     --color-ink-300: 160 160 160;
     --color-ink-400: 160 160 160;
     /*--color-ink-500: 80 80 80;*/
-    --color-ink-600: 0 0 0;
+    /*--color-ink-600: 0 0 0;*/
     --color-ink-700: 0 0 0;
     --color-ink-800: 0 0 0;
     /*--color-ink-900: 0 0 0;*/
@@ -219,6 +220,7 @@
     --color-ink-950: 255 255 255; /* Purest highlight */
     --color-ink-900: 247 244 239; /* Main Body Text (Old Card color) */
     --color-ink-500: 176 160 140; /* Muted Text - shifted to warm tan */
+    --color-ink-600: 156 140 120;
 
     /* Green - Sage looks great on dark brown */
     --color-green-500: 125 160 131; /* Lightened Sage */
@@ -229,7 +231,7 @@
     /*--color-ink-900: 255 255 255;*/
     --color-ink-800: 255 255 255;
     --color-ink-700: 255 255 255;
-    --color-ink-600: 255 255 255;
+    /*--color-ink-600: 255 255 255;*/
     /*--color-ink-500: 200 200 200;*/
     --color-ink-400: 100 100 100;
     --color-ink-300: 100 100 100;
@@ -300,29 +302,29 @@
     --color-green-900: 20 83 45;
     --color-green-950: 5 46 22; /* darkest green */
 
-    --color-yellow-50: 255 251 235; /* lightest yellow */
-    --color-yellow-100: 254 243 199;
-    --color-yellow-200: 253 230 138;
-    --color-yellow-300: 252 211 77;
-    --color-yellow-400: 251 191 36;
+    --color-yellow-950: 255 251 235; /* lightest yellow */
+    --color-yellow-900: 254 243 199;
+    --color-yellow-800: 253 230 138;
+    --color-yellow-700: 252 211 77;
+    --color-yellow-600: 251 191 36;
     --color-yellow-500: 245 158 11; /* standard yellow */
-    --color-yellow-600: 217 119 6;
-    --color-yellow-700: 180 83 9;
-    --color-yellow-800: 146 64 14;
-    --color-yellow-900: 113 63 18;
-    --color-yellow-950: 66 50 3; /* darkest yellow */
+    --color-yellow-400: 217 119 6;
+    --color-yellow-300: 180 83 9;
+    --color-yellow-200: 146 64 14;
+    --color-yellow-100: 113 63 18;
+    --color-yellow-50: 66 50 3; /* darkest yellow */
 
-    --color-red-50: 254 242 242; /* lightest red */
-    --color-red-100: 254 226 226;
-    --color-red-200: 254 202 202;
-    --color-red-300: 252 165 165;
-    --color-red-400: 248 113 113;
+    --color-red-950: 254 242 242; /* lightest red */
+    --color-red-900: 254 226 226;
+    --color-red-800: 254 202 202;
+    --color-red-700: 252 165 165;
+    --color-red-600: 248 113 113;
     --color-red-500: 239 68 68; /* standard red */
-    --color-red-600: 220 38 38;
-    --color-red-700: 185 28 28;
-    --color-red-800: 153 27 27;
-    --color-red-900: 127 29 29;
-    --color-red-950: 69 10 10; /* darkest red */
+    --color-red-400: 220 38 38;
+    --color-red-300: 185 28 28;
+    --color-red-200: 153 27 27;
+    --color-red-100: 127 29 29;
+    --color-red-50: 69 10 10; /* darkest red */
 
     touch-action: pan-y;
   }
@@ -411,7 +413,7 @@ h3,
 h4,
 h5,
 h6 {
-  /*font-family: 'Inter', sans-serif; !* Clean modern font *!*/
+  font-family: 'Cormorant Garamond', Inter, sans-serif; /* Clean modern font */
   font-weight: 900; /* Semi-bold for clarity */
   /*color: #111827;                   !* Near-black text for readability *!*/
   line-height: 1.25;

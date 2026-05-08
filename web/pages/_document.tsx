@@ -25,6 +25,10 @@ export default function Document() {
           // href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+          rel="stylesheet"
+        />
 
         {/* PWA primary color */}
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />

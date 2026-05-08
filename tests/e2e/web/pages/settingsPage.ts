@@ -29,7 +29,7 @@ export class SettingsPage {
     this.themeToggle = page.getByTestId('settings-dark-light-toggle')
     this.fontPicker = page.getByTestId('settings-font-picker')
     this.downloadProfileJSONDataButton = page.getByRole('button', {
-      name: 'Download all my data (JSON)',
+      name: 'Download all my data',
     })
     this.manageHiddenProfilesButton = page.getByRole('button', {name: 'Manage hidden profiles'})
     this.hiddenProfilesSection = page.getByTestId('hidden-profiles')

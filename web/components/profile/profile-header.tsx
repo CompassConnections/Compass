@@ -8,11 +8,11 @@ import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
+import Image from 'next/image'
 import Link from 'next/link'
 import Router from 'next/router'
 import React from 'react'
 import toast from 'react-hot-toast'
-import {Button} from 'web/components/buttons/button'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
@@ -52,52 +52,82 @@ export default function ProfileHeader(props: {
   })
 
   return (
-    <Row className="w-full">
-      <Col className="w-full">
-        {currentUser && !isCurrentUser && isHiddenFromMe && (
-          <div className="guidance">
-            {t(
-              'profile_grid.hidden_notice',
-              "You hid this person, so they don't appear in your search results.",
-            )}
-          </div>
-        )}
-        {currentUser && isCurrentUser && disabled && (
-          <div className="text-red-500">
-            {t(
-              'profile.header.disabled_notice',
-              'You disabled your profile, so no one else can access it.',
-            )}
-          </div>
-        )}
-        <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
-          <Row className="items-center gap-1">
-            <Col className="gap-1">
-              <Row className="items-center gap-1 text-xl" data-testid="profile-display-name-age">
-                {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
-                <span>
-                  {simpleView ? (
-                    <Link className={linkClass} href={`/${user.username}`}>
-                      <span className="font-semibold">{user.name}</span>
-                    </Link>
-                  ) : (
-                    <span className="font-semibold">{user.name}</span>
-                  )}
-                </span>
+    <Row className={'flex-wrap gap-4'}>
+      {currentUser && !isCurrentUser && isHiddenFromMe && (
+        <div className="guidance">
+          {t(
+            'profile_grid.hidden_notice',
+            "You hid this person, so they don't appear in your search results.",
+          )}
+        </div>
+      )}
+      {currentUser && isCurrentUser && disabled && (
+        <div className="text-red-500">
+          {t(
+            'profile.header.disabled_notice',
+            'You disabled your profile, so no one else can access it.',
+          )}
+        </div>
+      )}
+      <Col>
+        <Row className="w-full gap-6 flex-wrap">
+          {profile.pinned_url && (
+            <div className="h-[108px] w-[108px] flex-none">
+              <Image
+                priority={true}
+                src={profile.pinned_url}
+                height={300}
+                width={300}
+                sizes="(max-width: 640px) 100vw, 300px"
+                alt=""
+                className="h-full w-full rounded-2xl object-cover"
+              />
+            </div>
+          )}
+          <Col className="max-w-[160px] sm:max-w-[300px]">
+            <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
+              <Row className="items-center gap-1">
+                <Col className="gap-1">
+                  <Row className="items-center gap-1" data-testid="profile-display-name-age">
+                    {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
+                    <span>
+                      {simpleView ? (
+                        <Link className={linkClass} href={`/${user.username}`}>
+                          <span
+                            className="font-cormorant text-4xl font-medium"
+                            style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
+                          >
+                            {user.name}
+                          </span>
+                        </Link>
+                      ) : (
+                        <span
+                          className="font-cormorant text-4xl font-medium"
+                          style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
+                        >
+                          {user.name}
+                        </span>
+                      )}
+                    </span>
+                  </Row>
+                  <ProfilePrimaryInfo profile={profile} />
+                </Col>
               </Row>
-              <ProfilePrimaryInfo profile={profile} />
-            </Col>
-          </Row>
+            </Row>
+          </Col>
         </Row>
-
-        <Row className={'px-4 gap-2 flex-wrap py-2'} data-testid="profile-keywords">
+        <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
           {profile.keywords?.map(capitalizePure)?.map((tag, i) => (
             <span
               key={i}
-              className={'bg-canvas-200'}
+              className={'border-canvas-300 text-primary-700 bg-canvas-200'}
               style={{
-                padding: '6px 16px',
-                borderRadius: '20px',
+                padding: '5px 13px',
+                borderRadius: '100px',
+                fontSize: '13px',
+                fontWeight: '400',
+                letterSpacing: '0.01em',
+                borderWidth: '1px',
               }}
             >
               {tag.trim()}
@@ -106,8 +136,31 @@ export default function ProfileHeader(props: {
         </Row>
       </Col>
       {profile.headline && (
-        <div className="italic max-w-3xl px-4 py-3" data-testid="profile-headline">
-          "{profile.headline}"
+        <div
+          className="relative max-w-xl px-4 py-3 text-ink-600  flex items-center justify-center"
+          data-testid="profile-headline"
+          style={{
+            fontSize: '15px',
+            lineHeight: '1.65',
+            borderLeft: '1.5px solid rgb(var(--color-primary-300))',
+            paddingLeft: '40px',
+          }}
+        >
+          <div className="h-fit relative">
+            <span
+              className="absolute -mt-6 text-3xl text-primary-300"
+              style={{fontFamily: 'serif'}}
+            >
+              "
+            </span>
+            <span className="italic">{profile.headline}</span>
+            <span
+              className="absolute -bottom-8 text-3xl text-primary-300"
+              style={{fontFamily: 'serif'}}
+            >
+              "
+            </span>
+          </div>
         </div>
       )}
     </Row>
@@ -159,21 +212,20 @@ export function ProfileHeaderActions(props: {
 
   if (currentUser && isCurrentUser) {
     return (
-      <Row className={'items-center gap-4'}>
+      <Row className={'items-center gap-2'}>
         <ViewProfileCardButton user={user} profile={profile} />
         <ShareProfileButton className="sm:flex" username={user.username} />
         <Tooltip text={t('more_options_user.edit_profile', 'Edit profile')} noTap>
-          <Button
+          <button
             data-testid="profile-edit"
-            color={'gray-outline'}
             onClick={() => {
               track('editprofile', {userId: user.id})
               Router.push('profile')
             }}
-            size="sm"
+            className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-2 py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50"
           >
-            <PencilIcon className=" h-4 w-4" />
-          </Button>
+            <PencilIcon className="h-4 w-4 text-ink-500" />
+          </button>
         </Tooltip>
 
         <Tooltip
@@ -183,7 +235,11 @@ export function ProfileHeaderActions(props: {
         >
           <DropdownMenu
             menuWidth={'w-52'}
-            icon={<EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />}
+            icon={
+              <button className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-2 py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50">
+                <EllipsisHorizontalIcon className="h-4 w-4 text-ink-500" aria-hidden="true" />
+              </button>
+            }
             items={[
               {
                 name:
@@ -239,7 +295,7 @@ export function ProfileHeaderActions(props: {
   }
 
   return (
-    <Row className="items-center gap-1 sm:gap-2">
+    <Row className="items-center gap-2">
       <ViewProfileCardButton user={user} profile={profile} />
       <ShareProfileButton className="sm:flex" username={user.username} />
       {currentUser && (

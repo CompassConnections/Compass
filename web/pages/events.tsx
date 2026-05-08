@@ -113,8 +113,8 @@ export default function EventsPage() {
           </div>
 
           {/* Event Ideas Section */}
-          <div className="mt-6 bg-canvas-100 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-2 mt-0">
+          <div className="mt-6 bg-canvas-50 border border-canvas-200 rounded-lg p-4">
+            <h2 className="text-xl font-semibold mb-2 mt-0">
               {t('events.why_organize', 'Why organize events?')}
             </h2>
             <p className="text-ink-600 text-sm mb-3">
@@ -124,28 +124,28 @@ export default function EventsPage() {
               )}
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 📚 {t('events.book_clubs', 'Book clubs')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🎮 {t('events.game_nights', 'Game nights')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🚶 {t('events.walking_groups', 'Walking groups')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 ☕ {t('events.coffee_chats', 'Coffee chats')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🎨 {t('events.creative_workshops', 'Creative workshops')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🤔 {t('events.philosophy_discussions', 'Philosophy discussions')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🌱 {t('events.sustainability_meetups', 'Sustainability meetups')}
               </span>
-              <span className="bg-canvas-50 text-ink-700 px-3 py-1 rounded-full text-xs">
+              <span className="bg-canvas-100 border border-canvas-200 text-ink-700 px-3 py-1 rounded-full text-xs">
                 🎯 {t('events.hobby_exchanges', 'Hobby exchanges')}
               </span>
             </div>

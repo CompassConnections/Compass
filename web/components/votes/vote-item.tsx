@@ -36,7 +36,7 @@ export function VoteItem(props: {vote: Vote; onVoted?: () => void | Promise<void
   const t = useT()
   // console.debug('creator', creator, vote)
   return (
-    <Col className={'mb-4 rounded-lg border border-canvas-200 p-4'}>
+    <Col className={'mb-4 rounded-lg border border-canvas-200 p-4 bg-canvas-50'}>
       <Row className={'mb-2'}>
         <Col className={'flex-grow'}>
           <p className={'text-2xl'}>{vote.title}</p>

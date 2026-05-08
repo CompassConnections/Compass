@@ -89,47 +89,58 @@ function ButtonModal(props: {
       size={'lg'}
     >
       <Col className={MODAL_CLASS}>
-        <h3>{t('saved_searches.title', 'Saved Searches')}</h3>
+        <h3 className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+          {t('saved_searches.title', 'Saved Searches')}
+        </h3>
         {bookmarkedSearches?.length ? (
           <>
-            <p>
+            <p className="text-ink-500 text-sm mb-4">
               {t(
                 'saved_searches.notification_note',
                 "We'll notify you daily when new people match your searches below.",
               )}
             </p>
-            <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
+            <Col className={clsx('divide-y divide-canvas-200 w-full pr-2', SCROLLABLE_MODAL_CLASS)}>
               {(bookmarkedSearches || []).map((search) => (
-                <Row key={search.id} className="items-center justify-between py-2 gap-2">
-                  <div className="w-full rounded-md p-2">
-                    {formatFilters(
-                      search.search_filters as Partial<FilterFields>,
-                      search.location as locationType,
-                      choicesIdsToLabels,
-                      measurementSystem,
-                      t,
-                    )?.join(' • ')}
+                <div key={search.id} className="py-3 first:pt-0 last:pb-0">
+                  <div className="bg-canvas-0 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm">
+                    <Row className="items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="font-medium text-ink-900 text-sm leading-relaxed">
+                          {formatFilters(
+                            search.search_filters as Partial<FilterFields>,
+                            search.location as locationType,
+                            choicesIdsToLabels,
+                            measurementSystem,
+                            t,
+                          )?.join(' • ')}
+                        </div>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          await deleteBookmarkedSearch(search.id)
+                          refreshBookmarkedSearches()
+                        }}
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </Row>
                   </div>
-                  <button
-                    onClick={async () => {
-                      await deleteBookmarkedSearch(search.id)
-                      refreshBookmarkedSearches()
-                    }}
-                    className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  >
-                    <XMarkIcon className="h-6 w-6" />
-                  </button>
-                </Row>
+                </div>
               ))}
             </Col>
           </>
         ) : (
-          <p>
-            {t(
-              'saved_searches.empty_state',
-              "You haven't saved any search. To save one, click on Get Notified and we'll notify you daily when new people match it.",
-            )}
-          </p>
+          <div className="text-center py-8">
+            <div className="text-ink-500 text-sm mb-2">You haven't saved any search.</div>
+            <div className="text-ink-300 text-xs">
+              {t(
+                'saved_searches.empty_state',
+                "To save one, click on Get Notified and we'll notify you daily when new people match it.",
+              )}
+            </div>
+          </div>
         )}
         {/*<BookmarkSearchContent*/}
         {/*  total={bookmarkedSearches.length}*/}
@@ -209,64 +220,76 @@ function StarModal(props: {
       // }}
     >
       <Col className={MODAL_CLASS}>
-        <h3>{t('saved_people.title', 'Saved People')}</h3>
+        <h3 className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+          {t('saved_people.title', 'Saved People')}
+        </h3>
         {visibleUsers?.length ? (
           <>
-            <p>{t('saved_people.list_header', 'Here are the people you saved:')}</p>
-            <Col className={clsx('divide-y divide-canvas-300 w-full pr-4', SCROLLABLE_MODAL_CLASS)}>
+            <p className="text-ink-500 text-sm mb-4">
+              {t('saved_people.list_header', 'Here are the people you saved:')}
+            </p>
+            <Col className={clsx('divide-y divide-canvas-200 w-full pr-2', SCROLLABLE_MODAL_CLASS)}>
               {visibleUsers.map((u) => (
-                <Row key={u.id} className="items-center justify-between py-2 gap-2">
-                  <Link
-                    className="w-full rounded-md hover:bg-canvas-25 p-2"
-                    href={'/' + u.username}
-                  >
-                    <Row className="items-center gap-3">
-                      <Avatar
-                        size="md"
-                        username={u.username}
-                        avatarUrl={u.avatarUrl ?? undefined}
-                      />
-                      <Col>
-                        <div className="font-medium">{u.name}</div>
-                        <div className="text-ink-500 text-sm">@{u.username}</div>
-                      </Col>
-                    </Row>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      // Optimistically remove the user from the list
-                      setRemovingIds((prev) => new Set(prev).add(u.id))
-                      // Fire the API call without blocking UI
-                      api('star-profile', {
-                        targetUserId: u.id,
-                        remove: true,
-                      })
-                        .then(() => {
-                          // Sync with server state
-                          refreshStars()
-                        })
-                        .catch(() => {
-                          toast.error("Couldn't remove saved profile. Please try again.")
-                          // Revert optimistic removal on failure
-                          setRemovingIds((prev) => {
-                            const next = new Set(prev)
-                            next.delete(u.id)
-                            return next
+                <div key={u.id} className="py-3 first:pt-0 last:pb-0">
+                  <div className="bg-canvas-0 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm">
+                    <Row className="items-center justify-between gap-3">
+                      <Link className="flex-1 group" href={'/' + u.username}>
+                        <Row className="items-center gap-3">
+                          <div className="relative">
+                            <Avatar
+                              size="md"
+                              username={u.username}
+                              avatarUrl={u.avatarUrl ?? undefined}
+                            />
+                          </div>
+                          <Col className="flex-1">
+                            <div className="font-medium text-ink-900 group-hover:text-primary-600 transition-colors">
+                              {u.name}
+                            </div>
+                            <div className="text-ink-500 text-sm">@{u.username}</div>
+                          </Col>
+                        </Row>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          // Optimistically remove the user from the list
+                          setRemovingIds((prev) => new Set(prev).add(u.id))
+                          // Fire the API call without blocking UI
+                          api('star-profile', {
+                            targetUserId: u.id,
+                            remove: true,
                           })
-                        })
-                    }}
-                    className="inline-flex items-center justify-center h-8 w-8 rounded-full text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  >
-                    <XMarkIcon className="h-6 w-6" />
-                  </button>
-                </Row>
+                            .then(() => {
+                              // Sync with server state
+                              refreshStars()
+                            })
+                            .catch(() => {
+                              toast.error("Couldn't remove saved profile. Please try again.")
+                              // Revert optimistic removal on failure
+                              setRemovingIds((prev) => {
+                                const next = new Set(prev)
+                                next.delete(u.id)
+                                return next
+                              })
+                            })
+                        }}
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    </Row>
+                  </div>
+                </div>
               ))}
             </Col>
           </>
         ) : (
-          <p>
-            You haven't saved any profile. To save one, click on the star on their profile page.
-          </p>
+          <div className="text-center py-8">
+            <div className="text-ink-500 text-sm mb-2">You haven't saved any profile.</div>
+            <div className="text-ink-300 text-xs">
+              To save one, click on the star on their profile page.
+            </div>
+          </div>
         )}
         {/*<BookmarkSearchContent*/}
         {/*  total={bookmarkedSearches.length}*/}

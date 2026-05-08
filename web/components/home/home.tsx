@@ -44,7 +44,7 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
       <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5">
         {icon}
       </div>
-      <h3 className="text-base font-bold text-ink-1000 mb-2.5">{title}</h3>
+      <h3 className="font-bold text-ink-1000 mb-2.5">{title}</h3>
       <p className="text-sm text-primary-700 leading-relaxed">{text}</p>
     </div>
   )

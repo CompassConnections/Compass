@@ -44,7 +44,7 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
       <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5 flex-shrink-0">
         {icon}
       </div>
-      <h3 className="text-base font-bold text-ink-900 mb-2.5">{title}</h3>
+      <h3 className="font-bold text-ink-900 mb-2.5">{title}</h3>
       <p className="text-sm text-ink-500 leading-relaxed">{text}</p>
     </div>
   )
@@ -68,7 +68,7 @@ function FeatureCardWide({icon, title, text}: FeatureCardProps) {
         {icon}
       </div>
       <div className={'min-w-0'}>
-        <h3 className="text-base font-bold text-ink-900 mb-2">{title}</h3>
+        <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
         <p className="text-sm text-ink-500 leading-relaxed">{text}</p>
       </div>
     </div>
@@ -95,7 +95,7 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}
       <div className="w-10 h-10 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-lg mb-4 flex-shrink-0">
         {icon}
       </div>
-      <h3 id={id} className="text-base font-bold text-ink-900 mb-2">
+      <h3 id={id} className="font-bold text-ink-900 mb-2">
         {title}
       </h3>
       <p className="text-sm text-ink-500 leading-relaxed flex-1 mb-5">{text}</p>

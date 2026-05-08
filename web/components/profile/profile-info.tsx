@@ -274,7 +274,10 @@ function ProfileContent(props: {
 
   return (
     <>
-      <div className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_800px]">
+      <div
+        className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_800px]"
+        data-testid="profile-content"
+      >
         <Col className="gap-6">
           <ProfileCard title="Details" className="p-5">
             <ProfileAbout

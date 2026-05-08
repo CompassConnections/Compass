@@ -21,7 +21,7 @@ export class ProfilePage {
   private readonly headlineSection: Locator
   private readonly keywordsSection: Locator
   private readonly politicalAboutSection: Locator
-  private readonly relegiousAboutSection: Locator
+  private readonly religiousAboutSection: Locator
   private readonly interestsAboutSection: Locator
   private readonly causesAboutSection: Locator
   private readonly personalityAboutSection: Locator
@@ -80,28 +80,28 @@ export class ProfilePage {
     this.genderLocationHightInInchesSection = page.getByTestId(
       'profile-gender-location-height-inches',
     )
-    this.politicalAboutSection = page.getByTestId('profile-about-political')
-    this.relegiousAboutSection = page.getByTestId('profile-about-religious')
-    this.interestsAboutSection = page.getByTestId('profile-about-interests')
-    this.causesAboutSection = page.getByTestId('profile-about-causes')
-    this.personalityAboutSection = page.getByTestId('profile-about-personality')
-    this.ethnicityAboutSection = page.getByTestId('profile-about-ethnicity')
-    this.dietAboutSection = page.getByTestId('profile-about-diet')
-    this.languagesAboutSection = page.getByTestId('profile-about-languages')
-    this.seekingAboutSection = page.getByTestId('profile-about-seeking')
-    this.relationshipStatusAboutSection = page.getByTestId('profile-about-relationship-status')
-    this.educationAboutSection = page.getByTestId('profile-about-education')
-    this.occupationAboutSection = page.getByTestId('profile-about-occupation')
-    this.workAreaAboutSection = page.getByTestId('profile-about-work-area')
-    this.smokerAboutSection = page.getByTestId('profile-about-smoker')
-    this.notDrinkerAboutSection = page.getByTestId('profile-about-not-drink')
-    this.drinkerAboutSection = page.getByTestId('profile-about-drinker')
-    this.wantsKidsAboutSection = page.getByTestId('profile-about-wants-kids')
-    this.lastOnlineAboutSection = page.getByTestId('profile-about-wants-last-online')
+    this.politicalAboutSection = page.getByTestId('profile-content')
+    this.religiousAboutSection = page.getByTestId('profile-content')
+    this.interestsAboutSection = page.getByTestId('profile-content')
+    this.causesAboutSection = page.getByTestId('profile-content')
+    this.personalityAboutSection = page.getByTestId('profile-content')
+    this.ethnicityAboutSection = page.getByTestId('profile-content')
+    this.dietAboutSection = page.getByTestId('profile-content')
+    this.languagesAboutSection = page.getByTestId('profile-content')
+    this.seekingAboutSection = page.getByTestId('profile-content')
+    this.relationshipStatusAboutSection = page.getByTestId('profile-content')
+    this.educationAboutSection = page.getByTestId('profile-content')
+    this.occupationAboutSection = page.getByTestId('profile-content')
+    this.workAreaAboutSection = page.getByTestId('profile-content')
+    this.smokerAboutSection = page.getByTestId('profile-content')
+    this.notDrinkerAboutSection = page.getByTestId('profile-content')
+    this.drinkerAboutSection = page.getByTestId('profile-content')
+    this.wantsKidsAboutSection = page.getByTestId('profile-content')
+    this.lastOnlineAboutSection = page.getByTestId('profile-content')
     this.bigFivePersonalityTraitsAboutSection = page.getByTestId(
       'profile-about-big-five-personality-traits',
     )
-    this.hasKidsAboutSection = page.getByTestId('profile-about-has-kids')
+    this.hasKidsAboutSection = page.getByTestId('profile-content')
     this.socialMediaSection = page.getByTestId('profile-social-media-accounts')
     this.bioSection = page.getByTestId('profile-bio')
     this.bioOptionsDropdown = page.getByTestId('profile-bio-options')
@@ -433,10 +433,10 @@ export class ProfilePage {
   }
 
   async verifyReligiousBeliefs(belief?: string[], details?: string) {
-    await expect(this.relegiousAboutSection).toBeVisible()
+    await expect(this.religiousAboutSection).toBeVisible()
     if (belief)
-      await expect(this.relegiousAboutSection).toContainText(belief[0], {ignoreCase: true})
-    if (details) await expect(this.relegiousAboutSection).toContainText(details, {ignoreCase: true})
+      await expect(this.religiousAboutSection).toContainText(belief[0], {ignoreCase: true})
+    if (details) await expect(this.religiousAboutSection).toContainText(details, {ignoreCase: true})
   }
 
   async verifyPersonalityType(personalityType: string | undefined) {

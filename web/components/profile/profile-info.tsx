@@ -174,7 +174,9 @@ export function ProfileInfo(props: {
               <div className="from-canvas-50 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
             </Col>
             <Row className="gap-2">
-              <SignUpButton text={t('profile.info.signup_to_see', 'Sign up to see profile')} />
+              <SignUpButton
+                text={t('profile.info.signup_to_see', 'Sign up to see their full profile')}
+              />
             </Row>
           </Col>
         )}
@@ -259,7 +261,7 @@ function ProfileContent(props: {
     refreshProfile,
     fromProfilePage,
     fromSignup,
-    isProfileVisible,
+    // isProfileVisible,
     // likesGiven,
     // likesReceived,
     // ships,
@@ -282,9 +284,11 @@ function ProfileContent(props: {
             />
           </ProfileCard>
 
-          <ProfileCard title={t('profile.interests_and_causes', 'Interests')} className="p-5">
-            <ProfileInterestsAndCauses profile={profile} />
-          </ProfileCard>
+          {(!!profile.interests?.length || !!profile.causes?.length) && (
+            <ProfileCard title={t('profile.interests_and_causes', 'Interests')} className="p-5">
+              <ProfileInterestsAndCauses profile={profile} />
+            </ProfileCard>
+          )}
 
           {(profile.mbti || profile.big5_agreeableness) && (
             <ProfileCard title={t('profile.personality', 'Personality')} className="p-5">
@@ -299,48 +303,57 @@ function ProfileContent(props: {
           )}
         </Col>
         <Col className="gap-6">
-          <ProfileCard title={t('profile.bio.about_me', 'About Me')} className="p-0">
-            <ProfileBio
-              isCurrentUser={isCurrentUser}
-              profile={profile}
-              refreshProfile={refreshProfile}
-              fromProfilePage={fromProfilePage}
-            />
-          </ProfileCard>
+          {profile.bio && (
+            <ProfileCard title={t('profile.bio.about_me', 'About Me')} className="p-0">
+              <ProfileBio
+                isCurrentUser={isCurrentUser}
+                profile={profile}
+                refreshProfile={refreshProfile}
+                fromProfilePage={fromProfilePage}
+              />
+            </ProfileCard>
+          )}
 
-          {isProfileVisible && (
+          {currentUser && (
             // <ProfileCard className="!p-0">
             <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />
             // </ProfileCard>
           )}
 
-          <ProfileCard
-            className="p-5"
-            title={
-              isCurrentUser
-                ? t('answers.display.your_prompts', 'Compatibility Prompts')
-                : t('answers.display.user_prompts', 'Compatibility Prompts', {
-                    name: shortenName(user.name),
-                  })
-            }
-          >
-            <ProfileAnswers
-              isCurrentUser={isCurrentUser}
-              user={user}
-              fromSignup={fromSignup}
-              fromProfilePage={fromProfilePage}
-              profile={profile}
-            />
-          </ProfileCard>
+          {currentUser && (
+            <ProfileCard
+              className="p-5"
+              title={
+                isCurrentUser
+                  ? t('answers.display.your_prompts', 'Compatibility Prompts')
+                  : t('answers.display.user_prompts', 'Compatibility Prompts', {
+                      name: shortenName(user.name),
+                    })
+              }
+            >
+              <ProfileAnswers
+                isCurrentUser={isCurrentUser}
+                user={user}
+                fromSignup={fromSignup}
+                fromProfilePage={fromProfilePage}
+                profile={profile}
+              />
+            </ProfileCard>
+          )}
 
-          <ProfileCard className="p-5" title={t('profile.comments.section_title', 'Endorsements')}>
-            <ProfileCommentSection
-              onUser={user}
-              profile={profile}
-              currentUser={currentUser}
-              simpleView={!!fromProfilePage}
-            />
-          </ProfileCard>
+          {currentUser && (
+            <ProfileCard
+              className="p-5"
+              title={t('profile.comments.section_title', 'Endorsements')}
+            >
+              <ProfileCommentSection
+                onUser={user}
+                profile={profile}
+                currentUser={currentUser}
+                simpleView={!!fromProfilePage}
+              />
+            </ProfileCard>
+          )}
 
           {!isCurrentUser && currentUser && (
             <ProfileCard title={t('profile.connect.title', 'Connect')}>

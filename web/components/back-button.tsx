@@ -20,7 +20,7 @@ export function BackButton(props: {className?: string}) {
       type="button"
       onClick={() => router.back()}
       className={clsx(
-        'text-ink-500 hover:text-primary-700 inline-flex items-center gap-2 text-sm transition-all',
+        'text-ink-500 hover:text-primary-700 inline-flex items-center gap-1 text-sm transition-all',
         className,
       )}
     >

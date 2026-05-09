@@ -77,14 +77,14 @@ const newClient = (
         ...settings,
       }
     : {
-        // Default: connect to Supabase's pooled Postgres
+        // Default: connect to Supabase's Postgres
         // This host is IPV4 compatible, for the google cloud VM
         host: 'aws-1-us-west-1.pooler.supabase.com',
-        port: 5432,
+        port: 6543, // transaction mode
         user: `postgres.${instanceId}`,
         password: password,
         database: 'postgres',
-        pool_mode: 'session',
+        // pool_mode: 'session', // This line is ignored by pg-promise/node-postgres anyway
         ssl: {rejectUnauthorized: false},
         family: 4, // <- forces IPv4
         ...settings,
@@ -125,20 +125,20 @@ export function createSupabaseDirectClient(password?: string) {
   return (pgpDirect = client)
 }
 
-let shortTimeoutPgpClient: IDatabase<object, IClient> | null = null
-export const createShortTimeoutDirectClient = () => {
-  if (shortTimeoutPgpClient) return shortTimeoutPgpClient
-  shortTimeoutPgpClient = newClient({
-    instanceId: getInstanceId(),
-    password: getSupabasePwd(),
-    query_timeout: 1000 * 30,
-    max: 20,
-  })
-  return shortTimeoutPgpClient
-}
+// let shortTimeoutPgpClient: IDatabase<object, IClient> | null = null
+// export const createShortTimeoutDirectClient = () => {
+//   if (shortTimeoutPgpClient) return shortTimeoutPgpClient
+//   shortTimeoutPgpClient = newClient({
+//     instanceId: getInstanceId(),
+//     password: getSupabasePwd(),
+//     query_timeout: 1000 * 30,
+//     max: 20,
+//   })
+//   return shortTimeoutPgpClient
+// }
 
-export const SERIAL_MODE = new pgp.txMode.TransactionMode({
-  tiLevel: pgp.txMode.isolationLevel.serializable,
-  readOnly: false,
-  deferrable: false,
-})
+// export const SERIAL_MODE = new pgp.txMode.TransactionMode({
+//   tiLevel: pgp.txMode.isolationLevel.serializable,
+//   readOnly: false,
+//   deferrable: false,
+// })

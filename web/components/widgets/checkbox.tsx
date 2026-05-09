@@ -28,7 +28,7 @@ export function Checkbox(props: {
         <span
           className={clsx(
             'ml-3 whitespace-nowrap font-medium',
-            disabled ? 'text-ink-300' : 'text-ink-700',
+            disabled ? 'text-ink-300' : checked ? 'text-primary-700' : 'text-ink-600',
           )}
         >
           {label}

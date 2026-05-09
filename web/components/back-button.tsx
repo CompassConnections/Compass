@@ -25,7 +25,7 @@ export function BackButton(props: {className?: string}) {
       )}
     >
       <ChevronLeftIcon className="h-4 w-4" />
-      <span className={' hidden sm:flex'}>Back</span>
+      <span className={'hidden sm:flex'}>Back</span>
     </button>
   )
 }

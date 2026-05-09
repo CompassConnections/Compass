@@ -7,7 +7,6 @@ import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {Title} from 'web/components/widgets/title'
 import {useT} from 'web/lib/locale'
 import {getPageData} from 'web/lib/util/page-data'
 import {isNativeMobile} from 'web/lib/util/webview'
@@ -74,7 +73,7 @@ export default function WhatsNew(props: {releases?: Release[]}) {
   }, [nativeMobile])
 
   return (
-    <PageBase trackPageView={'news'} className={'mx-4'}>
+    <PageBase trackPageView={'news'} className={'mx-auto'}>
       <SEO
         title={t('news.title', "What's New")}
         description={
@@ -84,29 +83,55 @@ export default function WhatsNew(props: {releases?: Release[]}) {
         }
         url={`/news`}
       />
-      <Title className="text-3xl">{t('news.title', "What's New")}</Title>
+      <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 mb-10 text-center">
+        <h1 className="font-cormorant text-5xl font-medium text-ink-900 mb-4">
+          {t('news.title', "What's New")}
+        </h1>
+        <p className="text-ink-500 text-base max-w-xl mx-auto leading-relaxed">
+          {t(
+            'news.description',
+            'Stay up to date with the latest features, improvements, and changes to Compass.',
+          )}
+        </p>
+        {releases.length > 0 && (
+          <div className="mt-4 inline-flex items-center gap-2 text-xs text-ink-300 bg-canvas-100 border border-canvas-200 rounded-full px-3 py-1">
+            <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+            {t('news.latest_version', 'Latest: {version}', {version: releases[0].tag_name})}
+          </div>
+        )}
+      </div>
       {loading && <CompassLoadingIndicator />}
       {!loading && !releases.length ? (
-        <p>{t('news.failed', 'Failed to fetch releases.')}</p>
+        <p className="text-ink-500 text-center py-8">
+          {t('news.failed', 'Failed to fetch releases.')}
+        </p>
       ) : (
-        <Col className="max-w-3xl mx-auto py-10 px-4 custom-link">
+        <Col className="max-w-3xl mx-auto py-8 px-4 custom-link gap-6">
           <EnglishOnlyWarning />
           {releases.map((release: Release) => (
-            <div key={release.id} className="mb-10 border-b pb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">{release.name || release.tag_name}</h2>
-                <span className="text-sm text-gray-500">
+            <div
+              key={release.id}
+              className="bg-canvas-50 border border-canvas-200 rounded-xl p-6 transition-all hover:border-primary-300 hover:shadow-sm"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="font-cormorant text-2xl font-medium text-ink-900 leading-tight">
+                  {release.name || release.tag_name}
+                </h2>
+                <span className="text-sm text-ink-300 font-mono whitespace-nowrap ml-4">
                   {new Date(release.published_at).toISOString().split('T')[0]}
                 </span>
               </div>
-              <div className="mt-4 mb-4 prose prose-neutral dark:prose-invert text-ink-1000">
+              <div className="mb-5 prose prose-neutral dark:prose-invert text-ink-900">
                 <CustomMarkdown>
                   {formatPullLinks(
                     release.body || t('news.no_release_notes', '_No release notes provided._'),
                   )}
                 </CustomMarkdown>
               </div>
-              <CustomLink href={release.html_url}>
+              <CustomLink
+                href={release.html_url}
+                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors"
+              >
                 {t('news.view_on_github', 'View on GitHub')}
               </CustomLink>
             </div>

@@ -13,7 +13,6 @@ import {PageBase} from 'web/components/page-base'
 import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
-import {Title} from 'web/components/widgets/title'
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useLastPrivateMessages} from 'web/hooks/use-last-private-messages'
@@ -59,14 +58,24 @@ export function MessagesContent(props: {currentUser: User}) {
 
   return (
     <>
-      <Row className="justify-between">
-        <Title>{t('messages.title', 'Messages')}</Title>
+      <Row className="justify-between items-center mb-4">
+        <h1 className="font-cormorant text-4xl font-medium text-ink-900">
+          {t('messages.title', 'Messages')}
+        </h1>
         <NewMessageButton />
       </Row>
-      <Col className={'w-full overflow-hidden'}>
+      <Col className={'w-full overflow-hidden gap-2'}>
         {channels && channels.length === 0 && (
-          <div className={'text-ink-500 dark:text-ink-600 mt-4 text-center'}>
-            {t('messages.empty', 'You have no messages, yet.')}
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+            <p className="text-ink-500 text-sm mb-1">
+              {t('messages.empty', 'You have no messages, yet.')}
+            </p>
+            <p className="text-ink-300 text-xs">
+              {t(
+                'messages.empty_hint',
+                'Start a conversation with someone who resonates with you.',
+              )}
+            </p>
           </div>
         )}
         {channels?.map((channel) => {
@@ -103,7 +112,11 @@ export const MessageChannelRow = (props: {
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   return (
-    <Row className={'items-center gap-3'}>
+    <Row
+      className={
+        'items-center gap-3 bg-canvas-50 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm hover:bg-canvas-100'
+      }
+    >
       {otherUsers && otherUsers.length > 0 ? (
         <MultipleOrSingleAvatars
           size="md"
@@ -115,14 +128,14 @@ export const MessageChannelRow = (props: {
       ) : (
         <Avatar size="md" username="?" noLink />
       )}
-      <Link
-        className="w-full rounded-md hover:bg-canvas-25 p-2"
-        key={channelId}
-        href={'/messages/' + channelId}
-      >
-        <Col className={''}>
+      <Link className="w-full group" key={channelId} href={'/messages/' + channelId}>
+        <Col className={'gap-1'}>
           <Row className={'items-center justify-between'}>
-            <span className={'font-semibold'}>
+            <span
+              className={
+                'font-medium text-ink-900 text-sm group-hover:text-primary-600 transition-colors'
+              }
+            >
               {otherUsers && otherUsers.length > 0 ? (
                 <span>
                   {otherUsers
@@ -142,36 +155,34 @@ export const MessageChannelRow = (props: {
                 </span>
               ) : (
                 otherUserIds.length == 0 && (
-                  <span className="italic">{t('messages.deleted_user', 'Deleted user')}</span>
+                  <span className="italic text-ink-500">
+                    {t('messages.deleted_user', 'Deleted user')}
+                  </span>
                 )
               )}
               {isBanned && <BannedBadge />}
             </span>
-            <span className={'text-ink-400 dark:text-ink-500 text-xs'}>
+            <span className={'text-ink-300 text-xs'}>
               {lastMessage && <RelativeTimestamp time={lastMessage.createdTime} />}
             </span>
           </Row>
           <Row className="items-center justify-between gap-1">
             <span
               className={clsx(
-                'line-clamp-1 h-5 text-sm',
-                unseen ? '' : 'text-ink-500 dark:text-ink-600',
+                'line-clamp-1 text-sm',
+                unseen ? 'text-ink-900 font-medium' : 'text-ink-500',
               )}
             >
               {lastMessage && (
                 <>
-                  {lastMessage.userId == currentUser.id && t('messages.you_prefix', 'You: ')}
+                  {lastMessage.userId == currentUser.id && (
+                    <span className="text-ink-300">{t('messages.you_prefix', 'You: ')}</span>
+                  )}
                   {parseJsonContentToText(lastMessage.content)}
                 </>
               )}
             </span>
-            {unseen && (
-              <div
-                className={clsx(
-                  'text-canvas-50 bg-primary-500 h-4 min-w-[15px] rounded-full p-[2px] text-center text-[10px] ',
-                )}
-              />
-            )}
+            {unseen && <div className="bg-primary-500 h-2.5 w-2.5 rounded-full shrink-0" />}
           </Row>
         </Col>
       </Link>

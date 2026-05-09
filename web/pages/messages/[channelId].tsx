@@ -83,8 +83,15 @@ export function PrivateMessagesContent(props: {user: User; channelId: number}) {
         thisChannel ? (
           <PrivateChat channel={thisChannel} user={user} memberIds={memberIds} />
         ) : (
-          <div className="flex h-[50vh] flex-col items-center justify-center mx-4 font-bold text-2xl">
-            {t('messages.no_access', 'You do not have access to this conversation.')}
+          <div className="flex h-[50vh] flex-col items-center justify-center mx-4">
+            <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center max-w-md">
+              <p className="font-cormorant text-2xl font-medium text-ink-900 mb-2">
+                {t('messages.no_access', 'You do not have access to this conversation.')}
+              </p>
+              <p className="text-ink-500 text-sm">
+                {t('messages.no_access_hint', 'You may have been removed from this chat.')}
+              </p>
+            </div>
           </div>
         )
       ) : (
@@ -256,8 +263,10 @@ export const PrivateChat = (props: {
 
   return (
     <Col className="w-full">
-      <Row className={'border-ink-200 h-14 items-center gap-2 border-b rounded-xl'}>
-        <BackButton className="self-stretch ml-2" />
+      <Row
+        className={'bg-canvas-0 border border-canvas-200 h-14 items-center gap-2 rounded-xl px-2'}
+      >
+        <BackButton className="self-stretch mr-2" />
         {members && members.length > 0 ? (
           <MultipleOrSingleAvatars
             size="sm"
@@ -271,7 +280,10 @@ export const PrivateChat = (props: {
         )}
         {members && members.length > 0 ? (
           <span
-            className={clsx('ml-1 cursor-pointer hover:underline', noOtherUser && 'italic')}
+            className={clsx(
+              'ml-1 cursor-pointer hover:text-primary-600 transition-colors font-medium text-sm text-ink-900',
+              noOtherUser && 'italic text-ink-500',
+            )}
             onClick={() =>
               members.length === 1 ? router.push(`/${members[0].username}`) : setShowUsers(true)
             }
@@ -287,7 +299,9 @@ export const PrivateChat = (props: {
             {members.length > 2 && ` & ${members.length - 2} more`}
           </span>
         ) : (
-          <span className={'ml-1 italic'}>{t('messages.deleted_user', 'Deleted user')}</span>
+          <span className={'ml-1 italic text-ink-500 text-sm'}>
+            {t('messages.deleted_user', 'Deleted user')}
+          </span>
         )}
 
         {members?.length == 1 && members[0].isBannedFromPosting && <BannedBadge />}
@@ -352,10 +366,16 @@ export const PrivateChat = (props: {
         {showUsers && (
           <Modal open={showUsers} setOpen={setShowUsers}>
             <Col className={clsx(MODAL_CLASS)}>
+              <p className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+                {t('messages.members', 'Members')}
+              </p>
               {members?.map((user) => (
-                <Row key={user.id} className={'w-full items-center justify-start gap-2'}>
+                <div
+                  key={user.id}
+                  className="w-full bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
+                >
                   <UserAvatarAndBadge user={user} />
-                </Row>
+                </div>
               ))}
             </Col>
           </Modal>
@@ -423,16 +443,19 @@ export const PrivateChat = (props: {
               </>
             )}
             {messages && messages.length === 0 && (
-              <div className="text-ink-500 dark:text-ink-600 p-2">
-                {t('messages.empty', 'No messages yet.')}
+              <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+                <p className="text-ink-500 text-sm">{t('messages.empty', 'No messages yet.')}</p>
+                <p className="text-ink-300 text-xs mt-1">
+                  {t('messages.empty_hint', 'Be the first to start the conversation!')}
+                </p>
               </div>
             )}
           </div>
         </div>
       </Col>
       {noOtherUser ? (
-        <div className="border-ink-200 p-4 text-center">
-          <span className="text-ink-600">
+        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+          <span className="text-ink-500 text-sm">
             {t(
               'messages.cannot_message_deleted',
               "You can't text them as they deleted their account.",
@@ -440,14 +463,14 @@ export const PrivateChat = (props: {
           </span>
         </div>
       ) : allUsersBanned ? (
-        <div className="border-ink-200 p-4 text-center">
-          <span className="text-ink-600">
+        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+          <span className="text-ink-500 text-sm">
             {t('messages.cannot_message_banned', "You can't text them as they got banned.")}
           </span>
         </div>
       ) : user.isBannedFromPosting ? (
-        <div className="border-ink-200 p-4 text-center">
-          <span className="text-ink-600">
+        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+          <span className="text-ink-500 text-sm">
             {t('messages.cannot_message_you_banned', "You can't text them as you got banned.")}
           </span>
         </div>

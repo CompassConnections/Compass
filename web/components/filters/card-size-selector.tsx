@@ -26,8 +26,8 @@ export function CardSizeSelector(props: {
             <button
               key={size}
               className={clsx(
-                'px-3 py-1.5 text-sm rounded-xl border border-canvas-100 transition-colors',
-                isSelected ? 'bg-primary-100' : 'bg-canvas-50  hover:bg-canvas-25',
+                'rounded-xl text-xs border-canvas-300 flex items-center gap-1.5 border px-3 py-2 text-ink-500 transition-colors hover:border-primary-400',
+                isSelected ? 'bg-primary-200' : 'bg-canvas-100',
               )}
               onClick={() => updateDisplayOptions({cardSize: size})}
             >

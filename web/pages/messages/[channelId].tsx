@@ -256,8 +256,8 @@ export const PrivateChat = (props: {
 
   return (
     <Col className="w-full">
-      <Row className={'border-ink-200 h-14 items-center gap-1 border-b rounded-xl'}>
-        <BackButton className="self-stretch" />
+      <Row className={'border-ink-200 h-14 items-center gap-2 border-b rounded-xl'}>
+        <BackButton className="self-stretch ml-2" />
         {members && members.length > 0 ? (
           <MultipleOrSingleAvatars
             size="sm"

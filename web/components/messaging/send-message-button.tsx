@@ -178,11 +178,11 @@ export const SendMessageButton = (props: {
 
       <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
         <Col className={MODAL_CLASS}>
-          <Col className={'w-full'}>
-            <p className={'!mb-2 text-xl font-bold'}>
+          <Col className={'w-full mb-2'}>
+            <p className={'font-cormorant text-3xl font-medium text-ink-900 mb-2'}>
               {t('send_message.title', 'Start a meaningful conversation')}
             </p>
-            <p className={'guidance'}>
+            <p className={'text-ink-500 text-sm leading-relaxed'}>
               {t(
                 'send_message.guidance',
                 'Compass is about depth. Take a moment to write something genuine.',
@@ -193,8 +193,8 @@ export const SendMessageButton = (props: {
           {firebaseUser?.emailVerified ? (
             <>
               {!!profile.keywords?.length && (
-                <div className={'w-full border border-canvas-100 rounded-xl p-2'}>
-                  <p className={'text-ink-1000/75 mb-2 text-xs'}>
+                <div className={'w-full bg-canvas-50 border border-canvas-200 rounded-xl p-3'}>
+                  <p className={'text-ink-500 mb-2 text-xs font-medium'}>
                     {t(
                       'send_message.keywords_hint',
                       `Insert some of {name}'s topics in your message`,
@@ -208,10 +208,10 @@ export const SendMessageButton = (props: {
                         type={'button'}
                         onClick={() => toggleChip(k)}
                         className={clsx(
-                          'text-xs px-3 py-1 rounded-full transition-colors',
+                          'text-xs px-3 py-1 rounded-full transition-colors border',
                           insertedChips.includes(k)
-                            ? 'bg-primary-200 border border-primary-300'
-                            : 'bg-canvas-100 hover:bg-canvas-200',
+                            ? 'bg-primary-50 border-primary-300 text-primary-700'
+                            : 'bg-canvas-100 border-canvas-200 text-ink-500 hover:border-primary-300 hover:bg-primary-50',
                         )}
                       >
                         {k}
@@ -229,11 +229,19 @@ export const SendMessageButton = (props: {
                 submitOnEnter={false}
               />
 
+              <p className="text-ink-500 text-xs text-center leading-relaxed">
+                {t(
+                  'send_message.min_chars_hint',
+                  'Write at least {count} characters to unlock the send button',
+                  {count: MIN_CHARS},
+                )}
+              </p>
+
               {/* quality meter */}
-              <div className={'mt-2 w-full flex items-center gap-3'}>
+              <div className={'mt-3 w-full flex items-center gap-3'}>
                 <div
                   className={
-                    'h-1 flex-1 rounded-full bg-canvas-100 border border-canvas-300 overflow-hidden'
+                    'h-2 flex-1 rounded-full bg-canvas-100 border border-canvas-200 overflow-hidden'
                   }
                 >
                   <div
@@ -241,9 +249,9 @@ export const SendMessageButton = (props: {
                     style={{backgroundColor: barColor, width: `${pct}%`}}
                   />
                 </div>
-                <span className={'tabular-nums guidance shrink-0'}>
+                <span className={'tabular-nums text-ink-500 text-xs shrink-0'}>
                   {charCount < MIN_CHARS
-                    ? `${charCount} / ${MIN_CHARS} min`
+                    ? `${charCount}`
                     : t('send_message.ready', 'Ready to send')}
                 </span>
               </div>
@@ -251,7 +259,15 @@ export const SendMessageButton = (props: {
           ) : (
             <EmailVerificationPrompt t={t} className="max-w-xl" />
           )}
-          <span className={'text-red-500'}>{error}</span>
+          {error && (
+            <span
+              className={
+                'text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm mt-2'
+              }
+            >
+              {error}
+            </span>
+          )}
         </Col>
       </Modal>
     </>

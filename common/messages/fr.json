@@ -531,6 +531,7 @@
   "send_message.title": "Commencez une conversation qui a du sens",
   "send_message.guidance": "Prenez un moment pour écrire quelque chose d'authentique.",
   "send_message.keywords_hint": "Insérez quelques-uns des sujets de {name} dans votre message",
+  "send_message.min_chars_hint": "Écrivez au moins {count} caractères pour débloquer le bouton d'envoi",
   "send_message.more_chars": "{count} caractères de plus",
   "send_message.ready": "Prêt à envoyer",
   "more_options_user.ban_user": "Bannir l'utilisateur",

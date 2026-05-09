@@ -531,6 +531,7 @@
   "send_message.title": "Beginne ein bedeutungsvolles Gespräch",
   "send_message.guidance": "Compass geht um Tiefe. Nimm dir einen Moment, um etwas Echtes zu schreiben.",
   "send_message.keywords_hint": "Füge einige von {name}s Themen in deine Nachricht ein",
+  "send_message.min_chars_hint": "Schreiben Sie mindestens {count} Zeichen, um die Senden-Schaltfläche freizuschalten",
   "send_message.more_chars": "{count} Zeichen mehr",
   "send_message.ready": "Bereit zu senden",
   "more_options_user.ban_user": "Benutzer sperren",

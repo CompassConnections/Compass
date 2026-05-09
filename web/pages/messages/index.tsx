@@ -33,7 +33,7 @@ export default function MessagesPage() {
   const firebaseUser = useFirebaseUser()
   const t = useT()
   return (
-    <PageBase trackPageView={'messages page'} className={'py-2 px-2 xl:!px-8'}>
+    <PageBase trackPageView={'messages page'} className={'py-2 px-2 xl:!px-6'}>
       <SEO
         title={t('messages.title', 'Messages')}
         description={t('messages.seo.description', 'Your Messages')}

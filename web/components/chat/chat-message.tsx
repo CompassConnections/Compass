@@ -131,7 +131,12 @@ export function ChatMessageItem(props: {
                     onTouchEnd={cancelLongPress}
                     onTouchCancel={cancelLongPress}
                   >
-                    <Content size={'sm'} content={chat.content} key={chat.id} />
+                    <Content
+                      size={'sm'}
+                      content={chat.content}
+                      key={chat.id}
+                      className={'!text-ink-1000'}
+                    />
                   </div>
                 </Row>
                 {/* Hidden host for emoji picker, opened via long-press */}

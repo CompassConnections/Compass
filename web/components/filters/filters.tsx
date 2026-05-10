@@ -9,12 +9,7 @@ import {Profile} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
-import {
-  Big5Filters,
-  Big5FilterText,
-  countBig5Filters,
-  hasAnyBig5Filter,
-} from 'web/components/filters/big5-filter'
+import {Big5Filters, Big5FilterText, countBig5Filters, hasAnyBig5Filter,} from 'web/components/filters/big5-filter'
 import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
@@ -175,7 +170,7 @@ function SelectedFiltersSummary(props: {
         {selectedFilters.map((filter, idx) => (
           <Row
             key={idx}
-            className="items-center gap-1 text-primary-700 pl-3 pr-2 py-1 rounded-full text-sm bg-gray-100/70 dark:bg-gray-900"
+            className="items-center gap-1 text-primary-700 pl-3 pr-2 py-1 rounded-full text-sm bg-canvas-100 border border-canvas-200"
           >
             <span>{filter.label}</span>
             <button

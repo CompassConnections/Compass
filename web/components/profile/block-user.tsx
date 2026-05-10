@@ -12,7 +12,7 @@ export const BlockUser = (props: {
   currentUser: PrivateUser
   closeModal: () => void
 }) => {
-  const {user, currentUser, closeModal} = props
+  const {user, currentUser} = props
   const {id: userId} = user
   const t = useT()
 
@@ -30,9 +30,9 @@ export const BlockUser = (props: {
   return (
     <Col>
       <Row className={'justify-between'}>
-        <Button onClick={closeModal} color={'gray-white'}>
-          {t('settings.action.cancel', 'Cancel')}
-        </Button>
+        {/*<Button onClick={closeModal} color={'gray-white'}>*/}
+        {/*  {t('settings.action.cancel', 'Cancel')}*/}
+        {/*</Button>*/}
         <Row className={'gap-4'}>
           {isBlocked ? (
             <Button

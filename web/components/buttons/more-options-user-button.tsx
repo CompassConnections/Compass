@@ -12,7 +12,8 @@ import {Modal} from 'web/components/layout/modal'
 import {UncontrolledTabs} from 'web/components/layout/tabs'
 import {BlockUser} from 'web/components/profile/block-user'
 import {ReportUser} from 'web/components/profile/report-user'
-import {Title} from 'web/components/widgets/title'
+import {Avatar} from 'web/components/widgets/avatar'
+import {Subtitle} from 'web/components/widgets/subtitle'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useAdmin, useTrusted} from 'web/hooks/use-admin'
 import {usePrivateUser} from 'web/hooks/use-user'
@@ -37,8 +38,6 @@ export function MoreOptionsUserButton(props: {user: User}) {
     month: 'short',
   })
 
-  // const isYou = currentPrivateUser.id === userId
-
   return (
     <>
       <Tooltip text={t('more_options_user.more_options', 'More Options')} noTap>
@@ -51,83 +50,101 @@ export function MoreOptionsUserButton(props: {user: User}) {
         </Button>
       </Tooltip>
 
-      <Modal open={isModalOpen} setOpen={setIsModalOpen}>
-        <Col className={'bg-canvas-50 text-ink-1000 rounded-md p-4 '}>
-          <div className="mb-2 flex flex-wrap justify-between">
-            <Title className={'!mb-0'}>{name}</Title>
-            {(isAdmin || isTrusted) && (
-              <Row className="gap-2">
-                <Button
-                  color={'red'}
-                  size="xs"
-                  onClick={async () => {
-                    await toast.promise(
-                      api('ban-user', {
-                        userId,
-                        unban: user.isBannedFromPosting ?? false,
-                      }),
-                      {
-                        loading: t('more_options_user.banning', 'Banning...'),
-                        success: () => {
-                          return t('more_options_user.user_banned', 'User banned!')
-                        },
-                        error: () => {
-                          return t('more_options_user.error_banning', 'Error banning user')
-                        },
-                      },
-                    )
-                  }}
-                >
-                  {user.isBannedFromPosting
-                    ? t('more_options_user.banned', 'Banned')
-                    : t('more_options_user.ban_user', 'Ban User')}
-                </Button>
-                <Button
-                  size="sm"
-                  color="red"
-                  onClick={() => {
-                    api('remove-pinned-photo', {userId}).then(() => Router.back())
-                  }}
-                >
-                  {t('more_options_user.delete_pinned_photo', 'Delete pinned photo')}
-                </Button>
+      <Modal open={isModalOpen} setOpen={setIsModalOpen} size="md">
+        <Col className="items-center gap-5 rounded-xl bg-canvas-50 px-4 pb-6 pt-6 text-ink-1000 sm:px-8">
+          {/* Header */}
+          <Row className="w-full items-center gap-4">
+            <Avatar username={user.username} avatarUrl={user.avatarUrl} size="md" noLink />
+            <Col className="min-w-0 flex-1">
+              <Subtitle className="!mb-0 !mt-0 truncate">{name}</Subtitle>
+              <Row className="flex-wrap items-center gap-x-3 gap-y-1 text-ink-500">
+                <span className="text-sm">
+                  {t('more_options_user.joined', 'Joined')} {createdTime}
+                </span>
+                {isAdmin && (
+                  <SimpleCopyTextButton
+                    text={user.id}
+                    tooltip={t('more_options_user.copy_user_id', 'Copy user id')}
+                    className="!px-1 !py-px"
+                    eventTrackingName={'admin copy user id'}
+                  />
+                )}
               </Row>
-            )}
-          </div>
-          <Row className={'text-ink-600 flex-wrap items-center gap-x-3 gap-y-1 px-1'}>
-            <span className={'text-sm'}>
-              {t('more_options_user.joined', 'Joined')} {createdTime}
-            </span>
-            {isAdmin && (
-              <SimpleCopyTextButton
-                text={user.id}
-                tooltip={t('more_options_user.copy_user_id', 'Copy user id')}
-                className="!px-1 !py-px"
-                eventTrackingName={'admin copy user id'}
-              />
-            )}
+            </Col>
           </Row>
-          <UncontrolledTabs
-            className={'mb-4'}
-            tabs={buildArray([
-              [
-                {
-                  title: t('more_options_user.block', 'Block'),
-                  content: (
-                    <BlockUser
-                      user={user}
-                      currentUser={currentPrivateUser}
-                      closeModal={() => setIsModalOpen(false)}
-                    />
-                  ),
-                },
-                {
-                  title: t('more_options_user.report', 'Report'),
-                  content: <ReportUser user={user} closeModal={() => setIsModalOpen(false)} />,
-                },
-              ],
-            ])}
-          />
+
+          {/* Tabs */}
+          <div className="w-full">
+            <UncontrolledTabs
+              className="mb-2"
+              tabs={buildArray([
+                [
+                  {
+                    title: t('more_options_user.block', 'Block'),
+                    content: (
+                      <BlockUser
+                        user={user}
+                        currentUser={currentPrivateUser}
+                        closeModal={() => setIsModalOpen(false)}
+                      />
+                    ),
+                  },
+                  {
+                    title: t('more_options_user.report', 'Report'),
+                    content: <ReportUser user={user} closeModal={() => setIsModalOpen(false)} />,
+                  },
+                ],
+              ])}
+            />
+          </div>
+
+          {/* Admin actions */}
+          {(isAdmin || isTrusted) && (
+            <>
+              <div className="w-full border-t border-canvas-200" />
+              <Col className="w-full gap-3">
+                <span className="text-xs font-medium uppercase tracking-wide text-ink-400">
+                  {t('more_options_user.admin', 'Admin')}
+                </span>
+                <Row className="flex-wrap gap-2">
+                  <Button
+                    color={'red'}
+                    size="xs"
+                    onClick={async () => {
+                      await toast.promise(
+                        api('ban-user', {
+                          userId,
+                          unban: user.isBannedFromPosting ?? false,
+                        }),
+                        {
+                          loading: t('more_options_user.banning', 'Banning...'),
+                          success: () => {
+                            return t('more_options_user.user_banned', 'User banned!')
+                          },
+                          error: () => {
+                            return t('more_options_user.error_banning', 'Error banning user')
+                          },
+                        },
+                      )
+                    }}
+                  >
+                    {user.isBannedFromPosting
+                      ? t('more_options_user.banned', 'Banned')
+                      : t('more_options_user.ban_user', 'Ban User')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="red"
+                    onClick={() => {
+                      api('remove-pinned-photo', {userId}).then(() => Router.back())
+                    }}
+                  >
+                    {t('more_options_user.delete_pinned_photo', 'Delete pinned photo')}
+                  </Button>
+                </Row>
+              </Col>
+            </>
+          )}
         </Col>
       </Modal>
     </>

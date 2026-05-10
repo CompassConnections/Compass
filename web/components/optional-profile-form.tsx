@@ -992,7 +992,7 @@ export const OptionalProfileUserForm = (props: {
               const value = e.target.value === '' ? null : Number(e.target.value)
               setProfile('drinks_per_month', value)
             }}
-            className={'w-20'}
+            className={'!w-20'}
             min={0}
             value={profile['drinks_per_month'] ?? undefined}
           />

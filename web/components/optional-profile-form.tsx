@@ -387,6 +387,7 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
           <Input
             type="number"
+            className={'!w-24'}
             placeholder={t('profile.optional.age', 'Age')}
             value={profile['age'] ?? undefined}
             min={18}
@@ -422,7 +423,7 @@ export const OptionalProfileUserForm = (props: {
                   const heightInInches = Number(e.target.value || 0) * 12 + (heightInches ?? 0)
                   setProfile('height_in_inches', heightInInches)
                 }}
-                className={'w-20'}
+                className={'!w-20'}
                 value={typeof heightFeet === 'number' && heightFeet ? Math.floor(heightFeet) : ''}
                 min={0}
                 step={1}
@@ -437,7 +438,7 @@ export const OptionalProfileUserForm = (props: {
                   const heightInInches = Number(e.target.value || 0) + 12 * (heightFeet ?? 0)
                   setProfile('height_in_inches', heightInInches)
                 }}
-                className={'w-20'}
+                className={'!w-20'}
                 value={
                   typeof heightInches === 'number' && heightInches ? Math.floor(heightInches) : ''
                 }
@@ -462,7 +463,7 @@ export const OptionalProfileUserForm = (props: {
                     setProfile('height_in_inches', totalInches)
                   }
                 }}
-                className={'w-24'}
+                className={'!w-24'}
                 value={
                   heightFeet !== undefined && profile['height_in_inches']
                     ? Math.round(profile['height_in_inches'] * 2.54)
@@ -1187,7 +1188,8 @@ export const OptionalProfileUserForm = (props: {
             disabled={isSubmitting || uploadingImages}
             loading={isSubmitting}
             onClick={handleSubmit}
-            color={'gray'}
+            size={'xl'}
+            color={'primary'}
           >
             {buttonLabel ?? t('common.next', 'Next')}
           </Button>

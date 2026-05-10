@@ -313,7 +313,14 @@ export function CompatibilityQuestionsDisplay(props: {
             )
           })}
           {shownAnswers.length === 0 && (
-            <div className="text-ink-500">{t('answers.display.none', 'None')}</div>
+            <Col className="items-center py-8 text-center">
+              <div className="text-ink-600 mb-2">
+                {t('answers.display.no_results', 'No questions match your search')}
+              </div>
+              <div className="text-sm text-ink-500">
+                {t('answers.display.try_different', 'Try adjusting your search or filters')}
+              </div>
+            </Col>
           )}
         </>
       )}

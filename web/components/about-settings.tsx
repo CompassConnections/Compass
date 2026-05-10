@@ -3,7 +3,7 @@ import {Capacitor} from '@capacitor/core'
 import {githubRepo} from 'common/constants'
 import {HOSTING_ENV, IS_VERCEL} from 'common/hosting/constants'
 import {PrivateUser} from 'common/user'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {CustomLink} from 'web/components/links'
@@ -127,7 +127,10 @@ export const AboutSettings = () => (
 
 const LoadedAboutSettings = (_props: {privateUser: PrivateUser}) => {
   const [copyFeedback, setCopyFeedback] = useState('')
+  const [localStorageFeedback, setLocalStorageFeedback] = useState('')
   const t = useT()
+  const clickCountRef = useRef(0)
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const diagnostics = useDiagnostics()
   if (!diagnostics) return null
@@ -141,8 +144,43 @@ const LoadedAboutSettings = (_props: {privateUser: PrivateUser}) => {
     }, 2000)
   }
 
+  const handleHeroClick = () => {
+    clickCountRef.current++
+
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current)
+    }
+
+    clickTimerRef.current = setTimeout(() => {
+      clickCountRef.current = 0
+    }, 500)
+
+    if (clickCountRef.current === 3) {
+      // Triple click detected
+      const localStorageContents = JSON.stringify(localStorage)
+
+      navigator.clipboard.writeText(localStorageContents)
+      setLocalStorageFeedback(t('about.settings.local_storage_copied', 'LocalStorage copied!'))
+
+      setTimeout(() => {
+        setLocalStorageFeedback('')
+      }, 2000)
+
+      clickCountRef.current = 0
+    }
+  }
+
   return (
     <Col className={''}>
+      <div
+        className="w-fit bg-gradient-to-br from-primary-100 to-canvas-50 rounded-2xl p-6 mt-4"
+        onClick={handleHeroClick}
+      >
+        <p className="text-ink-600 text-sm">
+          {localStorageFeedback ||
+            t('about.settings.description', 'View app version and diagnostic information')}
+        </p>
+      </div>
       <RuntimeInfo info={diagnostics.runtime} />
       <WebBuildInfo info={diagnostics.web} />
       <AndroidInfo info={diagnostics.android} />

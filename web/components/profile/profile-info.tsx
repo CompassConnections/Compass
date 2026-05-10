@@ -141,7 +141,9 @@ export function ProfileInfo(props: {
           >
             {user.name?.charAt(0).toUpperCase()}
           </div>
-          <div className={clsx('min-w-0 flex-1', !profile.pinned_url && 'ml-6')}>
+          <div
+            className={clsx('min-w-0 flex-1 animate-profile-appear', !profile.pinned_url && 'ml-6')}
+          >
             <ProfileHeader
               user={user}
               userActivity={userActivity}

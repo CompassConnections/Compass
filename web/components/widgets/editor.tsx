@@ -14,7 +14,9 @@ import clsx from 'clsx'
 import {richTextToString} from 'common/util/parse'
 import Iframe from 'common/util/tiptap-iframe'
 import {debounce} from 'lodash'
-import {createElement, ReactNode, useCallback, useEffect, useMemo} from 'react'
+import Image from 'next/image'
+import {createElement, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {CustomLink} from 'web/components/links'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
@@ -244,10 +246,15 @@ export function TextEditor(props: {
 
 function RichContent(props: {content: JSONContent; className?: string; size?: 'sm' | 'md' | 'lg'}) {
   const {className, content, size = 'md'} = props
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState('')
 
   const jsxContent = useMemo(() => {
     try {
-      return renderJSONContent(content, size)
+      return renderJSONContent(content, size, (url) => {
+        setLightboxUrl(url)
+        setLightboxOpen(true)
+      })
     } catch (e) {
       console.error('Error generating react', e, 'for content', content)
       return ''
@@ -257,25 +264,47 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
   if (!content) return null
 
   return (
-    <div
-      className={clsx(
-        'ProseMirror custom-link',
-        className,
-        proseClass(size),
-        String.raw`empty:prose-p:after:content-["\00a0"]`, // make empty paragraphs have height
-      )}
-    >
-      {jsxContent}
-    </div>
+    <>
+      <div
+        className={clsx(
+          'ProseMirror custom-link',
+          className,
+          proseClass(size),
+          String.raw`empty:prose-p:after:content-["\00a0"]`, // make empty paragraphs have height
+        )}
+      >
+        {jsxContent}
+      </div>
+      <Modal open={lightboxOpen} setOpen={setLightboxOpen}>
+        <div className={MODAL_CLASS}>
+          <Image
+            src={lightboxUrl}
+            width={1000}
+            height={1000}
+            alt=""
+            className="max-h-[90vh] w-auto"
+          />
+        </div>
+      </Modal>
+    </>
   )
 }
 
-function renderJSONContent(doc: JSONContent, size: 'sm' | 'md' | 'lg'): ReactNode {
-  return recurse(doc, 0, size)
+function renderJSONContent(
+  doc: JSONContent,
+  size: 'sm' | 'md' | 'lg',
+  onImageClick?: (url: string) => void,
+): ReactNode {
+  return recurse(doc, 0, size, onImageClick)
 }
 
-function recurse(node: JSONContent, key: number, size: 'sm' | 'md' | 'lg'): ReactNode {
-  const children = node.content?.map((n, i) => recurse(n, i, size))
+function recurse(
+  node: JSONContent,
+  key: number,
+  size: 'sm' | 'md' | 'lg',
+  onImageClick?: (url: string) => void,
+): ReactNode {
+  const children = node.content?.map((n, i) => recurse(n, i, size, onImageClick))
 
   switch (node.type) {
     case 'doc':
@@ -308,13 +337,19 @@ function recurse(node: JSONContent, key: number, size: 'sm' | 'md' | 'lg'): Reac
       return <br key={key} />
     case 'image':
       return (
-        <img
+        <button
           key={key}
-          src={node.attrs?.src}
-          alt={node.attrs?.alt ?? ''}
-          title={node.attrs?.title ?? undefined}
-          className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
-        />
+          type="button"
+          onClick={() => onImageClick?.(node.attrs?.src ?? '')}
+          className="cursor-pointer"
+        >
+          <img
+            src={node.attrs?.src}
+            alt={node.attrs?.alt ?? ''}
+            title={node.attrs?.title ?? undefined}
+            className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+          />
+        </button>
       )
     case 'table':
       return (

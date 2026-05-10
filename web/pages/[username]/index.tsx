@@ -229,18 +229,6 @@ export default function UserPage(props: UserPageProps) {
     return <Custom404 customText={fetchedProps.notFoundCustomText} />
   }
 
-  if (!fetchedProps.user) {
-    return (
-      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
-        <Col className="items-center justify-center h-full">
-          <div className="text-xl font-semibold text-center mt-8">
-            {t('userpage.accountDeleted', 'This account has been deleted.')}
-          </div>
-        </Col>
-      </PageBase>
-    )
-  }
-
   if (fetchedProps.user?.isBannedFromPosting) {
     return (
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
@@ -253,17 +241,11 @@ export default function UserPage(props: UserPageProps) {
     )
   }
 
-  if (!fetchedProps.profile) {
-    return (
-      <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
-        <Col className="items-center justify-center h-full">
-          <div className="text-xl font-semibold text-center mt-8">
-            {t('custom404.profileNotFound', 'Profile not found.')}
-          </div>
-        </Col>
-      </PageBase>
-    )
+  if (!fetchedProps.user || !fetchedProps.profile) {
+    return <Custom404 customText={'profileNotFound'} />
   }
+
+  // console.log('fetchedProps', fetchedProps)
 
   return <UserPageInner {...(fetchedProps as ActiveUserPageProps)} />
 }

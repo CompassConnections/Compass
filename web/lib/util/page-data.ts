@@ -22,7 +22,7 @@ export const getPageData = async (route = '/') => {
     const url = `${DEPLOYED_WEB_URL}/api/proxy-data?path=${buildId}/${cleanRoute || 'index'}.json`
     debug('Fetching data from:', url)
     const res = await fetch(url, {
-      cache: 'force-cache',
+      // cache: 'force-cache', // must fetch fresh data if their profile changed or got deleted
     })
 
     if (!res.ok) {

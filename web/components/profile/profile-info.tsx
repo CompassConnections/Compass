@@ -275,7 +275,7 @@ function ProfileContent(props: {
   return (
     <>
       <div
-        className="mt-4 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_800px]"
+        className="mt-4 grid grid-cols-1 items-start gap-6 md:grid-cols-[1fr_500px] xl:grid-cols-[1fr_800px]"
         data-testid="profile-content"
       >
         <Col className="gap-6">

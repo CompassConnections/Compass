@@ -1,3 +1,4 @@
 /build/*
 !/build/.npmkeep
 /google-services.json
+/debug/output-metadata.json

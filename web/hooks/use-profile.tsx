@@ -99,3 +99,32 @@ export const useProfileByUserId = (userId: string | undefined) => {
 
   return profile
 }
+//
+// async function getUserById(userId: string) {
+//   const userRes = await run(
+//     db
+//       .from('users')
+//       .select(`id, name, username, created_time, avatar_url, is_banned_from_posting`)
+//       .eq('id', userId),
+//   )
+//   const user = userRes.data?.[0]
+//   if (!user) return null
+//   return convertPartialUser(user)
+// }
+//
+// export const useUserById = (userId: string | undefined) => {
+//   const [user, setUser] = usePersistentInMemoryState<User | undefined | null>(
+//     undefined,
+//     `user-${userId}`,
+//   )
+//
+//   useEffect(() => {
+//     if (userId) {
+//       getUserById(userId).then((user) => {
+//         setUser(user ?? null)
+//       })
+//     }
+//   }, [userId])
+//
+//   return user
+// }

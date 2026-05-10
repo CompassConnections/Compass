@@ -38,13 +38,16 @@ export function ProfileInfo(props: {
   fromProfilePage?: Profile
   fromSignup?: boolean
 }) {
-  const {profile, user, refreshProfile, fromProfilePage, fromSignup} = props
-  debug('Rendering Profile for', user.username, user.name, props)
+  const {profile, refreshProfile, fromProfilePage, fromSignup} = props
 
   const currentUser = useUser()
   const t = useT()
   // const currentProfile = useProfile()
-  // const isCurrentUser = currentUser?.id === user.id
+
+  const isCurrentUser = currentUser?.id === props.user.id
+  const user = isCurrentUser ? currentUser : props.user // to refresh user info after update
+
+  debug('Rendering Profile for', user.username, user.name, props)
 
   const {data: starredUsers, refresh: refreshStars} = useGetter('stars', currentUser?.id, getStars)
   const starredUserIds = starredUsers?.map((u) => u.id)
@@ -319,7 +322,7 @@ function ProfileContent(props: {
 
           {currentUser && (
             // <ProfileCard className="!p-0">
-            <ProfileCarousel profile={profile} refreshProfile={refreshProfile} />
+            <ProfileCarousel profile={profile} />
             // </ProfileCard>
           )}
 

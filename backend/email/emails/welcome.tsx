@@ -1,6 +1,6 @@
 import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
 import {type User} from 'common/user'
-import { container, content, Footer, main, paragraph} from 'email/utils'
+import {container, content, Footer, main, paragraph} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -116,27 +116,27 @@ export const WelcomeEmail = ({
               </Button>
             </div>
 
-            <Text
-              style={{
-                marginTop: '32px',
-                fontSize: '12px',
-                color: '#beaea2',
-                textAlign: 'center',
-                lineHeight: '1.6',
-              }}
-            >
-              {t('email.welcome.copyLink', 'Or copy and paste this link into your browser:')} <br />
-              <a
-                href={verificationLink}
-                style={{
-                  color: '#c17f3e',
-                  textDecoration: 'none',
-                  wordBreak: 'break-all',
-                }}
-              >
-                {verificationLink}
-              </a>
-            </Text>
+            {/*<Text*/}
+            {/*  style={{*/}
+            {/*    marginTop: '32px',*/}
+            {/*    fontSize: '12px',*/}
+            {/*    color: '#beaea2',*/}
+            {/*    textAlign: 'center',*/}
+            {/*    lineHeight: '1.6',*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  {t('email.welcome.copyLink', 'Or copy and paste this link into your browser:')} <br />*/}
+            {/*  <a*/}
+            {/*    href={verificationLink}*/}
+            {/*    style={{*/}
+            {/*      color: '#c17f3e',*/}
+            {/*      textDecoration: 'none',*/}
+            {/*      wordBreak: 'break-all',*/}
+            {/*    }}*/}
+            {/*  >*/}
+            {/*    {verificationLink}*/}
+            {/*  </a>*/}
+            {/*</Text>*/}
 
             <Text
               style={{

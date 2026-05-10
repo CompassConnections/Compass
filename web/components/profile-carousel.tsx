@@ -10,7 +10,7 @@ import {isVideo} from 'web/lib/firebase/storage'
 
 import {SignUpButton} from './nav/sidebar'
 
-export default function ProfileCarousel(props: {profile: Profile; refreshProfile: () => void}) {
+export default function ProfileCarousel(props: {profile: Profile}) {
   const {profile} = props
   const photoNums = profile.photo_urls ? profile.photo_urls.length : 0
 

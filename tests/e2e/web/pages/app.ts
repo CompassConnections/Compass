@@ -10,6 +10,7 @@ import {ProfilePage} from './profilePage'
 import {SettingsPage} from './settingsPage'
 import {SignUpPage} from './signUpPage'
 import {SocialPage} from './socialPage'
+import { PeoplePage } from "./peoplePage";
 
 export class App {
   readonly auth: AuthPage

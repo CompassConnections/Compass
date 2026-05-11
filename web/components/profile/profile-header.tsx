@@ -23,6 +23,7 @@ import {linkClass} from 'web/components/widgets/site-link'
 import {StarButton} from 'web/components/widgets/star-button'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useUser} from 'web/hooks/use-user'
+import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {disableProfile} from 'web/lib/util/disable'
@@ -175,17 +176,8 @@ export function ProfileHeaderActions(props: {
   showMessageButton: boolean
   refreshProfile: () => void
   isHiddenFromMe: boolean | undefined
-  setShowVisibilityModal: (show: boolean) => void
 }) {
-  const {
-    user,
-    profile,
-    starredUserIds,
-    refreshStars,
-    showMessageButton,
-    refreshProfile,
-    setShowVisibilityModal,
-  } = props
+  const {user, profile, starredUserIds, refreshStars, showMessageButton, refreshProfile} = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const disabled = profile.disabled
@@ -252,7 +244,26 @@ export function ProfileHeaderActions(props: {
                   ) : (
                     <LockClosedIcon className="h-4 w-4" />
                   ),
-                onClick: () => setShowVisibilityModal(true),
+                onClick: async () => {
+                  toast
+                    .promise(
+                      updateProfile({
+                        visibility: profile.visibility === 'member' ? 'public' : 'member',
+                      }),
+                      {
+                        loading: 'Loading...',
+                        success: 'Success!',
+                        error:
+                          'Failed to update profile visibility. Try again later or contact support.',
+                      },
+                    )
+                    .then(() => {
+                      refreshProfile()
+                    })
+                    .catch(() => {
+                      // noop
+                    })
+                },
               },
               {
                 name: disabled

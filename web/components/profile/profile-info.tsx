@@ -103,8 +103,6 @@ export function ProfileInfo(props: {
               showMessageButton={showMessageButton}
               refreshProfile={refreshProfile}
               isHiddenFromMe={isHiddenFromMe}
-              // no-op: the visibility modal lives inside ProfileHeader below
-              setShowVisibilityModal={() => {}}
             />
           </div>
         </div>

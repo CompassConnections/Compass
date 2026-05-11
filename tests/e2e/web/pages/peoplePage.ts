@@ -427,8 +427,8 @@ export class PeoplePage {
 
   async verifyNumberOfMatchingProfiles(count: number) {
     await expect(this.profileCount).toBeVisible()
-    const test = await this.profileCount.textContent()
-    if (!test) return
-    expect(actual).toStrictEqual(expected)
+    const actualCount = await this.profileCount.textContent()
+    if (!actualCount) return
+    expect(parseInt(actualCount)).toStrictEqual(count)
   }
 }

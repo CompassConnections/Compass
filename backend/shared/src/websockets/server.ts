@@ -135,12 +135,18 @@ export function broadcast(topic: string, data: BroadcastPayload) {
 export function listen(server: HttpServer, path: string) {
   const wss = new WebSocketServer({server, path})
   let deadConnectionCleaner: NodeJS.Timeout | undefined
+
+  const HEARTBEAT_INTERVAL = 25000 // 25s
+  const MAX_SESSION_DURATION = 4 * 60 * 1000 // 4 minutes
+
   wss.on('listening', () => {
     log.info(`Web socket server listening on ${path}. ${getWebsocketUrl()}`)
+
+    // 1. Keep-alive check: Terminate zombies who don't respond to pings
     deadConnectionCleaner = setInterval(() => {
       for (const ws of wss.clients as Set<HeartbeatWebSocket>) {
         if (ws.isAlive === false) {
-          debug('Terminating dead connection')
+          debug('Terminating dead connection (heartbeat fail)')
           ws.terminate()
           continue
         }
@@ -148,36 +154,54 @@ export function listen(server: HttpServer, path: string) {
         // debug('Sending ping to client');
         ws.ping()
       }
-    }, 25000)
+    }, HEARTBEAT_INTERVAL)
   })
-  wss.on('error', (err) => {
-    log.error('Error on websocket server.', {error: err})
-  })
+
   wss.on('connection', (ws: HeartbeatWebSocket) => {
     ws.isAlive = true
     // debug('Received pong from client');
+
+    // 2. Hard Session Limit: Sever connection after 5 mins to allow Scale-to-Zero
+    // This stops bots/idle users from resetting the Cloud Run 15-min idle timer indefinitely.
+    const sessionTimeout = setTimeout(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        debug('Closing WS: Max session duration reached (5m)')
+        ws.close(1000, 'Session limit reached') // 1000 is a normal closure
+      }
+    }, MAX_SESSION_DURATION)
+
     ws.on('pong', () => (ws.isAlive = true))
+
     metrics.inc('ws/connections_established')
     metrics.set('ws/open_connections', wss.clients.size)
     debug('WS client connected.')
     SWITCHBOARD.connect(ws)
+
     ws.on('message', (data) => {
       const result = processMessage(ws, data)
       // mqp: check ws.readyState before sending?
-      ws.send(JSON.stringify(result))
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(result))
+      }
     })
+
     ws.on('close', (code, reason) => {
+      clearTimeout(sessionTimeout) // 3. Clean up the timer!
       metrics.inc('ws/connections_terminated')
       metrics.set('ws/open_connections', wss.clients.size)
       debug(`WS client disconnected.`, {code, reason: reason.toString()})
       SWITCHBOARD.disconnect(ws)
     })
+
     ws.on('error', (err) => {
+      clearTimeout(sessionTimeout)
       log.error('Error on websocket connection.', {error: err})
     })
   })
+
   wss.on('close', function close() {
     clearInterval(deadConnectionCleaner)
   })
+
   return wss
 }

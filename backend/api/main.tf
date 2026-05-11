@@ -30,6 +30,52 @@ provider "google" {
   region  = local.region
 }
 
+# The Identity
+resource "google_service_account" "api_runtime_sa" {
+  project      = local.project
+  account_id   = "api-runtime-sa"
+  display_name = "Cloud Run API Runtime Identity"
+}
+
+# The Minimum Permissions
+# 1. Allow it to write logs (Essential for debugging)
+resource "google_project_iam_member" "log_writer" {
+  project = local.project
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
+# 2. Allow it to pull data from Artifact Registry (Required to start)
+resource "google_project_iam_member" "artifact_viewer" {
+  project = local.project
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
+resource "google_project_iam_member" "secretAccessor" {
+  project = local.project
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
+resource "google_project_iam_member" "metric_writer" {
+  project = local.project
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
+resource "google_project_iam_member" "firebase_auth_admin" {
+  project = local.project
+  role    = "roles/firebaseauth.admin"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
+resource "google_project_iam_member" "fcm_admin" {
+  project = local.project
+  role    = "roles/firebase.messagingAdmin"
+  member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
+}
+
 # The Cloud Run Service
 resource "google_cloud_run_v2_service" "api" {
   name     = local.service_name
@@ -37,6 +83,8 @@ resource "google_cloud_run_v2_service" "api" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
+    service_account = google_service_account.api_runtime_sa.email
+
     startup_cpu_boost = true
 
     scaling {

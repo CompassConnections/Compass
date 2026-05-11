@@ -586,6 +586,7 @@ function Filters(props: {
         </FilterSection>
 
         <FilterSection
+          testId="lifestyle-smoker"
           title={t('profile.optional.is_smoker', 'Smoker')}
           openFilter={openFilter}
           setOpenFilter={setOpenFilter}
@@ -810,6 +811,7 @@ export function FilterSection(props: {
   selection?: ReactNode
   showNewBadge?: boolean
   newBadgeClassName?: string
+  testId?: string
 }) {
   const {
     title,
@@ -823,10 +825,11 @@ export function FilterSection(props: {
     selection,
     showNewBadge,
     newBadgeClassName,
+    testId,
   } = props
   const isOpen = openFilter == title
   return (
-    <Col className={clsx(className)}>
+    <Col className={clsx(className)} data-testid={testId}>
       <button
         className={clsx(
           'text-ink-600 flex w-full flex-row justify-between px-4 pt-4 relative hover-bold',

@@ -32,7 +32,7 @@ export type UserAccountInformation = {
   height?: Height
   ethnicity_origin?: EthnicityTuple
   interested_in?: InterestedInGenderTuple
-  Interested_in_ages?: InterestedInAges
+  Interested_in_ages?: MinMaxNumbers
   connection_type?: ConnectionTypeTuple
   relationship_status?: RelationshipStatusTuple
   relationship_style?: RelationshipStyleTuple
@@ -62,7 +62,7 @@ type Height = {
   centimeters: string
 }
 
-type InterestedInAges = {
+export type MinMaxNumbers = {
   min: string
   max?: string
 }
@@ -89,7 +89,7 @@ export type Socials = {
   urlOrUsername: string
 }
 
-type FiveBigPersonalityTraits = {
+export type FiveBigPersonalityTraits = {
   openness?: number
   conscientiousness?: number
   extraversion?: number

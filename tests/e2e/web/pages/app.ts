@@ -21,6 +21,7 @@ export class App {
   readonly settings: SettingsPage
   readonly signUp: SignUpPage
   readonly social: SocialPage
+  readonly people: PeoplePage
 
   constructor(public readonly page: Page) {
     this.auth = new AuthPage(page)
@@ -32,6 +33,7 @@ export class App {
     this.settings = new SettingsPage(page)
     this.signUp = new SignUpPage(page)
     this.social = new SocialPage(page)
+    this.people = new PeoplePage(page)
   }
 
   async deleteProfileFromSettings() {

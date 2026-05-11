@@ -32,4 +32,4 @@ COPY dist ./
 # Use PM2 to run the application with the ecosystem config (was only for VM, not cloud run)
 #CMD ["pm2-runtime", "ecosystem.config.js"]
 
-CMD ["node", "-r", "tsconfig-paths/register", "backend/api/lib/serve.js"]
+CMD ["node", "backend/api/lib/serve.js"]

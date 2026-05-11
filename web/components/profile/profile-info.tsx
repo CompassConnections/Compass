@@ -1,4 +1,3 @@
-import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
@@ -18,7 +17,6 @@ import ProfileAbout, {
 } from 'web/components/profile-about'
 import ProfileCarousel from 'web/components/profile-carousel'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
-import {Content} from 'web/components/widgets/editor'
 import {Subtitle} from 'web/components/widgets/subtitle'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useGetter} from 'web/hooks/use-getter'
@@ -161,7 +159,6 @@ export function ProfileInfo(props: {
             refreshProfile={refreshProfile}
             fromProfilePage={fromProfilePage}
             fromSignup={fromSignup}
-            isProfileVisible={isProfileVisible}
             // likesGiven={likesGiven ?? []}
             // likesReceived={likesReceived ?? []}
             // ships={ships ?? []}
@@ -169,9 +166,9 @@ export function ProfileInfo(props: {
           />
         ) : (
           <Col className="bg-canvas-50 border-canvas-300 w-full gap-4 rounded-xl border p-6">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />
-            </div>
+            {/*<div className="text-sm text-gray-500 dark:text-gray-400">*/}
+            {/*  <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />*/}
+            {/*</div>*/}
             <Col className="relative gap-4">
               <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
               <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
@@ -180,7 +177,10 @@ export function ProfileInfo(props: {
             </Col>
             <Row className="gap-2">
               <SignUpButton
-                text={t('profile.info.signup_to_see', 'Sign up to see their full profile')}
+                text={t(
+                  'profile.info.signup_to_see',
+                  'Sign up to see their full profile or connect with them',
+                )}
               />
             </Row>
           </Col>
@@ -253,7 +253,6 @@ function ProfileContent(props: {
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
-  isProfileVisible?: true | User
   // likesGiven: LikeData[]
   // likesReceived: LikeData[]
   // ships: ShipData[]
@@ -266,7 +265,6 @@ function ProfileContent(props: {
     refreshProfile,
     fromProfilePage,
     fromSignup,
-    // isProfileVisible,
     // likesGiven,
     // likesReceived,
     // ships,
@@ -322,11 +320,7 @@ function ProfileContent(props: {
             </ProfileCard>
           )}
 
-          {currentUser && (
-            // <ProfileCard className="!p-0">
-            <ProfileCarousel profile={profile} />
-            // </ProfileCard>
-          )}
+          <ProfileCarousel profile={profile} />
 
           {currentUser && (
             <ProfileCard
@@ -367,6 +361,14 @@ function ProfileContent(props: {
             <ProfileCard title={t('profile.connect.title', 'Connect')}>
               <ConnectActions user={user} profile={profile} />
             </ProfileCard>
+          )}
+          {!currentUser && (
+            <SignUpButton
+              text={t(
+                'profile.info.signup_to_see',
+                'Sign up to see their full profile or connect with them',
+              )}
+            />
           )}
         </Col>
       </div>

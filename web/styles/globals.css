@@ -290,17 +290,17 @@
     --color-yes-50: 17 17 17;
     --color-yes-0: 0 0 0; /* black */
 
-    --color-green-50: 240 253 244; /* lightest green */
-    --color-green-100: 220 252 231;
-    --color-green-200: 187 247 208;
-    --color-green-300: 134 239 172;
-    --color-green-400: 74 222 128;
+    --color-green-950: 240 253 244; /* lightest green */
+    --color-green-900: 220 252 231;
+    --color-green-800: 187 247 208;
+    --color-green-700: 134 239 172;
+    --color-green-600: 74 222 128;
     /*--color-green-500: 34 197 94; !* standard green *!*/
-    --color-green-600: 22 163 74;
-    --color-green-700: 21 128 61;
-    --color-green-800: 22 101 52;
-    --color-green-900: 20 83 45;
-    --color-green-950: 5 46 22; /* darkest green */
+    --color-green-400: 22 163 74;
+    --color-green-300: 21 128 61;
+    --color-green-200: 22 101 52;
+    --color-green-100: 20 83 45;
+    --color-green-50: 5 46 22; /* darkest green */
 
     --color-yellow-950: 255 251 235; /* lightest yellow */
     --color-yellow-900: 254 243 199;

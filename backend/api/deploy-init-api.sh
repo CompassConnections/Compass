@@ -38,18 +38,17 @@ IMAGE_URL="${REGION}-docker.pkg.dev/${PROJECT}/builds/${SERVICE_NAME}:${IMAGE_TA
 echo "🚀 Building & Pushing Image..."
 yarn build
 gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${REGION}-docker.pkg.dev
-gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 docker build . --tag ${IMAGE_URL} --platform linux/amd64
 docker push ${IMAGE_URL}
 
-# Update Cloud Run (The fast way)
-# This keeps all the Terraform-defined settings (env vars, memory, etc.)
-# but simply swaps the container image.
-gcloud run deploy ${SERVICE_NAME} \
-  --image ${IMAGE_URL} \
-  --region ${REGION} \
-  --platform managed \
-  --quiet
+echo "Infrastructure Update..."
+export TF_VAR_image_url=$IMAGE_URL
+export TF_VAR_env=$ENV
+tofu apply -auto-approve
 
+# Get the new URL just in case
+SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --platform managed --region ${REGION} --format 'value(status.url)')
+
+echo "✅ Deployed to Cloud Run!"
+echo "Service URL: ${SERVICE_URL}"
 echo "Custom Domain: https://api.compassmeet.com"
-echo "✅ Code updated on Cloud Run!"

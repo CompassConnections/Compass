@@ -1,7 +1,7 @@
 name: API Release
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
     paths:
       - 'backend/api/package.json'
       - '.github/workflows/cd-api.yml'
@@ -69,17 +69,6 @@ jobs:
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
-
-      - name: Install Tofu (Terraform)
-        run: |
-          LATEST=https://github.com/opentofu/opentofu/releases/download/v1.10.5/tofu_1.10.5_linux_amd64.zip
-          curl -LO "$LATEST"
-          unzip -o tofu_*_linux_amd64.zip
-          sudo mv tofu /usr/local/bin/
-          rm tofu_*_linux_amd64.zip
-          echo "OpenTofu version: $(tofu version)"
-          cd backend/api
-          tofu init
 
       - name: Run deploy script
         run: |

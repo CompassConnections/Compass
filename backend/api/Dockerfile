@@ -4,7 +4,7 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install PM2 globally
-RUN yarn global add pm2
+# RUN yarn global add pm2
 
 # Fet dependencies in for efficient docker layering
 COPY dist/package.json dist/yarn.lock ./
@@ -21,13 +21,15 @@ RUN npm list || true
 COPY dist ./
 
 # Copy the PM2 ecosystem configuration
-COPY ecosystem.config.js ./
+# COPY ecosystem.config.js ./
 
-ENV PORT=80
-EXPOSE 80/tcp
+#ENV PORT=80
+#EXPOSE 80/tcp
 # EXPOSE 8090/tcp
 # EXPOSE 8091/tcp
 # EXPOSE 8092/tcp
 
-# Use PM2 to run the application with the ecosystem config
-CMD ["pm2-runtime", "ecosystem.config.js"]
+# Use PM2 to run the application with the ecosystem config (was only for VM, not cloud run)
+#CMD ["pm2-runtime", "ecosystem.config.js"]
+
+CMD ["node", "-r", "tsconfig-paths/register", "backend/api/lib/serve.js"]

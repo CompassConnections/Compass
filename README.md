@@ -23,9 +23,6 @@ deep, authentic 1-on-1 connections with clarity and efficiency.
 
 You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and
 the [FAQ](https://www.compassmeet.com/faq) as well.
-A detailed description of the early vision is also available in
-this [blog post](https://martinbraquet.com/meeting-rational) (you can disregard the parts about rationality, as Compass
-shifted to a more general audience).
 
 **We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small
 donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help

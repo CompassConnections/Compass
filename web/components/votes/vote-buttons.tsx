@@ -116,7 +116,7 @@ export function VoteButtons(props: {
     <Row className={clsx('gap-2 xs:gap-4 mt-2 flex-wrap', className)}>
       <div className="relative" ref={containerRef}>
         <VoteButton
-          color={clsx('bg-green-700 text-white hover:bg-green-500')}
+          color={clsx('bg-[rgb(22,163,74)] hover:bg-[rgb(21,128,61)] text-white hover:text-white')}
           count={counts.for}
           title={t('vote.for', 'For')}
           disabled={disabled}
@@ -151,14 +151,14 @@ export function VoteButtons(props: {
         )}
       </div>
       <VoteButton
-        color={clsx('bg-yellow-700 text-white hover:bg-yellow-500')}
+        color={clsx('bg-[rgb(217,119,6)] hover:bg-[rgb(180,83,9)] text-white hover:text-white')}
         count={counts.abstain}
         title={t('vote.abstain', 'Abstain')}
         disabled={disabled}
         onClick={() => handleVote('abstain')}
       />
       <VoteButton
-        color={clsx('bg-red-700 text-white hover:bg-red-500')}
+        color={clsx('bg-[rgb(220,38,38)] hover:bg-[rgb(185,28,28)] text-white hover:text-white')}
         count={counts.against}
         title={t('vote.against', 'Against')}
         disabled={disabled}

@@ -1,6 +1,7 @@
 import {
   EllipsisHorizontalIcon,
   EyeIcon,
+  EyeSlashIcon,
   LockClosedIcon,
   PencilIcon,
 } from '@heroicons/react/24/outline'
@@ -54,23 +55,25 @@ export default function ProfileHeader(props: {
 
   return (
     <Row className={'flex-wrap gap-4'}>
-      {currentUser && !isCurrentUser && isHiddenFromMe && (
-        <div className="guidance">
-          {t(
-            'profile_grid.hidden_notice',
-            "You hid this person, so they don't appear in your search results.",
-          )}
-        </div>
-      )}
-      {currentUser && isCurrentUser && disabled && (
-        <div className="text-red-500">
-          {t(
-            'profile.header.disabled_notice',
-            'You disabled your profile, so no one else can access it.',
-          )}
-        </div>
-      )}
       <Col>
+        {currentUser && !isCurrentUser && isHiddenFromMe && (
+          <div className="flex items-center gap-2 rounded-lg bg-canvas-200 px-4 py-3 text-sm text-primary-800 mb-4">
+            <EyeSlashIcon className="h-4 w-4 flex-none" />
+            {t(
+              'profile_grid.hidden_notice',
+              "You hid this person, so they don't appear in your search results.",
+            )}
+          </div>
+        )}
+        {currentUser && isCurrentUser && disabled && (
+          <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 mb-4">
+            <LockClosedIcon className="h-4 w-4 flex-none" />
+            {t(
+              'profile.header.disabled_notice',
+              'You disabled your profile, so no one else can access it.',
+            )}
+          </div>
+        )}
         <Row className="w-full gap-6 flex-wrap">
           {profile.pinned_url && (
             <div className="h-[108px] w-[108px] flex-none">
@@ -85,7 +88,13 @@ export default function ProfileHeader(props: {
               />
             </div>
           )}
-          <Col className="max-w-[160px] sm:max-w-[300px]">
+          <Col
+            className={clsx(
+              profile.pinned_url
+                ? 'max-w-[160px] sm:max-w-[300px]'
+                : 'max-w-[260px] sm:max-w-[400px]',
+            )}
+          >
             <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
               <Row className="items-center gap-1">
                 <Col className="gap-1">

@@ -7,7 +7,6 @@ import {ErrorRequestHandler} from 'express'
 import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
 import {initAdmin} from 'shared/init-admin'
-import {METRIC_WRITER} from 'shared/monitoring/metric-writer'
 import {log} from 'shared/utils'
 import {listen as webSocketListen} from 'shared/websockets/server'
 
@@ -46,7 +45,7 @@ if (IS_LOCAL) {
   })
 }
 
-METRIC_WRITER.start()
+// METRIC_WRITER.start()
 
 const credentials = IS_LOCAL
   ? getServiceAccountCredentials()

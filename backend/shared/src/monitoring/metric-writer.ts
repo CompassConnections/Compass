@@ -82,7 +82,7 @@ function serializeEntries(instance: InstanceInfo, entries: MetricStoreEntry[], t
 }
 
 /** Writes metrics out to GCP's API from a metric store on an interval. */
-export class MetricWriter {
+class MetricWriter {
   client: MetricServiceClient
   store: MetricStore
   intervalMs: number
@@ -101,7 +101,8 @@ export class MetricWriter {
       for (const entry of freshEntries) {
         entry.fresh = false
       }
-      if (IS_GOOGLE_CLOUD) {
+      if (IS_GOOGLE_CLOUD && !process.env.K_SERVICE) {
+        // only for vm, not cloud run
         log.debug('Writing GCP metrics.', {entries: freshEntries})
         if (this.instance == null) {
           this.instance = await getInstanceInfo()

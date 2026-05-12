@@ -77,7 +77,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
     >
       <button
         className={clsx(
-          'border border-canvas-200 rounded-md p-1 hover:bg-canvas-200 focus:outline-none',
+          'relative inline-flex items-center justify-center border bg-canvas-50 border-canvas-300 text-ink-300 hover:border-primary-400 hover:bg-primary-50 rounded-lg h-7 w-7',
           className,
         )}
         disabled={submitting}
@@ -91,9 +91,9 @@ export function HideProfileButton(props: HideProfileButtonProps) {
         }
       >
         {hidden || eyeOff ? (
-          <EyeSlashIcon className={clsx('h-4 w-4 guidance', iconClassName)} />
+          <EyeSlashIcon className={clsx('h-4 w-4 text-ink-500', iconClassName)} />
         ) : (
-          <EyeIcon className={clsx('h-4 w-4 guidance', iconClassName)} />
+          <EyeIcon className={clsx('h-4 w-4 text-ink-500', iconClassName)} />
         )}
       </button>
     </Tooltip>

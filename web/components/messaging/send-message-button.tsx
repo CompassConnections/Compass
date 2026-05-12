@@ -4,9 +4,9 @@ import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
-import {Button} from 'web/components/buttons/button'
+import {Button, buttonClass} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
@@ -15,26 +15,41 @@ import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
-import {usePrivateUser} from 'web/hooks/use-user'
+import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 
 export const SendMessageButton = (props: {
   toUser: User
-  currentUser: User | undefined | null
   profile: Profile
   includeLabel?: boolean
   circleButton?: boolean
   text?: string
   tooltipText?: string
+  className?: string
   disabled?: boolean
+  accentIfMessaged?: boolean
+  onPointerDown?: () => void
+  size?: string
 }) => {
-  const {toUser, currentUser, profile, includeLabel, circleButton, text, tooltipText, disabled} =
-    props
+  const {
+    toUser,
+    profile,
+    includeLabel,
+    circleButton,
+    text,
+    tooltipText,
+    disabled,
+    onPointerDown,
+    className,
+    size = 'h-6 w-6',
+    accentIfMessaged,
+  } = props
   const firebaseUser = useFirebaseUser()
   const router = useRouter()
   const privateUser = usePrivateUser()
+  const currentUser = useUser()
   const channelMemberships = useSortedPrivateMessageMemberships(currentUser?.id)
   const {memberIdsByChannelId} = channelMemberships
   const t = useT()
@@ -43,17 +58,19 @@ export const SendMessageButton = (props: {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  const previousDirectMessageChannel = findKey(
+    memberIdsByChannelId,
+    (dm) => dm.includes(toUser.id) && dm.length === 1,
+  )
+
+  const previousChannelId =
+    previousDirectMessageChannel !== undefined ? previousDirectMessageChannel : undefined
+
+  const putAccent = previousChannelId !== undefined && accentIfMessaged
+
   const messageButtonClicked = async () => {
     if (disabled) return
     if (!currentUser) return firebaseLogin()
-    const previousDirectMessageChannel = findKey(
-      memberIdsByChannelId,
-      (dm) => dm.includes(toUser.id) && dm.length === 1,
-    )
-
-    const previousChannelId =
-      previousDirectMessageChannel !== undefined ? previousDirectMessageChannel : undefined
-
     if (previousChannelId) router.push(`/messages/${previousChannelId}`)
     else setOpenComposeModal(true)
   }
@@ -138,12 +155,23 @@ export const SendMessageButton = (props: {
 
   return (
     <>
-      <Tooltip text={tooltipText || t('send_message.button_label', 'Message')} noTap>
+      <Tooltip
+        text={
+          tooltipText ||
+          (putAccent ? t('send_message.', 'Follow Up') : t('send_message.button_label', 'Message'))
+        }
+        noTap
+      >
         {text ? (
           <Button
             className={clsx('h-fit gap-1', disabled && 'opacity-50 cursor-not-allowed')}
             color={'primary'}
-            onClick={messageButtonClicked}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault()
+              onPointerDown?.()
+              messageButtonClicked()
+            }}
+            onPointerDown={onPointerDown}
             disabled={disabled}
           >
             {text}
@@ -154,7 +182,12 @@ export const SendMessageButton = (props: {
               'h-7 w-7 rounded-full transition-colors',
               disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-900 hover:bg-primary-600',
             )}
-            onClick={messageButtonClicked}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault()
+              onPointerDown?.()
+              messageButtonClicked()
+            }}
+            onPointerDown={onPointerDown}
             disabled={disabled}
           >
             <BiEnvelope
@@ -163,14 +196,27 @@ export const SendMessageButton = (props: {
           </button>
         ) : (
           <button
-            onClick={messageButtonClicked}
+            onPointerDown={onPointerDown}
             disabled={disabled}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault()
+              onPointerDown?.()
+              messageButtonClicked()
+            }}
             className={clsx(
-              'border-canvas-300 flex items-center gap-1.5 rounded-lg border px-2 py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50',
+              'relative border border-canvas-200',
+              buttonClass('xs', 'none'),
               disabled && 'opacity-50 cursor-not-allowed',
+              className,
+              putAccent
+                ? 'bg-green-200 border-green-500 !text-green-500'
+                : 'bg-canvas-50 border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50',
             )}
           >
-            <BiEnvelope className={clsx('h-5 w-5', includeLabel && 'mr-2')} />{' '}
+            {putAccent && (
+              <span className="absolute top-[3px] right-[3px] w-[7px] h-[7px] rounded-full bg-green-500 border-[1.5px] border-canvas-50" />
+            )}
+            <BiEnvelope className={clsx(size, includeLabel && 'mr-2')} />{' '}
             {includeLabel && <>{t('send_message.button_label', 'Message')}</>}
           </button>
         )}

@@ -23,12 +23,14 @@ import {PiMagnifyingGlassBold} from 'react-icons/pi'
 import GenderIcon from 'web/components/gender-icon'
 import {IconWithInfo} from 'web/components/icons'
 import {Row} from 'web/components/layout/row'
+import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ProfileLocation} from 'web/components/profile/profile-location'
 import {getSeekingText} from 'web/components/profile-about'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Content} from 'web/components/widgets/editor'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {StarButton} from 'web/components/widgets/star-button'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {isDark, useTheme} from 'web/hooks/use-theme'
@@ -144,7 +146,16 @@ function ProfilePreview(props: {
   onUndoHidden?: (userId: string) => void
   displayOptions?: Partial<DisplayOptions>
 }) {
-  const {profile, compatibilityScore, onHide, isHidden, onUndoHidden, displayOptions} = props
+  const {
+    profile,
+    compatibilityScore,
+    onHide,
+    isHidden,
+    onUndoHidden,
+    displayOptions,
+    hasStar,
+    refreshStars,
+  } = props
 
   const {
     showPhotos,
@@ -168,7 +179,6 @@ function ProfilePreview(props: {
   const {user} = profile
   const choicesIdsToLabels = useChoicesContext()
   const t = useT()
-  // const currentUser = useUser()
 
   const [isLoading, setIsLoading] = useState(false)
   const [showRing, setShowRing] = useState(false)
@@ -346,24 +356,53 @@ function ProfilePreview(props: {
         <Col className={clsx('relative w-full rounded-xl transition-all text-sm')}>
           <Row
             className={clsx(
-              'absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10',
+              'absolute top-2 right-2 items-start justify-end px-2 pb-3 z-10 gap-1',
               isPhotoRendered && (cardSize === 'large' ? 'mr-0 sm:mr-60' : 'mr-40'),
             )}
           >
             {compatibilityScore && (
-              <CompatibleBadge compatibility={compatibilityScore} className={'pt-1'} />
+              <CompatibleBadge
+                compatibility={compatibilityScore}
+                className={clsx('pt-1 text-xs', cardSize !== 'large' && 'hidden sm:flex')}
+              />
             )}
             {onHide && (
               <HideProfileButton
                 hiddenUserId={profile.user_id}
                 onHidden={onHide}
-                className="ml-2"
+                className="ml-1"
                 stopPropagation
                 eyeOff
                 onPointerDown={() => {
                   hideButtonClickedRef.current = true
                 }}
               />
+            )}
+            {hasStar !== undefined && (
+              <StarButton
+                targetProfile={profile}
+                isStarred={hasStar}
+                refresh={refreshStars}
+                size={'h-4 w-4'}
+                className="h-7 w-7 !rounded-lg !p-1 hover:border-primary-400 hover:bg-primary-50"
+                onPointerDown={() => {
+                  hideButtonClickedRef.current = true
+                }}
+              />
+            )}
+            {user && (
+              <div className={clsx(cardSize !== 'large' && 'hidden sm:flex')}>
+                <SendMessageButton
+                  toUser={user}
+                  profile={profile}
+                  size={'h-4 w-4'}
+                  className={clsx('!p-1 w-7 h-7')}
+                  accentIfMessaged
+                  onPointerDown={() => {
+                    hideButtonClickedRef.current = true
+                  }}
+                />
+              </div>
             )}
           </Row>
 

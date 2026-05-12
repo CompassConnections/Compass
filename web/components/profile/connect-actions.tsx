@@ -89,7 +89,6 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
           {profile.allow_direct_messaging || matches.length > 0 ? (
             <SendMessageButton
               toUser={user}
-              currentUser={currentUser}
               profile={profile}
               text={t('messaging.send_thoughtful_message', 'Send them a thoughtful message')}
             />

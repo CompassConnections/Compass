@@ -14,8 +14,10 @@ export const StarButton = (props: {
   refresh: () => Promise<void>
   hideTooltip?: boolean
   className?: string
+  size?: string
+  onPointerDown?: () => void
 }) => {
-  const {targetProfile, refresh, hideTooltip, className} = props
+  const {targetProfile, refresh, hideTooltip, className, size = 'w-6 h-6', onPointerDown} = props
   const targetId = targetProfile.user_id
   const [isStarred, setIsStarred] = useState(props.isStarred)
   const t = useT()
@@ -41,18 +43,21 @@ export const StarButton = (props: {
 
   const button = (
     <button
-      className={clsx(buttonClass('xs', 'none'), 'text-ink-500 group !rounded-full', className)}
+      className={clsx(
+        'border border-canvas-200',
+        buttonClass('xs', 'none'),
+        isStarred
+          ? 'bg-primary-50 border-primary-200 text-primary-600'
+          : 'bg-canvas-50 border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50',
+        className,
+      )}
       onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         star()
       }}
+      onPointerDown={onPointerDown}
     >
-      <StarIcon
-        className={clsx(
-          'h-7 w-7 transition-colors group-hover:fill-yellow-400/70',
-          isStarred && 'fill-yellow-400 stroke-yellow-500 dark:stroke-yellow-600',
-        )}
-      />
+      <StarIcon className={clsx(size, isStarred && 'fill-primary-500')} />
     </button>
   )
 

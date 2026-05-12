@@ -106,6 +106,7 @@
     --color-ink-600: 120 108 92;
 
     /* Green - Accents */
+    --color-green-200: #f0faf3;
     --color-green-500: 107 143 113; /* Accent - Sage Green (#6B8F71) */
 
     /* Canvas - Backgrounds & Surfaces */
@@ -182,7 +183,7 @@
     /*--color-green-500: 34 197 94; !* standard green *!*/
     --color-green-400: 74 222 128;
     --color-green-300: 110 231 183; /* vibrant but not neon */
-    --color-green-200: 167 243 208; /* gentle mid-light tone */
+    /*--color-green-200: 167 243 208; !* gentle mid-light tone *!*/
     --color-green-100: 209 260 229; /* soft and airy */
     --color-green-50: 240 263 245; /* subtle, barely tinted background */
 
@@ -222,8 +223,11 @@
     --color-ink-500: 176 160 140; /* Muted Text - shifted to warm tan */
     --color-ink-600: 156 140 120;
 
-    /* Green - Sage looks great on dark brown */
-    --color-green-500: 125 160 131; /* Lightened Sage */
+    /* Button background — barely-there dark green surface */
+    --color-green-200: 32 54 38;
+
+    /* Icon, dot, text — readable sage on that dark surface */
+    --color-green-500: 125 160 131;
 
     /* High Contrast */
     --color-ink-1000: 255 255 255; /* white */
@@ -298,7 +302,7 @@
     /*--color-green-500: 34 197 94; !* standard green *!*/
     --color-green-400: 22 163 74;
     --color-green-300: 21 128 61;
-    --color-green-200: 22 101 52;
+    /*--color-green-200: 22 101 52;*/
     --color-green-100: 20 83 45;
     --color-green-50: 5 46 22; /* darkest green */
 

@@ -123,7 +123,7 @@ export function Tooltip(props: {
         as="div"
         ref={refs.setFloating as any}
         style={{position: strategy, top: y ?? 0, left: x ?? 0}}
-        className="text-ink-1000 bg-canvas-50 z-20 w-max max-w-xs whitespace-normal rounded-lg px-2 py-1 text-center text-sm font-medium border border-canvas-100 shadow shadow-canvas-100"
+        className="text-ink-1000 bg-primary-100 z-20 w-max max-w-xs whitespace-normal rounded-lg px-2 py-1 text-center text-sm font-medium border border-primary-300 shadow shadow-canvas-100"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}
       >

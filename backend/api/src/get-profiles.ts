@@ -109,6 +109,7 @@ export type profileQueryType = {
 // Define all text fields to search
 const textFields = [
   'users.name',
+  'users.username',
   'search_text',
   'headline',
   'occupation',
@@ -611,7 +612,14 @@ export const loadProfiles = async (props: profileQueryType) => {
       ),
   ]
 
-  let selectCols = 'profiles.*, users.name, users.username, users.data as user'
+  let selectCols = `profiles.*, users.name, users.username, jsonb_build_object(
+    'id', users.id,
+    'name', users.name,
+    'username', users.username,
+    'avatarUrl', users.avatar_url,
+    'createdTime', users.created_time,
+    'isBannedFromPosting', users.is_banned_from_posting
+  ) as user`
   if (orderByParam === 'compatibility_score') {
     selectCols += ', cs.score as compatibility_score'
   } else if (orderByParam === 'last_online_time' || last_active) {

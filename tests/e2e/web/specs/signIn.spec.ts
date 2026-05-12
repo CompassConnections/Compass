@@ -3,11 +3,11 @@ import {expect, test} from '../fixtures/signInFixture'
 test.describe('when given valid input', () => {
   test('should be able to sign in to an available account', async ({
     app,
-    signedOutAccount,
+    signedOutAccount: account,
   }) => {
-    await app.signinWithEmail(signedOutAccount)
+    await app.signinWithEmail(account)
     await app.home.goToHomePage()
-    await app.home.verifySignedInHomePage(signedOutAccount.display_name)
+    await app.home.verifySignedInHomePage(account.display_name)
   })
 
   test('the profile count should update sucessfully when applying a filter', async ({
@@ -45,5 +45,13 @@ test.describe('when given invalid input', () => {
 })
 
 test.describe('when an error occurs', () => {
-  test('placeholder', async () => {})
+  test('placeholder', async () => { })
+  test('Trial', async ({
+    app,
+    signedOutAccount: account
+  }) => {
+    await app.signinWithEmail(account)
+    await app.home.clickPeopleLink()
+    await app.people.setDisplayFilter({cardSize: "Large", filters: [["Gender", true]]})
+  })
 })

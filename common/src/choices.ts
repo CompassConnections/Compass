@@ -339,3 +339,7 @@ export type SubstanceIntentionTuple = {
 export type SubstancePreferenceTuple = {
   [K in keyof typeof SUBSTANCE_PREFERENCE_CHOICES]: [K, (typeof SUBSTANCE_PREFERENCE_CHOICES)[K]]
 }[keyof typeof SUBSTANCE_PREFERENCE_CHOICES]
+
+export type LastActiveTuple = {
+  [K in keyof typeof LAST_ONLINE_CHOICES]: [K, (typeof LAST_ONLINE_CHOICES)[K]]
+}[keyof typeof LAST_ONLINE_CHOICES]

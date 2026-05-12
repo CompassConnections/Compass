@@ -1,14 +1,26 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { ConnectionTypeTuple, GenderTuple, EducationTuple, DietTuple, PsychedelicsTuple, CannabisTuple, LanguageTuple, PoliticalTuple, ReligionTuple, PersonalityKey } from "common/choices";
+import { 
+    ConnectionTypeTuple,
+    GenderTuple,
+    EducationTuple,
+    DietTuple,
+    PsychedelicsTuple,
+    CannabisTuple,
+    LanguageTuple,
+    PoliticalTuple,
+    ReligionTuple,
+    PersonalityKey,
+    LastActiveTuple,
+} from "common/choices";
 import { MinMaxNumbers } from "../utils/accountInformation";
 
-export type Background = {
+export type BackgroundFilter = {
     location?: string
     education?: EducationTuple
     work?: string
 }
 
-export type Lifestyle = {
+export type LifestyleFilter = {
     interest?: string
     cause?: string
     diet?: DietTuple
@@ -19,12 +31,12 @@ export type Lifestyle = {
     language?: LanguageTuple
 }
 
-export type Beliefs = {
+export type BeliefsFilter = {
     political?: PoliticalTuple
     religious?: ReligionTuple
 }
 
-export type Personality = {
+export type PersonalityFilter = {
     mbti?: PersonalityKey
     bigFive?: BigFive
 }
@@ -37,8 +49,19 @@ type BigFive = {
     neuroticism?: MinMaxNumbers
 }
 
+export type AdvancedFilter = {
+    lastActive?: LastActiveTuple
+    photos?: boolean
+}
+
+export type DisplayFilter = {
+    cardSize?: "Small" | "Medium" | "Large"
+    filters?: [string, boolean][]
+}
+
 export class PeoplePage {
     private readonly peopleHeading: Locator
+    private readonly resetFilters: Locator
     private readonly yourFiltersCheckbox: Locator
     private readonly incompleteProfilesCheckbox: Locator
     private readonly connectionTypeDropdown: Locator
@@ -65,10 +88,13 @@ export class PeoplePage {
     private readonly personalityMbti: Locator
     private readonly personalityBigFive: Locator
     private readonly advancedDropdown: Locator
+    private readonly advancedActive: Locator
+    private readonly advancedPhotos: Locator
     private readonly displayDropdown: Locator
 
     constructor (public readonly page: Page) {
         this.peopleHeading = page.getByRole('heading', { name: 'People' })
+        this.resetFilters = page.getByRole('button', { name: 'Reset filters' })
         this.yourFiltersCheckbox = page.getByText('Your filters', { exact: true })
         this.incompleteProfilesCheckbox = page.getByText('Include incomplete profiles', { exact: true })
         this.connectionTypeDropdown = page.getByRole('button', { name: 'Any connection' })
@@ -95,6 +121,8 @@ export class PeoplePage {
         this.personalityMbti = page.getByRole('button', { name: 'Any MBTI' })
         this.personalityBigFive = page.getByRole('button', { name: 'Any Big 5' })
         this.advancedDropdown = page.getByRole('button', { name: 'Advanced' })
+        this.advancedActive = page.getByTestId('advanced-active')
+        this.advancedPhotos = page.getByText('Photos', { exact: true })
         this.displayDropdown = page.getByRole('button', { name: 'Display' })
     }
     
@@ -153,6 +181,11 @@ export class PeoplePage {
         await expect(this.peopleHeading).toBeVisible()
     }
 
+    async resetFilter() {
+        await expect(this.resetFilters).toBeVisible()
+        await this.resetFilters.click()
+    }
+
     async setYourFilters() {
         await expect(this.yourFiltersCheckbox).toBeVisible()
         await this.yourFiltersCheckbox.click()
@@ -192,7 +225,7 @@ export class PeoplePage {
         // await this.page.getByLabel(genderType[0], {exact: true}).click()
     }
     
-    async setBackground(background: Background) {
+    async setBackgroundFilter(background: BackgroundFilter) {
         await expect(this.backgroundDropdown).toBeVisible()
         await this.backgroundDropdown.click()
         if (background.location) {
@@ -216,7 +249,7 @@ export class PeoplePage {
         }
     }
 
-    async setLifestyle(lifestyle: Lifestyle) {
+    async setLifestyleFilter(lifestyle: LifestyleFilter) {
         await expect(this.lifestyleDropdown).toBeVisible()
         await this.lifestyleDropdown.click()
 
@@ -242,7 +275,7 @@ export class PeoplePage {
         if(lifestyle.language) await this.selectOption(this.lifestyleLanguages, lifestyle.language[0])
     }
 
-    async setValuesAndBeliefs(values: Beliefs) {
+    async setValuesAndBeliefsFilter(values: BeliefsFilter) {
         await expect(this.valuesAndBeliefsDropdown).toBeVisible()
         await this.valuesAndBeliefsDropdown.click()
 
@@ -250,20 +283,11 @@ export class PeoplePage {
         if(values.religious) await this.selectOption(this.valuesAndBeliefsReligion, values.religious[0])
     }
 
-    async setPersonality(personality: Personality) {
+    async setPersonalityFilter(personality: PersonalityFilter) {
         await expect(this.personalityDropdown).toBeVisible()
         await this.personalityDropdown.click()
 
-        await this.personalityBigFive.click()
-        await this.sliderHelper(
-            {min: "20", max: "50"},
-            this.page.getByTestId('big-five-agreeableness')
-        )
-
-        if(personality.mbti) {
-            await this.personalityMbti.click()
-            await this.selectOption(this.personalityMbti, personality.mbti)
-        }
+        if(personality.mbti) await this.selectOption(this.personalityMbti, personality.mbti)
         
         if(personality.bigFive) {
             await this.personalityBigFive.click()
@@ -296,6 +320,45 @@ export class PeoplePage {
                     personality.bigFive.neuroticism,
                     this.page.getByTestId('big-five-neuroticism')
                 )
+            }
+        }
+    }
+
+    async setAdvancedFilter(advanced: AdvancedFilter) {
+        await expect(this.advancedDropdown).toBeVisible()
+        await this.advancedDropdown.click()
+
+        if (advanced.lastActive) {
+            await this.advancedActive.click()
+            await this.page.getByRole('button', { name: `${advanced.lastActive[1]}`}).click()
+        }
+        
+        if (advanced.photos) {
+            await this.advancedPhotos.click()
+            await this.page.getByRole('checkbox', { name: 'Has photos' }).click()
+        }
+    }
+
+    async setDisplayFilter(display: DisplayFilter) {
+        await expect(this.displayDropdown).toBeVisible()
+        await this.displayDropdown.click()
+
+        if (display.cardSize) await this.page.getByRole('button', { name: `${display.cardSize}` }).click()
+        
+        if (!display.filters) return
+        if (display.filters?.length > 0) {
+            for (let i = 0; i < display.filters.length; i++) {
+                const filter = await this.page.getByRole('checkbox', { name: `${display.filters[i][0]}` })
+                await expect(filter).toBeVisible()
+                const isChecked = await filter.isChecked()
+
+                if (display.filters[i][1]) {
+                    if (isChecked) continue
+                    if (!isChecked) await filter.click()
+                } else if (!display.filters[i][1]) {
+                    if (isChecked) await filter.click()
+                    if (!isChecked) continue
+                }
             }
         }
     }

@@ -9,7 +9,12 @@ import {Profile} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
-import {Big5Filters, Big5FilterText, countBig5Filters, hasAnyBig5Filter,} from 'web/components/filters/big5-filter'
+import {
+  Big5Filters,
+  Big5FilterText,
+  countBig5Filters,
+  hasAnyBig5Filter,
+} from 'web/components/filters/big5-filter'
 import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
@@ -743,6 +748,7 @@ function Filters(props: {
         {/* LAST ACTIVE */}
         <FilterSection
           title={t('filter.last_active.title', 'Last active')}
+          testId="advanced-active"
           openFilter={openFilter}
           setOpenFilter={setOpenFilter}
           isActive={!!filters.last_active}

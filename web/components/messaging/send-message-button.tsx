@@ -273,6 +273,7 @@ export const SendMessageButton = (props: {
                 isSubmitting={!editor || submitting}
                 isDisabled={charCount < MIN_CHARS}
                 submitOnEnter={false}
+                maxHeight={'25vh'} // otherwise send button gets hidden (need better fix)
               />
 
               <p className="text-ink-500 text-xs text-center leading-relaxed">

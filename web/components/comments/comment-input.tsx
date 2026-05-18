@@ -134,6 +134,7 @@ export function CommentInputTextArea(props: {
   isDisabled?: boolean
   isEditing?: boolean
   commentTypes?: CommentType[]
+  maxHeight?: string
 }) {
   const {
     user,
@@ -146,6 +147,7 @@ export function CommentInputTextArea(props: {
     commentTypes = ['comment'],
     cancelEditing,
     isDisabled,
+    maxHeight,
   } = props
   const t = useT()
 
@@ -198,7 +200,7 @@ export function CommentInputTextArea(props: {
   }, [replyTo, editor])
 
   return (
-    <TextEditor editor={editor} simple hideEmbed>
+    <TextEditor editor={editor} maxHeight={maxHeight} simple hideEmbed>
       <Row className={''}>
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>

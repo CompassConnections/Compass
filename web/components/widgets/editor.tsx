@@ -221,8 +221,9 @@ export function TextEditor(props: {
   className?: string
   onBlur?: () => void
   onChange?: () => void
+  maxHeight?: string
 }) {
-  const {editor, simple, hideEmbed, children, className, onBlur, onChange} = props
+  const {editor, simple, hideEmbed, children, className, onBlur, onChange, maxHeight} = props
 
   return (
     // matches input styling
@@ -233,7 +234,7 @@ export function TextEditor(props: {
       )}
     >
       <FloatingFormatMenu editor={editor} advanced={!simple} />
-      <div className={clsx('max-h-[69vh] overflow-auto')}>
+      <div className={clsx(`overflow-auto`, maxHeight ? `max-h-[${maxHeight}]` : 'max-h-[69vh]')}>
         <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 

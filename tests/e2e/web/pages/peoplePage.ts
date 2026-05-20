@@ -429,6 +429,6 @@ export class PeoplePage {
     await expect(this.profileCount).toBeVisible()
     const test = await this.profileCount.textContent()
     if (!test) return
-    await expect(count).toStrictEqual(parseInt(test))
+    expect(actual).toStrictEqual(expected)
   }
 }

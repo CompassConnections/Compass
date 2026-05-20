@@ -38,20 +38,4 @@ test.describe('when given invalid input', () => {
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()
   })
-
-  test('login check', async ({}) => {
-    
-  });
-})
-
-test.describe('when an error occurs', () => {
-  test('placeholder', async () => { })
-  test('Trial', async ({
-    app,
-    signedOutAccount: account
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-    await app.people.setDisplayFilter({cardSize: "Large", filters: [["Gender", true]]})
-  })
 })

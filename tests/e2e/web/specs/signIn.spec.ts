@@ -9,6 +9,23 @@ test.describe('when given valid input', () => {
     await app.home.goToHomePage()
     await app.home.verifySignedInHomePage(account.display_name)
   })
+
+  test('should be able to filter users correctly on the people page', async ({
+    app,
+    signedOutAccount: account,
+  }) => {
+    await app.signinWithEmail(account)
+    await app.home.clickPeopleLink()
+    await app.people.getProfileInfo()
+    const totalProfiles = (await app.people.profileCountLocator.textContent())
+    await app.people.setConnectionTypeFilter(["Collaboration", "collaboration"])
+
+    const filterdProfiles = await app.people.profileCountLocator.textContent()
+
+    if(!totalProfiles || !filterdProfiles) return
+    await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+    
+  });
 })
 
 test.describe('when given invalid input', () => {
@@ -21,21 +38,5 @@ test.describe('when given invalid input', () => {
     await expect(
       page.getByText('Failed to sign in with your email and password', {exact: true}),
     ).toBeVisible()
-  })
-
-  test('login check', async ({}) => {
-    
-  });
-})
-
-test.describe('when an error occurs', () => {
-  test('placeholder', async () => { })
-  test('Trial', async ({
-    app,
-    signedOutAccount: account
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-    await app.people.setDisplayFilter({cardSize: "Large", filters: [["Gender", true]]})
   })
 })

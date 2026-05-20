@@ -59,8 +59,20 @@ export type DisplayFilter = {
     filters?: [string, boolean][]
 }
 
+export type PeoplePageFilter = {
+    connectionFilter?: ConnectionTypeTuple
+    ageFilter?: MinMaxNumbers
+    genderFilter?: GenderTuple
+    backgroundFilter?: BackgroundFilter
+    lifestyleFilter?: LifestyleFilter
+    valuesAndBeliefsFilter?: BeliefsFilter
+    personalityFilter?: PersonalityFilter
+}
+
 export class PeoplePage {
     private readonly peopleHeading: Locator
+    private readonly searchBox: Locator
+    private readonly profileCount: Locator
     private readonly resetFilters: Locator
     private readonly yourFiltersCheckbox: Locator
     private readonly incompleteProfilesCheckbox: Locator
@@ -91,9 +103,15 @@ export class PeoplePage {
     private readonly advancedActive: Locator
     private readonly advancedPhotos: Locator
     private readonly displayDropdown: Locator
+    private readonly profileGrid: Locator
+    private readonly profileResults: Locator
+    private readonly profileName: Locator
+    private readonly profileAgeGender: Locator
 
     constructor (public readonly page: Page) {
         this.peopleHeading = page.getByRole('heading', { name: 'People' })
+        this.searchBox = page.getByRole('textbox', { name: 'Search anything...' })
+        this.profileCount = page.getByTestId('people-profile-count')
         this.resetFilters = page.getByRole('button', { name: 'Reset filters' })
         this.yourFiltersCheckbox = page.getByText('Your filters', { exact: true })
         this.incompleteProfilesCheckbox = page.getByText('Include incomplete profiles', { exact: true })
@@ -124,8 +142,17 @@ export class PeoplePage {
         this.advancedActive = page.getByTestId('advanced-active')
         this.advancedPhotos = page.getByText('Photos', { exact: true })
         this.displayDropdown = page.getByRole('button', { name: 'Display' })
+        this.profileGrid = page.getByTestId('people-profile-grid')
+        this.profileResults = page.getByTestId('people-profile-results')
+        this.profileName = page.getByTestId('people-profile-name')
+        this.profileAgeGender = page.getByTestId('people-profile-age-gender')
+        
     }
     
+    get profileCountLocator(): Locator {
+        return this.profileCount
+    }
+
     async sliderHelper(range: MinMaxNumbers, locator?: Locator){
         let minSlider
         let maxSlider
@@ -179,6 +206,14 @@ export class PeoplePage {
 
     async verifyPeoplePage() {
         await expect(this.peopleHeading).toBeVisible()
+    }
+
+    //Doesn't actually work, need to find out why
+    async useSearch(item: string) {
+        await expect(this.searchBox).toBeVisible()
+        await this.searchBox.click()
+        await this.searchBox.fill(item)
+        await this.page.keyboard.press('Enter')
     }
 
     async resetFilter() {
@@ -361,5 +396,25 @@ export class PeoplePage {
                 }
             }
         }
+    }
+
+    async getProfileInfo() {
+        await expect(this.profileGrid).toBeVisible()
+        const totalResults = await this.profileResults.count()
+        const chosenProfileNumber = Math.floor(Math.random() * totalResults)
+        const chosenProfile = await this.profileResults.nth(chosenProfileNumber)
+        const profileName = await chosenProfile.getByTestId('people-profile-name').textContent()
+
+        if (!profileName) return
+        return {
+            name: profileName
+        }
+    }
+
+    async verifyNumberOfMatchingProfiles(count: number) {
+        await expect(this.profileCount).toBeVisible()
+        const test = await this.profileCount.textContent()
+        if (!test) return
+        await expect(count).toStrictEqual(parseInt(test))
     }
 }

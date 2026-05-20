@@ -267,7 +267,7 @@ export const Search = forwardRef<
         </Row>
         {(profileCount ?? 0) > 0 && (
           <Row className="text-sm text-ink-500 gap-2">
-            <p>
+            <p data-testid="people-profile-count">
               {profileCount}{' '}
               {(profileCount ?? 0) > 1
                 ? t('common.people', 'people')

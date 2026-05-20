@@ -39,12 +39,11 @@ export async function seedDbUser(
     ],
   }
   const relationshipStyle = userInfo.randomElement(userInfo.pref_relation_styles)
-  let romanticStyle: any
+  let romanticStyle: string | null = null
   if (relationshipStyle === 'relationship') {
     romanticStyle = userInfo.randomElement(userInfo.pref_romantic_styles)
-  } else {
-    romanticStyle = null
   }
+
   const numberOfLanguages = faker.number.int({min: 1, max: 3})
   let languagesKnown = []
 
@@ -69,7 +68,7 @@ export async function seedDbUser(
     pref_gender: [userInfo.randomElement(userInfo.pref_gender)],
     pref_relation_styles: [relationshipStyle],
     relationship_status: [userInfo.randomElement(userInfo.relationship_status)],
-    pref_romantic_styles: [romanticStyle],
+    pref_romantic_styles: romanticStyle ? [romanticStyle] : [],
     pref_age_min: userInfo.pref_age.min,
     pref_age_max: userInfo.pref_age.max,
     born_in_location: userInfo.born_in_location,

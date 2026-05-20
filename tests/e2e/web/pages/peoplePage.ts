@@ -176,10 +176,15 @@ export class PeoplePage {
 
     if (minRange > currentMinValue) {
       await minSlider.click()
+      let iterations = 0
+      const MAX_ITERATIONS = 100
       while (true) {
+        if (iterations++ > MAX_ITERATIONS) {
+          throw new Error(`Slider adjustment exceeded ${MAX_ITERATIONS} iterations`)
+        }
         const changedMinValue = Number(await minSlider.getAttribute('aria-valuenow'))
 
-        if (changedMinValue === null) break
+        if (isNaN(changedMinValue)) break
         if (minRange <= changedMinValue) break
         await this.page.keyboard.press('ArrowRight')
       }
@@ -187,9 +192,14 @@ export class PeoplePage {
 
     if (maxRange < currentMaxValue) {
       await maxSlider.click()
+      let iterations = 0
+      const MAX_ITERATIONS = 100
       while (true) {
+        if (iterations++ > MAX_ITERATIONS) {
+          throw new Error(`Slider adjustment exceeded ${MAX_ITERATIONS} iterations`)
+        }
         const changedMaxValue = Number(await maxSlider.getAttribute('aria-valuenow'))
-        if (changedMaxValue === null) break
+        if (isNaN(changedMaxValue)) break
         if (maxRange >= changedMaxValue) break
         await this.page.keyboard.press('ArrowLeft')
       }
@@ -199,8 +209,10 @@ export class PeoplePage {
   async selectOption(trigger: Locator, label: string) {
     await expect(trigger).toBeVisible()
     await trigger.click()
-    await this.page.getByLabel(label, {exact: true}).isVisible()
-    await this.page.getByLabel(label, {exact: true}).click()
+
+    const option = this.page.getByLabel(label, {exact: true})
+    await expect(option).toBeVisible()
+    await option.click()
   }
 
   async verifyPeoplePage() {

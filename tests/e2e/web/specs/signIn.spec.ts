@@ -10,7 +10,7 @@ test.describe('when given valid input', () => {
     await app.home.verifySignedInHomePage(account.display_name)
   })
 
-  test('should be able to filter users correctly on the people page', async ({
+  test('the profile count should update sucessfully when applying a filter', async ({
     app,
     signedOutAccount: account,
   }) => {

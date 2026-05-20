@@ -13,7 +13,7 @@ import {ANDROID_APP_URL} from 'common/constants'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
-import { container, content, Footer, main} from 'email/utils'
+import {container, content, Footer, main} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 

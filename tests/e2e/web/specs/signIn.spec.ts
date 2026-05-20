@@ -17,15 +17,14 @@ test.describe('when given valid input', () => {
     await app.signinWithEmail(account)
     await app.home.clickPeopleLink()
     await app.people.getProfileInfo()
-    const totalProfiles = (await app.people.profileCountLocator.textContent())
-    await app.people.setConnectionTypeFilter(["Collaboration", "collaboration"])
+    const totalProfiles = await app.people.profileCountLocator.textContent()
+    await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
 
     const filterdProfiles = await app.people.profileCountLocator.textContent()
 
-    if(!totalProfiles || !filterdProfiles) return
+    if (!totalProfiles || !filterdProfiles) return
     await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
-    
-  });
+  })
 })
 
 test.describe('when given invalid input', () => {

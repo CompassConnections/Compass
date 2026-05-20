@@ -120,7 +120,12 @@ const Profiles = {
   href: '/',
   icon: UsersIcon,
 }
-const Home = {key: 'nav.home', name: 'Home', href: '/', icon: HomeIcon}
+const Home = {
+  key: 'nav.home',
+  name: 'Home',
+  href: '/',
+  icon: HomeIcon,
+}
 const faq = {
   key: 'nav.faq',
   name: 'FAQ',
@@ -163,7 +168,12 @@ const Organization = {
   href: '/organization',
   icon: GlobeAltIcon,
 }
-const Vote = {key: 'nav.vote', name: 'Vote', href: '/vote', icon: MdThumbUp}
+const Vote = {
+  key: 'nav.vote',
+  name: 'Vote',
+  href: '/vote',
+  icon: MdThumbUp,
+}
 const Contact = {
   key: 'nav.contact',
   name: 'Contact',

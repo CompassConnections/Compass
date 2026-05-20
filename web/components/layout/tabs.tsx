@@ -140,7 +140,11 @@ export function ControlledTabs(props: TabProps & {activeIndex: number}) {
                 <Row className={'items-center'}>
                   <Col>
                     {tab.title.split('\n').map((line, i) => (
-                      <Row className={'items-center justify-center'} key={i}>
+                      <Row
+                        className={'items-center justify-center'}
+                        key={i}
+                        data-testid={`${tab.title.toLowerCase()}-tab`}
+                      >
                         {line}
                       </Row>
                     ))}

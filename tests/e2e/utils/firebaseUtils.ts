@@ -78,7 +78,10 @@ export async function deleteAccount(idToken: any) {
  * Check if a Firebase user exists by email
  * Returns userId if exists, undefined if not found
  */
-export async function firebaseUserExists(email: string, password: string): Promise<string | undefined> {
+export async function firebaseUserExists(
+  email: string,
+  password: string,
+): Promise<string | undefined> {
   try {
     const login = await firebaseLoginEmailPassword(email, password)
     return login.data.localId

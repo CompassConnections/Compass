@@ -10,6 +10,8 @@ import {ProfilePage} from './profilePage'
 import {SettingsPage} from './settingsPage'
 import {SignUpPage} from './signUpPage'
 import {SocialPage} from './socialPage'
+import {PeoplePage} from './peoplePage'
+import {NotificationPage} from './notificationsPage'
 
 export class App {
   readonly auth: AuthPage
@@ -21,6 +23,8 @@ export class App {
   readonly settings: SettingsPage
   readonly signUp: SignUpPage
   readonly social: SocialPage
+  readonly people: PeoplePage
+  readonly notifs: NotificationPage
 
   constructor(public readonly page: Page) {
     this.auth = new AuthPage(page)
@@ -32,6 +36,8 @@ export class App {
     this.settings = new SettingsPage(page)
     this.signUp = new SignUpPage(page)
     this.social = new SocialPage(page)
+    this.people = new PeoplePage(page)
+    this.notifs = new NotificationPage(page)
   }
 
   async deleteProfileFromSettings() {

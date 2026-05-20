@@ -70,7 +70,7 @@ export function Big5SliderRow(props: {
   const {label, minValue, maxValue, onChange} = props
 
   return (
-    <div className="mb-4">
+    <div className="mb-4" data-testid={`big-five-${label.toLowerCase()}`}>
       <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
         <span>{label}</span>
         <span className="font-semibold text-ink-700">

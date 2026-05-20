@@ -1,3 +1,4 @@
+import {faker} from '@faker-js/faker'
 import {debug} from 'common/logger'
 import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
@@ -37,13 +38,46 @@ export async function seedDbUser(
       },
     ],
   }
+  const relationshipStyle = userInfo.randomElement(userInfo.pref_relation_styles)
+  let romanticStyle: string | null = null
+  if (relationshipStyle === 'relationship') {
+    romanticStyle = userInfo.randomElement(userInfo.pref_romantic_styles)
+  }
+
+  const numberOfLanguages = faker.number.int({min: 1, max: 3})
+  let languagesKnown = []
+
+  for (let i = 0; i < numberOfLanguages; i++) {
+    languagesKnown.push(userInfo.randomElement(userInfo.languages))
+  }
+
+  const keywords = faker.number.int({min: 1, max: 4})
+  let profileKeywords = []
+  for (let i = 0; i < keywords; i++) {
+    profileKeywords.push(userInfo.keywords)
+  }
+
   const basicProfile = {
     user_id: userId,
     bio_length: userInfo.bio.length,
     bio: bio,
     age: userInfo.age,
+    gender: userInfo.randomElement(userInfo.gender),
+    ethnicity: [userInfo.randomElement(userInfo.ethnicity)],
+    height_in_inches: userInfo.height_in_inches,
+    pref_gender: [userInfo.randomElement(userInfo.pref_gender)],
+    pref_relation_styles: [relationshipStyle],
+    relationship_status: [userInfo.randomElement(userInfo.relationship_status)],
+    pref_romantic_styles: romanticStyle ? [romanticStyle] : [],
+    pref_age_min: userInfo.pref_age.min,
+    pref_age_max: userInfo.pref_age.max,
     born_in_location: userInfo.born_in_location,
     company: userInfo.company,
+    occupation_title: userInfo.occupation_title,
+    religion: [userInfo.randomElement(userInfo.religion)],
+    has_kids: userInfo.has_kids,
+    wants_kids_strength: userInfo.wants_kids_strength,
+    is_smoker: userInfo.is_smoker,
   }
 
   const mediumProfile = {
@@ -51,17 +85,12 @@ export async function seedDbUser(
     drinks_per_month: userInfo.drinks_per_month,
     diet: [userInfo.randomElement(userInfo.diet)],
     education_level: userInfo.randomElement(userInfo.education_level),
-    ethnicity: [userInfo.randomElement(userInfo.ethnicity)],
-    gender: userInfo.randomElement(userInfo.gender),
-    height_in_inches: userInfo.height_in_inches,
-    pref_gender: [userInfo.randomElement(userInfo.pref_gender)],
-    pref_age_min: userInfo.pref_age.min,
-    pref_age_max: userInfo.pref_age.max,
+    languages: languagesKnown,
+    keywords: profileKeywords,
   }
 
   const fullProfile = {
     ...mediumProfile,
-    occupation_title: userInfo.occupation_title,
     cannabis: userInfo.randomElement(userInfo.cannabis),
     psychedelics: userInfo.randomElement(userInfo.psychedelics),
     cannabis_intention: [userInfo.randomElement(userInfo.cannabis_intention)],
@@ -69,8 +98,12 @@ export async function seedDbUser(
     cannabis_pref: [userInfo.randomElement(userInfo.cannabis_pref)],
     psychedelics_pref: [userInfo.randomElement(userInfo.psychedelics_pref)],
     political_beliefs: [userInfo.randomElement(userInfo.political_beliefs)],
-    pref_relation_styles: [userInfo.randomElement(userInfo.pref_relation_styles)],
-    religion: [userInfo.randomElement(userInfo.religion)],
+    mbti: userInfo.randomElement(userInfo.mbti),
+    big5_openness: userInfo.big5_openness,
+    big5_conscientiousness: userInfo.big5_conscientiousness,
+    big5_extraversion: userInfo.big5_extraversion,
+    big5_agreeableness: userInfo.big5_agreeableness,
+    big5_neuroticism: userInfo.big5_neuroticism,
   }
 
   const profileData =

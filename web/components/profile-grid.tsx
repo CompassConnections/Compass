@@ -82,7 +82,7 @@ export const ProfileGrid = (props: {
   }[cardSize ?? 'medium']
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="people-profile-grid">
       <div
         className={clsx(
           `grid gap-6 py-4 grid-cols-1`,
@@ -328,6 +328,7 @@ function ProfilePreview(props: {
         isLoading && 'scale-[0.94] transition-transform duration-[80ms] ease-out',
         !isLoading && 'transition-transform duration-[120ms] ease-in',
       )}
+      data-testid="people-profile-results"
     >
       <Link
         href={`/${user.username}`}
@@ -419,6 +420,7 @@ function ProfilePreview(props: {
                   'main-font font-medium text-lg text-gray-900 dark:text-white truncate my-0 transition-opacity duration-75',
                   isLoading && 'opacity-50',
                 )}
+                data-testid="people-profile-name"
               >
                 {user.name}
               </h3>
@@ -427,6 +429,7 @@ function ProfilePreview(props: {
                   'flex-wrap gap-x-2 transition-opacity duration-75',
                   isLoading && 'opacity-50',
                 )}
+                data-testid="people-profile-age-gender"
               >
                 {showCity !== false && <ProfileLocation profile={profile} />}
                 {showAge !== false && profile.age && (

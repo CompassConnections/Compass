@@ -217,7 +217,20 @@ export function ProfilesHome() {
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-4">
       <Col className={'lg:col-span-9'}>
-        {showSignupBanner && (
+        {!user && (
+          <Col className="items-center justify-center min-h-[60vh] gap-6 text-center">
+            <div className="animate-spin rounded-full h-14 w-14 border-4 border-primary-500 border-t-transparent" />
+            <div className="flex flex-col gap-2">
+              <h2 className="text-2xl font-semibold">
+                {t('profiles.loading_dashboard', 'Loading dashboard…')}
+              </h2>
+              <p className="text-ink-500 max-w-sm">
+                {t('profiles.loading_dashboard_desc', 'Hang tight while we set things up for you.')}
+              </p>
+            </div>
+          </Col>
+        )}
+        {showSignupBanner && user && (
           <div className="w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
             <Col className="items-center justify-center gap-2">
               <span className={'mb-2'}>

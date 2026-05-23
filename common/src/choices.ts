@@ -213,7 +213,7 @@ export const MBTI_CHOICES = {
   ESTP: 'estp',
   ESFJ: 'esfj',
   ESFP: 'esfp',
-}
+} as const
 
 // MBTI type name mapping
 export const MBTI_TYPE_NAMES: Record<string, string> = {

@@ -56,7 +56,24 @@ export type AdvancedFilter = {
 
 export type DisplayFilter = {
   cardSize?: 'Small' | 'Medium' | 'Large'
-  filters?: [string, boolean][]
+  filters?: {
+    Gender?: boolean
+    City?: boolean
+    Age?: boolean
+    Headline?: boolean
+    Keywords?: boolean
+    'What they seek'?: boolean
+    Work?: boolean
+    Interests?: boolean
+    Causes?: boolean
+    Diet?: boolean
+    Smoking?: boolean
+    Drinks?: boolean
+    MBTI?: boolean
+    Languages?: boolean
+    Bio?: boolean
+    'Profile photo'?: boolean
+  }
 }
 
 export type PeoplePageFilter = {
@@ -107,6 +124,7 @@ export class PeoplePage {
   private readonly profileResults: Locator
   private readonly profileName: Locator
   private readonly profileAgeGender: Locator
+  private readonly profileSeeking: Locator
 
   constructor(public readonly page: Page) {
     this.peopleHeading = page.getByRole('heading', {name: 'People'})
@@ -146,6 +164,7 @@ export class PeoplePage {
     this.profileResults = page.getByTestId('people-profile-results')
     this.profileName = page.getByTestId('people-profile-name')
     this.profileAgeGender = page.getByTestId('people-profile-age-gender')
+    this.profileSeeking = page.getByTestId('people-profile-seeking')
   }
 
   get profileCountLocator(): Locator {
@@ -395,19 +414,14 @@ export class PeoplePage {
     if (display.cardSize) await this.page.getByRole('button', {name: `${display.cardSize}`}).click()
 
     if (!display.filters) return
-    if (display.filters?.length > 0) {
-      for (let i = 0; i < display.filters.length; i++) {
-        const filter = await this.page.getByRole('checkbox', {name: `${display.filters[i][0]}`})
+    if (display.filters) {
+      for (const [name, shouldBeChecked] of Object.entries(display.filters)) {
+        const filter = await this.page.getByRole('checkbox', {name, exact: true})
         await expect(filter).toBeVisible()
         const isChecked = await filter.isChecked()
 
-        if (display.filters[i][1]) {
-          if (isChecked) continue
-          if (!isChecked) await filter.click()
-        } else if (!display.filters[i][1]) {
-          if (isChecked) await filter.click()
-          if (!isChecked) continue
-        }
+        if (shouldBeChecked && !isChecked) await filter.click()
+        if (!shouldBeChecked && isChecked) await filter.click()
       }
     }
   }
@@ -418,10 +432,13 @@ export class PeoplePage {
     const chosenProfileNumber = Math.floor(Math.random() * totalResults)
     const chosenProfile = await this.profileResults.nth(chosenProfileNumber)
     const profileName = await chosenProfile.getByTestId('people-profile-name').textContent()
+    const ageGender = await chosenProfile.getByTestId('people-profile-age-gender').textContent()
+    const seekingInfo = await chosenProfile.getByTestId('people-profile-seeking').textContent()
 
-    if (!profileName) return
     return {
-      name: profileName,
+      name: profileName ?? '',
+      ageGender: ageGender ?? '',
+      seeking: seekingInfo ?? '',
     }
   }
 

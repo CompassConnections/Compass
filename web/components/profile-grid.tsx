@@ -506,6 +506,7 @@ function ProfilePreview(props: {
               )}
               {showSeeking !== false && seekingText && (
                 <IconWithInfo
+                  testid="people-profile-seeking"
                   text={seekingText}
                   icon={<PiMagnifyingGlassBold className="h-4 w-4 " />}
                 />

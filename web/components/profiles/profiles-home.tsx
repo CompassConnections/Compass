@@ -11,8 +11,7 @@ import {Search} from 'web/components/filters/search'
 import {useFilters} from 'web/components/filters/use-filters'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {ProfileGrid} from 'web/components/profile-grid'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {ProfileGrid, ProfileGridSkeleton} from 'web/components/profile-grid'
 import {Title} from 'web/components/widgets/title'
 import {useBookmarkedSearches} from 'web/hooks/use-bookmarked-searches'
 import {useDisplayOptions} from 'web/hooks/use-display-options'
@@ -329,7 +328,7 @@ export function ProfilesHome() {
           filtersElement={filtersElement}
         />
         {displayProfiles === undefined || compatibleProfiles === undefined ? (
-          <CompassLoadingIndicator />
+          <ProfileGridSkeleton count={6} />
         ) : (
           <>
             {fromSignup && isClearedFilters && (

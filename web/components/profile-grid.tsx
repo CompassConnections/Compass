@@ -41,6 +41,45 @@ import {capitalizePure} from 'web/lib/util/time'
 
 import {Col} from './layout/col'
 
+export function ProfileGridSkeleton(props: {count?: number; className?: string}) {
+  const {count = 6, className} = props
+  return (
+    <div className={clsx('grid gap-6 py-4 grid-cols-1', className)}>
+      {Array.from({length: count}).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-xl border border-canvas-300 bg-canvas-50 overflow-hidden animate-pulse"
+        >
+          <div className="flex flex-row h-full justify-between">
+            <div className="flex-1 px-4 py-3 space-y-2 min-w-0">
+              {/* name */}
+              <div className="h-5 bg-canvas-200 rounded w-2/5" />
+              {/* age / location */}
+              <div className="h-3.5 bg-canvas-200 rounded w-1/3" />
+              {/* headline */}
+              <div className="h-3.5 bg-canvas-200 rounded w-3/5 mt-1" />
+              {/* keyword pills */}
+              <div className="flex gap-2 pt-1">
+                <div className="h-6 bg-canvas-200 rounded-full w-16" />
+                <div className="h-6 bg-canvas-200 rounded-full w-20" />
+                <div className="h-6 bg-canvas-200 rounded-full w-14" />
+              </div>
+              {/* bio lines */}
+              <div className="space-y-1.5 pt-1">
+                <div className="h-3 bg-canvas-200 rounded w-full" />
+                <div className="h-3 bg-canvas-200 rounded w-4/5" />
+                <div className="h-3 bg-canvas-200 rounded w-3/4" />
+              </div>
+            </div>
+            {/* photo placeholder */}
+            <div className="shrink-0 w-40 min-h-24 bg-canvas-200 rounded-r-xl" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export const ProfileGrid = (props: {
   profiles: Profile[]
   loadMore: () => Promise<boolean>

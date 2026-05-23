@@ -10,7 +10,7 @@ test.describe('when given valid input', () => {
     await app.home.verifySignedInHomePage(account.display_name)
   })
 
-  test('the profile count should update sucessfully when applying a filter', async ({
+  test('the profile count should update successfully when applying a filter', async ({
     app,
     signedOutAccount: account,
   }) => {
@@ -20,10 +20,15 @@ test.describe('when given valid input', () => {
     const totalProfiles = await app.people.profileCountLocator.textContent()
     await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
 
-    const filterdProfiles = await app.people.profileCountLocator.textContent()
+    const filteredProfiles = await app.people.profileCountLocator.textContent()
 
-    if (!totalProfiles || !filterdProfiles) return
-    await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+    expect(totalProfiles).toBeTruthy()
+    expect(filteredProfiles).toBeTruthy()
+    const totalCount = Number.parseInt(totalProfiles!, 10)
+    const filteredCount = Number.parseInt(filteredProfiles!, 10)
+    expect(Number.isNaN(totalCount)).toBe(false)
+    expect(Number.isNaN(filteredCount)).toBe(false)
+    await expect(filteredCount).not.toEqual(totalCount)
   })
 })
 

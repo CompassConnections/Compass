@@ -151,7 +151,7 @@ export class SignUpPage {
     this.smokerField = page.getByText('Yes', {exact: true})
     this.nonSmokerField = page.getByText('No', {exact: true})
     this.alcoholConsumedPerMonthField = page.getByTestId('alcohol-consumed-per-month')
-    this.socialPlatformSelectionField = page.getByRole('button', {name: 'Platform'})
+    this.socialPlatformSelectionField = page.getByRole('button', {name: 'Website'})
     this.socialPlatformSearchField = page.getByRole('textbox', {name: 'Search...'})
     this.addSocialPlatformField = page.getByRole('textbox', {name: 'URL'})
     this.addSocialPlatformButton = page.locator('button').filter({hasText: 'Add'}).nth(3)

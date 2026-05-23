@@ -3,17 +3,17 @@ import {
   CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  LANGUAGE_CHOICES,
+  MBTI_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
   RELATIONSHIP_STATUS_CHOICES,
-  ROMANTIC_CHOICES,
   RELIGION_CHOICES,
-  LANGUAGE_CHOICES,
+  ROMANTIC_CHOICES,
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
-  MBTI_CHOICES,
 } from 'common/choices'
 
 class UserAccountInformationForSeeding {
@@ -52,6 +52,7 @@ class UserAccountInformationForSeeding {
   occupation_title = faker.person.jobTitle()
   university = faker.company.name()
   keywords = faker.lorem.word()
+  headline = faker.lorem.words({min: 8, max: 16})
 
   cannabis = Object.values(CANNABIS_CHOICES)
   psychedelics = Object.values(PSYCHEDELICS_CHOICES)

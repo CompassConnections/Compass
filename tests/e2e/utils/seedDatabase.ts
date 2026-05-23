@@ -20,7 +20,7 @@ import {firebaseSignUp} from './firebaseUtils'
 export async function seedDbUser(
   userInfo: UserAccountInformationForSeeding,
   profileType?: string,
-): Promise<Boolean> {
+): Promise<boolean> {
   const pg = createSupabaseDirectClient()
   const userId = userInfo.user_id
   const deviceToken = randomString()
@@ -45,14 +45,14 @@ export async function seedDbUser(
   }
 
   const numberOfLanguages = faker.number.int({min: 1, max: 3})
-  let languagesKnown = []
+  const languagesKnown = []
 
   for (let i = 0; i < numberOfLanguages; i++) {
     languagesKnown.push(userInfo.randomElement(userInfo.languages))
   }
 
   const keywords = faker.number.int({min: 1, max: 4})
-  let profileKeywords = []
+  const profileKeywords = []
   for (let i = 0; i < keywords; i++) {
     profileKeywords.push(userInfo.keywords)
   }
@@ -63,6 +63,8 @@ export async function seedDbUser(
     bio: bio,
     age: userInfo.age,
     gender: userInfo.randomElement(userInfo.gender),
+    headline: userInfo.headline,
+    keywords: profileKeywords,
     ethnicity: [userInfo.randomElement(userInfo.ethnicity)],
     height_in_inches: userInfo.height_in_inches,
     pref_gender: [userInfo.randomElement(userInfo.pref_gender)],
@@ -86,7 +88,6 @@ export async function seedDbUser(
     diet: [userInfo.randomElement(userInfo.diet)],
     education_level: userInfo.randomElement(userInfo.education_level),
     languages: languagesKnown,
-    keywords: profileKeywords,
   }
 
   const fullProfile = {

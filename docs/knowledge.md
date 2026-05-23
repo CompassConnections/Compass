@@ -15,7 +15,7 @@
 - express node api server `/backend/api`
 - one off scripts, like migrations `/backend/scripts`
 - supabase postgres. schema in `/backend/supabase`
-  - supabase-generated types in `/backend/supabase/schema.ts`
+  - supabase-generated types in `/common/src/supabase/schema.ts`
 - files shared between backend directories `/backend/shared`
   - anything in `/backend` can import from `shared`, but not vice versa
 - files shared between the frontend and backend in `/common`
@@ -333,7 +333,7 @@ export const placeBet: APIHandler<'bet'> = async (props, auth) => {
 }
 ```
 
-And finally, you need to register the handler in `backend/api/src/routes.ts`
+And finally, you need to register the handler in the `handlers` map in `backend/api/src/app.ts`
 
 ```ts
 import {placeBet} from './place-bet'
@@ -454,7 +454,7 @@ const t = useT()
 t('common.key', 'English translations')
 ```
 
-Translations should go to the JSON files in `web/messages` (`de.json` and `fr.json`, as of now).
+Translations should go to the JSON files in `common/messages` (`de.json` and `fr.json`, as of now; English is the inline fallback passed to `t()`).
 
 ### Misc coding tips
 

@@ -14,7 +14,7 @@ Compass (compassmeet.com) is a transparent dating platform for forming deep, aut
 - **Shared backend utilities** `/backend/shared`
 - **Email functions** `/backend/email`
 - **Database schema** `/backend/supabase`
-  - Supabase-generated types in `/backend/supabase/schema.ts`
+  - Supabase-generated types in `/common/src/supabase/schema.ts`
 - **Files shared between frontend and backend** `/common`
   - Types (User, Profile, etc.) and utilities
   - Try not to add package dependencies to common

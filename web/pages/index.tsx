@@ -1,8 +1,10 @@
 import {debug} from 'common/logger'
+import {useEffect, useState} from 'react'
 import {LoggedOutHome} from 'web/components/home/home'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {ProfilesHome} from 'web/components/profiles/profiles-home'
+import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
@@ -15,20 +17,29 @@ import {useT} from 'web/lib/locale'
 export default function ProfilesPage() {
   const user = useUser()
   const t = useT()
+  const [slowLoad, setSlowLoad] = useState(false)
+
+  useEffect(() => {
+    if (user !== undefined) return
+    const timer = setTimeout(() => setSlowLoad(true), 5000)
+    return () => clearTimeout(timer)
+  }, [user])
 
   if (user === undefined) {
     return (
       <PageBase trackPageView={'loading'}>
-        <Col className="items-center justify-center min-h-[60vh] gap-6 text-center">
-          <div className="animate-spin rounded-full h-14 w-14 border-4 border-primary-500 border-t-transparent" />
-          <div className="flex flex-col gap-2">
+        <Col className="items-center gap-8 px-4 py-8">
+          <Col className="items-center gap-3 text-center pt-8">
+            <CompassLoadingIndicator />
             <h2 className="text-2xl font-semibold">
               {t('profiles.loading_dashboard', 'Loading dashboard…')}
             </h2>
-            {/*<p className="text-ink-500 max-w-sm">*/}
-            {/*  {t('profiles.loading_dashboard_desc', 'Hang tight while we set things up for you.')}*/}
-            {/*</p>*/}
-          </div>
+            <p className="text-ink-500 max-w-sm text-sm">
+              {slowLoad
+                ? t('profiles.loading_slow', 'Still starting up — almost there…')
+                : t('profiles.loading_dashboard_desc', 'The server is waking up, hang tight.')}
+            </p>
+          </Col>
         </Col>
       </PageBase>
     )

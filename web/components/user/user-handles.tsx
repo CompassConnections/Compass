@@ -1,5 +1,12 @@
 import clsx from 'clsx'
-import {getSocialUrl, PLATFORM_LABELS, Site, SITE_ORDER, Socials} from 'common/socials'
+import {
+  getSocialEntries,
+  getSocialUrl,
+  PLATFORM_LABELS,
+  Site,
+  SITE_ORDER,
+  Socials,
+} from 'common/socials'
 import {sortBy} from 'lodash'
 
 import {Row} from '../layout/row'
@@ -18,20 +25,21 @@ export function UserHandles(props: {links: Socials; className?: string}) {
   const {links, className} = props
 
   const display = sortBy(
-    Object.entries(links),
-    ([platform]) => -[...SITE_ORDER].reverse().indexOf(platform as Site),
+    getSocialEntries(links),
+    ({platform}) => -[...SITE_ORDER].reverse().indexOf(platform as Site),
   )
-    .filter(([platform, label]) => !!label && !!platform)
-    .map(([platform, label]) => {
+    .filter(({platform, value}) => !!value && !!platform)
+    .map(({platform, value, index}) => {
       let renderedLabel: string = LABELS_TO_RENDER.includes(platform)
         ? PLATFORM_LABELS[platform as Site]
-        : label
+        : value
       renderedLabel = renderedLabel?.replace(/\/+$/, '') // remove trailing slashes
       renderedLabel = renderedLabel?.replace(/^(https?:\/\/)?(www\.)?/, '') // remove protocol and www
       return {
         platform,
         label: renderedLabel,
-        url: getSocialUrl(platform as any, label),
+        url: getSocialUrl(platform as any, value),
+        key: `${platform}-${index}`,
       }
     })
 
@@ -44,9 +52,9 @@ export function UserHandles(props: {links: Socials; className?: string}) {
       className={clsx('flex-wrap items-center gap-2', className)}
       data-testid="profile-social-media-accounts"
     >
-      {display.map(({platform, label, url}) => (
+      {display.map(({platform, label, url, key}) => (
         <a
-          key={platform}
+          key={key}
           target="_blank"
           href={url}
           className="border-canvas-300 bg-canvas-0 flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[12.5px] text-ink-500 transition-colors hover:border-primary-300 hover:text-primary-600"

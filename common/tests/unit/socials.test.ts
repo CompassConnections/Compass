@@ -1,5 +1,5 @@
 import {discordLink} from 'common/constants'
-import {getSocialUrl, strip} from 'common/socials'
+import {getSocialEntries, getSocialUrl, strip} from 'common/socials'
 
 describe('strip', () => {
   describe('x/twitter', () => {
@@ -79,5 +79,21 @@ describe('getSocialUrl', () => {
       'https://discord.com/users/123456789012345678',
     )
     expect(getSocialUrl('discord', 'not-an-id')).toBe(discordLink)
+  })
+})
+
+describe('getSocialEntries', () => {
+  it('flattens multi-value website links while preserving single-value links', () => {
+    expect(
+      getSocialEntries({
+        site: ['example.com', 'blog.example.com'],
+        github: 'username',
+        x: null,
+      }),
+    ).toEqual([
+      {platform: 'site', value: 'example.com', index: 0},
+      {platform: 'site', value: 'blog.example.com', index: 1},
+      {platform: 'github', value: 'username', index: 0},
+    ])
   })
 })

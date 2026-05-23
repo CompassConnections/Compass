@@ -26,7 +26,24 @@ export const SITE_ORDER = [
 export type Site = (typeof SITE_ORDER)[number]
 
 // this is a lie, actually people can have anything in their links
-export type Socials = {[key in Site]?: string}
+export type SocialValue = string | string[] | null | undefined
+export type Socials = {[key: string]: SocialValue}
+
+export const MULTI_VALUE_SITES = ['site'] as const
+
+export const isMultiValueSite = (site: string) =>
+  (MULTI_VALUE_SITES as readonly string[]).includes(site)
+
+export const getSocialLinkValues = (value: SocialValue) => {
+  if (Array.isArray(value)) return value
+  if (value == null) return []
+  return [value]
+}
+
+export const getSocialEntries = (links: Socials | null | undefined) =>
+  Object.entries(links ?? {}).flatMap(([platform, value]) =>
+    getSocialLinkValues(value).map((value, index) => ({platform, value, index})),
+  )
 
 export const strip = (site: Site, input: string) => stripper[site]?.(input) ?? input
 

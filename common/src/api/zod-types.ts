@@ -44,6 +44,8 @@ export const zBoolean = z
   .union([z.boolean(), z.string()])
   .transform((val) => val === true || val === 'true')
 
+const linkValueSchema = z.union([z.string(), z.array(z.string())]).nullable()
+
 // TODO: merge the two below when the deprecated /create-profile is deleted
 export const baseProfilesSchema = z.object({
   age: z.number().min(18).max(100).optional().nullable(),
@@ -97,7 +99,7 @@ const optionalProfilesSchema = z.object({
   image_descriptions: z.any().optional().nullable(),
   interests: z.array(z.string()).optional().nullable(),
   is_smoker: zBoolean.optional().nullable(),
-  links: z.record(z.string().nullable()).optional(),
+  links: z.record(linkValueSchema).optional(),
   mbti: z.string().optional().nullable(),
   occupation: z.string().optional().nullable(),
   occupation_title: z.string().optional().nullable(),

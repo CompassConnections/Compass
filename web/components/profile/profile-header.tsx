@@ -57,7 +57,7 @@ export default function ProfileHeader(props: {
     <Row className={'flex-wrap gap-4'}>
       <Col>
         {currentUser && !isCurrentUser && isHiddenFromMe && (
-          <div className="flex items-center gap-2 rounded-lg bg-canvas-200 px-4 py-3 text-sm text-primary-800 mb-4">
+          <div className="w-fit flex items-center gap-2 rounded-lg bg-canvas-200 px-4 py-3 text-sm text-primary-800 mb-4">
             <EyeSlashIcon className="h-4 w-4 flex-none" />
             {t(
               'profile_grid.hidden_notice',
@@ -66,7 +66,7 @@ export default function ProfileHeader(props: {
           </div>
         )}
         {currentUser && isCurrentUser && disabled && (
-          <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 mb-4">
+          <div className="w-fit flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 mb-4">
             <LockClosedIcon className="h-4 w-4 flex-none" />
             {t(
               'profile.header.disabled_notice',
@@ -126,7 +126,10 @@ export default function ProfileHeader(props: {
             </Row>
           </Col>
         </Row>
-        <Row className={'gap-2 flex-wrap py-2'} data-testid="profile-keywords">
+        <Row
+          className={clsx('gap-2 flex-wrap py-2', 'max-w-full sm:max-w-[500px]')}
+          data-testid="profile-keywords"
+        >
           {profile.keywords?.map(capitalizePure)?.map((tag, i) => (
             <span
               key={i}

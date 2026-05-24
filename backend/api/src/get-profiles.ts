@@ -493,9 +493,14 @@ export const loadProfiles = async (props: profileQueryType) => {
       where(`religion IS NULL OR religion = '{}' OR religion && $(religion)`, {religion}),
 
     orientation?.length &&
-      where(`orientation IS NULL OR orientation = '{}' OR orientation && $(orientation)`, {
-        orientation,
-      }),
+      where(
+        // most are straight, so we don't include the people who didn't answer if we're looking for non-straight
+        (!orientation.includes('straight') ? '' : "orientation IS NULL OR orientation = '{}' OR ") +
+          `orientation && $(orientation)`,
+        {
+          orientation,
+        },
+      ),
 
     interests?.length && where(getManyToManyClause('interests'), {values: interests.map(Number)}),
 

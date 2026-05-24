@@ -1,3 +1,5 @@
+import {sleep} from 'common/util/time'
+
 import {expect, test} from '../fixtures/signInFixture'
 
 test.describe('when given valid input', () => {
@@ -28,6 +30,7 @@ test.describe('when given valid input', () => {
     const filteredCount = Number.parseInt(filteredProfiles!, 10)
     expect(Number.isNaN(totalCount)).toBe(false)
     expect(Number.isNaN(filteredCount)).toBe(false)
+    await sleep(1000)
     await expect(filteredCount).not.toEqual(totalCount)
   })
 })

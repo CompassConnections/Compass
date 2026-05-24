@@ -151,19 +151,22 @@ const arrayChoiceFields = [
 
 const EXCLUDED_PROFILE_COLS = new Set(['search_text', 'search_tsv'])
 
-const profileColsPromise: Promise<string> = (async () => {
+let profileCols: any
+
+const getProfileCols = async () => {
+  if (profileCols) return profileCols
   const pg = createSupabaseDirectClient()
   const rows = await pg.manyOrNone<{column_name: string}>(
     `SELECT column_name FROM information_schema.columns WHERE table_name = 'profiles' ORDER BY ordinal_position`,
   )
-  const result = rows
+  profileCols = rows
     .map((r) => r.column_name)
     .filter((c) => !EXCLUDED_PROFILE_COLS.has(c))
     .map((c) => `profiles.${c}`)
     .join(', ')
-  console.log('profileCols:', result)
-  return result
-})()
+  console.log('profileCols:', profileCols)
+  return profileCols
+}
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
@@ -637,7 +640,7 @@ export const loadProfiles = async (props: profileQueryType) => {
       ),
   ]
 
-  const profileCols = (await profileColsPromise) ?? 'profiles.*' // stored at module level
+  const profileCols = (await getProfileCols()) ?? 'profiles.*' // stored at module level
   let selectCols = `${profileCols}, users.name, users.username, jsonb_build_object(
     'id', users.id,
     'name', users.name,
@@ -667,7 +670,7 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   const profiles = await pg.map(query, [], convertRow)
 
-  // console.debug('profiles:', profiles)
+  console.debug('profiles:', profiles)
 
   const countQuery = renderSql(select(`count(*) as count`), ...tableSelection, ...filters)
 

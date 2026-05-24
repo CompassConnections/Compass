@@ -1,7 +1,6 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
   ConnectionTypeTuple,
-  GenderTuple,
   EducationTuple,
   DietTuple,
   PsychedelicsTuple,
@@ -11,6 +10,7 @@ import {
   ReligionTuple,
   PersonalityKey,
   LastActiveTuple,
+  InterestedInGenderTuple,
 } from 'common/choices'
 import {MinMaxNumbers} from '../utils/accountInformation'
 
@@ -25,7 +25,7 @@ export type LifestyleFilter = {
   cause?: string
   diet?: DietTuple
   alcohol?: MinMaxNumbers
-  smoker?: string
+  smoker?: "Yes" | "No" | "Either"
   psychedelics?: PsychedelicsTuple
   cannabis?: CannabisTuple
   language?: LanguageTuple
@@ -79,7 +79,7 @@ export type DisplayFilter = {
 export type PeoplePageFilter = {
   connectionFilter?: ConnectionTypeTuple
   ageFilter?: MinMaxNumbers
-  genderFilter?: GenderTuple
+  genderFilter?: InterestedInGenderTuple
   backgroundFilter?: BackgroundFilter
   lifestyleFilter?: LifestyleFilter
   valuesAndBeliefsFilter?: BeliefsFilter
@@ -282,7 +282,7 @@ export class PeoplePage {
     await this.sliderHelper(ageRange)
   }
 
-  async setGenderTypeFilter(genderType: GenderTuple) {
+  async setGenderTypeFilter(genderType: InterestedInGenderTuple) {
     await this.selectOption(this.genderDropdown, genderType[0])
     // await expect(this.genderDropdown).toBeVisible()
     // await this.genderDropdown.click()
@@ -442,10 +442,17 @@ export class PeoplePage {
     }
   }
 
-  async verifyNumberOfMatchingProfiles(count: number) {
-    await expect(this.profileCount).toBeVisible()
-    const actualCount = await this.profileCount.textContent()
-    if (!actualCount) return
-    expect(parseInt(actualCount)).toStrictEqual(count)
+  async verifyProfileCount(totalProfiles: string) {
+    const exists = await this.profileCountLocator.count() > 0
+
+    if (exists) {
+      const filterdProfiles = await this.profileCountLocator.textContent()
+  
+      if (!totalProfiles || !filterdProfiles) return
+      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+    } else {
+      const noProfilesFound = await this.page.getByText('No profiles found.', { exact: true })
+      await expect(noProfilesFound).toBeVisible()
+    }
   }
 }

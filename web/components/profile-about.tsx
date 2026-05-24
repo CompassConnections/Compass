@@ -6,6 +6,7 @@ import {
   INVERTED_EDUCATION_CHOICES,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
+  INVERTED_ORIENTATION_CHOICES,
   INVERTED_POLITICAL_CHOICES,
   INVERTED_PSYCHEDELICS_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
@@ -119,6 +120,7 @@ export default function ProfileAbout(props: {
   return (
     <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
       <SeekingAndRelationship profile={profile} />
+      <Orientation profile={profile} />
       <Education profile={profile} />
       <OccupationAndWork profile={profile} />
       <Politics profile={profile} />
@@ -626,6 +628,69 @@ function Religion(props: {profile: Profile}) {
           {religiousBeliefs && (
             <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
               "{religiousBeliefs}"
+            </div>
+          )}
+        </Col>
+      </Row>
+      <Divider />
+    </>
+  )
+}
+
+function Orientation(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const p = profile as any
+  const orientation = p.orientation as string[] | null | undefined
+  const orientationDetails = p.orientation_details as string | null | undefined
+  const genderDetails = p.gender_details as string | null | undefined
+
+  if (!orientation?.length && !orientationDetails && !genderDetails) return null
+
+  const orientationText = orientation?.length
+    ? orientation
+        .map((o: string) => t(`profile.orientation.${o}`, INVERTED_ORIENTATION_CHOICES[o] ?? o))
+        .join(', ')
+    : null
+
+  return (
+    <>
+      <Row className="items-start gap-2.5">
+        <div
+          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
+          style={{width: '32px', height: '32px', marginTop: '1px'}}
+        >
+          <FaHeart className="h-5 w-5" />
+        </div>
+        <Col className={'w-full'}>
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '500',
+              color: 'rgb(var(--color-ink-300))',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+              marginBottom: '1px',
+            }}
+          >
+            {t('profile.orientation', 'Orientation')}
+          </div>
+          {orientationText && (
+            <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>
+              {orientationText}
+            </div>
+          )}
+          {orientationDetails && (
+            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
+              "{orientationDetails}"
+            </div>
+          )}
+          {genderDetails && (
+            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '4px'}}>
+              <span style={{fontWeight: 500, color: 'rgb(var(--color-ink-400))'}}>
+                {t('profile.gender', 'Gender')}:{' '}
+              </span>
+              "{genderDetails}"
             </div>
           )}
         </Col>

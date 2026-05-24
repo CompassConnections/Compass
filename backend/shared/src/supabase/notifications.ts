@@ -181,7 +181,7 @@ async function getUserIds() {
   const pg = createSupabaseDirectClient()
 
   // Fetch all users
-  const {data: users, error} = await tryCatch(pg.many<Row<'users'>>('select id from users'))
+  const {data: users, error} = await tryCatch(pg.manyOrNone<Row<'users'>>('select id from users'))
 
   if (error) {
     console.error('Error fetching users', error)

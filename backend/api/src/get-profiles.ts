@@ -6,6 +6,7 @@ import {
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   RACE_CHOICES,
   RELATIONSHIP_CHOICES,
@@ -79,6 +80,7 @@ export type profileQueryType = {
   relationship_status?: string[] | undefined
   languages?: string[] | undefined
   religion?: string[] | undefined
+  orientation?: string[] | undefined
   wants_kids_strength?: number | undefined
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
@@ -123,6 +125,8 @@ const textFields = [
   'raised_in_country',
   'political_details',
   'religious_beliefs',
+  'orientation_details',
+  'gender_details',
 ]
 
 // Define choice fields to search
@@ -138,13 +142,28 @@ const arrayChoiceFields = [
   {field: 'political_beliefs', choices: POLITICAL_CHOICES},
   {field: 'relationship_status', choices: RELATIONSHIP_STATUS_CHOICES},
   {field: 'religion', choices: RELIGION_CHOICES},
+  {field: 'orientation', choices: ORIENTATION_CHOICES},
   {field: 'pref_relation_styles', choices: RELATIONSHIP_CHOICES},
   {field: 'pref_romantic_styles', choices: ROMANTIC_CHOICES},
   {field: 'languages', choices: LANGUAGE_CHOICES},
   {field: 'ethnicity', choices: RACE_CHOICES},
 ]
 
-// const userActivityColumns = ['last_online_time']
+const EXCLUDED_PROFILE_COLS = new Set(['search_text', 'search_tsv'])
+
+const profileColsPromise: Promise<string> = (async () => {
+  const pg = createSupabaseDirectClient()
+  const rows = await pg.manyOrNone<{column_name: string}>(
+    `SELECT column_name FROM information_schema.columns WHERE table_name = 'profiles' ORDER BY ordinal_position`,
+  )
+  const result = rows
+    .map((r) => r.column_name)
+    .filter((c) => !EXCLUDED_PROFILE_COLS.has(c))
+    .map((c) => `profiles.${c}`)
+    .join(', ')
+  console.log('profileCols:', result)
+  return result
+})()
 
 export const loadProfiles = async (props: profileQueryType) => {
   const pg = createSupabaseDirectClient()
@@ -180,6 +199,7 @@ export const loadProfiles = async (props: profileQueryType) => {
     relationship_status,
     languages,
     religion,
+    orientation,
     wants_kids_strength,
     has_kids,
     interests,
@@ -469,6 +489,11 @@ export const loadProfiles = async (props: profileQueryType) => {
     religion?.length &&
       where(`religion IS NULL OR religion = '{}' OR religion && $(religion)`, {religion}),
 
+    orientation?.length &&
+      where(`orientation IS NULL OR orientation = '{}' OR orientation && $(orientation)`, {
+        orientation,
+      }),
+
     interests?.length && where(getManyToManyClause('interests'), {values: interests.map(Number)}),
 
     causes?.length && where(getManyToManyClause('causes'), {values: causes.map(Number)}),
@@ -612,7 +637,8 @@ export const loadProfiles = async (props: profileQueryType) => {
       ),
   ]
 
-  let selectCols = `profiles.*, users.name, users.username, jsonb_build_object(
+  const profileCols = (await profileColsPromise) ?? 'profiles.*' // stored at module level
+  let selectCols = `${profileCols}, users.name, users.username, jsonb_build_object(
     'id', users.id,
     'name', users.name,
     'username', users.username,
@@ -637,7 +663,6 @@ export const loadProfiles = async (props: profileQueryType) => {
     after && where(`${_orderBy} < (${afterFilter})`),
     limitParam && limit(limitParam),
   )
-
   // console.debug('query:', query)
 
   const profiles = await pg.map(query, [], convertRow)

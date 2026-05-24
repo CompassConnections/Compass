@@ -1143,6 +1143,7 @@ export type Database = {
           education_level: string | null
           ethnicity: string[] | null
           gender: string | null
+          gender_details: string | null
           geodb_city_id: string | null
           has_kids: number | null
           headline: string | null
@@ -1159,6 +1160,8 @@ export type Database = {
           messaging_status: string
           occupation: string | null
           occupation_title: string | null
+          orientation: string[] | null
+          orientation_details: string | null
           photo_urls: string[] | null
           pinned_url: string | null
           political_beliefs: string[] | null
@@ -1221,6 +1224,7 @@ export type Database = {
           education_level?: string | null
           ethnicity?: string[] | null
           gender?: string | null
+          gender_details?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
           headline?: string | null
@@ -1237,6 +1241,8 @@ export type Database = {
           messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
+          orientation?: string[] | null
+          orientation_details?: string | null
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null
@@ -1299,6 +1305,7 @@ export type Database = {
           education_level?: string | null
           ethnicity?: string[] | null
           gender?: string | null
+          gender_details?: string | null
           geodb_city_id?: string | null
           has_kids?: number | null
           headline?: string | null
@@ -1315,6 +1322,8 @@ export type Database = {
           messaging_status?: string
           occupation?: string | null
           occupation_title?: string | null
+          orientation?: string[] | null
+          orientation_details?: string | null
           photo_urls?: string[] | null
           pinned_url?: string | null
           political_beliefs?: string[] | null

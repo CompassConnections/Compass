@@ -3,11 +3,14 @@ import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
   CANNABIS_CHOICES,
+  DEFAULT_ORIENTATIONS,
   DIET_CHOICES,
   EDUCATION_CHOICES,
   GENDERS,
+  GENDERS_PLURAL,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
@@ -18,6 +21,7 @@ import {
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
+import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
@@ -54,6 +58,45 @@ import {colClassName, labelClassName} from 'web/pages/signup'
 
 import {AddPhotosWidget} from './widgets/add-photos'
 
+const DEFAULT_PREF_GENDER_VALUES = ['female', 'male']
+
+function PrefGenderCheckbox(props: {
+  profile: ProfileWithoutUser
+  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
+  t: (key: string, fallback: string) => string
+}) {
+  const {profile, setProfile, t} = props
+  const selected = profile['pref_gender'] || []
+  const hasExtended = selected.some((v) => !DEFAULT_PREF_GENDER_VALUES.includes(v))
+  const [showAll, setShowAll] = useState(hasExtended)
+
+  const visibleChoices = Object.fromEntries(
+    Object.entries(GENDERS_PLURAL as Record<string, string>).filter(
+      ([, v]) => showAll || DEFAULT_PREF_GENDER_VALUES.includes(v) || selected.includes(v),
+    ),
+  )
+
+  return (
+    <>
+      <MultiCheckbox
+        choices={visibleChoices}
+        translationPrefix={'profile.gender'}
+        selected={selected}
+        onChange={(selected) => setProfile('pref_gender', selected)}
+      />
+      {!showAll && (
+        <button
+          type="button"
+          className="text-primary-600 mt-1 text-sm"
+          onClick={() => setShowAll(true)}
+        >
+          {t('profile.gender.show_more', 'Show more options')}
+        </button>
+      )}
+    </>
+  )
+}
+
 export const OptionalProfileUserForm = (props: {
   profile: ProfileWithoutUser
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
@@ -67,6 +110,10 @@ export const OptionalProfileUserForm = (props: {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
   const [ageError, setAgeError] = useState<string | null>(null)
+  const [showAllGenders, setShowAllGenders] = useState(
+    () => !!profile.gender && EXTRA_GENDERS.includes(profile.gender as any),
+  )
+  const [showAllOrientations, setShowAllOrientations] = useState(false)
   const t = useT()
   const {locale} = useLocale()
 
@@ -375,11 +422,93 @@ export const OptionalProfileUserForm = (props: {
               currentChoice={profile['gender']}
               choicesMap={
                 Object.fromEntries(
-                  Object.entries(GENDERS).map(([k, v]) => [t(`profile.gender.${v}`, k), v]),
+                  Object.entries(GENDERS)
+                    .filter(
+                      ([, v]) =>
+                        showAllGenders ||
+                        DEFAULT_GENDERS.includes(v as any) ||
+                        profile['gender'] === v,
+                    )
+                    .map(([k, v]) => [t(`profile.gender.${v}`, k), v]),
                 ) as any
               }
               setChoice={(c) => setProfile('gender', c)}
             />
+            {!showAllGenders && (
+              <button
+                type="button"
+                className="text-primary-600 mt-1 text-sm"
+                onClick={() => setShowAllGenders(true)}
+              >
+                {t('profile.gender.show_more', 'Show more options')}
+              </button>
+            )}
+            {showAllGenders && (
+              <>
+                <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+                <Input
+                  type="text"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setProfile('gender_details', e.target.value)
+                  }
+                  className={'w-full sm:w-[700px]'}
+                  value={(profile as any)['gender_details'] ?? undefined}
+                  placeholder={t(
+                    'profile.gender.details_placeholder',
+                    'Any details about your gender identity…',
+                  )}
+                />
+              </>
+            )}
+          </Col>
+        </Row>
+
+        <Row className={'items-center gap-2'}>
+          <Col className={'gap-1'}>
+            <label className={clsx(labelClassName)}>
+              {t('profile.optional.orientation', 'Sexual orientation')}
+            </label>
+            <MultiCheckbox
+              choices={
+                Object.fromEntries(
+                  Object.entries(ORIENTATION_CHOICES).filter(
+                    ([, v]) =>
+                      showAllOrientations ||
+                      DEFAULT_ORIENTATIONS.includes(v as any) ||
+                      (profile['orientation'] ?? []).includes(v),
+                  ),
+                ) as any
+              }
+              selected={profile['orientation'] ?? []}
+              translationPrefix={'profile.orientation'}
+              onChange={(selected) => setProfile('orientation', selected)}
+            />
+            {!showAllOrientations && (
+              <button
+                type="button"
+                className="text-primary-600 mt-1 text-sm"
+                onClick={() => setShowAllOrientations(true)}
+              >
+                {t('profile.orientation.show_more', 'Show more options')}
+              </button>
+            )}
+            {showAllOrientations && (
+              <>
+                <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+                <Input
+                  type="text"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setProfile('orientation_details', e.target.value)
+                  }
+                  className={'w-full sm:w-[700px]'}
+                  value={(profile as any)['orientation_details'] ?? undefined}
+                  placeholder={t(
+                    'profile.orientation.details_placeholder',
+                    'Any details about your sexual orientation…',
+                  )}
+                />
+              </>
+            )}
           </Col>
         </Row>
 
@@ -589,16 +718,7 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx(labelClassName)}>
             {t('profile.optional.interested_in', 'Interested in connecting with')}
           </label>
-          <MultiCheckbox
-            choices={{
-              Women: 'female',
-              Men: 'male',
-              Other: 'other',
-            }}
-            translationPrefix={'profile.gender.plural'}
-            selected={profile['pref_gender'] || []}
-            onChange={(selected) => setProfile('pref_gender', selected)}
-          />
+          <PrefGenderCheckbox profile={profile} setProfile={setProfile} t={t} />
         </Col>
 
         <Col className={clsx(colClassName)}>

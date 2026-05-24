@@ -45,7 +45,7 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
     <RadioGroup
       className={clsx(
         className,
-        'border-ink-300 text-ink-400 bg-canvas-50 inline-flex flex-row gap-2 rounded-md border p-1 text-sm shadow-sm',
+        'flex flex-wrap border-ink-300 text-ink-400 bg-canvas-50 flex-row gap-2 rounded-md border p-1 text-sm shadow-sm',
         disabled && 'bg-canvas-50 !cursor-not-allowed',
       )}
       value={currentChoice ?? undefined}

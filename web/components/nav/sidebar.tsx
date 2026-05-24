@@ -57,7 +57,11 @@ export default function Sidebar(props: {
       {user && !isMobile && (
         <>
           <div className="h-px bg-canvas-900 mb-4" />
-          <ProfileSummary user={user} className="mb-3 text-white" currentPage={currentPage} />
+          <ProfileSummary
+            user={user}
+            className="mb-3 sidebar-text hover:text-primary-700 hover:translate-x-[2px]"
+            currentPage={currentPage}
+          />
         </>
       )}
 

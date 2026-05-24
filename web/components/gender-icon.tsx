@@ -31,14 +31,14 @@ export default function GenderIcon(props: {gender: Gender; className: string; ha
       />
     )
   }
-  if (gender == 'trans-female') {
+  if (gender == 'trans-woman') {
     return (
       <PiGenderTransgenderBold
         className={clsx(className, hasColor ? 'text-pink-500 dark:text-pink-300' : '')}
       />
     )
   }
-  if (gender == 'trans-male') {
+  if (gender == 'trans-man') {
     return (
       <PiGenderTransgenderBold
         className={clsx(className, hasColor ? 'text-blue-500 dark:text-blue-300' : '')}

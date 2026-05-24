@@ -14,7 +14,10 @@ To do so, you add code here:
 - common/src/api/zod-types.ts (optionalProfilesSchema)
 - web/components/filters/filters.tsx
 - common/src/filters.ts
+- common/src/filters-format.ts
 - web/components/filters/use-filters.ts (yourFilters and isYourFilters)
+- tests/e2e/backend/utils/userInformation.ts (UserAccountInformationForSeeding)
+- Add translations (see [internationalization.md](internationalization.md))
 
 Note that you will also need to add a column to the `profiles` table; you
 can do so via this SQL command (change the type and index if not `TEXT`):
@@ -26,7 +29,8 @@ ADD COLUMN profile_field TEXT;
 CREATE INDEX IF NOT EXISTS idx_profiles_profile_field ON profiles USING btree (mbti);
 ```
 
-Store it in `add_<profile_field>.sql` in the [migrations](../backend/supabase/migrations) folder and
+Store it in `add_<profile_field>.sql` in the [migrations](../backend/supabase/migrations) folder, add the line to
+backend/supabase/migration.sql and
 run [migrate.sh](../scripts/migrate.sh) from the root folder:
 
 ```bash

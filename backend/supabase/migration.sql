@@ -56,4 +56,5 @@ BEGIN;
 \i backend/supabase/migrations/20260319_add_compatibility_prompts_pinned.sql
 \i backend/supabase/migrations/20260330_add_substance_fields_to_profiles.sql
 \i backend/supabase/email_unsubscribe_tokens.sql
+\i backend/supabase/migrations/20260524_add_orientation_to_profiles.sql
 COMMIT;

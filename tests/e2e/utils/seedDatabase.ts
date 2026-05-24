@@ -63,6 +63,7 @@ export async function seedDbUser(
     bio: bio,
     age: userInfo.age,
     gender: userInfo.randomElement(userInfo.gender),
+    orientation: userInfo.orientation,
     headline: userInfo.headline,
     keywords: profileKeywords,
     ethnicity: [userInfo.randomElement(userInfo.ethnicity)],
@@ -80,6 +81,7 @@ export async function seedDbUser(
     has_kids: userInfo.has_kids,
     wants_kids_strength: userInfo.wants_kids_strength,
     is_smoker: userInfo.is_smoker,
+    // visibility: 'public',
   }
 
   const mediumProfile = {
@@ -88,6 +90,7 @@ export async function seedDbUser(
     diet: [userInfo.randomElement(userInfo.diet)],
     education_level: userInfo.randomElement(userInfo.education_level),
     languages: languagesKnown,
+    orientation_details: 'Some orientation details',
   }
 
   const fullProfile = {
@@ -105,6 +108,7 @@ export async function seedDbUser(
     big5_extraversion: userInfo.big5_extraversion,
     big5_agreeableness: userInfo.big5_agreeableness,
     big5_neuroticism: userInfo.big5_neuroticism,
+    gender_details: 'Some gender details',
   }
 
   const profileData =
@@ -153,9 +157,9 @@ export async function seedUser(
   if (password) userInfo.password = password
   if (displayName) userInfo.name = displayName
   if (userName) userInfo.userName = userName
-  userInfo.user_id = await firebaseSignUp(userInfo.email, userInfo.password)
-  if (userInfo.user_id) {
-    const created = await seedDbUser(userInfo, profileType ?? 'full')
-    if (created) debug('User created in Firebase and Supabase:', userInfo.email)
-  }
+  const firebaseId = await firebaseSignUp(userInfo.email, userInfo.password)
+  if (firebaseId) userInfo.user_id = firebaseId
+  // Fall back to the pre-generated faker id when Firebase is unreachable
+  const created = await seedDbUser(userInfo, profileType ?? 'full')
+  if (created) debug('User created in Supabase:', userInfo.email)
 }

@@ -1,4 +1,10 @@
-# Adding a new language
+# Internationalization
+
+`const t = useT()` (from `web/lib/locale`), then `t('key', 'English fallback')`. Translation JSON lives in
+`common/messages/` (`de.json`, `fr.json`; English is the inline fallback). To add a language see `docs/development.md`
+and the `LOCALES` dict in `common/src/constants.ts`.
+
+### Adding a new language
 
 Adding a new language is very easy, especially with translating tools like large language models (ChatGPT, Claude, etc.)
 which

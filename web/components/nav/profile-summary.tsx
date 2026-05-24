@@ -18,7 +18,7 @@ export function ProfileSummary(props: {user: User; className?: string; currentPa
       href={profile === null ? '/signup' : `/${user.username}`}
       onClick={trackCallback('sidebar: profile')}
       className={clsx(
-        'hover:bg-canvas-900 text-ink-700 group flex w-full shrink-0 flex-row items-center truncate rounded-xl py-3 transition-all',
+        'group flex w-full shrink-0 flex-row items-center truncate rounded-xl py-3 transition-all',
         className,
         isSelected && 'bg-canvas-900',
       )}
@@ -27,7 +27,9 @@ export function ProfileSummary(props: {user: User; className?: string; currentPa
       <Avatar avatarUrl={profile?.pinned_url ?? ''} username={user.username} noLink />
       <div className="mr-1 w-2 shrink-[2]" />
       <div className="shrink-0 grow" data-testid="sidebar-username">
-        <div className="group-hover:text-primary-200">{user.name}</div>
+        <div className="sidebar-text group-hover:text-primary-700 group-hover:translate-x-[2px]">
+          {user.name}
+        </div>
       </div>
       <div className="w-2 shrink" />
     </Link>

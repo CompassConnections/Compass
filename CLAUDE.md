@@ -90,8 +90,7 @@ response → React state.
 ### Internationalization
 
 `const t = useT()` (from `web/lib/locale`), then `t('key', 'English fallback')`. Translation JSON lives in
-`common/messages/` (`de.json`, `fr.json`; English is the inline fallback). To add a language see `docs/development.md`
-and the `LOCALES` dict in `common/src/constants.ts`.
+`common/messages/` (`de.json`, `fr.json`; English is the inline fallback).
 
 ### Timestamps
 

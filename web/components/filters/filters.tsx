@@ -50,6 +50,7 @@ import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
 import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
+import {OrientationFilter, OrientationFilterText} from './orientation-filter'
 import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
@@ -325,7 +326,25 @@ function Filters(props: {
           />
         }
       >
-        <GenderFilter filters={filters} updateFilter={updateFilter} />
+        <GenderFilter filters={filters} updateFilter={updateFilter} profile={youProfile} />
+      </FilterSection>
+
+      {/* ORIENTATION - Always visible */}
+      <FilterSection
+        title={t('profile.optional.orientation', 'Orientation')}
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={hasAny((filters as any).orientation || undefined)}
+        selection={
+          <OrientationFilterText options={(filters as any).orientation as string[] | undefined} />
+        }
+      >
+        <OrientationFilter
+          filters={filters}
+          updateFilter={updateFilter}
+          profile={youProfile}
+          className={''}
+        />
       </FilterSection>
 
       {/* ACCORDION GROUPS */}

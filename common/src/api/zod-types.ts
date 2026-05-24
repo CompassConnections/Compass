@@ -34,8 +34,8 @@ const genderType = z.string()
 // z.union([
 //   z.literal('male'),
 //   z.literal('female'),
-//   z.literal('trans-female'),
-//   z.literal('trans-male'),
+//   z.literal('trans-woman'),
+//   z.literal('trans-man'),
 //   z.literal('non-binary'),
 // ])
 const genderTypes = z.array(genderType)
@@ -120,6 +120,9 @@ const optionalProfilesSchema = z.object({
   raised_in_radius: z.number().optional().nullable(),
   raised_in_region_code: z.string().optional().nullable(),
   relationship_status: z.array(z.string()).optional().nullable(),
+  gender_details: z.string().optional().nullable(),
+  orientation: z.array(z.string()).optional().nullable(),
+  orientation_details: z.string().optional().nullable(),
   religion: z.array(z.string()).optional().nullable(),
   religious_belief_strength: z.number().optional().nullable(),
   religious_beliefs: z.string().optional().nullable(),

@@ -5,6 +5,7 @@ import {
   INVERTED_GENDERS,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
+  INVERTED_ORIENTATION_CHOICES,
   INVERTED_POLITICAL_CHOICES,
   INVERTED_PSYCHEDELICS_CHOICES,
   INVERTED_RELATIONSHIP_CHOICES,
@@ -39,6 +40,7 @@ const filterLabels: Record<string, string> = {
   causes: '',
   work: '',
   religion: '',
+  orientation: '',
   orderBy: '',
   hasPhoto: '',
   diet: 'Diet',
@@ -180,6 +182,10 @@ export function formatFilters(
         value = value.map((s) => translate(`profile.education.${s}`, INVERTED_EDUCATION_CHOICES[s]))
       } else if (key === 'religion') {
         value = value.map((s) => translate(`profile.religion.${s}`, INVERTED_RELIGION_CHOICES[s]))
+      } else if (key === 'orientation') {
+        value = value.map((s) =>
+          translate(`profile.orientation.${s}`, INVERTED_ORIENTATION_CHOICES[s] ?? s),
+        )
       } else if (key === 'languages') {
         value = value.map((s) => translate(`profile.language.${s}`, INVERTED_LANGUAGE_CHOICES[s]))
       } else if (key === 'pref_gender') {

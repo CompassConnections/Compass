@@ -218,14 +218,84 @@ export const MBTI_CHOICES = {
 export const GENDERS = {
   Woman: 'female',
   Man: 'male',
-  Other: 'other',
+  Agender: 'agender',
+  Androgynous: 'androgynous',
+  Bigender: 'bigender',
+  'Cis Man': 'cis-man',
+  'Cis Woman': 'cis-woman',
+  Genderfluid: 'genderfluid',
+  Genderqueer: 'genderqueer',
+  'Gender Nonconforming': 'gender-nonconforming',
+  Hijra: 'hijra',
+  Intersex: 'intersex',
+  'Non-binary': 'non-binary',
+  'Other gender': 'other',
+  Pangender: 'pangender',
+  Transfeminine: 'transfeminine',
+  Transgender: 'transgender',
+  'Trans Man': 'trans-man',
+  Transmasculine: 'transmasculine',
+  Transsexual: 'transsexual',
+  'Trans Woman': 'trans-woman',
+  'Two Spirit': 'two-spirit',
 } as const
 
 export const GENDERS_PLURAL = {
   Women: 'female',
   Men: 'male',
-  Other: 'other',
+  Agender: 'agender',
+  Androgynous: 'androgynous',
+  Bigender: 'bigender',
+  'Cis Men': 'cis-man',
+  'Cis Women': 'cis-woman',
+  Genderfluid: 'genderfluid',
+  Genderqueer: 'genderqueer',
+  'Gender Nonconforming': 'gender-nonconforming',
+  Hijra: 'hijra',
+  Intersex: 'intersex',
+  'Non-binary': 'non-binary',
+  'Other gender': 'other',
+  Pangender: 'pangender',
+  Transfeminine: 'transfeminine',
+  Transgender: 'transgender',
+  'Trans Men': 'trans-man',
+  Transmasculine: 'transmasculine',
+  Transsexual: 'transsexual',
+  'Trans Women': 'trans-woman',
+  'Two Spirit': 'two-spirit',
 } as const
+
+export const ORIENTATION_CHOICES = {
+  Straight: 'straight',
+  Lesbian: 'lesbian',
+  Gay: 'gay',
+  Bisexual: 'bisexual',
+  Queer: 'queer',
+  Pansexual: 'pansexual',
+  Questioning: 'questioning',
+  Heteroflexible: 'heteroflexible',
+  Homoflexible: 'homoflexible',
+  Asexual: 'asexual',
+  'Gray-asexual': 'gray-asexual',
+  Demisexual: 'demisexual',
+  Reciprosexual: 'reciprosexual',
+  Akiosexual: 'akiosexual',
+  Aceflux: 'aceflux',
+  Grayromantic: 'grayromantic',
+  Demiromantic: 'demiromantic',
+  Recipromantic: 'recipromantic',
+  Akioromantic: 'akioromantic',
+  Aroflux: 'aroflux',
+} as const
+
+export const DEFAULT_ORIENTATIONS = [
+  ORIENTATION_CHOICES.Straight,
+  ORIENTATION_CHOICES.Lesbian,
+  ORIENTATION_CHOICES.Gay,
+]
+export const EXTRA_ORIENTATIONS = Object.values(ORIENTATION_CHOICES).filter(
+  (v) => !DEFAULT_ORIENTATIONS.includes(v as any),
+)
 
 export const LAST_ONLINE_CHOICES = {
   now: 'Currently online',
@@ -287,6 +357,7 @@ export const INVERTED_PSYCHEDELICS_CHOICES = invert(PSYCHEDELICS_CHOICES)
 export const INVERTED_CANNABIS_CHOICES = invert(CANNABIS_CHOICES)
 export const INVERTED_SUBSTANCE_INTENTION_CHOICES = invert(SUBSTANCE_INTENTION_CHOICES)
 export const INVERTED_SUBSTANCE_PREFERENCE_CHOICES = invert(SUBSTANCE_PREFERENCE_CHOICES)
+export const INVERTED_ORIENTATION_CHOICES = invert(ORIENTATION_CHOICES)
 
 //Exported types for test files to use when referencing the keys of the choices objects
 export type PersonalityKey = keyof typeof MBTI_CHOICES
@@ -343,3 +414,7 @@ export type SubstancePreferenceTuple = {
 export type LastActiveTuple = {
   [K in keyof typeof LAST_ONLINE_CHOICES]: [K, (typeof LAST_ONLINE_CHOICES)[K]]
 }[keyof typeof LAST_ONLINE_CHOICES]
+
+export type OrientationTuple = {
+  [K in keyof typeof ORIENTATION_CHOICES]: [K, (typeof ORIENTATION_CHOICES)[K]]
+}[keyof typeof ORIENTATION_CHOICES]

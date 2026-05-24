@@ -3,8 +3,10 @@ import {
   CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
@@ -26,10 +28,15 @@ class UserAccountInformationForSeeding {
   age = faker.number.int({min: 18, max: 100})
   bio = faker.lorem.words({min: 200, max: 350})
   born_in_location = faker.location.country()
-  gender = ['Female', 'Male', 'Other']
-
-  pref_gender = ['Female', 'Male', 'Other']
-
+  gender = Object.values(GENDERS)
+  pref_gender = Object.values(GENDERS)
+  orientation = Array.from(
+    {length: faker.number.int({min: 1, max: 2})},
+    () =>
+      Object.values(ORIENTATION_CHOICES)[
+        faker.number.int({min: 0, max: Object.values(ORIENTATION_CHOICES).length - 1})
+      ],
+  )
   pref_age = {
     min: faker.number.int({min: 18, max: 27}),
     max: faker.number.int({min: 36, max: 68}),

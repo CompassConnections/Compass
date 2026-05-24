@@ -1,12 +1,16 @@
 import clsx from 'clsx'
-import {GENDERS_PLURAL} from 'common/choices'
+import {GENDERS} from 'common/choices'
 import {FilterFields} from 'common/filters'
-import {Gender} from 'common/gender'
+import {EXTRA_GENDERS, Gender} from 'common/gender'
+import {Profile} from 'common/profiles/profile'
+import {useState} from 'react'
 import {Row} from 'web/components/layout/row'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {useT} from 'web/lib/locale'
 
 import GenderIcon from '../gender-icon'
+
+const DEFAULT_GENDER_VALUES = ['female', 'male']
 
 export function GenderFilterText(props: {gender: Gender[] | undefined; highlightedClass?: string}) {
   const {gender, highlightedClass} = props
@@ -39,18 +43,41 @@ export function GenderFilterText(props: {gender: Gender[] | undefined; highlight
 export function GenderFilter(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
+  profile?: Profile | null
 }) {
-  const {filters, updateFilter} = props
+  const {filters, updateFilter, profile} = props
+  const t = useT()
+  const selected = filters.genders ?? []
+  const hasExtendedSelected =
+    selected.some((v) => !DEFAULT_GENDER_VALUES.includes(v)) ||
+    (profile?.gender && EXTRA_GENDERS.includes(profile.gender as any))
+  const [showAll, setShowAll] = useState(hasExtendedSelected)
+
+  const visibleChoices = Object.fromEntries(
+    Object.entries(GENDERS).filter(
+      ([, v]) => showAll || DEFAULT_GENDER_VALUES.includes(v) || selected.includes(v),
+    ),
+  )
+
   return (
     <>
       <MultiCheckbox
-        selected={filters.genders ?? []}
-        choices={GENDERS_PLURAL}
-        translationPrefix={'profile.gender.plural'}
+        selected={selected}
+        choices={visibleChoices}
+        translationPrefix={'profile.gender'}
         onChange={(c) => {
           updateFilter({genders: c})
         }}
       />
+      {!showAll && (
+        <button
+          type="button"
+          className="text-primary-600 mt-1 text-sm"
+          onClick={() => setShowAll(true)}
+        >
+          {t('filter.gender.show_more', 'Show more genders')}
+        </button>
+      )}
     </>
   )
 }

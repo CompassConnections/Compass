@@ -463,55 +463,6 @@ export const OptionalProfileUserForm = (props: {
           </Col>
         </Row>
 
-        <Row className={'items-center gap-2'}>
-          <Col className={'gap-1'}>
-            <label className={clsx(labelClassName)}>
-              {t('profile.optional.orientation', 'Sexual orientation')}
-            </label>
-            <MultiCheckbox
-              choices={
-                Object.fromEntries(
-                  Object.entries(ORIENTATION_CHOICES).filter(
-                    ([, v]) =>
-                      showAllOrientations ||
-                      DEFAULT_ORIENTATIONS.includes(v as any) ||
-                      (profile['orientation'] ?? []).includes(v),
-                  ),
-                ) as any
-              }
-              selected={profile['orientation'] ?? []}
-              translationPrefix={'profile.orientation'}
-              onChange={(selected) => setProfile('orientation', selected)}
-            />
-            {!showAllOrientations && (
-              <button
-                type="button"
-                className="text-primary-600 mt-1 text-sm"
-                onClick={() => setShowAllOrientations(true)}
-              >
-                {t('profile.orientation.show_more', 'Show more options')}
-              </button>
-            )}
-            {showAllOrientations && (
-              <>
-                <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
-                <Input
-                  type="text"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setProfile('orientation_details', e.target.value)
-                  }
-                  className={'w-full sm:w-[700px]'}
-                  value={(profile as any)['orientation_details'] ?? undefined}
-                  placeholder={t(
-                    'profile.orientation.details_placeholder',
-                    'Any details about your sexual orientation…',
-                  )}
-                />
-              </>
-            )}
-          </Col>
-        </Row>
-
         <Col className={clsx(colClassName)}>
           <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
           <Input
@@ -799,6 +750,55 @@ export const OptionalProfileUserForm = (props: {
 
         {lookingRelationship && (
           <>
+            <Row className={'items-center gap-2'}>
+              <Col className={'gap-1'}>
+                <label className={clsx(labelClassName)}>
+                  {t('profile.optional.orientation', 'Orientation')}
+                </label>
+                <MultiCheckbox
+                  choices={
+                    Object.fromEntries(
+                      Object.entries(ORIENTATION_CHOICES).filter(
+                        ([, v]) =>
+                          showAllOrientations ||
+                          DEFAULT_ORIENTATIONS.includes(v as any) ||
+                          (profile['orientation'] ?? []).includes(v),
+                      ),
+                    ) as any
+                  }
+                  selected={profile['orientation'] ?? []}
+                  translationPrefix={'profile.orientation'}
+                  onChange={(selected) => setProfile('orientation', selected)}
+                />
+                {!showAllOrientations && (
+                  <button
+                    type="button"
+                    className="text-primary-600 mt-1 text-sm"
+                    onClick={() => setShowAllOrientations(true)}
+                  >
+                    {t('profile.orientation.show_more', 'Show more options')}
+                  </button>
+                )}
+                {showAllOrientations && (
+                  <>
+                    <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+                    <Input
+                      type="text"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setProfile('orientation_details', e.target.value)
+                      }
+                      className={'w-full sm:w-[700px]'}
+                      value={(profile as any)['orientation_details'] ?? undefined}
+                      placeholder={t(
+                        'profile.orientation.details_placeholder',
+                        'Any details about your sexual orientation…',
+                      )}
+                    />
+                  </>
+                )}
+              </Col>
+            </Row>
+
             <Col className={clsx(colClassName)}>
               <label className={clsx(labelClassName)}>
                 {t('profile.optional.relationship_style', 'Relationship style')}

@@ -16,7 +16,7 @@ export function RelationshipStatusFilterText(props: {
   const t = useT()
   const length = (options ?? []).length
 
-  const label = defaultLabel || t('filter.any', 'Any')
+  const label = defaultLabel || t('filter.any', 'Any Status')
 
   if (!options || length < 1) {
     return <span className={clsx('text-semibold', highlightedClass)}>{label}</span>

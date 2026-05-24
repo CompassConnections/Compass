@@ -18,7 +18,7 @@ export function RomanticFilterText(props: {
   if (!relationship || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_relationship', 'Any relationship')}
+        {t('filter.any_relationship', 'Any relationship style')}
       </span>
     )
   }

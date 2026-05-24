@@ -24,6 +24,7 @@ import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profil
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
 import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
 import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
+import {OrientationFilter, OrientationFilterText} from 'web/components/filters/orientation-filter'
 import {PoliticalFilter, PoliticalFilterText} from 'web/components/filters/political-filter'
 import {
   RelationshipStatusFilter,
@@ -50,7 +51,6 @@ import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
 import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
 import {MyMatchesToggle} from './my-matches-toggle'
-import {OrientationFilter, OrientationFilterText} from './orientation-filter'
 import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
@@ -329,24 +329,6 @@ function Filters(props: {
         <GenderFilter filters={filters} updateFilter={updateFilter} profile={youProfile} />
       </FilterSection>
 
-      {/* ORIENTATION - Always visible */}
-      <FilterSection
-        title={t('profile.optional.orientation', 'Orientation')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={hasAny((filters as any).orientation || undefined)}
-        selection={
-          <OrientationFilterText options={(filters as any).orientation as string[] | undefined} />
-        }
-      >
-        <OrientationFilter
-          filters={filters}
-          updateFilter={updateFilter}
-          profile={youProfile}
-          className={''}
-        />
-      </FilterSection>
-
       {/* ACCORDION GROUPS */}
 
       {/* Relationship Group */}
@@ -366,7 +348,7 @@ function Filters(props: {
             selection={
               <RelationshipStatusFilterText
                 options={filters.relationship_status as string[]}
-                defaultLabel={t('filter.relationship_status.any', 'Any')}
+                defaultLabel={t('filter.relationship_status.any', 'Any status')}
                 // highlightedClass={
                 //   hasAny(filters.relationship_status || undefined)
                 //     ? 'text-primary-600'
@@ -376,6 +358,25 @@ function Filters(props: {
             }
           >
             <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
+          </FilterSection>
+
+          <FilterSection
+            title={t('profile.optional.orientation', 'Orientation')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={hasAny((filters as any).orientation || undefined)}
+            selection={
+              <OrientationFilterText
+                options={(filters as any).orientation as string[] | undefined}
+              />
+            }
+          >
+            <OrientationFilter
+              filters={filters}
+              updateFilter={updateFilter}
+              profile={youProfile}
+              className={''}
+            />
           </FilterSection>
 
           {/* Romantic Style */}

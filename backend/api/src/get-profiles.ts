@@ -153,7 +153,7 @@ const EXCLUDED_PROFILE_COLS = new Set(['search_text', 'search_tsv'])
 
 let profileCols: any
 
-const getProfileCols = async () => {
+export const getProfileCols = async () => {
   if (profileCols) return profileCols
   const pg = createSupabaseDirectClient()
   const rows = await pg.manyOrNone<{column_name: string}>(

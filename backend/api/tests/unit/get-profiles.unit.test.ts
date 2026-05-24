@@ -6,6 +6,7 @@ import * as sqlBuilder from 'shared/supabase/sql-builder'
 describe('getProfiles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.spyOn(profilesModule, 'getProfileCols').mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -77,6 +78,7 @@ describe('loadProfiles', () => {
     }
 
     jest.spyOn(supabaseInit, 'createSupabaseDirectClient').mockReturnValue(mockPg)
+    jest.spyOn(profilesModule, 'getProfileCols').mockResolvedValue(null)
   })
   afterEach(() => {
     jest.restoreAllMocks()

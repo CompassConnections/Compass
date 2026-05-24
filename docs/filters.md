@@ -1,7 +1,8 @@
 - Seeking — the type of connection someone is looking for (friendship, relationship, collaboration, etc.).
 - Living — where someone currently lives, with a selectable search radius.
 - Age — age range.
-- Gender — gender identity.
+- Gender — gender identity (multi-select with extended list hidden behind "Show more").
+- Orientation — sexual orientation (multi-select with extended list hidden behind "Show more").
 - Status — current relationship status (e.g., single, in a relationship).
 - Style — preferred romantic relationship structure (e.g., monogamous, polyamorous).
 - Has Kids — whether someone currently has children.

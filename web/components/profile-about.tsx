@@ -121,6 +121,7 @@ export default function ProfileAbout(props: {
     <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
       <SeekingAndRelationship profile={profile} />
       <Orientation profile={profile} />
+      <CombinedChildren profile={profile} />
       <Education profile={profile} />
       <OccupationAndWork profile={profile} />
       <Politics profile={profile} />
@@ -133,7 +134,6 @@ export default function ProfileAbout(props: {
       <Psychedelics profile={profile} />
       <Diet profile={profile} />
       <LanguagesSection profile={profile} />
-      <CombinedChildren profile={profile} />
       {!isCurrentUser && (
         <>
           <LastOnline lastOnlineTime={userActivity?.last_online_time} />

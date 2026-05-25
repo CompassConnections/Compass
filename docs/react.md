@@ -506,16 +506,16 @@ function Button() {
 // Types
 interface ProfileProps {
   profile: Profile
-  invertedMbtiChoice: string // ✅ a prop, not a second parameter
+  label: string // a prop, not a second parameter
 }
 
 // Component
-export function ProfilePersonality({profile, invertedMbtiChoice}: ProfileProps) {
+export function ProfilePersonality({profile, label}: ProfileProps) {
   // Hook — stateful logic
   const [isExpanded, setIsExpanded] = useState(false)
 
   // Derived value — plain calculation, not a hook
-  const mbtiType = profile.mbti ? invertedMbtiChoice : null
+  const mbtiType = label + '-MBTI'
 
   // Effect — side effect (lifecycle)
   useEffect(() => {
@@ -545,8 +545,8 @@ export function ProfilePersonality({profile, invertedMbtiChoice}: ProfileProps) 
 ```
 JavaScript
 ├── Everything is an object (or behaves like one)
-├── Classes are functions with prototype chains
 ├── Functions are first-class objects
+├── Classes are functions with prototype chains
 └── Async model: single-threaded + event loop
 
       ↓ adds

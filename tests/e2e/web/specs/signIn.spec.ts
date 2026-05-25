@@ -1,5 +1,3 @@
-import {sleep} from 'common/util/time'
-
 import {expect, test} from '../fixtures/signInFixture'
 
 test.describe('when given valid input', () => {
@@ -19,19 +17,20 @@ test.describe('when given valid input', () => {
     await app.signinWithEmail(account)
     await app.home.clickPeopleLink()
     await app.people.getProfileInfo()
+
     const totalProfiles = await app.people.profileCountLocator.textContent()
+    expect(totalProfiles).toBeTruthy()
+    const totalCount = Number.parseInt(totalProfiles!, 10)
+    expect(Number.isNaN(totalCount)).toBe(false)
+
     await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
 
-    const filteredProfiles = await app.people.profileCountLocator.textContent()
-
-    expect(totalProfiles).toBeTruthy()
-    expect(filteredProfiles).toBeTruthy()
-    const totalCount = Number.parseInt(totalProfiles!, 10)
-    const filteredCount = Number.parseInt(filteredProfiles!, 10)
-    expect(Number.isNaN(totalCount)).toBe(false)
-    expect(Number.isNaN(filteredCount)).toBe(false)
-    await sleep(1000)
-    await expect(filteredCount).not.toEqual(totalCount)
+    // The count updates asynchronously after the filter is applied, so poll until it changes.
+    await expect
+      .poll(async () =>
+        Number.parseInt((await app.people.profileCountLocator.textContent())!, 10),
+      )
+      .not.toEqual(totalCount)
   })
 })
 

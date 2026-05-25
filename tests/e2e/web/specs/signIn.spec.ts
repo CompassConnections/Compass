@@ -10,170 +10,218 @@ test.describe('when given valid input', () => {
     await app.home.verifySignedInHomePage(account.display_name)
   })
 
-  test('the profile count should update successfully when applying a filter', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-    await app.people.getProfileInfo()
+  test.describe('the applied filter should', () => {
+    test('update the profile count', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
 
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      const filterdProfiles = await app.people.profileCountLocator.textContent()
 
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    expect(totalProfiles).toBeTruthy()
-    const totalCount = Number.parseInt(totalProfiles!, 10)
-    expect(Number.isNaN(totalCount)).toBe(false)
+      if (!totalProfiles || !filterdProfiles) return
+      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
 
-    await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    const filterdProfiles = await app.people.profileCountLocator.textContent()
+      const results = await app.people.getProfileInfo()
+      if (!results) return
+      await expect(results.seeking).toContain('Collaboration')
+    })
 
-    if (!totalProfiles || !filterdProfiles) return
-    await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+    /**
+     * Test fails due to ui not updating
+     * works fine manually
+     */
+    test.skip('show profiles with the correct age', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+      await app.people.setDisplayFilter({filters: {Age: true}})
 
-    const results = await app.people.getProfileInfo()
-    if (!results) return
-    await expect(results.seeking).toContain('Collaboration')
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      const profileResults = await app.people.getProfileInfo()
+      const profileAge = parseInt(profileResults.ageGender.match(/\d+/)?.[0] ?? '0')
+      const age = profileAge <= 60 ? profileAge : 60
+      console.log(profileResults, age)
+
+      await app.people.setAgeRangeFilter({min: String(age), max: String(age)})
+
+      const filterdProfiles = await app.people.profileCountLocator.textContent()
+
+      if (!totalProfiles || !filterdProfiles) return
+      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+    })
+
+    test('show profiles with the correct gender', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setGenderTypeFilter(['Women', 'female'])
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct education level', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setBackgroundFilter({education: ['College', 'some-college']})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct diet', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setLifestyleFilter({diet: ['Vegetarian', 'veg']})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct smoking preference', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setLifestyleFilter({smoker: 'Yes'})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct psychedelics preference', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setLifestyleFilter({psychedelics: ['Regularly (weekly+)', 'regularly']})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct cannabis preference', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setLifestyleFilter({
+        cannabis: ['Occasionally (a few times a year)', 'occasionally'],
+      })
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct political preference', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setValuesAndBeliefsFilter({political: ['Progressive', 'progressive']})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
+
+    test('show profiles with the correct relegion preference', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+
+      const totalProfiles = await app.people.profileCountLocator.textContent()
+      await app.people.setValuesAndBeliefsFilter({religious: ['Jewish', 'jewish']})
+      await app.people.setDisplayFilter({cardSize: 'Large'})
+      if (!totalProfiles) return
+      await app.people.verifyProfileCount(totalProfiles)
+    })
   })
 
-  /**
-   * Test fails due to ui not updating
-   * works fine manually
-   */
-  test.skip('the age filter should work correctly', async ({
-    app,
-    signedOutAccount: account
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-    await app.people.setDisplayFilter({filters: {Age: true}})
+  test.describe('the hide profile feature', () => {
+    test('should correctly hide a profile', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+      const results = await app.people.getProfileInfo()
+      if (!results) return
+      const hideProfileButton = await results.profile.getByRole('button', {
+        name: 'Hide this profile',
+      })
+      await expect(hideProfileButton).toBeVisible()
+      await hideProfileButton.click()
+      await expect(
+        app.page.getByText(`You won't see ${results.name} in your search results anymore.`),
+      ).toBeVisible()
+    })
 
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    const profileResults = await app.people.getProfileInfo()
-    const profileAge = parseInt(profileResults.ageGender.match(/\d+/)?.[0] ?? '0')
-    const age = profileAge <= 60 ? profileAge : 60
-    console.log(profileResults, age)
-
-    await app.people.setAgeRangeFilter({min: String(age), max: String(age)})
-
-    // The count updates asynchronously after the filter is applied, so poll until it changes.
-    await expect
-      .poll(async () =>
-        Number.parseInt((await app.people.profileCountLocator.textContent())!, 10),
+    test('should be reverseable using undo', async ({app, signedOutAccount: account}) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+      const results = await app.people.getProfileInfo()
+      if (!results) return
+      const hideProfileButton = await results.profile.getByRole('button', {
+        name: 'Hide this profile',
+      })
+      await expect(hideProfileButton).toBeVisible()
+      await hideProfileButton.click()
+      const hideProfileMessage = await app.page.getByText(
+        `You won't see ${results.name} in your search results anymore.`,
       )
-      .not.toEqual(totalCount)
-  })
+      await expect(hideProfileMessage).toBeVisible()
+      await app.people.page.getByRole('button', {name: 'Undo'}).click()
+      await expect(hideProfileMessage).not.toBeVisible()
+      const profile = await app.people.page.getByRole('heading', {name: `${results.name}`})
+      await expect(profile).toBeVisible()
+    })
 
-  test('the gender filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setGenderTypeFilter(["Women", "female"])
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the education filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setBackgroundFilter({education: ["College", "some-college"]})
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the diet filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setLifestyleFilter({diet: ["Vegetarian", "veg"]})
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the smoker filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setLifestyleFilter({smoker: 'Yes'})
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the psychedelics filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setLifestyleFilter({psychedelics: ["Regularly (weekly+)", "regularly"]})
-    await app.people.setDisplayFilter({cardSize: 'Large'})
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the cannabis filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setLifestyleFilter({cannabis: ["Occasionally (a few times a year)", "occasionally"]})
-    await app.people.setDisplayFilter({ cardSize: 'Large' })
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the politics filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setValuesAndBeliefsFilter({political: ["Progressive", "progressive"]})
-    await app.people.setDisplayFilter({ cardSize: 'Large' })
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
-  })
-
-  test('the religion filter should work correctly', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
-    await app.signinWithEmail(account)
-    await app.home.clickPeopleLink()
-
-    const totalProfiles = await app.people.profileCountLocator.textContent()
-    await app.people.setValuesAndBeliefsFilter({religious: ["Jewish", "jewish"]})
-    await app.people.setDisplayFilter({ cardSize: 'Large' })
-    if (!totalProfiles) return
-    await app.people.verifyProfileCount(totalProfiles)
+    test('should be reverseable using manage hidden profiles feature in settings', async ({
+      app,
+      signedOutAccount: account,
+    }) => {
+      await app.signinWithEmail(account)
+      await app.home.clickPeopleLink()
+      const results = await app.people.getProfileInfo()
+      if (!results) return
+      const hideProfileButton = await results.profile.getByRole('button', {
+        name: 'Hide this profile',
+      })
+      await expect(hideProfileButton).toBeVisible()
+      await hideProfileButton.click()
+      const hideProfileMessage = await app.page.getByText(
+        `You won't see ${results.name} in your search results anymore.`,
+      )
+      await expect(hideProfileMessage).toBeVisible()
+      await app.home.clickSettingsLink()
+      await app.settings.clickManageHiddenProfilesButton()
+      await app.settings.verifyHiddenProfiles([results.name])
+      await app.settings.unhideProfiles(results.name)
+      await app.settings.clickCloseButton()
+      await app.home.clickPeopleLink()
+      const profile = await app.people.page.getByRole('heading', {name: `${results.name}`})
+      await expect(profile).toBeVisible()
+    })
   })
 })
 

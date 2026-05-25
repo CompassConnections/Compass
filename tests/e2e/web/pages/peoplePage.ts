@@ -25,7 +25,7 @@ export type LifestyleFilter = {
   cause?: string
   diet?: DietTuple
   alcohol?: MinMaxNumbers
-  smoker?: "Yes" | "No" | "Either"
+  smoker?: 'Yes' | 'No' | 'Either'
   psychedelics?: PsychedelicsTuple
   cannabis?: CannabisTuple
   language?: LanguageTuple
@@ -169,6 +169,15 @@ export class PeoplePage {
 
   get profileCountLocator(): Locator {
     return this.profileCount
+  }
+  get profileNameLocator(): Locator {
+    return this.profileName
+  }
+  get profileAgeGenderLocator(): Locator {
+    return this.profileAgeGender
+  }
+  get profileSeekingLocator(): Locator {
+    return this.profileSeeking
   }
 
   async sliderHelper(range: MinMaxNumbers, locator?: Locator) {
@@ -436,6 +445,7 @@ export class PeoplePage {
     const seekingInfo = await chosenProfile.getByTestId('people-profile-seeking').textContent()
 
     return {
+      profile: chosenProfile ?? '',
       name: profileName ?? '',
       ageGender: ageGender ?? '',
       seeking: seekingInfo ?? '',
@@ -443,15 +453,15 @@ export class PeoplePage {
   }
 
   async verifyProfileCount(totalProfiles: string) {
-    const exists = await this.profileCountLocator.count() > 0
+    const exists = (await this.profileCountLocator.count()) > 0
 
     if (exists) {
       const filterdProfiles = await this.profileCountLocator.textContent()
-  
+
       if (!totalProfiles || !filterdProfiles) return
       await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
     } else {
-      const noProfilesFound = await this.page.getByText('No profiles found.', { exact: true })
+      const noProfilesFound = await this.page.getByText('No profiles found.', {exact: true})
       await expect(noProfilesFound).toBeVisible()
     }
   }

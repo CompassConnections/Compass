@@ -1,4 +1,5 @@
 import {expect, test} from '../fixtures/signInFixture'
+import {ContextManager} from '../../utils/contextManager'
 
 test.describe('when given valid input', () => {
   test('should be able to sign in to an available account', async ({
@@ -221,6 +222,17 @@ test.describe('when given valid input', () => {
       await app.home.clickPeopleLink()
       const profile = await app.people.page.getByRole('heading', {name: `${results.name}`})
       await expect(profile).toBeVisible()
+    })
+  })
+
+  test.describe('a verified account should', () => {
+    test('be able to send a message', async ({app, devOneAccount, devTwoAccount}) => {
+      const devOne = await app.contextManager.createContext('devOne')
+      const devTwo = await app.contextManager.createContext('devTwo')
+      await devOne.signinWithEmail(devOneAccount)
+      await devOne.home.clickPeopleLink()
+      await devTwo.signinWithEmail(devTwoAccount)
+      await devTwo.home.clickPeopleLink()
     })
   })
 })

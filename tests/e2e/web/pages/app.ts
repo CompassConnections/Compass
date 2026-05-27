@@ -1,6 +1,7 @@
-import {Page} from '@playwright/test'
+import {BrowserContext, Page} from '@playwright/test'
 
 import {UserAccountInformation} from '../utils/accountInformation'
+import {ContextManager} from '../../utils/contextManager'
 import {AuthPage} from './authPage'
 import {CompatibilityPage} from './compatibilityPage'
 import {HomePage} from './homePage'
@@ -25,6 +26,8 @@ export class App {
   readonly social: SocialPage
   readonly people: PeoplePage
   readonly notifs: NotificationPage
+  readonly contextManager: ContextManager
+  readonly context: BrowserContext
 
   constructor(public readonly page: Page) {
     this.auth = new AuthPage(page)
@@ -38,6 +41,11 @@ export class App {
     this.social = new SocialPage(page)
     this.people = new PeoplePage(page)
     this.notifs = new NotificationPage(page)
+    this.context = page.context()
+
+    const browser = page.context().browser()
+    if (!browser) throw new Error('Could not get Browser from page.context().browser()')
+    this.contextManager = new ContextManager(browser)
   }
 
   async deleteProfileFromSettings() {

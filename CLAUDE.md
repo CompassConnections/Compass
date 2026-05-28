@@ -95,6 +95,7 @@ Frontend then calls it via `useAPIGetter('endpoint-name', props)` (client) or `a
 - **i18n**: `useT()` from `web/lib/locale`, then `t('key', 'English fallback')`. Translation JSON in
   `common/messages/`. Details in [`docs/internationalization.md`](docs/internationalization.md).
 - **Scripts that mutate backend state or schema are run by the human, not Claude.**
+- When editing files, do NOT remove comments or commented-out code.
 
 ## Docs
 

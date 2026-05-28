@@ -863,7 +863,7 @@ These are seeded automatically by `yarn test:db:seed`:
 ## Troubleshooting
 
 For comprehensive troubleshooting guidance beyond testing-specific issues, see
-the [Troubleshooting Guide](TROUBLESHOOTING.md) which covers development environment setup, database and emulator
+the [Troubleshooting Guide](troubleshooting.md) which covers development environment setup, database and emulator
 issues, API problems, and more.
 
 ### Port already in use
@@ -948,4 +948,4 @@ To download the Playwright report from a failed CI run:
 4. Open `index.html` in your browser
 
 For performance testing guidance and benchmarking strategies, see
-the [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md).
+the [Performance Optimization Guide](performance-optimization.md).

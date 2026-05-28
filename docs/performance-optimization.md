@@ -377,7 +377,7 @@ metrics.set('pg/pool_connections', pool.idleCount, {state: 'idle'})
 metrics.set('pg/pool_connections', pool.totalCount, {state: 'total'})
 ```
 
-See [DATABASE_CONNECTION_POOLING.md](DATABASE_CONNECTION_POOLING.md) for detailed connection pooling best practices.
+See [database-connection-pooling.md](database-connection-pooling.md) for detailed connection pooling best practices.
 
 ### Query Optimization
 

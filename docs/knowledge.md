@@ -6,7 +6,7 @@
 ## Development Workflow
 
 - See the To Do section in the root [README.md](../README.md) for all the tasks. Some other tasks are in
-  this [TODO.md](TODO.md), but they are secondary and need to be migrated to the main README.
+  this [todo.md](todo.md), but they are secondary and need to be migrated to the main README.
 
 ## Project Structure
 
@@ -373,8 +373,8 @@ using the pg-promise library. The client (code in web) does not have permission 
 
 For more information on database connection management and optimization, see:
 
-- [Database Connection Pooling Guide](DATABASE_CONNECTION_POOLING.md) for detailed configuration and troubleshooting
-- [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md) for database query optimization techniques
+- [Database Connection Pooling Guide](database-connection-pooling.md) for detailed configuration and troubleshooting
+- [Performance Optimization Guide](performance-optimization.md) for database query optimization techniques
 
 Another example using the direct client:
 
@@ -454,7 +454,8 @@ const t = useT()
 t('common.key', 'English translations')
 ```
 
-Translations should go to the JSON files in `common/messages` (`de.json` and `fr.json`, as of now; English is the inline fallback passed to `t()`).
+Translations should go to the JSON files in `common/messages` (`de.json` and `fr.json`, as of now; English is the inline
+fallback passed to `t()`).
 
 ### Misc coding tips
 

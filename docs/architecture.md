@@ -384,8 +384,8 @@ GitHub Push
 
 - [Knowledge Base](knowledge.md)
 - [Development Guide](development.md)
-- [Testing Guide](TESTING.md)
-- [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md)
-- [Database Connection Pooling Guide](DATABASE_CONNECTION_POOLING.md)
-- [Troubleshooting Guide](TROUBLESHOOTING.md)
-- [Next.js Documentation](Next.js.md)
+- [Testing Guide](testing.md)
+- [Performance Optimization Guide](performance-optimization.md)
+- [Database Connection Pooling Guide](database-connection-pooling.md)
+- [Troubleshooting Guide](troubleshooting.md)
+- [Next.js Documentation](next-js.md)

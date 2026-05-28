@@ -19,11 +19,15 @@ On Compass, it can be any browser (Chrome, Firefox, etc.).
 
 ### Server
 
-Any remote infrastructure, i.e., not running in the user's environment / OS. The back-end is the code that runs in that environment.
+Any remote infrastructure, i.e., not running in the user's environment / OS. The back-end is the code that runs in that
+environment.
 On Compass, there are two servers:
 
-- Web server: hosted on Vercel at `compassmeet.com`, which mostly provides the web pages to the client. That's the server we are talking about in the rest of the document.
-- Core server: hosted on Google Cloud at `api.compassmeet.com`, a server with more resources and permissions to update the database. It's in charge of any operation related to non-web data (i.e., no HTML or CSS) such as accounts, profiles, messages, and votes.
+- Web server: hosted on Vercel at `compassmeet.com`, which mostly provides the web pages to the client. That's the
+  server we are talking about in the rest of the document.
+- Core server: hosted on Google Cloud at `api.compassmeet.com`, a server with more resources and permissions to update
+  the database. It's in charge of any operation related to non-web data (i.e., no HTML or CSS) such as accounts,
+  profiles, messages, and votes.
 
 ---
 
@@ -31,7 +35,8 @@ On Compass, there are two servers:
 
 React is a client-side UI library.  
 Its core job: create and update a **virtual DOM**, then reconcile that with the **real DOM** in the browser.  
-React itself **does not** define routing, data fetching conventions, or server rendering (it allows it, but doesn’t provide a full system).
+React itself **does not** define routing, data fetching conventions, or server rendering (it allows it, but doesn’t
+provide a full system).
 
 **Key behavior:**
 
@@ -43,14 +48,16 @@ React itself **does not** define routing, data fetching conventions, or server r
 
 ### Hydration
 
-When a framework pre-renders HTML on the server, the browser receives static markup (HTML, JS and CSS). React then runs on the client and attaches event listeners and internal state to that markup.  
+When a framework pre-renders HTML on the server, the browser receives static markup (HTML, JS and CSS). React then runs
+on the client and attaches event listeners and internal state to that markup.  
 Hydration bridges static HTML (build time) and interactive React behavior (run time).
 
 You only need hydration if you have server-rendered HTML that must become interactive.
 
 ---
 
-React re-renders a component **whenever its state or props change**. Hooks don’t cause re-renders by themselves — **their returned values changing** does.
+React re-renders a component **whenever its state or props change**. Hooks don’t cause re-renders by themselves — \*
+\*their returned values changing\*\* does.
 
 ### React re-renders when:
 
@@ -101,7 +108,9 @@ Hydration is **startup initialization**.
 
 ### Next.js: What it adds
 
-Next.js is a React framework that controls **where** code runs (server vs client), **when** it runs (build vs request time), and how HTML is generated. It adds routing, rendering strategies, data fetching conventions, and server infrastructure.
+Next.js is a React framework that controls **where** code runs (server vs client), **when** it runs (build vs request
+time), and how HTML is generated. It adds routing, rendering strategies, data fetching conventions, and server
+infrastructure.
 
 Next.js introduces:
 
@@ -436,10 +445,12 @@ Fallback generation effectively behaves like **ISR** for pages not pre-rendered.
 
 ### Downtime
 
-To simulate downtime **you need the error to happen at runtime, not at build time**. That means the page must be **server-rendered**, not statically generated.
+To simulate downtime **you need the error to happen at runtime, not at build time**. That means the page must be \*
+\*server-rendered\*\*, not statically generated.
 
 ### Performance Optimization Resources
 
 For detailed performance optimization strategies specific to Compass, see:
 
-- [Performance Optimization Guide](PERFORMANCE_OPTIMIZATION.md) for frontend, backend, and infrastructure optimization techniques
+- [Performance Optimization Guide](performance-optimization.md) for frontend, backend, and infrastructure optimization
+  techniques

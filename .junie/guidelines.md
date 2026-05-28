@@ -1234,10 +1234,10 @@ components or improving wording in some pages. You can find those files in `web/
 
 There is a lof of documentation in the [docs](docs) folder and across the repo, namely:
 
-- [Next.js.md](docs/Next.js.md) for core fundamentals about our web / page-rendering framework.
+- [next-js.md](docs/next-js.md) for core fundamentals about our web / page-rendering framework.
 - [knowledge.md](docs/knowledge.md) for general information about the project structure.
 - [development.md](docs/development.md) for additional instructions, such as adding new profile fields or languages.
-- [TESTING.md](docs/TESTING.md) for how to write tests.
+- [testing.md](docs/testing.md) for how to write tests.
 - [web](web) for the web.
 - [backend/api](backend/api) for the backend API.
 - [android](android) for the Android app.

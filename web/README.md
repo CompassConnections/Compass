@@ -339,7 +339,7 @@ Check `yarn lint` first, as linting issues can cause build failures.
 - [Main README](../README.md)
 - [Contributing Guide](../CONTRIBUTING.md)
 - [Development Docs](../docs/development.md)
-- [Testing Guide](../docs/TESTING.md)
+- [Testing Guide](../docs/testing.md)
 - [Architecture Docs](../docs/knowledge.md)
 
 ## Setup

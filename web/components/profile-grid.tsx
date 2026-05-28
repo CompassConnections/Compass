@@ -376,7 +376,7 @@ function ProfilePreview(props: {
         onClick={handleClick}
         className={clsx(
           'relative overflow-hidden rounded-xl bg-canvas-50 person-card',
-          'border-[1.5px] border-[#E4DDD4]',
+          !showRing && 'border border-canvas-300',
           'transition-all duration-[120ms] ease-in',
           'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[4px]',
           'before:bg-[#C17F3E] before:rounded-l-lg',
@@ -384,7 +384,7 @@ function ProfilePreview(props: {
           'hover:before:opacity-100',
           // 'hover:bg-canvas-100',
           'hover:border-primary-300 hover:shadow-lg',
-          'relative z-10 cursor-pointer group block rounded-xl overflow-hidden bg-transparent h-full border border-canvas-300',
+          'relative z-10 cursor-pointer group block rounded-xl overflow-hidden bg-transparent h-full',
           'text-ink-600',
           // hover,
         )}
@@ -621,7 +621,7 @@ function ProfilePreview(props: {
           <div
             className="absolute -inset-[200%] animate-spin"
             style={{
-              background: `conic-gradient(from 0deg, ${isDarkTheme ? '#000000' : '#ffffff'}, ${isDarkTheme ? '#000000' : '#ffffff'}, #C17F3E)`,
+              background: `conic-gradient(from 0deg, ${isDarkTheme ? '#1f1c17' : '#f3f0ea'}, ${isDarkTheme ? '#1f1c17' : '#f3f0ea'}, #C17F3E)`,
               animationDuration: '1s',
             }}
           />

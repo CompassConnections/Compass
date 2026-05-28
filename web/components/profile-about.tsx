@@ -16,7 +16,7 @@ import {
   SUBSTANCE_PREFERENCE_ABOUT,
 } from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
-import {convertGenderPlural, Gender} from 'common/gender'
+import {convertGender, convertGenderPlural, Gender} from 'common/gender'
 import {getGoogleMapsUrl, getLocationText} from 'common/geodb'
 import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
@@ -25,16 +25,14 @@ import {UserActivity} from 'common/user'
 import {Home, Languages, Leaf, Salad} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
-import {FaHeart, FaUsers} from 'react-icons/fa'
+import {FaHeart} from 'react-icons/fa'
 import {FaChild} from 'react-icons/fa6'
-import {FiUser} from 'react-icons/fi'
-import {GiRing} from 'react-icons/gi'
 import {HiOutlineGlobe} from 'react-icons/hi'
 import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap} from 'react-icons/lu'
 import {MdNoDrinks} from 'react-icons/md'
-import {PiHandsPrayingBold, PiMagnifyingGlassBold} from 'react-icons/pi'
+import {PiGenderIntersexBold, PiHandsPrayingBold, PiMagnifyingGlassBold} from 'react-icons/pi'
 import {RiScales3Line} from 'react-icons/ri'
-import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
+import {TbBulb, TbCheck, TbHearts, TbMoodSad, TbUsers} from 'react-icons/tb'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {CustomLink} from 'web/components/links'
@@ -47,70 +45,6 @@ import {convertRace} from 'web/lib/util/convert-types'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 import {fromNow} from 'web/lib/util/time'
 
-function Divider() {
-  return (
-    <div
-      className="w-full"
-      style={{
-        height: '1px',
-        background: 'rgb(var(--color-canvas-200))',
-        margin: '12px 0',
-      }}
-    />
-  )
-}
-
-export function AboutRow(props: {
-  icon: ReactNode
-  text?: string | null | string[]
-  preText?: string
-  suffix?: string | null
-  testId?: string
-  children?: ReactNode
-}) {
-  const {icon, text, preText, suffix, testId} = props
-  const t = useT()
-  let children = props.children
-  if (!children) {
-    if (!text?.length && !preText && !suffix) {
-      return <></>
-    }
-    let formattedText = ''
-    if (preText) {
-      formattedText += preText
-    }
-    if (text?.length) {
-      formattedText += stringOrStringArrayToText({
-        text: text,
-        preText: preText,
-        asSentence: false,
-        capitalizeFirstLetterOption: true,
-        t: t,
-      })
-    }
-    children = <div>{formattedText}</div>
-  }
-
-  return (
-    <Row className="items-start gap-2.5" data-testid={testId}>
-      <div
-        className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-        style={{width: '32px', height: '32px', marginTop: '1px'}}
-      >
-        {icon}
-      </div>
-      <Col className={'w-full'}>
-        {children}
-        {suffix && (
-          <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-            {suffix}
-          </div>
-        )}
-      </Col>
-    </Row>
-  )
-}
-
 export default function ProfileAbout(props: {
   profile: Profile
   userActivity?: UserActivity
@@ -121,8 +55,9 @@ export default function ProfileAbout(props: {
   return (
     <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
       <SeekingAndRelationship profile={profile} />
+      <GenderIdentity profile={profile} />
       <Orientation profile={profile} />
-      <CombinedChildren profile={profile} />
+      <Children profile={profile} />
       <Education profile={profile} />
       <OccupationAndWork profile={profile} />
       <Politics profile={profile} />
@@ -144,173 +79,140 @@ export default function ProfileAbout(props: {
   )
 }
 
-export function ProfileInterestsAndCauses(props: {profile: Profile}) {
-  const {profile} = props
-  const t = useT()
-  const choices = useChoicesContext()
-  const {locale} = useLocale()
-
-  const interests = profile.interests
-    ?.map((id) => choices?.['interests']?.[id])
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, locale)) as string[]
-
-  const causes = profile.causes
-    ?.map((id) => choices?.['causes']?.[id])
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, locale)) as string[]
-
-  if (!interests?.length && !causes?.length) return null
-
+function Divider() {
   return (
-    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      {interests && interests.length > 0 && (
-        <>
-          {/*<div*/}
-          {/*  style={{*/}
-          {/*    fontSize: '12px',*/}
-          {/*    color: 'rgb(var(--color-ink-300))',*/}
-          {/*    textTransform: 'uppercase',*/}
-          {/*    letterSpacing: '0.07em',*/}
-          {/*    fontWeight: '500',*/}
-          {/*    marginBottom: '8px',*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {t('profile.interests', 'Interests')}*/}
-          {/*</div>*/}
-          <div className="flex flex-wrap gap-2">
-            {interests.map((interest, i) => (
-              <span
-                key={i}
-                className="border-canvas-300 text-primary-700 bg-canvas-200"
-                style={{
-                  padding: '5px 13px',
-                  borderRadius: '100px',
-                  fontSize: '13px',
-                  fontWeight: '400',
-                  letterSpacing: '0.01em',
-                  borderWidth: '1px',
-                }}
-              >
-                {interest}
-              </span>
-            ))}
-          </div>
-        </>
-      )}
-      {causes && causes.length > 0 && (
-        <>
-          {interests && interests.length > 0 && (
-            <div
-              className="border-canvas-200"
-              style={{borderBottomWidth: '1px', margin: '12px 0'}}
-            />
-          )}
-          <div
-            style={{
-              fontSize: '12px',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              fontWeight: '500',
-              marginBottom: '8px',
-            }}
-          >
-            {t('profile.causes', 'Causes')}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {causes.map((cause, i) => (
-              <span
-                key={i}
-                className="border-primary-200 text-primary-700 bg-primary-50"
-                style={{
-                  padding: '5px 13px',
-                  borderRadius: '100px',
-                  fontSize: '13px',
-                  fontWeight: '400',
-                  letterSpacing: '0.01em',
-                  borderWidth: '1px',
-                }}
-              >
-                {cause}
-              </span>
-            ))}
-          </div>
-        </>
-      )}
-    </Col>
+    <div
+      className="w-full"
+      style={{
+        height: '1px',
+        background: 'rgb(var(--color-canvas-200))',
+        margin: '12px 0',
+      }}
+    />
   )
 }
 
-export function ProfilePersonality(props: {profile: Profile}) {
-  const {profile} = props
-
-  if (!profile.mbti && !profile.big5_agreeableness) return null
-
-  const mbtiType = profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null
-  const mbtiTypeName = mbtiType ? MBTI_TYPE_NAMES[mbtiType] : null
-
+function SectionLabel(props: {compact?: boolean; children: ReactNode}) {
+  const {compact, children} = props
   return (
-    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      {profile.mbti && (
-        <div style={{marginBottom: '18px'}}>
-          <div
-            style={{
-              fontSize: '12px',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              fontWeight: '500',
-              marginBottom: '8px',
-            }}
-          >
-            MBTI
-          </div>
-          <div
-            className="border-canvas-200 bg-canvas-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2"
-            style={{
-              fontFamily: 'Cormorant Garamond, serif',
-              fontSize: '20px',
-              fontWeight: '600',
-              color: 'rgb(var(--color-ink-900))',
-              letterSpacing: '0.08em',
-            }}
-          >
-            {mbtiType}
-            {mbtiTypeName && (
-              <span
-                style={{
-                  fontFamily: 'DM Sans, sans-serif',
-                  fontSize: '11px',
-                  color: 'rgb(var(--color-ink-500))',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  fontWeight: '400',
-                  marginLeft: '2px',
-                  verticalAlign: 'middle',
-                }}
-              >
-                {mbtiTypeName}
-              </span>
-            )}
-          </div>
+    <div
+      style={{
+        fontSize: compact ? '11px' : '12px',
+        fontWeight: '500',
+        color: 'rgb(var(--color-ink-300))',
+        textTransform: 'uppercase',
+        letterSpacing: '0.07em',
+        marginBottom: compact ? '1px' : '8px',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function Chip(props: {variant?: 'default' | 'primary' | 'muted'; children: ReactNode}) {
+  const {variant = 'default', children} = props
+  if (variant === 'muted') {
+    return (
+      <span
+        className="border-canvas-200 bg-canvas-100 text-ink-500"
+        style={{
+          padding: '4px 11px',
+          borderRadius: '100px',
+          fontSize: '12.5px',
+          borderWidth: '1px',
+        }}
+      >
+        {children}
+      </span>
+    )
+  }
+  const colorClass =
+    variant === 'primary'
+      ? 'border-primary-200 text-primary-700 bg-primary-50'
+      : 'border-canvas-300 text-primary-700 bg-canvas-200'
+  return (
+    <span
+      className={colorClass}
+      style={{
+        padding: '5px 13px',
+        borderRadius: '100px',
+        fontSize: '13px',
+        fontWeight: '400',
+        letterSpacing: '0.01em',
+        borderWidth: '1px',
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+
+function AboutRow(props: {
+  icon: ReactNode
+  title: ReactNode
+  text?: ReactNode
+  details?: ReactNode
+  children?: ReactNode
+  testId?: string
+  divider?: boolean
+}) {
+  const {icon, title, text, details, children, testId, divider = true} = props
+  return (
+    <>
+      <Row className="items-start gap-2.5" data-testid={testId}>
+        <div
+          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
+          style={{width: '32px', height: '32px', marginTop: '1px'}}
+        >
+          {icon}
         </div>
-      )}
-      <Big5Traits profile={profile} />
-    </Col>
+        <Col className={'w-full'}>
+          <SectionLabel compact>{title}</SectionLabel>
+          {text != null && text !== '' && (
+            <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
+          )}
+          {details && (
+            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
+              {details}
+            </div>
+          )}
+          {children}
+        </Col>
+      </Row>
+      {divider && <Divider />}
+    </>
   )
 }
 
-export function ProfileLinks(props: {profile: Profile}) {
+function SeekingAndRelationship(props: {profile: Profile}) {
+  const t = useT()
   const {profile} = props
-  const links = (profile.links ?? {}) as Socials
+  const seekingText = getSeekingText(profile, t)
+  const relationship_status = profile.relationship_status ?? []
 
-  if (!links || Object.keys(links).length === 0) return null
+  if (relationship_status.length === 0 && !seekingText) return null
+
+  const relationshipText =
+    relationship_status.length > 0
+      ? formatChoiceList(
+          relationship_status,
+          'relationship_status',
+          INVERTED_RELATIONSHIP_STATUS_CHOICES,
+          t,
+        )
+      : null
+
+  // const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
+  // const icon = RELATIONSHIP_ICONS[key] ?? FaHeart
 
   return (
-    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      <UserHandles links={links} />
-    </Col>
+    <AboutRow
+      icon={<PiMagnifyingGlassBold className="h-5 w-5" />}
+      title={t('profile.connection_goals', 'Connection Goals')}
+      text={seekingText}
+      details={relationshipText}
+    />
   )
 }
 
@@ -354,65 +256,6 @@ export function getSeekingText(profile: Profile, t: any, short?: boolean | undef
   return `${getSeekingConnectionText(profile, t, short)} ${seekingGenderText} ${ageRangeText}`
 }
 
-function SeekingAndRelationship(props: {profile: Profile}) {
-  const t = useT()
-  const {profile} = props
-  const seekingText = getSeekingText(profile, t)
-  const relationship_status = profile.relationship_status ?? []
-
-  if (relationship_status.length === 0 && !seekingText) return null
-
-  const relationshipText =
-    relationship_status.length > 0
-      ? relationship_status
-          ?.map((v) =>
-            t(`profile.relationship_status.${v}`, INVERTED_RELATIONSHIP_STATUS_CHOICES[v]),
-          )
-          .join(', ')
-      : null
-
-  // const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
-  const icon = null // RELATIONSHIP_ICONS[key] ?? FaHeart
-
-  return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          {icon ? (
-            React.createElement(icon, {className: 'h-5 w-5'})
-          ) : (
-            <PiMagnifyingGlassBold className="h-5 w-5" />
-          )}
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.connection_goals', 'Connection Goals')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{seekingText}</div>
-          {relationshipText && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              {relationshipText}
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
-  )
-}
-
 function Education(props: {profile: Profile}) {
   const t = useT()
   const {profile} = props
@@ -430,37 +273,14 @@ function Education(props: {profile: Profile}) {
     if (educationLevel) text += ` ${t('profile.at', 'at')} `
     text += capitalizeAndRemoveUnderscores(university)
   }
-  if (text.length === 0) {
-    return <></>
-  }
+  if (text.length === 0) return null
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <LuGraduationCap className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.education', 'Education')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<LuGraduationCap className="h-5 w-5" />}
+      title={t('profile.education', 'Education')}
+      text={text}
+    />
   )
 }
 
@@ -477,9 +297,7 @@ function OccupationAndWork(props: {profile: Profile}) {
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b, locale)) as string[]
 
-  if (!company && !occupation_title && !workAreas?.length) {
-    return <></>
-  }
+  if (!company && !occupation_title && !workAreas?.length) return null
 
   const occupationText = `${
     occupation_title ? capitalizeAndRemoveUnderscores(occupation_title) : ''
@@ -490,37 +308,12 @@ function OccupationAndWork(props: {profile: Profile}) {
   const workText = workAreas?.join(' · ')
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <LuBriefcase className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.work', 'Work')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{occupationText}</div>
-          {workText && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              {workText}
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<LuBriefcase className="h-5 w-5" />}
+      title={t('profile.work', 'Work')}
+      text={occupationText}
+      details={workText}
+    />
   )
 }
 
@@ -532,42 +325,13 @@ function Politics(props: {profile: Profile}) {
 
   if (!politicalBeliefs || politicalBeliefs.length === 0) return null
 
-  const text = politicalBeliefs
-    .map((belief) => t(`profile.political.${belief}`, INVERTED_POLITICAL_CHOICES[belief]))
-    .join(', ')
-
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <RiScales3Line className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.politics', 'Politics')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-          {politicalDetails && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              "{politicalDetails}"
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<RiScales3Line className="h-5 w-5" />}
+      title={t('profile.politics', 'Politics')}
+      text={formatChoiceList(politicalBeliefs, 'political', INVERTED_POLITICAL_CHOICES, t)}
+      details={politicalDetails ? `"${politicalDetails}"` : undefined}
+    />
   )
 }
 
@@ -579,42 +343,34 @@ function Religion(props: {profile: Profile}) {
 
   if (!religion || religion.length === 0) return null
 
-  const text = religion
-    .map((belief) => t(`profile.religion.${belief}`, INVERTED_RELIGION_CHOICES[belief]))
-    .join(', ')
+  return (
+    <AboutRow
+      icon={<PiHandsPrayingBold className="h-5 w-5" />}
+      title={t('profile.religion', 'Religion')}
+      text={formatChoiceList(religion, 'religion', INVERTED_RELIGION_CHOICES, t)}
+      details={religiousBeliefs ? `"${religiousBeliefs}"` : undefined}
+    />
+  )
+}
+
+function GenderIdentity(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const p = profile
+  const gender = p.gender
+  const genderDetails = p.gender_details
+
+  if (!gender || !genderDetails) return null
+
+  const text = t(`profile.gender.${gender}`, convertGender(gender as Gender))
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <PiHandsPrayingBold className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.religion', 'Religion')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-          {religiousBeliefs && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              "{religiousBeliefs}"
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<PiGenderIntersexBold className="h-5 w-5" />}
+      title={t('profile.gender_identity', 'Gender Identity')}
+      text={text}
+      details={`"${genderDetails}"`}
+    />
   )
 }
 
@@ -624,60 +380,20 @@ function Orientation(props: {profile: Profile}) {
   const p = profile as any
   const orientation = p.orientation as string[] | null | undefined
   const orientationDetails = p.orientation_details as string | null | undefined
-  const genderDetails = p.gender_details as string | null | undefined
 
-  if (!orientation?.length && !orientationDetails && !genderDetails) return null
+  if (!orientation?.length && !orientationDetails) return null
 
   const orientationText = orientation?.length
-    ? orientation
-        .map((o: string) => t(`profile.orientation.${o}`, INVERTED_ORIENTATION_CHOICES[o] ?? o))
-        .join(', ')
+    ? formatChoiceList(orientation, 'orientation', INVERTED_ORIENTATION_CHOICES, t)
     : null
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <FaHeart className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.orientation', 'Orientation')}
-          </div>
-          {orientationText && (
-            <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>
-              {orientationText}
-            </div>
-          )}
-          {orientationDetails && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              "{orientationDetails}"
-            </div>
-          )}
-          {genderDetails && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '4px'}}>
-              <span style={{fontWeight: 500, color: 'rgb(var(--color-ink-400))'}}>
-                {t('profile.gender', 'Gender')}:{' '}
-              </span>
-              "{genderDetails}"
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<TbHearts className="h-5 w-5" />}
+      title={t('profile.orientation', 'Orientation')}
+      text={orientationText}
+      details={orientationDetails ? `"${orientationDetails}"` : undefined}
+    />
   )
 }
 
@@ -691,32 +407,11 @@ function Ethnicity(props: {profile: Profile}) {
   const text = ethnicity.map((r: any) => t(`profile.race.${r}`, convertRace(r))).join(', ')
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <HiOutlineGlobe className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.ethnicity', 'Ethnicity')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<HiOutlineGlobe className="h-5 w-5" />}
+      title={t('profile.ethnicity', 'Ethnicity')}
+      text={text}
+    />
   )
 }
 
@@ -732,34 +427,7 @@ function Smoker(props: {profile: Profile}) {
     <LuCigaretteOff className="h-5 w-5" />
   )
 
-  return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          {icon}
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.smoking', 'Smoking')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
-  )
+  return <AboutRow icon={icon} title={t('profile.smoking', 'Smoking')} text={text} />
 }
 
 function Drinks(props: {profile: Profile}) {
@@ -779,34 +447,7 @@ function Drinks(props: {profile: Profile}) {
   const icon =
     drinksPerMonth === 0 ? <MdNoDrinks className="h-5 w-5" /> : <BiSolidDrink className="h-5 w-5" />
 
-  return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          {icon}
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.alcohol', 'Alcohol')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
-  )
+  return <AboutRow icon={icon} title={t('profile.alcohol', 'Alcohol')} text={text} />
 }
 
 function Diet(props: {profile: Profile}) {
@@ -816,35 +457,12 @@ function Diet(props: {profile: Profile}) {
 
   if (!diet || diet.length === 0) return null
 
-  const text = diet.map((e) => t(`profile.diet.${e}`, INVERTED_DIET_CHOICES[e])).join(', ')
-
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <Salad className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.diet', 'Diet')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<Salad className="h-5 w-5" />}
+      title={t('profile.diet', 'Diet')}
+      text={formatChoiceList(diet, 'diet', INVERTED_DIET_CHOICES, t)}
+    />
   )
 }
 
@@ -855,37 +473,12 @@ function LanguagesSection(props: {profile: Profile}) {
 
   if (!languages || languages.length === 0) return null
 
-  const text = languages
-    .map((v) => t(`profile.language.${v}`, INVERTED_LANGUAGE_CHOICES[v]))
-    .join(', ')
-
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <Languages className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.languages', 'Languages')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <AboutRow
+      icon={<Languages className="h-5 w-5" />}
+      title={t('profile.languages', 'Languages')}
+      text={formatChoiceList(languages, 'language', INVERTED_LANGUAGE_CHOICES, t)}
+    />
   )
 }
 
@@ -897,78 +490,31 @@ function Cannabis(props: {profile: Profile}) {
 
   const parts = t(`profile.cannabis.${cannabis}`, INVERTED_CANNABIS_CHOICES[cannabis])
 
-  // Intention chips (if not "never" and has intentions)
-  let intentionChips: React.ReactNode | null = null
-  if (cannabis !== 'never_not_interested' && profile.cannabis_intention?.length) {
-    intentionChips = (
-      <div className="flex flex-wrap gap-2 mt-2">
-        {profile.cannabis_intention.map((i) => (
-          <span
-            key={i}
-            className="border-canvas-200 bg-canvas-100 text-ink-500 rounded-full border px-2.5 py-1 text-xs"
-            style={{
-              padding: '4px 11px',
-              borderRadius: '100px',
-              fontSize: '12.5px',
-              backgroundColor: 'rgb(var(--color-canvas-100))',
-              color: 'rgb(var(--color-ink-500))',
-              border: '1px solid rgb(var(--color-canvas-200))',
-            }}
-          >
-            {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
-          </span>
-        ))}
-      </div>
-    )
-  }
-
-  // Preference for partner
-  let suffix: string | undefined
-  if (profile.cannabis_pref?.length) {
-    const prefs = profile.cannabis_pref.map((p) =>
-      t(
-        `profile.substance_pref_viewer.${p}`,
-        SUBSTANCE_PREFERENCE_ABOUT[p as keyof typeof SUBSTANCE_PREFERENCE_ABOUT],
-      ),
-    )
-    const formatted =
-      prefs.length > 1 ? `${prefs.slice(0, -1).join(', ')} or ${prefs[prefs.length - 1]}` : prefs[0]
-    suffix = `${t('profile.pref_you', 'Prefers you')} ${formatted}`
-  }
+  const showIntentions =
+    cannabis !== 'never_not_interested' && (profile.cannabis_intention?.length ?? 0) > 0
+  const prefText = formatPartnerPreferences(profile.cannabis_pref, t)
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <Leaf className="h-5 w-5" />
+    <AboutRow
+      icon={<Leaf className="h-5 w-5" />}
+      title={t('profile.cannabis', 'Cannabis')}
+      text={parts}
+    >
+      {showIntentions && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {profile.cannabis_intention!.map((i) => (
+            <Chip key={i} variant="muted">
+              {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
+            </Chip>
+          ))}
         </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.cannabis', 'Cannabis')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{parts}</div>
-          {intentionChips}
-          {suffix && (
-            <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
-              {suffix}
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+      )}
+      {prefText && (
+        <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
+          {prefText}
+        </div>
+      )}
+    </AboutRow>
   )
 }
 
@@ -983,78 +529,31 @@ function Psychedelics(props: {profile: Profile}) {
     INVERTED_PSYCHEDELICS_CHOICES[psychedelics],
   )
 
-  // Intention chips (if not "never" and has intentions)
-  let intentionChips: React.ReactNode | null = null
-  if (psychedelics !== 'never_not_interested' && profile.psychedelics_intention?.length) {
-    intentionChips = (
-      <div className="flex flex-wrap gap-2 mt-2">
-        {profile.psychedelics_intention.map((i) => (
-          <span
-            key={i}
-            className="border-canvas-200 bg-canvas-100 text-ink-500 rounded-full border px-2.5 py-1 text-xs"
-            style={{
-              padding: '4px 11px',
-              borderRadius: '100px',
-              fontSize: '12.5px',
-              backgroundColor: 'rgb(var(--color-canvas-100))',
-              color: 'rgb(var(--color-ink-500))',
-              border: '1px solid rgb(var(--color-canvas-200))',
-            }}
-          >
-            {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
-          </span>
-        ))}
-      </div>
-    )
-  }
-
-  // Preference for partner
-  let suffix: string | undefined
-  if (profile.psychedelics_pref?.length) {
-    const prefs = profile.psychedelics_pref.map((p) =>
-      t(
-        `profile.substance_pref_viewer.${p}`,
-        SUBSTANCE_PREFERENCE_ABOUT[p as keyof typeof SUBSTANCE_PREFERENCE_ABOUT],
-      ),
-    )
-    const formatted =
-      prefs.length > 1 ? `${prefs.slice(0, -1).join(', ')} or ${prefs[prefs.length - 1]}` : prefs[0]
-    suffix = `${t('profile.pref_you', 'Prefers you')} ${formatted}`
-  }
+  const showIntentions =
+    psychedelics !== 'never_not_interested' && (profile.psychedelics_intention?.length ?? 0) > 0
+  const prefText = formatPartnerPreferences(profile.psychedelics_pref, t)
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <CustomMushroom className="h-5 w-5" />
+    <AboutRow
+      icon={<CustomMushroom className="h-5 w-5" />}
+      title={t('profile.psychedelics', 'Psychedelics')}
+      text={parts}
+    >
+      {showIntentions && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {profile.psychedelics_intention!.map((i) => (
+            <Chip key={i} variant="muted">
+              {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
+            </Chip>
+          ))}
         </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.psychedelics', 'Psychedelics')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{parts}</div>
-          {intentionChips}
-          {suffix && (
-            <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
-              {suffix}
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-    </>
+      )}
+      {prefText && (
+        <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
+          {prefText}
+        </div>
+      )}
+    </AboutRow>
   )
 }
 
@@ -1089,35 +588,213 @@ function LastOnline(props: {lastOnlineTime?: string}) {
   const {lastOnlineTime} = props
   if (!lastOnlineTime) return null
   return (
-    <>
-      <Row className="items-start gap-2.5" data-testid="profile-about-last-online">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <ClockIcon className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
+    <AboutRow
+      testId="profile-about-last-online"
+      icon={<ClockIcon className="h-5 w-5" />}
+      title={t('profile.activity', 'Activity')}
+      text={t('profile.last_online', 'Active {time}', {
+        time: fromNow(lastOnlineTime, true, t, locale),
+      })}
+      divider={false}
+    />
+  )
+}
+
+function Children(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+
+  const hasKidsText =
+    typeof profile.has_kids === 'number'
+      ? profile.has_kids == 0
+        ? t('profile.has_kids.doesnt_have_kids', 'Does not have children')
+        : profile.has_kids > 1
+          ? t('profile.has_kids_many', 'Has {count} kids', {
+              count: profile.has_kids,
+            })
+          : t('profile.has_kids_one', 'Has {count} kid', {
+              count: profile.has_kids,
+            })
+      : null
+
+  const wantsKidsStrength = profile.wants_kids_strength
+  const wantsKidsText =
+    wantsKidsStrength != null && wantsKidsStrength >= 0
+      ? wantsKidsStrength == 0
+        ? t('profile.wants_kids_0', 'Does not want children')
+        : wantsKidsStrength == 1
+          ? t('profile.wants_kids_1', 'Prefers not to have children')
+          : wantsKidsStrength == 2
+            ? t('profile.wants_kids_2', 'Neutral or open to having children')
+            : wantsKidsStrength == 3
+              ? t('profile.wants_kids_3', 'Leaning towards wanting children')
+              : t('profile.wants_kids_4', 'Wants children')
+      : null
+
+  if (!hasKidsText && !wantsKidsText) return null
+
+  return (
+    <AboutRow
+      icon={<FaChild className="h-5 w-5" />}
+      title={t('profile.children', 'Children')}
+      text={hasKidsText}
+      details={wantsKidsText}
+    />
+  )
+}
+
+// function HasKids(props: {profile: Profile}) {
+//   const t = useT()
+//   const {profile} = props
+//   if (typeof profile.has_kids !== 'number') return null
+//   const hasKidsText =
+//     profile.has_kids == 0
+//       ? t('profile.has_kids.doesnt_have_kids', 'Does not have children')
+//       : profile.has_kids > 1
+//         ? t('profile.has_kids_many', 'Has {count} kids', {
+//             count: profile.has_kids,
+//           })
+//         : t('profile.has_kids_one', 'Has {count} kid', {
+//             count: profile.has_kids,
+//           })
+//   const faChild = <FaChild className="h-5 w-5" />
+//   const icon =
+//     profile.has_kids === 0 ? (
+//       <div className="relative h-5 w-5">
+//         {faChild}
+//         <div className="absolute inset-0">
+//           {/*<div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rotate-45 transform bg-ink-500"/>*/}
+//           <div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 -rotate-45 transform bg-ink-1000" />
+//         </div>
+//       </div>
+//     ) : (
+//       faChild
+//     )
+//   return <AboutRow icon={icon} text={hasKidsText} testId={'profile-about-has-kids'} />
+// }
+
+function RaisedIn(props: {profile: Profile}) {
+  const t = useT()
+  const locationText = getLocationText(props.profile, 'raised_in_')
+  if (!locationText) return null
+  return (
+    <AboutRow
+      icon={<Home className="h-5 w-5" />}
+      title={t('profile.raised_in', 'Raised In')}
+      text={
+        <CustomLink href={getGoogleMapsUrl(locationText)} className={'hover:text-primary-500'}>
+          {locationText}
+        </CustomLink>
+      }
+    />
+  )
+}
+
+export function ProfileInterestsAndCauses(props: {profile: Profile}) {
+  const {profile} = props
+  const t = useT()
+  const choices = useChoicesContext()
+  const {locale} = useLocale()
+
+  const interests = profile.interests
+    ?.map((id) => choices?.['interests']?.[id])
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, locale)) as string[]
+
+  const causes = profile.causes
+    ?.map((id) => choices?.['causes']?.[id])
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, locale)) as string[]
+
+  if (!interests?.length && !causes?.length) return null
+
+  return (
+    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
+      {interests && interests.length > 0 && (
+        <>
+          {/*<SectionLabel>{t('profile.interests', 'Interests')}</SectionLabel>*/}
+          <div className="flex flex-wrap gap-2">
+            {interests.map((interest, i) => (
+              <Chip key={i}>{interest}</Chip>
+            ))}
+          </div>
+        </>
+      )}
+      {causes && causes.length > 0 && (
+        <>
+          {interests && interests.length > 0 && (
+            <div
+              className="border-canvas-200"
+              style={{borderBottomWidth: '1px', margin: '12px 0'}}
+            />
+          )}
+          <SectionLabel>{t('profile.causes', 'Causes')}</SectionLabel>
+          <div className="flex flex-wrap gap-2">
+            {causes.map((cause, i) => (
+              <Chip key={i} variant="primary">
+                {cause}
+              </Chip>
+            ))}
+          </div>
+        </>
+      )}
+    </Col>
+  )
+}
+
+export function ProfilePersonality(props: {profile: Profile}) {
+  const {profile} = props
+
+  if (!profile.mbti && !profile.big5_agreeableness) return null
+
+  return (
+    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
+      <MBTI profile={profile} />
+      <Big5Traits profile={profile} />
+    </Col>
+  )
+}
+
+function MBTI(props: {profile: Profile}) {
+  const {profile} = props
+
+  if (!profile.mbti) return null
+
+  const mbtiType = profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null
+  const mbtiTypeName = mbtiType ? MBTI_TYPE_NAMES[mbtiType] : null
+
+  return (
+    <div style={{marginBottom: '18px'}}>
+      <SectionLabel>MBTI</SectionLabel>
+      <div
+        className="border-canvas-200 bg-canvas-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2"
+        style={{
+          fontFamily: 'Cormorant Garamond, serif',
+          fontSize: '20px',
+          fontWeight: '600',
+          color: 'rgb(var(--color-ink-900))',
+          letterSpacing: '0.08em',
+        }}
+      >
+        {mbtiType}
+        {mbtiTypeName && (
+          <span
             style={{
+              fontFamily: 'DM Sans, sans-serif',
               fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
+              color: 'rgb(var(--color-ink-500))',
               textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
+              letterSpacing: '0.06em',
+              fontWeight: '400',
+              marginLeft: '2px',
+              verticalAlign: 'middle',
             }}
           >
-            {t('profile.activity', 'Activity')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>
-            {t('profile.last_online', 'Active {time}', {
-              time: fromNow(lastOnlineTime, true, t, locale),
-            })}
-          </div>
-        </Col>
-      </Row>
-    </>
+            {mbtiTypeName}
+          </span>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -1166,19 +843,7 @@ function Big5Traits(props: {profile: Profile}) {
 
   return (
     <Col className="gap-3 w-full" data-testid="profile-about-big-five-personality-traits">
-      <div
-        className="text-ink-600"
-        style={{
-          fontSize: '12px',
-          color: 'rgb(var(--color-ink-300))',
-          textTransform: 'uppercase',
-          letterSpacing: '0.07em',
-          fontWeight: '500',
-          marginBottom: '8px',
-        }}
-      >
-        {t('profile.big5', 'Big Five')}
-      </div>
+      <SectionLabel>{t('profile.big5', 'Big Five')}</SectionLabel>
       <div className="flex flex-col gap-3">
         {traits.map((trait) => {
           if (trait.value === null || trait.value === undefined) return null
@@ -1221,142 +886,16 @@ function Big5Traits(props: {profile: Profile}) {
   )
 }
 
-function CombinedChildren(props: {profile: Profile}) {
-  const t = useT()
+export function ProfileLinks(props: {profile: Profile}) {
   const {profile} = props
+  const links = (profile.links ?? {}) as Socials
 
-  const hasKidsText =
-    typeof profile.has_kids === 'number'
-      ? profile.has_kids == 0
-        ? t('profile.has_kids.doesnt_have_kids', 'Does not have children')
-        : profile.has_kids > 1
-          ? t('profile.has_kids_many', 'Has {count} kids', {
-              count: profile.has_kids,
-            })
-          : t('profile.has_kids_one', 'Has {count} kid', {
-              count: profile.has_kids,
-            })
-      : null
-
-  const wantsKidsStrength = profile.wants_kids_strength
-  const wantsKidsText =
-    wantsKidsStrength != null && wantsKidsStrength >= 0
-      ? wantsKidsStrength == 0
-        ? t('profile.wants_kids_0', 'Does not want children')
-        : wantsKidsStrength == 1
-          ? t('profile.wants_kids_1', 'Prefers not to have children')
-          : wantsKidsStrength == 2
-            ? t('profile.wants_kids_2', 'Neutral or open to having children')
-            : wantsKidsStrength == 3
-              ? t('profile.wants_kids_3', 'Leaning towards wanting children')
-              : t('profile.wants_kids_4', 'Wants children')
-      : null
-
-  if (!hasKidsText && !wantsKidsText) return null
+  if (!links || Object.keys(links).length === 0) return null
 
   return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <FaChild className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.children', 'Children')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{hasKidsText}</div>
-          {wantsKidsText && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              {wantsKidsText}
-            </div>
-          )}
-        </Col>
-      </Row>
-
-      <Divider />
-    </>
-  )
-}
-
-// function HasKids(props: {profile: Profile}) {
-//   const t = useT()
-//   const {profile} = props
-//   if (typeof profile.has_kids !== 'number') return null
-//   const hasKidsText =
-//     profile.has_kids == 0
-//       ? t('profile.has_kids.doesnt_have_kids', 'Does not have children')
-//       : profile.has_kids > 1
-//         ? t('profile.has_kids_many', 'Has {count} kids', {
-//             count: profile.has_kids,
-//           })
-//         : t('profile.has_kids_one', 'Has {count} kid', {
-//             count: profile.has_kids,
-//           })
-//   const faChild = <FaChild className="h-5 w-5" />
-//   const icon =
-//     profile.has_kids === 0 ? (
-//       <div className="relative h-5 w-5">
-//         {faChild}
-//         <div className="absolute inset-0">
-//           {/*<div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rotate-45 transform bg-ink-500"/>*/}
-//           <div className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 -rotate-45 transform bg-ink-1000" />
-//         </div>
-//       </div>
-//     ) : (
-//       faChild
-//     )
-//   return <AboutRow icon={icon} text={hasKidsText} testId={'profile-about-has-kids'} />
-// }
-
-function RaisedIn(props: {profile: Profile}) {
-  const t = useT()
-  const locationText = getLocationText(props.profile, 'raised_in_')
-  if (!locationText) {
-    return null
-  }
-  return (
-    <>
-      <Row className="items-start gap-2.5">
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          <Home className="h-5 w-5" />
-        </div>
-        <Col className={'w-full'}>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: '500',
-              color: 'rgb(var(--color-ink-300))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-              marginBottom: '1px',
-            }}
-          >
-            {t('profile.raised_in', 'Raised In')}
-          </div>
-          <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>
-            <CustomLink href={getGoogleMapsUrl(locationText)} className={'hover:text-primary-500'}>
-              {locationText}
-            </CustomLink>
-          </div>
-        </Col>
-      </Row>
-      <Divider />
-    </>
+    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
+      <UserHandles links={links} />
+    </Col>
   )
 }
 
@@ -1402,10 +941,36 @@ const capitalizeAndRemoveUnderscores = (str: string) => {
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1)
 }
 
-export const RELATIONSHIP_ICONS = {
-  single: FiUser,
-  married: GiRing,
-  casual: FaHeart,
-  long_term: FaHeart,
-  open: FaUsers,
-} as const
+function formatChoiceList(
+  values: string[] | null | undefined,
+  namespace: string,
+  invertedChoices: Record<string, string>,
+  t: ReturnType<typeof useT>,
+): string {
+  if (!values?.length) return ''
+  return values.map((v) => t(`profile.${namespace}.${v}`, invertedChoices[v] ?? v)).join(', ')
+}
+
+function formatPartnerPreferences(
+  prefs: string[] | null | undefined,
+  t: ReturnType<typeof useT>,
+): string | undefined {
+  if (!prefs?.length) return undefined
+  const items = prefs.map((p) =>
+    t(
+      `profile.substance_pref_viewer.${p}`,
+      SUBSTANCE_PREFERENCE_ABOUT[p as keyof typeof SUBSTANCE_PREFERENCE_ABOUT],
+    ),
+  )
+  const formatted =
+    items.length > 1 ? `${items.slice(0, -1).join(', ')} or ${items[items.length - 1]}` : items[0]
+  return `${t('profile.pref_you', 'Prefers you')} ${formatted}`
+}
+
+// export const RELATIONSHIP_ICONS = {
+//   single: FiUser,
+//   married: GiRing,
+//   casual: FaHeart,
+//   long_term: FaHeart,
+//   open: FaUsers,
+// } as const

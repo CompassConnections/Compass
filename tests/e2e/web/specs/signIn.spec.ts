@@ -10,10 +10,7 @@ test.describe('when given valid input', () => {
     await app.home.verifySignedInHomePage(account.display_name)
   })
 
-  test('should be able to save/favorite people', async ({
-    app,
-    signedOutAccount: account,
-  }) => {
+  test('should be able to save/favorite people', async ({app, signedOutAccount: account}) => {
     await app.signinWithEmail(account)
     await app.home.clickPeopleLink()
     const profile = await app.people.getProfileInfo()
@@ -238,7 +235,11 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('a verified account should', () => {
-    test('be able to send a message from the messages page', async ({app, devOneAccount, devTwoAccount}) => {
+    test('be able to send a message from the messages page', async ({
+      app,
+      devOneAccount,
+      devTwoAccount,
+    }) => {
       const devOne = await app.contextManager.createContext('devOne')
       const devTwo = await app.contextManager.createContext('devTwo')
       await devOne.signinWithEmail(devOneAccount)
@@ -247,13 +248,17 @@ test.describe('when given valid input', () => {
       await devOne.home.clickMessagesLink()
       await devOne.messages.createNewMessage([devTwoAccount.display_name])
       await devOne.messages.sendMessage('This is a message')
-      
+
       await devTwo.home.clickMessagesLink()
       await devTwo.messages.findMessageConversation(devOneAccount.display_name)
       await devTwo.messages.verifyMessage('This is a message')
     })
 
-    test('be able to send a message from the people page', async ({app, devOneAccount, devTwoAccount}) => {
+    test('be able to send a message from the people page', async ({
+      app,
+      devOneAccount,
+      devTwoAccount,
+    }) => {
       const devOne = await app.contextManager.createContext('devOne')
       const devTwo = await app.contextManager.createContext('devTwo')
       await devOne.signinWithEmail(devOneAccount)
@@ -261,7 +266,7 @@ test.describe('when given valid input', () => {
 
       await devOne.home.clickPeopleLink()
       await devOne.people.useSearch(devTwoAccount.display_name)
-      const message = "This is a message".repeat(20)
+      const message = 'This is a message'.repeat(20)
       await devOne.people.messageProfile(devTwoAccount.display_name, message)
       await devOne.messages.verifyMessage(message)
 
@@ -269,8 +274,6 @@ test.describe('when given valid input', () => {
       await devTwo.messages.findMessageConversation(devOneAccount.display_name)
       await devTwo.messages.verifyMessage(message)
     })
-
-
   })
 })
 

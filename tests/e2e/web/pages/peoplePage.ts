@@ -135,10 +135,10 @@ export class PeoplePage {
 
   constructor(public readonly page: Page) {
     this.peopleHeading = page.getByRole('heading', {name: 'People'})
-    this.savedPeopleHeading = page.getByRole('heading', { name: 'Saved People' })
+    this.savedPeopleHeading = page.getByRole('heading', {name: 'Saved People'})
     this.savedPeopleList = page.getByTestId('saved-person')
     this.searchBox = page.getByRole('textbox', {name: 'Search anything...'})
-    this.savedPeopleButton = page.getByRole('button', { name: 'Saved People' })
+    this.savedPeopleButton = page.getByRole('button', {name: 'Saved People'})
     this.profileCount = page.getByTestId('people-profile-count')
     this.resetFilters = page.getByRole('button', {name: 'Reset filters'})
     this.yourFiltersCheckbox = page.getByText('Your filters', {exact: true})
@@ -500,7 +500,7 @@ export class PeoplePage {
     const profiles = await this.profileResults.all()
 
     for (let i = 0; i < profiles.length; i++) {
-      const profileName = await profiles[i].getByTestId('people-profile-name').textContent();
+      const profileName = await profiles[i].getByTestId('people-profile-name').textContent()
       if (profileName?.toLowerCase() === displayName.toLowerCase()) {
         await profiles[i].getByTestId('message-profile-button').click()
         await expect(this.messageInput).toBeVisible()
@@ -512,7 +512,7 @@ export class PeoplePage {
 
   async verifySavedPerson(displayName: string) {
     await expect(this.savedPeopleHeading).toBeVisible()
-    const isThereSavedPeople = await this.savedPeopleList.count() > 0
+    const isThereSavedPeople = (await this.savedPeopleList.count()) > 0
 
     if (isThereSavedPeople) {
       const listOfPeople = await this.savedPeopleList.all()

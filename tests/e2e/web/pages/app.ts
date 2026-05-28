@@ -13,8 +13,7 @@ import {SignUpPage} from './signUpPage'
 import {SocialPage} from './socialPage'
 import {PeoplePage} from './peoplePage'
 import {NotificationPage} from './notificationsPage'
-import { MessagesPage } from './messagesPage'
-
+import {MessagesPage} from './messagesPage'
 
 export class App {
   readonly auth: AuthPage

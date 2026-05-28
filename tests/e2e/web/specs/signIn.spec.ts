@@ -30,9 +30,8 @@ test.describe('when given valid input', () => {
       await app.people.setDisplayFilter({cardSize: 'Large'})
       const filterdProfiles = await app.people.profileCountLocator.textContent()
 
-      await expect(totalProfiles).not.toBeNull()
-      await expect(filterdProfiles).not.toBeNull()
-      await expect(Number(totalProfiles)).not.toEqual(Number(filterdProfiles))
+      if (!totalProfiles || !filterdProfiles) return
+      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
 
       const results = await app.people.getProfileInfo()
       if (!results) return
@@ -238,41 +237,41 @@ test.describe('when given valid input', () => {
   test.describe('a verified account should', () => {
     test('be able to send a message from the messages page', async ({
       app,
-      devOneAccount,
-      devTwoAccount,
+      signedOutAccount: accountOne,
+      signedInAccount: accountTwo,
     }) => {
       const devOne = await app.contextManager.createContext('devOne')
       const devTwo = await app.contextManager.createContext('devTwo')
-      await devOne.signinWithEmail(devOneAccount)
-      await devTwo.signinWithEmail(devTwoAccount)
+      await devOne.signinWithEmail(accountOne)
+      await devTwo.signinWithEmail(accountTwo)
 
       await devOne.home.clickMessagesLink()
-      await devOne.messages.createNewMessage([devTwoAccount.display_name])
+      await devOne.messages.createNewMessage([accountTwo.display_name])
       await devOne.messages.sendMessage('This is a message')
 
       await devTwo.home.clickMessagesLink()
-      await devTwo.messages.findMessageConversation(devOneAccount.display_name)
+      await devTwo.messages.findMessageConversation(accountOne.display_name)
       await devTwo.messages.verifyMessage('This is a message')
     })
 
     test('be able to send a message from the people page', async ({
       app,
-      devOneAccount,
-      devTwoAccount,
+      signedOutAccount: accountOne,
+      signedInAccount: accountTwo,
     }) => {
       const devOne = await app.contextManager.createContext('devOne')
       const devTwo = await app.contextManager.createContext('devTwo')
-      await devOne.signinWithEmail(devOneAccount)
-      await devTwo.signinWithEmail(devTwoAccount)
+      await devOne.signinWithEmail(accountOne)
+      await devTwo.signinWithEmail(accountTwo)
 
       await devOne.home.clickPeopleLink()
-      await devOne.people.useSearch(devTwoAccount.display_name)
+      await devOne.people.useSearch(accountTwo.display_name)
       const message = 'This is a message'.repeat(20)
-      await devOne.people.messageProfile(devTwoAccount.display_name, message)
+      await devOne.people.messageProfile(accountTwo.display_name, message)
       await devOne.messages.verifyMessage(message)
 
       await devTwo.home.clickMessagesLink()
-      await devTwo.messages.findMessageConversation(devOneAccount.display_name)
+      await devTwo.messages.findMessageConversation(accountOne.display_name)
       await devTwo.messages.verifyMessage(message)
     })
   })

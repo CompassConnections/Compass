@@ -514,6 +514,7 @@ export class PeoplePage {
 
   async verifySavedPerson(displayName: string) {
     await expect(this.savedPeopleHeading).toBeVisible()
+    await this.page.waitForTimeout(1000)
     const isThereSavedPeople = (await this.savedPeopleList.count()) > 0
 
     if (isThereSavedPeople) {

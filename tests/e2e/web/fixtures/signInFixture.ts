@@ -28,6 +28,7 @@ export const test = base.extend<{
       undefined,
       account.display_name,
       account.username,
+      true,
     )
     await app.signinWithEmail(account)
     await use(account)
@@ -41,6 +42,7 @@ export const test = base.extend<{
       undefined,
       account.display_name,
       account.username,
+      true,
     )
     await use(account)
     await deleteUser('Email/Password', account)

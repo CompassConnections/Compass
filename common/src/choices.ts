@@ -215,6 +215,26 @@ export const MBTI_CHOICES = {
   ESFP: 'esfp',
 }
 
+// MBTI type name mapping
+export const MBTI_TYPE_NAMES: Record<string, string> = {
+  INTJ: 'Architect',
+  INTP: 'Logician',
+  ENTJ: 'Commander',
+  ENTP: 'Debater',
+  INFJ: 'Advocate',
+  INFP: 'Mediator',
+  ENFJ: 'Protagonist',
+  ENFP: 'Campaigner',
+  ISTJ: 'Logistician',
+  ISFJ: 'Defender',
+  ESTJ: 'Executive',
+  ESFJ: 'Consul',
+  ISTP: 'Virtuoso',
+  ISFP: 'Adventurer',
+  ESTP: 'Entrepreneur',
+  ESFP: 'Entertainer',
+}
+
 export const GENDERS = {
   Woman: 'female',
   Man: 'male',

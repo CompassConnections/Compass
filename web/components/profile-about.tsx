@@ -12,6 +12,7 @@ import {
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
   INVERTED_SUBSTANCE_INTENTION_CHOICES,
+  MBTI_TYPE_NAMES,
   SUBSTANCE_PREFERENCE_ABOUT,
 } from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
@@ -245,26 +246,6 @@ export function ProfilePersonality(props: {profile: Profile}) {
   const {profile} = props
 
   if (!profile.mbti && !profile.big5_agreeableness) return null
-
-  // MBTI type name mapping
-  const MBTI_TYPE_NAMES: Record<string, string> = {
-    INTJ: 'Architect',
-    INTP: 'Logician',
-    ENTJ: 'Commander',
-    ENTP: 'Debater',
-    INFJ: 'Advocate',
-    INFP: 'Mediator',
-    ENFJ: 'Protagonist',
-    ENFP: 'Campaigner',
-    ISTJ: 'Logistician',
-    ISFJ: 'Defender',
-    ESTJ: 'Executive',
-    ESFJ: 'Consul',
-    ISTP: 'Virtuoso',
-    ISFP: 'Adventurer',
-    ESTP: 'Entrepreneur',
-    ESFP: 'Entertainer',
-  }
 
   const mbtiType = profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null
   const mbtiTypeName = mbtiType ? MBTI_TYPE_NAMES[mbtiType] : null

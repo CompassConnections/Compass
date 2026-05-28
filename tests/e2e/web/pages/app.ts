@@ -1,19 +1,19 @@
 import {BrowserContext, Page} from '@playwright/test'
 
-import {UserAccountInformation} from '../utils/accountInformation'
 import {ContextManager} from '../../utils/contextManager'
+import {UserAccountInformation} from '../utils/accountInformation'
 import {AuthPage} from './authPage'
 import {CompatibilityPage} from './compatibilityPage'
 import {HomePage} from './homePage'
+import {MessagesPage} from './messagesPage'
+import {NotificationPage} from './notificationsPage'
 import {OnboardingPage} from './onboardingPage'
 import {OrganizationPage} from './organizationPage'
+import {PeoplePage} from './peoplePage'
 import {ProfilePage} from './profilePage'
 import {SettingsPage} from './settingsPage'
 import {SignUpPage} from './signUpPage'
 import {SocialPage} from './socialPage'
-import {PeoplePage} from './peoplePage'
-import {NotificationPage} from './notificationsPage'
-import {MessagesPage} from './messagesPage'
 
 export class App {
   readonly auth: AuthPage

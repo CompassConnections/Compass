@@ -1,4 +1,5 @@
 import {expect, Locator, Page} from '@playwright/test'
+import {sleep} from 'common/util/time'
 
 export class MessagesPage {
   private readonly messagesPageHeader: Locator
@@ -43,6 +44,7 @@ export class MessagesPage {
     await expect(this.newMessageSearchUsers).toBeVisible()
     for (let i = 0; i < username.length; i++) {
       await this.newMessageSearchUsers.fill(username[i])
+      await sleep(1000)
       await expect(this.newMessageSearchResults).toBeVisible()
       const results = await this.newMessageSearchResults
         .getByTestId('search-results-username')
@@ -67,7 +69,8 @@ export class MessagesPage {
     await expect(this.messageSubmit).toBeVisible()
     await this.messageSubmit.click()
     const verified = await this.verifyMessage(message)
-    if (!verified) throw new Error(`Message "${message}" was not found in conversation after sending`)
+    if (!verified)
+      throw new Error(`Message "${message}" was not found in conversation after sending`)
   }
 
   async findMessageConversation(displayName: string) {
@@ -89,7 +92,7 @@ export class MessagesPage {
 
   async verifyMessage(messageContent: string) {
     await expect(this.conversation).toBeVisible()
-    await this.page.waitForTimeout(1000)
+    await sleep(1000)
     const messageCount = (await this.conversationMessage.count()) > 0
     if (messageCount) {
       const messages = await this.conversationMessage.all()

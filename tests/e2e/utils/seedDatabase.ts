@@ -11,6 +11,11 @@ import {getUser} from 'shared/utils'
 import UserAccountInformationForSeeding from '../backend/utils/userInformation'
 import {firebaseSignUp, verifyEmail} from './firebaseUtils'
 
+export const TEST_USER_EMAIL = 'user@compass.test'
+export const TEST_USER_PASSWORD = 'pass'
+export const TEST_USER_DISPLAY_NAME = 'Test User'
+export const TEST_USER_USERNAME = 'TestUser'
+
 /**
  * Function used to populate the database with profiles.
  *

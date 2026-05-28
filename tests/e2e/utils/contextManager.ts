@@ -1,4 +1,5 @@
-import {Browser, BrowserContext} from '@playwright/test'
+import {Browser} from '@playwright/test'
+
 import {App} from '../web/pages/app'
 
 export class ContextManager {
@@ -6,8 +7,10 @@ export class ContextManager {
 
   constructor(private browser: Browser) {}
 
-  async createContext(name: string): Promise<App> {
+  async createContext(customName?: string): Promise<App> {
+    const name = customName ?? crypto.randomUUID().slice(0, 6)
     const existing = this.contexts.get(name)
+    // Return the existing one instead of closing it?
     if (existing) await existing.page.context().close()
 
     const context = await this.browser.newContext()

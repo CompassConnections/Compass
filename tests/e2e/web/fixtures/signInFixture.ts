@@ -19,6 +19,7 @@ export const test = base.extend<{
   app: async ({page}, use) => {
     const appPage = new App(page)
     await use(appPage)
+    await appPage.contextManager?.closeAll()
   },
   signedInAccount: async ({app}: {app: App}, use) => {
     const account = testAccounts.faker_account()

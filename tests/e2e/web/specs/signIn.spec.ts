@@ -1,3 +1,6 @@
+import {sleep} from 'common/util/time'
+
+import {TEST_USER_DISPLAY_NAME} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
 
 test.describe('when given valid input', () => {
@@ -16,6 +19,7 @@ test.describe('when given valid input', () => {
     const profile = await app.people.getProfileInfo()
     await expect(profile.star).toBeVisible()
     await profile.star.click()
+    await sleep(1000)
     await app.people.clickSavedPeopleButton()
     await app.people.verifySavedPerson(profile.name)
   })
@@ -28,10 +32,15 @@ test.describe('when given valid input', () => {
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
       await app.people.setDisplayFilter({cardSize: 'Large'})
-      const filterdProfiles = await app.people.profileCountLocator.textContent()
+      const filteredProfiles = await app.people.profileCountLocator.textContent()
 
-      if (!totalProfiles || !filterdProfiles) return
-      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+      await expect(totalProfiles).not.toBeNull()
+      await expect(filteredProfiles).not.toBeNull()
+      console.log(totalProfiles)
+      console.log(filteredProfiles)
+      await expect(Number(totalProfiles?.split(' ')[0])).not.toEqual(
+        Number(filteredProfiles?.split(' ')[0]),
+      )
 
       const results = await app.people.getProfileInfo()
       if (!results) return
@@ -155,7 +164,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct relegion preference', async ({
+    test('show profiles with the correct religion preference', async ({
       app,
       signedOutAccount: account,
     }) => {
@@ -174,8 +183,10 @@ test.describe('when given valid input', () => {
     test('should correctly hide a profile', async ({app, signedOutAccount: account}) => {
       await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
+      await app.people.useSearch(TEST_USER_DISPLAY_NAME)
+      await sleep(1000)
       const results = await app.people.getProfileInfo()
-      if (!results) return
+      console.log(results)
       const hideProfileButton = await results.profile.getByRole('button', {
         name: 'Hide this profile',
       })
@@ -186,7 +197,7 @@ test.describe('when given valid input', () => {
       ).toBeVisible()
     })
 
-    test('should be reverseable using undo', async ({app, signedOutAccount: account}) => {
+    test('should be reversible using undo', async ({app, signedOutAccount: account}) => {
       await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
       const results = await app.people.getProfileInfo()
@@ -206,7 +217,7 @@ test.describe('when given valid input', () => {
       await expect(profile).toBeVisible()
     })
 
-    test('should be reverseable using manage hidden profiles feature in settings', async ({
+    test('should be reversible using manage hidden profiles feature in settings', async ({
       app,
       signedOutAccount: account,
     }) => {
@@ -235,44 +246,43 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('a verified account should', () => {
+    const message = 'This is a message'
     test('be able to send a message from the messages page', async ({
       app,
-      signedOutAccount: accountOne,
-      signedInAccount: accountTwo,
+      signedInAccount: sender,
+      signedOutAccount: receiver,
     }) => {
-      const devOne = await app.contextManager.createContext('devOne')
-      const devTwo = await app.contextManager.createContext('devTwo')
-      await devOne.signinWithEmail(accountOne)
-      await devTwo.signinWithEmail(accountTwo)
+      const receiverApp = await app.contextManager.createContext()
+      await receiverApp.signinWithEmail(receiver)
 
-      await devOne.home.clickMessagesLink()
-      await devOne.messages.createNewMessage([accountTwo.display_name])
-      await devOne.messages.sendMessage('This is a message')
+      await app.home.clickMessagesLink()
+      await app.messages.createNewMessage([receiver.display_name])
+      await app.messages.sendMessage(message)
 
-      await devTwo.home.clickMessagesLink()
-      await devTwo.messages.findMessageConversation(accountOne.display_name)
-      await devTwo.messages.verifyMessage('This is a message')
+      await receiverApp.home.clickMessagesLink()
+      await receiverApp.messages.findMessageConversation(sender.display_name)
+      await receiverApp.messages.verifyMessage(message)
     })
 
     test('be able to send a message from the people page', async ({
       app,
-      signedOutAccount: accountOne,
-      signedInAccount: accountTwo,
+      signedInAccount: sender,
+      signedOutAccount: receiver,
     }) => {
-      const devOne = await app.contextManager.createContext('devOne')
-      const devTwo = await app.contextManager.createContext('devTwo')
-      await devOne.signinWithEmail(accountOne)
-      await devTwo.signinWithEmail(accountTwo)
+      const receiverApp = await app.contextManager.createContext()
+      await receiverApp.signinWithEmail(receiver)
 
-      await devOne.home.clickPeopleLink()
-      await devOne.people.useSearch(accountTwo.display_name)
-      const message = 'This is a message'.repeat(20)
-      await devOne.people.messageProfile(accountTwo.display_name, message)
-      await devOne.messages.verifyMessage(message)
+      // To pass the min character limit for message intro (250 chars)
+      const longMessage = message.repeat(20)
 
-      await devTwo.home.clickMessagesLink()
-      await devTwo.messages.findMessageConversation(accountOne.display_name)
-      await devTwo.messages.verifyMessage(message)
+      await app.home.clickPeopleLink()
+      await app.people.useSearch(receiver.display_name)
+      await app.people.messageProfile(receiver.display_name, longMessage)
+      await app.messages.verifyMessage(longMessage)
+
+      await receiverApp.home.clickMessagesLink()
+      await receiverApp.messages.findMessageConversation(sender.display_name)
+      await receiverApp.messages.verifyMessage(longMessage)
     })
   })
 })

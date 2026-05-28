@@ -1005,7 +1005,7 @@ export const OptionalProfileUserForm = (props: {
             {t('profile.optional.mbti', 'MBTI Personality Type')}
           </label>
           <ChoicesToggleGroup
-            currentChoice={profile['mbti'] ?? ''}
+            currentChoice={profile['mbti'] as any}
             choicesMap={MBTI_CHOICES}
             setChoice={(c) => setProfile('mbti', c)}
             className="grid grid-cols-4 xs:grid-cols-8"

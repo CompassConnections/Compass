@@ -43,6 +43,7 @@ export const StarButton = (props: {
 
   const button = (
     <button
+      data-testid="star-profile-button"
       className={clsx(
         'border border-canvas-200',
         buttonClass('xs', 'none'),

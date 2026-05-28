@@ -232,7 +232,10 @@ function Filters(props: {
   const [noMinAge, noMaxAge] = getNoMinMaxAge(filters.pref_age_min, filters.pref_age_max)
 
   return (
-    <Col className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(--filter-offset)+env(safe-area-inset-top))] pt-3 pb-1">
+    <Col
+      className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(--filter-offset)+env(safe-area-inset-top))] pt-3 pb-1"
+      data-testid="people-filters"
+    >
       <SelectedFiltersSummary
         filters={filters}
         locationFilterProps={locationFilterProps}

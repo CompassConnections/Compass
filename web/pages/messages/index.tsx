@@ -64,7 +64,7 @@ export function MessagesContent(props: {currentUser: User}) {
         </h1>
         <NewMessageButton />
       </Row>
-      <Col className={'w-full overflow-hidden gap-2'}>
+      <Col className={'w-full overflow-hidden gap-2'} data-testid="messages-table">
         {channels && channels.length === 0 && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm mb-1">
@@ -116,6 +116,7 @@ export const MessageChannelRow = (props: {
       className={
         'items-center gap-3 bg-canvas-50 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm hover:bg-canvas-100'
       }
+      data-testid="messages-row"
     >
       {otherUsers && otherUsers.length > 0 ? (
         <MultipleOrSingleAvatars
@@ -135,6 +136,7 @@ export const MessageChannelRow = (props: {
               className={
                 'font-medium text-ink-900 text-sm group-hover:text-primary-600 transition-colors'
               }
+              data-testid="messages-username"
             >
               {otherUsers && otherUsers.length > 0 ? (
                 <span>
@@ -162,7 +164,7 @@ export const MessageChannelRow = (props: {
               )}
               {isBanned && <BannedBadge />}
             </span>
-            <span className={'text-ink-300 text-xs'}>
+            <span className={'text-ink-300 text-xs'} data-testid="messages-timestamp">
               {lastMessage && <RelativeTimestamp time={lastMessage.createdTime} />}
             </span>
           </Row>

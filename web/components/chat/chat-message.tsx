@@ -130,6 +130,7 @@ export function ChatMessageItem(props: {
                     onTouchStart={() => startLongPress(chat.id)}
                     onTouchEnd={cancelLongPress}
                     onTouchCancel={cancelLongPress}
+                    data-testid="conversation-message"
                   >
                     <Content
                       size={'sm'}

@@ -1,10 +1,19 @@
 import {ReactNode} from 'react'
 import {Row} from 'web/components/layout/row'
 
-export function IconWithInfo(props: {text?: string; icon: ReactNode; children?: ReactNode}) {
-  const {text, icon, children} = props
+export function IconWithInfo(props: {
+  text?: string
+  icon: ReactNode
+  children?: ReactNode
+  testid?: string
+}) {
+  const {text, icon, children, testid} = props
   return (
-    <Row className="items-center gap-1" style={{gap: '5px'}}>
+    <Row
+      className="items-center gap-1"
+      style={{gap: '5px'}}
+      {...(testid ? {'data-testid': testid} : {})}
+    >
       <div className="mt-0.5" style={{width: '14px', height: '14px'}}>
         {icon}
       </div>

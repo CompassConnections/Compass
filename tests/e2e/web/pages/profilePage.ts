@@ -504,7 +504,6 @@ export class ProfilePage {
 
   async verifyKeywords(keywords: string | undefined) {
     if (!keywords) return
-    console.log(this.keywordsSection.textContent())
     const keywordsArr = keywords.split(', ')
     await expect(this.keywordsSection).toBeVisible()
     for (const word of keywordsArr) {

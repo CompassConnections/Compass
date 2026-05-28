@@ -3,7 +3,13 @@ import {createSomeNotifications} from 'shared/create-notification'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 
-import {seedUser} from './seedDatabase'
+import {
+  seedUser,
+  TEST_USER_DISPLAY_NAME,
+  TEST_USER_EMAIL,
+  TEST_USER_PASSWORD,
+  TEST_USER_USERNAME,
+} from './seedDatabase'
 
 async function seedCompatibilityPrompts(userId: string | null = null) {
   // Need some prompts to prevent the onboarding from stopping once it reaches them (just after profile creation)
@@ -58,6 +64,15 @@ type ProfileType = 'basic' | 'medium' | 'full'
       await seedUser(undefined, undefined, profileType)
     }
   }
+
+  // Used in some tests that require interaction with a permanent user
+  await seedUser(
+    TEST_USER_EMAIL,
+    TEST_USER_PASSWORD,
+    'full',
+    TEST_USER_DISPLAY_NAME,
+    TEST_USER_USERNAME,
+  )
 
   await seedCompatibilityPrompts()
   await seedNotifications()

@@ -30,8 +30,9 @@ test.describe('when given valid input', () => {
       await app.people.setDisplayFilter({cardSize: 'Large'})
       const filterdProfiles = await app.people.profileCountLocator.textContent()
 
-      if (!totalProfiles || !filterdProfiles) return
-      await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
+      await expect(totalProfiles).not.toBeNull()
+      await expect(filterdProfiles).not.toBeNull()
+      await expect(Number(totalProfiles)).not.toEqual(Number(filterdProfiles))
 
       const results = await app.people.getProfileInfo()
       if (!results) return
@@ -66,7 +67,7 @@ test.describe('when given valid input', () => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
-      await app.people.setGenderTypeFilter(['Women', 'female'])
+      await app.people.setGenderTypeFilter(['Woman', 'female'])
       await app.people.setDisplayFilter({cardSize: 'Large'})
       if (!totalProfiles) return
       await app.people.verifyProfileCount(totalProfiles)

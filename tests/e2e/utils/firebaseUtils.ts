@@ -53,7 +53,7 @@ export async function verifyEmail(email: string, password: string) {
     await sendVerificationEmail(loginInfo.data.idToken)
     const oobResponse = await axios.get(`${config.FIREBASE_URL.FIREBASE_EMULATOR_API}`)
     const oobCode = await getOobCode(oobResponse.data.oobCodes, email)
-    console.log(oobCode)
+    if (!oobCode) throw new Error(`No verification OOB code found for email: ${email}`)
 
     const response = await axios.post(
       `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.CONFIRM_EMAIL_VERIFICATION}`,

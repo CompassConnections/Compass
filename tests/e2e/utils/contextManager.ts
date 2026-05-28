@@ -7,6 +7,9 @@ export class ContextManager {
   constructor(private browser: Browser) {}
 
   async createContext(name: string): Promise<App> {
+    const existing = this.contexts.get(name)
+    if (existing) await existing.page.context().close()
+
     const context = await this.browser.newContext()
     const page = await context.newPage()
     const app = new App(page)

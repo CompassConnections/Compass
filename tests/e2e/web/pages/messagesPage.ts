@@ -47,11 +47,13 @@ export class MessagesPage {
       const results = await this.newMessageSearchResults
         .getByTestId('search-results-username')
         .all()
-
-      for (let i = 0; i < results.length; i++) {
-        const usernameResults = await results[i].textContent()
-        if (usernameResults?.toLowerCase() === username[i].toLowerCase()) await results[i].click()
-        break
+      const targetUser = username[i].toLowerCase()
+      for (let j = 0; j < results.length; j++) {
+        const usernameResults = (await results[j].textContent())?.toLowerCase()
+        if (usernameResults === targetUser) {
+          await results[j].click()
+          break
+        }
       }
     }
 
@@ -64,10 +66,12 @@ export class MessagesPage {
     await this.messageInput.fill(message)
     await expect(this.messageSubmit).toBeVisible()
     await this.messageSubmit.click()
+    await this.verifyMessage(message)
   }
 
   async findMessageConversation(displayName: string) {
     await expect(this.messagesTable).toBeVisible()
+    await this.page.waitForTimeout(1000)
     const doMessagesExist = (await this.messagesRow.count()) > 0
     if (doMessagesExist) {
       const messages = await this.messagesRow.getByTestId('messages-username').all()
@@ -84,6 +88,7 @@ export class MessagesPage {
 
   async verifyMessage(messageContent: string) {
     await expect(this.conversation).toBeVisible()
+    await this.page.waitForTimeout(1000)
     const messageCount = (await this.conversationMessage.count()) > 0
     if (messageCount) {
       const messages = await this.conversationMessage.all()

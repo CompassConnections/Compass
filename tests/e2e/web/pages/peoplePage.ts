@@ -456,6 +456,7 @@ export class PeoplePage {
   async getProfileInfo() {
     await expect(this.profileGrid).toBeVisible()
     const totalResults = await this.profileResults.count()
+    if (totalResults === 0) throw Error('No profiles found')
     const chosenProfileNumber = Math.floor(Math.random() * totalResults)
     const chosenProfile = await this.profileResults.nth(chosenProfileNumber)
     const profileName = await chosenProfile.getByTestId('people-profile-name').textContent()
@@ -506,6 +507,7 @@ export class PeoplePage {
         await expect(this.messageInput).toBeVisible()
         await this.messageInput.fill(message)
         await this.page.getByTestId('conversation-message-submit').click()
+        return
       }
     }
   }

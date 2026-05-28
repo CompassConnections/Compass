@@ -11,9 +11,8 @@ import {useRouter} from 'next/router'
 import {useEffect, useMemo, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
-import {ProfileInfo} from 'web/components/profile/profile-info'
+import {ProfileInfo, ProfileInfoSkeleton} from 'web/components/profile/profile-info'
 import {SEO} from 'web/components/SEO'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
@@ -219,8 +218,8 @@ export default function UserPage(props: UserPageProps) {
 
   if (loading) {
     return (
-      <PageBase trackPageView={'user page'}>
-        <CompassLoadingIndicator />
+      <PageBase trackPageView={'user page'} className={'relative !px-0 sm:pt-0 !mt-0 col-span-10'}>
+        <ProfileInfoSkeleton />
       </PageBase>
     )
   }
@@ -324,7 +323,7 @@ function UserPageInner(props: ActiveUserPageProps) {
               fromSignup={fromSignup}
             />
           ) : (
-            <CompassLoadingIndicator />
+            <ProfileInfoSkeleton />
           )}
         </Col>
       )}

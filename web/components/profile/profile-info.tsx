@@ -207,6 +207,60 @@ export function ProfileInfo(props: {
   )
 }
 
+export function ProfileInfoSkeleton() {
+  return (
+    <>
+      <div
+        className="bg-canvas-50 border-canvas-300 mb-6 flex items-center border-b px-4 sm:px-9 py-4"
+        style={{
+          borderBottomWidth: '1px',
+          gap: '10px',
+        }}
+      >
+        <div className="flex w-full items-center gap-2">
+          <BackButton />
+        </div>
+      </div>
+
+      <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0 animate-pulse">
+        <Row className="gap-6 flex-wrap">
+          <div className="bg-canvas-200 h-[108px] w-[108px] flex-none rounded-2xl" />
+          <Col className="flex-1 gap-3 py-1 min-w-[160px]">
+            <div className="bg-canvas-200 h-8 w-2/3 max-w-[240px] rounded" />
+            <div className="bg-canvas-200 h-4 w-1/2 max-w-[180px] rounded" />
+            <div className="bg-canvas-200 h-4 w-2/5 max-w-[140px] rounded" />
+          </Col>
+        </Row>
+
+        <Row className="gap-2 flex-wrap py-3 mt-2 max-w-full sm:max-w-[500px]">
+          <div className="bg-canvas-200 h-7 w-16 rounded-full" />
+          <div className="bg-canvas-200 h-7 w-20 rounded-full" />
+          <div className="bg-canvas-200 h-7 w-14 rounded-full" />
+          <div className="bg-canvas-200 h-7 w-24 rounded-full" />
+        </Row>
+
+        <div
+          className="bg-canvas-50 border-canvas-300 border mt-6"
+          style={{borderRadius: '14px', padding: '22px 24px'}}
+        >
+          <div className="bg-canvas-200 h-6 w-24 rounded mb-5" />
+          <Col className="gap-4">
+            {[...Array(6)].map((_, i) => (
+              <Row key={i} className="items-center gap-2.5">
+                <div className="bg-canvas-200 h-8 w-8 flex-none rounded-lg" />
+                <Col className="flex-1 gap-1.5">
+                  <div className="bg-canvas-200 h-3 w-20 rounded" />
+                  <div className="bg-canvas-200 h-4 w-3/5 rounded" />
+                </Col>
+              </Row>
+            ))}
+          </Col>
+        </div>
+      </div>
+    </>
+  )
+}
+
 function ProfileCard(props: {title?: ReactNode; children: ReactNode; className?: string}) {
   const {title, children, className} = props
   // Check if children is null or undefined

@@ -66,7 +66,8 @@ export class MessagesPage {
     await this.messageInput.fill(message)
     await expect(this.messageSubmit).toBeVisible()
     await this.messageSubmit.click()
-    await this.verifyMessage(message)
+    const verified = await this.verifyMessage(message)
+    if (!verified) throw new Error(`Message "${message}" was not found in conversation after sending`)
   }
 
   async findMessageConversation(displayName: string) {

@@ -431,7 +431,10 @@ function ProfilePreview(props: {
               />
             )}
             {user && (
-              <div className={clsx(cardSize !== 'large' && 'hidden sm:flex')}>
+              <div
+                className={clsx(cardSize !== 'large' && 'hidden sm:flex')}
+                data-testid="message-profile-button"
+              >
                 <SendMessageButton
                   toUser={user}
                   profile={profile}

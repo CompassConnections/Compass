@@ -94,6 +94,7 @@ export function SelectUsers(props: {
                 'relative inline-block w-full overflow-y-scroll text-right',
                 queryReady && 'h-56',
               )}
+              data-testid="search-results"
             >
               {() => (
                 <Transition
@@ -112,7 +113,7 @@ export function SelectUsers(props: {
                   >
                     <div className="py-1">
                       {filteredUsers.map((user) => (
-                        <Menu.Item key={user.id}>
+                        <Menu.Item key={user.id} data-testid="search-results-username">
                           {({active}) => (
                             <button
                               className={clsx(

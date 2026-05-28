@@ -95,6 +95,7 @@ export function ChatMessageItem(props: {
         isMe && 'flex-row-reverse',
         firstOfUser ? 'mt-2' : 'mt-1',
       )}
+      data-testid="conversation-message"
     >
       {!isMe && !hideAvatar && (
         <MessageAvatar

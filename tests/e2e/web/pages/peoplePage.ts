@@ -88,7 +88,10 @@ export type PeoplePageFilter = {
 
 export class PeoplePage {
   private readonly peopleHeading: Locator
+  private readonly savedPeopleHeading: Locator
+  private readonly savedPeopleList: Locator
   private readonly searchBox: Locator
+  private readonly savedPeopleButton: Locator
   private readonly profileCount: Locator
   private readonly resetFilters: Locator
   private readonly yourFiltersCheckbox: Locator
@@ -122,13 +125,20 @@ export class PeoplePage {
   private readonly displayDropdown: Locator
   private readonly profileGrid: Locator
   private readonly profileResults: Locator
+  private readonly profileHide: Locator
+  private readonly profileStar: Locator
+  private readonly profileMessage: Locator
+  private readonly messageInput: Locator
   private readonly profileName: Locator
   private readonly profileAgeGender: Locator
   private readonly profileSeeking: Locator
 
   constructor(public readonly page: Page) {
     this.peopleHeading = page.getByRole('heading', {name: 'People'})
+    this.savedPeopleHeading = page.getByRole('heading', { name: 'Saved People' })
+    this.savedPeopleList = page.getByTestId('saved-person')
     this.searchBox = page.getByRole('textbox', {name: 'Search anything...'})
+    this.savedPeopleButton = page.getByRole('button', { name: 'Saved People' })
     this.profileCount = page.getByTestId('people-profile-count')
     this.resetFilters = page.getByRole('button', {name: 'Reset filters'})
     this.yourFiltersCheckbox = page.getByText('Your filters', {exact: true})
@@ -162,6 +172,10 @@ export class PeoplePage {
     this.displayDropdown = page.getByRole('button', {name: 'Display'})
     this.profileGrid = page.getByTestId('people-profile-grid')
     this.profileResults = page.getByTestId('people-profile-results')
+    this.profileHide = page.getByTestId('hide-profile-button')
+    this.profileStar = page.getByTestId('star-profile-button')
+    this.profileMessage = page.getByTestId('message-profile-button')
+    this.messageInput = page.locator('.tiptap')
     this.profileName = page.getByTestId('people-profile-name')
     this.profileAgeGender = page.getByTestId('people-profile-age-gender')
     this.profileSeeking = page.getByTestId('people-profile-seeking')
@@ -247,12 +261,16 @@ export class PeoplePage {
     await expect(this.peopleHeading).toBeVisible()
   }
 
-  //Doesn't actually work, need to find out why
+  async clickSavedPeopleButton() {
+    await expect(this.savedPeopleButton).toBeVisible()
+    await this.savedPeopleButton.click()
+  }
+
   async useSearch(item: string) {
     await expect(this.searchBox).toBeVisible()
     await this.searchBox.click()
     await this.searchBox.fill(item)
-    await this.page.keyboard.press('Enter')
+    await this.page.waitForTimeout(1000)
   }
 
   async resetFilter() {
@@ -443,12 +461,18 @@ export class PeoplePage {
     const profileName = await chosenProfile.getByTestId('people-profile-name').textContent()
     const ageGender = await chosenProfile.getByTestId('people-profile-age-gender').textContent()
     const seekingInfo = await chosenProfile.getByTestId('people-profile-seeking').textContent()
+    const hideProfile = await chosenProfile.getByTestId('hide-profile-button')
+    const starProfile = await chosenProfile.getByTestId('star-profile-button')
+    const messageProfile = await chosenProfile.getByTestId('message-profile-button')
 
     return {
       profile: chosenProfile ?? '',
       name: profileName ?? '',
       ageGender: ageGender ?? '',
       seeking: seekingInfo ?? '',
+      hide: hideProfile ?? '',
+      star: starProfile ?? '',
+      message: messageProfile ?? '',
     }
   }
 
@@ -463,6 +487,43 @@ export class PeoplePage {
     } else {
       const noProfilesFound = await this.page.getByText('No profiles found.', {exact: true})
       await expect(noProfilesFound).toBeVisible()
+    }
+  }
+
+  async selectProfile(displayName: string) {
+    await expect(this.profileGrid).toBeVisible()
+    await this.profileName.getByText(displayName).click()
+  }
+
+  async messageProfile(displayName: string, message: string) {
+    await expect(this.profileGrid).toBeVisible()
+    const profiles = await this.profileResults.all()
+
+    for (let i = 0; i < profiles.length; i++) {
+      const profileName = await profiles[i].getByTestId('people-profile-name').textContent();
+      if (profileName?.toLowerCase() === displayName.toLowerCase()) {
+        await profiles[i].getByTestId('message-profile-button').click()
+        await expect(this.messageInput).toBeVisible()
+        await this.messageInput.fill(message)
+        await this.page.getByTestId('conversation-message-submit').click()
+      }
+    }
+  }
+
+  async verifySavedPerson(displayName: string) {
+    await expect(this.savedPeopleHeading).toBeVisible()
+    const isThereSavedPeople = await this.savedPeopleList.count() > 0
+
+    if (isThereSavedPeople) {
+      const listOfPeople = await this.savedPeopleList.all()
+      for (let i = 0; i < listOfPeople.length; i++) {
+        await expect(listOfPeople[i]).toBeVisible()
+        const profileName = await listOfPeople[i].textContent()
+        if (profileName?.toLowerCase() === displayName.toLowerCase()) return true
+      }
+      return false
+    } else {
+      throw new Error('There are no profiles in the saved people list')
     }
   }
 }

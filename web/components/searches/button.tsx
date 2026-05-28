@@ -230,7 +230,7 @@ function StarModal(props: {
             </p>
             <Col className={clsx('divide-y divide-canvas-200 w-full pr-2', SCROLLABLE_MODAL_CLASS)}>
               {visibleUsers.map((u) => (
-                <div key={u.id} className="py-3 first:pt-0 last:pb-0">
+                <div key={u.id} className="py-3 first:pt-0 last:pb-0" data-testid="saved-person">
                   <div className="bg-canvas-0 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm">
                     <Row className="items-center justify-between gap-3">
                       <Link className="flex-1 group" href={'/' + u.username}>
@@ -243,7 +243,10 @@ function StarModal(props: {
                             />
                           </div>
                           <Col className="flex-1">
-                            <div className="font-medium text-ink-900 group-hover:text-primary-600 transition-colors">
+                            <div
+                              className="font-medium text-ink-900 group-hover:text-primary-600 transition-colors"
+                              data-testid="saved-person-display-name"
+                            >
                               {u.name}
                             </div>
                             <div className="text-ink-500 text-sm">@{u.username}</div>
@@ -251,6 +254,7 @@ function StarModal(props: {
                         </Row>
                       </Link>
                       <button
+                        data-testid="remove-saved-person"
                         onClick={() => {
                           // Optimistically remove the user from the list
                           setRemovingIds((prev) => new Set(prev).add(u.id))

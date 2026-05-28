@@ -76,6 +76,7 @@ export function HideProfileButton(props: HideProfileButtonProps) {
       noTap
     >
       <button
+        data-testid="hide-profile-button"
         className={clsx(
           'relative inline-flex items-center justify-center border bg-canvas-50 border-canvas-300 text-ink-300 hover:border-primary-400 hover:bg-primary-50 rounded-lg h-7 w-7',
           className,

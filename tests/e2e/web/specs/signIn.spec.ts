@@ -1,5 +1,4 @@
 import {expect, test} from '../fixtures/signInFixture'
-import {ContextManager} from '../../utils/contextManager'
 
 test.describe('when given valid input', () => {
   test('should be able to sign in to an available account', async ({
@@ -9,6 +8,19 @@ test.describe('when given valid input', () => {
     await app.signinWithEmail(account)
     await app.home.goToHomePage()
     await app.home.verifySignedInHomePage(account.display_name)
+  })
+
+  test('should be able to save/favorite people', async ({
+    app,
+    signedOutAccount: account,
+  }) => {
+    await app.signinWithEmail(account)
+    await app.home.clickPeopleLink()
+    const profile = await app.people.getProfileInfo()
+    await expect(profile.star).toBeVisible()
+    await profile.star.click()
+    await app.people.clickSavedPeopleButton()
+    await app.people.verifySavedPerson(profile.name)
   })
 
   test.describe('the applied filter should', () => {
@@ -226,14 +238,39 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('a verified account should', () => {
-    test('be able to send a message', async ({app, devOneAccount, devTwoAccount}) => {
+    test('be able to send a message from the messages page', async ({app, devOneAccount, devTwoAccount}) => {
       const devOne = await app.contextManager.createContext('devOne')
       const devTwo = await app.contextManager.createContext('devTwo')
       await devOne.signinWithEmail(devOneAccount)
-      await devOne.home.clickPeopleLink()
       await devTwo.signinWithEmail(devTwoAccount)
-      await devTwo.home.clickPeopleLink()
+
+      await devOne.home.clickMessagesLink()
+      await devOne.messages.createNewMessage([devTwoAccount.display_name])
+      await devOne.messages.sendMessage('This is a message')
+      
+      await devTwo.home.clickMessagesLink()
+      await devTwo.messages.findMessageConversation(devOneAccount.display_name)
+      await devTwo.messages.verifyMessage('This is a message')
     })
+
+    test('be able to send a message from the people page', async ({app, devOneAccount, devTwoAccount}) => {
+      const devOne = await app.contextManager.createContext('devOne')
+      const devTwo = await app.contextManager.createContext('devTwo')
+      await devOne.signinWithEmail(devOneAccount)
+      await devTwo.signinWithEmail(devTwoAccount)
+
+      await devOne.home.clickPeopleLink()
+      await devOne.people.useSearch(devTwoAccount.display_name)
+      const message = "This is a message".repeat(20)
+      await devOne.people.messageProfile(devTwoAccount.display_name, message)
+      await devOne.messages.verifyMessage(message)
+
+      await devTwo.home.clickMessagesLink()
+      await devTwo.messages.findMessageConversation(devOneAccount.display_name)
+      await devTwo.messages.verifyMessage(message)
+    })
+
+
   })
 })
 

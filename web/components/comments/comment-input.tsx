@@ -227,6 +227,7 @@ export function CommentInputTextArea(props: {
         )}
         {!isSubmitting && !isDisabled && submit && commentTypes.includes('comment') && (
           <button
+            data-testid="conversation-message-submit"
             className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
             disabled={isDisabled || !editor || editor.isEmpty}
             onClick={() => submit('comment')}

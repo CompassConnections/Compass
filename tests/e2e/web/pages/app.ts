@@ -13,6 +13,8 @@ import {SignUpPage} from './signUpPage'
 import {SocialPage} from './socialPage'
 import {PeoplePage} from './peoplePage'
 import {NotificationPage} from './notificationsPage'
+import { MessagesPage } from './messagesPage'
+
 
 export class App {
   readonly auth: AuthPage
@@ -26,6 +28,7 @@ export class App {
   readonly social: SocialPage
   readonly people: PeoplePage
   readonly notifs: NotificationPage
+  readonly messages: MessagesPage
   readonly contextManager: ContextManager
   readonly context: BrowserContext
 
@@ -41,6 +44,7 @@ export class App {
     this.social = new SocialPage(page)
     this.people = new PeoplePage(page)
     this.notifs = new NotificationPage(page)
+    this.messages = new MessagesPage(page)
     this.context = page.context()
 
     const browser = page.context().browser()

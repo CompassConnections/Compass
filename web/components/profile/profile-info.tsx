@@ -217,8 +217,8 @@ export function ProfileInfoSkeleton() {
           gap: '10px',
         }}
       >
-        <div className="flex w-full items-center gap-2">
-          <BackButton />
+        <div className="flex w-full items-center gap-2 min-h-7">
+          <BackButton className={'hidden sm:flex'} />
         </div>
       </div>
 

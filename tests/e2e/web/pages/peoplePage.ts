@@ -1,17 +1,18 @@
 import {expect, Locator, Page} from '@playwright/test'
 import {
-  ConnectionTypeTuple,
-  EducationTuple,
-  DietTuple,
-  PsychedelicsTuple,
   CannabisTuple,
-  LanguageTuple,
-  PoliticalTuple,
-  ReligionTuple,
-  PersonalityKey,
-  LastActiveTuple,
+  ConnectionTypeTuple,
+  DietTuple,
+  EducationTuple,
   InterestedInGenderTuple,
+  LanguageTuple,
+  LastActiveTuple,
+  PersonalityKey,
+  PoliticalTuple,
+  PsychedelicsTuple,
+  ReligionTuple,
 } from 'common/choices'
+
 import {MinMaxNumbers} from '../utils/accountInformation'
 
 export type BackgroundFilter = {
@@ -459,22 +460,7 @@ export class PeoplePage {
     if (totalResults === 0) throw Error('No profiles found')
     const chosenProfileNumber = Math.floor(Math.random() * totalResults)
     const chosenProfile = await this.profileResults.nth(chosenProfileNumber)
-    const profileName = await chosenProfile.getByTestId('people-profile-name').textContent()
-    const ageGender = await chosenProfile.getByTestId('people-profile-age-gender').textContent()
-    const seekingInfo = await chosenProfile.getByTestId('people-profile-seeking').textContent()
-    const hideProfile = await chosenProfile.getByTestId('hide-profile-button')
-    const starProfile = await chosenProfile.getByTestId('star-profile-button')
-    const messageProfile = await chosenProfile.getByTestId('message-profile-button')
-
-    return {
-      profile: chosenProfile ?? '',
-      name: profileName ?? '',
-      ageGender: ageGender ?? '',
-      seeking: seekingInfo ?? '',
-      hide: hideProfile ?? '',
-      star: starProfile ?? '',
-      message: messageProfile ?? '',
-    }
+    return chosenProfile
   }
 
   async verifyProfileCount(totalProfiles: string) {
@@ -512,7 +498,8 @@ export class PeoplePage {
     }
   }
 
-  async verifySavedPerson(displayName: string) {
+  async verifySavedPerson(displayName: string | null | undefined) {
+    if (!displayName) throw new Error('No display name provided')
     await expect(this.savedPeopleHeading).toBeVisible()
     await this.page.waitForTimeout(1000)
     const isThereSavedPeople = (await this.savedPeopleList.count()) > 0
@@ -529,4 +516,28 @@ export class PeoplePage {
       throw new Error('There are no profiles in the saved people list')
     }
   }
+}
+
+export async function getCardName(profile: Locator) {
+  return await profile.getByTestId('people-profile-name').textContent()
+}
+
+export async function getCardAgeGender(profile: Locator) {
+  return await profile.getByTestId('people-profile-age-gender').textContent()
+}
+
+export async function getCardSeekingInfo(profile: Locator) {
+  return await profile.getByTestId('people-profile-seeking').textContent()
+}
+
+export async function getCardHide(profile: Locator) {
+  return await profile.getByTestId('hide-profile-button')
+}
+
+export async function getCardStar(profile: Locator) {
+  return await profile.getByTestId('star-profile-button')
+}
+
+export async function getCardMessage(profile: Locator) {
+  return await profile.getByTestId('message-profile-button')
 }

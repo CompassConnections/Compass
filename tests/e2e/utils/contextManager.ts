@@ -14,10 +14,15 @@ export class ContextManager {
     if (existing) await existing.page.context().close()
 
     const context = await this.browser.newContext()
-    const page = await context.newPage()
-    const app = new App(page)
-    this.contexts.set(name, app)
-    return app
+    try {
+      const page = await context.newPage()
+      const app = new App(page, false)
+      this.contexts.set(name, app)
+      return app
+    } catch (error) {
+      await context.close()
+      throw error
+    }
   }
 
   getContext(name: string): App | undefined {
@@ -26,7 +31,11 @@ export class ContextManager {
 
   async closeAll(): Promise<void> {
     for (const app of this.contexts.values()) {
-      await app.page.context().close()
+      try {
+        await app.page.context().close()
+      } catch {
+        // context may already be closed
+      }
     }
     this.contexts.clear()
   }

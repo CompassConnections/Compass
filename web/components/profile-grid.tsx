@@ -431,7 +431,10 @@ function ProfilePreview(props: {
               />
             )}
             {user && (
-              <div className={clsx(cardSize !== 'large' && 'hidden sm:flex')}>
+              <div
+                className={clsx(cardSize !== 'large' && 'hidden sm:flex')}
+                data-testid="message-profile-button"
+              >
                 <SendMessageButton
                   toUser={user}
                   profile={profile}
@@ -506,6 +509,7 @@ function ProfilePreview(props: {
               )}
               {showSeeking !== false && seekingText && (
                 <IconWithInfo
+                  testid="people-profile-seeking"
                   text={seekingText}
                   icon={<PiMagnifyingGlassBold className="h-4 w-4 " />}
                 />

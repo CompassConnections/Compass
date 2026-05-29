@@ -2,10 +2,13 @@ export const config = {
   BASE_URL: 'http://localhost:3000',
   FIREBASE_URL: {
     BASE: 'http://localhost:9099/identitytoolkit.googleapis.com/v1',
+    FIREBASE_EMULATOR_API: 'http://localhost:9099/emulator/v1/projects/compass-57c3c/oobCodes',
     SIGNUP: '/accounts:signUp?key=fake-api-key',
     SIGN_IN_PASSWORD: '/accounts:signInWithPassword?key=fake-api-key',
     ACCOUNT_LOOKUP: '/accounts:lookup?key=fake-api-key',
     DELETE: '/accounts:delete?key=fake-api-key',
+    SEND_EMAIL_VERIFICATION: '/accounts:sendOobCode?key=fake-api-key',
+    CONFIRM_EMAIL_VERIFICATION: '/accounts:update?key=fake-api-key',
   },
   USERS: {
     DEV_1: {

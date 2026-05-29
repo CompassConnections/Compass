@@ -388,6 +388,7 @@ export const PrivateChat = (props: {
           style={{
             transform: isSafari ? 'translate3d(0, 0, 0)' : 'none',
           }}
+          data-testid="conversation"
         >
           <div
             className="relative px-1 pb-4 pt-1 transition-all duration-100"

@@ -9,7 +9,12 @@ import {insert} from 'shared/supabase/utils'
 import {getUser} from 'shared/utils'
 
 import UserAccountInformationForSeeding from '../backend/utils/userInformation'
-import {firebaseSignUp} from './firebaseUtils'
+import {firebaseSignUp, verifyEmail} from './firebaseUtils'
+
+export const TEST_USER_EMAIL = 'user@compass.test'
+export const TEST_USER_PASSWORD = 'pass'
+export const TEST_USER_DISPLAY_NAME = 'Test User'
+export const TEST_USER_USERNAME = 'TestUser'
 
 /**
  * Function used to populate the database with profiles.
@@ -151,6 +156,7 @@ export async function seedUser(
   profileType?: string | undefined,
   displayName?: string | undefined,
   userName?: string | undefined,
+  verifyUserEmail?: boolean,
 ) {
   const userInfo = new UserAccountInformationForSeeding()
   if (email) userInfo.email = email
@@ -162,4 +168,5 @@ export async function seedUser(
   // Fall back to the pre-generated faker id when Firebase is unreachable
   const created = await seedDbUser(userInfo, profileType ?? 'full')
   if (created) debug('User created in Supabase:', userInfo.email)
+  if (verifyUserEmail) await verifyEmail(userInfo.email, userInfo.password)
 }

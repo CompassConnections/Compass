@@ -37,6 +37,36 @@ export async function findUser(idToken: string) {
   }
 }
 
+export async function sendVerificationEmail(idToken: string) {
+  await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SEND_EMAIL_VERIFICATION}`, {
+    requestType: 'VERIFY_EMAIL',
+    idToken,
+  })
+}
+export async function getOobCode(oobCodes: any[], email: string) {
+  return oobCodes.find((item) => item.email.toLowerCase() === email.toLowerCase())?.oobCode
+}
+
+export async function verifyEmail(email: string, password: string) {
+  try {
+    const loginInfo = await firebaseLoginEmailPassword(email, password)
+    await sendVerificationEmail(loginInfo.data.idToken)
+    const oobResponse = await axios.get(`${config.FIREBASE_URL.FIREBASE_EMULATOR_API}`)
+    const oobCode = await getOobCode(oobResponse.data.oobCodes, email)
+    if (!oobCode) throw new Error(`No verification OOB code found for email: ${email}`)
+
+    const response = await axios.post(
+      `${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.CONFIRM_EMAIL_VERIFICATION}`,
+      {
+        oobCode,
+      },
+    )
+  } catch (err: any) {
+    console.log(err)
+    throw err
+  }
+}
+
 export async function firebaseSignUp(email: string, password: string) {
   try {
     const response = await axios.post(`${config.FIREBASE_URL.BASE}${config.FIREBASE_URL.SIGNUP}`, {

@@ -16,7 +16,7 @@ export class ContextManager {
     const context = await this.browser.newContext()
     try {
       const page = await context.newPage()
-      const app = new App(page, false)
+      const app = new App(page)
       this.contexts.set(name, app)
       return app
     } catch (error) {

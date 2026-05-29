@@ -7,6 +7,7 @@ import {deleteUser} from '../utils/deleteUser'
 
 export const test = base.extend<{
   app: App
+  app2: App
   devOneAccount: UserAccountInformation
   devTwoAccount: UserAccountInformation
   specAccount: UserAccountInformation
@@ -20,6 +21,14 @@ export const test = base.extend<{
     const appPage = new App(page)
     await use(appPage)
     await appPage.contextManager?.closeAll()
+  },
+  app2: async ({browser}, use) => {
+    // Totally isolated app which can be used to sign in a different user
+    // Use {storageState: 'auth/receiver.json'} later on to save compute time by signing in only once
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await use(new App(page))
+    await context.close() // guaranteed teardown, even on failure/timeout
   },
   signedInAccount: async ({app}: {app: App}, use) => {
     const account = testAccounts.faker_account()

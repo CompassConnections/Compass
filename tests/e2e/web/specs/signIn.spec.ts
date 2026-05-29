@@ -264,10 +264,10 @@ test.describe('when given valid input', () => {
     const message = 'This is a message'
     test('be able to send a message from the messages page', async ({
       app,
+      app2: receiverApp,
       signedInAccount: sender,
       signedOutAccount: receiver,
     }) => {
-      const receiverApp = await app.contextManager!.createContext()
       await receiverApp.signinWithEmail(receiver)
 
       await app.home.clickMessagesLink()
@@ -281,10 +281,10 @@ test.describe('when given valid input', () => {
 
     test('be able to send a message from the people page', async ({
       app,
+      app2: receiverApp,
       signedInAccount: sender,
       signedOutAccount: receiver,
     }) => {
-      const receiverApp = await app.contextManager!.createContext()
       await receiverApp.signinWithEmail(receiver)
 
       // To pass the min character limit for message intro (250 chars)

@@ -37,7 +37,7 @@ export default defineConfig({
   // No retries by default (even in CI) because it slows the CI pipeline and masks real bugs
   // If there is a known intermittent browser timing issue for some tests, it's fine to give 1 retry to those flaky tests
   retries: process.env.CI ? 0 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 4,
   reporter: [
     ['list'],
     ['html', {outputFolder: `tests/reports/playwright-report`, open: 'on-failure'}],

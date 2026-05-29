@@ -33,7 +33,7 @@ export class App {
 
   constructor(
     public readonly page: Page,
-    createContextManager = true,
+    // createContextManager = true,
   ) {
     this.auth = new AuthPage(page)
     this.compatibility = new CompatibilityPage(page)
@@ -49,11 +49,11 @@ export class App {
     this.messages = new MessagesPage(page)
     this.context = page.context()
 
-    if (createContextManager) {
-      const browser = page.context().browser()
-      if (!browser) throw new Error('Could not get Browser from page.context().browser()')
-      this.contextManager = new ContextManager(browser)
-    }
+    // if (createContextManager) {
+    //   const browser = page.context().browser()
+    //   if (!browser) throw new Error('Could not get Browser from page.context().browser()')
+    //   this.contextManager = new ContextManager(browser)
+    // }
   }
 
   async deleteProfileFromSettings() {

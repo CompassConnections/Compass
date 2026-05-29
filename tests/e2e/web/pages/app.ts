@@ -28,10 +28,13 @@ export class App {
   readonly people: PeoplePage
   readonly notifs: NotificationPage
   readonly messages: MessagesPage
-  readonly contextManager: ContextManager
+  readonly contextManager: ContextManager | undefined
   readonly context: BrowserContext
 
-  constructor(public readonly page: Page) {
+  constructor(
+    public readonly page: Page,
+    createContextManager = true,
+  ) {
     this.auth = new AuthPage(page)
     this.compatibility = new CompatibilityPage(page)
     this.home = new HomePage(page)
@@ -46,9 +49,11 @@ export class App {
     this.messages = new MessagesPage(page)
     this.context = page.context()
 
-    const browser = page.context().browser()
-    if (!browser) throw new Error('Could not get Browser from page.context().browser()')
-    this.contextManager = new ContextManager(browser)
+    if (createContextManager) {
+      const browser = page.context().browser()
+      if (!browser) throw new Error('Could not get Browser from page.context().browser()')
+      this.contextManager = new ContextManager(browser)
+    }
   }
 
   async deleteProfileFromSettings() {

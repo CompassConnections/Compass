@@ -200,7 +200,7 @@ export function AnswerCompatibilityQuestionContent(props: {
         </Col>
         <Col className="gap-2">
           <span className="text-ink-500 text-sm">
-            {t('answers.content.answers_you_accept', "Answers you'll accept")}
+            {t('answers.content.answers_you_accept', "Answers you'll accept from them")}
           </span>
           <MultiSelectAnswers
             values={answer.pref_choices ?? []}

@@ -82,31 +82,28 @@ export const NewSearchAlertsEmail = ({
                   </Text>
                   <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
                     {match.matches.map((p) => (
-                      <div
+                      <Link
                         key={p.username}
+                        href={`https://${DOMAIN}/${p.username}`}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '6px',
-                          padding: '6px 12px',
+                          flexWrap: 'wrap',
+                          gap: '4px 8px',
+                          padding: '7px 14px',
+                          maxWidth: '100%',
+                          boxSizing: 'border-box',
                           backgroundColor: '#faf3e9',
                           border: '1px solid #e8c99e',
-                          borderRadius: '100px',
+                          borderRadius: '14px',
                           fontSize: '13px',
+                          lineHeight: '1.2',
+                          textDecoration: 'none',
                         }}
                       >
-                        <span style={{color: '#1e1a14', fontWeight: '500'}}>{p.name}</span>
-                        <Link
-                          href={`https://${DOMAIN}/${p.username}`}
-                          style={{
-                            color: '#c17f3e',
-                            textDecoration: 'none',
-                            fontSize: '12px',
-                          }}
-                        >
-                          @{p.username}
-                        </Link>
-                      </div>
+                        <span style={{color: '#1e1a14', fontWeight: '600'}}>{p.name}</span>
+                        <span style={{color: '#c17f3e', fontSize: '12px'}}>@{p.username}</span>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -165,7 +162,7 @@ const matchSamples = [
     },
     matches: [
       {
-        name: 'James Bond',
+        name: 'James Bond Junior',
         username: 'jamesbond',
       },
       {

@@ -4,8 +4,7 @@ import {debug} from 'common/logger'
 import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
 import {cloneDeep} from 'lodash'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {updateUser, updateUserData} from 'shared/supabase/users'
+import {updateUser} from 'shared/supabase/users'
 import {getUser, getUserByUsername} from 'shared/utils'
 import {broadcastUpdatedUser} from 'shared/websockets/helpers'
 
@@ -32,12 +31,14 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
     update.username = cleanedUsername
   }
 
-  const pg = createSupabaseDirectClient()
-
   debug({update})
 
-  const {name, username, avatarUrl, ...rest} = update
-  await updateUserData(pg, auth.uid, removeUndefinedProps(rest))
+  const {name, username, avatarUrl} = update
+
+  // Any auth user can update their own data — parse and clean their data if we ever allow them to store in user.data
+  // Do NOT allow them to update other user fields like "isBannedFromPosting"
+  // const pg = createSupabaseDirectClient()
+  // await updateUserData(pg, auth.uid, removeUndefinedProps(data))
 
   // Ensure clients listening on `user/{id}` (e.g. AuthContext via useWebsocketUser)
   // get notified about link-only changes as well.

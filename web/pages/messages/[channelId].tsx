@@ -27,10 +27,7 @@ import {useTextEditor} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
-import {
-  usePrivateMessages,
-  useSortedPrivateMessageMemberships,
-} from 'web/hooks/use-private-messages'
+import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
@@ -454,25 +451,28 @@ export const PrivateChat = (props: {
           </div>
         </div>
       </Col>
-      {noOtherUser ? (
+      {allUsersBanned ? (
         <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
           <span className="text-ink-500 text-sm">
             {t(
-              'messages.cannot_message_deleted',
-              "You can't text them as they deleted their account.",
+              'messages.cannot_message_banned',
+              "The profile was removed for suspicious activity; never send money to someone you haven't met.",
             )}
-          </span>
-        </div>
-      ) : allUsersBanned ? (
-        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-          <span className="text-ink-500 text-sm">
-            {t('messages.cannot_message_banned', "You can't text them as they got banned.")}
           </span>
         </div>
       ) : user.isBannedFromPosting ? (
         <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
           <span className="text-ink-500 text-sm">
             {t('messages.cannot_message_you_banned', "You can't text them as you got banned.")}
+          </span>
+        </div>
+      ) : noOtherUser ? (
+        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+          <span className="text-ink-500 text-sm">
+            {t(
+              'messages.cannot_message_deleted',
+              "You can't text them as they deleted their account.",
+            )}
           </span>
         </div>
       ) : (

@@ -442,7 +442,7 @@ Pass the token in the Authorization header for all authenticated requests:
 Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
 \`\`\`
 
-In the API docs, authenticate through the green button at the bottom right of this section.
+In the API docs, authenticate through the green button at the bottom right of this section (BearerAuth token).
 
 **Don't have an account?** [Register on Compass](${DEPLOYED_WEB_URL}/register) to get started.
 

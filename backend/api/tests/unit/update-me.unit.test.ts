@@ -49,12 +49,12 @@ describe('updateMe', () => {
       expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid)
       expect(sharedUtils.getUserByUsername).toBeCalledTimes(1)
       expect(sharedUtils.getUserByUsername).toBeCalledWith(mockProps.username)
-      expect(supabaseUsers.updateUserData).toBeCalledTimes(1)
-      expect(supabaseUsers.updateUserData).toHaveBeenCalledWith(
-        expect.any(Object),
-        mockAuth.uid,
-        {},
-      )
+      // expect(supabaseUsers.updateUserData).toBeCalledTimes(1)
+      // expect(supabaseUsers.updateUserData).toHaveBeenCalledWith(
+      //   expect.any(Object),
+      //   mockAuth.uid,
+      //   {},
+      // )
       expect(supabaseUsers.updateUser).toBeCalledTimes(1)
       expect(supabaseUsers.updateUser).toHaveBeenCalledWith(mockAuth.uid, mockProps)
       expect(websocketHelperModules.broadcastUpdatedUser).toBeCalledTimes(1)

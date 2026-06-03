@@ -1,6 +1,23 @@
+import {
+  ArrowTrendingUpIcon,
+  BoltIcon,
+  BuildingLibraryIcon,
+  ChatBubbleLeftRightIcon,
+  ChatBubbleOvalLeftIcon,
+  CheckCircleIcon,
+  ClipboardDocumentListIcon,
+  EnvelopeIcon,
+  HandRaisedIcon,
+  PuzzlePieceIcon,
+  QuestionMarkCircleIcon,
+  ScaleIcon,
+  StarIcon,
+  UserIcon,
+  UsersIcon,
+} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {type Stats} from 'common/stats'
-import {ReactNode, useEffect, useState} from 'react'
+import {ComponentType, ReactNode, SVGProps, useEffect, useState} from 'react'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import ChartMembers from 'web/components/widgets/charts'
@@ -10,16 +27,18 @@ import {getCount} from 'web/lib/supabase/users'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
 interface StatCardProps {
   value: string | number | null | undefined
   label: string
-  icon: string
+  icon: IconType
   accent?: 'amber' | 'sage' | 'muted'
   large?: boolean
 }
 
 interface StatGroupProps {
-  icon: string
+  icon: IconType
   title: string
   children: ReactNode
 }
@@ -34,7 +53,7 @@ function formatNumber(n: number): string {
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 
-function StatCard({value, label, icon, accent = 'amber', large}: StatCardProps) {
+function StatCard({value, label, icon: Icon, accent = 'amber', large}: StatCardProps) {
   if (value === null || value === undefined || value === 0) return null
 
   const formatted = typeof value === 'number' ? formatNumber(value) : value
@@ -56,8 +75,8 @@ function StatCard({value, label, icon, accent = 'amber', large}: StatCardProps) 
       "
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="w-9 h-9 rounded-lg bg-canvas-200 border border-canvas-300 flex items-center justify-center text-base flex-shrink-0">
-          {icon}
+        <div className="w-9 h-9 rounded-lg bg-primary-100 border border-primary-200 flex items-center justify-center flex-shrink-0">
+          <Icon className="w-[18px] h-[18px] text-primary-600" strokeWidth={1.8} />
         </div>
       </div>
 
@@ -80,11 +99,11 @@ function StatCard({value, label, icon, accent = 'amber', large}: StatCardProps) 
 
 // ─── Stat Group ───────────────────────────────────────────────────────────────
 
-function StatGroup({icon, title, children}: StatGroupProps) {
+function StatGroup({icon: Icon, title, children}: StatGroupProps) {
   return (
     <div className="mb-10">
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-base">{icon}</span>
+        <Icon className="w-4 h-4 text-primary-500" strokeWidth={1.8} />
         <span className="text-[11px] font-bold tracking-[1.2px] uppercase text-ink-500">
           {title}
         </span>
@@ -107,8 +126,8 @@ function ChartCard() {
     "
     >
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-8 h-8 rounded-lg bg-canvas-200 border border-canvas-300 flex items-center justify-center text-sm">
-          📈
+        <div className="w-8 h-8 rounded-lg bg-primary-100 border border-primary-200 flex items-center justify-center">
+          <ArrowTrendingUpIcon className="w-4 h-4 text-primary-600" strokeWidth={1.8} />
         </div>
         <div>
           <h2 className="text-sm font-bold text-ink-900 leading-tight">
@@ -136,23 +155,28 @@ function HighlightRow({
   messages: number | null | undefined
 }) {
   const t = useT()
-  const items = [
+  const items: {
+    value: number | null | undefined
+    label: string
+    icon: IconType
+    accent: 'amber' | 'sage'
+  }[] = [
     {
       value: members,
       label: t('stats.highlight.members', 'Total Members'),
-      icon: '👥',
+      icon: UsersIcon,
       accent: 'amber' as const,
     },
     {
       value: active,
       label: t('stats.highlight.active', 'Active (last month)'),
-      icon: '⚡',
+      icon: BoltIcon,
       accent: 'sage' as const,
     },
     {
       value: messages,
       label: t('stats.highlight.messages', 'Messages sent'),
-      icon: '✉️',
+      icon: EnvelopeIcon,
       accent: 'amber' as const,
     },
   ].filter((i) => !!i.value)
@@ -161,31 +185,34 @@ function HighlightRow({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className="
+      {items.map((item) => {
+        const Icon = item.icon
+        return (
+          <div
+            key={item.label}
+            className="
             relative overflow-hidden
             bg-canvas-950 rounded-2xl p-6
             border-[1.5px] border-canvas-900
           "
-        >
-          <div className="w-9 h-9 rounded-lg bg-canvas-900 flex items-center justify-center text-base mb-4">
-            {item.icon}
-          </div>
-          <div
-            className={clsx(
-              'text-4xl font-black tracking-tight leading-none mb-2',
-              item.accent === 'sage' ? 'text-green-500' : 'text-primary-400',
-            )}
           >
-            {typeof item.value === 'number' ? formatNumber(item.value) : item.value}
+            <div className="w-9 h-9 rounded-lg bg-canvas-900 flex items-center justify-center mb-4">
+              <Icon className="w-[18px] h-[18px] text-primary-400" strokeWidth={1.8} />
+            </div>
+            <div
+              className={clsx(
+                'text-4xl font-black tracking-tight leading-none mb-2',
+                item.accent === 'sage' ? 'text-green-500' : 'text-primary-400',
+              )}
+            >
+              {typeof item.value === 'number' ? formatNumber(item.value) : item.value}
+            </div>
+            <p className="text-xs font-semibold text-white/60 uppercase tracking-wide">
+              {item.label}
+            </p>
           </div>
-          <p className="text-xs font-semibold text-white/60 uppercase tracking-wide">
-            {item.label}
-          </p>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -294,77 +321,83 @@ export default function Stats() {
             <ChartCard />
 
             {/* ── Community ── */}
-            <StatGroup icon="👥" title={t('stats.group.community', 'Community')}>
+            <StatGroup icon={UsersIcon} title={t('stats.group.community', 'Community')}>
               <StatCard
                 value={data.profiles}
                 label={t('stats.members', 'Members')}
-                icon="👤"
+                icon={UserIcon}
                 accent="amber"
               />
               <StatCard
                 value={data.active_members}
                 label={t('stats.active_members', 'Active (last month)')}
-                icon="⚡"
+                icon={BoltIcon}
                 accent="sage"
               />
               <StatCard
                 value={genderRatioLabel}
                 label={t('stats.gender_ratio', 'Male / Female')}
-                icon="⚖️"
+                icon={ScaleIcon}
                 accent="muted"
               />
               <StatCard
                 value={data.profile_comments}
                 label={t('stats.endorsements', 'Endorsements')}
-                icon="⭐"
+                icon={StarIcon}
                 accent="amber"
               />
             </StatGroup>
 
             {/* ── Conversations ── */}
-            <StatGroup icon="💬" title={t('stats.group.conversations', 'Conversations')}>
+            <StatGroup
+              icon={ChatBubbleLeftRightIcon}
+              title={t('stats.group.conversations', 'Conversations')}
+            >
               <StatCard
                 value={data.private_user_message_channels}
                 label={t('stats.discussions', 'Discussions')}
-                icon="🗨️"
+                icon={ChatBubbleOvalLeftIcon}
                 accent="amber"
               />
               <StatCard
                 value={statsData?.messages}
                 label={t('stats.messages', 'Messages')}
-                icon="✉️"
+                icon={EnvelopeIcon}
                 accent="sage"
               />
             </StatGroup>
 
             {/* ── Compatibility ── */}
-            <StatGroup icon="🎯" title={t('stats.group.compatibility', 'Compatibility')}>
+            <StatGroup
+              icon={PuzzlePieceIcon}
+              title={t('stats.group.compatibility', 'Compatibility')}
+            >
               <StatCard
                 value={data.compatibility_prompts}
                 label={t('stats.compatibility_prompts', 'Prompts Created')}
-                icon="❓"
+                icon={QuestionMarkCircleIcon}
                 accent="amber"
               />
               <StatCard
                 value={data.compatibility_answers}
                 label={t('stats.prompts_answered', 'Prompts Answered')}
-                icon="✅"
+                icon={CheckCircleIcon}
                 accent="sage"
               />
             </StatGroup>
 
             {/* ── Democracy ── */}
-            <StatGroup icon="🗳️" title={t('stats.group.democracy', 'Democracy')}>
+            <StatGroup icon={BuildingLibraryIcon} title={t('stats.group.democracy', 'Democracy')}>
               <StatCard
                 value={data.votes}
                 label={t('stats.proposals', 'Proposals')}
-                icon="📋"
+                icon={ClipboardDocumentListIcon}
                 accent="amber"
               />
               <StatCard
                 value={data.vote_results}
                 label={t('stats.votes', 'Votes Cast')}
-                icon="🗳️"
+                icon={HandRaisedIcon}
                 accent="sage"
               />
               {/*<StatCard*/}

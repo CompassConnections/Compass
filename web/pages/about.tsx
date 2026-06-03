@@ -1,8 +1,22 @@
+import {
+  BellIcon,
+  ChatBubbleLeftRightIcon,
+  CodeBracketIcon,
+  FlagIcon,
+  GiftIcon,
+  GlobeAltIcon,
+  HeartIcon,
+  LightBulbIcon,
+  MagnifyingGlassIcon,
+  MegaphoneIcon,
+  ScaleIcon,
+  SparklesIcon,
+} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {discordLink, formLink, githubRepo} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import Link from 'next/link'
-import {ReactNode} from 'react'
+import {ComponentType, ReactNode, SVGProps} from 'react'
 import {CopyLinkOrShareButton, ShareProfileOnXButton} from 'web/components/buttons/copy-link-button'
 import {GeneralButton} from 'web/components/buttons/general-button'
 import {Row} from 'web/components/layout/row'
@@ -12,14 +26,16 @@ import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
 interface FeatureCardProps {
-  icon: string
+  icon: IconType
   title: string
   text: ReactNode
 }
 
 interface HelpCardProps {
-  icon: string
+  icon: IconType
   title: string
   text: ReactNode
   buttonLabel: string
@@ -30,7 +46,7 @@ interface HelpCardProps {
 
 // ─── Feature Card ─────────────────────────────────────────────────────────────
 
-function FeatureCard({icon, title, text}: FeatureCardProps) {
+function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
   return (
     <div
       className="
@@ -41,8 +57,8 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
         hover:border-primary-500
       "
     >
-      <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5 flex-shrink-0">
-        {icon}
+      <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-5 flex-shrink-0">
+        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
       <h3 className="font-bold text-ink-900 mb-2.5">{title}</h3>
       <p className="text-sm text-ink-500 leading-relaxed">{text}</p>
@@ -52,7 +68,7 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
 
 // ─── Full-width Feature Card ──────────────────────────────────────────────────
 
-function FeatureCardWide({icon, title, text}: FeatureCardProps) {
+function FeatureCardWide({icon: Icon, title, text}: FeatureCardProps) {
   return (
     <div
       className="
@@ -64,8 +80,8 @@ function FeatureCardWide({icon, title, text}: FeatureCardProps) {
         hover:border-primary-500
       "
     >
-      <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl flex-shrink-0">
-        {icon}
+      <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
       <div className={'min-w-0'}>
         <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
@@ -77,7 +93,15 @@ function FeatureCardWide({icon, title, text}: FeatureCardProps) {
 
 // ─── Help Card ────────────────────────────────────────────────────────────────
 
-function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}: HelpCardProps) {
+function HelpCard({
+  icon: Icon,
+  title,
+  text,
+  buttonLabel,
+  buttonUrl,
+  buttonPrimary,
+  id,
+}: HelpCardProps) {
   return (
     <div
       className="
@@ -92,8 +116,8 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}
       // causing the absolute/flex-item to bleed past the corner radius.
       // Removed for cross-browser consistency.
     >
-      <div className="w-10 h-10 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-lg mb-4 flex-shrink-0">
-        {icon}
+      <div className="w-10 h-10 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-4 flex-shrink-0">
+        <Icon className="w-[18px] h-[18px] text-primary-600" strokeWidth={1.8} />
       </div>
       <h3 id={id} className="font-bold text-ink-900 mb-2">
         {title}
@@ -134,7 +158,10 @@ function ShareStrip({title, text}: {title: string; text: string}) {
   return (
     <div className="bg-canvas-950 rounded-2xl px-9 py-8 flex items-center justify-between gap-6 flex-wrap">
       <div className={'max-w-[450px]'}>
-        <h3 className="text-white text-lg font-bold mb-1.5">📣 {title}</h3>
+        <h3 className="text-white text-lg font-bold mb-1.5 flex items-center gap-2.5">
+          <MegaphoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" strokeWidth={1.8} />
+          {title}
+        </h3>
         <p className="text-primary-500 text-sm leading-relaxed">{text}</p>
       </div>
       <Row className="flex gap-2 flex-wrap">
@@ -178,7 +205,7 @@ export default function About() {
 
   const features: (FeatureCardProps & {wide?: boolean})[] = [
     {
-      icon: '🔍',
+      icon: MagnifyingGlassIcon,
       title: t('about.block.keyword.title', 'Keyword Search the Database'),
       text: t(
         'about.block.keyword.text',
@@ -186,7 +213,7 @@ export default function About() {
       ),
     },
     {
-      icon: '🔔',
+      icon: BellIcon,
       title: t('about.block.notify.title', 'Get Notified About Searches'),
       text: t(
         'about.block.notify.text',
@@ -194,17 +221,17 @@ export default function About() {
       ),
     },
     {
-      icon: '🎭',
+      icon: SparklesIcon,
       title: t('about.block.personality.title', 'Personality-Centered'),
       text: t('about.block.personality.text', 'Values and interests first, photos are secondary.'),
     },
     {
-      icon: '🎁',
+      icon: GiftIcon,
       title: t('about.block.free.title', 'Completely Free'),
       text: t('about.block.free.text', 'Subscription-free. Paywall-free. Ad-free.'),
     },
     {
-      icon: '🗳️',
+      icon: ScaleIcon,
       title: t('about.block.democratic.title', 'Democratic'),
       text: (
         <span>
@@ -224,7 +251,7 @@ export default function About() {
       ),
     },
     {
-      icon: '🎯',
+      icon: FlagIcon,
       title: t('about.block.mission.title', 'One Mission'),
       text: t(
         'about.block.mission.text',
@@ -232,7 +259,7 @@ export default function About() {
       ),
     },
     {
-      icon: '🌍',
+      icon: GlobeAltIcon,
       title: t('about.block.vision.title', 'Vision'),
       text: t(
         'about.block.vision.text',
@@ -244,7 +271,7 @@ export default function About() {
 
   const helpCards: HelpCardProps[] = [
     {
-      icon: '💡',
+      icon: LightBulbIcon,
       id: 'give-suggestions-or-contribute',
       title: t('about.suggestions.title', 'Give Suggestions or Contribute'),
       text: t(
@@ -256,7 +283,7 @@ export default function About() {
       // buttonPrimary: true,
     },
     {
-      icon: '💻',
+      icon: CodeBracketIcon,
       id: 'share',
       title: t('about.dev.title', 'Develop the App'),
       text: t(
@@ -267,7 +294,7 @@ export default function About() {
       buttonUrl: githubRepo,
     },
     {
-      icon: '💬',
+      icon: ChatBubbleLeftRightIcon,
       id: 'join-chats',
       title: t('about.join.title', 'Join the Community'),
       text: t(
@@ -278,7 +305,7 @@ export default function About() {
       buttonUrl: discordLink,
     },
     {
-      icon: '❤️',
+      icon: HeartIcon,
       id: 'donate',
       title: t('about.donate.title', 'Donate'),
       text: t(

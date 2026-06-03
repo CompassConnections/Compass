@@ -1,3 +1,4 @@
+import {CodeBracketIcon, EnvelopeIcon, MegaphoneIcon, UsersIcon} from '@heroicons/react/24/outline'
 import {
   discordLink,
   githubRepo,
@@ -6,22 +7,26 @@ import {
   supportEmail,
   xLink,
 } from 'common/constants'
-import {ReactNode} from 'react'
+import {ComponentType, ReactNode, SVGProps} from 'react'
+import {FaDiscord, FaGithub, FaInstagram, FaReddit} from 'react-icons/fa'
+import {FaXTwitter} from 'react-icons/fa6'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────── ──────────────────────────────────────────────────────
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
 interface SocialLink {
   url: string
   label: string
-  icon: string
+  icon: ReactNode
   primary?: boolean
 }
 
 interface SectionCardProps {
-  icon: string
+  icon: IconType
   title: string
   description: string
   links: SocialLink[]
@@ -47,7 +52,7 @@ function SocialLinkButton({url, label, icon, primary}: SocialLink) {
         }
       `}
     >
-      {icon && <span className="text-base leading-none">{icon}</span>}
+      {icon && <span className="flex items-center text-base leading-none">{icon}</span>}
       {label}
     </a>
   )
@@ -55,7 +60,7 @@ function SocialLinkButton({url, label, icon, primary}: SocialLink) {
 
 // ─── Section Card ─────────────────────────────────────────────────────────────
 
-function SectionCard({icon, title, description, links}: SectionCardProps) {
+function SectionCard({icon: Icon, title, description, links}: SectionCardProps) {
   return (
     <div
       className="
@@ -67,8 +72,8 @@ function SectionCard({icon, title, description, links}: SectionCardProps) {
       "
     >
       {/* Icon */}
-      <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5 flex-shrink-0">
-        {icon}
+      <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-5 flex-shrink-0">
+        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
 
       {/* Title & description */}
@@ -113,48 +118,73 @@ export default function Social() {
 
   const sections: SectionCardProps[] = [
     {
-      icon: '💬',
+      icon: UsersIcon,
       title: t('social.community.title', 'Community'),
       description: t(
         'social.community.desc',
         'Join our community chats and shape the platform with us.',
       ),
       links: [
-        {url: discordLink, label: t('social.discord', 'Discord'), icon: '🎮', primary: true},
-        {url: redditLink, label: t('social.reddit', 'Reddit'), icon: ''},
+        {
+          url: discordLink,
+          label: t('social.discord', 'Discord'),
+          icon: <FaDiscord className="w-4 h-4" />,
+          primary: true,
+        },
+        {
+          url: redditLink,
+          label: t('social.reddit', 'Reddit'),
+          icon: <FaReddit className="w-4 h-4" />,
+        },
         // {url: stoatLink, label: t('social.stoat', 'Revolt / Stoat'), icon: '💬'},
       ],
     },
     {
-      icon: '📣',
+      icon: MegaphoneIcon,
       title: t('social.follow.title', 'Follow & Updates'),
       description: t(
         'social.follow.desc',
         'Stay informed about announcements, releases, and news.',
       ),
       links: [
-        {url: xLink, label: t('social.x', 'X / Twitter'), icon: '𝕏', primary: true},
-        {url: instagramLink, label: t('social.instagram', 'Instagram'), icon: '📸'},
+        {
+          url: xLink,
+          label: t('social.x', 'X / Twitter'),
+          icon: <FaXTwitter className="w-4 h-4" />,
+          primary: true,
+        },
+        {
+          url: instagramLink,
+          label: t('social.instagram', 'Instagram'),
+          icon: <FaInstagram className="w-4 h-4" />,
+        },
       ],
     },
     {
-      icon: '💻',
+      icon: CodeBracketIcon,
       title: t('social.dev.title', 'Development'),
       description: t(
         'social.dev.desc',
         'Explore our source code, open issues, or contribute a PR.',
       ),
-      links: [{url: githubRepo, label: t('social.github', 'GitHub'), icon: '⭐', primary: true}],
+      links: [
+        {
+          url: githubRepo,
+          label: t('social.github', 'GitHub'),
+          icon: <FaGithub className="w-4 h-4" />,
+          primary: true,
+        },
+      ],
     },
     {
-      icon: '✉️',
+      icon: EnvelopeIcon,
       title: t('social.contact.title', 'Contact'),
       description: t('social.contact.desc', 'Reach out to us directly for inquiries or support.'),
       links: [
         {
           url: `mailto:${supportEmail}`,
           label: `${t('social.email_button', 'Email us')}`,
-          icon: '📧',
+          icon: <EnvelopeIcon className="w-4 h-4" strokeWidth={1.8} />,
           primary: true,
         },
       ],

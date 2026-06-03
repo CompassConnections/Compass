@@ -1,10 +1,18 @@
-import {ReactNode} from 'react'
+import {
+  ChartBarIcon,
+  InformationCircleIcon,
+  LifebuoyIcon,
+  ShieldCheckIcon,
+} from '@heroicons/react/24/outline'
+import {ComponentType, ReactNode, SVGProps} from 'react'
 import {GeneralButton} from 'web/components/buttons/general-button'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
 interface LinkItem {
   url: string
@@ -13,7 +21,7 @@ interface LinkItem {
 }
 
 interface SectionCardProps {
-  icon: string
+  icon: IconType
   title: string
   description: string
   links: LinkItem[]
@@ -21,7 +29,7 @@ interface SectionCardProps {
 
 // ─── Section Card ─────────────────────────────────────────────────────────────
 
-function SectionCard({icon, title, description, links}: SectionCardProps) {
+function SectionCard({icon: Icon, title, description, links}: SectionCardProps) {
   return (
     <div
       className="
@@ -33,8 +41,8 @@ function SectionCard({icon, title, description, links}: SectionCardProps) {
       "
     >
       {/* Icon */}
-      <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5 flex-shrink-0">
-        {icon}
+      <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-5 flex-shrink-0">
+        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
 
       {/* Title & description */}
@@ -88,7 +96,7 @@ export default function Organization() {
 
   const sections: SectionCardProps[] = [
     {
-      icon: 'ℹ️',
+      icon: InformationCircleIcon,
       title: t('organization.about.title', 'About us'),
       description: t(
         'organization.about.desc',
@@ -100,7 +108,7 @@ export default function Organization() {
       ],
     },
     {
-      icon: '📊',
+      icon: ChartBarIcon,
       title: t('organization.proof.title', 'Proof & transparency'),
       description: t(
         'organization.proof.desc',
@@ -113,7 +121,7 @@ export default function Organization() {
       ],
     },
     {
-      icon: '💬',
+      icon: LifebuoyIcon,
       title: t('organization.contactSection.title', 'Contact & support'),
       description: t(
         'organization.contactSection.desc',
@@ -125,7 +133,7 @@ export default function Organization() {
       ],
     },
     {
-      icon: '🔒',
+      icon: ShieldCheckIcon,
       title: t('organization.trust.title', 'Trust & legal'),
       description: t(
         'organization.trust.desc',

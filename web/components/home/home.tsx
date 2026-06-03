@@ -1,6 +1,8 @@
+import {AdjustmentsHorizontalIcon, EyeIcon, UsersIcon} from '@heroicons/react/24/outline'
 import {discordLink, githubRepo} from 'common/constants'
 import Link from 'next/link'
-import {useEffect, useRef} from 'react'
+import {ComponentType, ReactNode, SVGProps, useEffect, useRef} from 'react'
+import {FaDiscord, FaGithub} from 'react-icons/fa'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
@@ -9,8 +11,10 @@ import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type IconType = ComponentType<SVGProps<SVGSVGElement>>
+
 interface FeatureCardProps {
-  icon: string
+  icon: IconType
   title: string
   text: string
 }
@@ -31,18 +35,18 @@ function EyebrowBadge({children}: {children: React.ReactNode}) {
   )
 }
 
-function FeatureCard({icon, title, text}: FeatureCardProps) {
+function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
   return (
     <div
       className="
       group relative overflow-hidden
       bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-7
       transition-all duration-200
-      hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(44,36,22,0.10)] hover:border-[#C17F3E]
+      hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(44,36,22,0.10)] hover:border-primary-500
     "
     >
-      <div className="w-11 h-11 rounded-xl bg-canvas-200 border border-canvas-300 flex items-center justify-center text-xl mb-5">
-        {icon}
+      <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-5">
+        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
       <h3 className="font-bold text-ink-1000 mb-2.5">{title}</h3>
       <p className="text-sm text-primary-700 leading-relaxed">{text}</p>
@@ -99,7 +103,7 @@ function OpenSourceStrip({
 }: {
   title: string
   description: string
-  badges: {label: string; url: string; primary?: boolean}[]
+  badges: {label: string; url: string; primary?: boolean; icon?: ReactNode}[]
 }) {
   return (
     <div className="w-full max-w-3xl bg-canvas-950 dark:bg-canvas-300 rounded-2xl px-10 py-8 flex items-center justify-between gap-6 flex-wrap">
@@ -113,14 +117,15 @@ function OpenSourceStrip({
             href={b.url}
             key={b.label}
             className={`
-              px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-150
+              inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-150
               ${
                 b.primary
-                  ? 'bg-primary-500 text-white border-[#C17F3E] hover:bg-primary-600'
+                  ? 'bg-primary-500 text-white border-primary-500 hover:bg-primary-600'
                   : 'bg-primary-500/30 text-white/75 border-primary-500/30 hover:bg-primary-500/50'
               }
             `}
           >
+            {b.icon}
             {b.label}
           </Link>
         ))}
@@ -191,7 +196,7 @@ export function LoggedOutHome() {
 
   const features: FeatureCardProps[] = [
     {
-      icon: '🔍',
+      icon: EyeIcon,
       title: t('home.feature1.title', 'Radically Transparent'),
       text: t(
         'home.feature1.text',
@@ -199,7 +204,7 @@ export function LoggedOutHome() {
       ),
     },
     {
-      icon: '🎯',
+      icon: AdjustmentsHorizontalIcon,
       title: t('home.feature2.title', 'Built for Depth'),
       text: t(
         'home.feature2.text',
@@ -207,7 +212,7 @@ export function LoggedOutHome() {
       ),
     },
     {
-      icon: '🌍',
+      icon: UsersIcon,
       title: t('home.feature3.title', 'Community Owned'),
       text: t(
         'home.feature3.text',
@@ -217,8 +222,16 @@ export function LoggedOutHome() {
   ]
 
   const openSourceBadges = [
-    {label: t('home.strip.github', '⭐ GitHub'), url: githubRepo},
-    {label: t('home.strip.discord', '📖 Discord'), url: discordLink},
+    {
+      label: t('home.strip.github', 'GitHub'),
+      url: githubRepo,
+      icon: <FaGithub className="w-4 h-4" />,
+    },
+    {
+      label: t('home.strip.discord', 'Discord'),
+      url: discordLink,
+      icon: <FaDiscord className="w-4 h-4" />,
+    },
     {label: t('home.strip.join', 'Join Now →'), url: '/register', primary: true},
   ]
 

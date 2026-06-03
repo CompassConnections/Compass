@@ -31,14 +31,16 @@ export function ContactComponent() {
         {t('contact.intro_prefix', 'You can also contact us through this ')}
         <Link href={formLink}>{t('contact.form_link', 'feedback form')}</Link>
         {t('contact.intro_middle', ' or any of our ')}
-        <Link href={'/social'}>{t('contact.socials', 'socials')}</Link>
-        {t(
-          'contact.intro_suffix',
-          ". Feel free to give your contact information if you'd like us to get back to you.",
-        )}
+        <Link href={'/social'}>{t('contact.socials', 'socials')}</Link>.
+        {user === null &&
+          ' ' +
+            t(
+              'contact.intro_suffix',
+              "Feel free to give your contact information if you'd like us to get back to you.",
+            )}
       </p>
       <Col>
-        <div className={'mb-2'}>
+        <div className={'mb-2  min-w-[700px]'}>
           <TextEditor editor={editor} />
         </div>
         {showButton && (

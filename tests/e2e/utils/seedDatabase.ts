@@ -96,6 +96,7 @@ export async function seedDbUser(
     education_level: userInfo.randomElement(userInfo.education_level),
     languages: languagesKnown,
     orientation_details: 'Some orientation details',
+    pinned_url: '/images/default-avatar.png',
   }
 
   const fullProfile = {

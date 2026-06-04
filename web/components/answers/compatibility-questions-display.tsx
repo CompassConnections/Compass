@@ -11,7 +11,7 @@ import {Profile} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
-import {keyBy, partition, sortBy} from 'lodash'
+import {keyBy, sortBy} from 'lodash'
 import {PinIcon} from 'lucide-react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -31,15 +31,11 @@ import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
-import {useIsLooking} from 'web/hooks/use-is-looking'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePinnedQuestionIds} from 'web/hooks/use-pinned-question-ids'
 import {useProfile} from 'web/hooks/use-profile'
 import {useCompatibleProfiles} from 'web/hooks/use-profiles'
-import {
-  useCompatibilityQuestionsWithAnswerCount,
-  useUserCompatibilityAnswers,
-} from 'web/hooks/use-questions'
+import {useCompatibilityQuestionGroups, useUserCompatibilityAnswers} from 'web/hooks/use-questions'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
@@ -65,29 +61,6 @@ import {PinQuestionButton} from './pin-question-button'
 const NUM_QUESTIONS_TO_SHOW = 8
 const NUM_PINNED_QUESTIONS_TO_SHOW = 4
 
-export function separateQuestionsArray(
-  questions: QuestionWithStats[],
-  skippedAnswerQuestionIds: Set<number>,
-  answeredQuestionIds: Set<number>,
-) {
-  debug('Refreshing questions array')
-  const skippedQuestions: QuestionWithStats[] = []
-  const answeredQuestions: QuestionWithStats[] = []
-  const otherQuestions: QuestionWithStats[] = []
-
-  questions.forEach((q) => {
-    if (skippedAnswerQuestionIds.has(q.id)) {
-      skippedQuestions.push(q)
-    } else if (answeredQuestionIds.has(q.id)) {
-      answeredQuestions.push(q)
-    } else {
-      otherQuestions.push(q)
-    }
-  })
-
-  return {skippedQuestions, answeredQuestions, otherQuestions}
-}
-
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
   user: User
@@ -106,26 +79,15 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const {pinnedQuestionIds, refreshPinnedQuestionIds} = usePinnedQuestionIds()
 
-  const {refreshCompatibilityQuestions, compatibilityQuestions} =
-    useCompatibilityQuestionsWithAnswerCount()
-
-  const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(user.id)
-
-  const {answers, skippedQuestions, answeredQuestions, otherQuestions} = useMemo(() => {
-    debug('Refreshing questions')
-    const [skippedAnswers, answers] = partition(
-      compatibilityAnswers,
-      (answer) => answer.importance == -1,
-    )
-    const answeredQuestionIds = new Set(answers.map((answer) => answer.question_id))
-    const skippedAnswerQuestionIds = new Set(skippedAnswers.map((answer) => answer.question_id))
-    const {skippedQuestions, answeredQuestions, otherQuestions} = separateQuestionsArray(
-      compatibilityQuestions,
-      skippedAnswerQuestionIds,
-      answeredQuestionIds,
-    )
-    return {answers, skippedQuestions, answeredQuestions, otherQuestions}
-  }, [compatibilityAnswers, compatibilityQuestions])
+  const {
+    answers,
+    skippedQuestions,
+    answeredQuestions,
+    otherQuestions,
+    compatibilityQuestions,
+    refreshCompatibilityAnswers,
+    refreshCompatibilityQuestions,
+  } = useCompatibilityQuestionGroups(user.id)
 
   const refreshCompatibilityAll = useCallback(() => {
     refreshCompatibilityAnswers()
@@ -133,9 +95,8 @@ export function CompatibilityQuestionsDisplay(props: {
     refreshPinnedQuestionIds()
   }, [refreshCompatibilityAnswers, refreshCompatibilityQuestions, refreshPinnedQuestionIds])
 
-  const isLooking = useIsLooking()
   const [sort, setSort] = usePersistentInMemoryState<CompatibilitySort>(
-    !isLooking && !fromProfilePage ? 'their_important' : 'your_important',
+    isCurrentUser ? 'your_important' : 'their_important',
     `compatibility-sort-${user.id}`,
   )
   const [searchTerm, setSearchTerm] = useState('')
@@ -241,40 +202,42 @@ export function CompatibilityQuestionsDisplay(props: {
       )}
       <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
         {answeredQuestions.length > 0 && (
-          <div className="relative mt-3 w-full max-w-[50%] xl:max-w-[400px]">
-            {/*<input*/}
-            {/*  type="text"*/}
-            {/*  placeholder={t('answers.search_placeholder', 'Search prompts...')}*/}
-            {/*  value={searchTerm}*/}
-            {/*  onChange={(e) => {*/}
-            {/*    setSearchTerm(e.target.value)*/}
-            {/*    setPage(0)*/}
-            {/*  }}*/}
-            {/*  className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-xl bg-canvas-50 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"*/}
-            {/*/>*/}
-            <Input
-              value={searchTerm}
-              placeholder={t('answers.search_placeholder', 'Search prompts...')}
-              className={'w-full'}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setSearchTerm(e.target.value)
-              }}
-              searchIcon
+          <>
+            <div className="relative mt-3 w-full max-w-[50%] xl:max-w-[400px]">
+              {/*<input*/}
+              {/*  type="text"*/}
+              {/*  placeholder={t('answers.search_placeholder', 'Search prompts...')}*/}
+              {/*  value={searchTerm}*/}
+              {/*  onChange={(e) => {*/}
+              {/*    setSearchTerm(e.target.value)*/}
+              {/*    setPage(0)*/}
+              {/*  }}*/}
+              {/*  className="h-8 pl-7 pr-2 text-sm border border-ink-300 rounded-xl bg-canvas-50 focus:outline-none focus:ring-1 focus:ring-primary-500 w-48 transition-all"*/}
+              {/*/>*/}
+              <Input
+                value={searchTerm}
+                placeholder={t('answers.search_placeholder', 'Search prompts...')}
+                className={'w-full'}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setSearchTerm(e.target.value)
+                }}
+                searchIcon
+              />
+            </div>
+            <CompatibilitySortWidget
+              className="text-sm sm:flex mt-4"
+              sort={sort}
+              setSort={setSort}
+              user={user}
+              profile={profile}
             />
-          </div>
+          </>
         )}
-        <CompatibilitySortWidget
-          className="text-sm sm:flex mt-4"
-          sort={sort}
-          setSort={setSort}
-          user={user}
-          profile={profile}
-        />
         {compatibilityScore && (
           <CompatibleBadge compatibility={compatibilityScore} className={'mt-5 mr-4'} />
         )}
       </Row>
-      {answeredQuestions.length <= 0 ? (
+      {answeredQuestions.length == 0 ? (
         <span className="text-ink-600 text-sm">
           {isCurrentUser
             ? t(

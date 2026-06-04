@@ -1,7 +1,8 @@
 import {QuestionWithStats} from 'common/api/types'
+import {debug} from 'common/logger'
 import {Row} from 'common/supabase/utils'
-import {sortBy} from 'lodash'
-import {useEffect, useState} from 'react'
+import {partition, sortBy} from 'lodash'
+import {useEffect, useMemo, useState} from 'react'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
@@ -116,5 +117,60 @@ export const useCompatibilityQuestionsWithAnswerCount = () => {
     refreshCompatibilityQuestions,
     compatibilityQuestions,
     isLoading,
+  }
+}
+
+export function separateQuestionsArray(
+  questions: QuestionWithStats[],
+  skippedAnswerQuestionIds: Set<number>,
+  answeredQuestionIds: Set<number>,
+) {
+  debug('Refreshing questions array')
+  const skippedQuestions: QuestionWithStats[] = []
+  const answeredQuestions: QuestionWithStats[] = []
+  const otherQuestions: QuestionWithStats[] = []
+
+  questions.forEach((q) => {
+    if (skippedAnswerQuestionIds.has(q.id)) {
+      skippedQuestions.push(q)
+    } else if (answeredQuestionIds.has(q.id)) {
+      answeredQuestions.push(q)
+    } else {
+      otherQuestions.push(q)
+    }
+  })
+
+  return {skippedQuestions, answeredQuestions, otherQuestions}
+}
+
+// Single source of truth for a user's compatibility answers split into
+// answered / skipped / other groups. Both the display component and the
+// profile-card visibility check read this (shared in-memory cache, no refetch).
+export const useCompatibilityQuestionGroups = (userId: string | undefined) => {
+  const {refreshCompatibilityAnswers, compatibilityAnswers} = useUserCompatibilityAnswers(userId)
+  const {refreshCompatibilityQuestions, compatibilityQuestions} =
+    useCompatibilityQuestionsWithAnswerCount()
+
+  const groups = useMemo(() => {
+    debug('Refreshing questions')
+    const [skippedAnswers, answers] = partition(
+      compatibilityAnswers,
+      (answer) => answer.importance == -1,
+    )
+    return {
+      answers,
+      ...separateQuestionsArray(
+        compatibilityQuestions,
+        new Set(skippedAnswers.map((answer) => answer.question_id)),
+        new Set(answers.map((answer) => answer.question_id)),
+      ),
+    }
+  }, [compatibilityAnswers, compatibilityQuestions])
+
+  return {
+    ...groups,
+    compatibilityQuestions,
+    refreshCompatibilityAnswers,
+    refreshCompatibilityQuestions,
   }
 }

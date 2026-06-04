@@ -21,6 +21,7 @@ import {Subtitle} from 'web/components/widgets/subtitle'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
+import {useCompatibilityQuestionGroups} from 'web/hooks/use-questions'
 import {useUser} from 'web/hooks/use-user'
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
@@ -327,6 +328,9 @@ function ProfileContent(props: {
   const isCurrentUser = currentUser?.id === user.id
   const t = useT()
 
+  const {answeredQuestions} = useCompatibilityQuestionGroups(user.id)
+  const showCompatibilityPrompts = currentUser && (isCurrentUser || answeredQuestions.length > 0)
+
   return (
     <>
       <div
@@ -374,7 +378,7 @@ function ProfileContent(props: {
 
           <ProfileCarousel profile={profile} />
 
-          {currentUser && (
+          {showCompatibilityPrompts && (
             <ProfileCard
               className="p-5"
               title={

@@ -593,7 +593,7 @@ function ProfilePreview(props: {
             {isPhotoRendered && (
               <div
                 className={clsx(
-                  'relative shrink-0 rounded-r-xl lg:self-stretch overflow-hidden z-1 mx-auto',
+                  'relative shrink-0 rounded-r-xl lg:self-stretch overflow-hidden z-1 mx-auto mr-0',
                   photoSizeClass,
                 )}
               >

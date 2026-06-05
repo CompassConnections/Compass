@@ -136,7 +136,7 @@ web/
 
 ### Jest Unit Testing Guide
 
-This guide provides guidelines and best practices for writing unit tests using Jest in this project. Following these
+These are the guidelines and best practices we follow when writing unit tests using Jest in this project. Following these
 standards ensures consistency, maintainability, and comprehensive test coverage.
 
 #### Best Practices
@@ -493,14 +493,28 @@ jest.spyOn(Array.prototype, 'includes').mockImplementation(function (value) {
 
 # Playwright (E2E) Testing Guide
 
-E2E tests use [Playwright](https://playwright.dev/) and run against a fully isolated local stack:
+These are the guidelines and best practices we follow when writing E2E tests using [Playwright](https://playwright.dev/) in this project. Following these
+standards ensures consistency, maintainability, and comprehensive test coverage.
 
-- **Supabase** (Postgres) via `npx supabase start`
-- **Firebase** (Auth and Storage) via `firebase emulators:start`
+E2E tests live in `tests/e2e/` and follow the `*.spec.ts` naming convention, when executed they are run against a fully isolated local stack:
+
+- **Supabase** (Postgres)
+- **Firebase** (Auth and Storage)
 - **Backend API** (`backend/api`)
 - **Next.js frontend** (`web`)
 
-Tests live in `tests/e2e/` and follow the `*.e2e.spec.ts` naming convention.
+### Best Practices
+
+1. Test one scenario per test - Each test should verify a single behavior.
+2. Keep tests independent - Each test should be fully independent.
+3. Use locators that reflect how users will interact with the application - Outlined in the [Component Selection Hierarchy](###component-selection-hierarchy) below.
+4. Use the Page Object Model (POM) - Keeps the test files lightweight and easily readable at a glance.
+5. Store authentication state - Persist login state via `storageState` and reuse it across tests where needed.
+6. Use fixtures for setup and teardown - Keeps test files lightweight.
+7. Use web-first assertions - Use Playwright's built-in `expect` assertions (e.g., `toBeVisible`, `toHaveText`) which auto-retry until the condition is met.
+8. Use environment variables for config - Store credentials, base URLs, and environment-specific settings in env vars rather than hardcoding them in test files.
+9. Organise tests with a clear folder structure - Separate test files, page objects, fixtures, and helpers into distinct directories for scalability and maintainability.
+10. Integrate with CI/CD - Run Playwright tests in headless mode in your pipeline, alerting you of possible issues early.
 
 ---
 
@@ -603,9 +617,15 @@ This opens a visual browser interface where you can:
 - 🔄 Re-run tests without restarting anything
 - 🕵️ Time-travel debug through test steps
 
+Alternatively if you only want to open the Playwright UI you can use:
+
+```bash
+npx playwright test --ui
+```
+
 ### 3. Edit tests and re-run
 
-Edit your `*.e2e.spec.ts` file, save, then click **Run** in the Playwright UI.
+Edit your `*.spec.ts` file, save, then click **Run** in the Playwright UI.
 No restart needed for test file changes.
 
 ### 4. Reset data when needed
@@ -672,10 +692,10 @@ tests/
 └── e2e/
     ├── web/
     │   └── specs/
-    │       └── auth.e2e.spec.ts
+    │       └── auth.spec.ts
     └── backend/
         └── specs/
-            └── api.e2e.spec.ts
+            └── api.spec.ts
 ```
 
 ### Component Selection Hierarchy
@@ -712,23 +732,62 @@ This hierarchy mirrors how users actually interact with your application, making
 Tests often receive multiple page objects as fixtures (e.g. `homePage`, `authPage`, `profilePage`). This is the **Page
 Object Model** pattern — a way to organize selectors and actions by the area of the app they belong to.
 
-**Page objects are not separate browser tabs.** They are all wrappers around the same underlying `page` instance. Each
-class simply encapsulates the selectors and actions relevant to one part of the UI:
+**Page objects** are all wrappers around the same underlying `page` instance. Each
+class simply encapsulates the selectors and actions relevant to an entire page of the application.
+
+The `app.ts` file improves scalability by acting as a central hub for page objects and shared modules. Instead of importing 40 different pages into a test, modules can be accessed through `app.ts`, making tests cleaner and easier to maintain. It also supports functionality that spans multiple pages.
 
 ```typescript
-class ProfilePage {
-  constructor(private page: Page) {}
+//profilePage.ts
+import {expect, Locator, Page} from '@playwright/test'
+
+export class ProfilePage {
+  private readonly displayName: Locator
+
+  constructor(public readonly page: Page) {
+    this.displayName = page.getByTestId('display-name')
+  }
 
   async verifyDisplayName(name: string) {
-    await expect(this.page.getByTestId('display-name')).toHaveText(name)
+    await expect(this.displayName).toBeVisible()
+    await expect(this.displayName).toHaveText(name)
   }
 }
 
-class SettingsPage {
-  constructor(private page: Page) {} // same page instance
+//settingsPage.ts
+import {expect, Locator, Page} from '@playwright/test'
+
+export class SettingsPage {
+  private readonly deleteAccountButton: Locator
+
+  constructor(public readonly page: Page) {
+    this.deleteAccountButton = page.getByRole('button', {name: 'Delete account'})
+  }
 
   async deleteAccount() {
-    await this.page.getByRole('button', {name: 'Delete account'}).click()
+    await expect(this.deleteAccountButton).toBeVisible()
+    await this.deleteAccountButton.click()
+  }
+}
+
+//app.ts
+import {ProfilePage} from './profilePage'
+import {SettingsPage} from './settingsPage'
+
+export class App {
+  readonly profile: ProfilePage
+  readonly settings: SettingsPage
+
+  constructor(public readonly page: Page) {
+    this.profile = new ProfilePage(page)
+    this.settings = new SettingsPage(page)
+  }
+
+  //Methods that span multiple pages can be outlined here
+  async verifyAccountThenDelete(name: string) {
+    this.profile.verifyDisplayName(name)
+    //navigation to the settings page
+    this.settings.deleteAccount()
   }
 }
 ```
@@ -747,9 +806,9 @@ await page.locator('[data-testid="skip-onboarding"]').click()
 // ...50 more lines of noise
 
 // ✅ With POM — readable and maintainable
-await registerWithEmail(homePage, authPage, fakerAccount)
-await skipOnboardingHeadToProfile(onboardingPage, signUpPage, profilePage, fakerAccount)
-await profilePage.verifyDisplayName(fakerAccount.display_name)
+await app.registerWithEmail(fakerAccount)
+await app.skipOnboardingHeadToProfile(fakerAccount)
+await app.profile.verifyDisplayName(fakerAccount)
 ```
 
 **What happens if you call a method on the "wrong" page object?**
@@ -761,11 +820,85 @@ won't find its element and the test will **time out**.
 
 ```typescript
 // ⚠️ This fails at runtime if navigation hasn't happened yet
-await settingsPage.deleteAccount() // navigates away from profile
-await profilePage.verifyDisplayName(name) // locator not found → timeout
+await app.settings.deleteAccount() // navigates away from profile
+await app.profile.verifyDisplayName(name) // locator not found → timeout
 ```
 
 Always ensure navigation has completed before calling methods that depend on a specific screen being visible.
+
+### Fixtures
+
+To further improve readability, and simplify the creation/implimentation of tests, fixtures are used for test case setup and teardown where appropriate.
+
+```typescript
+//baseFixture.ts
+import {test as base} from '@playwright/test'
+import {App} from './app.ts'
+import {testAccounts, UserAccountInformation} from './accountInformation'
+import {deleteUser} from './deleteUser'
+import {seedUser} from './seedDatabase'
+
+export const test = base.extend<{
+  app: App
+  signedInAccount: UserAccountInformation
+}>({
+  //This gives access to the entire POM structure for the application
+  app: async ({page}, use) => {
+    const appPage = new App(page)
+    await use(appPage)
+  },
+  /**
+   * This generates a test account
+   * Seeds the database with the user
+   * Signs the user into the app
+   * Executes the test
+   * Deletes the user after execution is complete
+   */
+  signedInAccount: async ({app}: {app: App}, use) => {
+    const account = testAccounts.faker_account()
+    await seedUser(account.email, account.password)
+    await app.signinWithEmail(account)
+    await use(account)
+    await deleteUser(account)
+  },
+})
+
+export {expect} from '@playwright/test'
+```
+
+```typescript
+//test.spec.ts
+//This is an example of how the above fixture would be used in a test
+import {expect, test} from './fixtures/baseFixture'
+
+test.describe('when given valid input', () => {
+  test('should already be signed into the correct account', async ({
+    signedInAccount, //This is the fixture that contains the account information and is already signed in
+    app, //This is the fixture that gives access to the entire POM structure
+  }) => {
+    await app.home.goToProfilePage()
+    await app.profile.verifyDisplayName(signedInAccount.display_name)
+  })
+})
+
+//This is how the test would look without the fixture
+import {test, expect} from '@playwright/test'
+import {App} from './app.ts'
+import {testAccounts, UserAccountInformation} from './accountInformation'
+import {deleteUser} from './deleteUser'
+
+test.describe('when given valid input', () => {
+  test('should already be signed into the correct account', async ({page}) => {
+    const app = new App(page)
+    const account = testAccounts.faker_account()
+
+    await app.auth.signUpWithEmail(account)
+    await app.home.goToProfilePage()
+    await app.profile.verifyDisplayName(signedInAccount.display_name)
+    await deleteUser(account)
+  })
+})
+```
 
 ### Setting up test data
 
@@ -773,8 +906,7 @@ Since the tests run in parallel (i.e., at the same time) and share the same data
 create issues where one tests edits or deletes data that another test is using, hence breaking that test.
 
 The standard solution for shared data is **test isolation via unique data per test**. Each test generates its own unique
-identifiers so
-they never touch each other's data.
+identifiers so they never touch each other's data.
 
 **1. Use unique emails/username/IDs per test**
 
@@ -792,16 +924,8 @@ This way no two tests share the same user, so deletes/reads never conflict.
 
 **2. Cleanup only your own data**
 
-Each test must fully attend to their own (and only their own) garden, by tracking what it created and cleaning up only
-that:
-
-```js
-afterEach(async () => {
-  await deleteUser(email, password) // only the one this test created
-})
-```
-
-Avoid `deleteAllUsers()` or broad wipes in parallel tests — that's what causes race conditions.
+Each test must fully attend to their own (and only their own) data, by tracking what it created and cleaning up only
+that, correct use of fixtures helps data cleanup.
 
 **3. If you must share fixtures, use read-only shared data**
 

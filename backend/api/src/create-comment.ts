@@ -1,5 +1,6 @@
 import {type JSONContent} from '@tiptap/core'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {isSuspiciousId} from 'common/moderation/suspicious'
 import {Notification} from 'common/notifications'
 import {convertComment} from 'common/supabase/comment'
 import {type Row} from 'common/supabase/utils'
@@ -56,6 +57,7 @@ const validateComment = async (userId: string, creatorId: string, content: JSONC
 
   if (!creator) throw APIErrors.unauthorized('Your account was not found')
   if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
+  if (isSuspiciousId(creator.id)) throw APIErrors.forbidden('Suspicious users cannot send messages')
 
   const otherUser = await getPrivateUser(userId)
   if (!otherUser) throw APIErrors.notFound('Other user not found')

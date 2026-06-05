@@ -101,9 +101,10 @@
     --grid-stroke: rgb(232 213 188); /* canvas-200 */
 
     /* Ink - Text Colors */
-    --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
     --color-ink-500: 140 128 112; /* Muted Warm Gray (#8C8070) */
     --color-ink-600: 120 108 92;
+    --color-ink-700: 100 88 72;
+    --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
 
     /* Green - Accents */
     --color-green-200: #f0faf3;
@@ -141,7 +142,7 @@
     --color-ink-400: 160 160 160;
     /*--color-ink-500: 80 80 80;*/
     /*--color-ink-600: 0 0 0;*/
-    --color-ink-700: 0 0 0;
+    /*--color-ink-700: 0 0 0;*/
     --color-ink-800: 0 0 0;
     /*--color-ink-900: 0 0 0;*/
     --color-ink-950: 0 0 0;
@@ -218,10 +219,11 @@
     --grid-stroke: rgb(68 52 34); /* canvas-900 */
 
     /* Ink - Text becomes light */
-    --color-ink-950: 255 255 255; /* Purest highlight */
-    --color-ink-900: 247 244 239; /* Main Body Text (Old Card color) */
     --color-ink-500: 176 160 140; /* Muted Text - shifted to warm tan */
-    --color-ink-600: 156 140 120;
+    --color-ink-600: 186 170 150;
+    --color-ink-700: 206 190 170;
+    --color-ink-900: 247 244 239; /* Main Body Text (Old Card color) */
+    --color-ink-950: 255 255 255; /* Purest highlight */
 
     /* Button background — barely-there dark green surface */
     --color-green-200: 32 54 38;
@@ -234,7 +236,7 @@
     /*--color-ink-950: 255 255 255;*/
     /*--color-ink-900: 255 255 255;*/
     --color-ink-800: 255 255 255;
-    --color-ink-700: 255 255 255;
+    /*--color-ink-700: 255 255 255;*/
     /*--color-ink-600: 255 255 255;*/
     /*--color-ink-500: 200 200 200;*/
     --color-ink-400: 100 100 100;

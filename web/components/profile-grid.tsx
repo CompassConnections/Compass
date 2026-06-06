@@ -29,7 +29,6 @@ import {getSeekingText} from 'web/components/profile-about'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Content} from 'web/components/widgets/editor'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {StarButton} from 'web/components/widgets/star-button'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {useChoicesContext} from 'web/hooks/use-choices'
@@ -146,11 +145,7 @@ export const ProfileGrid = (props: {
 
       <LoadMoreUntilNotVisible loadMore={loadMore} />
 
-      {isLoadingMore && (
-        <div className="flex justify-center py-4">
-          <CompassLoadingIndicator />
-        </div>
-      )}
+      {isLoadingMore && <ProfileGridSkeleton count={2} />}
 
       {user?.isBannedFromPosting ? (
         <div className="py-8 text-center">

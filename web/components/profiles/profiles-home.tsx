@@ -2,6 +2,7 @@ import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {DAY_MS} from 'common/util/time'
+import {isEqual} from 'lodash'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -51,6 +52,10 @@ export function ProfilesHome() {
     undefined,
     'profiles',
   )
+  const [getProfilesArgs, setGetProfilesArgs] = usePersistentInMemoryState<any>(
+    undefined,
+    'get-profiles-args',
+  )
   const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(
     undefined,
     'profile-count',
@@ -96,19 +101,23 @@ export function ProfilesHome() {
       setProfileCount(0)
       return
     }
-    setIsReloading(true)
-    const current = ++id.current
     const args = removeNullOrUndefinedProps({
       limit: 20,
       compatibleWithUserId: user?.id,
       locale,
       ...filters,
     })
-    debug('Refreshing profiles, filters:', args)
+    if (!!profiles?.length && isEqual(getProfilesArgs, args)) {
+      return
+    }
+    setIsReloading(true)
+    const current = ++id.current
+    debug('Refreshing profiles. Filters:', args)
     api('get-profiles', args as any)
       .then(({profiles, count}) => {
         if (current === id.current) {
           setProfiles(profiles)
+          setGetProfilesArgs(args)
           setProfileCount(count)
         }
       })
@@ -134,6 +143,7 @@ export function ProfilesHome() {
       return false
     }
     if (!profiles || isLoadingMore) return false
+    debug('Loading more profiles. Current:', profiles.length)
     if (fromSignup && isClearedFilters && sendScrollWarning) {
       setSendScrollWarning(false)
       toast(

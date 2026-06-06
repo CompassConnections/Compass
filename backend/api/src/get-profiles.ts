@@ -675,7 +675,7 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   const profiles = await pg.map(query, [], convertRow)
 
-  console.debug('profiles:', profiles)
+  // console.debug('profiles:', profiles)
 
   const countQuery = renderSql(select(`count(*) as count`), ...tableSelection, ...filters)
 

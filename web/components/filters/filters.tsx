@@ -452,29 +452,6 @@ function Filters(props: {
         // icon={<BsPersonHeart className="h-4 w-4" />}
       >
         <FilterSection
-          title={t('profile.optional.raised_in', 'Grew up')}
-          openFilter={openFilter}
-          setOpenFilter={setOpenFilter}
-          isActive={!!raisedInLocationFilterProps.location}
-          selection={
-            <LocationFilterText
-              location={raisedInLocationFilterProps.location}
-              radius={raisedInLocationFilterProps.radius}
-              labelPrefix={t('filter.raised_in', 'Grew up')}
-              youProfile={youProfile}
-              // highlightedClass={
-              //   !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
-              // }
-            />
-          }
-        >
-          <LocationFilter
-            youProfile={youProfile}
-            locationFilterProps={raisedInLocationFilterProps}
-          />
-        </FilterSection>
-
-        <FilterSection
           title={t('profile.optional.education_level', 'Education')}
           openFilter={openFilter}
           setOpenFilter={setOpenFilter}
@@ -511,6 +488,29 @@ function Filters(props: {
             updateFilter={updateFilter}
             choices={choices.work}
             label="work"
+          />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.raised_in', 'Grew up')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={!!raisedInLocationFilterProps.location}
+          selection={
+            <LocationFilterText
+              location={raisedInLocationFilterProps.location}
+              radius={raisedInLocationFilterProps.radius}
+              labelPrefix={t('filter.raised_in', 'Grew up')}
+              youProfile={youProfile}
+              // highlightedClass={
+              //   !raisedInLocationFilterProps.location ? 'text-ink-900' : 'text-primary-600'
+              // }
+            />
+          }
+        >
+          <LocationFilter
+            youProfile={youProfile}
+            locationFilterProps={raisedInLocationFilterProps}
           />
         </FilterSection>
       </FilterGroup>

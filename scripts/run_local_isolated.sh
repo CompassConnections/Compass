@@ -55,9 +55,6 @@ for var in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY DATABASE_URL; 
   fi
 done
 
-# Build backend (required?)
-#./scripts/build_api.sh
-
 echo ""
 echo "  Starting isolated web app..."
 echo "  Useful links:"

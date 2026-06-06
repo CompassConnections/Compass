@@ -191,9 +191,9 @@ However, running in full isolation requires installing several heavy dependencie
 First startup is slow (30-60s) and the stack uses significant memory. If your machine has less than 8GB RAM, you may
 notice slowdowns.
 
-If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote
-and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the
-database or authentication.
+[//]: # 'If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote'
+[//]: # "and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the"
+[//]: # 'database or authentication.'
 
 ###### Setup instructions
 
@@ -250,7 +250,7 @@ Run in isolation
 yarn dev:isolated
 ```
 
-Visit `http://localhost:3000` as usual. Your local database comes preloaded with synthetic test profiles so the app
+Visit http://localhost:3000 as usual. Your local database comes preloaded with synthetic test profiles so the app
 looks and feels like the real thing.
 
 ### Contributing

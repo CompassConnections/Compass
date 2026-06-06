@@ -11,6 +11,7 @@ import {
   INVERTED_PSYCHEDELICS_CHOICES,
   INVERTED_RELATIONSHIP_STATUS_CHOICES,
   INVERTED_RELIGION_CHOICES,
+  INVERTED_ROMANTIC_CHOICES,
   INVERTED_SUBSTANCE_INTENTION_CHOICES,
   MBTI_TYPE_NAMES,
   SUBSTANCE_PREFERENCE_ABOUT,
@@ -190,6 +191,7 @@ function SeekingAndRelationship(props: {profile: Profile}) {
   const {profile} = props
   const seekingText = getSeekingText(profile, t)
   const relationship_status = profile.relationship_status ?? []
+  const relationshipTypes = profile.pref_relation_styles ?? []
 
   if (relationship_status.length === 0 && !seekingText) return null
 
@@ -203,6 +205,13 @@ function SeekingAndRelationship(props: {profile: Profile}) {
         )
       : null
 
+  let romanticStyles: string[] | undefined
+  if (relationshipTypes?.includes('relationship')) {
+    romanticStyles = profile.pref_romantic_styles
+      ?.map((style) => t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]))
+      .filter(Boolean)
+  }
+
   // const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
   // const icon = RELATIONSHIP_ICONS[key] ?? FaHeart
 
@@ -212,7 +221,17 @@ function SeekingAndRelationship(props: {profile: Profile}) {
       title={t('profile.connection_goals', 'Connection Goals')}
       text={seekingText}
       details={relationshipText}
-    />
+    >
+      {romanticStyles && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {romanticStyles!.map((r) => (
+            <Chip key={r} variant="muted">
+              {r}
+            </Chip>
+          ))}
+        </div>
+      )}
+    </AboutRow>
   )
 }
 

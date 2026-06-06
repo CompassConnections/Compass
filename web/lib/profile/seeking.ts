@@ -1,4 +1,3 @@
-import {INVERTED_ROMANTIC_CHOICES} from 'common/choices'
 import {Profile} from 'common/profiles/profile'
 import {capitalize} from 'lodash'
 import {convertRelationshipType, RelationshipType} from 'web/lib/util/convert-types'
@@ -6,7 +5,7 @@ import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-te
 
 export function getSeekingConnectionText(profile: Profile, t: any, _short?: boolean) {
   const relationshipTypes = profile.pref_relation_styles
-  let seekingGenderText = stringOrStringArrayToText({
+  const seekingGenderText = stringOrStringArrayToText({
     text: relationshipTypes?.length
       ? relationshipTypes
           .map((rel) =>
@@ -22,15 +21,15 @@ export function getSeekingConnectionText(profile: Profile, t: any, _short?: bool
     capitalizeFirstLetterOption: false,
     t: t,
   })
-  if (relationshipTypes?.includes('relationship')) {
-    const romanticStyles = profile.pref_romantic_styles
-      ?.map((style) =>
-        t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]).toLowerCase(),
-      )
-      .filter(Boolean)
-    if (romanticStyles && romanticStyles.length > 0) {
-      seekingGenderText += ` (${romanticStyles.join(', ')})`
-    }
-  }
+  // if (relationshipTypes?.includes('relationship')) {
+  //   const romanticStyles = profile.pref_romantic_styles
+  //     ?.map((style) =>
+  //       t(`profile.romantic.${style}`, INVERTED_ROMANTIC_CHOICES[style]).toLowerCase(),
+  //     )
+  //     .filter(Boolean)
+  //   if (romanticStyles && romanticStyles.length > 0) {
+  //     seekingGenderText += ` (${romanticStyles.join(', ')})`
+  //   }
+  // }
   return capitalize(seekingGenderText ?? undefined)
 }

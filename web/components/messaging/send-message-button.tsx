@@ -11,10 +11,10 @@ import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
+import {usePrivateMessageMembershipsContext} from 'web/components/messaging/private-message-memberships-context'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
-import {useSortedPrivateMessageMemberships} from 'web/hooks/use-private-messages'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {firebaseLogin} from 'web/lib/firebase/users'
@@ -50,8 +50,7 @@ export const SendMessageButton = (props: {
   const router = useRouter()
   const privateUser = usePrivateUser()
   const currentUser = useUser()
-  const channelMemberships = useSortedPrivateMessageMemberships(currentUser?.id)
-  const {memberIdsByChannelId} = channelMemberships
+  const {memberIdsByChannelId} = usePrivateMessageMembershipsContext()
   const t = useT()
 
   const [openComposeModal, setOpenComposeModal] = useState(false)

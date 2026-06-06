@@ -21,6 +21,8 @@ import {useEffect, useState} from 'react'
 import {AuthProvider, AuthUser} from 'web/components/auth-context'
 import {ErrorBoundary} from 'web/components/error-boundary'
 import {LiveRegionProvider} from 'web/components/live-region'
+import {UnseenMessageChannelsProvider} from 'web/components/messaging/messages-icon'
+import {PrivateMessageMembershipsProvider} from 'web/components/messaging/private-message-memberships-context'
 import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
@@ -237,9 +239,13 @@ function MyApp(props: AppProps<PageProps>) {
                     <ChoicesProvider>
                       <PinnedQuestionIdsProvider>
                         <HiddenProfilesProvider>
-                          <WebPush />
-                          <AndroidPush />
-                          <Component {...pageProps} />
+                          <UnseenMessageChannelsProvider>
+                            <PrivateMessageMembershipsProvider>
+                              <WebPush />
+                              <AndroidPush />
+                              <Component {...pageProps} />
+                            </PrivateMessageMembershipsProvider>
+                          </UnseenMessageChannelsProvider>
                         </HiddenProfilesProvider>
                       </PinnedQuestionIdsProvider>
                     </ChoicesProvider>

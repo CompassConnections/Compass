@@ -1,11 +1,31 @@
 import clsx from 'clsx'
+import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {PrivateUser} from 'common/user'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
 import {usePathname} from 'next/navigation'
+import {createContext, ReactNode, useContext} from 'react'
 import {BiEnvelope, BiSolidEnvelope} from 'react-icons/bi'
 import {Row} from 'web/components/layout/row'
 import {useUnseenPrivateMessageChannels} from 'web/hooks/use-private-messages'
 import {usePrivateUser} from 'web/hooks/use-user'
+
+// Shared unseen-channels state so the desktop sidebar icon and the mobile
+// bottom-nav icon (both mounted at once) consume a single fetch instead of each
+// running their own `useUnseenPrivateMessageChannels`.
+const UnseenMessageChannelsContext = createContext<PrivateMessageChannel[]>([])
+
+export function UnseenMessageChannelsProvider(props: {children: ReactNode}) {
+  const {children} = props
+  const privateUser = usePrivateUser()
+  // The hook is always called (no conditional hooks); `enabled` gates the fetch
+  // so signed-out users don't hit the authed endpoint.
+  const {unseenChannels} = useUnseenPrivateMessageChannels(false, !!privateUser)
+  return (
+    <UnseenMessageChannelsContext.Provider value={unseenChannels}>
+      {children}
+    </UnseenMessageChannelsContext.Provider>
+  )
+}
 
 export function UnseenMessagesBubble(props: {className?: string}) {
   const {className} = props
@@ -50,7 +70,7 @@ function InternalUnseenMessagesBubble(props: {
 }) {
   const {privateUser, className, bubbleClassName} = props
 
-  const {unseenChannels} = useUnseenPrivateMessageChannels(false)
+  const unseenChannels = useContext(UnseenMessageChannelsContext)
   const pathName = usePathname()
 
   const {sendToBrowser} = getNotificationDestinationsForUser(privateUser, 'new_message')

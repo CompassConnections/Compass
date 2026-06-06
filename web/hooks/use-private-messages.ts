@@ -58,7 +58,7 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
   return {messages, fetchMessages, setMessages}
 }
 
-export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean) => {
+export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, enabled = true) => {
   const pathName = usePathname()
   const lastSeenMessagesPageTime = useLastSeenMessagesPageTime() // ms for now
   const [lastSeenChatTimeByChannelId, setLastSeenChatTimeByChannelId] = useState<
@@ -67,12 +67,14 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean) => 
 
   const {data, refresh} = useAPIGetter(
     'get-channel-memberships',
-    {
-      lastUpdatedTime: ignorePageSeenTime
-        ? new Date(0).toISOString()
-        : millisToTs(lastSeenMessagesPageTime),
-      limit: 100,
-    },
+    enabled
+      ? {
+          lastUpdatedTime: ignorePageSeenTime
+            ? new Date(0).toISOString()
+            : millisToTs(lastSeenMessagesPageTime),
+          limit: 100,
+        }
+      : undefined,
     ['lastUpdatedTime'],
   )
   const {channels} = data ?? {

@@ -7,7 +7,7 @@ import {
   getNotificationDestinationsForUser,
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
-import NewSearchAlertsEmail from 'email/new-search_alerts'
+import NewSearchAlertsEmail from 'email/new-search-alerts'
 import ShareCompassEmail from 'email/share-compass'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'

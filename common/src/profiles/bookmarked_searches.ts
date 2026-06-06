@@ -6,6 +6,7 @@ export interface MatchPrivateUser {
 export interface MatchUser {
   name: string
   username: string
+  avatarUrl?: string | null
 }
 
 export interface MatchesType {

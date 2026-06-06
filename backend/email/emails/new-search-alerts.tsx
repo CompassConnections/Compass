@@ -1,4 +1,14 @@
-import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Section,
+  Text,
+} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
@@ -88,21 +98,38 @@ export const NewSearchAlertsEmail = ({
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          flexWrap: 'wrap',
-                          gap: '4px 8px',
+                          gap: '12px',
                           padding: '7px 14px',
                           maxWidth: '100%',
                           boxSizing: 'border-box',
                           backgroundColor: '#faf3e9',
                           border: '1px solid #e8c99e',
                           borderRadius: '14px',
-                          fontSize: '13px',
                           lineHeight: '1.2',
                           textDecoration: 'none',
                         }}
                       >
-                        <span style={{color: '#1e1a14', fontWeight: '600'}}>{p.name}</span>
-                        <span style={{color: '#c17f3e', fontSize: '12px'}}>@{p.username}</span>
+                        {p.avatarUrl && (
+                          <Img
+                            src={p.avatarUrl}
+                            alt={`${p.username} avatar`}
+                            width={40}
+                            height={40}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '9999px',
+                              objectFit: 'cover',
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                        <span style={{display: 'inline-flex', flexDirection: 'column'}}>
+                          <span style={{color: '#1e1a14', fontWeight: '600', fontSize: '14px'}}>
+                            {p.name}
+                          </span>
+                          <span style={{color: '#c17f3e', fontSize: '12px'}}>@{p.username}</span>
+                        </span>
                       </Link>
                     ))}
                   </div>
@@ -164,6 +191,7 @@ const matchSamples = [
       {
         name: 'James Bond Junior',
         username: 'jamesbond',
+        avatarUrl: 'https://ui-avatars.com/api/?name=JB',
       },
       {
         name: 'Lily',

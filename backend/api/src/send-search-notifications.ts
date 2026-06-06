@@ -70,10 +70,7 @@ export const sendSearchNotifications = async () => {
     matches[row.creator_id].matches.push({
       id: row.creator_id,
       description: {filters: row.search_filters, location: row.location},
-      matches: profiles.map((item: any) => ({
-        name: item.name,
-        username: item.username,
-      })),
+      matches: profiles.map((profile: any) => profile.user),
     })
   }
   debug('matches:', JSON.stringify(matches, null, 2))

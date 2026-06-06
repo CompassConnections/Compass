@@ -692,7 +692,7 @@ Object.entries(handlers).forEach(([path, handler]) => {
 // Internal Endpoints
 app.post(pathWithPrefix('/internal/send-search-notifications'), async (req, res) => {
   const apiKey = req.header('x-api-key')
-  if (apiKey !== process.env.COMPASS_API_KEY) {
+  if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
     return res.status(401).json({error: 'Unauthorized'})
   }
 

@@ -1,5 +1,6 @@
 import {APIParams, APIPath, APIResponse} from 'common/api/schema'
 import {APIError} from 'common/api/utils'
+import {debug} from 'common/logger'
 import {useEffect} from 'react'
 import {api} from 'web/lib/api'
 
@@ -13,17 +14,20 @@ export const useAPIGetter = <P extends APIPath>(
   props: APIParams<P> | undefined,
   ingoreDependencies?: string[],
 ) => {
-  const propsString = JSON.stringify(props)
   const propsStringToTriggerRefresh = JSON.stringify(
     deepCopyWithoutKeys(props, ingoreDependencies || []),
   )
 
+  // Key caching and in-flight dedup on the dependency-filtered props so that
+  // instances differing only in ignored deps (e.g. a volatile `lastUpdatedTime`)
+  // share one cache bucket and one in-flight request instead of each firing
+  // their own. The request itself still sends the full current `props`.
   const [data, setData] = usePersistentInMemoryState<APIResponse<P> | undefined>(
     undefined,
-    `${path}-${propsString}`,
+    `${path}-${propsStringToTriggerRefresh}`,
   )
 
-  const key = `${path}-${propsString}-error`
+  const key = `${path}-${propsStringToTriggerRefresh}-error`
   const [error, setError] = usePersistentInMemoryState<APIError | undefined>(undefined, key)
 
   const refresh = useEvent(async () => {
@@ -33,6 +37,7 @@ export const useAPIGetter = <P extends APIPath>(
     if (cachedPromise) {
       await cachedPromise.then(setData).catch(setError)
     } else {
+      debug('useAPIGetter use refresh')
       const promise = api(path, props)
       promiseCache[key] = promise
       await promise.then(setData).catch(setError)

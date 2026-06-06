@@ -546,29 +546,6 @@ function Filters(props: {
         </FilterSection>
 
         <FilterSection
-          title={t('profile.optional.causes', 'Causes')}
-          openFilter={openFilter}
-          setOpenFilter={setOpenFilter}
-          isActive={hasAny(filters.causes || undefined)}
-          selection={
-            <InterestFilterText
-              options={filters.causes as string[] | undefined}
-              label={'causes'}
-              // highlightedClass={
-              //   hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
-              // }
-            />
-          }
-        >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.causes}
-            label="causes"
-          />
-        </FilterSection>
-
-        <FilterSection
           title={t('profile.optional.diet', 'Diet')}
           openFilter={openFilter}
           setOpenFilter={setOpenFilter}
@@ -720,6 +697,29 @@ function Filters(props: {
           }
         >
           <ReligionFilter filters={filters} updateFilter={updateFilter} className={''} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.causes', 'Causes')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.causes || undefined)}
+          selection={
+            <InterestFilterText
+              options={filters.causes as string[] | undefined}
+              label={'causes'}
+              // highlightedClass={
+              //   hasAny(filters.causes || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
+            />
+          }
+        >
+          <InterestFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            choices={choices.causes}
+            label="causes"
+          />
         </FilterSection>
       </FilterGroup>
 

@@ -40,7 +40,7 @@ export function ContactComponent() {
             )}
       </p>
       <Col>
-        <div className={'mb-2  min-w-[700px]'}>
+        <div className={'mb-2 sm:min-w-[700px]'}>
           <TextEditor editor={editor} />
         </div>
         {showButton && (

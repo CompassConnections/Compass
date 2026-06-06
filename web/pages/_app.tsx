@@ -14,8 +14,7 @@ import {isUrl} from 'common/parsing'
 import type {AppProps} from 'next/app'
 import {Major_Mono_Display} from 'next/font/google'
 import Head from 'next/head'
-import {useRouter} from 'next/navigation'
-import {Router} from 'next/router'
+import {Router, useRouter} from 'next/router'
 import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
 import {useEffect, useState} from 'react'
@@ -43,8 +42,15 @@ if (Capacitor.isNativePlatform()) {
   // Note sure it's doing anything, though. Need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
 
-  App.addListener('backButton', () => {
-    window.dispatchEvent(new CustomEvent('appBackButton'))
+  App.addListener('backButton', ({canGoBack}) => {
+    // Only navigate back when the WebView actually has history to pop;
+    // otherwise exit the app so the back button doesn't become a dead no-op
+    // at the root of the stack.
+    if (canGoBack) {
+      window.dispatchEvent(new CustomEvent('appBackButton'))
+    } else {
+      App.exitApp()
+    }
   })
 
   // Remove live update as the free plan is very limited (100 live updates per year). Do releases on Play Store instead.

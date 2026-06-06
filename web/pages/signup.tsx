@@ -57,7 +57,11 @@ export default function SignupPage() {
     }
 
     window.addEventListener('popstate', handlePopState)
-    window.history.replaceState({signupStep: 0}, '')
+    // Spread the existing state so we don't clobber Next.js's own routing
+    // bookkeeping (__N/key/idx). Overwriting it desyncs the history index and
+    // breaks back navigation for the rest of the session (notably the native
+    // Android back button, which has no fallback).
+    window.history.replaceState({...window.history.state, signupStep: 0}, '')
 
     return () => {
       window.removeEventListener('popstate', handlePopState)
@@ -69,7 +73,7 @@ export default function SignupPage() {
   }, [auth.currentUser?.uid])
 
   const advanceToStep = (nextStep: number) => {
-    window.history.pushState({signupStep: nextStep}, '')
+    window.history.pushState({...window.history.state, signupStep: nextStep}, '')
     setStep(nextStep)
     scrollTo(0, 0)
   }

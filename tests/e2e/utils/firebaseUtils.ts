@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 import {config} from '../web/SPEC_CONFIG'
 
 export async function firebaseLoginEmailPassword(
@@ -85,7 +86,7 @@ export async function firebaseSignUp(email: string, password: string) {
       return await getUserId(email, password)
     }
     if (err.code === 'ECONNREFUSED') return
-    // throw Error('Firebase emulator not running. Start it with:\n  yarn test:e2e:services\n')
+    // throw Error('Firebase emulator not running. Start it with:\n  yarn dev:isolated\n')
     console.log(err)
     throw err
   }

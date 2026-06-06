@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname "$0")"/..
+# Note: Test services and isolated dev services are the same for now, but they may diverge in the future.
 
 # Run the web app locally in full isolation (database, storage and authentication all stored locally)
 # What runs on each port?
@@ -24,50 +24,14 @@ NC='\033[0m'
 print_status() { echo -e "${GREEN}[E2E-DEV]${NC} $1"; }
 print_error()  { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Clean ghost processes
-kill_ghosts() {
-  for p in 3000 4000 4400 4500 8088 9099 9199; do
-    pids=$(lsof -ti :$p 2>/dev/null)
-    if [ -n "$pids" ]; then
-      kill $pids || true
-    fi
-  done
-}
-kill_ghosts
-
 set -euo pipefail
 
-# Function to clean up background processes
-cleanup() {
-  print_status "Cleaning up..."
+# Change to project root
+cd "$(dirname "$0")"/..
 
-  # Stop Firebase emulators
-  ./scripts/firebase_stop.sh
+export NEXT_PUBLIC_ISOLATED_ENV=true
 
-  # Kill all background processes
-  for pid in "${PIDS[@]:-}"; do
-    if kill -0 "$pid" 2>/dev/null; then
-      kill "$pid" 2>/dev/null || true
-      wait "$pid" 2>/dev/null || true
-    fi
-  done
-
-  kill_ghosts
-
-  # Stop Docker containers
-  if [ "${SKIP_DB_CLEANUP:-}" != "true" ]; then
-    print_status "Stopping test database..."
-    docker compose -f scripts/docker-compose.test.yml down -v
-  fi
-
-  sleep 2
-
-  print_status "Cleanup complete"
-}
-
-# Trap EXIT, INT, TERM to run cleanup automatically
-trap cleanup EXIT INT TERM
-
+export $(cat .env.local | grep -v '^#' | xargs)
 export $(cat .env.test | grep -v '^#' | xargs)
 
 # Ensure Supabase local stack is running; if not, reset/start it
@@ -84,25 +48,63 @@ export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
 export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')
 
-echo $NEXT_PUBLIC_SUPABASE_URL
-echo $NEXT_PUBLIC_SUPABASE_ANON_KEY
-echo $DATABASE_URL
+for var in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY DATABASE_URL; do
+  if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+    echo "Error: $var is not set or null" >&2
+    exit 1
+  fi
+done
 
-# Start servers in background and store their PIDs
-PIDS=()
-npx nyc --reporter=lcov yarn --cwd=web serve & PIDS+=($!)
-npx nyc --reporter=lcov yarn --cwd=backend/api dev & PIDS+=($!)
-yarn emulate & PIDS+=($!)
-
-npx wait-on http://localhost:3000
+# Build backend (required?)
+#./scripts/build_api.sh
 
 echo ""
-echo "✅ Isolated web app fully running and ready!"
+echo "  Starting isolated web app..."
 echo "  Useful links:"
 echo "  - Front end: http://127.0.0.1:3000"
+echo "  - Back end: http://127.0.0.1:8080"
 echo "  - Supabase UI: http://127.0.0.1:54323"
 echo "  - Firebase UI: http://127.0.0.1:4000"
 echo ""
-read -p "Press enter to exit..." < /dev/tty
 
-exit ${TEST_FAILED:-0}
+concurrently --names 'firebase,api,web' 'yarn emulate' 'yarn --cwd=backend/api dev' 'yarn --cwd=web dev'
+
+#kill_ghosts() {
+#  for p in 3000 4000 4400 4500 8088 9099 9199; do
+#    pids=$(lsof -ti :$p 2>/dev/null)
+#    if [ -n "$pids" ]; then
+#      kill $pids || true
+#    fi
+#  done
+#}
+#
+## Function to clean up background processes
+#cleanup() {
+#  print_status "Cleaning up..."
+#
+#  # Stop Firebase emulators
+#  ./scripts/firebase_stop.sh
+#
+#  # Kill all background processes
+#  for pid in "${PIDS[@]:-}"; do
+#    if kill -0 "$pid" 2>/dev/null; then
+#      kill "$pid" 2>/dev/null || true
+#      wait "$pid" 2>/dev/null || true
+#    fi
+#  done
+#
+#  kill_ghosts
+#
+#  # Stop Docker containers
+#  if [ "${SKIP_DB_CLEANUP:-}" != "true" ]; then
+#    print_status "Stopping test database..."
+#    docker compose -f scripts/docker-compose.test.yml down -v
+#  fi
+#
+#  sleep 2
+#
+#  print_status "Cleanup complete"
+#}
+#
+## Trap EXIT, INT, TERM to run cleanup automatically
+#trap cleanup EXIT INT TERM

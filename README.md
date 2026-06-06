@@ -160,6 +160,10 @@ Start the development server:
 yarn dev
 ```
 
+Note: the dev remote server is not available until further notice (to save money). The above command will start a local
+server instead (same as `yarn dev:isolated` below). You'll have to set up Firebase and Supabase first (see below).
+Contact us if you need help; we may spin up the dev remote server for you.
+
 Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles;
 you should see a few synthetic profiles.
 

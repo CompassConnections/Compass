@@ -577,7 +577,7 @@ yarn test:e2e:dev --debug tests/e2e/web/specs/signUp.spec.ts
 ### 1. Start services once
 
 ```bash
-yarn test:e2e:services
+yarn dev:isolated
 ```
 
 This starts Firebase emulators, the backend API, and Next.js in one terminal.

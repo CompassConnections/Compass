@@ -90,15 +90,16 @@ export const NewSearchAlertsEmail = ({
                       t,
                     )?.join(' • ')}
                   </Text>
-                  <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                  <div style={{fontSize: 0}}>
                     {match.matches.map((p) => (
                       <Link
                         key={p.username}
                         href={`https://${DOMAIN}/${p.username}`}
                         style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '12px',
+                          display: 'inline-block',
+                          verticalAlign: 'top',
+                          marginRight: '8px',
+                          marginBottom: '8px',
                           padding: '7px 14px',
                           maxWidth: '100%',
                           boxSizing: 'border-box',
@@ -109,27 +110,58 @@ export const NewSearchAlertsEmail = ({
                           textDecoration: 'none',
                         }}
                       >
-                        {p.avatarUrl && (
-                          <Img
-                            src={p.avatarUrl}
-                            alt={`${p.username} avatar`}
-                            width={40}
-                            height={40}
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              borderRadius: '9999px',
-                              objectFit: 'cover',
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
-                        <span style={{display: 'inline-flex', flexDirection: 'column'}}>
-                          <span style={{color: '#1e1a14', fontWeight: '600', fontSize: '14px'}}>
-                            {p.name}
-                          </span>
-                          <span style={{color: '#c17f3e', fontSize: '12px'}}>@{p.username}</span>
-                        </span>
+                        <table
+                          role="presentation"
+                          cellPadding={0}
+                          cellSpacing={0}
+                          border={0}
+                          style={{borderCollapse: 'collapse'}}
+                        >
+                          <tbody>
+                            <tr>
+                              {p.avatarUrl && (
+                                <td style={{paddingRight: '12px', verticalAlign: 'middle'}}>
+                                  <Img
+                                    src={p.avatarUrl}
+                                    alt={`${p.username} avatar`}
+                                    width={40}
+                                    height={40}
+                                    style={{
+                                      width: '40px',
+                                      height: '40px',
+                                      borderRadius: '9999px',
+                                      objectFit: 'cover',
+                                      display: 'block',
+                                    }}
+                                  />
+                                </td>
+                              )}
+                              <td style={{verticalAlign: 'middle'}}>
+                                <span
+                                  style={{
+                                    display: 'block',
+                                    color: '#1e1a14',
+                                    fontWeight: '600',
+                                    fontSize: '14px',
+                                    lineHeight: '1.2',
+                                  }}
+                                >
+                                  {p.name}
+                                </span>
+                                <span
+                                  style={{
+                                    display: 'block',
+                                    color: '#c17f3e',
+                                    fontSize: '12px',
+                                    lineHeight: '1.2',
+                                  }}
+                                >
+                                  @{p.username}
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </Link>
                     ))}
                   </div>

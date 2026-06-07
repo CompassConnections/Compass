@@ -44,15 +44,11 @@ if (Capacitor.isNativePlatform()) {
   // Note sure it's doing anything, though. Need to check
   StatusBar.setOverlaysWebView({overlay: false}).catch(console.warn)
 
-  App.addListener('backButton', ({canGoBack}) => {
-    // Only navigate back when the WebView actually has history to pop;
-    // otherwise exit the app so the back button doesn't become a dead no-op
-    // at the root of the stack.
-    if (canGoBack) {
-      window.dispatchEvent(new CustomEvent('appBackButton'))
-    } else {
-      App.exitApp()
-    }
+  // NOTE: don't use the event's `canGoBack` — it reflects the native WebView's
+  // history (webView.canGoBack()), which stays false because we navigate via
+  // history.pushState inside a single document. The handler decides instead.
+  App.addListener('backButton', () => {
+    window.dispatchEvent(new CustomEvent('appBackButton'))
   })
 
   // Remove live update as the free plan is very limited (100 live updates per year). Do releases on Play Store instead.
@@ -98,6 +94,24 @@ function printBuildInfo() {
     const url = `https://github.com/${owner}/${repo}/commit/${sha}`
     console.info(`Build: ${env} / ${firstLine(msg || '???')} / ${url}`)
   }
+}
+
+const navigationHistory: string[] = []
+
+function useTrackedHistory() {
+  // asPath includes the query string, so back restores the previous page
+  // *with* its filters/search state (unlike usePathname, which drops it).
+  const {asPath} = useRouter()
+  useEffect(() => {
+    if (!asPath) return
+    navigationHistory.push(asPath)
+  }, [asPath])
+  return navigationHistory
+}
+
+function updateHistoryBack() {
+  navigationHistory.pop()
+  navigationHistory.pop()
 }
 
 // specially treated props that may be present in the server/static props
@@ -151,9 +165,22 @@ function MyApp(props: AppProps<PageProps>) {
     }
   }, [])
 
+  useTrackedHistory()
   useEffect(() => {
+    // All this is to handle the back button on mobile when returning to the startup page
+    // (router.back() does not go back to the startup / home page)
     const handleBack = () => {
-      router.back()
+      debug('handleBack:', navigationHistory)
+      if (navigationHistory.length > 2) {
+        updateHistoryBack()
+        router.back()
+      } else if (navigationHistory.length === 2) {
+        const path = navigationHistory[0]
+        updateHistoryBack()
+        router.push(path)
+      } else if (Capacitor.isNativePlatform()) {
+        App.minimizeApp()
+      }
     }
 
     window.addEventListener('appBackButton', handleBack)

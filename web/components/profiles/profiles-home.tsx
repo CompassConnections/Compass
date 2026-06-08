@@ -228,7 +228,7 @@ export function ProfilesHome() {
     <div className="lg:grid lg:grid-cols-12 lg:gap-4">
       <Col className={'lg:col-span-9'}>
         {showSignupBanner && user && (
-          <div className="w-full bg-canvas-100 rounded text-center py-3 px-3 relative">
+          <div className="w-full bg-canvas-50 rounded-xl text-center py-3 px-3 relative">
             <Col className="items-center justify-center gap-2">
               <span className={'mb-2'}>
                 {t(

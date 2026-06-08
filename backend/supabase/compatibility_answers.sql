@@ -1,23 +1,31 @@
-CREATE TABLE IF NOT EXISTS compatibility_answers (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
-    creator_id TEXT NOT NULL,
-    explanation TEXT,
-    importance INTEGER NOT NULL,
-    multiple_choice INTEGER NOT NULL,
-    pref_choices INTEGER[] NOT NULL,
-    question_id BIGINT NOT NULL
+CREATE TABLE IF NOT EXISTS compatibility_answers
+(
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    created_time    TIMESTAMPTZ DEFAULT now() NOT NULL,
+    creator_id      TEXT                      NOT NULL,
+    explanation     TEXT,
+    importance      INTEGER                   NOT NULL,
+    multiple_choice INTEGER                   NOT NULL,
+    pref_choices    INTEGER[]                 NOT NULL,
+    question_id     BIGINT                    NOT NULL
 );
 
 ALTER TABLE compatibility_answers
     ADD CONSTRAINT compatibility_answers_creator_id_fkey
         FOREIGN KEY (creator_id)
-            REFERENCES users(id)
+            REFERENCES users (id)
+            ON DELETE CASCADE;
+
+ALTER TABLE compatibility_answers
+    ADD CONSTRAINT compatibility_answers_question_id_fkey
+        FOREIGN KEY (question_id)
+            REFERENCES compatibility_prompts (id)
             ON DELETE CASCADE;
 
 
 -- Row Level Security
-ALTER TABLE compatibility_answers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE compatibility_answers
+    ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE compatibility_answers
     ADD CONSTRAINT unique_question_creator

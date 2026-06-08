@@ -14,6 +14,12 @@ ALTER TABLE compatibility_answers_free
             REFERENCES users(id)
             ON DELETE CASCADE;
 
+ALTER TABLE compatibility_answers_free
+    ADD CONSTRAINT compatibility_answers_free_question_id_fkey
+        FOREIGN KEY (question_id)
+            REFERENCES compatibility_prompts(id)
+            ON DELETE CASCADE;
+
 
 -- Row Level Security
 ALTER TABLE compatibility_answers_free ENABLE ROW LEVEL SECURITY;

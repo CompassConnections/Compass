@@ -10,12 +10,12 @@ BEGIN;
 \i backend/supabase/private_users.sql
 \i backend/supabase/private_user_messages.sql
 \i backend/supabase/private_user_seen_message_channels.sql
-\i backend/supabase/compatibility_answers_free.sql
 \i backend/supabase/profile_comments.sql
+\i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/compatibility_answers.sql
+\i backend/supabase/compatibility_answers_free.sql
 \i backend/supabase/compatibility_scores.sql
 \i backend/supabase/profile_likes.sql
-\i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/profile_ships.sql
 \i backend/supabase/profile_stars.sql
 \i backend/supabase/user_waitlist.sql

@@ -5,8 +5,18 @@ import {signInWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import React, {Suspense, useEffect, useState} from 'react'
+import {
+  AuthDivider,
+  AuthError,
+  AuthFieldGroup,
+  AuthFooter,
+  AuthForm,
+  AuthHeader,
+  AuthInput,
+  AuthShell,
+  AuthSubmitButton,
+} from 'web/components/auth/auth-form'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
-import FavIconBlack from 'web/components/FavIcon'
 import {InfoIcon} from 'web/components/icons'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
@@ -129,55 +139,43 @@ function RegisterComponent() {
         description={t('signin.seo.description', 'Sign in to your account')}
         url={`/signin`}
       />
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {redirectPath && (
-            <div className="bg-primary-100 border border-primary-200 rounded-lg p-4 flex items-center gap-3">
-              <InfoIcon className="w-5 h-5 text-primary-700 flex-shrink-0" />
-              <p className="text-primary-700 text-sm">
-                {t(
-                  'signin.prompt.sign_in_to_access',
-                  'Please sign in to access the {redirectPath} page',
-                  {redirectPath: redirectPath.replace('/', '')},
-                )}
-              </p>
-            </div>
-          )}
-          <div>
-            <div className="flex justify-center mb-6">
-              <FavIconBlack className="dark:invert" />
-            </div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold ">
-              {t('signin.title', 'Sign in')}
-            </h2>
+      <AuthShell>
+        {redirectPath && (
+          <div className="bg-primary-100 border border-primary-200 rounded-lg p-4 flex items-center gap-3">
+            <InfoIcon className="w-5 h-5 text-primary-700 flex-shrink-0" />
+            <p className="text-primary-700 text-sm">
+              {t(
+                'signin.prompt.sign_in_to_access',
+                'Please sign in to access the {redirectPath} page',
+                {redirectPath: redirectPath.replace('/', '')},
+              )}
+            </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Email"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-b-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder={t('signin.password_placeholder', 'Your password')}
-                />
+        )}
+        <AuthHeader
+          title={t('signin.title', 'Sign in')}
+          subtitle={t('signin.subtitle', 'Welcome back — pick up where you left off.')}
+        />
+        <AuthForm onSubmit={handleSubmit}>
+          <AuthFieldGroup>
+            <AuthInput
+              id="email"
+              name="email"
+              type="email"
+              required
+              position="top"
+              label="Email"
+              placeholder="Email"
+            />
+            <AuthInput
+              id="password"
+              name="password"
+              type="password"
+              required
+              position="bottom"
+              label="Password"
+              placeholder={t('signin.password_placeholder', 'Your password')}
+              below={
                 <div className="text-right mt-1 custom-link">
                   <button
                     type="button"
@@ -201,41 +199,25 @@ function RegisterComponent() {
                     {t('signin.forgot_password', 'Forgot password?')}
                   </button>
                 </div>
-              </div>
-            </div>
+              }
+            />
+          </AuthFieldGroup>
 
-            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          <AuthError>{error}</AuthError>
 
-            <div className="space-y-4">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
-              </button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 body-bg text-gray-500">
-                    {t('signin.continue', 'Or continue with')}
-                  </span>
-                </div>
-              </div>
-              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
-            </div>
-          </form>
-          <div className="text-center custom-link">
-            <p className="mt-4 text-sm">
-              {t('signin.no_account', "Don't have an account?")}{' '}
-              <Link href="/register">{t('signin.link_sign_up', 'Register')}</Link>
-            </p>
+          <div className="space-y-4">
+            <AuthSubmitButton isLoading={isLoading}>
+              {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
+            </AuthSubmitButton>
+            <AuthDivider label={t('signin.continue', 'Or continue with')} />
+            <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
           </div>
-        </div>
-      </div>
+        </AuthForm>
+        <AuthFooter>
+          {t('signin.no_account', "Don't have an account?")}{' '}
+          <Link href="/register">{t('signin.link_sign_up', 'Register')}</Link>
+        </AuthFooter>
+      </AuthShell>
     </PageBase>
   )
 }

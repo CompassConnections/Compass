@@ -6,10 +6,21 @@ import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
 import React, {Suspense, useState} from 'react'
 import toast from 'react-hot-toast'
+import {
+  AuthDivider,
+  AuthError,
+  AuthFieldGroup,
+  AuthFooter,
+  AuthForm,
+  AuthHeader,
+  AuthInput,
+  AuthShell,
+  AuthSubmitButton,
+} from 'web/components/auth/auth-form'
 import {GoogleButton} from 'web/components/buttons/sign-up-button'
-import FavIconBlack from 'web/components/FavIcon'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {NewTabLink} from 'web/components/widgets/new-tab-link'
 import {auth} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {googleSigninSignup, setOnboardingFlag, signinSignupRedirect} from 'web/lib/util/signup'
@@ -112,146 +123,110 @@ function RegisterComponent() {
         description={t('register.seo.description', 'Register for a new account')}
         url={`/register`}
       />
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {registrationSuccess ? (
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h2 className="mt-6 text-3xl font-extrabold ">
-                {t('register.check_email.title', 'Check your email')}
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                {t('register.check_email.sent_prefix', 'We have sent a verification link to ')}
-                <span className="font-medium">{registeredEmail}</span>
-                {t('register.check_email.sent_suffix', '.')}
-              </p>
-              <p className="mt-4 text-sm text-gray-500">
-                {t(
-                  'register.check_email.help_prefix',
-                  'Did not receive the email? Check your spam folder or ',
-                )}
-                <button
-                  type="button"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                  onClick={() => setRegistrationSuccess(false)}
-                >
-                  {t('register.check_email.try_again', 'try again')}
-                </button>
-                {t('register.check_email.help_suffix', '.')}
-              </p>
-              <div className="mt-6">
-                <Link
-                  href="/signin"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                >
-                  {t('register.back_to_login', 'Back to Login')}
-                </Link>
-              </div>
+      <AuthShell>
+        {registrationSuccess ? (
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+              <svg
+                className="h-6 w-6 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
             </div>
-          ) : (
-            <div>
-              <div>
-                {/*<h2 className="mt-6 text-center text-xl font-extrabold text-red-700">*/}
-                {/*  The project is still in development...*/}
-                {/*</h2>*/}
-                <div className="flex justify-center mb-6">
-                  <FavIconBlack className="dark:invert" />
-                </div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold ">
-                  {t('register.get_started', 'Get Started')}
-                </h2>
-              </div>
-              <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div className="rounded-md shadow-sm -space-y-px">
-                  <div>
-                    <label htmlFor="email" className="sr-only">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      className="bg-canvas-50 appearance-none rounded-none relative block w-full px-3 py-2 border rounded-t-md border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder="Email"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="password" className="sr-only">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      required
-                      className="bg-canvas-50 bg-input appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500  rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder={t('register.password_placeholder', 'Password')}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm mt-2 text-center custom-link">
-                    {t('register.agreement.prefix', 'By signing up, I agree to the ')}
-                    <Link href="/terms">{t('register.terms', 'Terms and Conditions')}</Link>
-                    {t('register.agreement.and', ' and ')}
-                    <Link href="/privacy">{t('register.privacy', 'Privacy Policy')}</Link>
-                    {t('register.agreement.suffix', '.')}
-                  </p>
-                </div>
-
-                {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-
-                <div className="space-y-4">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  >
-                    {isLoading
-                      ? t('register.button.creating', 'Creating account...')
-                      : t('register.button.email', 'Sign up with Email')}
-                  </button>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 body-bg text-gray-500">
-                        {t('register.or_sign_up_with', 'Or sign up with')}
-                      </span>
-                    </div>
-                  </div>
-                  <GoogleButton onClick={googleSigninSignup} isLoading={isLoading} />
-                </div>
-              </form>
-              <div className="my-8" />
-              <div className="text-center custom-link">
-                <p className="">
-                  {t('register.already_account', 'Already have an account?')}{' '}
-                  <Link href="/signin">{t('register.link_signin', 'Sign in')}</Link>
-                </p>
-              </div>
+            <h2 className="mt-6 text-3xl font-extrabold ">
+              {t('register.check_email.title', 'Check your email')}
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              {t('register.check_email.sent_prefix', 'We have sent a verification link to ')}
+              <span className="font-medium">{registeredEmail}</span>
+              {t('register.check_email.sent_suffix', '.')}
+            </p>
+            <p className="mt-4 text-sm text-gray-500">
+              {t(
+                'register.check_email.help_prefix',
+                'Did not receive the email? Check your spam folder or ',
+              )}
+              <button
+                type="button"
+                className="font-medium text-blue-600 hover:text-blue-500"
+                onClick={() => setRegistrationSuccess(false)}
+              >
+                {t('register.check_email.try_again', 'try again')}
+              </button>
+              {t('register.check_email.help_suffix', '.')}
+            </p>
+            <div className="mt-6">
+              <Link
+                href="/signin"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                {t('register.back_to_login', 'Back to Login')}
+              </Link>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        ) : (
+          <>
+            <AuthHeader
+              title={t('register.get_started', 'Get Started')}
+              subtitle={t('register.subtitle', 'Create your free account — no algorithms, no ads.')}
+            />
+            <AuthForm onSubmit={handleSubmit}>
+              <AuthFieldGroup>
+                <AuthInput
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  position="top"
+                  label="Email"
+                  placeholder="Email"
+                />
+                <AuthInput
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  position="bottom"
+                  label="Password"
+                  placeholder={t('register.password_placeholder', 'Password')}
+                />
+              </AuthFieldGroup>
+
+              <p className="text-sm mt-2 text-center text-ink-600 custom-link">
+                {t('register.agreement.prefix', 'By signing up, I agree to the ')}
+                <NewTabLink href="/terms">{t('register.terms', 'Terms and Conditions')}</NewTabLink>
+                {t('register.agreement.and', ' and ')}
+                <NewTabLink href="/privacy">{t('register.privacy', 'Privacy Policy')}</NewTabLink>
+                {t('register.agreement.suffix', '.')}
+              </p>
+
+              <AuthError>{error}</AuthError>
+
+              <div className="space-y-4">
+                <AuthSubmitButton isLoading={isLoading}>
+                  {isLoading
+                    ? t('register.button.creating', 'Creating account...')
+                    : t('register.button.email', 'Sign up with Email')}
+                </AuthSubmitButton>
+                <AuthDivider label={t('register.or_sign_up_with', 'Or sign up with')} />
+                <GoogleButton onClick={googleSigninSignup} isLoading={isLoading} />
+              </div>
+            </AuthForm>
+            <AuthFooter>
+              {t('register.already_account', 'Already have an account?')}{' '}
+              <Link href="/signin">{t('register.link_signin', 'Sign in')}</Link>
+            </AuthFooter>
+          </>
+        )}
+      </AuthShell>
     </PageBase>
   )
 }

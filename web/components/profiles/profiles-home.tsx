@@ -303,7 +303,7 @@ export function ProfilesHome() {
               <span className={'mb-2'}>
                 {t(
                   'profiles.early_growth',
-                  `Compass is in its early growth phase — 500+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
+                  `Compass is in its early growth phase — 600+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
                 )}
               </span>
             </Col>

@@ -1190,6 +1190,7 @@
   "register.error.email_in_use": "Diese E-Mail ist bereits registriert",
   "register.error.unknown": "Registrierung fehlgeschlagen",
   "register.get_started": "Loslegen",
+  "register.subtitle": "Erstelle dein kostenloses Konto — keine Algorithmen, keine Werbung.",
   "register.link_signin": "Anmelden",
   "register.or_sign_up_with": "Oder registrieren mit",
   "register.password_label": "Passwort",

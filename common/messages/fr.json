@@ -1189,6 +1189,7 @@
   "register.error.email_in_use": "Cet e‑mail est déjà enregistré",
   "register.error.unknown": "Échec de l'inscription",
   "register.get_started": "Commencer",
+  "register.subtitle": "Crée ton compte gratuit — pas d'algorithmes, pas de pub.",
   "register.link_signin": "Se connecter",
   "register.or_sign_up_with": "Ou inscrivez-vous avec",
   "register.password_label": "Mot de passe",

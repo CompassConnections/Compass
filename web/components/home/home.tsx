@@ -49,7 +49,7 @@ function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
         <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
       </div>
       <h3 className="font-bold text-ink-1000 mb-2.5">{title}</h3>
-      <p className="text-sm text-primary-700 leading-relaxed">{text}</p>
+      <p className="text-sm text-ink-600 leading-relaxed">{text}</p>
     </div>
   )
 }
@@ -57,7 +57,7 @@ function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
 function SocialAvatar({letter, gradient}: SocialAvatarProps) {
   return (
     <div
-      className="w-8 h-8 rounded-full border-2 border-[#EDE8E0] -ml-2 first:ml-0 flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+      className="w-8 h-8 rounded-full border-2 border-canvas-50 -ml-2 first:ml-0 flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
       style={{background: gradient}}
     >
       {letter}
@@ -74,7 +74,7 @@ function SocialProof({label}: {label: React.ReactNode}) {
   ]
 
   return (
-    <div className="flex items-center gap-3 text-[#8C8070] text-sm">
+    <div className="flex items-center gap-3 text-ink-600 text-sm">
       <div className="flex">
         {avatars.map((av) => (
           <SocialAvatar key={av.letter} {...av} />
@@ -88,10 +88,15 @@ function SocialProof({label}: {label: React.ReactNode}) {
 function QuoteBlock({children}: {children: React.ReactNode}) {
   return (
     <div className="relative bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl px-10 py-9 text-center max-w-2xl mx-auto mb-14">
-      <span className="absolute top-3 left-8 text-6xl text-primary-700 font-serif leading-none select-none">
-        "
-      </span>
-      <p className="relative z-10 text-base text-primary-700 italic leading-relaxed">{children}</p>
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="absolute top-2 left-3 w-9 h-9 text-primary-500/30 select-none"
+      >
+        <path d="M9.5 5C6.46 5 4 7.46 4 10.5c0 2.9 2.24 5.27 5.08 5.48-.34 1.2-1.2 2.3-2.58 3.02a.6.6 0 0 0 .3 1.13c3.9-.5 6.7-3.78 6.7-8.13V10.5C13.5 7.46 11.04 5 9.5 5Zm9 0C15.46 5 13 7.46 13 10.5c0 2.9 2.24 5.27 5.08 5.48-.34 1.2-1.2 2.3-2.58 3.02a.6.6 0 0 0 .3 1.13c3.9-.5 6.7-3.78 6.7-8.13V10.5C22.5 7.46 20.04 5 18.5 5Z" />
+      </svg>
+      <p className="relative z-10 text-base text-ink-600 italic leading-relaxed">{children}</p>
     </div>
   )
 }
@@ -249,36 +254,57 @@ export function LoggedOutHome() {
 
       <div className="flex flex-col items-center w-full px-4 pb-16">
         {/* ── Hero ── */}
-        <section className="flex flex-col items-center text-center max-w-3xl w-full pt-16 pb-12">
+        <section className="relative flex flex-col items-center text-center max-w-3xl w-full pt-16 pb-12">
+          {/* Soft radial glow behind the hero for depth. Dark mode uses a brighter,
+              lighter-hued, faster-falloff core so it reads as light, not brown haze. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_30%,rgba(193,127,62,0.16),transparent_70%)]"
+          />
+
           <EyebrowBadge>
             {t('home.eyebrow', 'Free forever · Open source · No matching algorithms')}
           </EyebrowBadge>
 
-          <h1 className="text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight mb-2">
+          <h1 className="animate-fade-up text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight mb-2">
             {t('home.title', "Don't Swipe.")}
           </h1>
 
           {/* Typewriter line */}
-          <div className="text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight text-primary-500 mb-9 flex items-center justify-center min-h-[1.1em]">
+          <div
+            className="animate-fade-up text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight text-primary-500 mb-9 flex items-center justify-center min-h-[1.1em]"
+            style={{animationDelay: '80ms'}}
+          >
             <span ref={typewriterRef} />
             <span className="animate-pulse ml-0.5 font-light">|</span>
           </div>
 
-          <p className="text-[clamp(17px,2.2vw,22px)] text-[#8C8070] leading-relaxed max-w-xl mb-10">
+          <p
+            className="animate-fade-up text-[clamp(17px,2.2vw,22px)] text-ink-600 leading-relaxed max-w-xl mb-10"
+            style={{animationDelay: '160ms'}}
+          >
             {t('home.subtitle', 'Find people who share your ')}
-            <strong className="text-ink-1000">{t('home.subtitle.values', 'values')}</strong>
+            <strong className="text-ink-900">{t('home.subtitle.values', 'values')}</strong>
             {', '}
-            <strong className="text-ink-1000">{t('home.subtitle.ideas', 'ideas')}</strong>
+            <strong className="text-ink-900">{t('home.subtitle.ideas', 'ideas')}</strong>
             {t('home.subtitle.and', ', and ')}
-            <strong className="text-ink-1000">{t('home.subtitle.intentions', 'intentions')}</strong>
+            <strong className="text-ink-900">{t('home.subtitle.intentions', 'intentions')}</strong>
             {t('home.subtitle.end', ' — not just your photos.')}
           </p>
 
           {/* CTAs */}
-          <div className="flex gap-3 flex-wrap justify-center mb-10">
-            {/*<button className="px-8 py-3.5 rounded-xl bg-primary-500 text-white font-bold text-[15px] shadow-[0_4px_16px_rgba(193,127,62,0.35)] hover:bg-[#A86D30] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] transition-all duration-150">*/}
-            {/*  {t('home.cta.primary', 'Explore People →')}*/}
-            {/*</button>*/}
+          <div
+            className="animate-fade-up flex gap-3 flex-wrap justify-center items-center mb-10"
+            style={{animationDelay: '240ms'}}
+          >
+            {user === null && (
+              <Link
+                href={'/register'}
+                className="hidden sm:inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-primary-500 text-white font-bold text-[15px] shadow-[0_4px_16px_rgba(193,127,62,0.35)] hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] transition-all duration-150"
+              >
+                {t('home.cta.primary', 'Get started — free')}
+              </Link>
+            )}
             <Link
               href={'/about'}
               className="px-7 py-3.5 rounded-xl bg-transparent text-[#8B5E3C] font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-150"
@@ -288,15 +314,17 @@ export function LoggedOutHome() {
           </div>
 
           {/* Social proof */}
-          <SocialProof
-            label={
-              <>
-                {t('home.proof.prefix', 'Joined by ')}
-                <strong className="text-ink-1000">{t('home.proof.count', '600+')}</strong>
-                {t('home.proof.suffix', ' real people worldwide')}
-              </>
-            }
-          />
+          <div className="animate-fade-up" style={{animationDelay: '320ms'}}>
+            <SocialProof
+              label={
+                <>
+                  {t('home.proof.prefix', 'Joined by ')}
+                  <strong className="text-ink-900">{t('home.proof.count', '600+')}</strong>
+                  {t('home.proof.suffix', ' real people worldwide')}
+                </>
+              }
+            />
+          </div>
         </section>
 
         {/* Divider */}
@@ -320,13 +348,13 @@ export function LoggedOutHome() {
         {/* ── Quote ── */}
         <QuoteBlock>
           {t('home.quote.prefix', 'Compass is to human connection what ')}
-          <strong className="text-ink-1000">{t('home.quote.linux', 'Linux')}</strong>
+          <strong className="text-ink-900">{t('home.quote.linux', 'Linux')}</strong>
           {t('home.quote.linux_suffix', ' is to software, ')}
-          <strong className="text-ink-1000">{t('home.quote.wikipedia', 'Wikipedia')}</strong>
+          <strong className="text-ink-900">{t('home.quote.wikipedia', 'Wikipedia')}</strong>
           {t('home.quote.wikipedia_suffix', ' is to knowledge, and ')}
-          <strong className="text-ink-1000">{t('home.quote.firefox', 'Firefox')}</strong>
+          <strong className="text-ink-900">{t('home.quote.firefox', 'Firefox')}</strong>
           {t('home.quote.end', ' is to browsing — a public digital good designed to ')}
-          <strong className="text-ink-1000">
+          <strong className="text-ink-900">
             {t('home.quote.mission', 'serve people, not profit.')}
           </strong>
         </QuoteBlock>

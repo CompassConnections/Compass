@@ -949,21 +949,13 @@ This gives each parallel worker its own emulator namespace, so even aggressive c
 
 This is not implemented yet, but it will be very userful as the playwright test suite grows.
 
-**Recommended approach in practice:**
-
-- Unique email/username/ID per test → no sharing, no conflict
-- `afterEach` cleans up only own data
-- `beforeAll` seeds any read-only shared fixtures once
-
-This eliminates race conditions without needing locks or sequencing.
-
 ### Example test
 
 ```typescript
 import {test, expect} from '@playwright/test'
 
-test.describe('Authentication', () => {
-  test('should login successfully', async ({page}) => {
+test.describe('When given valid input', () => {
+  test('this should login successfully', async ({page}) => {
     await page.goto('/')
     await page.getByRole('button', {name: 'Sign In'}).click()
     await page.getByLabel('Email').fill('test@example.com')

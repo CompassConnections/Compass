@@ -160,15 +160,22 @@ Start the development server:
 yarn dev
 ```
 
-Note: the dev remote server is not available until further notice (to save money). The above command will start a local
-server instead (same as `yarn dev:isolated` below). You'll have to set up Firebase and Supabase first (see below).
-Contact us if you need help; we may spin up the dev remote server for you.
+[//]: # 'Note: the dev remote server is not available until further notice (to save money). The above command will start a local'
+[//]: # "server instead (same as `yarn dev:isolated` below). You'll have to set up Firebase and Supabase first (see below)."
+[//]: # 'Contact us if you need help; we may spin up the dev remote server for you.'
 
 Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles;
 you should see a few synthetic profiles.
 
 Note: it's normal if page loading locally is much slower than the deployed version. It can take up to 10 seconds, it
 would be great to improve that though!
+
+If you update the database schema (in the SQL files) or the database is not super clean or too large (e.g., someone
+clogged it up), you can reset it to a clean state by running:
+
+```bash
+yarn dev:db:reset
+```
 
 #### Full isolation
 
@@ -191,9 +198,9 @@ However, running in full isolation requires installing several heavy dependencie
 First startup is slow (30-60s) and the stack uses significant memory. If your machine has less than 8GB RAM, you may
 notice slowdowns.
 
-[//]: # 'If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote'
-[//]: # "and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the"
-[//]: # 'database or authentication.'
+If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote
+and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the
+database or authentication.
 
 ###### Setup instructions
 

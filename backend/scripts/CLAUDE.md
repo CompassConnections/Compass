@@ -52,6 +52,9 @@ Run with `bun run <script>.ts` or `bun x ts-node <script>.ts` from this director
   here as user-triggered ops.
 - Always test against the dev DB first. Dry-run the loop (count rows, log what would change) before mutating.
 - Don't add `sleep()` for eventual consistency — rely on transactions.
+- Changes in a row of the profiles tables will also update the corresponding last_modification_time. WARN the user and
+  adapt the
+  script if making a change in that table so it doesn't change last_modification_time.
 
 ## Build / test
 

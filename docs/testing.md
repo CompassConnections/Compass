@@ -348,6 +348,7 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
+
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
@@ -576,15 +577,16 @@ yarn test:e2e:dev --debug tests/e2e/web/specs/signUp.spec.ts
 
 ### 1. Start services once
 
-```bash
-yarn dev:isolated
-```
-
-This starts Firebase emulators, the backend API, and Next.js in one terminal.
-In a separate terminal, start Supabase:
+Reset the local supabase database:
 
 ```bash
 yarn test:db:reset  # Restart and apply migrations + seed
+```
+
+Then start the Firebase emulators, the backend API, and Next.js:
+
+```bash
+yarn dev:isolated
 ```
 
 ### 2. Open Playwright UI

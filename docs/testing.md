@@ -348,7 +348,6 @@ jest.mock('path/to/module')
  * This creates an object containing all named exports from ./path/to/module
  */
 import * as mockModule from 'path/to/module'
-
 ;(mockModule.module as jest.Mock).mockResolvedValue(mockReturnValue)
 ```
 
@@ -983,6 +982,27 @@ These are seeded automatically by `yarn test:db:seed`:
 For comprehensive troubleshooting guidance beyond testing-specific issues, see
 the [Troubleshooting Guide](troubleshooting.md) which covers development environment setup, database and emulator
 issues, API problems, and more.
+
+### Supabase emulator not working
+
+There might be compatability issues with the Supabase emulator and your setup this can cause a `Runtime error` on the app pointing to an issue in the `supabase/utils.ts (69: 17)` file, and the Supabase emulator showing a generic `site can't be reached` browser error.
+
+The workaround for this is to use a remote db and the local firebase emulator
+
+Install DBeaver (contact the main maintainer for the postgres db connection info) to view and edit the database
+
+```bash
+# Comment out "Object.assign(process.env, supabaseEnv)" in playwright.config.ts
+
+# This launches the Firebase Emulator
+yarn emulate
+
+# This launches the app
+yarn dev
+
+# Launch Playwright
+npx playwright test --ui
+```
 
 ### Port already in use
 

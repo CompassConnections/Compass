@@ -1,4 +1,4 @@
-import {sleep} from 'common/util/time'
+import {sleep} from 'common/src/util/time'
 
 import {TEST_USER_DISPLAY_NAME} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
@@ -28,8 +28,7 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('the applied filter should', () => {
-    test('update the profile count', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test('update the profile count', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -55,8 +54,7 @@ test.describe('when given valid input', () => {
      * Test fails due to ui not updating
      * works fine manually
      */
-    test.skip('show profiles with the correct age', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test.skip('show profiles with the correct age', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
       await app.people.setDisplayFilter({filters: {Age: true}})
 
@@ -76,8 +74,7 @@ test.describe('when given valid input', () => {
       await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filteredProfiles))
     })
 
-    test('show profiles with the correct gender', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test('show profiles with the correct gender', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -89,9 +86,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct education level', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -101,8 +97,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct diet', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test('show profiles with the correct diet', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -114,9 +109,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct smoking preference', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -128,9 +122,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct psychedelics preference', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -142,9 +135,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct cannabis preference', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -158,9 +150,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct political preference', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -172,9 +163,8 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct religion preference', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -186,8 +176,7 @@ test.describe('when given valid input', () => {
   })
 
   test.describe('the hide profile feature', () => {
-    test('should correctly hide a profile', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test('should correctly hide a profile', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
       await app.people.useSearch(TEST_USER_DISPLAY_NAME)
       await sleep(1000)
@@ -205,8 +194,7 @@ test.describe('when given valid input', () => {
       ).toBeVisible()
     })
 
-    test('should be reversible using undo', async ({app, signedOutAccount: account}) => {
-      await app.signinWithEmail(account)
+    test('should be reversible using undo', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
       await app.people.useSearch(TEST_USER_DISPLAY_NAME)
       await sleep(1000)
@@ -230,9 +218,8 @@ test.describe('when given valid input', () => {
 
     test('should be reversible using manage hidden profiles feature in settings', async ({
       app,
-      signedOutAccount: account,
+      signedInAccount,
     }) => {
-      await app.signinWithEmail(account)
       await app.home.clickPeopleLink()
       await app.people.useSearch(TEST_USER_DISPLAY_NAME)
       await sleep(1000)

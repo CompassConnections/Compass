@@ -84,10 +84,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct education level', async ({
-      app,
-      signedInAccount,
-    }) => {
+    test('show profiles with the correct education level', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -107,10 +104,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct smoking preference', async ({
-      app,
-      signedInAccount,
-    }) => {
+    test('show profiles with the correct smoking preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -133,10 +127,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct cannabis preference', async ({
-      app,
-      signedInAccount,
-    }) => {
+    test('show profiles with the correct cannabis preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -148,10 +139,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct political preference', async ({
-      app,
-      signedInAccount,
-    }) => {
+    test('show profiles with the correct political preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -161,10 +149,7 @@ test.describe('when given valid input', () => {
       await app.people.verifyProfileCount(totalProfiles)
     })
 
-    test('show profiles with the correct religion preference', async ({
-      app,
-      signedInAccount,
-    }) => {
+    test('show profiles with the correct religion preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()

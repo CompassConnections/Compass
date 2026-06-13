@@ -101,6 +101,12 @@ export function PrivateMessagesContent(props: {user: User; channelId: number}) {
   )
 }
 
+export const getFirstName = (name: string) => {
+  const parts = name.trim().split(/\s+/)
+  const first = parts[0].endsWith('.') && parts.length > 1 ? parts.slice(0, 2).join(' ') : parts[0]
+  return first
+}
+
 export const PrivateChat = (props: {
   user: User
   channel: PrivateMessageChannel
@@ -290,9 +296,7 @@ export const PrivateChat = (props: {
           >
             {members
               .map((user) =>
-                user.name
-                  ? user.name.split(' ')[0].trim()
-                  : t('messages.deleted_user', 'Deleted user'),
+                user.name ? getFirstName(user.name) : t('messages.deleted_user', 'Deleted user'),
               )
               .slice(0, 2)
               .join(', ')}

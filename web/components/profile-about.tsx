@@ -776,15 +776,16 @@ export function ProfilePersonality(props: {profile: Profile}) {
 
 function MBTI(props: {profile: Profile}) {
   const {profile} = props
+  const t = useT()
 
   if (!profile.mbti) return null
 
   const mbtiType = profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null
-  const mbtiTypeName = mbtiType ? MBTI_TYPE_NAMES[mbtiType] : null
+  const mbtiTypeName = mbtiType ? t(`profile.mbti.${mbtiType}`, MBTI_TYPE_NAMES[mbtiType]) : null
 
   return (
     <div style={{marginBottom: '18px'}}>
-      <SectionLabel>MBTI</SectionLabel>
+      <SectionLabel>{t('profile.mbti', 'MBTI')}</SectionLabel>
       <div
         className="border-canvas-200 bg-canvas-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2"
         style={{
@@ -922,6 +923,7 @@ export const formatProfileValue = (
   key: string,
   value: any,
   measurementSystem: MeasurementSystem = 'imperial',
+  t: ReturnType<typeof useT>,
 ) => {
   if (Array.isArray(value)) {
     return value.join(', ')
@@ -933,25 +935,25 @@ export const formatProfileValue = (
     case 'is_smoker':
     case 'diet':
     case 'has_pets':
-      return value ? 'Yes' : 'No'
+      return value ? t('common.yes', 'Yes') : t('common.no', 'No')
     case 'height_in_inches':
       return formatHeight(value, measurementSystem)
     case 'pref_age_max':
     case 'pref_age_min':
       return null // handle this in a special case
     case 'wants_kids_strength':
-      return renderAgreementScale(value)
+      return renderAgreementScale(value, t)
     default:
       return value
   }
 }
 
-const renderAgreementScale = (value: number) => {
-  if (value == 1) return 'Strongly disagree'
-  if (value == 2) return 'Disagree'
-  if (value == 3) return 'Neutral'
-  if (value == 4) return 'Agree'
-  if (value == 5) return 'Strongly agree'
+const renderAgreementScale = (value: number, t: ReturnType<typeof useT>) => {
+  if (value == 1) return t('profile.agreement.strongly_disagree', 'Strongly disagree')
+  if (value == 2) return t('profile.agreement.disagree', 'Disagree')
+  if (value == 3) return t('profile.agreement.neutral', 'Neutral')
+  if (value == 4) return t('profile.agreement.agree', 'Agree')
+  if (value == 5) return t('profile.agreement.strongly_agree', 'Strongly agree')
   return ''
 }
 

@@ -338,7 +338,7 @@ function ProfileContent(props: {
         data-testid="profile-content"
       >
         <Col className="gap-6">
-          <ProfileCard title="Details" className="p-5">
+          <ProfileCard title={t('profile.details', 'Details')} className="p-5">
             <ProfileAbout
               profile={profile}
               userActivity={userActivity}

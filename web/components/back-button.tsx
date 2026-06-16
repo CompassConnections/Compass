@@ -2,10 +2,12 @@ import {ChevronLeftIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {useRouter} from 'next/router'
 import React, {useEffect, useState} from 'react'
+import {useT} from 'web/lib/locale'
 
 export function BackButton(props: {className?: string}) {
   const {className} = props
   const router = useRouter()
+  const t = useT()
   const [canGoBack, setCanGoBack] = useState(false)
 
   // Can't put this in a useMemo to avoid the page jump else we'll get hydration errors.
@@ -25,7 +27,7 @@ export function BackButton(props: {className?: string}) {
       )}
     >
       <ChevronLeftIcon className="h-4 w-4" />
-      <span className={'hidden sm:flex'}>Back</span>
+      <span className={'hidden sm:flex'}>{t('common.back', 'Back')}</span>
     </button>
   )
 }

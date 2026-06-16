@@ -31,7 +31,12 @@ export default function ProfilePrimaryInfo(props: {profile: Profile; short?: boo
       )}
       {!short && profile.height_in_inches != null && (
         <IconWithInfo
-          text={formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem)}
+          text={formatProfileValue(
+            'height_in_inches',
+            profile.height_in_inches,
+            measurementSystem,
+            t,
+          )}
           icon={<MdHeight className="text-ink-300" style={{width: '14px', height: '14px'}} />}
         />
       )}

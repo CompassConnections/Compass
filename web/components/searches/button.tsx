@@ -1,10 +1,10 @@
-import {XMarkIcon} from '@heroicons/react/24/outline'
+import {BookmarkIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {User} from 'common/user'
-import {Star, Users} from 'lucide-react'
+import {Users} from 'lucide-react'
 import Link from 'next/link'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
@@ -42,7 +42,7 @@ export function BookmarkSearchButton(props: {
           'rounded-xl bg-canvas-50 text-xs border-canvas-300 flex items-center gap-1.5 border px-3 py-2 text-ink-500 transition-colors hover:border-primary-400 hover:bg-primary-50'
         }
       >
-        <Star className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
+        <BookmarkIcon className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
         {t('saved_searches.button', 'Saved Searches')}
       </button>
       <ButtonModal

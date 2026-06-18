@@ -291,7 +291,7 @@ function StarModal(props: {
           <div className="text-center py-8">
             <div className="text-ink-500 text-sm mb-2">You haven't saved any profile.</div>
             <div className="text-ink-300 text-xs">
-              To save one, click on the star on their profile page.
+              To save one, click on the bookmark on their profile page.
             </div>
           </div>
         )}

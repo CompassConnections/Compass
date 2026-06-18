@@ -27,7 +27,10 @@ import {useTextEditor} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
-import {usePrivateMessages, useSortedPrivateMessageMemberships,} from 'web/hooks/use-private-messages'
+import {
+  usePrivateMessages,
+  useSortedPrivateMessageMemberships,
+} from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
@@ -96,6 +99,12 @@ export function PrivateMessagesContent(props: {user: User; channelId: number}) {
       )}
     </>
   )
+}
+
+export const getFirstName = (name: string) => {
+  const parts = name.trim().split(/\s+/)
+  const first = parts[0].endsWith('.') && parts.length > 1 ? parts.slice(0, 2).join(' ') : parts[0]
+  return first
 }
 
 export const PrivateChat = (props: {
@@ -272,7 +281,7 @@ export const PrivateChat = (props: {
             avatars={members}
             onClick={() => setShowUsers(true)}
           />
-        ) : (
+        ) : otherUsers === undefined ? null : (
           <Avatar size="sm" username="?" noLink />
         )}
         {members && members.length > 0 ? (
@@ -287,15 +296,13 @@ export const PrivateChat = (props: {
           >
             {members
               .map((user) =>
-                user.name
-                  ? user.name.split(' ')[0].trim()
-                  : t('messages.deleted_user', 'Deleted user'),
+                user.name ? getFirstName(user.name) : t('messages.deleted_user', 'Deleted user'),
               )
               .slice(0, 2)
               .join(', ')}
             {members.length > 2 && ` & ${members.length - 2} more`}
           </span>
-        ) : (
+        ) : otherUsers === undefined ? null : (
           <span className={'ml-1 italic text-ink-500 text-sm'}>
             {t('messages.deleted_user', 'Deleted user')}
           </span>

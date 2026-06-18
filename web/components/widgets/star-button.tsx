@@ -1,4 +1,4 @@
-import {StarIcon} from '@heroicons/react/24/outline'
+import {BookmarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {useEffect, useState} from 'react'
@@ -58,7 +58,7 @@ export const StarButton = (props: {
       }}
       onPointerDown={onPointerDown}
     >
-      <StarIcon className={clsx(size, isStarred && 'fill-primary-500')} />
+      <BookmarkIcon className={clsx(size, isStarred && 'fill-primary-500')} />
     </button>
   )
 

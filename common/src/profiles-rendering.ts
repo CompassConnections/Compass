@@ -21,7 +21,7 @@ export type DisplayOptions = {
 }
 
 export const initialDisplayOptions: DisplayOptions = {
-  showPhotos: undefined,
+  showPhotos: true,
   showAge: undefined,
   showGender: undefined,
   showLanguages: true,

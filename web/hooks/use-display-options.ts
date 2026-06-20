@@ -17,7 +17,6 @@ export function useDisplayOptions(profile?: any) {
     if (profile && displayOptions.showPhotos === undefined) {
       const isLookingForRelationship = !!profile?.pref_relation_styles?.includes('relationship')
       updateDisplayOptions({
-        showPhotos: isLookingForRelationship,
         showAge: isLookingForRelationship,
         showGender: isLookingForRelationship,
       })

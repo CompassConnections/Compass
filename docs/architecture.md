@@ -363,6 +363,13 @@ GitHub Push
 └─────────────┘
 ```
 
+For the deployed prod env, the web app is updated on any push to main, the API is updated on a version increment in the
+API [package.json](../backend/api/package.json) pushed to main, and the Android app is updated on a version increment
+in [build.gradle](../android/app/build.gradle) pushed to main.
+
+For the deployed dev env, the web app is updated on any push to the deb branch and the API is updated manually by
+running `./backend/api/deploy-api.sh dev`.
+
 ### Environments
 
 | Environment | Web                 | API                     | GCP/Firebase project | Purpose                    |

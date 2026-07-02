@@ -1,8 +1,8 @@
 {
   "git": {
-    "revision": "c085e8f",
-    "commitDate": "2026-02-22 21:51:08 +0100",
-    "author": "MartinBraquet",
-    "message": "Add guidelines for adding translations to existing files"
+    "revision": "394470c3",
+    "commitDate": "2026-07-02 17:19:46 +0200",
+    "author": "Martin Braquet",
+    "message": "Update deploy script for remote dev (#61)"
   }
 }

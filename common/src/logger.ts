@@ -1,4 +1,5 @@
 import {IS_PROD} from 'common/envs/constants'
+import {IS_DEPLOYED} from 'common/hosting/constants'
 
 /**
  * Log level severity types
@@ -156,7 +157,7 @@ const currentLevel = (): LogLevel => {
     if (envLogLevel in LOG_LEVELS) return envLogLevel as LogLevel
     console.warn(`Invalid NEXT_PUBLIC_LOG_LEVEL: ${envLogLevel}`)
   }
-  if (IS_PROD || process.env.NODE_ENV == 'production') return 'info'
+  if (IS_PROD || process.env.NODE_ENV == 'production' || IS_DEPLOYED) return 'info'
   return 'debug'
 }
 

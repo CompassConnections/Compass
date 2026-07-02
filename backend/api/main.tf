@@ -78,6 +78,7 @@ resource "google_project_iam_member" "firebase_auth_admin" {
 }
 
 resource "google_project_iam_member" "fcm_admin" {
+  count   = local.is_prod ? 1 : 0
   project = local.project
   role    = "roles/firebase.messagingAdmin"
   member  = "serviceAccount:${google_service_account.api_runtime_sa.email}"
@@ -92,8 +93,6 @@ resource "google_cloud_run_v2_service" "api" {
   template {
     service_account = google_service_account.api_runtime_sa.email
 
-    startup_cpu_boost = true
-
     scaling {
       min_instance_count = 0 # This enables scaling to zero (saves money!)
       max_instance_count = 10
@@ -107,6 +106,8 @@ resource "google_cloud_run_v2_service" "api" {
           cpu    = "1" # 1 vCPU is standard, increase to "2" if heavy traffic
           memory = "1Gi"
         }
+        # CPU Boost speeds up cold starts significantly
+        startup_cpu_boost = true
       }
 
       ports {
@@ -125,8 +126,8 @@ resource "google_cloud_run_v2_service" "api" {
       # Optional: CPU Boost speeds up cold starts significantly
       startup_probe {
         initial_delay_seconds = 0
-        timeout_seconds       = 1
-        period_seconds        = 3
+        timeout_seconds       = 240
+        period_seconds        = 240
         failure_threshold     = 3
         tcp_socket {
           port = 8080

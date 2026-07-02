@@ -28,7 +28,7 @@ import {vote} from 'api/vote'
 import {API, type APIPath} from 'common/api/schema'
 import {APIError, APIErrors, pathWithPrefix} from 'common/api/utils'
 import {sendDiscordMessage} from 'common/discord/core'
-import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL, IS_DEV} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {filterDefined} from 'common/util/array'
 import cors from 'cors'
@@ -397,7 +397,7 @@ const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? 'API_KEY'
 const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
-    title: 'Compass API',
+    title: 'Compass API' + (IS_DEV ? ' (dev)' : ''),
     description: `
 Compass is a free, open-source platform to help people form deep, meaningful, and lasting connections — whether platonic, romantic, or collaborative. Our API provides programmatic access to core platform features including user profiles, messaging, compatibility scoring, and community features.
 

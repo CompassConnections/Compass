@@ -1,4 +1,5 @@
 import {SecretManagerServiceClient} from '@google-cloud/secret-manager'
+import {IS_DEV} from 'common/envs/constants'
 import {refreshConfig} from 'common/envs/prod'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {debug} from 'common/logger'
@@ -62,15 +63,26 @@ export const getSecrets = async (credentials?: any, ...ids: SecretId[]) => {
     (secret: string) => `${client.projectPath(projectId)}/secrets/${secret}/versions/latest`,
   )
 
-  const secretResponses = await Promise.all(
-    fullSecretNames.map((name) =>
-      client.accessSecretVersion({
-        name,
-      }),
-    ),
+  const secretValues = await Promise.all(
+    fullSecretNames.map(async (name) => {
+      try {
+        const [response] = await client.accessSecretVersion({name})
+        return response.payload!.data!.toString()
+      } catch (err) {
+        // In dev, tolerate secrets that haven't been provisioned yet instead of
+        // crashing startup. Prod still fails loudly on a missing secret.
+        if (IS_DEV) {
+          debug(`Missing secret ${name}, skipping (dev).`)
+          return undefined
+        }
+        throw err
+      }
+    }),
   )
-  const secretValues = secretResponses.map(([response]) => response.payload!.data!.toString())
-  const pairs = zip(secretIds, secretValues) as [string, string][]
+  const pairs = zip(secretIds, secretValues).filter(([, value]) => value != null) as [
+    string,
+    string,
+  ][]
   return Object.fromEntries(pairs)
 }
 

@@ -12,12 +12,19 @@ variable "env" {
 
 # 2. Local Constants
 locals {
-  project      = "compass-130ba"
+  is_prod = var.env == "prod"
+  # Prod and dev live in separate GCP/Firebase projects. env=dev targets the dev
+  # Firebase project so the API talks to the dev Auth/Firestore/Storage backends.
+  project      = local.is_prod ? "compass-130ba" : "compass-57c3c"
   region       = "us-west1"
   service_name = "api"
+  api_domain   = local.is_prod ? "api.compassmeet.com" : "api.dev.compassmeet.com"
 }
 
 # 3. Provider & Backend
+# State stays in the prod bucket but is isolated per environment via Terraform
+# workspaces (default = prod, `terraform workspace new dev` for dev). The gcs
+# backend automatically namespaces named workspaces, so dev/prod never collide.
 terraform {
   backend "gcs" {
     bucket = "compass-130ba-terraform-state"
@@ -142,7 +149,7 @@ resource "google_cloud_run_v2_service_iam_member" "public_access" {
 # Otherwise, use 'google_cloud_run_v2_domain_mapping'
 resource "google_cloud_run_domain_mapping" "api_domain" {
   location = local.region
-  name     = "api.compassmeet.com"
+  name     = local.api_domain
 
   metadata {
     namespace = local.project

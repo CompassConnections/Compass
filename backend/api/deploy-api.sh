@@ -7,12 +7,27 @@ source ../../.env
 
 ENV=${1:-prod}
 
+if [ "$ENV" != "prod" ] && [ "$ENV" != "dev" ]; then
+  echo "Invalid environment '${ENV}'; must be 'dev' or 'prod'."
+  exit 1
+fi
+
 # Config
 REGION="us-west1"
 ZONE="us-west1-b"
 
-PROJECT="compass-130ba"
+# Prod and dev live in separate GCP/Firebase projects (see main.tf). The image is
+# built into, and Cloud Run deployed to, the project matching $ENV.
+if [ "$ENV" = "prod" ]; then
+  PROJECT="compass-130ba"
+  DOMAIN="api.compassmeet.com"
+else
+  PROJECT="compass-57c3c"
+  DOMAIN="api.dev.compassmeet.com"
+fi
 SERVICE_NAME="api"
+
+echo "Deploying '${SERVICE_NAME}' to ${ENV} (project ${PROJECT})"
 
 GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_COMMIT_DATE=$(git log -1 --format=%ci)
@@ -47,9 +62,10 @@ docker push ${IMAGE_URL}
 # but simply swaps the container image.
 gcloud run deploy ${SERVICE_NAME} \
   --image ${IMAGE_URL} \
+  --project ${PROJECT} \
   --region ${REGION} \
   --platform managed \
   --quiet
 
-echo "Custom Domain: https://api.compassmeet.com"
+echo "Custom Domain: https://${DOMAIN}"
 echo "✅ Code updated on Cloud Run!"

@@ -348,6 +348,21 @@ log.error('Failed to process', error)
 
 ## Deployment
 
+### Environments
+
+There are two fully isolated environments, each in its own GCP/Firebase project with its own
+Supabase instance (config lives in `common/src/envs/{prod,dev}.ts`):
+
+| Environment | API domain                | GCP/Firebase project | Cloud Run service | Terraform workspace |
+| ----------- | ------------------------- | -------------------- | ----------------- | ------------------- |
+| prod        | `api.compassmeet.com`     | `compass-130ba`      | `api`             | `default`           |
+| dev         | `api.dev.compassmeet.com` | `compass-57c3c`      | `api`             | `dev`               |
+
+The `dev`/`prod` switch is driven by `NEXT_PUBLIC_FIREBASE_ENV` (set on the Cloud Run service by
+Terraform). `main.tf` and `deploy-api.sh` both take an `env` argument (`prod` default) and derive the
+project, service, and domain from it. State for both lives in the `compass-130ba-terraform-state`
+bucket, isolated per environment via Terraform workspaces.
+
 ### Production Deployment
 
 Deployments are automated via GitHub Actions. Push to main triggers deployment:
@@ -364,8 +379,41 @@ git push origin main
 
 ```bash
 cd backend/api
-./deploy-api.sh prod
+./deploy-api.sh prod   # or: ./deploy-api.sh dev
 ```
+
+`deploy-api.sh <env>` builds the image, pushes it to that project's Artifact Registry
+(`us-west1-docker.pkg.dev/<project>/builds/api`), and swaps it onto the Cloud Run service. The service
+and its surrounding infra must already exist (see below).
+
+### Infrastructure (Terraform)
+
+`main.tf` provisions the Cloud Run service, runtime service account + IAM, and the custom-domain mapping.
+Run it only when infra (not app code) changes:
+
+```bash
+cd backend/api
+terraform init
+terraform workspace select dev            # or `default` for prod; `terraform workspace new dev` first time
+terraform apply -var="env=dev" \
+  -var="image_url=$(gcloud run services describe api --project compass-57c3c --region us-west1 \
+    --format='value(spec.template.spec.containers[0].image)')"
+```
+
+Notes:
+
+- `image_url` is required (Cloud Run needs an image). For a brand-new service, bootstrap with
+  `us-docker.pkg.dev/cloudrun/container/hello`, then `./deploy-api.sh <env>` swaps in the real image.
+  On later applies, pass the currently deployed image (as above) so Terraform doesn't revert it.
+- `roles/firebase.messagingAdmin` is bound to the runtime SA in **prod only** (`count = local.is_prod`);
+  the dev project can't grant it at project level.
+
+### DNS
+
+Managed at the `compassmeet.com` DNS provider:
+
+- `api.dev` → CNAME `ghs.googlehosted.com` (add after the Cloud Run domain mapping is created; the mapping
+  status page confirms the target and cert issuance). Prod uses the same target for `api`.
 
 ### Server Access
 

@@ -1,7 +1,8 @@
 # backend/api
 
 Express 5 REST + WebSocket server. One file per endpoint under `src/`. Runs at
-`https://api.compassmeet.com` in prod, `http://localhost:8088` locally.
+`https://api.compassmeet.com` in prod, `https://api.dev.compassmeet.com` in dev (separate
+`compass-57c3c` project), `http://localhost:8088` locally.
 
 See [README.md](README.md) for full Google Cloud setup, deployment, SSH access, and DNS. Cross-package
 context lives in the [root CLAUDE.md](../../CLAUDE.md).

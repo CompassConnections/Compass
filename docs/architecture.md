@@ -365,11 +365,15 @@ GitHub Push
 
 ### Environments
 
-| Environment | URL             | Purpose           |
-| ----------- | --------------- | ----------------- |
-| Development | localhost       | Local development |
-| Staging     | -               | Testing changes   |
-| Production  | compassmeet.com | Live users        |
+| Environment | Web                 | API                     | GCP/Firebase project | Purpose                    |
+| ----------- | ------------------- | ----------------------- | -------------------- | -------------------------- |
+| Local       | localhost:3000      | localhost:8088          | —                    | Local development          |
+| Dev         | dev.compassmeet.com | api.dev.compassmeet.com | compass-57c3c        | Deployed testing / staging |
+| Production  | compassmeet.com     | api.compassmeet.com     | compass-130ba        | Live users                 |
+
+The deployed dev environment mirrors prod's stack (Vercel web + Cloud Run API) against separate
+Supabase/Firebase backends. See [`backend/api/README.md`](../backend/api/README.md#environments) for
+deployment details.
 
 ## Development Workflow
 

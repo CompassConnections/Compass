@@ -1,12 +1,12 @@
 'use client'
 
+import {HomeLoadingAnimation} from 'web/components/home/home-loading-animation'
 import {PageBase} from 'web/components/page-base'
-import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 
 export default function Loading() {
   return (
-    <PageBase trackPageView={'loading'}>
-      <CompassLoadingIndicator />
+    <PageBase trackPageView={'loading'} className={'col-span-10 lg:!mt-0 xl:!px-0'}>
+      <HomeLoadingAnimation />
     </PageBase>
   )
 }

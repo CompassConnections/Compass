@@ -48,7 +48,6 @@ const searchProps = (row: SearchRow, userIds: string[]): profileQueryType => {
     userId: row.creator_id,
     shortBio: true,
     skipCount: true,
-    lastModificationWithin: '24 hours',
     userIds,
   }
 }

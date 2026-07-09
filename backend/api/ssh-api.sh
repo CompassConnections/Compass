@@ -14,7 +14,7 @@ ENV=prod
 
 case $ENV in
     dev)
-        GCLOUD_PROJECT=compass-130ba ;;
+        GCLOUD_PROJECT=compass-57c3c ;;
     prod)
         GCLOUD_PROJECT=compass-130ba ;;
     *)
@@ -24,6 +24,7 @@ esac
 
 echo "Looking for API instance on ${GCLOUD_PROJECT} to talk to..."
 INSTANCE_ID=$(gcloud compute instances list \
+  --project="${GCLOUD_PROJECT}" \
   --filter="zone:(us-west1-c)" \
   --sort-by="~creationTimestamp" \
   --format="value(name)" \

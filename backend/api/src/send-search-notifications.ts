@@ -177,11 +177,10 @@ export const sendSearchNotifications = async () => {
     for (const row of creatorSearches) {
       if (typeof row.search_filters !== 'object') continue
       const profiles = await findNewMatches(pg, row, changedUserIds)
-      debug(
-        row.id,
-        profiles.map((profile: any) => profile.name),
-      )
       if (!profiles.length) continue
+      log.info(
+        `Matches for search from profileId=${row.id}: ${profiles.map((profile: any) => profile.name)}`,
+      )
 
       alert.matchedSearchIds.push(row.id)
       alert.matches.push({

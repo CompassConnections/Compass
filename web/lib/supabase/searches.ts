@@ -19,7 +19,7 @@ export const getUserBookmarkedSearches = async (userId: string) => {
 
 export type BookmarkedSearchSubmitType = Omit<
   Row<'bookmarked_searches'>,
-  'created_time' | 'id' | 'last_notified_at' | 'creator_id'
+  'created_time' | 'id' | 'last_notified_at' | 'last_checked_at' | 'creator_id'
 >
 
 export const submitBookmarkedSearch = async (
@@ -37,7 +37,8 @@ export const submitBookmarkedSearch = async (
   const props = {
     ...filterKeys(
       row,
-      (key, _) => !['id', 'created_time', 'last_notified_at', 'creator_id'].includes(key),
+      (key, _) =>
+        !['id', 'created_time', 'last_notified_at', 'last_checked_at', 'creator_id'].includes(key),
     ),
   } as BookmarkedSearchSubmitType
 

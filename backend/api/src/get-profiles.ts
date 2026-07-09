@@ -18,7 +18,7 @@ import {OptionTableKey} from 'common/profiles/constants'
 import {compact} from 'lodash'
 import {log} from 'shared/monitoring/log'
 import {convertRow} from 'shared/profiles/supabase'
-import {createSupabaseDirectClient, pgp} from 'shared/supabase/init'
+import {createSupabaseDirectClient, pgp, SupabaseDirectClient} from 'shared/supabase/init'
 import {
   from,
   join,
@@ -102,6 +102,10 @@ export type profileQueryType = {
   skipId?: string | undefined
   orderBy?: string | undefined
   lastModificationWithin?: string | undefined
+  /** Restrict the results to these user ids. An empty array matches nothing. */
+  userIds?: string[] | undefined
+  /** Skip the total-count query when the caller only needs the rows */
+  skipCount?: boolean | undefined
   last_active?: string | undefined
   locale?: string | undefined
 } & {
@@ -156,8 +160,9 @@ let profileCols: any
 export const getProfileCols = async () => {
   if (profileCols) return profileCols
   const pg = createSupabaseDirectClient()
+  // table_schema matters: the search-alert snapshot schemas hold a `profiles` table too.
   const rows = await pg.manyOrNone<{column_name: string}>(
-    `SELECT column_name FROM information_schema.columns WHERE table_name = 'profiles' ORDER BY ordinal_position`,
+    `SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' ORDER BY ordinal_position`,
   )
   profileCols = rows
     .map((r) => r.column_name)
@@ -168,9 +173,12 @@ export const getProfileCols = async () => {
   return profileCols
 }
 
-export const loadProfiles = async (props: profileQueryType) => {
-  const pg = createSupabaseDirectClient()
-  log('get-profiles', props)
+/**
+ * @param db pass a client bound to a snapshot schema (see `withSchema` in `profile-snapshot.ts`) to
+ *   evaluate the same filters against the profiles as they were at an earlier point in time.
+ */
+export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectClient) => {
+  const pg = db ?? createSupabaseDirectClient()
   const {
     limit: limitParam,
     after,
@@ -226,10 +234,14 @@ export const loadProfiles = async (props: profileQueryType) => {
     compatibleWithUserId,
     orderBy: orderByParam = 'created_time',
     lastModificationWithin,
+    userIds,
+    skipCount,
     skipId,
     locale = 'en',
     last_active,
   } = props
+
+  log('get-profiles', {...props, userIds: userIds && `${userIds.length} ids`})
 
   const filterLocation = lat && lon && radius
   const filterRaisedInLocation = raised_in_lat && raised_in_lon && raised_in_radius
@@ -600,6 +612,8 @@ export const loadProfiles = async (props: profileQueryType) => {
 
     skipId && where(`profiles.user_id != $(skipId)`, {skipId}),
 
+    userIds && where(`profiles.user_id = any($(userIds))`, {userIds}),
+
     !shortBio &&
       where(
         `bio_length >= ${100}
@@ -679,7 +693,9 @@ export const loadProfiles = async (props: profileQueryType) => {
 
   const countQuery = renderSql(select(`count(*) as count`), ...tableSelection, ...filters)
 
-  const count = await pg.one<number>(countQuery, [], (r) => Number(r.count))
+  const count = skipCount
+    ? profiles.length
+    : await pg.one<number>(countQuery, [], (r) => Number(r.count))
 
   return {profiles, count}
 }

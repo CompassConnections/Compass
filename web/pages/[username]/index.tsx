@@ -9,6 +9,7 @@ import {GetStaticPropsContext} from 'next'
 import Head from 'next/head'
 import {useRouter} from 'next/router'
 import {useEffect, useMemo, useState} from 'react'
+import {HomeLoadingAnimation} from 'web/components/home/home-loading-animation'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {ProfileInfo, ProfileInfoSkeleton} from 'web/components/profile/profile-info'
@@ -312,7 +313,7 @@ function UserPageInner(props: ActiveUserPageProps) {
         </Head>
       )}
 
-      {currentUser !== undefined && (
+      {currentUser !== undefined ? (
         <Col className={'gap-4'}>
           {profile ? (
             <ProfileInfo
@@ -326,6 +327,8 @@ function UserPageInner(props: ActiveUserPageProps) {
             <ProfileInfoSkeleton />
           )}
         </Col>
+      ) : (
+        <HomeLoadingAnimation />
       )}
     </PageBase>
   )

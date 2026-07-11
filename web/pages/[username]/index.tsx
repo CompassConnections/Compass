@@ -307,7 +307,10 @@ function UserPageInner(props: ActiveUserPageProps) {
         url={`/${user.username}`}
         image={seoImage}
       />
-      {(user.isBannedFromPosting || user.userDeleted) && (
+      {(user.isBannedFromPosting ||
+        user.userDeleted ||
+        profile?.disabled ||
+        profile?.visibility === 'member') && (
         <Head>
           <meta name="robots" content="noindex, nofollow" />
         </Head>

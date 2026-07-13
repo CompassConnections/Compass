@@ -3,7 +3,7 @@ import {buildArray} from 'common/util/array'
 import Image from 'next/image'
 import {useState} from 'react'
 import {Col} from 'web/components/layout/col'
-import {Modal} from 'web/components/layout/modal'
+import {MediaModal} from 'web/components/media-modal'
 import {Carousel} from 'web/components/widgets/carousel'
 import {useUser} from 'web/hooks/use-user'
 import {isVideo} from 'web/lib/firebase/storage'
@@ -100,19 +100,7 @@ export default function ProfileCarousel(props: {profile: Profile}) {
         ))}
       </Carousel>
 
-      <Modal open={lightboxOpen} setOpen={setLightboxOpen}>
-        {isVideo(lightboxUrl) ? (
-          <video
-            src={lightboxUrl}
-            controls
-            autoPlay
-            playsInline
-            className="max-h-[80vh] w-full rounded"
-          />
-        ) : (
-          <Image src={lightboxUrl} width={1000} height={1000} alt="" />
-        )}
-      </Modal>
+      <MediaModal url={lightboxUrl} open={lightboxOpen} setOpen={setLightboxOpen} />
     </>
   )
 }

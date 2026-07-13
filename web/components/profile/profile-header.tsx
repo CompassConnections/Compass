@@ -12,12 +12,13 @@ import {User, UserActivity} from 'common/user'
 import Image from 'next/image'
 import Link from 'next/link'
 import Router from 'next/router'
-import React from 'react'
+import React, {useState} from 'react'
 import toast from 'react-hot-toast'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {MediaModal} from 'web/components/media-modal'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ViewProfileCardButton} from 'web/components/photos-modal'
 import {linkClass} from 'web/components/widgets/site-link'
@@ -45,6 +46,8 @@ export default function ProfileHeader(props: {
   const isCurrentUser = currentUser?.id === user.id
   const disabled = profile.disabled
   const t = useT()
+
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   debug('ProfileProfileHeader', {
     user,
@@ -84,7 +87,8 @@ export default function ProfileHeader(props: {
                 width={300}
                 sizes="(max-width: 640px) 100vw, 300px"
                 alt=""
-                className="h-full w-full rounded-2xl object-cover"
+                className="h-full w-full cursor-pointer rounded-2xl object-cover"
+                onClick={() => setLightboxOpen(true)}
               />
             </div>
           )}
@@ -175,6 +179,9 @@ export default function ProfileHeader(props: {
             </span>
           </div>
         </div>
+      )}
+      {profile.pinned_url && (
+        <MediaModal url={profile.pinned_url} open={lightboxOpen} setOpen={setLightboxOpen} />
       )}
     </Row>
   )

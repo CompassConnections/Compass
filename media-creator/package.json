@@ -1,0 +1,27 @@
+{
+  "name": "compass-media-creator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone Remotion studio for Compass media creation. Intentionally NOT part of the root yarn workspaces — install and run it on its own with npm.",
+  "license": "MIT",
+  "scripts": {
+    "render": "npm run render:post",
+    "render:carousel": "node scripts/render-carousel.mjs",
+    "render:post": "remotion render IntroPost out/compass-intro-post.mp4",
+    "render:story": "remotion render IntroStory out/compass-intro-story.mp4",
+    "studio": "remotion studio",
+    "typecheck": "tsc --noEmit",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.290",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.290"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.5.4"
+  }
+}

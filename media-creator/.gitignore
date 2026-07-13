@@ -1,0 +1,11 @@
+# Standalone npm project — its own dependency tree, kept out of the repo.
+node_modules/
+
+# Rendered video output.
+out/
+
+# Remotion caches / bundles.
+.remotion/
+
+# Logs
+npm-debug.log*

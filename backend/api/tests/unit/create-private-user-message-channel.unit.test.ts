@@ -1,15 +1,19 @@
 import {createPrivateUserMessageChannel} from 'api/create-private-user-message-channel'
 import {AuthedUser} from 'api/helpers/endpoint'
 import * as privateMessageModules from 'api/helpers/private-messages'
+import {sendDiscordMessage} from 'common/discord/core'
 import {sqlMatch} from 'common/test-utils'
 import * as utilArrayModules from 'common/util/array'
 import * as admin from 'firebase-admin'
 import * as supabaseInit from 'shared/supabase/init'
+import {updateUser} from 'shared/supabase/users'
 import * as sharedUtils from 'shared/utils'
 
 jest.mock('shared/supabase/init')
 jest.mock('common/util/array')
+jest.mock('common/discord/core')
 jest.mock('api/helpers/private-messages')
+jest.mock('shared/supabase/users')
 jest.mock('shared/utils')
 jest.mock('firebase-admin', () => ({
   auth: jest.fn(),
@@ -110,7 +114,10 @@ describe('createPrivateUserMessageChannel', () => {
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
       ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(false)
-      ;(mockPg.one as jest.Mock).mockResolvedValue(mockChannel)
+      // First pg.one is the recent-channel count (under limit), second is the channel insert.
+      ;(mockPg.one as jest.Mock)
+        .mockResolvedValueOnce({count: '0'})
+        .mockResolvedValueOnce(mockChannel)
 
       const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
 
@@ -121,7 +128,9 @@ describe('createPrivateUserMessageChannel', () => {
       expect(sharedUtils.getPrivateUser).toBeCalledTimes(2)
       expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[0])
       expect(sharedUtils.getPrivateUser).toBeCalledWith(mockUserIds[1])
-      expect(mockPg.one).toBeCalledTimes(1)
+      expect(updateUser).not.toHaveBeenCalled()
+      expect(sendDiscordMessage).not.toHaveBeenCalled()
+      expect(mockPg.one).toBeCalledTimes(2)
       expect(mockPg.one).toBeCalledWith(
         sqlMatch(
           'insert into private_user_message_channels default\n     values\n     returning id',
@@ -140,6 +149,79 @@ describe('createPrivateUserMessageChannel', () => {
         mockChannel.id,
         expect.any(Object),
       )
+    })
+  })
+
+  describe('when the daily new-conversation limit is exceeded', () => {
+    const mockBody = {userIds: ['123']}
+    const mockAuth = {uid: '321'} as AuthedUser
+    const mockReq = {} as any
+    const mockPrivateUsers = [
+      {id: '123', blockedUserIds: [], blockedByUserIds: []},
+      {id: '321', blockedUserIds: [], blockedByUserIds: []},
+    ]
+    const mockCreator = {
+      id: '321',
+      name: 'Spammy McSpam',
+      username: 'spammy',
+      isBannedFromPosting: false,
+    }
+
+    beforeEach(() => {
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
+      ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
+      // getProfile + no-existing-channel lookups both return falsy.
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(null)
+    })
+
+    it('bans the user and notifies admins on the 6th conversation within 24h', async () => {
+      // Already created 5 channels in the last 24h → this new one is over the limit.
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+      ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
+
+      await expect(
+        createPrivateUserMessageChannel(mockBody, mockAuth, mockReq),
+      ).rejects.toThrowError('You are banned')
+
+      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {isBannedFromPosting: true})
+      expect(sendDiscordMessage).toHaveBeenCalledTimes(1)
+      expect(sendDiscordMessage).toHaveBeenCalledWith(
+        expect.stringContaining('Auto-ban'),
+        'reports',
+      )
+      // The count query runs, but the channel is never created once the user is banned.
+      expect(mockPg.one).toHaveBeenCalledTimes(1)
+      expect(privateMessageModules.addUsersToPrivateMessageChannel).not.toHaveBeenCalled()
+    })
+
+    it('still bans when the Discord notification fails', async () => {
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+      ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('Discord down'))
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+
+      await expect(
+        createPrivateUserMessageChannel(mockBody, mockAuth, mockReq),
+      ).rejects.toThrowError('You are banned')
+
+      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {isBannedFromPosting: true})
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to send auto-ban discord report'),
+        expect.any(Error),
+      )
+    })
+
+    it('does not ban when still under the limit', async () => {
+      // 4 channels so far → this 5th one is allowed; second pg.one is the channel insert.
+      ;(mockPg.one as jest.Mock)
+        .mockResolvedValueOnce({count: '4'})
+        .mockResolvedValueOnce({id: '333'})
+
+      const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
+
+      expect(results.status).toBe('success')
+      expect(updateUser).not.toHaveBeenCalled()
+      expect(sendDiscordMessage).not.toHaveBeenCalled()
+      expect(privateMessageModules.addUsersToPrivateMessageChannel).toHaveBeenCalledTimes(1)
     })
   })
 

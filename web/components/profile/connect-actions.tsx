@@ -137,6 +137,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
                   return (
                     <Tooltip
                       key={'connection-type-key-' + type}
+                      className={isDisabled ? 'cursor-not-allowed' : undefined}
                       text={
                         isDisabled &&
                         t('profile.not_both_open_to_type', 'You are not both open to a {type}', {
@@ -157,7 +158,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
                       ? 'bg-primary-100 border-primary-300'
                       : 'bg-canvas-50 text-ink-700 border-ink-300'
                 }
-                ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'hover:border-primary-400'}
+                ${isDisabled ? 'opacity-30 pointer-events-none' : 'hover:border-primary-400'}
               `}
                       >
                         {t(`profile.relationship.${type}`, label)}

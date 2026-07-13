@@ -7,13 +7,14 @@ import {
   safePolygon,
   shift,
   useClick,
+  useDismiss,
   useFloating,
   useHover,
   useInteractions,
   useRole,
 } from '@floating-ui/react'
 import {Transition} from '@headlessui/react'
-import {ReactNode, useEffect, useRef, useState} from 'react'
+import {ReactNode, useRef, useState} from 'react'
 
 // See https://floating-ui.com/docs/react-dom
 
@@ -41,7 +42,6 @@ export function Tooltip(props: {
 
   const arrowRef = useRef(null)
   const [open, setOpen] = useState(false)
-  const touchOpenRef = useRef(false) // tracks whether open was triggered by touch
 
   const {x, y, refs, strategy, context} = useFloating({
     open,
@@ -51,45 +51,18 @@ export function Tooltip(props: {
     middleware: [offset(8), flip(), shift({padding: 4}), arrow({element: arrowRef})],
   })
 
-  // Close tooltip when tapping outside on touch devices
-  useEffect(() => {
-    if (!open || !touchOpenRef.current) return
-
-    const handleOutsideTouch = (e: TouchEvent) => {
-      const ref = refs.reference.current as Element | null
-      const floating = refs.floating.current as Element | null
-      if (
-        ref &&
-        !ref.contains(e.target as Node) &&
-        floating &&
-        !floating.contains(e.target as Node)
-      ) {
-        setOpen(false)
-        touchOpenRef.current = false
-      }
-    }
-
-    document.addEventListener('touchstart', handleOutsideTouch, {passive: true})
-    return () => document.removeEventListener('touchstart', handleOutsideTouch)
-  }, [open, refs.reference, refs.floating])
-
   const {getReferenceProps, getFloatingProps} = useInteractions([
+    // Hover is a mouse-only concept; touch devices open via useClick below.
     useHover(context, {
-      // Allow hover on all devices; touch devices will also use onTouchStart below
-      mouseOnly: noTap,
+      mouseOnly: true,
       handleClose: hasSafePolygon ? safePolygon({buffer: -0.5}) : null,
     }),
-    useClick(context),
+    // Tap/click toggles the tooltip (persists on touch) unless tapping is disabled.
+    useClick(context, {enabled: !noTap}),
+    // Tapping/clicking outside dismisses it, including on touch devices.
+    useDismiss(context),
     useRole(context, {role: 'tooltip'}),
   ])
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (noTap) return
-    e.stopPropagation()
-    const next = !open
-    touchOpenRef.current = next
-    setOpen(next)
-  }
 
   return text ? (
     <>
@@ -98,14 +71,6 @@ export function Tooltip(props: {
         suppressHydrationWarning={suppressHydrationWarning}
         className={className}
         ref={refs.setReference as any}
-        onMouseEnter={() => {
-          touchOpenRef.current = false
-          setOpen(true)
-        }}
-        onMouseLeave={() => {
-          if (!touchOpenRef.current) setOpen(false)
-        }}
-        onTouchStart={handleTouchStart}
         {...getReferenceProps()}
       >
         {children}

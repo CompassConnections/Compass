@@ -485,7 +485,12 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         {pref_romantic_styles},
       ),
 
-    diet?.length && where(`diet IS NULL OR diet = '{}' OR diet && $(diet)`, {diet}),
+    diet?.length &&
+      where(
+        // most are omnivores, so we don't include the people who didn't answer if we're looking for other diets
+        (!diet.includes('omnivore') ? '' : "diet IS NULL OR diet = '{}' OR ") + `diet && $(diet)`,
+        {diet},
+      ),
 
     political_beliefs?.length &&
       where(

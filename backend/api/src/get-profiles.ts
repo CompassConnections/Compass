@@ -373,6 +373,28 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     )`
   }
 
+  // Decide whether unfilled (null) profiles should be surfaced by a numeric range
+  // filter. Rare searches — a narrow band, or one sitting near an extreme edge of
+  // the field's domain — exclude nulls, since people who left the field blank
+  // almost certainly aren't the rare match being sought. Broad, central searches
+  // keep nulls. `lo`/`hi` are the field's full domain (used when only one bound is
+  // set); `isRare` receives the effective [m, M] range.
+  const numericRangeClause = (
+    field: string,
+    min: number | null | undefined,
+    max: number | null | undefined,
+    lo: number,
+    hi: number,
+    isRare: (m: number, M: number) => boolean,
+  ) => {
+    if (!min && !max) return undefined
+    const m = min ?? lo
+    const M = max ?? hi
+    const bounds = compact([min && `${field} >= $(min)`, max && `${field} <= $(max)`]).join(' AND ')
+    const clause = isRare(m, M) ? bounds : `(${bounds}) OR ${field} IS NULL`
+    return where(clause, {min, max})
+  }
+
   const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
@@ -415,63 +437,28 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         pref_gender,
       }),
 
-    pref_age_min && where(`age >= $(pref_age_min) or age is null`, {pref_age_min}),
+    // age domain 18–100; young (<30), older (>50), or narrow (<15yr) searches are rare
+    numericRangeClause('age', pref_age_min, pref_age_max, 18, 100, (m, M) => {
+      return M < 30 || m > 50 || M - m < 15
+    }),
 
-    pref_age_max && where(`age <= $(pref_age_max) or age is null`, {pref_age_max}),
+    // drinks/month domain 0–20; narrow band, near-teetotal, or heavy-drinker searches are rare
+    numericRangeClause('drinks_per_month', drinks_min, drinks_max, 0, 20, (m, M) => {
+      return M - m < 5 || M < 5 || m > 15
+    }),
 
-    drinks_min &&
-      where(`drinks_per_month >= $(drinks_min) or drinks_per_month is null`, {drinks_min}),
-
-    drinks_max &&
-      where(`drinks_per_month <= $(drinks_max) or drinks_per_month is null`, {drinks_max}),
-
-    big5_openness_min &&
-      where(`big5_openness >= $(big5_openness_min) or big5_openness is null`, {big5_openness_min}),
-
-    big5_openness_max &&
-      where(`big5_openness <= $(big5_openness_max) or big5_openness is null`, {big5_openness_max}),
-
-    big5_conscientiousness_min &&
-      where(
-        `big5_conscientiousness >= $(big5_conscientiousness_min) or big5_conscientiousness is null`,
-        {big5_conscientiousness_min},
-      ),
-
-    big5_conscientiousness_max &&
-      where(
-        `big5_conscientiousness <= $(big5_conscientiousness_max) or big5_conscientiousness is null`,
-        {big5_conscientiousness_max},
-      ),
-
-    big5_extraversion_min &&
-      where(`big5_extraversion >= $(big5_extraversion_min) or big5_extraversion is null`, {
-        big5_extraversion_min,
-      }),
-
-    big5_extraversion_max &&
-      where(`big5_extraversion <= $(big5_extraversion_max) or big5_extraversion is null`, {
-        big5_extraversion_max,
-      }),
-
-    big5_agreeableness_min &&
-      where(`big5_agreeableness >= $(big5_agreeableness_min) or big5_agreeableness is null`, {
-        big5_agreeableness_min,
-      }),
-
-    big5_agreeableness_max &&
-      where(`big5_agreeableness <= $(big5_agreeableness_max) or big5_agreeableness is null`, {
-        big5_agreeableness_max,
-      }),
-
-    big5_neuroticism_min &&
-      where(`big5_neuroticism >= $(big5_neuroticism_min) or big5_neuroticism is null`, {
-        big5_neuroticism_min,
-      }),
-
-    big5_neuroticism_max &&
-      where(`big5_neuroticism <= $(big5_neuroticism_max) or big5_neuroticism is null`, {
-        big5_neuroticism_max,
-      }),
+    // big5 traits are 0–100 percentiles; narrow band or outer-quartile searches are rare
+    ...(
+      [
+        ['big5_openness', big5_openness_min, big5_openness_max],
+        ['big5_conscientiousness', big5_conscientiousness_min, big5_conscientiousness_max],
+        ['big5_extraversion', big5_extraversion_min, big5_extraversion_max],
+        ['big5_agreeableness', big5_agreeableness_min, big5_agreeableness_max],
+        ['big5_neuroticism', big5_neuroticism_min, big5_neuroticism_max],
+      ] as const
+    ).map(([field, min, max]) =>
+      numericRangeClause(field, min, max, 0, 100, (m, M) => M - m < 25 || M < 25 || m > 75),
+    ),
 
     pref_relation_styles?.length &&
       where(
@@ -492,22 +479,24 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         {diet},
       ),
 
+    // no dominant value, so unfilled profiles are never surfaced by a politics filter
     political_beliefs?.length &&
-      where(
-        `political_beliefs IS NULL OR political_beliefs = '{}' OR political_beliefs && $(political_beliefs)`,
-        {political_beliefs},
-      ),
+      where(`political_beliefs && $(political_beliefs)`, {political_beliefs}),
 
     relationship_status?.length &&
       where(
-        `relationship_status IS NULL OR relationship_status = '{}' OR relationship_status && $(relationship_status)`,
+        // most are single, so we don't include the people who didn't answer unless looking for single
+        (!relationship_status.includes('single')
+          ? ''
+          : "relationship_status IS NULL OR relationship_status = '{}' OR ") +
+          `relationship_status && $(relationship_status)`,
         {relationship_status},
       ),
 
     languages?.length && where(`languages && $(languages)`, {languages}),
 
-    religion?.length &&
-      where(`religion IS NULL OR religion = '{}' OR religion && $(religion)`, {religion}),
+    // no dominant value, so unfilled profiles are never surfaced by a religion filter
+    religion?.length && where(`religion && $(religion)`, {religion}),
 
     orientation?.length &&
       where(

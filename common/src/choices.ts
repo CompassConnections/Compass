@@ -97,6 +97,7 @@ export const LANGUAGE_CHOICES = {
   Dutch: 'dutch',
   'Eastern Min': 'eastern-min',
   English: 'english',
+  Finnish: 'Finnish',
   French: 'french',
   Fula: 'fula',
   Gan: 'gan',

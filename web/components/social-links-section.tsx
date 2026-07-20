@@ -108,7 +108,7 @@ export function SocialLinksSection({profile, setProfile}: SocialLinksSectionProp
           type="text"
           placeholder={
             newLinkPlatform === 'signal'
-              ? t('profile.optional.signal_placeholder', 'Phone (+32777777777)')
+              ? t('profile.optional.signal_placeholder', 'Phone (+32777777777) or signal.me link')
               : SITE_ORDER.includes(newLinkPlatform as any) && newLinkPlatform != 'site'
                 ? t('profile.optional.username_or_url', 'Username or URL')
                 : t('profile.optional.site_url', 'Site URL')

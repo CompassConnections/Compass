@@ -13,6 +13,7 @@ import {Row} from '../layout/row'
 import {SocialIcon} from './social'
 
 const LABELS_TO_RENDER = [
+  'signal',
   'okcupid',
   'calendly',
   'datingdoc',

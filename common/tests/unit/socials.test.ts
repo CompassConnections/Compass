@@ -55,6 +55,15 @@ describe('strip', () => {
       expect(strip('linkedin', 'username')).toBe('username')
     })
   })
+
+  describe('signal', () => {
+    it('should strip signal.me deep links', () => {
+      expect(strip('signal', 'https://signal.me/#p/+15551234567')).toBe('+15551234567')
+      expect(strip('signal', 'signal.me/#p/+15551234567')).toBe('+15551234567')
+      expect(strip('signal', 'https://signal.me/#eu/abc123')).toBe('abc123')
+      expect(strip('signal', '+15551234567')).toBe('+15551234567')
+    })
+  })
 })
 
 describe('getSocialUrl', () => {
@@ -67,6 +76,15 @@ describe('getSocialUrl', () => {
     expect(getSocialUrl('linkedin', 'username')).toBe('https://linkedin.com/in/username')
     expect(getSocialUrl('facebook', 'username')).toBe('https://facebook.com/username')
     expect(getSocialUrl('spotify', 'username')).toBe('https://open.spotify.com/user/username')
+  })
+
+  it('should build signal.me deep links from phone numbers', () => {
+    expect(getSocialUrl('signal', '+15551234567')).toBe('https://signal.me/#p/+15551234567')
+    expect(getSocialUrl('signal', '15551234567')).toBe('https://signal.me/#p/+15551234567')
+    expect(getSocialUrl('signal', '+1 (555) 123-4567')).toBe('https://signal.me/#p/+15551234567')
+    expect(getSocialUrl('signal', 'https://signal.me/#eu/abc123')).toBe(
+      'https://signal.me/#eu/abc123',
+    )
   })
 
   it('should handle custom website URLs', () => {

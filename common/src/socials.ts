@@ -5,6 +5,7 @@ export const SITE_ORDER = [
   'site', // personal site
   'x', // twitter
   'discord',
+  'signal',
   'bluesky',
   'mastodon',
   'substack',
@@ -55,6 +56,8 @@ const stripper: {[key in Site]: (input: string) => string} = {
       .replace(/^@/, '')
       .replace(/\/$/, ''),
   discord: (s) => s,
+  // strip a signal.me deep link down to the phone number / handle for display
+  signal: (s) => s.replace(/^(https?:\/\/)?(www\.)?signal\.me\/#[a-z]+\//i, '').replace(/\/$/, ''),
   paypal: (s) =>
     s.replace(/^(https?:\/\/)?(www\.)?(\w+\.)?paypal\.com\/paypalme\//, '').replace(/\/$/, ''),
   patreon: (s) => s.replace(/^(https?:\/\/)?(www\.)?(\w+\.)?patreon\.com\//, '').replace(/\/$/, ''),
@@ -100,6 +103,16 @@ const urler: {[key in Site]: (handle: string) => string} = {
     (s.length === 17 || s.length === 18) && !isNaN(parseInt(s, 10))
       ? `https://discord.com/users/${s}` // discord user id
       : discordLink, // our server
+  // signal.me deep links open the Signal app directly. Phone numbers use #p/,
+  // a full pasted signal.me link (e.g. a username link, #eu/) is kept as-is.
+  signal: (s) => {
+    if (s.startsWith('http')) return s
+    const cleaned = s.replace(/[\s()\-.]/g, '')
+    if (/^\+?\d{7,15}$/.test(cleaned)) {
+      return `https://signal.me/#p/${cleaned.startsWith('+') ? cleaned : `+${cleaned}`}`
+    }
+    return `https://signal.me/#p/${s}`
+  },
   bluesky: (s) => `https://bsky.app/profile/${s}`,
   mastodon: (s) => (s.includes('@') ? `https://${s.split('@')[1]}/@${s.split('@')[0]}` : s),
   substack: (s) => (s.startsWith('http') ? s : `https://${s}.substack.com`),
@@ -121,6 +134,7 @@ export const PLATFORM_LABELS: {[key in Site]: string} = {
   site: 'Website',
   x: 'Twitter/X',
   discord: 'Discord',
+  signal: 'Signal',
   bluesky: 'Bluesky',
   mastodon: 'Mastodon',
   substack: 'Substack',

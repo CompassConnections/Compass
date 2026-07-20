@@ -2,6 +2,7 @@ import {DocumentTextIcon, LinkIcon} from '@heroicons/react/24/solid'
 import {Site} from 'common/socials'
 import {ReactNode} from 'react'
 import {LuBookmark, LuHandshake, LuHeart, LuUsers} from 'react-icons/lu'
+import {SiSignal} from 'react-icons/si'
 import {
   TbBrandBluesky,
   TbBrandDiscord,
@@ -23,6 +24,7 @@ export const PLATFORM_ICONS: {
   site: LinkIcon,
   x: TbBrandX,
   discord: TbBrandDiscord,
+  signal: SiSignal,
   bluesky: TbBrandBluesky,
   mastodon: TbBrandMastodon,
   substack: LuBookmark,

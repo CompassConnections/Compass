@@ -1066,6 +1066,7 @@
   "profile.optional.subtitle": "Informations optionnelles",
   "profile.optional.title": "Plus d'informations à mon sujet",
   "profile.optional.university": "Université",
+  "profile.optional.signal_placeholder": "Numéro de téléphone ou lien signal.me",
   "profile.optional.username_or_url": "Nom d'utilisateur ou URL",
   "profile.optional.want_kids": "Je souhaite avoir des enfants",
   "profile.optional.work": "Domaine de travail",

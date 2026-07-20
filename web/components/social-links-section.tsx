@@ -107,9 +107,11 @@ export function SocialLinksSection({profile, setProfile}: SocialLinksSectionProp
         <Input
           type="text"
           placeholder={
-            SITE_ORDER.includes(newLinkPlatform as any) && newLinkPlatform != 'site'
-              ? t('profile.optional.username_or_url', 'Username or URL')
-              : t('profile.optional.site_url', 'Site URL')
+            newLinkPlatform === 'signal'
+              ? t('profile.optional.signal_placeholder', 'Phone (+32777777777)')
+              : SITE_ORDER.includes(newLinkPlatform as any) && newLinkPlatform != 'site'
+                ? t('profile.optional.username_or_url', 'Username or URL')
+                : t('profile.optional.site_url', 'Site URL')
           }
           value={newLinkValue}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewLinkValue(e.target.value)}

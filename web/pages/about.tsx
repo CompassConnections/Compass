@@ -17,6 +17,7 @@ import {discordLink, formLink, githubRepo} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps} from 'react'
+import {VoteEvidence} from 'web/components/about/vote-evidence'
 import {CopyLinkOrShareButton, ShareProfileOnXButton} from 'web/components/buttons/copy-link-button'
 import {GeneralButton} from 'web/components/buttons/general-button'
 import {Row} from 'web/components/layout/row'
@@ -331,7 +332,7 @@ export default function About() {
           <p className="text-xs font-bold tracking-[1.5px] uppercase text-primary-500 mb-3">
             {t('about.eyebrow', 'About Compass')}
           </p>
-          <h1 className="text-[clamp(28px,4vw,40px)] font-black text-ink-900 tracking-tight leading-tight mb-3">
+          <h1 className="text-[clamp(28px,4vw,40px)] text-ink-900 tracking-tight leading-tight mb-3">
             {t('about.title', 'Why Choose Compass?')}
           </h1>
           <p className="text-lg text-ink-500 max-w-lg leading-relaxed">
@@ -353,6 +354,14 @@ export default function About() {
               <FeatureCard key={f.title} icon={f.icon} title={f.title} text={f.text} />
             ),
           )}
+        </div>
+
+        <Divider />
+
+        {/* ── How a decision gets made ── */}
+        <SectionLabel>{t('about.vote.label', 'How a decision gets made')}</SectionLabel>
+        <div className="mb-4">
+          <VoteEvidence />
         </div>
 
         <Divider />

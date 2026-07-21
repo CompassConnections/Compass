@@ -1,12 +1,55 @@
+import {CheckIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {toKey} from 'common/parsing'
 import {nullifyEmpty} from 'common/util/array'
 import {useEffect, useMemo, useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Row} from 'web/components/layout/row'
-import {Checkbox} from 'web/components/widgets/checkbox'
 import {Input} from 'web/components/widgets/input'
 import {useT} from 'web/lib/locale'
+
+/**
+ * A selectable option, styled as a chip rather than a checkbox-and-label row.
+ *
+ * The filter rail used native checkboxes in uniform `text-ink-600`, which read as washed out and gave
+ * no visual weight to what was actually selected. Chips reuse the language already on profile cards
+ * (keywords, interests) so the filters and the results they produce look like the same product, and a
+ * filled chip makes the current selection obvious at a glance.
+ *
+ * Still a real `<input type="checkbox">` underneath — visually hidden, not replaced — so keyboard
+ * navigation, focus order and screen-reader semantics are unchanged.
+ */
+function OptionChip(props: {
+  label: string
+  checked: boolean
+  toggle: (checked: boolean) => void
+  disabled?: boolean
+}) {
+  const {label, checked, toggle, disabled} = props
+
+  return (
+    <label
+      className={clsx(
+        'group relative inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-150',
+        'focus-within:ring-2 focus-within:ring-primary-400 focus-within:ring-offset-1 focus-within:ring-offset-canvas-50',
+        disabled && 'cursor-not-allowed opacity-50',
+        checked
+          ? 'border-primary-500 bg-primary-500 text-white shadow-[0_2px_8px_rgba(193,127,62,0.28)]'
+          : 'border-canvas-300 bg-canvas-0 text-ink-600 hover:border-primary-400 hover:text-primary-700',
+      )}
+    >
+      <input
+        type="checkbox"
+        className="sr-only"
+        checked={checked}
+        disabled={disabled}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => toggle(e.target.checked)}
+      />
+      {checked && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={3} />}
+      <span className="whitespace-nowrap">{label}</span>
+    </label>
+  )
+}
 
 export const MultiCheckbox = (props: {
   // Map of label -> value
@@ -138,9 +181,9 @@ export const MultiCheckbox = (props: {
         </Row>
       )}
 
-      <Row className={clsx('flex-wrap', optionsClassName)}>
+      <Row className={clsx('flex-wrap gap-2', optionsClassName)}>
         {filteredEntries.map(([key, value]) => (
-          <Checkbox
+          <OptionChip
             key={key}
             label={translateOption(key, value)}
             checked={selected.includes(value)}

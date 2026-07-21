@@ -75,6 +75,71 @@ export interface ShowcaseProfile {
   photoCount: number
 }
 
+/**
+ * The account captures sign in AS, rather than one they look at.
+ *
+ * Search, filters and the profile grid only render for a signed-in user, so a capture run needs a session.
+ * Doing that by hand (the `.auth-profile` route `capture-profile.mjs` uses) breaks on every reseed and
+ * can't run unattended — so this one account, unlike the personas, does get a Firebase login.
+ *
+ * Kept out of `SHOWCASE_PROFILES` because it is infrastructure, not a face: it exists to hold a session,
+ * and mostly shows up as a nav avatar.
+ */
+export const SHOWCASE_VIEWER_EMAIL = 'viewer@compass.showcase'
+export const SHOWCASE_VIEWER_PASSWORD = 'showcase-viewer-pass'
+
+export const SHOWCASE_VIEWER: ShowcaseProfile = {
+  slug: 'alexmorel',
+  name: 'Alex Morel',
+  email: SHOWCASE_VIEWER_EMAIL,
+  age: 33,
+  // A default gender on purpose. GenderFilter auto-expands its full ~20-option list when the signed-in
+  // viewer's own gender is an extended one (gender-filter.tsx), which buried the point of the filter
+  // beat in the marketing capture. Woman/Man are the two defaults.
+  gender: 'female',
+  orientation: ['queer'],
+  headline: 'Translator and mountain person, here to meet people who read',
+  bio: [
+    'I translate technical documentation between French, English and Spanish, which is a stranger job than it sounds — most of the work is deciding what the original author actually meant.',
+    'I climb and ski depending on the season, and I read more than is reasonable. Currently working through a stack of translated Japanese fiction and losing.',
+    'Here for friendship and collaboration mainly. Happy to be surprised.',
+  ],
+  keywords: ['translation', 'climbing', 'literature'],
+  city: 'Grenoble',
+  region_code: 'ARA',
+  country: 'France',
+  city_latitude: 45.1885,
+  city_longitude: 5.7245,
+  born_in_location: 'France',
+  occupation_title: 'Technical Translator',
+  company: 'Freelance',
+  university: 'Université Grenoble Alpes',
+  education_level: 'masters',
+  languages: ['french', 'english', 'spanish'],
+  ethnicity: ['caucasian'],
+  height_in_inches: 69,
+  religion: ['agnostic'],
+  political_beliefs: ['progressive'],
+  diet: ['veg'],
+  mbti: 'infp',
+  big5: {openness: 86, conscientiousness: 70, extraversion: 45, agreeableness: 76, neuroticism: 38},
+  relationship_status: ['single'],
+  pref_relation_styles: ['friendship', 'collaboration'],
+  pref_romantic_styles: [],
+  pref_gender: ['female', 'male', 'non-binary'],
+  pref_age_min: 25,
+  pref_age_max: 45,
+  has_kids: 0,
+  wants_kids_strength: 1,
+  is_smoker: false,
+  drinks_per_month: 5,
+  interests: ['Climbing', 'Literature', 'Skiing', 'Languages'],
+  causes: ['Open source'],
+  work: ['Translation'],
+  links: {site: 'alexmorel.fr'},
+  photoCount: 1,
+}
+
 export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
   {
     slug: 'mayaokonkwo',

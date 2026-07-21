@@ -6,15 +6,23 @@
   "license": "MIT",
   "scripts": {
     "capture:profile": "node scripts/capture-profile.mjs",
+    "capture:search": "node scripts/capture-search.mjs --theme light",
+    "capture:search:dark": "node scripts/capture-search.mjs --theme dark",
+    "capture:vote": "node scripts/capture-vote.mjs",
     "render": "npm run render:post",
     "render:carousel": "node scripts/render-carousel.mjs",
     "render:post": "remotion render IntroPost out/compass-intro-post.mp4",
+    "render:search": "remotion render SearchDemoLight out/compass-search-demo-light.mp4 --crf 30",
+    "render:search:dark": "remotion render SearchDemoDark out/compass-search-demo-dark.mp4 --crf 30",
     "render:story": "remotion render IntroStory out/compass-intro-story.mp4",
     "render:tour": "remotion render ProfileTourStory out/compass-profile-tour-story.mp4",
     "render:tour:post": "remotion render ProfileTourPost out/compass-profile-tour-post.mp4",
+    "still:search": "remotion still SearchDemoLight out/compass-search-poster-light.png --frame=0",
+    "still:search:dark": "remotion still SearchDemoDark out/compass-search-poster-dark.png --frame=0",
     "studio": "remotion studio",
     "typecheck": "tsc --noEmit",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "upload:media": "bash scripts/upload-media.sh"
   },
   "dependencies": {
     "@remotion/cli": "4.0.290",

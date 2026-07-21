@@ -603,6 +603,30 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>{t('profile.optional.photos', 'Photos')}</label>
+
+          {/*<div className="mb-1">*/}
+          {/*  A real or stylized photo of you is required.*/}
+          {/*</div>*/}
+
+          <AddPhotosWidget
+            username={user.username}
+            photo_urls={profile.photo_urls}
+            pinned_url={profile.pinned_url}
+            setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
+            setPinnedUrl={(url) => setProfile('pinned_url', url)}
+            setDescription={(url, description) =>
+              setProfile('image_descriptions', {
+                ...((profile?.image_descriptions as Record<string, string>) ?? {}),
+                [url]: description,
+              })
+            }
+            image_descriptions={profile.image_descriptions as Record<string, string>}
+            onUpload={(uploading) => setUploadingImages(uploading)}
+          />
+        </Col>
+
         <Category title={t('profile.optional.og_card', 'Profile Card')} className={'mt-0'} />
 
         <label className={clsx('guidance')}>
@@ -1268,34 +1292,6 @@ export const OptionalProfileUserForm = (props: {
             setProfile('bio_length', e.getText().length)
           }}
         />
-
-        <Category title={t('profile.optional.photos', 'Photos')} />
-
-        <Col className={clsx(colClassName)}>
-          {/*<label className={clsx(labelClassName)}>*/}
-          {/*  {t('profile.optional.photos', 'Photos')}*/}
-          {/*</label>*/}
-
-          {/*<div className="mb-1">*/}
-          {/*  A real or stylized photo of you is required.*/}
-          {/*</div>*/}
-
-          <AddPhotosWidget
-            username={user.username}
-            photo_urls={profile.photo_urls}
-            pinned_url={profile.pinned_url}
-            setPhotoUrls={(urls) => setProfile('photo_urls', urls)}
-            setPinnedUrl={(url) => setProfile('pinned_url', url)}
-            setDescription={(url, description) =>
-              setProfile('image_descriptions', {
-                ...((profile?.image_descriptions as Record<string, string>) ?? {}),
-                [url]: description,
-              })
-            }
-            image_descriptions={profile.image_descriptions as Record<string, string>}
-            onUpload={(uploading) => setUploadingImages(uploading)}
-          />
-        </Col>
 
         <Row className={'justify-end'}>
           <Button

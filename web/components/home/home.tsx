@@ -3,6 +3,7 @@ import {discordLink, githubRepo} from 'common/constants'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps, useEffect, useRef} from 'react'
 import {FaDiscord, FaGithub} from 'react-icons/fa'
+import {SearchDemo} from 'web/components/home/search-demo'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
@@ -54,6 +55,9 @@ function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
   )
 }
 
+// Kept for the commented-out avatar row in SocialProof below: the gradient initials were fabricated
+// social proof sitting next to the word "real", so they are disabled rather than deleted.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function SocialAvatar({letter, gradient}: SocialAvatarProps) {
   return (
     <div
@@ -66,6 +70,7 @@ function SocialAvatar({letter, gradient}: SocialAvatarProps) {
 }
 
 function SocialProof({label}: {label: React.ReactNode}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const avatars: SocialAvatarProps[] = [
     {letter: 'S', gradient: 'linear-gradient(135deg, #C17F3E, #8B5E3C)'},
     {letter: 'R', gradient: 'linear-gradient(135deg, #6B8F71, #4A7055)'},
@@ -75,11 +80,11 @@ function SocialProof({label}: {label: React.ReactNode}) {
 
   return (
     <div className="flex items-center gap-3 text-ink-600 text-sm">
-      <div className="flex">
-        {avatars.map((av) => (
-          <SocialAvatar key={av.letter} {...av} />
-        ))}
-      </div>
+      {/*<div className="flex">*/}
+      {/*  {avatars.map((av) => (*/}
+      {/*    <SocialAvatar key={av.letter} {...av} />*/}
+      {/*  ))}*/}
+      {/*</div>*/}
       <span>{label}</span>
     </div>
   )
@@ -213,7 +218,7 @@ export function LoggedOutHome() {
       title: t('home.feature2.title', 'Built for Depth'),
       text: t(
         'home.feature2.text',
-        'Filter by values, interests, goals, and keywords — from "stoicism" to "sustainable living." Surface connections that truly matter.',
+        'Filter by values, interests, goals, and keywords — from "meditation" to "sustainable living." Surface connections that truly matter.',
       ),
     },
     {
@@ -253,78 +258,94 @@ export function LoggedOutHome() {
       )}
 
       <div className="flex flex-col items-center w-full px-4 pb-16">
-        {/* ── Hero ── */}
-        <section className="relative flex flex-col items-center text-center max-w-3xl w-full pt-16 pb-12">
-          {/* Soft radial glow behind the hero for depth. Dark mode uses a brighter,
+        {/* ── Hero ──
+            Two columns from lg up: copy left, phone clip right. Stacked and centred below that, which
+            is also the mobile shape. The clip is a portrait phone recording, so stacking it under a
+            centred hero on a wide screen left ~535px dead on either side and pushed the features
+            section off the fold; side by side, its height is an asset instead of a cost. */}
+        <section className="relative w-full max-w-3xl lg:max-w-6xl pt-16 pb-12 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-10 lg:gap-14 items-center">
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            {/* Soft radial glow behind the hero for depth. Dark mode uses a brighter,
               lighter-hued, faster-falloff core so it reads as light, not brown haze. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_30%,rgba(193,127,62,0.16),transparent_70%)]"
-          />
-
-          <EyebrowBadge>
-            {t('home.eyebrow', 'Free forever · Open source · No matching algorithms')}
-          </EyebrowBadge>
-
-          <h1 className="animate-fade-up text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight mb-2">
-            {t('home.title', "Don't Swipe.")}
-          </h1>
-
-          {/* Typewriter line */}
-          <div
-            className="animate-fade-up text-[clamp(52px,8vw,96px)] font-black leading-none tracking-tight text-primary-500 mb-9 flex items-center justify-center min-h-[1.1em]"
-            style={{animationDelay: '80ms'}}
-          >
-            <span ref={typewriterRef} />
-            <span className="animate-pulse ml-0.5 font-light">|</span>
-          </div>
-
-          <p
-            className="animate-fade-up text-[clamp(17px,2.2vw,22px)] text-ink-600 leading-relaxed max-w-xl mb-10"
-            style={{animationDelay: '160ms'}}
-          >
-            {t('home.subtitle', 'Find people who share your ')}
-            <strong className="text-ink-900">{t('home.subtitle.values', 'values')}</strong>
-            {', '}
-            <strong className="text-ink-900">{t('home.subtitle.ideas', 'ideas')}</strong>
-            {t('home.subtitle.and', ', and ')}
-            <strong className="text-ink-900">{t('home.subtitle.intentions', 'intentions')}</strong>
-            {t('home.subtitle.end', ' — not just your photos.')}
-          </p>
-
-          {/* CTAs */}
-          <div
-            className="animate-fade-up flex gap-3 flex-wrap justify-center items-center mb-10"
-            style={{animationDelay: '240ms'}}
-          >
-            {user === null && (
-              <Link
-                href={'/register'}
-                className="hidden sm:inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-primary-500 text-white font-bold text-[15px] shadow-[0_4px_16px_rgba(193,127,62,0.35)] hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] transition-all duration-150"
-              >
-                {t('home.cta.primary', 'Get started — free')}
-              </Link>
-            )}
-            <Link
-              href={'/about'}
-              className="px-7 py-3.5 rounded-xl bg-transparent text-[#8B5E3C] font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-150"
-            >
-              {t('home.cta.secondary', 'Learn how it works')}
-            </Link>
-          </div>
-
-          {/* Social proof */}
-          <div className="animate-fade-up" style={{animationDelay: '320ms'}}>
-            <SocialProof
-              label={
-                <>
-                  {t('home.proof.prefix', 'Joined by ')}
-                  <strong className="text-ink-900">{t('home.proof.count', '700+')}</strong>
-                  {t('home.proof.suffix', ' real people worldwide')}
-                </>
-              }
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_30%,rgba(193,127,62,0.16),transparent_70%)]"
             />
+
+            <EyebrowBadge>
+              {t('home.eyebrow', 'Free forever · Open source · No matching algorithms')}
+            </EyebrowBadge>
+
+            <h1 className="animate-fade-up text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight mb-2">
+              {t('home.title', "Don't Swipe.")}
+            </h1>
+
+            {/* Typewriter line */}
+            <div
+              // font-heading: this is the second line of the same headline as the <h1> above, but it is a
+              // <div>, so the global h1–h6 rule does not reach it — without this the two lines render in
+              // different faces.
+
+              className="animate-fade-up font-heading font-semibold text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight text-primary-500 mb-9 flex items-center justify-center lg:justify-start min-h-[1.1em]"
+              style={{animationDelay: '80ms'}}
+            >
+              <span ref={typewriterRef} />
+              <span className="animate-pulse ml-0.5 font-light">|</span>
+            </div>
+
+            <p
+              className="animate-fade-up text-[clamp(17px,2.2vw,22px)] text-ink-600 leading-relaxed max-w-xl mb-10"
+              style={{animationDelay: '160ms'}}
+            >
+              {t('home.subtitle', 'Find people who share your ')}
+              <strong className="text-ink-900">{t('home.subtitle.values', 'values')}</strong>
+              {', '}
+              <strong className="text-ink-900">{t('home.subtitle.ideas', 'ideas')}</strong>
+              {t('home.subtitle.and', ', and ')}
+              <strong className="text-ink-900">
+                {t('home.subtitle.intentions', 'intentions')}
+              </strong>
+              {t('home.subtitle.end', ' — not just your photos.')}
+            </p>
+
+            {/* CTAs */}
+            <div
+              className="animate-fade-up flex gap-3 flex-wrap justify-center lg:justify-start items-center mb-10"
+              style={{animationDelay: '240ms'}}
+            >
+              {user === null && (
+                <Link
+                  href={'/register'}
+                  className="hidden sm:inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-primary-500 text-white font-bold text-[15px] shadow-[0_4px_16px_rgba(193,127,62,0.35)] hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] transition-all duration-150"
+                >
+                  {t('home.cta.primary', 'Get started — free')}
+                </Link>
+              )}
+              <Link
+                href={'/about'}
+                className="px-7 py-3.5 rounded-xl bg-transparent text-[#8B5E3C] font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-150"
+              >
+                {t('home.cta.secondary', 'Learn how it works')}
+              </Link>
+            </div>
+
+            {/* Social proof */}
+            <div className="animate-fade-up" style={{animationDelay: '320ms'}}>
+              <SocialProof
+                label={
+                  <>
+                    {t('home.proof.prefix', 'Joined by ')}
+                    <strong className="text-ink-900">{t('home.proof.count', '700+')}</strong>
+                    {t('home.proof.suffix', ' real people worldwide')}
+                  </>
+                }
+              />
+            </div>
           </div>
+
+          {/* Proof of the hero's claim: the headline says "Don't Swipe. Search." and this is what
+              searching actually looks like. */}
+          <SearchDemo />
         </section>
 
         {/* Divider */}
@@ -335,7 +356,7 @@ export function LoggedOutHome() {
           <p className="text-center text-xs font-bold tracking-[1.5px] uppercase text-primary-500 mb-3">
             {t('home.features.label', 'Why Compass')}
           </p>
-          <h2 className="text-center text-[clamp(24px,3vw,32px)] font-extrabold text-ink-1000 tracking-tight mb-10">
+          <h2 className="text-center text-[clamp(24px,3vw,32px)] text-ink-1000 tracking-tight mb-10">
             {t('home.features.title', 'Built different. On purpose.')}
           </h2>
           <div className="grid md:grid-cols-3 gap-5">

@@ -59,7 +59,7 @@ export function MessagesContent(props: {currentUser: User}) {
   return (
     <>
       <Row className="justify-between items-center mb-4">
-        <h1 className="font-cormorant text-4xl font-medium text-ink-900">
+        <h1 className="font-heading text-4xl font-medium text-ink-900">
           {t('messages.title', 'Messages')}
         </h1>
         <NewMessageButton />

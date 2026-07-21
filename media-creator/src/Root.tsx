@@ -1,7 +1,8 @@
-import {Composition} from 'remotion';
-import {FORMATS} from './theme';
-import {Intro, INTRO_DURATION} from './scenes/Intro';
-import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour';
+import {Composition} from 'remotion'
+import {FORMATS} from './theme'
+import {Intro, INTRO_DURATION} from './scenes/Intro'
+import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour'
+import {SearchDemo, SearchDemoProps, calculateSearchDemoMetadata} from './scenes/SearchDemo'
 
 // Register every video composition here. The same Intro scenes render into two
 // Instagram-ready canvases; render with:
@@ -43,6 +44,32 @@ export const RemotionRoot: React.FC = () => {
         width={FORMATS.post.width}
         height={FORMATS.post.height}
       />
+      {/* Home-page hero clip. Not a social format: its canvas is the capture viewport, and both
+          size and duration come from public/search/manifest.json via calculateMetadata, so a
+          re-capture with a different --query needs no change here.
+            npm run capture:search && npm run render:search */}
+      <Composition
+        id="SearchDemoLight"
+        component={SearchDemo}
+        durationInFrames={480}
+        fps={30}
+        width={780}
+        height={1688}
+        // Cast so the prop type stays `SearchManifest | null` rather than being narrowed to `null`
+        // by inference; calculateMetadata supplies the real manifest.
+        defaultProps={{manifest: null, theme: 'light'} as SearchDemoProps}
+        calculateMetadata={calculateSearchDemoMetadata}
+      />
+      <Composition
+        id="SearchDemoDark"
+        component={SearchDemo}
+        durationInFrames={514}
+        fps={30}
+        width={780}
+        height={1688}
+        defaultProps={{manifest: null, theme: 'dark'} as SearchDemoProps}
+        calculateMetadata={calculateSearchDemoMetadata}
+      />
     </>
-  );
-};
+  )
+}

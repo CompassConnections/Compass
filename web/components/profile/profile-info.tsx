@@ -284,7 +284,7 @@ function CardTitle(props: {children: ReactNode; className?: string}) {
   return (
     // <div
     //   className={clsx(
-    //     'text-ink-900 mb-3.5 font-cormorant text-xl font-medium tracking-wide',
+    //     'text-ink-900 mb-3.5 font-heading text-xl font-medium tracking-wide',
     //     className,
     //   )}
     //   style={{letterSpacing: '0.01em'}}
@@ -292,7 +292,7 @@ function CardTitle(props: {children: ReactNode; className?: string}) {
     //   {children}
     // </div>
     <Subtitle
-      className={clsx('!mt-0 !mb-4 font-cormorant text-xl font-medium tracking-wide', className)}
+      className={clsx('!mt-0 !mb-4 font-heading text-xl font-medium tracking-wide', className)}
     >
       {children}
     </Subtitle>

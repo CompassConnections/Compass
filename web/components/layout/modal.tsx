@@ -59,7 +59,13 @@ export function Modal(props: {
           leaveTo="opacity-0"
         >
           {/* background cover */}
-          <div className="bg-canvas-100/75 fixed inset-0" />
+          <div
+            className="bg-canvas-100/60 fixed inset-0 backdrop-blur-lg"
+            // Real blur rather than a heavier tint: a flat scrim just dims the page, while
+            // defocusing it pushes it behind the dialog and makes the modal the only thing
+            // the eye can resolve. The tint drops from /75 so the blur is actually visible
+            // through it — at 75% opacity the backdrop-filter is almost entirely masked.
+          />
         </Transition.Child>
 
         <Transition.Child

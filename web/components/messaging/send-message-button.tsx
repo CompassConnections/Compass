@@ -1,15 +1,17 @@
+import {CheckIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH} from 'common/comment'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
 import {Button, buttonClass} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
+import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {usePrivateMessageMembershipsContext} from 'web/components/messaging/private-message-memberships-context'
 import {useTextEditor} from 'web/components/widgets/editor'
@@ -17,6 +19,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
+import {skipEmailVerification} from 'web/lib/dev-flags'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 
@@ -82,8 +85,11 @@ export const SendMessageButton = (props: {
       `What genuinely resonated with you in {name}'s profile? What would you like to explore together?`,
       {name: toUser.name},
     ),
+    // The editor sets an inline `min-height` from nRowsMin (editor.tsx), and inline style beats the
+    // class below — so nRowsMin, not `min-h-[150px]`, is what actually decides the height. Five rows
+    // gives a message with a 200-character minimum somewhere to live.
     className: 'min-h-[150px]',
-    nRowsMin: 3,
+    nRowsMin: 5,
   })
 
   useEffect(() => {
@@ -94,6 +100,29 @@ export const SendMessageButton = (props: {
       }, 100)
     }
   }, [openComposeModal, editor])
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const editorWrapRef = useRef<HTMLDivElement>(null)
+
+  // The panel scrolls, and the editor grows with the message — so once the content outgrows the
+  // panel, every new line would push the send button (and the line being typed) below the fold.
+  // Pin the scroll to the bottom whenever the editor gets taller, so what's being written stays in
+  // view and the header scrolls off the top instead. Only growth triggers it: on shrink, or when
+  // the user scrolls up deliberately, we leave the position alone.
+  useEffect(() => {
+    const wrap = editorWrapRef.current
+    const scroller = scrollRef.current
+    if (!wrap || !scroller) return
+
+    let lastHeight = wrap.getBoundingClientRect().height
+    const observer = new ResizeObserver(([entry]) => {
+      const height = entry.contentRect.height
+      if (height > lastHeight) scroller.scrollTop = scroller.scrollHeight
+      lastHeight = height
+    })
+    observer.observe(wrap)
+    return () => observer.disconnect()
+  }, [openComposeModal, firebaseUser?.emailVerified])
 
   const sendMessage = async () => {
     if (!editor) return
@@ -144,11 +173,11 @@ export const SendMessageButton = (props: {
 
   const charCount = editor?.getText().trim().length ?? 0
   const pct = Math.min((charCount / MIN_CHARS) * 100, 100)
-  // Smooth color transition from red (0%) to green (100%)
-  const r = pct < 50 ? 255 : Math.round(((100 - pct) / 50) * 255)
-  const g = pct < 50 ? Math.round((pct / 50) * 255) : 255
-  const b = Math.round(0)
-  const barColor = `rgb(${r}, ${g}, ${b})`
+  const isReady = charCount >= MIN_CHARS
+  const firstName = toUser.name.split(' ')[0]
+  // Amber while short, green once it unlocks — the design's signal that the threshold is met. The
+  // green is the brand sage rather than the design's raw oklch, so it stays on-palette.
+  const barColor = isReady ? '#6B8F71' : '#C17F3E'
 
   if (privateUser?.blockedByUserIds.includes(toUser.id)) return null
 
@@ -221,86 +250,165 @@ export const SendMessageButton = (props: {
         )}
       </Tooltip>
 
-      <Modal open={openComposeModal} setOpen={setOpenComposeModal}>
-        <Col className={MODAL_CLASS}>
-          <Col className={'w-full mb-2'}>
-            <p className={'font-cormorant text-3xl font-medium text-ink-900 mb-2'}>
+      {/* `!min-h-0` / `!h-auto` override the shared modal's fixed 60vh floor: this composer's content is
+          short, and the forced height left roughly a third of the panel as empty canvas below the
+          progress bar, which is what made it read as unfinished. */}
+      {/* size="lg" (max-w-2xl) rather than the default md: this is the one modal in the app people
+          actually compose long-form text in, and 200 characters minimum in a 448px column is a
+          cramped place to do it. Mobile is unaffected — the panel is full-width there regardless. */}
+      <Modal open={openComposeModal} setOpen={setOpenComposeModal} size="lg" className="!min-h-0">
+        {/* `[&>*]:shrink-0` is load-bearing. This is a flex column, so by default a long message let
+            flex compress the editor instead of overflowing the panel — and TextEditor's shell is
+            `overflow-hidden`, so the compressed part was clipped with no way to scroll to it. That is
+            why the top of a long message and the image/emoji toolbar became unreachable. Keeping
+            children at their natural height makes the panel itself overflow, which `overflow-y-auto`
+            then scrolls. */}
+        <Col
+          ref={scrollRef}
+          className={clsx(MODAL_CLASS, '!h-auto max-h-[85vh] overflow-y-auto pb-5 [&>*]:shrink-0')}
+        >
+          {/* Header. Follows the Compose Modal design: portrait, an uppercase "writing to" eyebrow,
+              then the serif title and a hairline. The earlier full-bleed gradient band competed with
+              the content it was introducing. */}
+          <Col className={'w-full'}>
+            <Row className={'items-center gap-3.5 mb-6'}>
+              {profile.pinned_url && (
+                <img
+                  src={profile.pinned_url}
+                  alt=""
+                  className={'h-13 w-13 rounded-full object-cover border border-canvas-200'}
+                  style={{width: 52, height: 52}}
+                />
+              )}
+              <Col className={'gap-0.5'}>
+                <span
+                  className={
+                    'text-primary-600 text-[11px] font-semibold uppercase tracking-[0.09em]'
+                  }
+                >
+                  {t('send_message.writing_to', 'Writing to')}
+                </span>
+                <span className={'text-ink-900 text-[17px] font-semibold leading-tight'}>
+                  {toUser.name}
+                </span>
+              </Col>
+            </Row>
+
+            <h2
+              className={
+                'font-heading text-[32px] font-medium leading-[1.15] text-ink-1000 !mt-0 mb-3'
+              }
+            >
               {t('send_message.title', 'Start a meaningful conversation')}
-            </p>
-            <p className={'text-ink-500 text-sm leading-relaxed'}>
+            </h2>
+            <p className={'text-ink-500 text-[15px] leading-[1.55] max-w-[92%]'}>
               {t(
                 'send_message.guidance',
                 'Compass is about depth. Take a moment to write something genuine.',
               )}
             </p>
+            <div className={'h-px bg-canvas-200 mt-6'} />
           </Col>
 
-          {firebaseUser?.emailVerified ? (
+          {/* skipEmailVerification is dev-only and cannot be enabled in a production build; the API
+              still rejects unverified senders. See web/lib/dev-flags.ts. */}
+          {firebaseUser?.emailVerified || skipEmailVerification ? (
             <>
+              {/* Topics box: a 40% tint rather than solid canvas-100. At full strength the fill sat a
+                  whole step away from the modal's canvas-50 surface and read as a separate panel. The
+                  border is what defines the box; the fill only needs to hint at it. Works in both
+                  themes, since canvas-100 sits on the far side of canvas-50 either way. */}
               {!!profile.keywords?.length && (
-                <div className={'w-full bg-canvas-50 border border-canvas-200 rounded-xl p-3'}>
-                  <p className={'text-ink-500 mb-2 text-xs font-medium'}>
-                    {t(
-                      'send_message.keywords_hint',
-                      `Insert some of {name}'s topics in your message`,
-                      {name: toUser.name},
-                    )}
+                <div
+                  className={
+                    'w-full bg-canvas-100/80 border border-canvas-200 rounded-2xl p-[18px]'
+                  }
+                >
+                  <p className={'text-primary-600 mb-3 text-[12.5px] font-semibold'}>
+                    {t('send_message.keywords_hint', `Insert some of {name}'s topics`, {
+                      name: firstName,
+                    })}
                   </p>
-                  <div className={'flex flex-wrap gap-2'}>
+                  <div className={'flex flex-wrap gap-[9px]'}>
                     {profile.keywords.map((k) => (
                       <button
                         key={k}
                         type={'button'}
                         onClick={() => toggleChip(k)}
+                        // Same chip language as the filter rail, so selecting a topic here reads the
+                        // same as narrowing a search there.
                         className={clsx(
-                          'text-xs px-3 py-1 rounded-full transition-colors border',
+                          'inline-flex items-center gap-1.5 text-[13.5px] font-medium px-[15px] py-2 rounded-full border transition-colors duration-150 whitespace-nowrap',
                           insertedChips.includes(k)
-                            ? 'bg-primary-50 border-primary-300 text-primary-700'
-                            : 'bg-canvas-100 border-canvas-200 text-ink-500 hover:border-primary-300 hover:bg-primary-50',
+                            ? 'bg-primary-500 border-primary-500 text-white'
+                            : 'bg-canvas-0 border-canvas-300 text-ink-700 hover:bg-primary-50 hover:border-primary-400',
                         )}
                       >
+                        {insertedChips.includes(k) && (
+                          <CheckIcon className={'h-3 w-3'} strokeWidth={3} />
+                        )}
                         {k}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-              <CommentInputTextArea
-                editor={editor}
-                user={currentUser}
-                submit={sendMessage}
-                isSubmitting={!editor || submitting}
-                isDisabled={charCount < MIN_CHARS}
-                submitOnEnter={false}
-                maxHeight={'max-h-[25vh]'} // otherwise send button gets hidden (need better fix)
-              />
-
-              <p className="text-ink-500 text-xs text-center leading-relaxed">
-                {t(
-                  'send_message.min_chars_hint',
-                  'Write at least {count} characters to unlock the send button',
-                  {count: MIN_CHARS},
-                )}
-              </p>
-
-              {/* quality meter */}
-              <div className={'mt-3 w-full flex items-center gap-3'}>
-                <div
+              {/* No wrapper here. TextEditor already draws its own bordered shell
+                  (`border-ink-300 ... rounded-lg` in editor.tsx), so adding one produced two nested
+                  outlines. Restyle that single shell instead — `!` because clsx just concatenates and
+                  the base classes would otherwise win by stylesheet order. */}
+              {/* Plain wrapper purely so the effect above has something whose height it can observe;
+                  it stretches like any flex child, so it doesn't change the layout. */}
+              <div ref={editorWrapRef} className={'w-full'}>
+                <CommentInputTextArea
+                  editor={editor}
+                  user={currentUser}
+                  submit={sendMessage}
+                  isSubmitting={!editor || submitting}
+                  isDisabled={charCount < MIN_CHARS}
+                  hideSubmitButton
+                  submitOnEnter={false}
+                  // max-h-none: let the editor grow and let the *modal* do the scrolling instead of
+                  // trapping the message in a ~25vh inner scroller. That inner box made it awkward to
+                  // scroll back to the top of a long message, and pushed the image/emoji toolbar —
+                  // which sits below it — out of reach on shorter windows.
+                  maxHeight={'max-h-none'}
                   className={
-                    'h-2 flex-1 rounded-full bg-canvas-100 border border-canvas-200 overflow-hidden'
+                    '!rounded-2xl !border-[1.5px] !border-canvas-200 !bg-canvas-0/50 !shadow-none focus-within:!border-primary-400 focus-within:!ring-0'
                   }
-                >
+                />
+              </div>
+
+              {/* Progress toward the minimum length, with the count beside it. */}
+              <div className={'w-full flex items-center gap-3.5'}>
+                <div className={'h-[5px] flex-1 rounded-full bg-canvas-200 overflow-hidden'}>
                   <div
-                    className={'h-full rounded-full transition-all duration-300'}
-                    style={{backgroundColor: barColor, width: `${pct}%`}}
+                    className={'h-full rounded-full transition-all duration-200 ease-out'}
+                    style={{background: barColor, width: `${pct}%`}}
                   />
                 </div>
-                <span className={'tabular-nums text-ink-500 text-xs shrink-0'}>
-                  {charCount < MIN_CHARS
-                    ? `${charCount}`
-                    : t('send_message.ready', 'Ready to send')}
+                <span className={'tabular-nums text-ink-500 text-[12.5px] whitespace-nowrap'}>
+                  {charCount} / {MIN_CHARS}
                 </span>
               </div>
+
+              <button
+                type={'button'}
+                onClick={sendMessage}
+                disabled={!isReady || submitting}
+                className={clsx(
+                  'w-full rounded-[14px] px-5 py-[15px] text-[15px] font-semibold transition-colors duration-150',
+                  isReady
+                    ? 'bg-primary-600 text-white hover:bg-primary-700 cursor-pointer'
+                    : 'bg-canvas-200 text-ink-400 cursor-not-allowed',
+                )}
+              >
+                {isReady
+                  ? t('send_message.send', 'Send message')
+                  : t('send_message.unlock', 'Write {count} more characters to unlock', {
+                      count: MIN_CHARS - charCount,
+                    })}
+              </button>
             </>
           ) : (
             <EmailVerificationPrompt t={t} className="max-w-xl" />

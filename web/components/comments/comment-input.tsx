@@ -132,6 +132,10 @@ export function CommentInputTextArea(props: {
   isSubmitting: boolean
   submitOnEnter?: boolean
   isDisabled?: boolean
+  /** Suppress the built-in send arrow so the caller can place its own send control. */
+  hideSubmitButton?: boolean
+  /** Passed through to TextEditor's outer shell, for callers that need a different frame. */
+  className?: string
   isEditing?: boolean
   commentTypes?: CommentType[]
   maxHeight?: string
@@ -139,6 +143,8 @@ export function CommentInputTextArea(props: {
   const {
     user,
     submitOnEnter,
+    hideSubmitButton,
+    className,
     editor,
     submit,
     isSubmitting,
@@ -200,7 +206,7 @@ export function CommentInputTextArea(props: {
   }, [replyTo, editor])
 
   return (
-    <TextEditor editor={editor} maxHeight={maxHeight} simple hideEmbed>
+    <TextEditor editor={editor} maxHeight={maxHeight} className={className} simple hideEmbed>
       <Row className={''}>
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>
@@ -225,16 +231,23 @@ export function CommentInputTextArea(props: {
             </button>
           </Row>
         )}
-        {!isSubmitting && !isDisabled && submit && commentTypes.includes('comment') && (
-          <button
-            data-testid="conversation-message-submit"
-            className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
-            disabled={isDisabled || !editor || editor.isEmpty}
-            onClick={() => submit('comment')}
-          >
-            <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />
-          </button>
-        )}
+        {/* hideSubmitButton lets a caller render its own send control outside the editor (the message
+            composer does, per its design) without losing keyboard submit, which also depends on
+            `submit` being passed. */}
+        {!hideSubmitButton &&
+          !isSubmitting &&
+          !isDisabled &&
+          submit &&
+          commentTypes.includes('comment') && (
+            <button
+              data-testid="conversation-message-submit"
+              className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
+              disabled={isDisabled || !editor || editor.isEmpty}
+              onClick={() => submit('comment')}
+            >
+              <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />
+            </button>
+          )}
 
         {submit && isSubmitting && (
           <LoadingIndicator size={'md'} className={'px-4'} spinnerClassName="border-ink-500" />

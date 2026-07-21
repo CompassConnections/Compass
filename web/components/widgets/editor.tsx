@@ -155,7 +155,7 @@ export function useTextEditor(props: {
       Placeholder.configure({
         placeholder,
         emptyEditorClass:
-          'before:content-[attr(data-placeholder)] before:text-ink-1000/55 before:text-sm before:float-left before:h-0 cursor-text',
+          'before:content-[attr(data-placeholder)] before:text-ink-1000/40 before:text-sm before:float-left before:h-0 cursor-text',
       }),
       CharacterCount.configure({limit: max}),
       ...(props.extensions ?? []),

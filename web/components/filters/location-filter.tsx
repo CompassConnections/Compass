@@ -117,7 +117,7 @@ export function LocationFilter(props: {
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
           placeholder={t('filter.location.search_city', 'Search city...')}
-          className="h-8 w-full rounded-none border-0 bg-transparent px-1 focus:border-b focus:ring-0 focus:ring-transparent"
+          className="h-8 w-full rounded-none border-0 bg-canvas-0 px-1 focus:border-b focus:ring-0 focus:ring-transparent"
           autoFocus
           // onBlur // TODO
           searchIcon

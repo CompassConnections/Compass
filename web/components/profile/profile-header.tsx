@@ -108,7 +108,7 @@ export default function ProfileHeader(props: {
                       {simpleView ? (
                         <Link className={linkClass} href={`/${user.username}`}>
                           <span
-                            className="font-cormorant text-4xl font-medium"
+                            className="font-heading text-4xl font-medium"
                             style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
                           >
                             {user.name}
@@ -116,7 +116,7 @@ export default function ProfileHeader(props: {
                         </Link>
                       ) : (
                         <span
-                          className="font-cormorant text-4xl font-medium"
+                          className="font-heading text-4xl font-medium"
                           style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
                         >
                           {user.name}

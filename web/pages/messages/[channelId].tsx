@@ -85,7 +85,7 @@ export function PrivateMessagesContent(props: {user: User; channelId: number}) {
         ) : (
           <div className="flex h-[50vh] flex-col items-center justify-center mx-4">
             <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center max-w-md">
-              <p className="font-cormorant text-2xl font-medium text-ink-900 mb-2">
+              <p className="font-heading text-2xl font-medium text-ink-900 mb-2">
                 {t('messages.no_access', 'You do not have access to this conversation.')}
               </p>
               <p className="text-ink-500 text-sm">
@@ -370,7 +370,7 @@ export const PrivateChat = (props: {
         {showUsers && (
           <Modal open={showUsers} setOpen={setShowUsers}>
             <Col className={clsx(MODAL_CLASS)}>
-              <p className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+              <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
                 {t('messages.members', 'Members')}
               </p>
               {members?.map((user) => (

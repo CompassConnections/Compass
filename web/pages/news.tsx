@@ -84,7 +84,7 @@ export default function WhatsNew(props: {releases?: Release[]}) {
         url={`/news`}
       />
       <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 mb-10 text-center">
-        <h1 className="font-cormorant text-5xl font-medium text-ink-900 mb-4">
+        <h1 className="font-heading text-5xl font-medium text-ink-900 mb-4">
           {t('news.title', "What's New")}
         </h1>
         <p className="text-ink-500 text-base max-w-xl mx-auto leading-relaxed">
@@ -114,7 +114,7 @@ export default function WhatsNew(props: {releases?: Release[]}) {
               className="bg-canvas-50 border border-canvas-200 rounded-xl p-6 transition-all hover:border-primary-300 hover:shadow-sm"
             >
               <div className="flex justify-between items-start mb-4">
-                <h2 className="font-cormorant text-2xl font-medium text-ink-900 leading-tight">
+                <h2 className="font-heading text-2xl font-medium text-ink-900 leading-tight">
                   {release.name || release.tag_name}
                 </h2>
                 <span className="text-sm text-ink-300 font-mono whitespace-nowrap ml-4">

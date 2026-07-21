@@ -89,7 +89,7 @@ function ButtonModal(props: {
       size={'lg'}
     >
       <Col className={MODAL_CLASS}>
-        <h3 className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+        <h3 className="font-heading text-2xl font-medium text-ink-900 mb-4">
           {t('saved_searches.title', 'Saved Searches')}
         </h3>
         {bookmarkedSearches?.length ? (
@@ -220,7 +220,7 @@ function StarModal(props: {
       // }}
     >
       <Col className={MODAL_CLASS}>
-        <h3 className="font-cormorant text-2xl font-medium text-ink-900 mb-4">
+        <h3 className="font-heading text-2xl font-medium text-ink-900 mb-4">
           {t('saved_people.title', 'Saved People')}
         </h3>
         {visibleUsers?.length ? (

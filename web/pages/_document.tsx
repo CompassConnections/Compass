@@ -29,6 +29,13 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
           rel="stylesheet"
         />
+        {/* Newsreader is the heading face (see the h1–h6 rule in globals.css and the `heading` family
+            in tailwind.config.js). Cormorant Garamond above is kept only for the wordmark `.logo`,
+            which is brand identity rather than a heading. */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&display=swap"
+          rel="stylesheet"
+        />
 
         {/* PWA primary color */}
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />

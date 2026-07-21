@@ -19,7 +19,14 @@ import {execFileSync} from 'child_process'
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs'
 import {join} from 'path'
 
-import {SHOWCASE_PROFILES, ShowcaseProfile} from '../tests/e2e/utils/showcase-profiles'
+import {
+  SHOWCASE_PROFILES,
+  SHOWCASE_VIEWER,
+  ShowcaseProfile,
+} from '../tests/e2e/utils/showcase-profiles'
+
+/** The viewer account needs a face too — it shows up as the nav avatar in every signed-in capture. */
+const ALL_PROFILES = [...SHOWCASE_PROFILES, SHOWCASE_VIEWER]
 
 const REPO_ROOT = join(__dirname, '..')
 const OUT_DIR = join(REPO_ROOT, 'web/public/images/showcase')
@@ -147,6 +154,14 @@ const PORTRAITS: Record<string, PortraitSpec> = {
       'sitting on a wooden jetty in a towel after a cold-water swim, steam rising off her shoulders',
     ],
   },
+  alexmorel: {
+    appearance:
+      '33-year-old French non-binary person, light skin, dark wavy hair to the jaw tucked behind one ear, ' +
+      'fine silver-framed glasses, slight build, calm thoughtful half-smile',
+    scenes: [
+      'at a desk by a window in Grenoble with mountains visible outside, two dictionaries open, mid-work',
+    ],
+  },
   rafaelmendes: {
     appearance:
       '36-year-old Brazilian man, light brown skin, dark curly hair getting long, patchy beard, ' +
@@ -240,8 +255,8 @@ async function main() {
   const force = args.includes('--force')
   const only = args[args.indexOf('--only') + 1]
   const targets = args.includes('--only')
-    ? SHOWCASE_PROFILES.filter((p) => p.slug === only)
-    : SHOWCASE_PROFILES
+    ? ALL_PROFILES.filter((p) => p.slug === only)
+    : ALL_PROFILES
 
   if (targets.length === 0) throw new Error(`no persona matching --only ${only}`)
 

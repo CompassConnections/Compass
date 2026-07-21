@@ -104,3 +104,6 @@ test-results
 *my-release-key.keystore
 
 .vscode/settings.json
+# The home-page hero clips and their posters are NOT committed. They live in Cloudflare R2 and are
+# downloaded into web/public/ by web/scripts/fetch-media.mjs during the build, so Vercel still serves
+# them same-origin. Push new renders with media-creator's `npm run upload:media`.

@@ -1,4 +1,4 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/24/outline'
+import {ChevronDownIcon} from '@heroicons/react/24/outline'
 import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
@@ -233,7 +233,9 @@ function Filters(props: {
 
   return (
     <Col
-      className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(--filter-offset)+env(safe-area-inset-top))] pt-3 pb-1"
+      // gap-1 + px-2: sections are cards now, so they need to breathe apart instead of butting
+      // together as one undifferentiated list.
+      className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(--filter-offset)+env(safe-area-inset-top))] gap-1 px-2 pt-3 pb-1"
       data-testid="people-filters"
     >
       <SelectedFiltersSummary
@@ -253,11 +255,6 @@ function Filters(props: {
           hidden={!youProfile}
         />
       </Row>
-
-      {/* Short Bios */}
-      <Col className="p-2">
-        <IncompleteProfilesToggle updateFilter={updateFilter} filters={filters} hidden={false} />
-      </Col>
 
       {/* ALWAYS VISIBLE FILTERS */}
 
@@ -801,6 +798,12 @@ function Filters(props: {
         >
           <HasPhotoFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
+
+        {/* INCOMPLETE PROFILES — lives here rather than pinned above the list: it is a rarely-changed
+            escape hatch, not something to weigh on every search. */}
+        <Col className="px-3.5 py-2">
+          <IncompleteProfilesToggle updateFilter={updateFilter} filters={filters} hidden={false} />
+        </Col>
       </FilterGroup>
 
       <hr className="border-gray-500 my-2 mx-4" />
@@ -857,31 +860,44 @@ export function FilterSection(props: {
     testId,
   } = props
   const isOpen = openFilter == title
+  // Sections read as cards rather than rows in a flat list: an open or active one gets a surface,
+  // a border and a primary accent, so the rail shows at a glance where the user has actually
+  // narrowed something. Previously every row was the same weight and colour, which is what made
+  // the panel look washed out.
   return (
-    <Col className={clsx(className)} data-testid={testId}>
+    <Col
+      className={clsx(
+        'rounded-xl border transition-colors duration-150',
+        isOpen
+          ? 'border-primary-200 bg-canvas-0 shadow-[0_2px_10px_rgba(44,36,22,0.05)]'
+          : isActive
+            ? 'border-primary-200/70 bg-primary-50/40'
+            : 'border-transparent hover:bg-canvas-0/60',
+        className,
+      )}
+      data-testid={testId}
+    >
       <button
         className={clsx(
-          'text-ink-600 flex w-full flex-row justify-between px-4 pt-4 relative hover-bold',
-          isOpen ? 'pb-2' : 'pb-4',
+          'flex w-full flex-row items-center justify-between px-3.5 relative',
+          isOpen || isActive ? 'text-primary-700' : 'text-ink-600 hover:text-ink-900',
+          isOpen ? 'pt-3 pb-1.5' : 'py-3',
         )}
         onClick={() => (isOpen ? setOpenFilter(undefined) : setOpenFilter(title))}
       >
         {showNewBadge && <NewBadge classes={newBadgeClassName} />}
-        <Row
-          className={clsx(
-            'items-center gap-2',
-            isActive && 'font-semibold',
-            isOpen && 'force-bold',
-          )}
-        >
+        <Row className={clsx('items-center gap-2', (isActive || isOpen) && 'font-semibold')}>
           {icon}
           {selection}
         </Row>
-        <div className="text-ink-900">
-          {isOpen ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
-        </div>
+        <ChevronDownIcon
+          className={clsx(
+            'h-4 w-4 flex-shrink-0 transition-transform duration-200',
+            isOpen ? 'rotate-180 text-primary-600' : 'text-ink-400',
+          )}
+        />
       </button>
-      {isOpen && <div className={clsx('px-4 py-2', childrenClassName)}>{children}</div>}
+      {isOpen && <div className={clsx('px-3.5 pb-3 pt-1', childrenClassName)}>{children}</div>}
     </Col>
   )
 }
@@ -895,24 +911,37 @@ function FilterGroup(props: {
 }) {
   const {title, children, openGroup, setOpenGroup, icon} = props
   const isOpen = openGroup === title
+  // A group is a container for sections, and nothing about the old layout said so: an open "Background"
+  // and its "Any education" / "Any work" children sat at identical indent, weight and colour, so the
+  // children read as siblings. The header now takes a filled pill when open and the children hang off
+  // an indented accent rail, which is what actually communicates "these belong to that".
   return (
-    <Col className="">
+    <Col>
       <button
-        className="flex w-full flex-row items-center justify-between px-4 py-3 text-ink-600"
+        className={clsx(
+          'flex w-full flex-row items-center justify-between rounded-xl px-3.5 py-3 transition-all duration-150',
+          isOpen
+            ? 'bg-primary-100/70 text-primary-800 font-semibold'
+            : 'text-ink-600 hover:bg-canvas-0/60 hover:text-ink-900',
+        )}
         onClick={() => (isOpen ? setOpenGroup(undefined) : setOpenGroup(title))}
       >
-        <Row
-          className={clsx(
-            'items-center gap-2 hover-bold',
-            isOpen && 'font-semibold text-primary-700',
-          )}
-        >
+        <Row className="items-center gap-2">
           {icon}
           {title}
         </Row>
-        {isOpen ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+        <ChevronDownIcon
+          className={clsx(
+            'h-4 w-4 flex-shrink-0 transition-transform duration-200',
+            isOpen ? 'rotate-180 text-primary-600' : 'text-ink-400',
+          )}
+        />
       </button>
-      {isOpen && <div className="px-2 pb-4">{children}</div>}
+      {isOpen && (
+        <div className="mt-1 ml-3.5 flex flex-col gap-1 border-l-2 border-primary-200 pl-2.5">
+          {children}
+        </div>
+      )}
     </Col>
   )
 }

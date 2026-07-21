@@ -419,8 +419,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Cormorant Garamond', Inter, sans-serif; /* Clean modern font */
-  font-weight: 900; /* Semi-bold for clarity */
+  font-family: 'Newsreader', Georgia, serif;
+  /* 900 exceeds Newsreader's 800 ceiling, so the browser clamps to 800. That is still a real weight
+     rather than the synthesised faux-bold headings got under Cormorant, which was only loaded to 600. */
+  font-weight: 700;
   /*color: #111827;                   !* Near-black text for readability *!*/
   line-height: 1.25;
   margin-top: 1.5rem;
@@ -429,10 +431,12 @@ h6 {
 
 /* Size scaling */
 h1 {
+  font-weight: 600;
   font-size: 2rem; /* ~32px */
 }
 
 h2 {
+  font-weight: 600;
   font-size: 1.5rem; /* ~24px */
 }
 

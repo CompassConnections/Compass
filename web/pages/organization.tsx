@@ -161,7 +161,7 @@ export default function Organization() {
           <p className="text-xs font-bold tracking-[1.5px] uppercase text-primary-500 mb-3">
             {t('organization.eyebrow', 'Compass')}
           </p>
-          <h1 className="text-[clamp(28px,4vw,40px)] font-black text-ink-900 tracking-tight leading-tight mb-3">
+          <h1 className="text-[clamp(28px,4vw,40px)] text-ink-900 tracking-tight leading-tight mb-3">
             {t('organization.title', 'Organization')}
           </h1>
           <p className="text-lg text-ink-500 max-w-2xl leading-relaxed">

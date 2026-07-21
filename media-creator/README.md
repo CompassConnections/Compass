@@ -43,6 +43,57 @@ Both are 30fps H.264, ready to upload.
 | Post   | `IntroPost`    | 4:5   | 1080×1350 | Instagram **feed post** — tallest ratio allowed in-feed (primary) |
 | Story  | `IntroStory`   | 9:16  | 1080×1920 | Instagram **Story / Reel**, TikTok, YouTube Shorts (secondary)    |
 
+## Videos
+
+### Intro (`IntroPost` / `IntroStory`)
+
+The brand intro — what Compass is and why. Content sourced from the About page and FAQ.
+
+### Profile tour (`ProfileTourStory` / `ProfileTourPost`)
+
+A ~30s section-by-section walk through a real profile page: header → details → interests →
+personality → bio → photos → compatibility prompts → links → CTA. Story is the primary format here
+(it's a Reel).
+
+```bash
+npm run render:tour        # -> out/compass-profile-tour-story.mp4   9:16 (primary)
+npm run render:tour:post   # -> out/compass-profile-tour-post.mp4    4:5
+```
+
+Every shot is a **screenshot of the live app**, not a mock-up, so the video can never drift from
+what the product actually looks like. Regenerate the artwork whenever the profile UI changes:
+
+```bash
+yarn dev                                        # from the repo root — needs http://localhost:3000
+npm run capture:profile                         # -> public/profile/*.png
+npm run capture:profile -- http://localhost:3000/SomeoneElse
+```
+
+`scripts/capture-profile.mjs` shoots the page at 430×932 CSS px @ DPR 2 (so the PNGs are 2× and stay
+crisp on the 1080-wide canvas), hides fixed chrome and the Next.js dev badge, and clips one image per
+card. It borrows Playwright from the **monorepo root** by absolute path, deliberately — this package
+stays Remotion-only.
+
+**Compatibility Prompts and Endorsements only render for a signed-in viewer.** Firebase keeps its auth
+in IndexedDB, which Playwright's `storageState` does not carry, so the script uses a persistent browser
+profile you sign into by hand, once:
+
+```bash
+npm run capture:profile -- --login    # opens a real window; sign in yourself
+npm run capture:profile               # later runs reuse the session, headless
+```
+
+The session lives in `.auth-profile/` (gitignored — it is a real login). Without it those two cards are
+simply skipped, with a warning, and the rest still captures.
+
+> Sign in as **someone other than the profile's owner**. Viewing your own profile renders the prompts
+> card in its editing form; a different account gives the visitor view ("Important to …", "Answer
+> yourself"), which is what someone watching the reel would actually see.
+
+> The scene scales each shot by width and pans the ones taller than the frame. If a card's height
+> changes substantially, update its entry in `SHOTS` at the top of `src/scenes/ProfileTour.tsx` — the
+> pan maths reads those dimensions.
+
 Both formats share the same scenes; the taller Features scene compacts automatically on the shorter 4:5
 canvas. Formats are defined in `src/theme.ts` (`FORMATS`) and registered in `src/Root.tsx`.
 

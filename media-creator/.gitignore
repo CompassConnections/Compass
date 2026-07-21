@@ -9,3 +9,7 @@ out/
 
 # Logs
 npm-debug.log*
+
+# Persistent browser profile used by scripts/capture-profile.mjs --login.
+# Holds a real signed-in session — never commit it.
+.auth-profile/

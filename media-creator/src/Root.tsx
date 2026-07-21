@@ -1,6 +1,7 @@
 import {Composition} from 'remotion';
 import {FORMATS} from './theme';
 import {Intro, INTRO_DURATION} from './scenes/Intro';
+import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour';
 
 // Register every video composition here. The same Intro scenes render into two
 // Instagram-ready canvases; render with:
@@ -25,6 +26,22 @@ export const RemotionRoot: React.FC = () => {
         fps={FORMATS.story.fps}
         width={FORMATS.story.width}
         height={FORMATS.story.height}
+      />
+      <Composition
+        id="ProfileTourStory"
+        component={ProfileTour}
+        durationInFrames={PROFILE_TOUR_DURATION}
+        fps={FORMATS.story.fps}
+        width={FORMATS.story.width}
+        height={FORMATS.story.height}
+      />
+      <Composition
+        id="ProfileTourPost"
+        component={ProfileTour}
+        durationInFrames={PROFILE_TOUR_DURATION}
+        fps={FORMATS.post.fps}
+        width={FORMATS.post.width}
+        height={FORMATS.post.height}
       />
     </>
   );

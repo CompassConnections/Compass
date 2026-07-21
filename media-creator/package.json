@@ -5,10 +5,13 @@
   "description": "Standalone Remotion studio for Compass media creation. Intentionally NOT part of the root yarn workspaces — install and run it on its own with npm.",
   "license": "MIT",
   "scripts": {
+    "capture:profile": "node scripts/capture-profile.mjs",
     "render": "npm run render:post",
     "render:carousel": "node scripts/render-carousel.mjs",
     "render:post": "remotion render IntroPost out/compass-intro-post.mp4",
     "render:story": "remotion render IntroStory out/compass-intro-story.mp4",
+    "render:tour": "remotion render ProfileTourStory out/compass-profile-tour-story.mp4",
+    "render:tour:post": "remotion render ProfileTourPost out/compass-profile-tour-post.mp4",
     "studio": "remotion studio",
     "typecheck": "tsc --noEmit",
     "upgrade": "remotion upgrade"

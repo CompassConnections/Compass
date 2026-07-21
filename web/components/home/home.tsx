@@ -319,7 +319,7 @@ export function LoggedOutHome() {
               label={
                 <>
                   {t('home.proof.prefix', 'Joined by ')}
-                  <strong className="text-ink-900">{t('home.proof.count', '600+')}</strong>
+                  <strong className="text-ink-900">{t('home.proof.count', '700+')}</strong>
                   {t('home.proof.suffix', ' real people worldwide')}
                 </>
               }

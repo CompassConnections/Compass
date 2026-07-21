@@ -3,6 +3,7 @@ import {createSomeNotifications} from 'shared/create-notification'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 
+import {seedShowcaseUsers} from './seed-showcase'
 import {
   seedUser,
   TEST_USER_DISPLAY_NAME,
@@ -52,27 +53,33 @@ async function seedNotifications() {
 
 type ProfileType = 'basic' | 'medium' | 'full'
 ;(async () => {
-  //Edit the count seedConfig to specify the amount of each profiles to create
-  const seedConfig = [
-    {count: 8, profileType: 'basic' as ProfileType},
-    {count: 8, profileType: 'medium' as ProfileType},
-    {count: 8, profileType: 'full' as ProfileType},
-  ]
+  if (process.env.SHOWCASE === '1') {
+    // Hand-authored personas with real prose and portraits, for marketing captures.
+    // Needs no Firebase emulator, so it works against the remote dev DB on its own.
+    await seedShowcaseUsers()
+  } else {
+    //Edit the count seedConfig to specify the amount of each profiles to create
+    const seedConfig = [
+      {count: 8, profileType: 'basic' as ProfileType},
+      {count: 8, profileType: 'medium' as ProfileType},
+      {count: 8, profileType: 'full' as ProfileType},
+    ]
 
-  for (const {count, profileType} of seedConfig) {
-    for (let i = 0; i < count; i++) {
-      await seedUser(undefined, undefined, profileType)
+    for (const {count, profileType} of seedConfig) {
+      for (let i = 0; i < count; i++) {
+        await seedUser(undefined, undefined, profileType)
+      }
     }
-  }
 
-  // Used in some tests that require interaction with a permanent user
-  await seedUser(
-    TEST_USER_EMAIL,
-    TEST_USER_PASSWORD,
-    'full',
-    TEST_USER_DISPLAY_NAME,
-    TEST_USER_USERNAME,
-  )
+    // Used in some tests that require interaction with a permanent user
+    await seedUser(
+      TEST_USER_EMAIL,
+      TEST_USER_PASSWORD,
+      'full',
+      TEST_USER_DISPLAY_NAME,
+      TEST_USER_USERNAME,
+    )
+  }
 
   await seedCompatibilityPrompts()
   await seedNotifications()

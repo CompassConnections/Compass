@@ -85,12 +85,6 @@ DROP POLICY IF EXISTS "public read" ON profiles;
 CREATE POLICY "public read" ON profiles
     FOR SELECT USING (true);
 
-DROP POLICY IF EXISTS "self update" ON profiles;
-
-CREATE POLICY "self update" ON profiles
-    FOR UPDATE
-    WITH CHECK ((user_id = firebase_uid()));
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON public.profiles USING btree (user_id);
 

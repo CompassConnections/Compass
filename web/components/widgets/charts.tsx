@@ -162,6 +162,104 @@ function CustomLegend({payload}: any) {
 
 // ─── Chart ────────────────────────────────────────────────────────────────────
 
+/**
+ * A stripped-down version of the growth curve for the about page (A3 in docs/marketing-visuals.md).
+ *
+ * Lives here rather than under components/about/ so it shares this file's date helpers — the shape of
+ * the data is the same, only the presentation differs.
+ *
+ * Deliberately not the chart above. That one is an instrument: two series, axes, grid, tooltip, for
+ * someone who came to /stats to read numbers. This one is a single claim on a page someone is
+ * skimming, so it is one line, no axes, no tooltip, with the endpoints labelled in real HTML instead
+ * of recharts ticks — which also sidesteps the hardcoded light-theme tick colours above.
+ *
+ * The number is queried live, never hardcoded. A count that quietly goes stale on a page arguing for
+ * transparency is the one failure mode worth engineering against, and it is also why this renders
+ * nothing at all rather than a placeholder when the query comes back empty.
+ *
+ * Scaling caveat, inherited from `getProfilesCreations`: this pulls one row per profile and rolls the
+ * cumulative curve up in the browser. Fine at the current size, and identical to what /stats already
+ * does, but it grows linearly — past a few thousand members this wants an aggregate endpoint
+ * returning daily totals instead.
+ */
+export function MemberGrowth() {
+  const t = useT()
+  const [data, setData] = useState<{dateTs: number; members: number}[]>([])
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const profiles = await getProfilesCreations()
+        if (!profiles?.length) return setFailed(true)
+
+        const counts = buildCounts(profiles)
+        const dates = Object.keys(counts).sort((a, b) => a.localeCompare(b))
+        const range = buildDailyRange(dates[0], dates[dates.length - 1])
+        const cumulative = cumulativeFromCounts(counts, range)
+
+        setData(
+          range.map((date) => ({
+            dateTs: new Date(date + 'T00:00:00.000Z').getTime(),
+            members: cumulative[date] || 0,
+          })),
+        )
+      } catch {
+        setFailed(true)
+      }
+    }
+    void load()
+  }, [])
+
+  // Render nothing rather than a zero or a spinner: this is supporting evidence on a page that reads
+  // fine without it, and an empty chart frame claims more than it shows.
+  if (failed || !data.length) return null
+
+  const total = data[data.length - 1].members
+  const monthYear = (ts: number) =>
+    new Date(ts).toLocaleDateString('en-US', {month: 'short', year: 'numeric'})
+
+  return (
+    <figure className="bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7">
+      <div className="flex items-baseline gap-2 mb-[-20px] sm:mb-[-40px]">
+        <span className="text-3xl font-bold text-ink-1000">{total.toLocaleString()}</span>
+        <span className="text-sm text-ink-600">
+          {t('about.growth.label', 'members and counting')}
+        </span>
+      </div>
+
+      <div className="h-[120px] sm:h-[140px] -mx-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{top: 8, right: 4, bottom: 0, left: 4}}>
+            <defs>
+              <linearGradient id="gradGrowth" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="rgb(193 127 62)" stopOpacity={0.22} />
+                <stop offset="95%" stopColor="rgb(193 127 62)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <Area
+              type="monotone"
+              dataKey="members"
+              stroke="rgb(193 127 62)"
+              strokeWidth={2.5}
+              fill="url(#gradGrowth)"
+              dot={false}
+              isAnimationActive={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Endpoints as text rather than an axis: two labels are all this needs, and they inherit the
+          theme tokens instead of recharts' hardcoded tick colours. */}
+      <figcaption className="flex justify-between text-xs text-ink-500 mt-1">
+        <span>{monthYear(data[0].dateTs)}</span>
+        <span>{t('about.growth.today', 'Today')}</span>
+      </figcaption>
+    </figure>
+  )
+}
+
 export default function ChartMembers() {
   const [data, setData] = useState<any[]>([])
   const [chartHeight, setChartHeight] = useState(380)

@@ -92,8 +92,14 @@ upload "$OUT_DIR/compass-search-demo-dark.mp4" "videos/search-demo-dark.mp4" "vi
 upload "$WEB_IMAGES/search-demo-poster-light.jpg" "images/search-demo-poster-light.jpg" "image/jpeg"
 upload "$WEB_IMAGES/search-demo-poster-dark.jpg" "images/search-demo-poster-dark.jpg" "image/jpeg"
 # About-page vote card (A1). Written straight to web/public by capture-vote.mjs — no render step.
-upload "$WEB_IMAGES/vote-tally-light.jpg" "images/vote-tally-light.jpg" "image/jpeg"
-upload "$WEB_IMAGES/vote-tally-dark.jpg" "images/vote-tally-dark.jpg" "image/jpeg"
+# Two widths per theme: the desktop shot is illegible scaled into a phone column, so the page picks
+# with a <picture> media query.
+for theme in light dark; do
+  for suffix in "" "-narrow"; do
+    upload "$WEB_IMAGES/vote-tally-${theme}${suffix}.webp" \
+      "images/vote-tally-${theme}${suffix}.webp" "image/webp"
+  done
+done
 
 echo
 echo "Done. The next Vercel build pulls these into web/public/videos via MEDIA_SOURCE_BASE_URL."

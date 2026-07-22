@@ -41,8 +41,10 @@ const ASSETS = [
   {key: 'videos/search-demo-dark.mp4', dest: 'videos/search-demo-dark.mp4'},
   {key: 'images/search-demo-poster-light.jpg', dest: 'images/search-demo-poster-light.jpg'},
   {key: 'images/search-demo-poster-dark.jpg', dest: 'images/search-demo-poster-dark.jpg'},
-  {key: 'images/vote-tally-light.jpg', dest: 'images/vote-tally-light.jpg'},
-  {key: 'images/vote-tally-dark.jpg', dest: 'images/vote-tally-dark.jpg'},
+  {key: 'images/vote-tally-light.webp', dest: 'images/vote-tally-light.webp'},
+  {key: 'images/vote-tally-dark.webp', dest: 'images/vote-tally-dark.webp'},
+  {key: 'images/vote-tally-light-narrow.webp', dest: 'images/vote-tally-light-narrow.webp'},
+  {key: 'images/vote-tally-dark-narrow.webp', dest: 'images/vote-tally-dark-narrow.webp'},
 ]
 
 /**

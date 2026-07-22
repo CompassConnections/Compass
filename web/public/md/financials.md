@@ -6,28 +6,30 @@ donating [here](/support).
 
 ### Expenses
 
-- **Hosting & Infrastructure**: $300.83
+- **Hosting & Infrastructure**: $456.65
 - **Development**: $0 (all volunteer-driven)
 - **Marketing**: $0 (growth is organic and community-led)
 - **Miscellaneous / Private Costs**: $0
 
 ### Funding Sources
 
-- **Donations**: $29.78
+- **Donations**: $144.70
 - **Grants**: $0
 
 ### Financial Summary
 
-- **Total Income**: $29.78
-- **Total Expenses**: $300.83
-- **Net Surplus**: -$271.05
+- **Total Income**: $144.70
+- **Total Expenses**: $456.65
+- **Net Surplus**: -$311.95
 
 ### Why Compass is Money-Efficient
 
-Compass is built entirely by volunteers and contributors, meaning every dollar donated goes **directly into infrastructure** (servers, hosting, maintenance).
+Compass is built entirely by volunteers and contributors, meaning every dollar donated goes **directly into
+infrastructure** (servers, hosting, maintenance).
 
 - No salaries.
 - No marketing budget.
 - No hidden private spending.
 
-This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and accessible.
+This ensures that donations are never diluted — 100% of funds serve the mission of keeping Compass running and
+accessible.

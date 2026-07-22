@@ -9,13 +9,11 @@ import {
   LightBulbIcon,
   MagnifyingGlassIcon,
   MegaphoneIcon,
-  ScaleIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {discordLink, formLink, githubRepo} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps} from 'react'
 import {VoteEvidence} from 'web/components/about/vote-evidence'
 import {CopyLinkOrShareButton, ShareProfileOnXButton} from 'web/components/buttons/copy-link-button'
@@ -23,6 +21,7 @@ import {GeneralButton} from 'web/components/buttons/general-button'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {MemberGrowth} from 'web/components/widgets/charts'
 import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -231,26 +230,10 @@ export default function About() {
       title: t('about.block.free.title', 'Completely Free'),
       text: t('about.block.free.text', 'Subscription-free. Paywall-free. Ad-free.'),
     },
-    {
-      icon: ScaleIcon,
-      title: t('about.block.democratic.title', 'Democratic'),
-      text: (
-        <span>
-          {t('about.block.democratic.prefix', 'Governed and ')}
-          <Link href="/vote" className="text-primary-500 hover:underline">
-            {t('about.block.democratic.link_voted', 'voted')}
-          </Link>
-          {t(
-            'about.block.democratic.middle',
-            ' by the community, while ensuring no drift through our ',
-          )}
-          <Link href="/constitution" className="text-primary-500 hover:underline">
-            {t('about.block.democratic.link_constitution', 'constitution')}
-          </Link>
-          {t('about.block.democratic.suffix', '.')}
-        </span>
-      ),
-    },
+    // The "Democratic" card used to sit here. Its claim now opens the "How a decision gets made"
+    // section below, next to the vote that proves it — a card asserting the same thing one screen
+    // above its own evidence was reading as a duplicate. Same translation keys, moved verbatim, so
+    // the fr/de strings carry over. See docs/marketing-visuals.md (A1).
     {
       icon: FlagIcon,
       title: t('about.block.mission.title', 'One Mission'),
@@ -369,10 +352,12 @@ export default function About() {
         {/* ── Help ── */}
         <SectionLabel>{t('about.help.label', 'Help Compass grow')}</SectionLabel>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {helpCards.map((card) => (
-            <HelpCard key={card.id} {...card} />
-          ))}
+        {/* Sits inside the Help section rather than getting a heading of its own: it renders nothing
+            when the query comes back empty, and a section label with nothing under it is worse than
+            no section. It also reads as the setup for the cards below — this is what you would be
+            helping grow. */}
+        <div className="mb-4">
+          <MemberGrowth />
         </div>
 
         {/* ── Share strip ── */}
@@ -383,6 +368,12 @@ export default function About() {
             'The best way to grow Compass is word of mouth. Thank you for supporting our mission.',
           )}
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          {helpCards.map((card) => (
+            <HelpCard key={card.id} {...card} />
+          ))}
+        </div>
       </div>
     </PageBase>
   )

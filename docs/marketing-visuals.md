@@ -329,20 +329,81 @@ blocking. Do **not** substitute showcase-seed photos: the copy claims these are 
 
 This page is a reference doc, not a pitch; it needs evidence, not a hero.
 
-### A1 — Proof for "Democratic"
+### A1 — Proof for "Democratic" — **done**
 
-`about.tsx:235-252` links to `/vote` and `/constitution` in text. A small real screenshot of an actual vote
-tally turns the assertion into evidence.
+The Democratic feature card links to `/vote` and `/constitution` in text. A real vote card turns the
+assertion into evidence, so there is now a "How a decision gets made" section between the feature grid and
+the help cards (`web/components/about/vote-evidence.tsx`).
+
+**Which vote, and why it matters.** The first candidate was a UX proposal reading 7 For / 2 Abstain /
+0 Against, `Voting Open`. Rejected on three counts, all of which are the selection criteria for a
+replacement:
+
+1. **`Implemented ✔️`, not `Voting Open`.** An open ballot proves the mechanism exists. A shipped one
+   proves it decides. The claim is that members govern, not that they can express opinions.
+2. **Contested.** A tally with nothing against reads as ceremonial and invites the reading that the vote
+   was a formality. Some opposition is what makes it evidence.
+3. **Governance, not UX.** The claim being evidenced is about how the project is run.
+
+The one used — "Require email verification before interacting with other people", 11 For / 0 Abstain /
+1 Against, `Implemented ✔️` — satisfies all three, and is verifiable by a reader: the shipped behaviour is
+enforced in `backend/api/src/create-private-user-message-channel.ts`.
+
+**Turnout is the honest tension.** Twelve voters is a small number to place near "700+ members". It is not
+a reason to fake anything; it is a reason to keep the tally off any screen that also shows the member
+count, which is why this lives on the about page and not the home page.
+
+**Privacy.** `/vote` renders for logged-out visitors (`web/pages/vote.tsx` gates only on
+`user === undefined`), so tallies and proposer names are already public — screenshotting one is not an
+escalation. The capture shoots the single card element rather than the viewport, so no neighbouring
+proposal or member name can wander into frame.
+
+Captured from **production** by `media-creator/scripts/capture-vote.mjs` (`npm run capture:vote`), because
+the whole point is that the decision is real — a local seed would be a mock-up. Re-run it after any restyle
+of `web/components/votes/vote-item.tsx`; the tally will have moved on by then, which is correct.
+
+**Two widths, four files.** The desktop capture is 868 CSS px; scaled into a phone column it renders the
+card's 14px description at about 6px — the same failure that forced H1 to mobile capture. So the card is
+also shot at 390px, where it reflows into its own mobile layout and is displayed at roughly 1:1. The page
+chooses with a `<picture>` media query, so exactly one file is downloaded. That rules out `next/image`,
+which cannot emit a `<picture>`; the files are instead authored at the sizes actually used and encoded as
+WebP, which for flat fill and text is about 45% smaller than the JPEG (80 KB vs 145 KB). `loading="lazy"`
+means the hidden theme's copy is never fetched at all, so a visit costs one 80 KB image.
+
+**The Democratic feature card no longer links to `/vote`.** This section is its proof and owns that link;
+two links to the same page within one screen sent readers away before they reached the evidence. The
+wording is unchanged, so the existing `fr`/`de` translations still apply.
+
+The card's own text is English only. Translating a screenshot of a real proposal would mean fabricating it,
+so the surrounding caption carries the meaning instead and is translated normally.
 
 ### A2 — Proof for "Community Owned / no VC"
 
 The one place a genuine human photo belongs, because it evidences the governance claim rather than selling a
 lifestyle: contributor photos, a Discord screenshot, or the GitHub contributor wall.
 
-### A3 — Growth chart (optional)
+### A3 — Growth chart — **done**
 
-A simple line of the member count over time near the `ShareStrip`. `web/public/md/financials.md` already
-establishes the transparency framing.
+A single cumulative line of the member count, sitting under the "Help Compass grow" label as the setup for
+the help cards — this is what you would be helping grow. `MemberGrowth` in
+`web/components/widgets/charts.tsx`.
+
+**It lives in `charts.tsx`, not `components/about/`,** because it shares that file's date helpers with the
+big `/stats` chart. Only the presentation differs, and it differs deliberately: `/stats` is an instrument —
+two series, axes, grid, tooltip — for someone who came to read numbers. This is one claim on a page someone
+is skimming, so it is a single line with no axes and no tooltip, and the endpoints are labelled in real
+HTML rather than recharts ticks. That last part is not only taste: the tick and tooltip colours in the
+`/stats` chart are hardcoded light-theme values, which HTML labels sidestep entirely.
+
+**Queried live, never hardcoded.** A member count that quietly goes stale on a page arguing for
+transparency is the failure mode worth engineering against. For the same reason it renders _nothing_ when
+the query comes back empty rather than a zero, a spinner, or an empty chart frame — an empty frame claims
+more than it shows. Rendering nothing is also why it has no section heading of its own: a heading with
+nothing beneath it is worse than no section.
+
+**Scaling caveat**, inherited from `getProfilesCreations`: one row per profile, cumulative curve rolled up
+in the browser. Fine at ~700 and identical to what `/stats` already does, but linear — past a few thousand
+members this wants an aggregate endpoint returning daily totals.
 
 ## Cross-cutting constraints
 
@@ -366,11 +427,11 @@ establishes the transparency framing.
 | H1  | Hero search demo               | W0c        | Claude ✅  |
 | H2  | Feature-card micro-screenshots | —          | — dropped  |
 | H3  | Fabricated avatars removed     | —          | Claude ✅  |
-| A1  | Vote-tally screenshot          | —          | Claude     |
+| A1  | Vote-tally screenshot          | —          | Claude ✅  |
 | A2  | Community photo                | —          | **Martin** |
-| A3  | Growth chart                   | —          | Claude     |
+| A3  | Growth chart                   | —          | Claude ✅  |
 
-The home page is finished. What is left is the about page, which currently carries no visuals at all.
+The home page is finished. On the about page, A2 needs a photo only Martin can supply and A3 is optional.
 H3 option 1 (real member photos, opt-in) stays available but is not blocking anything.
 
 ---

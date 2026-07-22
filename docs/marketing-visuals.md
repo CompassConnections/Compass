@@ -198,13 +198,11 @@ they are still same-origin off Vercel's CDN and another ~270 KB of binaries stay
 Uploads use `Cache-Control: public, max-age=86400` rather than `immutable`, since filenames are
 stable across re-renders and a long TTL would strand the build on an old clip.
 
-Nothing about the hero is committed now, so **a deploy without `MEDIA_SOURCE_BASE_URL` set renders
-neither the clip nor its poster.** The build warns rather than failing in that case, because a
-contributor without R2 access should still be able to build.
-
-> The root `.gitignore` blanket-ignores `*.jpg` / `*.mp4`. Those two paths are explicitly un-ignored,
-> and only the two **posters** are un-ignored, because the app serves them as the LCP image. The
-> videos are intentionally left ignored — R2 serves those. The showcase portraits are likewise
+> The root `.gitignore` blanket-ignores `*.jpg` / `*.mp4` / `*.webp`, and **nothing here is un-ignored** —
+> not the videos, not the posters, not the vote-tally stills. Every one of them reaches `public/` through
+> `fetch-media.mjs` at build time, which is why that script failing has to fail the build. (An earlier
+> version of this note claimed the two posters were committed; `git ls-files web/public/images` says
+> otherwise.) The showcase portraits are likewise
 > **not** un-ignored: they are dev-only seed data and `scripts/generate-showcase-portraits.ts`
 > regenerates them, so they stay out of the repo in line with the existing no-binaries policy. A fresh
 > clone seeds profiles with the default avatar until that script is run.
@@ -405,6 +403,201 @@ nothing beneath it is worse than no section.
 in the browser. Fine at ~700 and identical to what `/stats` already does, but linear — past a few thousand
 members this wants an aggregate endpoint returning daily totals.
 
+### A4 — Search-alert demo video — **done** (pending R2 upload)
+
+"Get Notified About Searches" is the page's most distinctive claim and the only one with no proof at all.
+It is also the hardest to evidence with a still, because the whole point of it happens _later_. The clip:
+
+1. `/people`, filtered down — Man, 24–40, atheist, vegan, near Grenoble.
+2. **Nobody matches.** Not a compromise — this is the premise. The app's own empty state says it:
+   "No profiles found. Feel free to click on Get Notified…". The clip follows the product's instruction.
+3. Press **Get notified for selected filters**; the saved-search modal confirms it.
+4. **Three days pass** — the interstitial, the one beat the product does not render.
+5. The alert email, describing that saved search and the one person who has since joined.
+6. His profile, then the composer.
+
+**Captured in two passes, and it has to be.** The saved search must _match_ Julien for the email to mean
+anything and _not_ match him for the "nobody fits yet" beat. Both cannot be true of one database at one
+moment. So the first half is shot while he does not exist and the second after he is seeded:
+
+```bash
+SHOWCASE_SKIP=juliensarr SHOWCASE=1 ./scripts/seed.sh
+npm run capture:alert -- --phase before        # and capture:alert:dark
+SHOWCASE=1 ./scripts/seed.sh
+npm run capture:alert -- --phase after         # merges both halves into manifest.json
+```
+
+Staging the empty state instead — the result card has a hide control — would have been one pass and a
+fiction, and an invisible one to anyone watching. This costs a seed run and stays true.
+
+`SHOWCASE_SKIP` (in `seed-showcase.ts`) **deletes** the named slugs before skipping them, rather than
+merely not inserting. It has to: seeding is otherwise a no-op for anyone who already exists, which also
+means edits to a persona — or portraits generated _after_ the first seed — never take effect. Delete and
+re-run is how you pick them up. That bit us: Julien's first seed predated his portraits, so his row
+pointed at `default-avatar.png` and the whole clip had a placeholder where his face should be.
+
+**Which database.** These run against the **local** stack (`yarn dev:isolated` + `./scripts/seed.sh`),
+not the remote dev DB. Deleting a persona is destructive, and the remote dev DB is shared.
+
+**The "wants kids" facet was dropped.** It was in the original brief, but the Relationship group renders
+only when the _signed-in viewer's own_ `pref_relation_styles` includes `'relationship'`, and the showcase
+viewer seeks friendship and collaboration (`filters.tsx`, `youSeekingRelationship`). Same class of
+constraint as H1's gender-filter note. Including it would have meant changing the viewer persona, which
+H1 is also captured as; the remaining four facets already narrow to exactly one person.
+
+Four things that bite when scripting the filter rail, none of which apply to H1:
+
+- **Filters are nested and collapsed groups are not in the DOM.** `FilterGroup` renders
+  `{isOpen && children}`, so looking for "Religion" before opening "Values & Beliefs" finds nothing at
+  all. Only gender and location are top level.
+- **Scope every query to `#headlessui-portal-root`.** `firstVisible()` is not enough here: the desktop
+  rail is not reliably `display: none` at this viewport, so Playwright calls it visible, clicks it, and
+  times out with the sheet's own overlay "intercepting pointer events".
+- **Section headers read as label-plus-selection** — "Living anywhere", "Any gender". So the location
+  section is "Living", never "Location", and anchoring a regex at the end matches nothing.
+- Groups _and_ sections are accordions, so each selection closes the previous one. Harmless — the
+  selections persist, and the folding reads as progress through a form.
+
+**The email needed a viewport meta.** Email HTML has none, because mail clients supply their own chrome —
+so a mobile browser falls back to a ~980px layout viewport and scales the whole thing down, rendering the
+body text at about 5px. With it, the template's `maxWidth: 600px` container reflows to the real 390px and
+reads at roughly 1:1, which is the entire reason this clip is on a phone.
+
+**The email now supports dark mode for real.** It was light-only, so the dark clip cut to a full-bleed
+white screen for four seconds. The first fix framed it in invented dark chrome; the better one was
+`DARK_MODE_CSS` in `emails/utils.tsx` — a `prefers-color-scheme` block with `!important` overrides hung
+off `cm-*` class hooks, since inline styles (which is what mail clients need) otherwise win. **This
+changes real sent email** in clients that honour the query — Apple Mail, iOS Mail, Outlook.com. Clients
+that ignore it keep the light version exactly as before, so it is additive. Only `new-search-alerts` uses
+it so far; the other templates could adopt it the same way.
+
+**The interstitial.** A dissolve alone said "something changed", not "days went by" — which left the email
+looking like it arrived the instant the search was saved, precisely the wrong idea about a feature whose
+point is that it works while you are not looking. So the saved-search screen recedes behind a scrim,
+three days tick across it, and the email arrives out of that. Synthesised in Remotion and injected by
+`calculateMetadata` rather than emitted by the capture script, so the manifest stays a pure record of what
+was photographed.
+
+**The scrim does not lift before the email arrives.** It used to, and the result was visible: the veil
+faded out, the saved-search screen returned at full strength for a few frames, and only then did the email
+begin dissolving in — so the clip appeared to bounce back to where it had just been. The scrim now holds
+through the handover and the email fades up over exactly the state the interstitial ended in. The gap is
+also a little shorter (54 frames), which brings the email forward.
+
+Its caption is light ink in **both** themes: the scrim has to be dark either way, or the screenshot
+behind it still reads as the live screen, and taking the ink from the theme put dark brown text on a dark
+scrim in light mode.
+
+This clip is **English-only**, unavoidably — its middle beat is a screenshot of an English email, and the
+interstitial says "3 days later". The hero clip has no text for the opposite reason: one render, every
+locale. The surrounding caption is translated normally.
+
+**Proving the match.** The profile beat used to scroll straight past the fields the search asked for, so
+the viewer had to take the match on trust. Two changes fixed that, and the first is nearly free:
+
+- **Pacing.** The two beats that carry the proof — the header (age, gender, city) and the details row
+  where religion and diet land together — hold for 96 frames instead of the scroll's 3. They are the only
+  moments in the clip meant to be _read_ rather than watched. That is exactly what per-frame `hold` in
+  the manifest is for.
+- **Spotlight.** The rest of the frame dims and each matching value gets a hand-drawn amber ellipse,
+  stroked on over about a third of a second and staggered so the eye is walked through them one at a
+  time. Geometry is measured off the live DOM, so a profile restyle moves the circles with it rather than
+  leaving them pointing at blank space.
+
+Two things that had to be got right:
+
+- **Measure the text, not the element.** `boundingBox()` returns the layout box, and in the details list
+  each value sits in a full-width row — circling that produced a flat oval spanning the whole card. A
+  `Range` over the text node gives the glyphs' own bounds.
+- **Frame both values together.** Centring on religion alone left diet at y≈762, half under the fixed
+  bottom nav. The script re-centres on the midpoint of the two against the viewport minus that nav.
+
+An earlier version captioned each circle with the criterion it satisfied ("✓ Vegan"). Dropped: the fields
+are about 25px apart, so every caption landed on the next value and buried what it was pointing at — and
+the criteria have just been read out in the email a beat earlier, so the labels were repetition as well as
+clutter. The circles alone carry it.
+
+**This is editorial annotation, not product UI**, and it is drawn to look like it. Compass has no
+"matches your search" highlighting on profiles; chrome implying otherwise would claim a feature that does
+not exist. A hand-drawn ring is unmistakably someone marking up a screen. (The tap indicator is different
+in kind — it depicts a finger, not a feature.)
+
+**Where it sits.** Inside "What makes us different", as a card in the column beside the three cards it
+is evidence for — "Keyword Search the Database", "Get Notified About Searches", "Personality-Centered".
+It first went in as a section of its own below the grid, which put the claim and its proof a full screen
+apart; that is the one arrangement in which the clip does no work. Two columns on desktop (cards stacked
+left, clip right, which the clip's phone aspect ratio suits); on mobile the cards simply stack above it.
+
+**Files**: `media-creator/scripts/capture-alert.mjs`, `media-creator/src/scenes/SearchAlert.tsx`
+(compositions `SearchAlertLight` / `SearchAlertDark`),
+`backend/email/emails/functions/render-search-alert.tsx` (`yarn --cwd=backend/email render:alert`), and
+the `web/components/about/search-alert-demo.tsx` embed. `TapIndicator` and `shotAt` are imported from
+`SearchDemo` rather than duplicated.
+
+```bash
+npm run capture:alert[:dark] -- --phase before|after
+npm run render:alert[:dark]    # -> out/compass-search-alert-{light,dark}.mp4  (2.5 MB, 31s, 916 frames)
+npm run still:alert[:dark]     # -> out/compass-alert-poster-{light,dark}.png  (frame 0)
+```
+
+**Still to do: `npm run upload:media`.** The four new assets are wired into `upload-media.sh` and into the
+`ASSETS` list in `web/scripts/fetch-media.mjs`, and they exist locally — but until they are in R2, a
+Vercel build will fail on them by design. Uploading is publishing, so it is Martin's call.
+
+### A5 — Stat band + country spread — **done**
+
+Two numbers-not-assets blocks, both off the existing `stats` endpoint, which already has a 1-hour
+server-side cache.
+
+- **Stat band** under the page header — members, messages, countries. The page currently opens with a
+  wall of identical cards; this gives it a first beat that is not one.
+- **Country spread** on **`/stats`**, as the right column of the **Community** group
+  (`web/components/widgets/country-spread.tsx`,
+  in `widgets/` because it is no longer an about-page component). It evidences "worldwide", asserted in
+  the home copy and shown nowhere. It started beside `MemberGrowth` on the about page and moved: it is a
+  distribution readout for someone who came to read numbers, and the about page already makes its one
+  claim about reach in the stat band. It belongs _inside_ Community because it answers the same question
+  as the four numbers beside it — who the members are — split by place rather than counted; on `lg` the
+  cards drop to a 2×2 block on the left and it takes the right half, and below `lg` it stacks under them
+  (its bars need the horizontal room). `/stats` fetches the whole `stats` payload for the page and passes
+  `countries`/`countryCount` in as props, so there is no second request. The page gates the column on
+  `MIN_COUNTRIES` rather than letting the component return null into it: a hidden child still leaves its
+  grid track behind, so hiding it would have left half a row blank instead of giving the width back.
+
+`stats` gained `countries` (top 8 by `profiles.country`) and `countryCount` rather than a new endpoint:
+same query batch, same cache, one round trip. Both blocks render **nothing** when the data is missing,
+per A3. Country bars are scaled against the _largest_ country rather than the total — against the total
+the long tail collapses into slivers of identical apparent length and the ranking stops being readable.
+
+Kept away from the vote tally — 12 voters next to a large member count is exactly the turnout tension A1
+was placed on this page to avoid.
+
+One number in the band is not a measurement: "$0 / Cost to join" is a policy, and it is the whole
+argument of the "Completely Free" card. Everything beside it is queried.
+
+Both live in `components/about/platform-stats.tsx`. Extracting `SectionLabel` / `Divider` into
+`components/about/section.tsx` was part of this: several blocks on the page now return null, and a
+heading or rule left behind by an absent block is worse than no section, so the label has to sit inside
+the component that decides whether to render.
+
+### A6 — Repo activity (the unblocked half of A2) — **done**
+
+A2 assumes a human photo and stays yours. But "Community Owned / no VC" can be evidenced without anyone's
+consent: contributor count, commits, stars, last commit. New `repo-stats` endpoint, long server-side cache,
+rendered in **our own components** — not a screenshot of GitHub's contributor wall, which H2 already
+rejected as stale on capture and not Compass pixels. Client-side calls to `api.github.com` are out: 60/hr
+per IP unauthenticated is not viable on a public page, so `repo-stats` proxies it with a 6-hour
+server-side cache.
+
+Each field is independently nullable and independently omitted, and the section renders nothing at all
+when every call fails — a zeroed contributor count would undercut the exact claim being made. A wholly
+empty result is never cached either, or one GitHub outage would pin the page to "nothing" for six hours.
+
+Currently reads 4 contributors, 38 stars, last change yesterday. **Worth a decision from Martin**: that
+is honest but modest, and it is the same tension as A1's twelve voters. It reads as a real early
+open-source project, which is what it is. Inflating it is not an option; dropping the block if it reads
+as weak is.
+
 ## Cross-cutting constraints
 
 - **Dark mode doubles the assets.** The site is fully tokenised (`bg-canvas-*`, `text-ink-*`); a light-mode
@@ -430,9 +623,21 @@ members this wants an aggregate endpoint returning daily totals.
 | A1  | Vote-tally screenshot          | —          | Claude ✅  |
 | A2  | Community photo                | —          | **Martin** |
 | A3  | Growth chart                   | —          | Claude ✅  |
+| A4  | Search-alert demo video        | W0c        | Claude ✅  |
+| A5  | Stat band + country spread     | —          | Claude ✅  |
+| A6  | Repo activity                  | —          | Claude ✅  |
 
-The home page is finished. On the about page, A2 needs a photo only Martin can supply and A3 is optional.
-H3 option 1 (real member photos, opt-in) stays available but is not blocking anything.
+A4 is captured, rendered and mounted; the one step left is `npm run upload:media`, which is publishing
+and so Martin's. Until that runs, a Vercel build fails on the four missing assets — deliberately.
+
+The home page is finished. On the about page, A2 needs a photo only Martin can supply; A6 covers the half
+of that claim that does not. H3 option 1 (real member photos, opt-in) stays available but is not blocking
+anything.
+
+**Why three at once**: the about page reads flat because ten of its twelve blocks are the same card
+(`FeatureCard` ×6, `HelpCard` ×4, identical surface and icon tile). A4/A5/A6 are as much about breaking
+that rhythm as about adding proof, so they are designed together — a clip, a number band, and a data
+block, none of which is another beige card.
 
 ---
 

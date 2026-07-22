@@ -7,6 +7,7 @@
     "dev": "email dev -p 3001",
     "lint": "npx eslint . --max-warnings 0",
     "lint-fix": "npx eslint . --fix",
+    "render:alert": "tsx emails/functions/render-search-alert.tsx",
     "test": "jest --config jest.config.ts --passWithNoTests",
     "typecheck": "npx tsc --noEmit"
   },

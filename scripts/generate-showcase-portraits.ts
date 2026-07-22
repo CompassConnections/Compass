@@ -171,6 +171,18 @@ const PORTRAITS: Record<string, PortraitSpec> = {
       'reading in a park on a bench, book propped on one knee, city noise implied, sunlight through leaves',
     ],
   },
+  juliensarr: {
+    appearance:
+      // Alpine fieldwork cues drag the apparent age up the way the coastal ones do for sofiacosta, so
+      // the early thirties are asserted rather than left to the scene: no grey, no weathering.
+      '32-year-old French-Senegalese man, dark brown skin, short black hair, neatly kept short beard ' +
+      'with no grey, tall and lean, unlined early-thirties face, warm and unhurried expression',
+    scenes: [
+      'standing in deep snow on an Alpine slope above Grenoble in a well-used shell jacket, a snow depth probe planted beside him, mountains behind, looking straight at the camera',
+      'cooking in a small bright flat kitchen, chopping herbs on a crowded board with pans and jars around him, sleeves pushed up, absorbed in the work',
+      'crouched beside a fast mountain stream in summer lowering a sensor into the water, notebook open on the rock next to him',
+    ],
+  },
 }
 
 // ─── API ──────────────────────────────────────────────────────────────────────

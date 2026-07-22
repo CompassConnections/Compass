@@ -23,6 +23,27 @@ export interface SearchFrame {
   hold: number
   /** Viewport position in CSS px of the control that produced this shot, when it came from a tap. */
   tap?: {x: number; y: number}
+  /**
+   * Dissolve into this shot from the one before it instead of cutting.
+   *
+   * Only honoured by the SearchAlert scene, where it marks the point at which the clip stops being one
+   * continuous session — the email arrives days later, in another app, and a hard cut there reads as a
+   * mistake rather than as elapsed time.
+   */
+  fadeIn?: boolean
+  /**
+   * A synthetic beat with no screenshot behind it, injected by the SearchAlert scene rather than
+   * captured. Marks the "days later" interstitial, which is the one moment in that clip the product
+   * does not render and so cannot be photographed.
+   */
+  gap?: boolean
+  /**
+   * Regions of this shot to spotlight, in CSS px, each with the search facet it satisfies.
+   *
+   * Measured by the capture script off the live DOM — same mechanism as `tap` — so they track the real
+   * layout instead of being hand-placed against a screenshot that will move on the next restyle.
+   */
+  highlights?: {x: number; y: number; w: number; h: number; label: string}[]
 }
 
 export interface SearchManifest {
@@ -73,7 +94,7 @@ const TAP_FRAMES = 14
  *
  * Positioned in percentages of the CSS viewport so it lands correctly whatever the capture scale.
  */
-const TapIndicator: React.FC<{
+export const TapIndicator: React.FC<{
   tap: {x: number; y: number}
   css: {width: number; height: number}
   since: number

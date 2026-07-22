@@ -1,3 +1,4 @@
+import {InformationCircleIcon} from '@heroicons/react/24/outline'
 import * as Sentry from '@sentry/node'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
@@ -60,6 +61,14 @@ import {AddPhotosWidget} from './widgets/add-photos'
 
 const DEFAULT_PREF_GENDER_VALUES = ['female', 'male']
 
+const BIG5_KEYS = [
+  'big5_openness',
+  'big5_conscientiousness',
+  'big5_extraversion',
+  'big5_agreeableness',
+  'big5_neuroticism',
+] as const
+
 function PrefGenderCheckbox(props: {
   profile: ProfileWithoutUser
   setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
@@ -87,7 +96,7 @@ function PrefGenderCheckbox(props: {
       {!showAll && (
         <button
           type="button"
-          className="text-primary-600 mt-1 text-sm"
+          className="text-primary-700 mt-1 text-sm font-medium hover:underline"
           onClick={() => setShowAll(true)}
         >
           {t('profile.gender.show_more', 'Show more options')}
@@ -133,6 +142,9 @@ export const OptionalProfileUserForm = (props: {
 
   const heightInches =
     typeof profile.height_in_inches === 'number' ? profile.height_in_inches % 12 : undefined
+
+  const anyBig5Set = BIG5_KEYS.some((k) => typeof profile[k] === 'number')
+  const resetBig5 = () => BIG5_KEYS.forEach((k) => setProfile(k, null))
 
   const [isExtracting, setIsExtracting] = useState(false)
   const [parsingEditor, setParsingEditor] = useState<any>(null)
@@ -358,13 +370,26 @@ export const OptionalProfileUserForm = (props: {
 
   return (
     <>
-      <Col className={'gap-8 max-w-3xl'}>
-        <p className={'guidance'}>
-          {t(
-            'profile.optional.subtitle',
-            'Although all the fields below are optional, they will help people better understand you and connect with you.',
-          )}
-        </p>
+      {/* `pb-32`: the bio editor is the last element on the page, so when it is focused there is
+          nothing below it to scroll into — the document simply ends, and no amount of
+          `scrollIntoView` can lift its toolbar off the bottom edge. This reserves scrollable room
+          below the form so the toolbar can clear the viewport edge (and the floating submit button). */}
+      <Col className={'gap-8 max-w-3xl pb-32'}>
+        {/* This sentence is the single most abandonment-reducing thing on the page — it tells you the
+            eighteen sections below are all skippable. It was rendered in `.guidance`: 14px at 70%
+            opacity, i.e. styled like fine print, which is exactly backwards. */}
+        <div className="flex items-start gap-3 rounded-xl bg-primary-100/60 ring-1 ring-primary-200 p-4">
+          <InformationCircleIcon
+            className="w-5 h-5 text-primary-700 shrink-0 mt-0.5"
+            strokeWidth={1.8}
+          />
+          <p className="text-sm text-ink-700 leading-relaxed">
+            {t(
+              'profile.optional.subtitle',
+              'Although all the fields below are optional, they will help people better understand you and connect with you.',
+            )}
+          </p>
+        </div>
         <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
         <LLMExtractSection
           parsingEditor={parsingEditor}
@@ -379,8 +404,8 @@ export const OptionalProfileUserForm = (props: {
             {extractionError}
           </p>
         )}
-        <hr className="border border-b my-4" />
-
+        {/* The rule that used to sit here (`border border-b`, which draws two) is now owned by
+            `Category` itself, so every section boundary is drawn the same way. */}
         <Category
           title={t('profile.optional.category.personal_info', 'Personal Information')}
           className={'mt-0'}
@@ -437,7 +462,7 @@ export const OptionalProfileUserForm = (props: {
             {!showAllGenders && (
               <button
                 type="button"
-                className="text-primary-600 mt-1 text-sm"
+                className="text-primary-700 mt-1 text-sm font-medium hover:underline"
                 onClick={() => setShowAllGenders(true)}
               >
                 {t('profile.gender.show_more', 'Show more options')}
@@ -797,7 +822,7 @@ export const OptionalProfileUserForm = (props: {
                 {!showAllOrientations && (
                   <button
                     type="button"
-                    className="text-primary-600 mt-1 text-sm"
+                    className="text-primary-700 mt-1 text-sm font-medium hover:underline"
                     onClick={() => setShowAllOrientations(true)}
                   >
                     {t('profile.orientation.show_more', 'Show more options')}
@@ -1038,15 +1063,36 @@ export const OptionalProfileUserForm = (props: {
 
         {/* Big Five personality traits (0–100) */}
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.big5', 'Big Five Personality Traits')}
-          </label>
+          <Row className="w-full items-center justify-between gap-3">
+            <label className={clsx(labelClassName)}>
+              {t('profile.big5', 'Big Five Personality Traits')}
+            </label>
+            {/* A slider cannot express "unset": drag one and there is no gesture that puts it back,
+                so before this the first accidental touch permanently committed a score. Clearing
+                writes `null` rather than `undefined` on purpose — the edit path
+                (`pages/profile.tsx`) strips undefined but persists null, so undefined would silently
+                leave the old value in the database. Signup strips both, which is also correct there:
+                an unset trait should not be sent at all. */}
+            {anyBig5Set && (
+              <button
+                type="button"
+                onClick={resetBig5}
+                className="text-sm font-medium text-primary-700 hover:underline shrink-0"
+              >
+                {t('profile.big5_reset', 'Reset')}
+              </button>
+            )}
+          </Row>
           <p className="guidance custom-link">
             {t(
               'profile.big5_guidance',
               'The Big Five personality trait model is a scientific model that groups variation in personality into five separate factors (',
             )}
-            <CustomLink href={'https://en.wikipedia.org/wiki/Big_Five_personality_traits'}>
+            {/* CustomLink ships no colour of its own, so this inherited a 2.70:1 amber. */}
+            <CustomLink
+              href={'https://en.wikipedia.org/wiki/Big_Five_personality_traits'}
+              className="text-primary-700 font-medium hover:underline"
+            >
               {t('profile.big5_wikipedia_link', 'Wikipedia article')}
             </CustomLink>
             {t(
@@ -1062,30 +1108,35 @@ export const OptionalProfileUserForm = (props: {
             <Big5Slider
               label={t('profile.big5_openness', 'Openness')}
               value={profile.big5_openness ?? 50}
+              isSet={typeof profile.big5_openness === 'number'}
               onChange={(v) => setProfile('big5_openness', v)}
             />
             <Big5Slider
               label={t('profile.big5_conscientiousness', 'Conscientiousness')}
               value={profile.big5_conscientiousness ?? 50}
+              isSet={typeof profile.big5_conscientiousness === 'number'}
               onChange={(v) => setProfile('big5_conscientiousness', v)}
             />
             <Big5Slider
               label={t('profile.big5_extraversion', 'Extraversion')}
               value={profile.big5_extraversion ?? 50}
+              isSet={typeof profile.big5_extraversion === 'number'}
               onChange={(v) => setProfile('big5_extraversion', v)}
             />
             <Big5Slider
               label={t('profile.big5_agreeableness', 'Agreeableness')}
               value={profile.big5_agreeableness ?? 50}
+              isSet={typeof profile.big5_agreeableness === 'number'}
               onChange={(v) => setProfile('big5_agreeableness', v)}
             />
             <Big5Slider
               label={t('profile.big5_neuroticism', 'Neuroticism')}
               value={profile.big5_neuroticism ?? 50}
+              isSet={typeof profile.big5_neuroticism === 'number'}
               onChange={(v) => setProfile('big5_neuroticism', v)}
             />
           </div>
-          <p className="text-sm text-ink-500">
+          <p className="text-sm text-ink-700">
             {t(
               'profile.big5_hint',
               'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
@@ -1305,7 +1356,10 @@ export const OptionalProfileUserForm = (props: {
             loading={isSubmitting}
             onClick={handleSubmit}
             size={'xl'}
-            color={'primary'}
+            // Was `primary` — the *tinted secondary* variant. This is the button that actually
+            // creates the account at the end of a 7,500px form; it should not be the quietest
+            // control on screen.
+            color={'cta'}
           >
             {buttonLabel ?? t('common.next', 'Next')}
           </Button>
@@ -1360,18 +1414,56 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
   )
 }
 
+/**
+ * Section header for the long optional-profile form.
+ *
+ * This form is ~7,500px of a single flat column holding eighteen of these. Previously each was a bare
+ * `text-xl` heading pulled *closer* to its fields by a `mb-[-8px]` hack, so there was no visual
+ * boundary between one section and the next — "Work" ended and "Political beliefs" began with nothing
+ * between them but a slightly bolder line of text, and a filler had no way to see how the form was
+ * organised or where they were in it.
+ *
+ * A rule plus real leading space does the grouping without restructuring 1,300 lines of field markup:
+ * the header now closes the previous section as much as it opens its own. The negative margin is gone
+ * — the parent `Col` already supplies `gap-8`, which is the spacing this was fighting.
+ */
 function Category({title, className}: {title: string; className?: string}) {
-  return <h3 className={clsx('text-xl font-semibold mb-[-8px]', className)}>{title}</h3>
+  return (
+    // `mt-6` on top of the parent's `gap-8`, against `pt-5` below: the rule has to sit closer to the
+    // heading it introduces than to the section it closes, or it reads as a trailing underline for the
+    // previous block. Even spacing on both sides is the default mistake here.
+    <div className={clsx('w-full border-t border-canvas-200 mt-6 pt-5', className)}>
+      {/* `!mt-0`: the global h1–h6 rule puts a 24px margin on this, which silently doubled the space
+          below the rule and made the spacing symmetric again. It is also what the old `mb-[-8px]` on
+          this component was compensating for. */}
+      <h3 className="font-heading text-2xl font-bold tracking-tight text-ink-900 !mt-0">{title}</h3>
+    </div>
+  )
 }
 
-const Big5Slider = (props: {label: string; value: number; onChange: (v: number) => void}) => {
-  const {label, value, onChange} = props
+/**
+ * `isSet` distinguishes "I am a 50" from "I have not answered this".
+ *
+ * The slider has no null position — an untouched trait has to render *somewhere*, and it renders at
+ * the midpoint. Without a readout that says otherwise, an untouched form looks like five deliberate
+ * 50s, and submitting it would claim five personality scores the user never gave.
+ */
+const Big5Slider = (props: {
+  label: string
+  value: number
+  isSet: boolean
+  onChange: (v: number) => void
+}) => {
+  const {label, value, isSet, onChange} = props
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between text-sm text-ink-600">
+      <div className="mb-1 flex items-center justify-between text-sm text-ink-700">
         <span>{label}</span>
-        <span className="font-semibold text-ink-700" data-testid={`${label.toLowerCase()}-value`}>
-          {Math.round(value)}
+        <span
+          className={clsx('font-semibold', isSet ? 'text-ink-700' : 'text-ink-600')}
+          data-testid={`${label.toLowerCase()}-value`}
+        >
+          {isSet ? Math.round(value) : '–'}
         </span>
       </div>
       <Slider

@@ -263,122 +263,147 @@ export const SendMessageButton = (props: {
             why the top of a long message and the image/emoji toolbar became unreachable. Keeping
             children at their natural height makes the panel itself overflow, which `overflow-y-auto`
             then scrolls. */}
-        <Col
-          ref={scrollRef}
-          className={clsx(MODAL_CLASS, '!h-auto max-h-[85vh] overflow-y-auto pb-5 [&>*]:shrink-0')}
-        >
-          {/* Header. Follows the Compose Modal design: portrait, an uppercase "writing to" eyebrow,
+        <Col className={clsx(MODAL_CLASS, '!h-auto max-h-[85vh] overflow-hidden pb-5 !gap-0')}>
+          {/* Split into a scrolling region and a pinned footer.
+              Everything used to live in one scrolling column, so the progress bar and the send button
+              — the two things telling you whether you may send yet — drifted off the bottom as soon as
+              the message got long. They are now outside the scroller entirely and cannot move.
+              `min-h-0` on the scroller is load-bearing: a flex child's default `min-height: auto`
+              refuses to shrink below its content, so without it the region would grow past the panel
+              and push the footer out again — the same class of bug as the `[&>*]:shrink-0` note. */}
+          <Col
+            ref={scrollRef}
+            className={'w-full flex-1 min-h-0 overflow-y-auto gap-4 [&>*]:shrink-0'}
+          >
+            {/* Header. Follows the Compose Modal design: portrait, an uppercase "writing to" eyebrow,
               then the serif title and a hairline. The earlier full-bleed gradient band competed with
               the content it was introducing. */}
-          <Col className={'w-full'}>
-            <Row className={'items-center gap-3.5 mb-6'}>
-              {profile.pinned_url && (
-                <img
-                  src={profile.pinned_url}
-                  alt=""
-                  className={'h-13 w-13 rounded-full object-cover border border-canvas-200'}
-                  style={{width: 52, height: 52}}
-                />
-              )}
-              <Col className={'gap-0.5'}>
-                <span
-                  className={
-                    'text-primary-600 text-[11px] font-semibold uppercase tracking-[0.09em]'
-                  }
-                >
-                  {t('send_message.writing_to', 'Writing to')}
-                </span>
-                <span className={'text-ink-900 text-[17px] font-semibold leading-tight'}>
-                  {toUser.name}
-                </span>
-              </Col>
-            </Row>
+            <Col className={'w-full'}>
+              <Row className={'items-center gap-3.5 mb-6'}>
+                {profile.pinned_url && (
+                  <img
+                    src={profile.pinned_url}
+                    alt=""
+                    className={'h-13 w-13 rounded-full object-cover border border-canvas-200'}
+                    style={{width: 52, height: 52}}
+                  />
+                )}
+                <Col className={'gap-0.5'}>
+                  <span
+                    className={
+                      'text-primary-600 text-[11px] font-semibold uppercase tracking-[0.09em]'
+                    }
+                  >
+                    {t('send_message.writing_to', 'Writing to')}
+                  </span>
+                  <span className={'text-ink-900 text-[17px] font-semibold leading-tight'}>
+                    {toUser.name}
+                  </span>
+                </Col>
+              </Row>
 
-            <h2
-              className={
-                'font-heading text-[32px] font-medium leading-[1.15] text-ink-1000 !mt-0 mb-3'
-              }
-            >
-              {t('send_message.title', 'Start a meaningful conversation')}
-            </h2>
-            <p className={'text-ink-500 text-[15px] leading-[1.55] max-w-[92%]'}>
-              {t(
-                'send_message.guidance',
-                'Compass is about depth. Take a moment to write something genuine.',
-              )}
-            </p>
-            <div className={'h-px bg-canvas-200 mt-6'} />
-          </Col>
+              <h2
+                className={
+                  'font-heading text-[32px] font-medium leading-[1.15] text-ink-1000 !mt-0 mb-3'
+                }
+              >
+                {t('send_message.title', 'Start a meaningful conversation')}
+              </h2>
+              <p className={'text-ink-500 text-[15px] leading-[1.55] max-w-[92%]'}>
+                {t(
+                  'send_message.guidance',
+                  'Compass is about depth. Take a moment to write something genuine.',
+                )}
+              </p>
+              <div className={'h-px bg-canvas-200 mt-6'} />
+            </Col>
 
-          {/* skipEmailVerification is dev-only and cannot be enabled in a production build; the API
+            {/* skipEmailVerification is dev-only and cannot be enabled in a production build; the API
               still rejects unverified senders. See web/lib/dev-flags.ts. */}
-          {firebaseUser?.emailVerified || skipEmailVerification ? (
-            <>
-              {/* Topics box: a 40% tint rather than solid canvas-100. At full strength the fill sat a
+            {firebaseUser?.emailVerified || skipEmailVerification ? (
+              <>
+                {/* Topics box: a 40% tint rather than solid canvas-100. At full strength the fill sat a
                   whole step away from the modal's canvas-50 surface and read as a separate panel. The
                   border is what defines the box; the fill only needs to hint at it. Works in both
                   themes, since canvas-100 sits on the far side of canvas-50 either way. */}
-              {!!profile.keywords?.length && (
-                <div
-                  className={
-                    'w-full bg-canvas-100/80 border border-canvas-200 rounded-2xl p-[18px]'
-                  }
-                >
-                  <p className={'text-primary-600 mb-3 text-[12.5px] font-semibold'}>
-                    {t('send_message.keywords_hint', `Insert some of {name}'s topics`, {
-                      name: firstName,
-                    })}
-                  </p>
-                  <div className={'flex flex-wrap gap-[9px]'}>
-                    {profile.keywords.map((k) => (
-                      <button
-                        key={k}
-                        type={'button'}
-                        onClick={() => toggleChip(k)}
-                        // Same chip language as the filter rail, so selecting a topic here reads the
-                        // same as narrowing a search there.
-                        className={clsx(
-                          'inline-flex items-center gap-1.5 text-[13.5px] font-medium px-[15px] py-2 rounded-full border transition-colors duration-150 whitespace-nowrap',
-                          insertedChips.includes(k)
-                            ? 'bg-primary-500 border-primary-500 text-white'
-                            : 'bg-canvas-0 border-canvas-300 text-ink-700 hover:bg-primary-50 hover:border-primary-400',
-                        )}
-                      >
-                        {insertedChips.includes(k) && (
-                          <CheckIcon className={'h-3 w-3'} strokeWidth={3} />
-                        )}
-                        {k}
-                      </button>
-                    ))}
+                {!!profile.keywords?.length && (
+                  <div
+                    className={
+                      'w-full bg-canvas-100/80 border border-canvas-200 rounded-2xl p-[18px]'
+                    }
+                  >
+                    <p className={'text-primary-600 mb-3 text-[12.5px] font-semibold'}>
+                      {t('send_message.keywords_hint', `Insert some of {name}'s topics`, {
+                        name: firstName,
+                      })}
+                    </p>
+                    <div className={'flex flex-wrap gap-[9px]'}>
+                      {profile.keywords.map((k) => (
+                        <button
+                          key={k}
+                          type={'button'}
+                          onClick={() => toggleChip(k)}
+                          // Same chip language as the filter rail, so selecting a topic here reads the
+                          // same as narrowing a search there.
+                          className={clsx(
+                            'inline-flex items-center gap-1.5 text-[13.5px] font-medium px-[15px] py-2 rounded-full border transition-colors duration-150 whitespace-nowrap',
+                            insertedChips.includes(k)
+                              ? 'bg-cta border-cta text-white'
+                              : 'bg-canvas-0 border-canvas-300 text-ink-700 hover:bg-primary-50 hover:border-primary-400',
+                          )}
+                        >
+                          {insertedChips.includes(k) && (
+                            <CheckIcon className={'h-3 w-3'} strokeWidth={3} />
+                          )}
+                          {k}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-              {/* No wrapper here. TextEditor already draws its own bordered shell
+                )}
+                {/* No wrapper here. TextEditor already draws its own bordered shell
                   (`border-ink-300 ... rounded-lg` in editor.tsx), so adding one produced two nested
                   outlines. Restyle that single shell instead — `!` because clsx just concatenates and
                   the base classes would otherwise win by stylesheet order. */}
-              {/* Plain wrapper purely so the effect above has something whose height it can observe;
+                {/* Plain wrapper purely so the effect above has something whose height it can observe;
                   it stretches like any flex child, so it doesn't change the layout. */}
-              <div ref={editorWrapRef} className={'w-full'}>
-                <CommentInputTextArea
-                  editor={editor}
-                  user={currentUser}
-                  submit={sendMessage}
-                  isSubmitting={!editor || submitting}
-                  isDisabled={charCount < MIN_CHARS}
-                  hideSubmitButton
-                  submitOnEnter={false}
-                  // max-h-none: let the editor grow and let the *modal* do the scrolling instead of
-                  // trapping the message in a ~25vh inner scroller. That inner box made it awkward to
-                  // scroll back to the top of a long message, and pushed the image/emoji toolbar —
-                  // which sits below it — out of reach on shorter windows.
-                  maxHeight={'max-h-none'}
-                  className={
-                    '!rounded-2xl !border-[1.5px] !border-canvas-200 !bg-canvas-0/50 !shadow-none focus-within:!border-primary-400 focus-within:!ring-0'
-                  }
-                />
-              </div>
+                <div ref={editorWrapRef} className={'w-full'}>
+                  <CommentInputTextArea
+                    editor={editor}
+                    user={currentUser}
+                    submit={sendMessage}
+                    isSubmitting={!editor || submitting}
+                    isDisabled={charCount < MIN_CHARS}
+                    hideSubmitButton
+                    submitOnEnter={false}
+                    // max-h-none: let the editor grow and let the *modal* do the scrolling instead of
+                    // trapping the message in a ~25vh inner scroller. That inner box made it awkward to
+                    // scroll back to the top of a long message, and pushed the image/emoji toolbar —
+                    // which sits below it — out of reach on shorter windows.
+                    maxHeight={'max-h-none'}
+                    className={
+                      '!rounded-2xl !border-[1.5px] !border-canvas-200 !bg-canvas-0/50 !shadow-none focus-within:!border-primary-400 focus-within:!ring-0'
+                    }
+                  />
+                </div>
+              </>
+            ) : (
+              <EmailVerificationPrompt t={t} className="max-w-xl" />
+            )}
+            {error && (
+              <span
+                className={
+                  'text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm mt-2'
+                }
+              >
+                {error}
+              </span>
+            )}
+          </Col>
 
+          {/* Pinned footer — outside the scroller, so it is visible no matter how long the message is. */}
+          {(firebaseUser?.emailVerified || skipEmailVerification) && (
+            <Col className={'w-full shrink-0 gap-3.5 pt-4'}>
               {/* Progress toward the minimum length, with the count beside it. */}
               <div className={'w-full flex items-center gap-3.5'}>
                 <div className={'h-[5px] flex-1 rounded-full bg-canvas-200 overflow-hidden'}>
@@ -409,18 +434,7 @@ export const SendMessageButton = (props: {
                       count: MIN_CHARS - charCount,
                     })}
               </button>
-            </>
-          ) : (
-            <EmailVerificationPrompt t={t} className="max-w-xl" />
-          )}
-          {error && (
-            <span
-              className={
-                'text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm mt-2'
-              }
-            >
-              {error}
-            </span>
+            </Col>
           )}
         </Col>
       </Modal>

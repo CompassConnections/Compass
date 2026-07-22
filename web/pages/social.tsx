@@ -47,7 +47,7 @@ function SocialLinkButton({url, label, icon, primary}: SocialLink) {
         hover:-translate-y-0.5
         ${
           primary
-            ? 'bg-primary-500 border-primary-500 text-white hover:bg-primary-600 shadow-[0_3px_12px_rgba(193,127,62,0.3)]'
+            ? 'bg-cta border-cta text-white hover:bg-cta-hover shadow-[0_3px_12px_rgba(193,127,62,0.3)]'
             : 'bg-canvas-100 border-canvas-300 text-ink-900 hover:border-primary-500 hover:text-primary-500'
         }
       `}

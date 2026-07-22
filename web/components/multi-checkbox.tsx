@@ -34,7 +34,7 @@ function OptionChip(props: {
         'focus-within:ring-2 focus-within:ring-primary-400 focus-within:ring-offset-1 focus-within:ring-offset-canvas-50',
         disabled && 'cursor-not-allowed opacity-50',
         checked
-          ? 'border-primary-500 bg-primary-500 text-white shadow-[0_2px_8px_rgba(193,127,62,0.28)]'
+          ? 'border-cta bg-cta text-white shadow-[0_2px_8px_rgba(193,127,62,0.28)]'
           : 'border-canvas-300 bg-canvas-0 text-ink-600 hover:border-primary-400 hover:text-primary-700',
       )}
     >

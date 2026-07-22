@@ -351,6 +351,14 @@ module.exports = {
           900: 'rgb(var(--color-primary-900) / <alpha-value>)',
           950: 'rgb(var(--color-primary-950) / <alpha-value>)',
         },
+        // Filled-button background. Use `bg-cta hover:bg-cta-hover text-white` for any solid amber
+        // button — `bg-primary-500 text-white` is 3.30:1 and fails AA. See globals.css for why this
+        // is a token rather than a ramp step.
+        cta: {
+          DEFAULT: 'rgb(var(--color-cta) / <alpha-value>)',
+          hover: 'rgb(var(--color-cta-hover) / <alpha-value>)',
+          deep: 'rgb(var(--color-cta-deep) / <alpha-value>)',
+        },
         gray: {
           50: 'hsl(0, 0%, 95%)',
           100: 'hsl(0, 0%, 90%)',

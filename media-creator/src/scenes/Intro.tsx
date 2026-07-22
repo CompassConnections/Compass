@@ -1,9 +1,16 @@
-import React from 'react';
-import {AbsoluteFill, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {Background} from '../components/Background';
-import {Logo} from '../components/Logo';
-import {FadeUp, useSceneFade} from '../components/Animations';
-import {colors, DESIGN_HEIGHT, fonts} from '../theme';
+import React from 'react'
+import {
+  AbsoluteFill,
+  Sequence,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion'
+import {Background} from '../components/Background'
+import {Logo} from '../components/Logo'
+import {FadeUp, useSceneFade} from '../components/Animations'
+import {colors, DESIGN_HEIGHT, fonts} from '../theme'
 
 // ─── Scene schedule (frames @ 30fps) ────────────────────────────────────────
 const S = {
@@ -13,12 +20,12 @@ const S = {
   features: {from: 340, dur: 185},
   vision: {from: 520, dur: 105},
   cta: {from: 620, dur: 130},
-};
-export const INTRO_DURATION = S.cta.from + S.cta.dur; // 750 frames ≈ 25s
+}
+export const INTRO_DURATION = S.cta.from + S.cta.dur // 750 frames ≈ 25s
 
 // Wraps a scene so its whole content cross-fades at the edges — no hard pops.
 const Scene: React.FC<{dur: number; children: React.ReactNode}> = ({dur, children}) => {
-  const opacity = useSceneFade(dur);
+  const opacity = useSceneFade(dur)
   return (
     <AbsoluteFill
       style={{
@@ -31,8 +38,8 @@ const Scene: React.FC<{dur: number; children: React.ReactNode}> = ({dur, childre
     >
       {children}
     </AbsoluteFill>
-  );
-};
+  )
+}
 
 const Eyebrow: React.FC<{children: React.ReactNode}> = ({children}) => (
   <div
@@ -47,15 +54,15 @@ const Eyebrow: React.FC<{children: React.ReactNode}> = ({children}) => (
   >
     {children}
   </div>
-);
+)
 
 // ─── Scene 1 — logo + wordmark ──────────────────────────────────────────────
 const LogoScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const pop = spring({frame, fps, config: {damping: 12, mass: 0.8}});
-  const scale = interpolate(pop, [0, 1], [0.6, 1]);
-  const spin = interpolate(pop, [0, 1], [-25, 0]);
+  const frame = useCurrentFrame()
+  const {fps} = useVideoConfig()
+  const pop = spring({frame, fps, config: {damping: 12, mass: 0.8}})
+  const scale = interpolate(pop, [0, 1], [0.6, 1])
+  const spin = interpolate(pop, [0, 1], [-25, 0])
 
   return (
     <Scene dur={S.logo.dur}>
@@ -89,8 +96,8 @@ const LogoScene: React.FC = () => {
         </div>
       </FadeUp>
     </Scene>
-  );
-};
+  )
+}
 
 // ─── Scene 2 — the hook ─────────────────────────────────────────────────────
 const HookScene: React.FC = () => (
@@ -105,8 +112,7 @@ const HookScene: React.FC = () => (
           lineHeight: 1.12,
         }}
       >
-        Tired of endless{' '}
-        <span style={{color: colors.amberLight}}>swiping</span>,{' '}
+        Tired of endless <span style={{color: colors.amberLight}}>swiping</span>,{' '}
         <span style={{color: colors.amberLight}}>ads</span>, and{' '}
         <span style={{color: colors.amberLight}}>algorithms</span>?
       </div>
@@ -125,7 +131,7 @@ const HookScene: React.FC = () => (
       </div>
     </FadeUp>
   </Scene>
-);
+)
 
 // ─── Scene 3 — what Compass is ──────────────────────────────────────────────
 const WhatScene: React.FC = () => (
@@ -143,8 +149,7 @@ const WhatScene: React.FC = () => (
           lineHeight: 1.18,
         }}
       >
-        A free, open platform for{' '}
-        <span style={{color: colors.amberLight}}>deep, authentic</span>{' '}
+        A free, open platform for <span style={{color: colors.amberLight}}>deep, authentic</span>{' '}
         1-on-1 connections.
       </div>
     </FadeUp>
@@ -164,7 +169,7 @@ const WhatScene: React.FC = () => (
       </div>
     </FadeUp>
   </Scene>
-);
+)
 
 // ─── Scene 4 — features ─────────────────────────────────────────────────────
 const FEATURES: {title: string; text: string}[] = [
@@ -173,13 +178,13 @@ const FEATURES: {title: string; text: string}[] = [
   {title: 'Depth over swipes', text: 'Values and ideas first. Photos stay secondary.'},
   {title: 'Always free', text: 'No ads. No subscriptions. Your data is never sold.'},
   {title: 'Open & democratic', text: 'Community-owned, open source, run by a public constitution.'},
-];
+]
 
 // The five feature cards are the tallest scene, so they compact on the shorter
 // 4:5 post canvas to keep comfortable breathing room top and bottom.
 const useFeatureSizing = () => {
-  const {height} = useVideoConfig();
-  const compact = height < DESIGN_HEIGHT; // true for the 4:5 post format
+  const {height} = useVideoConfig()
+  const compact = height < DESIGN_HEIGHT // true for the 4:5 post format
   return {
     compact,
     cardPad: compact ? '22px 32px' : '30px 36px',
@@ -188,15 +193,15 @@ const useFeatureSizing = () => {
     textSize: compact ? 30 : 34,
     rowGap: compact ? 16 : 22,
     headerGap: compact ? 28 : 40,
-  };
-};
+  }
+}
 
 const FeatureRow: React.FC<{title: string; text: string; delay: number}> = ({
   title,
   text,
   delay,
 }) => {
-  const s = useFeatureSizing();
+  const s = useFeatureSizing()
   return (
     <FadeUp delay={delay} distance={40}>
       <div
@@ -244,11 +249,11 @@ const FeatureRow: React.FC<{title: string; text: string; delay: number}> = ({
         </div>
       </div>
     </FadeUp>
-  );
-};
+  )
+}
 
 const FeaturesScene: React.FC = () => {
-  const s = useFeatureSizing();
+  const s = useFeatureSizing()
   return (
     <Scene dur={S.features.dur}>
       <div style={{width: '100%'}}>
@@ -262,8 +267,8 @@ const FeaturesScene: React.FC = () => {
         </div>
       </div>
     </Scene>
-  );
-};
+  )
+}
 
 // ─── Scene 5 — vision ───────────────────────────────────────────────────────
 const VisionScene: React.FC = () => (
@@ -280,20 +285,16 @@ const VisionScene: React.FC = () => (
           lineHeight: 1.28,
         }}
       >
-        What{' '}
-        <span style={{color: colors.amberLight, fontWeight: 700}}>Linux</span> is
-        to software and{' '}
-        <span style={{color: colors.amberLight, fontWeight: 700}}>Wikipedia</span>{' '}
-        is to knowledge —
+        What <span style={{color: colors.amberLight, fontWeight: 700}}>Linux</span> is to software
+        and <span style={{color: colors.amberLight, fontWeight: 700}}>Wikipedia</span> is to
+        knowledge —
         <br />
         Compass is to{' '}
-        <span style={{color: colors.amberBright, fontStyle: 'italic'}}>
-          human connection.
-        </span>
+        <span style={{color: colors.amberBright, fontStyle: 'italic'}}>human connection.</span>
       </div>
     </FadeUp>
   </Scene>
-);
+)
 
 // ─── Scene 6 — call to action ───────────────────────────────────────────────
 const CtaScene: React.FC = () => (
@@ -344,7 +345,7 @@ const CtaScene: React.FC = () => (
       </div>
     </FadeUp>
   </Scene>
-);
+)
 
 // ─── Composition ────────────────────────────────────────────────────────────
 export const Intro: React.FC = () => {
@@ -370,5 +371,5 @@ export const Intro: React.FC = () => {
         <CtaScene />
       </Sequence>
     </AbsoluteFill>
-  );
-};
+  )
+}

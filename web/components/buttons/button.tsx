@@ -22,6 +22,7 @@ export type ColorType =
   | 'gold'
   | 'none'
   | 'primary'
+  | 'cta'
 
 const sizeClasses = {
   '2xs': 'px-2 py-1 text-xs',
@@ -53,12 +54,21 @@ export function buttonClass(size: SizeType, color: ColorType) {
     color === 'yellow-outline' && [outline, 'text-yellow-500 hover:bg-yellow-500'],
     color === 'blue' && [solid, 'bg-blue-400 hover:bg-blue-500'],
     color === 'sky-outline' && [outline, 'text-sky-500 hover:bg-sky-500'],
-    color === 'indigo' && [solid, 'bg-primary-500 hover:bg-primary-600'],
+    color === 'indigo' && [solid, 'bg-cta hover:bg-cta-hover'],
+    // The conversion CTA (sign-up). Distinct from 'primary', which is the *tinted* secondary
+    // (amber-on-tan) and is used as such in three other places — the sign-up button was borrowing it
+    // and so rendered as a low-emphasis pill. It also hardcodes `px-4 py-2 text-sm`, which silently
+    // fought the `size="xl"` its callers were passing.
+    color === 'cta' && [
+      solid,
+      '!rounded-xl bg-cta hover:bg-cta-hover shadow-[0_6px_20px_-8px_rgb(var(--color-cta)/0.75)]',
+    ],
     color === 'indigo-outline' && [outline, 'text-primary-500 hover:bg-primary-500'],
     color === 'gray' &&
       'bg-canvas-200 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-canvas-300 hover:text-ink-1000',
-    color === 'gray-outline' && [outline, 'text-ink-600 hover:bg-canvas-25'],
-    color === 'gradient' && [gradient, 'from-primary-500 to-primary-800'],
+    // ink-600 on the page canvas is 4.2:1 at 14px, just under AA; ink-700 clears it.
+    color === 'gray-outline' && [outline, 'text-ink-700 hover:bg-canvas-25'],
+    color === 'gradient' && [gradient, 'from-cta to-cta-deep'],
     color === 'gradient-pink' && [gradient, 'from-primary-500 to-fuchsia-500'],
     color === 'gray-white' &&
       'text-ink-500 hover:text-ink-900 disabled:text-ink-300 disabled:bg-transparent',

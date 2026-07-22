@@ -326,7 +326,7 @@ export function CreateEventModal(props: {
             <button
               type="submit"
               disabled={loading}
-              className="bg-primary-500 hover:bg-primary-600 text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="bg-cta hover:bg-cta-hover text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
               {loading
                 ? isEditing

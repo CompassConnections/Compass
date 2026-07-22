@@ -21,6 +21,7 @@ import {ComponentType, ReactNode, SVGProps, useEffect, useState} from 'react'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import ChartMembers from 'web/components/widgets/charts'
+import {CountrySpread, MIN_COUNTRIES} from 'web/components/widgets/country-spread'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {getCount} from 'web/lib/supabase/users'
@@ -40,6 +41,8 @@ interface StatCardProps {
 interface StatGroupProps {
   icon: IconType
   title: string
+  /** Optional block sharing the group's row — the right column on large screens. */
+  aside?: ReactNode
   children: ReactNode
 }
 
@@ -99,7 +102,7 @@ function StatCard({value, label, icon: Icon, accent = 'amber', large}: StatCardP
 
 // ─── Stat Group ───────────────────────────────────────────────────────────────
 
-function StatGroup({icon: Icon, title, children}: StatGroupProps) {
+function StatGroup({icon: Icon, title, aside, children}: StatGroupProps) {
   return (
     <div className="mb-10">
       <div className="flex items-center gap-3 mb-4">
@@ -109,7 +112,20 @@ function StatGroup({icon: Icon, title, children}: StatGroupProps) {
         </span>
         <div className="flex-1 h-px bg-canvas-200" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">{children}</div>
+      {/* With an `aside`, the cards give up half the width and drop to a 2×2 block beside it on large
+          screens; without one they keep the full-width 4-up row. The aside stacks underneath below
+          `lg` rather than squeezing — its country bars need the horizontal room. */}
+      <div className={clsx('grid gap-3', aside && 'lg:grid-cols-2 items-start')}>
+        <div
+          className={clsx(
+            'grid grid-cols-2 gap-3',
+            aside ? 'md:grid-cols-2' : 'md:grid-cols-3 lg:grid-cols-4',
+          )}
+        >
+          {children}
+        </div>
+        {aside}
+      </div>
     </div>
   )
 }
@@ -260,6 +276,8 @@ export default function Stats() {
     void load()
   }, [])
 
+  const hasCountrySpread = (statsData?.countries?.length ?? 0) >= MIN_COUNTRIES
+
   const genderRatioLabel = statsData?.genderRatio
     ? `${statsData.genderRatio.male ?? 0} / ${statsData.genderRatio.female ?? 0}`
     : null
@@ -321,7 +339,31 @@ export default function Stats() {
             <ChartCard />
 
             {/* ── Community ── */}
-            <StatGroup icon={UsersIcon} title={t('stats.group.community', 'Community')}>
+            {/* "Where members are" moved here from the about page, and sits inside Community rather
+                than in a section of its own: it answers "who are the members" like the four numbers
+                beside it, just split by place instead of counted. Fed from the payload this page
+                already fetched, so it does not fire a second `stats` request. Gated on the same
+                threshold the component uses: dropping the aside gives the four cards the full width
+                back, where merely hiding it would leave half the row blank. */}
+            <StatGroup
+              icon={UsersIcon}
+              title={t('stats.group.community', 'Community')}
+              aside={
+                hasCountrySpread && (
+                  <div
+                    className="
+                      bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-6
+                      shadow-[0_2px_8px_rgba(44,36,22,0.05)]
+                    "
+                  >
+                    <CountrySpread
+                      countries={statsData?.countries}
+                      countryCount={statsData?.countryCount}
+                    />
+                  </div>
+                )
+              }
+            >
               <StatCard
                 value={data.profiles}
                 label={t('stats.members', 'Members')}

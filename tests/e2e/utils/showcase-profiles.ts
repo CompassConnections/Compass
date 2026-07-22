@@ -693,4 +693,74 @@ export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
     },
     photoCount: 2,
   },
+  /**
+   * The search-alert persona (A4 in docs/marketing-visuals.md).
+   *
+   * Every field here is chosen so that he is the *only* profile matching the saved search the alert
+   * clip demonstrates — man, 24–40, atheist, vegan, wants kids, near Grenoble. Before he exists that
+   * search returns nothing, which is exactly the situation saved searches are for, and is the story
+   * the clip tells: you search, nobody fits yet, you ask to be told when someone does.
+   *
+   * Check before editing anyone above: making another man vegan *and* atheist *and* 24–40 would give
+   * the clip two results and cost it its point.
+   *
+   * Grenoble deliberately — the viewer persona (`SHOWCASE_VIEWER`) lives there, so any radius the
+   * location filter is set to includes him and the beat cannot fail on a slider position.
+   */
+  {
+    slug: 'juliensarr',
+    name: 'Julien Sarr',
+    email: 'julien.sarr@compass.showcase',
+    age: 32,
+    gender: 'male',
+    orientation: ['straight'],
+    headline: 'Hydrologist, vegan cook, wants a family and says so on the first date',
+    bio: [
+      'I model snowmelt for a living, which means I spend half the year in the Alps with instruments and the other half explaining to people why the numbers matter. Climate work is not abstract to me — I watch it in a dataset every winter.',
+      'I cook properly, all of it vegan, and I will feed anyone who lets me. Not evangelical about it; I just stopped being able to justify the alternative and the cooking got better. Ask me about lentils at your own risk.',
+      'I want kids. I would rather say that early than discover in year three that we wanted different lives. Beyond that I am fairly easy: long walks, bad films taken seriously, and someone who argues with me properly.',
+    ],
+    keywords: ['hydrology', 'sustainable living', 'vegan cooking', 'mountaineering'],
+    city: 'Grenoble',
+    region_code: 'ARA',
+    country: 'France',
+    city_latitude: 45.1885,
+    city_longitude: 5.7245,
+    born_in_location: 'Senegal',
+    occupation_title: 'Hydrologist',
+    company: 'Institut des Géosciences',
+    university: 'Université Grenoble Alpes',
+    education_level: 'doctorate',
+    languages: ['french', 'english', 'wolof'],
+    ethnicity: ['african'],
+    height_in_inches: 73,
+    religion: ['atheist'],
+    political_beliefs: ['green'],
+    diet: ['vegan'],
+    mbti: 'infj',
+    big5: {
+      openness: 81,
+      conscientiousness: 76,
+      extraversion: 44,
+      agreeableness: 79,
+      neuroticism: 31,
+    },
+    relationship_status: ['single'],
+    pref_relation_styles: ['relationship'],
+    pref_romantic_styles: ['mono'],
+    pref_gender: ['female'],
+    pref_age_min: 27,
+    pref_age_max: 40,
+    has_kids: 0,
+    // The point of the persona: the saved search filters on wanting children, so this has to be
+    // unambiguous rather than merely open to it.
+    wants_kids_strength: 3,
+    is_smoker: false,
+    drinks_per_month: 3,
+    interests: ['Mountaineering', 'Vegan cooking', 'Climate science', 'Trail running'],
+    causes: ['Climate', 'Animal welfare'],
+    work: ['Science', 'Research'],
+    links: {site: 'juliensarr.fr', github: 'jsarr'},
+    photoCount: 3,
+  },
 ]

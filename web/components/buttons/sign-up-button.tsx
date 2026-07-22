@@ -12,7 +12,7 @@ export const SidebarSignUpButton = (props: {className?: string}) => {
 
   return (
     <Col className={clsx('mt-4', className)}>
-      <Button color="gradient" size="xl" onClick={firebaseLogin} className="w-full">
+      <Button size="xl" onClick={firebaseLogin} className="w-full">
         Sign up
       </Button>
     </Col>

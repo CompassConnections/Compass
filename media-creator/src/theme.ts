@@ -17,14 +17,13 @@ export const colors = {
   // Accents pulled straight from the compass logo
   logoBlue: '#1D384B',
   logoRed: '#E94734',
-} as const;
+} as const
 
 // System-font stack only — no network fetch at render time, so renders are reproducible offline.
 export const fonts = {
-  display:
-    '"Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
+  display: '"Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif',
   serif: 'Georgia, "Times New Roman", serif',
-} as const;
+} as const
 
 // Output formats. Same scenes, different canvas — layouts adapt via useVideoConfig().
 //  - post:  4:5 portrait, the tallest ratio Instagram allows in-feed (primary).
@@ -32,8 +31,8 @@ export const fonts = {
 export const FORMATS = {
   post: {width: 1080, height: 1350, fps: 30},
   story: {width: 1080, height: 1920, fps: 30},
-} as const;
+} as const
 
 // Design reference height (the story format). Scenes are tuned against this;
 // the shorter post format compacts where needed.
-export const DESIGN_HEIGHT = FORMATS.story.height;
+export const DESIGN_HEIGHT = FORMATS.story.height

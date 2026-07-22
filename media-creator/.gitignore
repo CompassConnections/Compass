@@ -16,3 +16,4 @@ npm-debug.log*
 
 # Captured marketing stills (regenerate with the capture scripts).
 public/search/
+public/alert/

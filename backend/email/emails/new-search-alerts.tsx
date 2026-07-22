@@ -14,7 +14,7 @@ import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {type User} from 'common/user'
-import {container, content, Footer, main, paragraph} from 'email/utils'
+import {container, content, DARK_MODE_CSS, Footer, main, paragraph} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -43,13 +43,15 @@ export const NewSearchAlertsEmail = ({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>{DARK_MODE_CSS}</style>
+      </Head>
       <Preview>
         {t('email.search_alerts.preview', 'New people share your values — reach out and connect')}
       </Preview>
-      <Body style={main}>
+      <Body style={main} className="cm-body">
         <Container style={container}>
-          <Section style={content}>
+          <Section style={content} className="cm-surface">
             <Text style={paragraph}>{t('email.search_alerts.greeting', 'Hi {name},', {name})}</Text>
 
             <Text style={paragraph}>
@@ -62,6 +64,7 @@ export const NewSearchAlertsEmail = ({
             {(matches || []).map((match) => (
               <Section key={match.id} style={{marginBottom: '20px'}}>
                 <div
+                  className="cm-card"
                   style={{
                     backgroundColor: '#f7f4ef',
                     border: '1px solid #dee5b2',
@@ -94,6 +97,7 @@ export const NewSearchAlertsEmail = ({
                     {match.matches.map((p) => (
                       <Link
                         key={p.username}
+                        className="cm-chip"
                         href={`https://${DOMAIN}/${p.username}`}
                         style={{
                           display: 'inline-block',
@@ -138,6 +142,7 @@ export const NewSearchAlertsEmail = ({
                               )}
                               <td style={{verticalAlign: 'middle'}}>
                                 <span
+                                  className="cm-name"
                                   style={{
                                     display: 'block',
                                     color: '#1e1a14',
@@ -149,6 +154,7 @@ export const NewSearchAlertsEmail = ({
                                   {p.name}
                                 </span>
                                 <span
+                                  className="cm-accent"
                                   style={{
                                     display: 'block',
                                     color: '#c17f3e',

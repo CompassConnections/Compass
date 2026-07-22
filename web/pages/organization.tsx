@@ -58,7 +58,7 @@ function SectionCard({icon: Icon, title, description, links}: SectionCardProps) 
             content={label}
             color={
               primary
-                ? 'bg-primary-500 hover:bg-primary-600 text-white border-primary-500 shadow-[0_3px_12px_rgba(193,127,62,0.3)] text-sm'
+                ? 'bg-cta hover:bg-cta-hover text-white border-cta shadow-[0_3px_12px_rgba(193,127,62,0.3)] text-sm'
                 : 'bg-canvas-100 border-canvas-300 text-ink-900 hover:border-primary-500 hover:text-primary-500 text-sm'
             }
           />

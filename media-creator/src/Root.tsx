@@ -3,6 +3,7 @@ import {FORMATS} from './theme'
 import {Intro, INTRO_DURATION} from './scenes/Intro'
 import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour'
 import {SearchDemo, SearchDemoProps, calculateSearchDemoMetadata} from './scenes/SearchDemo'
+import {SearchAlert, SearchAlertProps, calculateSearchAlertMetadata} from './scenes/SearchAlert'
 
 // Register every video composition here. The same Intro scenes render into two
 // Instagram-ready canvases; render with:
@@ -69,6 +70,30 @@ export const RemotionRoot: React.FC = () => {
         height={1688}
         defaultProps={{manifest: null, theme: 'dark'} as SearchDemoProps}
         calculateMetadata={calculateSearchDemoMetadata}
+      />
+      {/* The about-page saved-search clip. Canvas and duration come from
+          public/alert/<theme>/manifest.json via calculateMetadata, so re-capturing with different
+          filters or an extra beat needs no change here.
+            npm run capture:alert && npm run render:alert */}
+      <Composition
+        id="SearchAlertLight"
+        component={SearchAlert}
+        durationInFrames={480}
+        fps={30}
+        width={780}
+        height={1688}
+        defaultProps={{manifest: null, theme: 'light'} as SearchAlertProps}
+        calculateMetadata={calculateSearchAlertMetadata}
+      />
+      <Composition
+        id="SearchAlertDark"
+        component={SearchAlert}
+        durationInFrames={480}
+        fps={30}
+        width={780}
+        height={1688}
+        defaultProps={{manifest: null, theme: 'dark'} as SearchAlertProps}
+        calculateMetadata={calculateSearchAlertMetadata}
       />
     </>
   )

@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import Link from 'next/link'
+import {surface} from 'web/components/widgets/surface'
 import {useT} from 'web/lib/locale'
 
 /**
@@ -81,12 +82,12 @@ export function VoteEvidence() {
   )
 
   return (
-    <figure className="bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7">
+    <figure className={clsx(surface, 'p-6 sm:p-8')}>
       {/* This was the "Democratic" feature card, moved down here verbatim. Asserting it one screen
           above its own evidence read as a duplicate; stated immediately before the vote that proves
           it, the claim and the proof are one thought. The translation keys are unchanged from the
           card, so the existing fr/de strings apply as they are. */}
-      <p className="text-base text-ink-900 leading-relaxed mb-3">
+      <p className="font-heading text-ink-900 text-xl sm:text-2xl leading-snug tracking-tight mb-3 max-w-2xl text-balance">
         {t('about.block.democratic.prefix', 'Governed and ')}
         {t('about.block.democratic.link_voted', 'voted')}
         {t(
@@ -99,7 +100,7 @@ export function VoteEvidence() {
         {t('about.block.democratic.suffix', '.')}
       </p>
 
-      <p className="text-sm text-ink-600 leading-relaxed mb-5">
+      <p className="text-sm text-ink-600 leading-relaxed mb-7 max-w-2xl">
         {t(
           'about.vote.intro',
           'Members propose changes, everyone votes, and the result is binding. This one added a step to signing up:',
@@ -113,12 +114,12 @@ export function VoteEvidence() {
         <Shot theme="dark" alt={alt} className="hidden dark:block" />
       </div>
 
-      <figcaption className="text-sm text-ink-500 leading-relaxed mt-4">
+      <figcaption className="text-sm text-ink-600 leading-relaxed mt-5">
         {t(
           'about.vote.caption',
           'Every proposal and tally is public — including the ones that lost. ',
         )}
-        <Link href="/vote" className="text-primary-500 hover:underline">
+        <Link href="/vote" className="font-medium text-primary-700 hover:underline">
           {t('about.vote.link', 'See all proposals →')}
         </Link>
       </figcaption>

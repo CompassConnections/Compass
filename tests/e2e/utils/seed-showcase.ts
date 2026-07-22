@@ -221,16 +221,49 @@ async function seedShowcaseProfile(profile: ShowcaseProfile, userId: string) {
   })
 }
 
+/**
+ * Personas to delete and then not re-create, as a comma-separated list of slugs.
+ *
+ * Two uses, and the second is the reason it deletes rather than merely skipping:
+ *
+ *  - The A4 alert clip is captured in two passes (docs/marketing-visuals.md). Its first half has to be
+ *    shot against a database where the match does not exist yet, because the story is "nobody fits this
+ *    search — tell me when someone does". Skipping alone would not do it: an already-seeded row would
+ *    simply stay.
+ *  - Re-seeding is otherwise a no-op for anyone who already exists, so edits to a persona — or portraits
+ *    generated *after* the first seed, which is easy to do in that order — never take effect. Deleting
+ *    and re-running is the way to pick them up.
+ *
+ * `users` cascades to `profiles`, `private_users` and the join tables, so removal is clean.
+ *
+ *   SHOWCASE_SKIP=juliensarr SHOWCASE=1 ./scripts/dev_db_seed.sh   # remove, then seed the rest
+ *   SHOWCASE=1 ./scripts/dev_db_seed.sh                            # put them back, fresh
+ */
+const SKIPPED = (process.env.SHOWCASE_SKIP ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+
 /** Seeds every showcase persona. Returns how many were newly created. */
 export async function seedShowcaseUsers() {
+  if (SKIPPED.length) {
+    const pg = createSupabaseDirectClient()
+    for (const slug of SKIPPED) {
+      await pg.none(`delete from users where username = $1`, [slug])
+    }
+    console.log(`[showcase] removed and skipping: ${SKIPPED.join(', ')}`)
+  }
+
+  const wanted = SHOWCASE_PROFILES.filter((p) => !SKIPPED.includes(p.slug))
+
   let created = 0
-  for (const profile of SHOWCASE_PROFILES) {
+  for (const profile of wanted) {
     if (await seedShowcaseProfile(profile, showcaseUserId(profile.slug))) {
       created++
       debug('Showcase profile created:', profile.slug)
     }
   }
-  console.log(`[showcase] ${created}/${SHOWCASE_PROFILES.length} personas created`)
+  console.log(`[showcase] ${created}/${wanted.length} personas created`)
 
   await seedShowcaseViewer()
   return created

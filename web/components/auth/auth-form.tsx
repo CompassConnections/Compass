@@ -118,7 +118,7 @@ export function AuthSubmitButton({
       type="submit"
       disabled={isLoading}
       className={clsx(
-        'group relative w-full flex justify-center py-3.5 px-4 text-[15px] font-bold rounded-xl text-white bg-primary-500 shadow-[0_4px_16px_rgba(193,127,62,0.35)] transition-all duration-150 hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
+        'group relative w-full flex justify-center py-3.5 px-4 text-[15px] font-bold rounded-xl text-white bg-cta shadow-[0_4px_16px_rgba(193,127,62,0.35)] transition-all duration-150 hover:bg-cta-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
         isLoading && 'opacity-70 cursor-not-allowed hover:translate-y-0',
       )}
     >

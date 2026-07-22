@@ -91,6 +91,12 @@ upload "$OUT_DIR/compass-search-demo-light.mp4" "videos/search-demo-light.mp4" "
 upload "$OUT_DIR/compass-search-demo-dark.mp4" "videos/search-demo-dark.mp4" "video/mp4"
 upload "$WEB_IMAGES/search-demo-poster-light.jpg" "images/search-demo-poster-light.jpg" "image/jpeg"
 upload "$WEB_IMAGES/search-demo-poster-dark.jpg" "images/search-demo-poster-dark.jpg" "image/jpeg"
+# About-page saved-search alert clip (A4). Same shape as the hero: clip in R2, poster converted to
+# JPEG into web/public by the step above.
+upload "$OUT_DIR/compass-search-alert-light.mp4" "videos/search-alert-light.mp4" "video/mp4"
+upload "$OUT_DIR/compass-search-alert-dark.mp4" "videos/search-alert-dark.mp4" "video/mp4"
+upload "$WEB_IMAGES/search-alert-poster-light.jpg" "images/search-alert-poster-light.jpg" "image/jpeg"
+upload "$WEB_IMAGES/search-alert-poster-dark.jpg" "images/search-alert-poster-dark.jpg" "image/jpeg"
 # About-page vote card (A1). Written straight to web/public by capture-vote.mjs — no render step.
 # Two widths per theme: the desktop shot is illegible scaled into a phone column, so the page picks
 # with a <picture> media query.

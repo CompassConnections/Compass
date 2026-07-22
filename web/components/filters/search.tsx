@@ -234,9 +234,7 @@ export const Search = forwardRef<
             }}
             // size={'xs'}
             color={'none'}
-            className={
-              'text-white bg-primary-500 hover:bg-primary-400 rounded-xl text-xs transition-colors'
-            }
+            className={'text-white bg-cta hover:bg-cta-hover rounded-xl text-xs transition-colors'}
           >
             <Bell className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
             {bookmarked

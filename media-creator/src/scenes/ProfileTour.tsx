@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   AbsoluteFill,
   Img,
@@ -8,11 +8,11 @@ import {
   staticFile,
   useCurrentFrame,
   useVideoConfig,
-} from 'remotion';
-import {Background} from '../components/Background';
-import {Logo} from '../components/Logo';
-import {FadeUp, useSceneFade} from '../components/Animations';
-import {colors, fonts} from '../theme';
+} from 'remotion'
+import {Background} from '../components/Background'
+import {Logo} from '../components/Logo'
+import {FadeUp, useSceneFade} from '../components/Animations'
+import {colors, fonts} from '../theme'
 
 // A guided tour of a real Compass profile, section by section.
 //
@@ -34,7 +34,7 @@ const SHOTS = {
   photos: {src: 'profile/07-photos.png', w: 422, h: 324},
   prompts: {src: 'profile/08-prompts.png', w: 422, h: 2152},
   full: {src: 'profile/full.png', w: 422, h: 9948},
-} as const;
+} as const
 
 // ─── Scene schedule (frames @ 30fps) ────────────────────────────────────────
 // Scenes overlap by a few frames so the cross-fades in useSceneFade meet cleanly.
@@ -49,28 +49,28 @@ const S = {
   prompts: {from: 635, dur: 120},
   links: {from: 750, dur: 70},
   cta: {from: 815, dur: 105},
-};
-export const PROFILE_TOUR_DURATION = S.cta.from + S.cta.dur; // 920 frames ≈ 30.7s
+}
+export const PROFILE_TOUR_DURATION = S.cta.from + S.cta.dur // 920 frames ≈ 30.7s
 
 // ─── Layout ─────────────────────────────────────────────────────────────────
 // The phone-ish frame the screenshots live in. Its height is what decides whether
 // a shot fits or has to pan, so it adapts to the canvas: the 9:16 story gets a tall
 // frame, the 4:5 post a short one.
-const FRAME_WIDTH = 840;
+const FRAME_WIDTH = 840
 
 const useFrameBox = () => {
-  const {height} = useVideoConfig();
-  const captionBlock = height > 1600 ? 430 : 330; // room for eyebrow + caption
+  const {height} = useVideoConfig()
+  const captionBlock = height > 1600 ? 430 : 330 // room for eyebrow + caption
   return {
     width: FRAME_WIDTH,
     height: height - captionBlock - 200,
     captionSize: height > 1600 ? 52 : 46,
     eyebrowSize: height > 1600 ? 30 : 26,
-  };
-};
+  }
+}
 
 const Scene: React.FC<{dur: number; children: React.ReactNode}> = ({dur, children}) => {
-  const opacity = useSceneFade(dur);
+  const opacity = useSceneFade(dur)
   return (
     <AbsoluteFill
       style={{
@@ -83,11 +83,11 @@ const Scene: React.FC<{dur: number; children: React.ReactNode}> = ({dur, childre
     >
       {children}
     </AbsoluteFill>
-  );
-};
+  )
+}
 
 const Eyebrow: React.FC<{children: React.ReactNode}> = ({children}) => {
-  const {eyebrowSize} = useFrameBox();
+  const {eyebrowSize} = useFrameBox()
   return (
     <div
       style={{
@@ -101,8 +101,8 @@ const Eyebrow: React.FC<{children: React.ReactNode}> = ({children}) => {
     >
       {children}
     </div>
-  );
-};
+  )
+}
 
 // ─── The shot ───────────────────────────────────────────────────────────────
 // A screenshot inside a rounded frame. Shots taller than the frame pan downward
@@ -112,33 +112,33 @@ const Eyebrow: React.FC<{children: React.ReactNode}> = ({children}) => {
 // `pan` caps how far a tall shot travels, as a fraction of its overscroll — the
 // bio is ~4 frames tall, and racing through all of it would just be a blur.
 const Shot: React.FC<{
-  shot: {src: string; w: number; h: number};
-  dur: number;
-  pan?: number;
+  shot: {src: string; w: number; h: number}
+  dur: number
+  pan?: number
 }> = ({shot, dur, pan = 1}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const box = useFrameBox();
+  const frame = useCurrentFrame()
+  const {fps} = useVideoConfig()
+  const box = useFrameBox()
 
-  const scale = box.width / shot.w;
-  const scaledHeight = shot.h * scale;
-  const overscroll = Math.max(0, scaledHeight - box.height);
+  const scale = box.width / shot.w
+  const scaledHeight = shot.h * scale
+  const overscroll = Math.max(0, scaledHeight - box.height)
 
   // Hold still for a beat at each end before travelling, so the top of a card
   // (its title) is readable on arrival and the bottom is readable on the cut.
-  const HOLD = 12;
+  const HOLD = 12
   const progress = interpolate(frame, [HOLD, dur - HOLD], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
-  });
-  const eased = progress * progress * (3 - 2 * progress); // smoothstep
+  })
+  const eased = progress * progress * (3 - 2 * progress) // smoothstep
 
-  const translateY = -overscroll * pan * eased;
-  const zoom = overscroll > 0 ? 1 : interpolate(eased, [0, 1], [1, 1.05]);
+  const translateY = -overscroll * pan * eased
+  const zoom = overscroll > 0 ? 1 : interpolate(eased, [0, 1], [1, 1.05])
 
   // Frame itself springs in, so the cut lands with a little weight.
-  const entrance = spring({frame, fps, config: {damping: 200, mass: 0.7}});
-  const frameScale = interpolate(entrance, [0, 1], [0.94, 1]);
+  const entrance = spring({frame, fps, config: {damping: 200, mass: 0.7}})
+  const frameScale = interpolate(entrance, [0, 1], [0.94, 1])
 
   return (
     <div
@@ -163,20 +163,20 @@ const Shot: React.FC<{
         }}
       />
     </div>
-  );
-};
+  )
+}
 
 // A titled beat: eyebrow + one-line caption above the framed screenshot.
 const SectionScene: React.FC<{
-  eyebrow: string;
-  caption: React.ReactNode;
-  shot: {src: string; w: number; h: number};
-  dur: number;
-  pan?: number;
+  eyebrow: string
+  caption: React.ReactNode
+  shot: {src: string; w: number; h: number}
+  dur: number
+  pan?: number
 }> = ({eyebrow, caption, shot, dur, pan}) => {
-  const box = useFrameBox();
-  const opacity = useSceneFade(dur);
-  const {height} = useVideoConfig();
+  const box = useFrameBox()
+  const opacity = useSceneFade(dur)
+  const {height} = useVideoConfig()
 
   // The caption block is pinned to a fixed offset rather than centred with the
   // shot: a short card (Links) would otherwise drag the text down the frame while
@@ -212,13 +212,13 @@ const SectionScene: React.FC<{
         <Shot shot={shot} dur={dur} pan={pan} />
       </div>
     </AbsoluteFill>
-  );
-};
+  )
+}
 
 // ─── Scene 1 — title, over the whole page scrolling by ──────────────────────
 const TitleScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {height} = useVideoConfig();
+  const frame = useCurrentFrame()
+  const {height} = useVideoConfig()
 
   return (
     <Scene dur={S.title.dur}>
@@ -275,8 +275,8 @@ const TitleScene: React.FC = () => {
         </FadeUp>
       </div>
     </Scene>
-  );
-};
+  )
+}
 
 // ─── Scene 9 — call to action ───────────────────────────────────────────────
 const CtaScene: React.FC = () => (
@@ -330,7 +330,7 @@ const CtaScene: React.FC = () => (
       </div>
     </FadeUp>
   </Scene>
-);
+)
 
 // ─── Composition ────────────────────────────────────────────────────────────
 export const ProfileTour: React.FC = () => {
@@ -447,5 +447,5 @@ export const ProfileTour: React.FC = () => {
         <CtaScene />
       </Sequence>
     </AbsoluteFill>
-  );
-};
+  )
+}

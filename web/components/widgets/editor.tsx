@@ -15,7 +15,7 @@ import {richTextToString} from 'common/util/parse'
 import Iframe from 'common/util/tiptap-iframe'
 import {debounce} from 'lodash'
 import Image from 'next/image'
-import {createElement, ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {createElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {CustomLink} from 'web/components/links'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
@@ -214,6 +214,53 @@ export function useTextEditor(props: {
 const getImages = (data: DataTransfer | null) =>
   Array.from(data?.files ?? []).filter((file) => file.type.startsWith('image'))
 
+/** Breathing room left below the format toolbar when we scroll it back into view. */
+const TOOLBAR_VIEWPORT_GAP = 16
+
+/**
+ * The lowest y coordinate that is actually *visible*, which is not the same as the viewport bottom.
+ *
+ * On mobile the bottom nav bar is `fixed inset-x-0 bottom-0 z-50`, so it sits on top of the page —
+ * scrolling something to `innerHeight - gap` parks it underneath the nav, which is exactly as hidden
+ * as being off-screen. Measuring the obstruction rather than hardcoding its height keeps this correct
+ * on the pages that render no bottom nav (signup), across the `lg` breakpoint where it disappears, and
+ * over the safe-area inset on notched devices.
+ *
+ * `nav` covers the bottom bar; `[data-bottom-overlay]` is an opt-in for any other fixed bottom
+ * furniture that gets added later. Both are cheap to query on each keystroke.
+ */
+function getUsableViewportBottom(): number {
+  const viewportBottom = window.visualViewport?.height ?? window.innerHeight
+  let usable = viewportBottom
+  document.querySelectorAll<HTMLElement>('nav, [data-bottom-overlay]').forEach((el) => {
+    if (getComputedStyle(el).position !== 'fixed') return
+    const r = el.getBoundingClientRect()
+    if (r.height === 0 || r.width === 0) return // `lg:hidden` etc.
+    // Anchored to the bottom edge and covering it.
+    if (r.bottom >= viewportBottom - 2 && r.top < usable) usable = r.top
+  })
+  return usable
+}
+
+/**
+ * Nearest ancestor that actually scrolls vertically, or null when the page itself is the scroller.
+ *
+ * Needed because this editor is used both inline on a page and inside a modal, and a modal is its own
+ * scroll container with the page behind it locked — so scrolling the window there does nothing at all.
+ * The editor's own content area is a *sibling* of the toolbar, not an ancestor, so it is never picked
+ * up by this walk.
+ */
+function getScrollParent(el: HTMLElement | null): HTMLElement | null {
+  let node = el?.parentElement ?? null
+  while (node && node !== document.body && node !== document.documentElement) {
+    const {overflowY} = getComputedStyle(node)
+    const scrolls = overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay'
+    if (scrolls && node.scrollHeight > node.clientHeight) return node
+    node = node.parentElement
+  }
+  return null
+}
+
 export function TextEditor(props: {
   editor: Editor | null
   simple?: boolean // show heading in toolbar
@@ -232,8 +279,69 @@ export function TextEditor(props: {
     className,
     onBlur,
     onChange,
-    maxHeight = 'max-h-[69vh]',
+    // The content area scrolls internally once it hits this; below it, the box just grows. At the
+    // previous 69vh the box could become two-thirds of the viewport tall before anything scrolled,
+    // which pushed the format toolbar (image / embed / emoji) off the bottom of the screen as soon as
+    // you typed a few lines — the toolbar sits *after* the content in flow, so its position is
+    // whatever the content height puts it at. Capping lower means new lines scroll within the box
+    // instead of growing it, and the toolbar stays a fixed ~32px below wherever you are typing.
+    maxHeight = 'max-h-[60vh]',
   } = props
+
+  const toolbarRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * Keep the format toolbar on screen while typing.
+   *
+   * Capping the content area's height is not sufficient on its own: the box grows *downwards*, so an
+   * editor that starts near the bottom of the viewport pushes its toolbar past the bottom edge long
+   * before the content ever reaches the height cap. The bio editor at the end of the signup form is
+   * the worst case — it is the last thing on the page, so it always starts there.
+   *
+   * `scrollIntoView({block: 'nearest'})` on the toolbar scrolls by the minimum needed and does nothing
+   * when it is already visible, so it neither fights the user's own scrolling nor jumps the page. It
+   * also walks whatever scrollable ancestor actually exists rather than assuming the window scrolls.
+   *
+   * Guarded on `isFocused` so that programmatic content changes (loading an existing bio, the
+   * auto-fill extraction writing its result) cannot yank the page around while the user is elsewhere.
+   */
+  useEffect(() => {
+    if (!editor) return
+    const keepToolbarInView = () => {
+      if (!editor.isFocused) return
+      const el = toolbarRef.current
+      if (!el) return
+
+      // Explicit rather than `scrollIntoView({block: 'nearest'})`. 'nearest' considers an element
+      // that is flush with the edge to be already visible and does nothing — and in that no-op case
+      // Chrome does not apply `scroll-margin` either, so the toolbar ends up hard against the bottom
+      // edge with its border clipped. Computing the overshoot ourselves guarantees the gap.
+
+      // The containing scroller first (a modal body, say). Inside a modal this is the only thing that
+      // moves: the page behind it is locked, so the window branch below is a no-op there.
+      const scroller = getScrollParent(el)
+      if (scroller) {
+        const overshoot =
+          el.getBoundingClientRect().bottom +
+          TOOLBAR_VIEWPORT_GAP -
+          scroller.getBoundingClientRect().bottom
+        if (overshoot > 0) scroller.scrollTop += overshoot
+      }
+
+      // Then the window, for the inline case — and for a modal that is itself taller than the screen.
+      // Re-measure: the scroller above may already have moved it.
+      const rect = el.getBoundingClientRect()
+      const overshoot = rect.bottom + TOOLBAR_VIEWPORT_GAP - getUsableViewportBottom()
+      if (overshoot > 0) window.scrollBy(0, overshoot)
+      else if (rect.top < 0) el.scrollIntoView({block: 'nearest'})
+    }
+    editor.on('update', keepToolbarInView)
+    editor.on('selectionUpdate', keepToolbarInView)
+    return () => {
+      editor.off('update', keepToolbarInView)
+      editor.off('selectionUpdate', keepToolbarInView)
+    }
+  }, [editor])
 
   return (
     // matches input styling
@@ -248,9 +356,11 @@ export function TextEditor(props: {
         <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 
-      <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>
-        {children}
-      </StickyFormatMenu>
+      <div ref={toolbarRef}>
+        <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>
+          {children}
+        </StickyFormatMenu>
+      </div>
     </div>
   )
 }

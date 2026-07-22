@@ -11,7 +11,7 @@ import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
-import {Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
+import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
@@ -154,6 +154,24 @@ export const API = (_apiTypeCheck = {
     cache: 'public, max-age=60',
     returns: {} as Stats,
     summary: 'Get platform statistics',
+    tag: 'General',
+  },
+  /**
+   * Get open-source repository activity
+   * Proxies a small slice of the GitHub API so the about page can evidence the "community owned"
+   * claim. Proxied rather than called from the browser because unauthenticated GitHub is limited to
+   * 60 requests/hour per IP, which a public page would exhaust.
+   *
+   * @returns Contributor / commit / star counts, or nulls when GitHub is unreachable
+   */
+  'repo-stats': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({}),
+    cache: 'public, max-age=3600',
+    returns: {} as RepoStats,
+    summary: 'Get open-source repository activity',
     tag: 'General',
   },
   /**

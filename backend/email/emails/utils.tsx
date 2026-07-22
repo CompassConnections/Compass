@@ -221,3 +221,30 @@ export const button = {
   padding: '6px 10px',
   margin: '10px 0',
 }
+
+/**
+ * Dark-mode overrides for email clients that honour `prefers-color-scheme` (Apple Mail, iOS Mail,
+ * and Outlook.com among others). Drop into a template's <Head/>.
+ *
+ * Emails are built from inline styles because that is what mail clients reliably support, and inline
+ * styles beat a stylesheet — hence `!important` throughout. The hooks are the `cm-*` class names on
+ * the handful of surfaces that actually carry colour; everything else inherits.
+ *
+ * Clients that ignore the media query keep the light email exactly as before, so this is additive.
+ */
+export const DARK_MODE_CSS = `
+  @media (prefers-color-scheme: dark) {
+    body, .cm-body { background-color: #16130F !important; }
+    .cm-surface { background-color: #16130F !important; }
+    .cm-surface p, .cm-surface div, .cm-surface td { color: #EDE6DA !important; }
+    .cm-card { background-color: #221D17 !important; border-color: #3A332B !important; }
+    .cm-card p { color: #F5EFE6 !important; }
+    .cm-chip { background-color: #2C251D !important; border-color: #5A4A33 !important; }
+    .cm-name { color: #F5EFE6 !important; }
+    .cm-muted { color: #A99C8C !important; }
+    /* The amber accent and the primary button already read correctly on a dark ground; leaving them
+       alone keeps the brand colour identical in both modes. */
+    .cm-accent { color: #D9975A !important; }
+    hr { border-color: #3A332B !important; }
+  }
+`

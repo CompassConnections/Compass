@@ -13,6 +13,7 @@ import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {initialRequiredState, RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {StepProgress} from 'web/components/widgets/step-progress'
 import {useTracking} from 'web/hooks/use-tracking'
 import {api} from 'web/lib/api'
 import {auth, CACHED_REFERRAL_USERNAME_KEY} from 'web/lib/firebase/users'
@@ -123,19 +124,35 @@ export default function SignupPage() {
     }
   }
 
+  const TOTAL_STEPS = 2
+
   return (
     <Col className="items-center">
       <Toaster position={'top-center'} containerClassName="!bottom-[70px]" />
       {isSubmitting ? (
         <Col className="flex-1 items-center justify-center py-20">
           <CompassLoadingIndicator />
-          <div className="mt-4 text-gray-500">
+          {/* Was `text-gray-500`, an off-palette literal that does not flip with the theme. */}
+          <div className="mt-4 text-base text-ink-700">
             {t('signup.creating_profile', 'Creating your profile...')}
           </div>
         </Col>
       ) : (
         <Col className={'w-full max-w-4xl px-6 py-4'}>
           <BackButton className="-ml-2 mb-2 self-start" />
+          {/* The flow had no progress indicator at all: two substantial form steps that looked alike,
+              so the only way to learn there were two was to finish the first. The bar is deliberately
+              the same component as /onboarding — those three screens lead directly here, and a reader
+              who has just watched a 3-segment bar fill should recognise this as the next one. */}
+          <StepProgress
+            current={step + 1}
+            total={TOTAL_STEPS}
+            label={t('common.step_progress', 'Step {current} of {total}', {
+              current: step + 1,
+              total: TOTAL_STEPS,
+            })}
+            className="mb-7"
+          />
           {step === 0 ? (
             <RequiredProfileUserForm
               data={baseUser}
@@ -161,8 +178,12 @@ export default function SignupPage() {
   )
 }
 
-export const colClassName = 'items-start gap-2'
-export const labelClassName = 'font-semibold text-md'
+// Field-group and label classes shared with `optional-profile-form.tsx`.
+// `gap-1.5` rather than `gap-2`: the label, its help text and the input are one unit, and at gap-2
+// they sat as far apart from each other as consecutive fields did. The vertical rhythm between
+// fields comes from the parent `Col`'s `gap-8`, not from here.
+export const colClassName = 'items-start gap-1.5 w-full'
+export const labelClassName = 'font-semibold text-md text-ink-900'
 
 function getInitialBaseUser() {
   const emailName = auth.currentUser?.email?.replace(/@.*$/, '')

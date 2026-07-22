@@ -5,12 +5,12 @@
 // If you change scene timings there, update the `frame` values here to match.
 //
 // Run with:  npm run render:carousel   ->  out/carousel/01-logo.jpg … 06-cta.jpg
-import {execFileSync} from 'node:child_process';
-import {mkdirSync} from 'node:fs';
-import {join} from 'node:path';
+import {execFileSync} from 'node:child_process'
+import {mkdirSync} from 'node:fs'
+import {join} from 'node:path'
 
-const OUT_DIR = join('out', 'carousel');
-mkdirSync(OUT_DIR, {recursive: true});
+const OUT_DIR = join('out', 'carousel')
+mkdirSync(OUT_DIR, {recursive: true})
 
 // name (drives upload order via the numeric prefix) -> absolute frame in IntroPost
 const SLIDES = [
@@ -20,13 +20,13 @@ const SLIDES = [
   {name: '04-features', frame: 495},
   {name: '05-vision', frame: 602},
   {name: '06-cta', frame: 720},
-];
+]
 
-const bin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const bin = process.platform === 'win32' ? 'npx.cmd' : 'npx'
 
 for (const {name, frame} of SLIDES) {
-  const output = join(OUT_DIR, `${name}.jpg`);
-  console.log(`→ ${output}  (frame ${frame})`);
+  const output = join(OUT_DIR, `${name}.jpg`)
+  console.log(`→ ${output}  (frame ${frame})`)
   execFileSync(
     bin,
     [
@@ -39,7 +39,7 @@ for (const {name, frame} of SLIDES) {
       '--jpeg-quality=95',
     ],
     {stdio: 'inherit'},
-  );
+  )
 }
 
-console.log(`\nDone — ${SLIDES.length} carousel slides in ${OUT_DIR}/`);
+console.log(`\nDone — ${SLIDES.length} carousel slides in ${OUT_DIR}/`)

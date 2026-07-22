@@ -231,7 +231,7 @@ export function EventCard(props: {
               {!isRsvped && (
                 <button
                   onClick={() => onRsvp?.(event.id, 'going')}
-                  className="bg-primary-500 hover:bg-primary-600 text-white rounded-md px-3 py-1.5 text-sm font-medium"
+                  className="bg-cta hover:bg-cta-hover text-white rounded-md px-3 py-1.5 text-sm font-medium"
                 >
                   {t('events.going', 'Going')}
                 </button>

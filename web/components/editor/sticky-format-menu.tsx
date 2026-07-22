@@ -24,7 +24,7 @@ export function StickyFormatMenu(props: {
   const [iframeOpen, setIframeOpen] = useState(false)
 
   return (
-    <Row className="text-ink-600 h-8 items-center">
+    <Row className="text-ink-700 h-9 shrink-0 items-center border-t border-canvas-200 bg-canvas-50 px-1">
       <UploadButton key={'upload-button'} upload={upload} />
       {!hideEmbed && (
         <ToolbarButton

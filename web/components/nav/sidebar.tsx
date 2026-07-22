@@ -142,7 +142,7 @@ export const SignUpButton = (props: {
 
   return (
     <Button
-      color={color ?? 'gradient'}
+      color={color ?? 'cta'}
       size={size ?? 'xl'}
       onClick={startSignup}
       className={clsx('w-full', className)}

@@ -5,10 +5,10 @@ import {useT} from 'web/lib/locale'
 
 const colorClasses = {
   'indigo-dark':
-    'text-ink-500 hover:bg-primary-100 hover:text-ink-700 aria-checked:bg-primary-500 aria-checked:text-white',
-  indigo: 'text-ink-500 hover:bg-ink-50 aria-checked:bg-primary-100 aria-checked:text-primary-900',
-  green: 'text-ink-500 hover:bg-ink-50 aria-checked:bg-teal-500 aria-checked:text-ink-0',
-  red: 'text-ink-500 hover:bg-ink-50 aria-checked:bg-scarlet-500 aria-checked:text-ink-0',
+    'text-ink-700 hover:bg-primary-100 hover:text-ink-700 aria-checked:bg-cta aria-checked:text-white',
+  indigo: 'text-ink-700 hover:bg-ink-50 aria-checked:bg-primary-100 aria-checked:text-primary-900',
+  green: 'text-ink-700 hover:bg-ink-50 aria-checked:bg-teal-500 aria-checked:text-ink-0',
+  red: 'text-ink-700 hover:bg-ink-50 aria-checked:bg-scarlet-500 aria-checked:text-ink-0',
 }
 
 export type ColorType = keyof typeof colorClasses

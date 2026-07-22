@@ -80,6 +80,7 @@ import {likeProfile} from './like-profile'
 import {llmExtractProfileEndpoint} from './llm-extract-profile'
 import {markAllNotifsRead} from './mark-all-notifications-read'
 import {removePinnedPhoto} from './remove-pinned-photo'
+import {repoStats} from './repo-stats'
 import {report} from './report'
 import {rsvpEvent} from './rsvp-event'
 import {searchLocationEndpoint} from './search-location'
@@ -658,6 +659,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-event': updateEvent,
   health: health,
   stats: stats,
+  'repo-stats': repoStats,
   'unsubscribe/:token': unsubscribe,
   me: getMe,
   'get-user-and-profile': getUserAndProfileHandler,

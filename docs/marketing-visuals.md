@@ -498,6 +498,8 @@ npx tsx scripts/generate-showcase-portraits.ts --dry-run   # print prompts, call
   the only sourcing route that is unambiguously safe for fictional profiles — a CC0 portrait of a real
   person attached to an invented biography is a different and worse problem.
 - **Output**: 896×1200 JPEG, re-compressed at q82 to 100–250 KB each (4.4 MB total).
+- **Cost**: ~5 EUR of Gemini API credit for the 35 image generations behind the demo set (the 29 kept
+  portraits plus regenerations). Budget for that before a `--force` re-run of everything.
 - **Identity consistency** is the hard part. Shot 1 is generated from text; shots 2..N pass shot 1 back as a
   reference image with an explicit "same person" instruction. Text alone drifts — identical descriptions
   produce different faces.

@@ -230,15 +230,18 @@ export function MemberGrowth() {
       setPhase('done')
       return
     }
+    // Hold off until the whole figure frame — plot plus its margin — has scrolled into view, not the
+    // instant its top edge appears: the reader is still on the copy above it, and a curve that grows
+    // off-screen isn't watched. threshold: 1 fires only once the entire element is within the viewport.
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
+        if (entries.some((e) => e.intersectionRatio >= 1)) {
           obs.disconnect()
           setPhase('drawing')
           window.setTimeout(() => setPhase('done'), GROWTH_DRAW_MS)
         }
       },
-      {rootMargin: '0px 0px -10% 0px'},
+      {threshold: 1},
     )
     obs.observe(el)
     return () => obs.disconnect()

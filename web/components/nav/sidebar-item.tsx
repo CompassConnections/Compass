@@ -28,11 +28,13 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
   }
 
   const sidebarClass = clsx(
-    isCurrentPage
-      ? 'bg-canvas-900 text-primary-600'
-      : 'sidebar-text hover:text-primary-700 hover:translate-x-[2px]',
-    'group flex items-center rounded-xl px-3 py-2 text-sm font-medium',
-    'focus-visible:bg-ink-100 outline-none transition-all',
+    'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium',
+    'outline-none transition-colors duration-150',
+    // Active is a warm amber-washed pill, not the same neutral fill as hover — the two used to be
+    // near-identical (both `bg-canvas-900`), so the current page barely stood out. Hover uses the
+    // canvas-900 "sidebar pressed" token, which is theme-aware on the always-dark rail.
+    isCurrentPage ? 'bg-primary-500/15 text-primary-500' : 'sidebar-text hover:bg-canvas-900',
+    'focus-visible:bg-canvas-900',
   )
 
   const sidebarItem = (
@@ -40,10 +42,9 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
       {item.icon && (
         <item.icon
           className={clsx(
-            isCurrentPage
-              ? 'text-primary-600'
-              : 'sidebar-text group-hover:text-primary-700 group-hover:translate-x-[2px]',
-            '-ml-1 mr-3 h-6 w-6 flex-shrink-0 transition-all',
+            'h-5 w-5 flex-shrink-0 transition',
+            // Muted until active/hovered — modern icon hierarchy — but always full-amber when current.
+            isCurrentPage ? 'text-primary-500' : 'sidebar-text opacity-70 group-hover:opacity-100',
           )}
           aria-hidden="true"
         />

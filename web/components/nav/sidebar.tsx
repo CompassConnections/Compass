@@ -56,16 +56,16 @@ export default function Sidebar(props: {
 
       {user && !isMobile && (
         <>
-          <div className="h-px bg-canvas-900 mb-4" />
+          <div className="h-px bg-white/[0.06] mb-4" />
           <ProfileSummary
             user={user}
-            className="mb-3 sidebar-text hover:text-primary-700 hover:translate-x-[2px]"
+            className="mb-3 sidebar-text transition-colors hover:bg-canvas-900"
             currentPage={currentPage}
           />
         </>
       )}
 
-      <div className="h-px bg-canvas-900 mb-4" />
+      <div className="h-px bg-white/[0.06] mb-4" />
 
       <div className="mb-4 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
         {navOptions.map((item) => (
@@ -81,7 +81,7 @@ export default function Sidebar(props: {
         )}
       </div>
       <div className="mb-[12px] mt-auto flex flex-col gap-1">
-        <div className="h-px bg-canvas-900" />
+        <div className="h-px bg-white/[0.06]" />
         {!isAndroid && (
           <SidebarItem
             item={{

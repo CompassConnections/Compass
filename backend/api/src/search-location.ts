@@ -9,7 +9,11 @@ export const searchLocationEndpoint: APIHandler<'search-location'> = async (body
 
 export async function searchLocation(body: ValidatedAPIParams<'search-location'>) {
   const {term, limit} = body
-  const endpoint = `/cities?namePrefix=${term}&limit=${limit ?? 10}&offset=0&sort=-population`
+  // Encode the user-supplied term and force limit to a small integer so neither can inject
+  // extra query parameters into the external GeoDB request (e.g. a term containing `&`).
+  const namePrefix = encodeURIComponent(term)
+  const safeLimit = Number.isFinite(limit) ? Math.trunc(limit as number) : 10
+  const endpoint = `/cities?namePrefix=${namePrefix}&limit=${safeLimit}&offset=0&sort=-population`
   // const endpoint = `/countries?namePrefix=${term}&limit=${limit ?? 10}&offset=0`
   return await geodbFetch(endpoint)
 }

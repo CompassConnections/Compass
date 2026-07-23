@@ -90,6 +90,17 @@ export function limit(limit: number, offset?: number) {
   return buildSql({limit, offset})
 }
 
+// `limit`/`offset` are interpolated into the SQL text rather than bound as params, so guard
+// them: only a real, finite integer may ever reach the query string. This is defense in depth
+// — every current caller passes a validated number — but it means a stray string (e.g. from an
+// unvalidated request field typed as `number`) errors instead of injecting.
+function asSqlInt(n: number, label: string): number {
+  if (typeof n !== 'number' || !Number.isFinite(n)) {
+    throw new Error(`sql-builder: ${label} must be a finite number, got ${JSON.stringify(n)}`)
+  }
+  return Math.trunc(n)
+}
+
 export function renderSql(...args: Args) {
   const builder = buildSql(...args)
 
@@ -114,7 +125,7 @@ export function renderSql(...args: Args) {
     where.length && `where ${where.map((clause) => `(${clause})`).join(' and ')}`,
     groupBy.length && `group by ${groupBy.join(', ')}`,
     orderBy.length && `order by ${orderBy.join(', ')}`,
-    limit && `limit ${limit}`,
-    limit && offset && `offset ${offset}`,
+    limit && `limit ${asSqlInt(limit, 'limit')}`,
+    limit && offset && `offset ${asSqlInt(offset, 'offset')}`,
   ).join('\n')
 }

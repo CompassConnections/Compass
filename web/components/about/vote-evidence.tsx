@@ -39,7 +39,13 @@ const SHOTS = {
 }
 
 // Matches Tailwind's `sm` (640px): below it, the card's own layout has already gone narrow.
-const NARROW_MEDIA = '(max-width: 420px)'
+// const NARROW_MEDIA = '(max-width: 420px)'
+
+// From lg up (see the grid below), the block is two columns and the about main column is only ~760px
+// wide, so a landscape shot would be squeezed into ~300px and rendered near-illegible. There the
+// reflowed *portrait* capture is the right one: it fills the column's height beside the copy and stays
+// at a legible scale. Keep this breakpoint in sync with the grid's `lg:`.
+// const WIDE_COLUMN_MEDIA = '(min-width: 1024px)'
 
 /**
  * A <picture> rather than next/image, so the browser picks a width itself and downloads only that
@@ -52,16 +58,23 @@ const NARROW_MEDIA = '(max-width: 420px)'
 function Shot({theme, alt, className}: {theme: 'light' | 'dark'; alt: string; className: string}) {
   return (
     <picture>
-      {/* width/height on the <source> too, not just the <img>: the two shots have different aspect
-          ratios, and without them the box is reserved at the wide ratio and jumps on load. */}
+      {/* width/height on every <source> too, not just the <img>: the shots have different aspect
+          ratios, and without them the box is reserved at the wide ratio and jumps on load. The first
+          matching source wins, so the two portrait cases are listed before the wide fallback. */}
       <source
-        media={NARROW_MEDIA}
+        media={'(min-width: 0px)'}
         srcSet={`/images/vote-tally-${theme}-narrow.webp`}
         width={SHOTS.narrow.width}
         height={SHOTS.narrow.height}
       />
+      {/*<source*/}
+      {/*  media={NARROW_MEDIA}*/}
+      {/*  srcSet={`/images/vote-tally-${theme}-narrow.webp`}*/}
+      {/*  width={SHOTS.narrow.width}*/}
+      {/*  height={SHOTS.narrow.height}*/}
+      {/*/>*/}
       <img
-        src={`/images/vote-tally-${theme}.webp`}
+        src={`/images/vote-tally-${theme}-narrow.webp`}
         alt={alt}
         width={SHOTS.wide.width}
         height={SHOTS.wide.height}
@@ -82,47 +95,56 @@ export function VoteEvidence() {
   )
 
   return (
-    <figure className={clsx(surface, 'p-6 sm:p-8')}>
-      {/* This was the "Democratic" feature card, moved down here verbatim. Asserting it one screen
-          above its own evidence read as a duplicate; stated immediately before the vote that proves
-          it, the claim and the proof are one thought. The translation keys are unchanged from the
+    <figure className={clsx(surface, 'p-6 sm:p-8 lg:p-10')}>
+      {/* Two columns from lg up: the claim and its link sit left, the ballot that proves them fills the
+          right — the width the capped screenshot used to leave empty. This was the "Democratic" feature
+          card, moved down here verbatim; asserting it one screen above its own evidence read as a
+          duplicate, so claim and proof are now one thought. The translation keys are unchanged from the
           card, so the existing fr/de strings apply as they are. */}
-      <p className="font-heading text-ink-900 text-xl sm:text-2xl leading-snug tracking-tight mb-3 max-w-2xl text-balance">
-        {t('about.block.democratic.prefix', 'Governed and ')}
-        {t('about.block.democratic.link_voted', 'voted')}
-        {t(
-          'about.block.democratic.middle',
-          ' by the community, while ensuring no drift through our ',
-        )}
-        <Link href="/constitution" className="text-primary-500 hover:underline">
-          {t('about.block.democratic.link_constitution', 'constitution')}
-        </Link>
-        {t('about.block.democratic.suffix', '.')}
-      </p>
+      <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto] lg:gap-12">
+        <div className="min-w-0">
+          <p className="font-heading text-ink-900 text-xl sm:text-2xl leading-snug tracking-tight mb-3 max-w-2xl text-balance">
+            {t('about.block.democratic.prefix', 'Governed and ')}
+            {t('about.block.democratic.link_voted', 'voted')}
+            {t(
+              'about.block.democratic.middle',
+              ' by the community, while ensuring no drift through our ',
+            )}
+            <Link href="/constitution" className="text-primary-500 hover:underline">
+              {t('about.block.democratic.link_constitution', 'constitution')}
+            </Link>
+            {t('about.block.democratic.suffix', '.')}
+          </p>
 
-      <p className="text-sm text-ink-600 leading-relaxed mb-7 max-w-2xl">
-        {t(
-          'about.vote.intro',
-          'Members propose changes, everyone votes, and the result is binding. This one added a step to signing up:',
-        )}
-      </p>
+          <p className="text-sm text-ink-600 leading-relaxed max-w-md">
+            {t(
+              'about.vote.intro',
+              'Members propose changes, everyone votes, and the result is binding. This one added a step to signing up:',
+            )}
+          </p>
 
-      {/* No border here: the captured card brings its own, and adding a second draws a double rule
-          along the same edge. */}
-      <div className="overflow-hidden rounded-xl">
-        <Shot theme="light" alt={alt} className="dark:hidden" />
-        <Shot theme="dark" alt={alt} className="hidden dark:block" />
+          <figcaption className="text-sm text-ink-600 leading-relaxed mt-5">
+            {t(
+              'about.vote.caption',
+              'Every proposal and tally is public — including the ones that lost. ',
+            )}
+            <Link href="/vote" className="font-medium text-primary-700 hover:underline">
+              {t('about.vote.link', 'See all proposals →')}
+            </Link>
+          </figcaption>
+        </div>
+
+        {/* No border here: the captured card brings its own, and adding a second draws a double rule
+            along the same edge. Below lg it is the landscape shot, capped and left-aligned so its
+            baked-in title stays under this block's heading (the shot is 868 CSS px, and filling the
+            card scaled it past 1:1, blowing that title larger than the heading). From lg up the column
+            is only ~300px, so <picture> serves the portrait capture instead; a fixed width holds it at
+            a legible scale and a soft shadow lifts it off the surface. */}
+        <div className="max-w-xl mx-auto overflow-hidden rounded-xl w-[300px] lg:w-[264px] lg:max-w-none lg:shadow-[0_24px_60px_-28px_rgb(44_36_22/0.5)]">
+          <Shot theme="light" alt={alt} className="dark:hidden" />
+          <Shot theme="dark" alt={alt} className="hidden dark:block" />
+        </div>
       </div>
-
-      <figcaption className="text-sm text-ink-600 leading-relaxed mt-5">
-        {t(
-          'about.vote.caption',
-          'Every proposal and tally is public — including the ones that lost. ',
-        )}
-        <Link href="/vote" className="font-medium text-primary-700 hover:underline">
-          {t('about.vote.link', 'See all proposals →')}
-        </Link>
-      </figcaption>
     </figure>
   )
 }

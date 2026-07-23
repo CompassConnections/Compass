@@ -1,33 +1,35 @@
 import {
   BellIcon,
+  BookmarkIcon,
   ChatBubbleLeftRightIcon,
   CodeBracketIcon,
+  EnvelopeIcon,
   FlagIcon,
   GiftIcon,
-  GlobeAltIcon,
   HeartIcon,
   LightBulbIcon,
   MagnifyingGlassIcon,
   MegaphoneIcon,
+  ShareIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline'
+import {GlobeAltIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {discordLink, formLink, githubRepo} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {ComponentType, ReactNode, SVGProps} from 'react'
+import {ComponentType, ReactNode, SVGProps, useEffect, useState} from 'react'
 import {StatBand} from 'web/components/about/platform-stats'
 import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
 import {SectionLabel} from 'web/components/about/section'
 import {VoteEvidence} from 'web/components/about/vote-evidence'
-import {CopyLinkOrShareButton, ShareProfileOnXButton} from 'web/components/buttons/copy-link-button'
 import {GeneralButton} from 'web/components/buttons/general-button'
-import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
 import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
+import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useT} from 'web/lib/locale'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -86,26 +88,26 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
 
 // ─── Full-width Feature Card ──────────────────────────────────────────────────
 
-function FeatureCardWide({icon, title, text}: FeatureCardProps) {
-  return (
-    <div
-      className={clsx(
-        surface,
-        surfaceHover,
-        'col-span-1 md:col-span-2 p-6 sm:p-7',
-        'flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6',
-      )}
-    >
-      <IconChip icon={icon} />
-      <div className="min-w-0">
-        <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
-        {/* Capped: the card is full-width, so without this the line runs to ~800px at desktop, well
-            past a readable measure. The wider page container buys layout room, not longer lines. */}
-        <p className="text-sm text-ink-600 leading-relaxed max-w-3xl">{text}</p>
-      </div>
-    </div>
-  )
-}
+// function FeatureCardWide({icon, title, text}: FeatureCardProps) {
+//   return (
+//     <div
+//       className={clsx(
+//         surface,
+//         surfaceHover,
+//         'col-span-1 md:col-span-2 p-6 sm:p-7',
+//         'flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6',
+//       )}
+//     >
+//       <IconChip icon={icon} />
+//       <div className="min-w-0">
+//         <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
+//         {/* Capped: the card is full-width, so without this the line runs to ~800px at desktop, well
+//             past a readable measure. The wider page container buys layout room, not longer lines. */}
+//         <p className="text-sm text-ink-600 leading-relaxed max-w-3xl">{text}</p>
+//       </div>
+//     </div>
+//   )
+// }
 
 // ─── Spotlight: "Get Notified About Searches" ─────────────────────────────────
 
@@ -121,7 +123,72 @@ function FeatureCardWide({icon, title, text}: FeatureCardProps) {
  * from floating in dead space at wide viewports — at 1900px the old fixed-width column left roughly half
  * the screen empty beside it.
  */
-function NotifySpotlight({title, text, note}: {title: string; text: string; note: string}) {
+/**
+ * One rung of the three-step flow in `NotifySpotlight`. The steps are the fix for the block's dead
+ * space *and* the honest caption for the clip: the video loops through search → save → email, but a
+ * glancing reader only ever catches one frame of it, so on its own the phone under-sells the "keyword
+ * search" half of the promise. Spelling the arc out beside the device means the two capabilities
+ * (find the exact person; be told when they arrive) both land whether or not the loop is watched.
+ */
+function FlowStep({
+  icon: Icon,
+  title,
+  text,
+  last,
+}: {
+  icon: IconType
+  title: string
+  text: string
+  last?: boolean
+}) {
+  return (
+    <li className="relative flex gap-4 pb-6 last:pb-0">
+      {/* The connector runs from just under this rung's marker to the next one, so it stops at the
+          last step rather than trailing into empty space. */}
+      {!last && (
+        <span aria-hidden className="absolute left-5 top-11 -bottom-0 w-px bg-canvas-200" />
+      )}
+      <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 ring-1 ring-primary-200">
+        <Icon className="h-5 w-5 text-primary-600" strokeWidth={1.8} />
+      </div>
+      <div className="min-w-0 pt-1">
+        <div className="font-semibold text-ink-900 leading-snug">{title}</div>
+        <div className="text-sm text-ink-600 leading-relaxed mt-1">{text}</div>
+      </div>
+    </li>
+  )
+}
+
+function NotifySpotlight({title, text}: {title: string; text: string}) {
+  const t = useT()
+
+  const steps = [
+    {
+      icon: MagnifyingGlassIcon,
+      title: t('about.block.notify.step1.title', 'Search by keyword'),
+      text: t(
+        'about.block.notify.step1.text',
+        'Filter the whole community down to the exact person — values, interests, location.',
+      ),
+    },
+    {
+      icon: BookmarkIcon,
+      title: t('about.block.notify.step2.title', 'Save the search'),
+      text: t(
+        'about.block.notify.step2.text',
+        'Nobody matches yet? Save it in one tap instead of checking back.',
+      ),
+    },
+    {
+      icon: EnvelopeIcon,
+      title: t('about.block.notify.step3.title', 'Get the email'),
+      text: t(
+        'about.block.notify.step3.text',
+        'We email you the day someone who fits actually joins.',
+      ),
+    },
+  ]
+
   return (
     <div className={clsx(surface, 'relative overflow-hidden p-6 sm:p-10')}>
       <div
@@ -129,13 +196,26 @@ function NotifySpotlight({title, text, note}: {title: string; text: string; note
         className="pointer-events-none absolute -right-24 top-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-primary-500/[0.07] blur-3xl"
       />
       <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 md:gap-14 items-center">
+        {/* The three steps are what close the gap: short copy centred against a ~580px device is what
+            left the panel two-thirds empty. They give the column real height, so the row is balanced
+            by content rather than padded by air. */}
         <div className="min-w-0">
           <IconChip icon={BellIcon} large />
           <h3 className="font-heading font-bold text-ink-900 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-tight mt-6 mb-4 text-balance">
             {title}
           </h3>
           <p className="text-base sm:text-lg text-ink-600 leading-relaxed max-w-lg">{text}</p>
-          <p className="text-sm text-ink-600 leading-relaxed max-w-lg mt-4">{note}</p>
+          <ol className="mt-8 max-w-md">
+            {steps.map((s, i) => (
+              <FlowStep
+                key={s.title}
+                icon={s.icon}
+                title={s.title}
+                text={s.text}
+                last={i === steps.length - 1}
+              />
+            ))}
+          </ol>
         </div>
         {/* The device is 2.16x as tall as it is wide, so at any width that keeps its UI legible it is
             far taller than the text beside it — centring it just produced ~200px of dead panel above
@@ -225,6 +305,60 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}
  * statement above is tinted-light rather than dark. Two dark full-width panels on one page would read as
  * a repeating band and neither would be the ending.
  */
+/**
+ * The share control on the closing strip.
+ *
+ * Deliberately mobile-only. On a phone the platform's own share sheet is the right surface — it lets the
+ * reader pick WhatsApp, Messages, whatever they actually talk to friends and family in, which is exactly
+ * who this block asks them to tell. On desktop there is no good equivalent (a "copy link" pill was the
+ * old stand-in and it was doing very little), so we show nothing rather than a weaker button.
+ *
+ * Two gates, both required: `useIsMobile()` (viewport under the sm breakpoint) AND a live check that the
+ * Web Share API exists. Width alone would render a dead button on the odd narrow desktop window; the API
+ * check alone would surface it on desktop Safari/Edge, which do implement `navigator.share`. `canShare`
+ * starts false and is only set in an effect, so SSR and the first client paint render nothing — the safe
+ * desktop state — and the button appears on phones once mounted.
+ */
+function MobileShareButton() {
+  const t = useT()
+  const isMobile = useIsMobile()
+  const [canShare, setCanShare] = useState(false)
+
+  useEffect(() => {
+    setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function')
+  }, [])
+
+  if (!isMobile || !canShare) return null
+
+  const onClick = async () => {
+    try {
+      await navigator.share({
+        title: t('about.share.title', 'Compass'),
+        text: t('about.share.text', 'Thoughtful 1-on-1 connections, built in the open.'),
+        url: DEPLOYED_WEB_URL,
+      })
+    } catch {
+      // The user dismissing the share sheet rejects the promise; that is not an error worth surfacing.
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={clsx(
+        'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border',
+        'transition-all duration-200 ease-out',
+        'bg-cta text-white border-cta hover:bg-cta-hover',
+        'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
+      )}
+    >
+      <ShareIcon className="w-[1.05rem] h-[1.05rem]" strokeWidth={2} aria-hidden="true" />
+      {t('about.share.button', 'Share')}
+    </button>
+  )
+}
+
 function ShareStrip({title, text}: {title: string; text: string}) {
   const t = useT()
   return (
@@ -248,29 +382,9 @@ function ShareStrip({title, text}: {title: string; text: string}) {
               and the icon; the sentence itself reads better in plain warm white. */}
           <p className="text-white/70 text-base leading-relaxed">{text}</p>
         </div>
-        <Row className="flex gap-2 flex-wrap">
-          {/*//     */}
-          {/*//     ${*/}
-          {/*//       primary*/}
-          {/*//         ? 'bg-primary-500 text-white border-primary-500 hover:bg-primary-600'*/}
-          {/*//         : 'bg-white/[0.06] text-canvas-200 border-white/10 hover:bg-white/[0.12] hover:text-canvas-50'*/}
-          {/*//     }*/}
-          <ShareProfileOnXButton
-            className={clsx(
-              'px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ease-out',
-              'bg-white/[0.06] !text-white/70 border-white/10 hover:bg-white/[0.12] hover:text-white',
-            )}
-          />
-          <CopyLinkOrShareButton
-            url={DEPLOYED_WEB_URL}
-            children={t('about.copy_link', ' Copy Link')}
-            className={clsx(
-              'px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ease-out',
-              'bg-cta text-white hover:text-white border-cta hover:bg-cta-hover',
-              'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
-            )}
-          />
-        </Row>
+        {/* Renders only on mobile; on desktop MobileShareButton returns null and the strip is copy-only
+            by design. */}
+        <MobileShareButton />
       </div>
     </div>
   )
@@ -285,14 +399,14 @@ export default function About() {
   // the middle of these three; it is now the spotlight block, so what is left is the pair that sets it
   // up (you can search for anything) and the one that follows from it (what we match on).
   const searchFeatures: FeatureCardProps[] = [
-    {
-      icon: MagnifyingGlassIcon,
-      title: t('about.block.keyword.title', 'Keyword Search the Database'),
-      text: t(
-        'about.block.keyword.text',
-        '"Meditation", "Hiking", "Neuroscience", "Nietzsche". Access any profile and get niche.',
-      ),
-    },
+    // {
+    //   icon: MagnifyingGlassIcon,
+    //   title: t('about.block.keyword.title', 'Keyword Search the Database'),
+    //   text: t(
+    //     'about.block.keyword.text',
+    //     '"Meditation", "Hiking", "Neuroscience", "Nietzsche". Access any profile and get niche.',
+    //   ),
+    // },
     {
       icon: SparklesIcon,
       title: t('about.block.personality.title', 'Personality-Centered'),
@@ -302,6 +416,14 @@ export default function About() {
       icon: GiftIcon,
       title: t('about.block.free.title', 'Completely Free'),
       text: t('about.block.free.text', 'Subscription-free. Paywall-free. Ad-free.'),
+    },
+    {
+      icon: GlobeAltIcon,
+      title: t('about.block.vision.title', 'Digital Public Good'),
+      text: t(
+        'about.block.vision.text',
+        'Built by the people who use it, for the benefit of everyone.',
+      ),
     },
   ]
 
@@ -411,10 +533,6 @@ export default function About() {
                 'about.block.notify.text',
                 "No need to constantly check the app! We'll contact you when new users fit your searches.",
               )}
-              note={t(
-                'about.alert.caption',
-                'The email is the real one, sent to people with saved searches. Daily at most, and only when somebody new actually matches.',
-              )}
             />
           </Reveal>
 
@@ -441,43 +559,33 @@ export default function About() {
           </Reveal>
           {/* Standalone rather than a grid cell: it is the only card in this section now that "One
               Mission" has been promoted, and a one-item grid is just an indirection. */}
-          <Reveal className="mt-4 sm:mt-5">
-            <FeatureCardWide
-              icon={GlobeAltIcon}
-              title={t('about.block.vision.title', 'Vision')}
-              text={t(
-                'about.block.vision.text',
-                'Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.',
-              )}
-            />
-          </Reveal>
+          {/*<Reveal className="mt-4 sm:mt-5">*/}
+          {/*  <FeatureCardWide*/}
+          {/*    icon={GlobeAltIcon}*/}
+          {/*    title={t('about.block.vision.title', 'Vision')}*/}
+          {/*    text={t(*/}
+          {/*      'about.block.vision.text',*/}
+          {/*      'Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.',*/}
+          {/*    )}*/}
+          {/*  />*/}
+          {/*</Reveal>*/}
         </Section>
 
         {/* ── How a decision gets made ── */}
         <Section>
           <SectionLabel>{t('about.vote.label', 'How a decision gets made')}</SectionLabel>
+
           <Reveal>
             <VoteEvidence />
           </Reveal>
+          <Reveal>
+            <RepoActivity className="mt-4 sm:mt-5" />
+          </Reveal>
         </Section>
-
-        {/* Owns its own heading, because it renders nothing when GitHub is unreachable and a label with
-            nothing under it is worse than no section. */}
-        <RepoActivity />
 
         {/* ── Help ── */}
         <Section>
           <SectionLabel>{t('about.help.label', 'Help Compass grow')}</SectionLabel>
-
-          {/* Sits inside the Help section rather than getting a heading of its own: it renders nothing
-              when the query comes back empty, and a section label with nothing under it is worse than
-              no section. It also reads as the setup for the cards below — this is what you would be
-              helping grow. The country spread that used to sit beside it now lives on /stats: it is a
-              distribution readout for someone who came to read numbers, and this page already makes its
-              one claim about reach in the stat band up top. */}
-          <div className="mb-5">
-            <MemberGrowth />
-          </div>
 
           {/* ── Share strip ── */}
           <Reveal>
@@ -489,6 +597,10 @@ export default function About() {
               )}
             />
           </Reveal>
+
+          <div className="mt-5">
+            <MemberGrowth />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-5">
             {helpCards.map((card, i) => (

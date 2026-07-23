@@ -101,10 +101,7 @@ upload "$WEB_IMAGES/search-alert-poster-dark.jpg" "images/search-alert-poster-da
 # Two widths per theme: the desktop shot is illegible scaled into a phone column, so the page picks
 # with a <picture> media query.
 for theme in light dark; do
-  for suffix in "" "-narrow"; do
-    upload "$WEB_IMAGES/vote-tally-${theme}${suffix}.webp" \
-      "images/vote-tally-${theme}${suffix}.webp" "image/webp"
-  done
+    upload "$WEB_IMAGES/vote-tally-${theme}.png" "images/vote-tally-${theme}.png" "image/png"
 done
 
 echo

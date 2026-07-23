@@ -47,8 +47,8 @@ const ASSETS = [
   {key: 'images/search-alert-poster-dark.jpg', dest: 'images/search-alert-poster-dark.jpg'},
   {key: 'images/vote-tally-light.webp', dest: 'images/vote-tally-light.webp'},
   {key: 'images/vote-tally-dark.webp', dest: 'images/vote-tally-dark.webp'},
-  {key: 'images/vote-tally-light-narrow.webp', dest: 'images/vote-tally-light-narrow.webp'},
-  {key: 'images/vote-tally-dark-narrow.webp', dest: 'images/vote-tally-dark-narrow.webp'},
+  // {key: 'images/vote-tally-light-narrow.webp', dest: 'images/vote-tally-light-narrow.webp'},
+  // {key: 'images/vote-tally-dark-narrow.webp', dest: 'images/vote-tally-dark-narrow.webp'},
 ]
 
 /**

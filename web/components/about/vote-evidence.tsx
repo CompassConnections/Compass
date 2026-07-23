@@ -63,7 +63,7 @@ function Shot({theme, alt, className}: {theme: 'light' | 'dark'; alt: string; cl
           matching source wins, so the two portrait cases are listed before the wide fallback. */}
       <source
         media={'(min-width: 0px)'}
-        srcSet={`/images/vote-tally-${theme}-narrow.webp`}
+        srcSet={`/images/vote-tally-${theme}.png`}
         width={SHOTS.narrow.width}
         height={SHOTS.narrow.height}
       />
@@ -74,7 +74,7 @@ function Shot({theme, alt, className}: {theme: 'light' | 'dark'; alt: string; cl
       {/*  height={SHOTS.narrow.height}*/}
       {/*/>*/}
       <img
-        src={`/images/vote-tally-${theme}-narrow.webp`}
+        src={`/images/vote-tally-${theme}.png`}
         alt={alt}
         width={SHOTS.wide.width}
         height={SHOTS.wide.height}

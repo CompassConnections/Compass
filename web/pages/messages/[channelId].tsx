@@ -1,5 +1,6 @@
 import {EllipsisVerticalIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import {DisplayUser} from 'common/api/user-types'
 import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
@@ -10,7 +11,7 @@ import {uniq} from 'lodash'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
-import {FaUserFriends, FaUserMinus} from 'react-icons/fa'
+import {FaFlag, FaUserFriends, FaUserMinus} from 'react-icons/fa'
 import {GiSpeakerOff} from 'react-icons/gi'
 import {BackButton} from 'web/components/back-button'
 import {ChatMessageItem, SystemChatMessageItem} from 'web/components/chat/chat-message'
@@ -21,6 +22,7 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
+import {ReportUser} from 'web/components/profile/report-user'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {useTextEditor} from 'web/components/widgets/editor'
@@ -143,6 +145,8 @@ export const PrivateChat = (props: {
   )
 
   const [showUsers, setShowUsers] = useState(false)
+  const [showReport, setShowReport] = useState(false)
+  const [reportTarget, setReportTarget] = useState<DisplayUser | null>(null)
   const maxUsersToGet = 100
   const messageUserIds = uniq(
     (messages ?? [])
@@ -356,6 +360,14 @@ export const PrivateChat = (props: {
               },
             },
             {
+              icon: <FaFlag className="h-5 w-5" />,
+              name: t('messages.menu.report', 'Report'),
+              onClick: () => {
+                setReportTarget(members.length === 1 ? members[0] : null)
+                setShowReport(true)
+              },
+            },
+            {
               icon: <FaUserMinus className="h-5 w-5" />,
               name: t('messages.menu.leave_chat', 'Leave chat'),
               onClick: async () => {
@@ -381,6 +393,44 @@ export const PrivateChat = (props: {
                   <UserAvatarAndBadge user={user} />
                 </div>
               ))}
+            </Col>
+          </Modal>
+        )}
+        {showReport && (
+          <Modal
+            open={showReport}
+            setOpen={(open) => {
+              setShowReport(open)
+              if (!open) setReportTarget(null)
+            }}
+          >
+            <Col className={clsx(MODAL_CLASS)}>
+              {reportTarget ? (
+                <ReportUser
+                  user={reportTarget}
+                  closeModal={() => {
+                    setShowReport(false)
+                    setReportTarget(null)
+                  }}
+                />
+              ) : members && members.length > 0 ? (
+                <>
+                  <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
+                    {t('messages.report.select_user', 'Select a user to report')}
+                  </p>
+                  {members.map((user) => (
+                    <button
+                      key={user.id}
+                      onClick={() => setReportTarget(user)}
+                      className="w-full text-left bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
+                    >
+                      <UserAvatarAndBadge user={user} />
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <span>{t('messages.report.no_users', 'No users to report')}</span>
+              )}
             </Col>
           </Modal>
         )}

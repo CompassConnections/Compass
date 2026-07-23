@@ -10,7 +10,7 @@ import {Checkbox} from 'web/components/widgets/checkbox'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
-export const ReportUser = (props: {user: User; closeModal: () => void}) => {
+export const ReportUser = (props: {user: Pick<User, 'id'>; closeModal: () => void}) => {
   const {user, closeModal} = props
   const t = useT()
   const reportTypes = [

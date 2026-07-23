@@ -66,6 +66,18 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Notification small icon + tint. Without these, FCM falls back to the full-colour launcher
+             icon, which Android masks to its alpha and shows as a solid white square in the status bar.
+             ic_stat_compass is a flat white Compass silhouette; the colour tints it in the shade. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_compass"
+        />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ic_notification_color"
+        />
     </application>
 
     <!-- Permissions -->

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accent the system applies to the notification small icon in the shade (the status-bar copy is
+         always tinted white). Compass brand amber. -->
+    <color name="ic_notification_color">#C17F3E</color>
+</resources>

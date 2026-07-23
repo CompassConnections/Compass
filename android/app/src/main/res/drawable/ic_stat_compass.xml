@@ -1,0 +1,38 @@
+<!--
+  Notification small icon: a flat, monochrome (white-on-transparent) Compass mark.
+
+  Android masks notification small icons to their alpha channel and tints them (white on the status
+  bar, the accent colour in the shade), so the full-colour launcher icon it used to fall back to
+  rendered as a solid white square. This is a silhouette of the brand mark instead (see
+  web/public/favicon-black.svg): a ring with eight slim needle points piercing through it — four long
+  and four short — around a heart in the open centre.
+
+  Tilted 45° from the favicon so the four long needles point to the corners of the frame (matching the
+  status-bar icon's orientation) and the glyph fills the 24dp box. The tilt is baked into the spike
+  coordinates rather than applied with a <group> rotation, so nothing depends on rotation-transform
+  support.
+
+  The ring is a stroked circle path and the spikes/heart are discrete filled shapes that leave the
+  centre open — deliberately NOT a filled disc with punched holes. `android:fillType="evenOdd"` is only
+  honoured on API 24+ and minSdk here is 23, so a hole-punch would fill solid on Marshmallow. Stroke
+  (API 21+) and discrete nonZero fills render identically on every supported API.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24"
+        android:viewportHeight="24">
+    <!-- Ring: a stroked circle, r=9 centred at (12,12). No fill, so the interior stays open. -->
+    <path
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="1.6"
+            android:pathData="M3,12 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0"/>
+    <!-- Eight needle points: 4 long to the corners, then 4 short to the edges, each piercing the ring. -->
+    <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M22.32,1.68 L19.42,6.70 L16.24,7.76 L17.30,4.58 Z M22.32,22.32 L17.30,19.42 L16.24,16.24 L19.42,17.30 Z M1.68,22.32 L4.58,17.30 L7.76,16.24 L6.70,19.42 Z M1.68,1.68 L6.70,4.58 L7.76,7.76 L4.58,6.70 Z M12.00,0.80 L13.25,3.00 L12.00,6.00 L10.75,3.00 Z M23.20,12.00 L21.00,13.25 L18.00,12.00 L21.00,10.75 Z M12.00,23.20 L10.75,21.00 L12.00,18.00 L13.25,21.00 Z M0.80,12.00 L3.00,10.75 L6.00,12.00 L3.00,13.25 Z"/>
+    <!-- Heart in the open centre. -->
+    <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M12.00,15.10 C10.35,13.45 7.97,12.07 7.97,10.35 C7.97,9.29 8.77,8.63 9.62,8.63 C10.42,8.63 11.14,9.10 12.00,9.95 C12.86,9.10 13.58,8.63 14.38,8.63 C15.23,8.63 16.03,9.29 16.03,10.35 C16.03,12.07 13.65,13.45 12.00,15.10 Z"/>
+</vector>

@@ -80,6 +80,12 @@ export async function getCount(table: TableName | 'active_members') {
     const result = await api('get-messages-count')
     return result.count
   }
+  if (table == 'private_user_message_channels') {
+    // Read via the service-role API: RLS restricts direct PostgREST reads of this table to
+    // channel members, so a client-side count would only see the caller's own channels.
+    const result = await api('get-channels-count')
+    return result.count
+  }
   if (table == 'active_members') {
     const {count} = await run(
       db

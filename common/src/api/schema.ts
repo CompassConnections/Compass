@@ -1118,6 +1118,15 @@ export const API = (_apiTypeCheck = {
     summary: 'Get the total number of messages (public endpoint)',
     tag: 'Messages',
   },
+  'get-channels-count': {
+    method: 'GET',
+    authed: false,
+    rateLimited: false,
+    props: z.object({}),
+    returns: {} as {count: number},
+    summary: 'Get the total number of message channels (public endpoint)',
+    tag: 'Messages',
+  },
   'save-subscription': {
     method: 'POST',
     authed: true,

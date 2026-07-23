@@ -18,7 +18,8 @@ supabase/
 
 ## Adding a migration
 
-1. Create a file `migrations/YYYYMMDDHHMMSS_<short-name>.sql`. The timestamp prefix determines apply order.
+1. Create a file `migrations/YYYYMMDDHHMMSS_<short-name>.sql` in `backend/supabase/migrations/` (NOT in
+   `supabase/migrations/`). The timestamp prefix determines apply order.
 2. Apply to the dev DB:
    ```bash
    ./scripts/migrate.sh supabase/migrations/<file>.sql

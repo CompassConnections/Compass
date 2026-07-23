@@ -5,7 +5,7 @@
 [![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
 [![CI E2E](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml)
 [![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
-[![Users](https://img.shields.io/badge/Users-600%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
+[![Users](https://img.shields.io/badge/Users-700%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 # Compass
 

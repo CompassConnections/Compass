@@ -7,10 +7,7 @@ export const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG)
 
 // Initialize storage with emulator support
 export const storage = getStorage()
-export const privateStorage = getStorage(
-  app,
-  'gs://' + FIREBASE_CONFIG.privateBucket
-)
+export const privateStorage = getStorage(app, 'gs://' + FIREBASE_CONFIG.privateBucket)
 
 // Connect to storage emulator if in emulator mode
 if (IS_FIREBASE_EMULATOR) {

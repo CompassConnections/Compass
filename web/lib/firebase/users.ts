@@ -6,7 +6,13 @@ import {debug} from 'common/logger'
 import {type User} from 'common/user'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {connectAuthEmulator, getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup,} from 'firebase/auth'
+import {
+  connectAuthEmulator,
+  getAuth,
+  GoogleAuthProvider,
+  signInWithCredential,
+  signInWithPopup,
+} from 'firebase/auth'
 import {isAndroidApp} from 'web/lib/util/webview'
 
 import {safeLocalStorage} from '../util/local'

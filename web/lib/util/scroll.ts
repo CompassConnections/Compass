@@ -4,8 +4,6 @@ export const scrollIntoViewCentered = (element: HTMLElement) => {
   const absoluteElementTop = elementRect.top + window.pageYOffset
   const halfWindowHeight = window.innerHeight / 2
   const middle =
-    absoluteElementTop -
-    halfWindowHeight +
-    Math.min(elementRect.height / 2, halfWindowHeight - 58)
+    absoluteElementTop - halfWindowHeight + Math.min(elementRect.height / 2, halfWindowHeight - 58)
   window.scrollTo(0, middle)
 }

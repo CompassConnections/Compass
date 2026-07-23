@@ -1,7 +1,7 @@
 import {getMessagesCount} from 'api/get-messages-count'
-import {CountryCount} from 'common/stats'
+import {CountryCount, DEMOGRAPHIC_FIELDS, DemographicField, Distribution} from 'common/stats'
 import {HOUR_MS} from 'common/util/time'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
 import {APIHandler} from './helpers/endpoint'
 
@@ -14,17 +14,109 @@ const CACHE_DURATION_MS = HOUR_MS
 // would be payload nobody renders; `countryCount` still reports the full spread.
 const TOP_COUNTRIES = 8
 
+// Below this many respondents a field is not published at all. A distribution drawn from a handful of
+// people is noise, and naming the one member in a rare category is the kind of soft de-anonymisation a
+// public transparency page should not do. Mirrors the spirit of MIN_COUNTRIES on the frontend.
+const MIN_RESPONSES = 4
+// The long tail past this is dropped — these are small fixed enums, so the head carries the shape.
+const TOP_PER_FIELD = 7
+
+// One breakdown for one profile column, labelled and ordered on the frontend. `$1~` is pg-promise name
+// escaping, so the column name is injected as a quoted identifier, never string-concatenated; the values
+// only ever come from DEMOGRAPHIC_FIELDS, never from the request.
+async function fieldDistribution(
+  pg: SupabaseDirectClient,
+  field: DemographicField,
+  multi: boolean,
+): Promise<Distribution | null> {
+  const rows = multi
+    ? await pg.manyOrNone(
+        `with answered as (
+           select id, unnest($1~) as v
+           from profiles
+           where $1~ is not null and array_length($1~, 1) > 0
+         )
+         select v as value,
+                count(*)::int as count,
+                (select count(distinct id)::int from answered) as base
+         from answered
+         where v is not null and v <> ''
+         group by v
+         order by count desc, v asc`,
+        [field],
+      )
+    : await pg.manyOrNone(
+        `select $1~ as value,
+                count(*)::int as count,
+                (sum(count(*)) over ())::int as base
+         from profiles
+         where $1~ is not null and $1~ <> ''
+         group by $1~
+         order by count desc, value asc`,
+        [field],
+      )
+
+  const base = rows[0]?.base ?? 0
+  if (base < MIN_RESPONSES) return null
+
+  return {
+    base,
+    multi,
+    items: rows.slice(0, TOP_PER_FIELD).map((r: any) => ({value: r.value, count: r.count})),
+  }
+}
+
+// Age is the one numeric field, so it is bucketed into ordinal ranges rather than grouped raw, and kept
+// in age order instead of by size — a histogram, not a ranking.
+async function ageDistribution(pg: SupabaseDirectClient): Promise<Distribution | null> {
+  const rows = await pg.manyOrNone(
+    `select bucket as value,
+            count(*)::int as count,
+            (sum(count(*)) over ())::int as base
+     from (
+       select case
+                when age < 25 then '18–24'
+                when age < 35 then '25–34'
+                when age < 45 then '35–44'
+                when age < 55 then '45–54'
+                else '55+'
+              end as bucket,
+              case
+                when age < 25 then 1
+                when age < 35 then 2
+                when age < 45 then 3
+                when age < 55 then 4
+                else 5
+              end as ord
+       from profiles
+       where age is not null and age >= 18
+     ) t
+     group by bucket, ord
+     order by ord`,
+  )
+
+  const base = rows[0]?.base ?? 0
+  if (base < MIN_RESPONSES) return null
+
+  return {base, multi: false, items: rows.map((r: any) => ({value: r.value, count: r.count}))}
+}
+
 export const stats: APIHandler<'stats'> = async (_, _auth) => {
   const now = Date.now()
 
   // Return cached data if still valid
   if (cachedData && now - cacheTimestamp < CACHE_DURATION_MS) {
-    console.log('cached stats')
-    console.log(cachedData)
     return cachedData
   }
 
   const pg = createSupabaseDirectClient()
+
+  // Each profile-field breakdown is its own query; run them alongside the headline counts. All of it
+  // sits behind the hour-long cache, so this whole block runs at most once an hour regardless of traffic.
+  const demographicFields = Object.entries(DEMOGRAPHIC_FIELDS) as [
+    DemographicField,
+    {multi: boolean},
+  ][]
 
   const [
     userCount,
@@ -34,6 +126,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     conversationCount,
     genderStats,
     countryStats,
+    demographicResults,
   ] = await Promise.all([
     pg.one(`SELECT COUNT(*)::int as count FROM users`),
     pg.one(`SELECT COUNT(*)::int as count FROM profiles`),
@@ -56,7 +149,19 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
          group by country
          order by count desc, country asc`,
     ),
+    Promise.all(
+      demographicFields.map(([field, {multi}]) =>
+        field === 'age' ? ageDistribution(pg) : fieldDistribution(pg, field, multi),
+      ),
+    ),
   ])
+
+  // Drop the fields that came back null (too few respondents) and key the rest by field name.
+  const demographics: Partial<Record<DemographicField, Distribution>> = {}
+  demographicFields.forEach(([field], i) => {
+    const dist = demographicResults[i]
+    if (dist) demographics[field] = dist
+  })
 
   // Calculate gender ratios
   const genderRatio: Record<string, number> = {}
@@ -89,6 +194,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     genderCounts: genderRatio,
     countries: countries.slice(0, TOP_COUNTRIES),
     countryCount: countries.length,
+    demographics,
   }
 
   // Update cache

@@ -110,7 +110,7 @@ export function VoteEvidence() {
               'about.block.democratic.middle',
               ' by the community, while ensuring no drift through our ',
             )}
-            <Link href="/constitution" className="text-primary-500 hover:underline">
+            <Link href="/constitution" className="text-primary-700 hover:underline">
               {t('about.block.democratic.link_constitution', 'constitution')}
             </Link>
             {t('about.block.democratic.suffix', '.')}

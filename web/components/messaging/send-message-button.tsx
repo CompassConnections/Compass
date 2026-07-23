@@ -1,4 +1,5 @@
 import {CheckIcon} from '@heroicons/react/24/outline'
+import {useEditorState} from '@tiptap/react'
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH} from 'common/comment'
 import {Profile} from 'common/profiles/profile'
@@ -171,7 +172,13 @@ export const SendMessageButton = (props: {
 
   const MIN_CHARS = 200
 
-  const charCount = editor?.getText().trim().length ?? 0
+  // Subscribe to just the trimmed length; the editor no longer re-renders us per keystroke (see
+  // editor.tsx), and this drives the live progress bar / unlock threshold below.
+  const charCount =
+    useEditorState({
+      editor,
+      selector: ({editor}) => editor?.getText().trim().length ?? 0,
+    }) ?? 0
   const pct = Math.min((charCount / MIN_CHARS) * 100, 100)
   const isReady = charCount >= MIN_CHARS
   const firstName = toUser.name.split(' ')[0]

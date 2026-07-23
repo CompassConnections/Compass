@@ -1,5 +1,5 @@
 import {PaperAirplaneIcon} from '@heroicons/react/24/solid'
-import {Editor} from '@tiptap/react'
+import {Editor, useEditorState} from '@tiptap/react'
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH, ReplyToUserInfo} from 'common/comment'
 import {User} from 'common/user'
@@ -157,6 +157,14 @@ export function CommentInputTextArea(props: {
   } = props
   const t = useT()
 
+  // The editor no longer re-renders this component on every keystroke (see editor.tsx), so subscribe
+  // to just the emptiness of the doc — that's all the send buttons below need to enable/disable.
+  const isEmpty =
+    useEditorState({
+      editor,
+      selector: ({editor}) => editor?.isEmpty ?? true,
+    }) ?? true
+
   useEffect(() => {
     editor?.setEditable(!isSubmitting)
   }, [isSubmitting, editor])
@@ -211,7 +219,7 @@ export function CommentInputTextArea(props: {
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>
             <button
-              disabled={isDisabled || !editor || editor.isEmpty}
+              disabled={isDisabled || !editor || isEmpty}
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-2 transition-colors"
               onClick={() => submit('repost')}
             >
@@ -242,7 +250,7 @@ export function CommentInputTextArea(props: {
             <button
               data-testid="conversation-message-submit"
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
-              disabled={isDisabled || !editor || editor.isEmpty}
+              disabled={isDisabled || !editor || isEmpty}
               onClick={() => submit('comment')}
             >
               <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />

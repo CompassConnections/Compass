@@ -1,6 +1,6 @@
 import {CheckIcon, LinkIcon, TrashIcon} from '@heroicons/react/24/solid'
 import {Editor} from '@tiptap/core'
-import {BubbleMenu} from '@tiptap/react'
+import {BubbleMenu, useEditorState} from '@tiptap/react'
 import clsx from 'clsx'
 import {getUrl} from 'common/util/parse'
 import {Bold, Italic, Type} from 'lucide-react'
@@ -17,7 +17,23 @@ export function FloatingFormatMenu(props: {
 
   const [url, setUrl] = useState<string | null>(null)
 
-  if (!editor) return null
+  // The editor no longer re-renders this component on every transaction (see editor.tsx), so subscribe
+  // to just the active marks we highlight. This re-renders only the bubble menu when they change.
+  const active = useEditorState({
+    editor,
+    selector: ({editor}) =>
+      editor
+        ? {
+            h1: editor.isActive('heading', {level: 1}),
+            h2: editor.isActive('heading', {level: 2}),
+            bold: editor.isActive('bold'),
+            italic: editor.isActive('italic'),
+            link: editor.isActive('link'),
+          }
+        : null,
+  })
+
+  if (!editor || !active) return null
 
   const setLink = () => {
     const href = url && getUrl(url)
@@ -45,12 +61,12 @@ export function FloatingFormatMenu(props: {
               <IconButton
                 icon={Type}
                 onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
-                isActive={editor.isActive('heading', {level: 1})}
+                isActive={active.h1}
               />
               <IconButton
                 icon={Type}
                 onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
-                isActive={editor.isActive('heading', {level: 2})}
+                isActive={active.h2}
                 className="!h-4"
               />
               <Divider />
@@ -59,17 +75,17 @@ export function FloatingFormatMenu(props: {
           <IconButton
             icon={Bold}
             onClick={() => editor.chain().focus().toggleBold().run()}
-            isActive={editor.isActive('bold')}
+            isActive={active.bold}
           />
           <IconButton
             icon={Italic}
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            isActive={editor.isActive('italic')}
+            isActive={active.italic}
           />
           <IconButton
             icon={LinkIcon}
-            onClick={() => (editor.isActive('link') ? unsetLink() : setUrl(''))}
-            isActive={editor.isActive('link')}
+            onClick={() => (active.link ? unsetLink() : setUrl(''))}
+            isActive={active.link}
           />
         </>
       ) : (

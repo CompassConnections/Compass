@@ -1,3 +1,4 @@
+import {useEditorState} from '@tiptap/react'
 import {isUrl} from 'common/parsing'
 import {useT} from 'web/lib/locale'
 
@@ -23,7 +24,15 @@ export function LLMExtractSection({
   progress,
 }: LLMExtractSectionProps) {
   const t = useT()
-  const parsingText = parsingEditor?.getText?.()
+  // Subscribe to just the editor's text so only this small section re-renders per keystroke — enough
+  // to keep the button's URL-vs-text label live. Previously `onChange` did `setParsingEditor({...})`
+  // on every keystroke, which re-rendered the entire profile form (and produced a broken non-Editor
+  // copy), which is what made typing here lag.
+  const parsingText =
+    useEditorState({
+      editor: parsingEditor ?? null,
+      selector: ({editor}) => editor?.getText?.() ?? '',
+    }) ?? ''
 
   return (
     <Col className={'gap-4'}>
@@ -42,10 +51,6 @@ export function LLMExtractSection({
       <BaseTextEditor
         onEditor={(e) => {
           if (e) setParsingEditor(e)
-        }}
-        onChange={() => {
-          // Trigger re-render to update button state and text on every key stroke
-          setParsingEditor({...parsingEditor})
         }}
         placeholder={t(
           'profile.llm.extract.placeholder',

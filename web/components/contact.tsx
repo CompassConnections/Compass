@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {useEditorState} from '@tiptap/react'
 import {formLink} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import Link from 'next/link'
@@ -22,7 +23,11 @@ export function ContactComponent() {
     placeholder: t('contact.editor.placeholder', 'Contact us here...'), // localized placeholder
   })
 
-  const showButton = !!editor?.getText().length
+  // Subscribe to non-emptiness; the editor no longer re-renders us per keystroke (see editor.tsx).
+  const showButton = useEditorState({
+    editor,
+    selector: ({editor}) => !!editor && !editor.isEmpty,
+  })
 
   return (
     <Col className="max-w-3xl mx-auto">

@@ -133,6 +133,12 @@ export function useTextEditor(props: {
       transformPastedHTML: (html) => html,
     },
     immediatelyRender: false,
+    // Don't re-render the whole host component on every transaction. Otherwise every keystroke
+    // re-renders whatever renders this editor — on the messages page that's the entire conversation
+    // (all ChatMessageItems), which is what made typing lag. Components that display editor-derived
+    // state (send-button enabled-ness, char counts, the format menu's active marks) subscribe to just
+    // what they need via `useEditorState` instead, so only those tiny components re-render.
+    shouldRerenderOnTransaction: false,
     onUpdate: ({editor}) => {
       if (key) {
         save(editor.getJSON())
@@ -307,7 +313,7 @@ export function TextEditor(props: {
    */
   useEffect(() => {
     if (!editor) return
-    const keepToolbarInView = () => {
+    const measureAndScroll = () => {
       if (!editor.isFocused) return
       const el = toolbarRef.current
       if (!el) return
@@ -335,11 +341,28 @@ export function TextEditor(props: {
       if (overshoot > 0) window.scrollBy(0, overshoot)
       else if (rect.top < 0) el.scrollIntoView({block: 'nearest'})
     }
+
+    // Coalesce the measurement into a single animation frame. TipTap fires `update` *and*
+    // `selectionUpdate` for every keystroke, and `measureAndScroll` reads layout
+    // (getBoundingClientRect / getComputedStyle / a document-wide querySelectorAll), which forces a
+    // synchronous reflow — so running it inline made every character pay for two full-page reflows on
+    // the input's critical path, which is what made typing lag on large DOMs (e.g. a message channel).
+    // Deferring to rAF collapses the bursts into at most one measurement per frame, off the keystroke
+    // path, so typing stays smooth while the toolbar still gets nudged back into view.
+    let frame = 0
+    const keepToolbarInView = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        measureAndScroll()
+      })
+    }
     editor.on('update', keepToolbarInView)
     editor.on('selectionUpdate', keepToolbarInView)
     return () => {
       editor.off('update', keepToolbarInView)
       editor.off('selectionUpdate', keepToolbarInView)
+      if (frame) cancelAnimationFrame(frame)
     }
   }, [editor])
 

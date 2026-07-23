@@ -1,4 +1,5 @@
 import {Editor} from '@tiptap/core'
+import {useEditorState} from '@tiptap/react'
 import {MIN_BIO_LENGTH} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
@@ -174,7 +175,12 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
       "Tell us all the details about yourself — and what you're looking for!",
     ),
   })
-  const textLength = editor?.getText().length ?? 0
+  // Subscribe to the text length; the editor no longer re-renders us per keystroke (see editor.tsx).
+  const textLength =
+    useEditorState({
+      editor,
+      selector: ({editor}) => editor?.getText().length ?? 0,
+    }) ?? 0
   const remainingChars = MIN_BIO_LENGTH - textLength
 
   useEffect(() => {

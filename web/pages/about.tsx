@@ -2,6 +2,7 @@ import {
   BellIcon,
   BookmarkIcon,
   ChatBubbleLeftRightIcon,
+  CheckIcon,
   CodeBracketIcon,
   EnvelopeIcon,
   FlagIcon,
@@ -12,12 +13,14 @@ import {
   MegaphoneIcon,
   ShareIcon,
   SparklesIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 import {GlobeAltIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {discordLink, formLink, githubRepo} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {ComponentType, ReactNode, SVGProps, useEffect, useState} from 'react'
+import Link from 'next/link'
+import {ComponentType, ReactNode, SVGProps, useState} from 'react'
 import {StatBand} from 'web/components/about/platform-stats'
 import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
@@ -29,8 +32,9 @@ import {SEO} from 'web/components/SEO'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
 import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
-import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
+import {copyToClipboard} from 'web/lib/util/copy'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -260,12 +264,47 @@ function MissionStatement({title, text}: {title: string; text: string}) {
   )
 }
 
-// ─── Help Card ────────────────────────────────────────────────────────────────
+// ─── Help Cards ───────────────────────────────────────────────────────────────
 
-function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}: HelpCardProps) {
+/**
+ * The lead of the "other ways to help" group. Contributing suggestions/help is the one we most want of
+ * the four, so it is the full-width horizontal card with a large icon and a *button* rather than a bare
+ * text link — but only an outline button, never a filled one. The filled amber CTA is spoken for by
+ * "Share Compass" one block up, which must stay the loudest thing here; a second filled CTA next to it
+ * out-shouts it. So the hierarchy is deliberately: filled Share › outlined Suggest › the three links.
+ */
+function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpCardProps) {
   return (
     <div
-      className={clsx(surface, surfaceHover, 'h-full flex flex-col p-6 sm:p-7')}
+      className={clsx(
+        surface,
+        surfaceHover,
+        'p-6 sm:p-8',
+        'flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-7',
+      )}
+    >
+      <IconChip icon={icon} large />
+      <div className="min-w-0 flex-1">
+        <h3 id={id} className="font-bold text-lg text-ink-900 mb-1.5">
+          {title}
+        </h3>
+        <p className="text-sm text-ink-600 leading-relaxed max-w-xl">{text}</p>
+      </div>
+      <div className="shrink-0 -mb-3 -ml-3 sm:m-0">
+        <GeneralButton
+          url={buttonUrl}
+          content={buttonLabel}
+          color={'bg-transparent text-cta border-cta hover:bg-cta hover:text-white'}
+        />
+      </div>
+    </div>
+  )
+}
+
+function HelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpCardProps) {
+  return (
+    <div
+      className={clsx(surface, surfaceHover, 'flex h-full flex-col p-5 sm:p-6')}
       // NOTE: Abandoned the left accent bar due to a known Firefox rendering bug.
       // Firefox fails to correctly apply overflow-hidden on rounded containers with borders,
       // causing the absolute/flex-item to bleed past the corner radius.
@@ -278,20 +317,17 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}
         {title}
       </h3>
       <p className="text-sm text-ink-600 leading-relaxed mb-5">{text}</p>
-      {/* `mt-auto` on the button rather than `flex-1` on the paragraph, and the parent is now actually
-          `flex flex-col`. It was not, so the old `flex-1` did nothing and the four buttons in this grid
-          sat wherever their card's text happened to end — measured 20-23px out of line with each other. */}
-      <div className="mt-auto -ml-3 -mb-3">
-        <GeneralButton
-          url={buttonUrl}
-          content={buttonLabel}
-          color={
-            buttonPrimary
-              ? 'bg-cta hover:bg-cta-hover text-white border-cta shadow-[0_3px_12px_rgba(193,127,62,0.3)]'
-              : 'bg-canvas-100 hover:border-primary-600 hover:text-primary-600 border-canvas-300 text-ink-900'
-          }
-        />
-      </div>
+      {/* A text link, not a boxed button: these three are the secondary asks, so their action is
+          deliberately lighter than the featured card's filled CTA. `mt-auto` pins it to the card's base
+          so the three links line up regardless of copy length. */}
+      <Link
+        href={buttonUrl}
+        target={buttonUrl.startsWith('http') ? '_blank' : undefined}
+        rel={buttonUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+        className="mt-auto inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+      >
+        {buttonLabel}
+      </Link>
     </div>
   )
 }
@@ -299,47 +335,63 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, buttonPrimary, id}
 // ─── Share Strip ──────────────────────────────────────────────────────────────
 
 /**
- * The closing ask, and the page's visual climax.
- *
- * It is the only dark block, which is what makes it land — so it is also the reason the "One Mission"
- * statement above is tinted-light rather than dark. Two dark full-width panels on one page would read as
- * a repeating band and neither would be the ending.
+ * One network-effect benefit in the closing share block. Kept terse — the argument is carried by the
+ * headline and the reframe beside it; these three just make "better for you" concrete (more people who
+ * fit, better events, still free). Styled for the dark panel: faint tile, amber glyph, warm-white text.
  */
+function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string; text: string}) {
+  return (
+    <li className="flex items-start gap-3.5">
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
+        <Icon className="h-[18px] w-[18px] text-primary-500" strokeWidth={1.8} />
+      </div>
+      <div className="min-w-0">
+        <div className="text-[15px] font-semibold leading-snug text-white">{title}</div>
+        <div className="mt-0.5 text-sm leading-snug text-white/55">{text}</div>
+      </div>
+    </li>
+  )
+}
+
 /**
- * The share control on the closing strip.
+ * The share control on the closing block.
  *
- * Deliberately mobile-only. On a phone the platform's own share sheet is the right surface — it lets the
- * reader pick WhatsApp, Messages, whatever they actually talk to friends and family in, which is exactly
- * who this block asks them to tell. On desktop there is no good equivalent (a "copy link" pill was the
- * old stand-in and it was doing very little), so we show nothing rather than a weaker button.
+ * Universal, not mobile-only: the block's whole argument is that sharing is easy and in the reader's
+ * interest, so a desktop with no button would undercut it. Phones get the native share sheet (they can
+ * pick WhatsApp, Messages, ...); everywhere else — and any browser without the Web Share API — it copies
+ * the link and confirms. The API is probed at click time, so there is no SSR/first-paint branch to get
+ * wrong and the button always renders.
  *
- * Two gates, both required: `useIsMobile()` (viewport under the sm breakpoint) AND a live check that the
- * Web Share API exists. Width alone would render a dead button on the odd narrow desktop window; the API
- * check alone would surface it on desktop Safari/Edge, which do implement `navigator.share`. `canShare`
- * starts false and is only set in an effect, so SSR and the first client paint render nothing — the safe
- * desktop state — and the button appears on phones once mounted.
+ * When the sharer is signed in the link carries their `?referrer=` tag, the same attribution the
+ * /referrals page and users.ts already speak — so the shares this block is arguing for actually get
+ * credited to them, which is the whole self-interest case. Logged-out visitors (the page is public)
+ * have no username, so they share the bare URL.
  */
-function MobileShareButton() {
+function ShareCTA() {
   const t = useT()
-  const isMobile = useIsMobile()
-  const [canShare, setCanShare] = useState(false)
+  const user = useUser()
+  const [copied, setCopied] = useState(false)
 
-  useEffect(() => {
-    setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function')
-  }, [])
-
-  if (!isMobile || !canShare) return null
+  const shareUrl = user?.username
+    ? `${DEPLOYED_WEB_URL}/?referrer=${user.username}`
+    : DEPLOYED_WEB_URL
 
   const onClick = async () => {
-    try {
-      await navigator.share({
-        title: t('about.share.title', 'Compass'),
-        text: t('about.share.text', 'Thoughtful 1-on-1 connections, built in the open.'),
-        url: DEPLOYED_WEB_URL,
-      })
-    } catch {
-      // The user dismissing the share sheet rejects the promise; that is not an error worth surfacing.
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: t('about.share.title', 'Compass'),
+          text: t('about.share.text', 'Thoughtful 1-on-1 connections, built in the open.'),
+          url: shareUrl,
+        })
+      } catch {
+        // The user dismissing the share sheet rejects the promise; not an error worth surfacing.
+      }
+      return
     }
+    copyToClipboard(shareUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -347,44 +399,130 @@ function MobileShareButton() {
       type="button"
       onClick={onClick}
       className={clsx(
-        'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border',
+        'inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold',
         'transition-all duration-200 ease-out',
         'bg-cta text-white border-cta hover:bg-cta-hover',
         'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
       )}
     >
-      <ShareIcon className="w-[1.05rem] h-[1.05rem]" strokeWidth={2} aria-hidden="true" />
-      {t('about.share.button', 'Share')}
+      {copied ? (
+        <CheckIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2.5} aria-hidden="true" />
+      ) : (
+        <ShareIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2} aria-hidden="true" />
+      )}
+      {copied
+        ? t('about.share.copied', 'Link copied!')
+        : t('about.share.button_cta', 'Share Compass')}
     </button>
   )
 }
 
-function ShareStrip({title, text}: {title: string; text: string}) {
+/**
+ * The closing ask, and the page's visual climax.
+ *
+ * It is the only dark block, which is what makes it land — so it is also the reason the "One Mission"
+ * statement above is tinted-light rather than dark. Two dark full-width panels on one page would read as
+ * a repeating band and neither would be the ending.
+ *
+ * The ask is framed as self-interest rather than charity (it used to close with "thank you for
+ * supporting our mission", which asks for a favour). Same argument as the share-compass email: growth is
+ * a network effect the sharer benefits from, and even a friend who is not your match brings their world
+ * with them. The headline states the payoff, the paragraph reframes the obvious objection, the benefits
+ * make the payoff concrete, and the full-width bar at the base carries the one action.
+ */
+function ShareStrip() {
   const t = useT()
+
+  const benefits = [
+    {
+      icon: UserGroupIcon,
+      title: t('about.share.benefit.people.title', 'More kindred spirits'),
+      text: t(
+        'about.share.benefit.people.text',
+        'A bigger pool of people who actually share your values.',
+      ),
+    },
+    // {
+    //   icon: CalendarDaysIcon,
+    //   title: t('about.share.benefit.events.title', 'Richer events'),
+    //   text: t(
+    //     'about.share.benefit.events.text',
+    //     'More people nearby means better meetups and gatherings.',
+    //   ),
+    // },
+    // Dropped: "Better odds of a match". "Match" is swipe-app vocabulary, and Compass positions itself
+    // against exactly that — it was the one benefit here that sounded like the thing we aren't.
+    // {
+    //   icon: HeartIcon,
+    //   title: t('about.share.benefit.match.title', 'Better odds of a match'),
+    //   text: t(
+    //     'about.share.benefit.match.text',
+    //     "Every person who joins raises the chance the one you're looking for is already here.",
+    //   ),
+    // },
+    {
+      icon: GiftIcon,
+      title: t('about.share.benefit.free.title', 'Free, forever'),
+      text: t(
+        'about.share.benefit.free.text',
+        'More contributors keep Compass ad-free and paywall-free.',
+      ),
+    },
+  ]
+
   return (
     <div className="relative overflow-hidden bg-canvas-950 rounded-3xl px-7 py-10 sm:px-12 sm:py-14">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-32 -right-20 w-[440px] h-[440px] rounded-full bg-primary-500/20 blur-3xl"
       />
-      <div className="relative flex items-center justify-between gap-8 flex-wrap">
-        <div className="max-w-[520px]">
-          <div className="flex items-center gap-2.5 mb-3">
-            <MegaphoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" strokeWidth={1.8} />
-            <span className={clsx(eyebrow, 'text-primary-500')}>
-              {t('about.final.label', 'Spread the word')}
-            </span>
-          </div>
-          <h3 className="font-heading text-white text-[clamp(22px,2.4vw,32px)] font-bold leading-tight tracking-tight mb-3 text-balance">
-            {title}
-          </h3>
-          {/* Was `text-primary-500` — amber body copy on espresso. The accent belongs on the eyebrow
-              and the icon; the sentence itself reads better in plain warm white. */}
-          <p className="text-white/70 text-base leading-relaxed">{text}</p>
+      <div className="relative">
+        <div className="flex items-center gap-2.5 mb-5">
+          <MegaphoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" strokeWidth={1.8} />
+          <span className={clsx(eyebrow, 'text-primary-500')}>
+            {t('about.final.label', 'Spread the word')}
+          </span>
         </div>
-        {/* Renders only on mobile; on desktop MobileShareButton returns null and the strip is copy-only
-            by design. */}
-        <MobileShareButton />
+
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-14">
+          <div>
+            <h3 className="font-heading text-white text-[clamp(24px,2.6vw,34px)] font-bold leading-tight tracking-tight mb-4 text-balance">
+              {t(
+                'about.share.headline',
+                'Compass gets better for you with every person you bring.',
+              )}
+            </h3>
+            {/* The reframe, condensed from the share-compass email: the friend you tell need not be your
+                match — they bring their world, and that is the reader's own upside. */}
+            <p className="text-white/70 text-base leading-relaxed max-w-xl">
+              {t(
+                'about.share.reframe',
+                "Even if a friend isn't your match, they bring their world with them — their friends, their circles, the thoughtful people you'd never have met otherwise. Sharing isn't just a favor to them. It's an investment in your own future connections.",
+              )}
+            </p>
+          </div>
+
+          {/* An inset panel rather than a bare list: a few short rows floating in a tall column read as
+              empty space. The panel gives the right side visual mass, stretches to the copy's height
+              (items-stretch on the grid), and centres the benefits within it. */}
+          <ul className="flex flex-col justify-center gap-6 rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10 sm:p-8 lg:h-full">
+            {benefits.map((b) => (
+              <ShareBenefit key={b.title} icon={b.icon} title={b.title} text={b.text} />
+            ))}
+          </ul>
+        </div>
+
+        {/* The share action sits at the base of the block, under a hairline rule and spanning the full
+            width, so it reads as the block's climax rather than a mid-column element. */}
+        <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-white/10 pt-6">
+          <ShareCTA />
+          {/*<span className="text-white/45 text-sm max-w-xs leading-snug">*/}
+          {/*  {t(*/}
+          {/*    'about.share.kicker',*/}
+          {/*    "One share, one person — that's how a community like this is built.",*/}
+          {/*  )}*/}
+          {/*</span>*/}
+        </div>
       </div>
     </div>
   )
@@ -587,24 +725,29 @@ export default function About() {
         <Section>
           <SectionLabel>{t('about.help.label', 'Help Compass grow')}</SectionLabel>
 
-          {/* ── Share strip ── */}
-          <Reveal>
-            <ShareStrip
-              title={t('about.final.title', 'Tell Your Friends and Family')}
-              text={t(
-                'about.final.text',
-                'The best way to grow Compass is word of mouth. Thank you for supporting our mission.',
-              )}
-            />
-          </Reveal>
+          {/* Growth line first, share block second: the momentum is what motivates the ask. Show that
+              Compass is growing, then invite the reader to add to it — the same order as the
+              share-compass email, which opens with the member count before asking. The share block then
+              closes the section on the action rather than on a passive chart. */}
+          <MemberGrowth />
 
+          {/* ── Share strip ── */}
           <div className="mt-5">
-            <MemberGrowth />
+            <Reveal>
+              <ShareStrip />
+            </Reveal>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-5">
-            {helpCards.map((card, i) => (
-              <Reveal key={card.id} delay={(i % 2) * 70}>
+          {/* One primary ask leads, then the three lighter ones. "Give Suggestions or Contribute" is
+              the contribution we most want, so it is the full-width featured card with the filled CTA;
+              the rest sit below as a quieter row of three with text-link actions. */}
+          <Reveal className="mt-5">
+            <FeaturedHelpCard {...helpCards[0]} />
+          </Reveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-4 sm:mt-5">
+            {helpCards.slice(1).map((card, i) => (
+              <Reveal key={card.id} delay={i * 70}>
                 <HelpCard {...card} />
               </Reveal>
             ))}

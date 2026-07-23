@@ -1,4 +1,5 @@
-import {useEffect, useState} from 'react'
+import {ArrowTrendingUpIcon} from '@heroicons/react/24/outline'
+import {useEffect, useRef, useState} from 'react'
 import {
   Area,
   AreaChart,
@@ -182,10 +183,18 @@ function CustomLegend({payload}: any) {
  * does, but it grows linearly — past a few thousand members this wants an aggregate endpoint
  * returning daily totals instead.
  */
+// How long the line takes to draw itself in on reveal. Reused as the delay before the endpoint dot
+// fades in, so the dot lands exactly when the line reaches it rather than floating ahead of it.
+const GROWTH_DRAW_MS = 1400
+
 export function MemberGrowth() {
   const t = useT()
   const [data, setData] = useState<{dateTs: number; members: number}[]>([])
   const [failed, setFailed] = useState(false)
+  // 'hidden' → <Area> not mounted; 'drawing' → recharts animates it in; 'done' → static, endpoint dot
+  // shown. Driven by an IntersectionObserver so the curve grows when the reader scrolls to it.
+  const [phase, setPhase] = useState<'hidden' | 'drawing' | 'done'>('hidden')
+  const figureRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -211,6 +220,30 @@ export function MemberGrowth() {
     void load()
   }, [])
 
+  // Draw the curve on reveal, not on data load — a line "growing" only reads as growth if the reader
+  // watches it happen. Re-armed when the data arrives (the figure, and so the ref, only mounts then).
+  // Reduced-motion visitors skip the draw and get the final curve immediately.
+  useEffect(() => {
+    const el = figureRef.current
+    if (!el || phase !== 'hidden') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPhase('done')
+      return
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          obs.disconnect()
+          setPhase('drawing')
+          window.setTimeout(() => setPhase('done'), GROWTH_DRAW_MS)
+        }
+      },
+      {rootMargin: '0px 0px -10% 0px'},
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [data.length, phase])
+
   // Render nothing rather than a zero or a spinner: this is supporting evidence on a page that reads
   // fine without it, and an empty chart frame claims more than it shows.
   if (failed || !data.length) return null
@@ -219,33 +252,78 @@ export function MemberGrowth() {
   const monthYear = (ts: number) =>
     new Date(ts).toLocaleDateString('en-US', {month: 'short', year: 'numeric'})
 
+  // Trailing-30-day growth, shown as a momentum badge beside the total. Read from the real series (never
+  // hardcoded), and rendered only when positive — a flat or empty period simply omits it rather than
+  // showing "+0", the same "say nothing rather than something weak" rule the rest of the page follows.
+  const lastIndex = data.length - 1
+  const recent = total - data[Math.max(0, lastIndex - 30)].members
+
   return (
-    <figure className="bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7">
-      <div className="flex items-baseline gap-2 mb-[-20px] sm:mb-[-40px]">
-        <span className="text-3xl font-bold text-ink-1000">{total.toLocaleString()}</span>
-        <span className="text-sm text-ink-600">
-          {t('about.growth.label', 'members and counting')}
-        </span>
+    <figure
+      ref={figureRef}
+      className="bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7"
+    >
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-[-20px] sm:mb-[-40px]">
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-bold text-ink-1000">{total.toLocaleString()}</span>
+          <span className="text-sm text-ink-600">
+            {t('about.growth.label', 'members and counting')}
+          </span>
+        </div>
+        {recent > 0 && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-200">
+            <ArrowTrendingUpIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
+            {t('about.growth.recent', '+{count} this month', {count: recent})}
+          </span>
+        )}
       </div>
 
       <div className="h-[120px] sm:h-[140px] -mx-1">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{top: 8, right: 4, bottom: 0, left: 4}}>
+          <AreaChart data={data} margin={{top: 8, right: 8, bottom: 0, left: 4}}>
             <defs>
               <linearGradient id="gradGrowth" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="rgb(193 127 62)" stopOpacity={0.22} />
+                <stop offset="5%" stopColor="rgb(193 127 62)" stopOpacity={0.24} />
                 <stop offset="95%" stopColor="rgb(193 127 62)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <Area
-              type="monotone"
-              dataKey="members"
-              stroke="rgb(193 127 62)"
-              strokeWidth={2.5}
-              fill="url(#gradGrowth)"
-              dot={false}
-              isAnimationActive={false}
-            />
+            {/* Mounted only once in view, so recharts draws it in from the left on reveal. Held out
+                entirely while 'hidden' rather than rendered invisibly — that keeps the animation from
+                firing off-screen before the reader ever sees it. */}
+            {phase !== 'hidden' && (
+              <Area
+                type="monotone"
+                dataKey="members"
+                stroke="rgb(193 127 62)"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                fill="url(#gradGrowth)"
+                isAnimationActive={phase === 'drawing'}
+                animationDuration={GROWTH_DRAW_MS}
+                animationEasing="ease-out"
+                activeDot={false}
+                // A marker on the last point only: the current value, haloed so the line reads as "still
+                // climbing, you are here". Amber-on-amber, so it needs no theme-dependent ring colour.
+                // Faded in only once the draw completes ('done'), so it never sits ahead of the line.
+                dot={(props: any) => {
+                  const {cx, cy, index} = props
+                  if (index !== lastIndex || cx == null || cy == null)
+                    return <g key={`d-${index}`} />
+                  return (
+                    <g
+                      key="end"
+                      style={{
+                        opacity: phase === 'done' ? 1 : 0,
+                        transition: 'opacity 300ms ease-out',
+                      }}
+                    >
+                      <circle cx={cx} cy={cy} r={8} fill="rgb(193 127 62)" opacity={0.16} />
+                      <circle cx={cx} cy={cy} r={3.5} fill="rgb(193 127 62)" />
+                    </g>
+                  )
+                }}
+              />
+            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>

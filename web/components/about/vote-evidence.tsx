@@ -119,7 +119,7 @@ export function VoteEvidence() {
           <p className="text-sm text-ink-600 leading-relaxed max-w-md">
             {t(
               'about.vote.intro',
-              'Members propose changes, everyone votes, and the result is binding. This one added a step to signing up:',
+              'Members propose changes, everyone votes, and the result is binding. The one highlighted here added a step to signing up.',
             )}
           </p>
 

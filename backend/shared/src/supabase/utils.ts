@@ -88,7 +88,10 @@ export async function update<T extends TableName, ColumnValues extends Tables[T]
   if (!(idField in values)) {
     throw new Error(`missing ${idField} in values for ${columnNames}`)
   }
-  const clause = pgp.as.format(`${idField} = $1`, values[idField as keyof ColumnValues])
+  const clause = pgp.as.format(`$(idField:name) = $(id)`, {
+    idField,
+    id: values[idField as keyof ColumnValues],
+  })
   const query = pgp.helpers.update(values, cs) + ` WHERE ${clause}`
   // Hack to properly cast values.
   const q = query.replace(/::(\w*)'/g, "'::$1")
@@ -150,15 +153,22 @@ export async function bulkUpdateData<T extends TableName>(
   updates: (Partial<DataFor<T>> & {id: string})[],
 ) {
   if (updates.length > 0) {
+    // Each tuple is fully escaped by pg-promise ($(id) as a value, $(update:json) serialized
+    // and quoted) before being joined. The previous version interpolated `id` raw and used
+    // `.replace("'", "''")`, which only escapes the FIRST quote — both a correctness bug and
+    // an injection vector if any id/value contained a quote.
     const values = updates
-      .map(({id, ...update}) => `('${id}', '${JSON.stringify(update).replace("'", "''")}'::jsonb)`)
+      .map(({id, ...update}) => pgp.as.format(`($(id), $(update:json)::jsonb)`, {id, update}))
       .join(',\n')
 
     await db.none(
-      `update ${table} as c
+      pgp.as.format(
+        `update $(table:name) as c
         set data = data || v.update
-      from (values ${values}) as v(id, update)
+      from (values $(values:raw)) as v(id, update)
       where c.id = v.id`,
+        {table, values},
+      ),
     )
   }
 }
@@ -185,12 +195,17 @@ export async function updateData<T extends TableName>(
   }
   const sortedExtraOperations = sortBy(extras, (statement) => (statement.startsWith('-') ? -1 : 1))
 
+  // `id` is bound as a value ($(id)) and `table`/`idField` as escaped identifiers (:name)
+  // rather than interpolated into the SQL text — otherwise an attacker-controlled id (e.g. a
+  // path param routed here via updatePrivateUser/updateUser) could break out of the
+  // `where ... = '...'` literal and run arbitrary SQL. The extra operations are already
+  // escaped by the FieldVal helpers that produced them.
   return await db.one<Row<T>>(
-    `update ${table} set data = data
+    `update $(table:name) set data = data
     ${sortedExtraOperations.join('\n')}
-    || $1
-    where ${idField} = '${id}' returning *`,
-    [JSON.stringify(basic)],
+    || $(basic:json)
+    where $(idField:name) = $(id) returning *`,
+    {table, idField, id, basic},
   )
 }
 
@@ -216,9 +231,13 @@ export const FieldVal = {
   arrayRemove:
     (...values: string[]) =>
     (fieldName: string) => {
+      // Build the text[] with an array[...] constructor whose elements are individually
+      // escaped by pg-promise (:list), rather than interpolating the joined values into the
+      // SQL with :raw, which does no escaping and let a value like `a'}'::text[]); drop ...`
+      // break out of the literal.
       return pgp.as.format(
-        `|| jsonb_build_object($1, coalesce(data->$1,'[]'::jsonb) - '{$2:raw}'::text[])`,
-        [fieldName, values.join(',')],
+        `|| jsonb_build_object($1, coalesce(data->$1,'[]'::jsonb) - array[$2:list]::text[])`,
+        [fieldName, values],
       )
     },
 }

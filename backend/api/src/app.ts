@@ -393,7 +393,44 @@ function generateSwaggerPaths(api: typeof API) {
   return paths
 }
 
-const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? 'API_KEY'
+// const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? 'API_KEY'
+
+// const accessInfo = `
+//   To obtain a token:
+//
+//   **In your browser console while logged in (CTRL+SHIFT+C, then select the Console tab):**
+// \`\`\`js
+// const db = await new Promise((res, rej) => {
+//   const req = indexedDB.open('firebaseLocalStorageDb')
+//   req.onsuccess = () => res(req.result)
+//   req.onerror = rej
+// })
+// const req = db.transaction('firebaseLocalStorage', 'readonly').objectStore('firebaseLocalStorage').getAll()
+// req.onsuccess = () => {
+//   const id_token = req.result[0].value.stsTokenManager.accessToken
+//   console.log('YOUR_FIREBASE_JWT_TOKEN is the string below:')
+//   console.log(id_token)
+//   copy(id_token)
+// }
+// \`\`\`
+//
+// **For testing (REST):**
+// \`\`\`bash
+// curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}' \\
+//   -H 'Content-Type: application/json' \\
+//   --data '{"email":"you@example.com","password":"yourpassword","returnSecureToken":true}'
+// # Use the returned idToken as your Bearer token
+// \`\`\`
+//
+// Tokens expire after **1 hour**. Refresh by calling \`getIdToken(true)\`.
+//
+// Pass the token in the Authorization header for all authenticated requests:
+// \`\`\`
+// Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
+// \`\`\`
+//
+// In the API docs, authenticate through the green button at the bottom right of this section (BearerAuth token).
+// `
 
 const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
@@ -409,41 +446,6 @@ Some endpoints are publicly accessible without authentication, such as events an
 
 ### Tier 2 — User Access (Firebase authentication required)
 Most endpoints require a valid Firebase JWT token. This gives you access to your own user data, profile, messages, and all interactive features.
-
-  To obtain a token:
-
-  **In your browser console while logged in (CTRL+SHIFT+C, then select the Console tab):**
-\`\`\`js
-const db = await new Promise((res, rej) => {
-  const req = indexedDB.open('firebaseLocalStorageDb')
-  req.onsuccess = () => res(req.result)
-  req.onerror = rej
-})
-const req = db.transaction('firebaseLocalStorage', 'readonly').objectStore('firebaseLocalStorage').getAll()
-req.onsuccess = () => {
-  const id_token = req.result[0].value.stsTokenManager.accessToken
-  console.log('YOUR_FIREBASE_JWT_TOKEN is the string below:')
-  console.log(id_token)
-  copy(id_token)
-}
-\`\`\`
-
-**For testing (REST):**
-\`\`\`bash
-curl 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}' \\
-  -H 'Content-Type: application/json' \\
-  --data '{"email":"you@example.com","password":"yourpassword","returnSecureToken":true}'
-# Use the returned idToken as your Bearer token
-\`\`\`
-
-Tokens expire after **1 hour**. Refresh by calling \`getIdToken(true)\`.
-
-Pass the token in the Authorization header for all authenticated requests:
-\`\`\`
-Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
-\`\`\`
-
-In the API docs, authenticate through the green button at the bottom right of this section (BearerAuth token).
 
 **Don't have an account?** [Register on Compass](${DEPLOYED_WEB_URL}/register) to get started.
 

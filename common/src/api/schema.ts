@@ -15,7 +15,7 @@ import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just ba
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
 import {PrivateUser, User} from 'common/user'
-import {notification_preference} from 'common/user-notification-preferences'
+import {NOTIFICATION_PREFERENCE_TYPES} from 'common/user-notification-preferences'
 import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
@@ -423,7 +423,7 @@ export const API = (_apiTypeCheck = {
     authed: true,
     rateLimited: false,
     props: z.object({
-      type: z.string() as z.ZodType<notification_preference>,
+      type: z.enum(NOTIFICATION_PREFERENCE_TYPES),
       medium: z.enum(['email', 'browser', 'mobile']),
       enabled: z.boolean(),
     }),

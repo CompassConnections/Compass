@@ -13,7 +13,7 @@ export const updatePrivateUserMessageChannel: APIHandler<
 
   const membershipStatus = await pg.oneOrNone(
     `select status from private_user_message_channel_members
-                where channel_id = $1 and user_id = $2`,
+                where channel_id = $1 and user_id = $2 and status != 'left'`,
     [channelId, auth.uid],
   )
   if (!membershipStatus) throw APIErrors.forbidden('You are not authorized to this channel')

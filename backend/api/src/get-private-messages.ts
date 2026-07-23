@@ -29,7 +29,8 @@ export async function getChannelMessages(props: {
        and exists (select 1
                    from private_user_message_channel_members pumcm
                    where pumcm.user_id = $2
-                     and pumcm.channel_id = $1)
+                     and pumcm.channel_id = $1
+                     and pumcm.status != 'left')
        and ($4 is null or id > $4)
        and ($5 is null or id < $5)
        and not visibility = 'system_status'

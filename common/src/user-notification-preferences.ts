@@ -6,6 +6,36 @@ import {filterDefined} from './util/array'
 export const NOTIFICATION_DESTINATION_TYPES = ['email', 'browser', 'mobile'] as const
 export type notification_destination_types = (typeof NOTIFICATION_DESTINATION_TYPES)[number]
 export type notification_preference = keyof notification_preferences
+
+// Runtime allow-list of valid preference keys. Kept in sync with `notification_preferences`
+// by the `satisfies` clause below — adding a key to the type without adding it here (or vice
+// versa) is a compile error. Used to validate the untrusted `type` field on the wire so it
+// never reaches a SQL statement unchecked.
+export const NOTIFICATION_PREFERENCE_TYPES = [
+  'new_match',
+  'new_endorsement',
+  'new_profile_like',
+  'new_profile_ship',
+  'new_search_alerts',
+  'connection_interest_match',
+  'new_message',
+  'tagged_user',
+  'on_new_follow',
+  'onboarding_flow',
+  'thank_you_for_purchases',
+  'platform_updates',
+  'opt_out_all',
+] as const satisfies readonly notification_preference[]
+
+// Reverse check: every key of `notification_preferences` must appear in the list above.
+// `satisfies` only guards the forward direction; this errors if a key is ever missing.
+type _AllPreferenceTypesListed =
+  notification_preference extends (typeof NOTIFICATION_PREFERENCE_TYPES)[number]
+    ? true
+    : ['missing notification_preference in NOTIFICATION_PREFERENCE_TYPES']
+const _assertAllPreferenceTypesListed: _AllPreferenceTypesListed = true
+void _assertAllPreferenceTypesListed
+
 export type notification_preferences = {
   new_match: notification_destination_types[]
   new_endorsement: notification_destination_types[]

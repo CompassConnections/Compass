@@ -119,12 +119,14 @@ export const createPrivateUserMessageMain = async (
 ) => {
   log('createPrivateUserMessageMain', creator, channelId, content)
 
-  // Normally, users can only submit messages to channels that they are members of
+  // Normally, users can only submit messages to channels that they are active members of
+  // (a member who has left keeps their row with status = 'left' and must not be able to post).
   const authorized = await pg.oneOrNone(
     `select 1
      from private_user_message_channel_members
      where channel_id = $1
-       and user_id = $2`,
+       and user_id = $2
+       and status != 'left'`,
     [channelId, creator.id],
   )
   if (!authorized) throw APIErrors.forbidden('You are not authorized to post to this channel')

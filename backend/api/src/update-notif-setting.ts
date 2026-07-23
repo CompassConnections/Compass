@@ -14,12 +14,15 @@ export const updateNotifSettings: APIHandler<'update-notif-settings'> = async (
       interestedInPushNotifications: !enabled,
     })
   } else {
-    // deep update array at data.notificationPreferences[type]
+    // deep update array at data.notificationPreferences[type].
+    // `type` and `medium` are passed as bound parameters (never interpolated into the SQL
+    // text) and are additionally constrained by the Zod enums on the endpoint schema. The
+    // jsonb path is built with array[...] so the key is a value, not raw SQL.
     await pg.none(
       `update private_users
-      set data = jsonb_set(data, '{notificationPreferences, $1:raw}',
+      set data = jsonb_set(data, array['notificationPreferences', $1],
         coalesce(data->'notificationPreferences'->$1, '[]'::jsonb)
-        ${enabled ? `|| '[$2:name]'::jsonb` : `- $2`}
+        ${enabled ? `|| to_jsonb($2::text)` : `- $2`}
       )
       where id = $3`,
       [type, medium, auth.uid],

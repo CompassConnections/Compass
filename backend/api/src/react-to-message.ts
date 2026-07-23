@@ -15,7 +15,8 @@ export const reactToMessage: APIHandler<'react-to-message'> = async (
      FROM private_user_message_channel_members m
               JOIN private_user_messages msg ON msg.channel_id = m.channel_id
      WHERE m.user_id = $1
-       AND msg.id = $2`,
+       AND msg.id = $2
+       AND m.status != 'left'`,
     [auth.uid, messageId],
   )
 

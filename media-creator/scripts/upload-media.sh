@@ -103,6 +103,11 @@ upload "$WEB_IMAGES/search-alert-poster-dark.jpg" "images/search-alert-poster-da
 for theme in light dark; do
     upload "$WEB_IMAGES/vote-tally-${theme}.png" "images/vote-tally-${theme}.png" "image/png"
 done
+# The default social preview card (`npm run still:og`). Uploaded under a versioned key: WhatsApp and
+# X cache a preview image by URL and effectively never revalidate, so a redesign must go up as
+# og-card-v2.jpg — bumped here, in web/scripts/fetch-media.mjs and in OG_CARD
+# (common/hosting/constants.ts) together — rather than overwrite this one.
+upload "$OUT_DIR/compass-og-card.jpg" "images/og-card-v1.jpg" "image/jpeg"
 
 echo
 echo "Done. The next Vercel build pulls these into web/public/videos via MEDIA_SOURCE_BASE_URL."

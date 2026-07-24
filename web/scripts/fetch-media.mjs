@@ -47,6 +47,10 @@ const ASSETS = [
   {key: 'images/search-alert-poster-dark.jpg', dest: 'images/search-alert-poster-dark.jpg'},
   {key: 'images/vote-tally-light.png', dest: 'images/vote-tally-light.png'},
   {key: 'images/vote-tally-dark.png', dest: 'images/vote-tally-dark.png'},
+  // The default social preview card (see OG_CARD in common/hosting/constants.ts). The filename is
+  // versioned because WhatsApp and X cache a preview by URL and never revalidate it — a redesign
+  // ships as -v2 on both sides, it never overwrites -v1.
+  {key: 'images/og-card-v1.jpg', dest: 'images/og-card-v1.jpg'},
 ]
 
 /**

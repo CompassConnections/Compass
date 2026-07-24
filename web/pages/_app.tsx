@@ -8,7 +8,7 @@ import {StatusBar} from '@capacitor/status-bar'
 import * as Sentry from '@sentry/node'
 import clsx from 'clsx'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {IS_VERCEL, PNG_LOGO} from 'common/hosting/constants'
+import {IS_VERCEL, OG_CARD} from 'common/hosting/constants'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
 import type {AppProps} from 'next/app'
@@ -227,23 +227,34 @@ function MyApp(props: AppProps<PageProps>) {
 
         <meta name="description" content={description} key="description" />
 
-        {/*OG tags (WhatsApp, Facebook, etc.)*/}
+        {/*OG tags (WhatsApp, Facebook, etc.). These are the site-wide default: any page that
+           renders <SEO> overrides them by `key`, and pages that don't (the home page among them)
+           are previewed with the card below.
+           Declaring width/height matters — several clients, WhatsApp in particular, are far more
+           reliable about rendering the large layout when they don't have to fetch the image to
+           learn its shape.*/}
         <meta property="og:site_name" content="Compass" />
+        <meta property="og:type" content="website" key="og-type" />
         <meta property="og:title" content={title} key="og-title" />
         <meta property="og:description" content={description} key="og-description" />
         <meta property="og:url" content={DEPLOYED_WEB_URL} key="og-url" />
-        <meta property="og:image" content={PNG_LOGO} key="og-image" />
-        <meta property="og:image:type" content="image/png" key="og-image-type" />
+        <meta property="og:image" content={OG_CARD.url} key="og-image" />
+        <meta property="og:image:secure_url" content={OG_CARD.url} key="og-image-secure-url" />
+        <meta property="og:image:type" content={OG_CARD.type} key="og-image-type" />
+        <meta property="og:image:width" content={OG_CARD.width} key="og-image-width" />
+        <meta property="og:image:height" content={OG_CARD.height} key="og-image-height" />
+        <meta property="og:image:alt" content={OG_CARD.alt} key="og-image-alt" />
 
         {/*Twitter/X tags — separate!*/}
         <meta name="twitter:title" content={title} key="twitter-title" />
         <meta name="twitter:description" content={description} key="twitter-description" />
-        <meta name="twitter:card" content="summary" key="twitter-card" />
-        <meta name="twitter:image" content={PNG_LOGO} key="twitter-image" />
+        {/*`summary_large_image`, not `summary`: the latter renders the small square thumbnail,
+           which is what a 512×512 app icon used to force here.*/}
+        <meta name="twitter:card" content="summary_large_image" key="twitter-card" />
+        <meta name="twitter:image" content={OG_CARD.url} key="twitter-image" />
+        <meta name="twitter:image:alt" content={OG_CARD.alt} key="twitter-image-alt" />
 
         {/*<meta name="twitter:site" content="@compassmeet"/>*/}
-        {/*<meta property="og:image:width" content="192" />*/}
-        {/*<meta property="og:image:height" content="192" />*/}
 
         <meta
           name="viewport"

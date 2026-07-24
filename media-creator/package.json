@@ -23,6 +23,7 @@
     "render:tour:post": "remotion render ProfileTourPost out/compass-profile-tour-post.mp4",
     "still:alert": "remotion still SearchAlertLight out/compass-alert-poster-light.png --frame=0",
     "still:alert:dark": "remotion still SearchAlertDark out/compass-alert-poster-dark.png --frame=0",
+    "still:og": "remotion still OgCard out/compass-og-card.jpg --image-format=jpeg --jpeg-quality=92",
     "still:search": "remotion still SearchDemoLight out/compass-search-poster-light.png --frame=0",
     "still:search:dark": "remotion still SearchDemoDark out/compass-search-poster-dark.png --frame=0",
     "studio": "remotion studio",

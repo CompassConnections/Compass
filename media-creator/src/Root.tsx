@@ -1,6 +1,7 @@
-import {Composition} from 'remotion'
+import {Composition, Still} from 'remotion'
 import {FORMATS} from './theme'
 import {Intro, INTRO_DURATION} from './scenes/Intro'
+import {OgCard} from './scenes/OgCard'
 import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour'
 import {SearchDemo, SearchDemoProps, calculateSearchDemoMetadata} from './scenes/SearchDemo'
 import {SearchAlert, SearchAlertProps, calculateSearchAlertMetadata} from './scenes/SearchAlert'
@@ -95,6 +96,10 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{manifest: null, theme: 'dark'} as SearchAlertProps}
         calculateMetadata={calculateSearchAlertMetadata}
       />
+      {/* The default social preview card. A Still, not a Composition — there is no timeline, and
+          `remotion still` is the only way it is ever rendered:
+            npm run still:og   -> out/compass-og-card.jpg */}
+      <Still id="OgCard" component={OgCard} width={FORMATS.og.width} height={FORMATS.og.height} />
     </>
   )
 }

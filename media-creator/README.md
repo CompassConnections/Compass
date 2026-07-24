@@ -99,6 +99,50 @@ canvas. Formats are defined in `src/theme.ts` (`FORMATS`) and registered in `src
 
 > Don't post the 9:16 story as a feed post — Instagram crops it to ~4:5. Use `IntroPost` for the feed.
 
+## Stills
+
+### Social preview card (`OgCard`)
+
+The default link preview — what WhatsApp, X, Slack, LinkedIn and friends show for a shared
+compassmeet.com link. 1200×630, the 1.91:1 `summary_large_image` slot. A `<Still>`, not a
+`<Composition>`: there is no timeline.
+
+```bash
+npm run still:og        # -> out/compass-og-card.jpg  (~80 KB, well under WhatsApp's ceiling)
+```
+
+It covers every page that does not set its own image; pages that do (a profile) get the separate
+per-profile card generated at runtime by `web/pages/api/og/profile.tsx`. The two deliberately share
+a visual language — warm cream canvas, amber rules, serif voice — so a shared profile and a shared
+home link look like they come from the same place.
+
+Publishing it is the usual R2 loop, plus one extra rule:
+
+```bash
+npm run still:og
+npm run upload:media    # uploads it as images/og-card-v1.jpg alongside the clips
+                        # then re-deploy: the web build pulls it into web/public/images
+```
+
+> **The filename is versioned, and a redesign must bump the version.** WhatsApp and X cache a
+> preview image _by URL_ and effectively never revalidate it. Overwriting `og-card-v1.jpg` leaves
+> everyone who already shared a link looking at the old card indefinitely. To ship a new design,
+> bump `-v1` to `-v2` in all three places at once: `scripts/upload-media.sh`,
+> `web/scripts/fetch-media.mjs`, and `OG_CARD` in `common/src/hosting/constants.ts` (which is what
+> the meta tags in `web/pages/_app.tsx` read).
+
+Copy on the card is the home page's own wording (`web/components/home/home.tsx`), so the preview
+cannot promise something the landing page does not say. If the home headline changes, re-render.
+
+#### Fonts
+
+This is the one scene that uses the real web faces — Newsreader for the headline, DM Sans for the
+eyebrow, Cormorant Garamond for the wordmark — rather than the system stack the videos use. The
+woff2 files are vendored in `public/fonts/` (both families are SIL OFL) and loaded by
+`src/components/BrandFonts.ts`, which holds the render open until they are ready. Vendoring rather
+than fetching from Google keeps the render reproducible offline; a missing network would otherwise
+silently produce a card in Georgia.
+
 ## Structure
 
 ```
@@ -106,12 +150,14 @@ media-creator/
 ├── package.json            standalone deps (npm)
 ├── remotion.config.ts      render settings (codec, quality)
 ├── public/logo.svg         Compass logo (copied from web/public/favicon.svg)
+├── public/fonts/           vendored web faces, used by the OG card only
 └── src/
     ├── index.ts            registerRoot
     ├── Root.tsx            composition registry
     ├── theme.ts            brand colors / fonts / output FORMATS
-    ├── components/         Background, Logo, reusable animations
-    └── scenes/Intro.tsx    the intro video (shared by both formats)
+    ├── components/         Background, Logo, BrandFonts, reusable animations
+    ├── scenes/Intro.tsx    the intro video (shared by both formats)
+    └── scenes/OgCard.tsx   the default social preview card (a still)
 ```
 
 ## Adding another video

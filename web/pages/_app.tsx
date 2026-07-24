@@ -247,7 +247,7 @@ function MyApp(props: AppProps<PageProps>) {
 
         {/*Twitter/X tags — separate!*/}
         <meta name="twitter:title" content={title} key="twitter-title" />
-        <meta name="twitter:description" content={description} key="twitter-description" />
+        <meta name="twitter:description" content={OG_DESCRIPTION} key="twitter-description" />
         {/*`summary_large_image`, not `summary`: the latter renders the small square thumbnail,
            which is what a 512×512 app icon used to force here.*/}
         <meta name="twitter:card" content="summary_large_image" key="twitter-card" />

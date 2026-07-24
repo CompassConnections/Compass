@@ -33,8 +33,8 @@ export const fonts = {
   serif: 'Georgia, "Times New Roman", serif',
 
   // The real web faces (see web/pages/_document.tsx and tailwind.config.js). Only usable in a
-  // scene that imports ./components/BrandFonts — that module vendors the woff2 files from
-  // public/fonts and blocks the render until they are ready. Without it these fall back.
+  // scene that imports ./components/BrandFonts — that module loads the woff2 files from
+  // public/fonts (`npm run fonts`) and blocks the render until they are ready.
   heading: '"Newsreader", Georgia, serif', // h1–h6 on the site
   body: '"DM Sans", "Segoe UI", sans-serif', // body copy
   wordmark: '"Cormorant Garamond", Georgia, serif', // the `.logo` wordmark

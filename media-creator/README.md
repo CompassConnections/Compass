@@ -18,13 +18,24 @@ own dependency tree so the web app and API never pull Remotion (and its bundled 
 ```bash
 cd media-creator
 npm install          # first time only — also downloads a headless browser for rendering
+npm run fonts        # brand web faces for the OG card; uncommitted, see Stills below
 ```
+
+Two render inputs are not in the repo and are not installed by npm:
+
+- `public/fonts/` — fetched by `npm run fonts` (and automatically by `npm run still:og`).
+- `public/logo.svg` — a copy of `web/public/favicon.svg`, which the root `.gitignore` excludes along
+  with every other `*.svg`. Copy it by hand: `cp ../web/public/favicon.svg public/logo.svg`. Every
+  scene that draws the logo needs it.
 
 ## Preview (interactive studio)
 
 ```bash
 npm run studio       # opens the Remotion Studio at http://localhost:3000
 ```
+
+> Previewing `OgCard` in the studio needs `npm run fonts` first — the studio does not run it, and
+> the render fails loudly rather than falling back to a substitute face.
 
 ## Render to MP4
 
@@ -137,11 +148,24 @@ cannot promise something the landing page does not say. If the home headline cha
 #### Fonts
 
 This is the one scene that uses the real web faces — Newsreader for the headline, DM Sans for the
-eyebrow, Cormorant Garamond for the wordmark — rather than the system stack the videos use. The
-woff2 files are vendored in `public/fonts/` (both families are SIL OFL) and loaded by
-`src/components/BrandFonts.ts`, which holds the render open until they are ready. Vendoring rather
-than fetching from Google keeps the render reproducible offline; a missing network would otherwise
-silently produce a card in Georgia.
+eyebrow, Cormorant Garamond for the wordmark — rather than the system stack the videos use.
+
+The woff2 files live in `public/fonts/` and are **not committed** (`.gitignore`), like the hero clips
+and `public/logo.svg`. Fetch them with:
+
+```bash
+npm run fonts              # no-op when they are already there
+npm run fonts -- --force   # re-download, e.g. to pick up a new family version
+```
+
+`npm run still:og` runs this itself, so rendering the card is a single command. `scripts/fetch-fonts.mjs`
+resolves the download URLs through the Google Fonts css2 API rather than hardcoding gstatic paths:
+those carry a family version (`/newsreader/v26/`) that Google rotates, so a hardcoded list would rot
+silently.
+
+`src/components/BrandFonts.ts` registers the faces and holds the render open until the browser
+reports them ready. A missing or corrupt file **cancels the render** instead of falling back to
+Georgia — a card in the wrong typeface would ship unnoticed, a red render will not.
 
 ## Structure
 
@@ -149,8 +173,8 @@ silently produce a card in Georgia.
 media-creator/
 ├── package.json            standalone deps (npm)
 ├── remotion.config.ts      render settings (codec, quality)
-├── public/logo.svg         Compass logo (copied from web/public/favicon.svg)
-├── public/fonts/           vendored web faces, used by the OG card only
+├── public/logo.svg         Compass logo (copied from web/public/favicon.svg; uncommitted)
+├── public/fonts/           brand web faces, OG card only (npm run fonts; uncommitted)
 └── src/
     ├── index.ts            registerRoot
     ├── Root.tsx            composition registry

@@ -1,9 +1,10 @@
 // Loads the real Compass web faces so a render looks like the site rather than like the local
 // system-font stack.
 //
-// The woff2 files are vendored under public/fonts (both families are SIL OFL) rather than fetched
-// from Google at render time — theme.ts's rule is that a render must be reproducible offline, and a
-// missing network would otherwise silently fall back to Georgia mid-render.
+// The woff2 files are read from public/fonts, which is uncommitted: `npm run fonts` downloads them
+// from Google Fonts, and `npm run still:og` runs that first. Fetching once at setup rather than at
+// render time is what keeps theme.ts's rule intact — a render itself touches no network, so it
+// cannot silently fall back to Georgia halfway through.
 //
 // Importing this module registers the faces and holds the render open until the browser reports
 // them ready. Only scenes that need them should import it; the video scenes deliberately do not,

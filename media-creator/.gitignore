@@ -17,3 +17,7 @@ npm-debug.log*
 # Captured marketing stills (regenerate with the capture scripts).
 public/search/
 public/alert/
+
+# Brand web faces for the OG card. Build inputs, not ours to redistribute — refetch from Google
+# with `npm run fonts` (which `npm run still:og` does for you).
+public/fonts/

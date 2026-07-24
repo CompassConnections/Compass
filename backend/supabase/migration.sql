@@ -58,4 +58,6 @@ BEGIN;
 \i backend/supabase/email_unsubscribe_tokens.sql
 \i backend/supabase/migrations/20260524_add_orientation_to_profiles.sql
 \i backend/supabase/migrations/20260709_add_last_checked_at_to_bookmarked_searches.sql
+\i backend/supabase/migrations/20260724_add_neurotype_to_profiles.sql
+\i backend/supabase/migrations/20260724_add_accessibility_notes_to_profiles.sql
 COMMIT;

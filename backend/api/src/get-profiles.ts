@@ -6,6 +6,7 @@ import {
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  NEUROTYPE_CHOICES,
   ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   RACE_CHOICES,
@@ -81,6 +82,7 @@ export type profileQueryType = {
   languages?: string[] | undefined
   religion?: string[] | undefined
   orientation?: string[] | undefined
+  neurotype?: string[] | undefined
   wants_kids_strength?: number | undefined
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
@@ -131,6 +133,9 @@ const textFields = [
   'religious_beliefs',
   'orientation_details',
   'gender_details',
+  'neurotype_details',
+  // Keyword-searchable but deliberately has no filter of its own — see the migration for why.
+  'accessibility_notes',
 ]
 
 // Define choice fields to search
@@ -147,6 +152,7 @@ const arrayChoiceFields = [
   {field: 'relationship_status', choices: RELATIONSHIP_STATUS_CHOICES},
   {field: 'religion', choices: RELIGION_CHOICES},
   {field: 'orientation', choices: ORIENTATION_CHOICES},
+  {field: 'neurotype', choices: NEUROTYPE_CHOICES},
   {field: 'pref_relation_styles', choices: RELATIONSHIP_CHOICES},
   {field: 'pref_romantic_styles', choices: ROMANTIC_CHOICES},
   {field: 'languages', choices: LANGUAGE_CHOICES},
@@ -211,6 +217,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     languages,
     religion,
     orientation,
+    neurotype,
     wants_kids_strength,
     has_kids,
     interests,
@@ -505,6 +512,17 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
           `orientation && $(orientation)`,
         {
           orientation,
+        },
+      ),
+
+    neurotype?.length &&
+      where(
+        // most are neurotypical, so we don't include the people who didn't answer if we're looking for
+        // anything else — a rare value is only meaningful when it was actually stated
+        (!neurotype.includes('neurotypical') ? '' : "neurotype IS NULL OR neurotype = '{}' OR ") +
+          `neurotype && $(neurotype)`,
+        {
+          neurotype,
         },
       ),
 

@@ -6,6 +6,7 @@ import {
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  NEUROTYPE_CHOICES,
   ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
@@ -37,6 +38,14 @@ class UserAccountInformationForSeeding {
         faker.number.int({min: 0, max: Object.values(ORIENTATION_CHOICES).length - 1})
       ],
   )
+  neurotype = Array.from(
+    {length: faker.number.int({min: 1, max: 2})},
+    () =>
+      Object.values(NEUROTYPE_CHOICES)[
+        faker.number.int({min: 0, max: Object.values(NEUROTYPE_CHOICES).length - 1})
+      ],
+  )
+  accessibility_notes = faker.lorem.sentence()
   pref_age = {
     min: faker.number.int({min: 18, max: 27}),
     max: faker.number.int({min: 36, max: 68}),

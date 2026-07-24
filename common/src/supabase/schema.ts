@@ -1114,6 +1114,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accessibility_notes: string | null
           age: number | null
           allow_direct_messaging: boolean | null
           allow_interest_indicating: boolean | null
@@ -1158,6 +1159,8 @@ export type Database = {
           looking_for_matches: boolean
           mbti: string | null
           messaging_status: string
+          neurotype: string[] | null
+          neurotype_details: string | null
           occupation: string | null
           occupation_title: string | null
           orientation: string[] | null
@@ -1195,6 +1198,7 @@ export type Database = {
           wants_kids_strength: number | null
         }
         Insert: {
+          accessibility_notes?: string | null
           age?: number | null
           allow_direct_messaging?: boolean | null
           allow_interest_indicating?: boolean | null
@@ -1239,6 +1243,8 @@ export type Database = {
           looking_for_matches?: boolean
           mbti?: string | null
           messaging_status?: string
+          neurotype?: string[] | null
+          neurotype_details?: string | null
           occupation?: string | null
           occupation_title?: string | null
           orientation?: string[] | null
@@ -1276,6 +1282,7 @@ export type Database = {
           wants_kids_strength?: number | null
         }
         Update: {
+          accessibility_notes?: string | null
           age?: number | null
           allow_direct_messaging?: boolean | null
           allow_interest_indicating?: boolean | null
@@ -1320,6 +1327,8 @@ export type Database = {
           looking_for_matches?: boolean
           mbti?: string | null
           messaging_status?: string
+          neurotype?: string[] | null
+          neurotype_details?: string | null
           occupation?: string | null
           occupation_title?: string | null
           orientation?: string[] | null

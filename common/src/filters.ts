@@ -56,6 +56,7 @@ export type FilterFields = {
     | 'pref_age_max'
     | 'religion'
     | 'orientation'
+    | 'neurotype'
   >
 
 export const orderProfiles = (profiles: Profile[], starredUserIds: string[] | undefined) => {
@@ -107,6 +108,7 @@ export const initialFilters: Partial<FilterFields> = {
   languages: undefined,
   religion: undefined,
   orientation: undefined,
+  neurotype: undefined,
   mbti: undefined,
   pref_gender: undefined,
   shortBio: undefined,

@@ -5,6 +5,7 @@ import {
   INVERTED_GENDERS,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
+  INVERTED_NEUROTYPE_CHOICES,
   INVERTED_ORIENTATION_CHOICES,
   INVERTED_POLITICAL_CHOICES,
   INVERTED_PSYCHEDELICS_CHOICES,
@@ -41,6 +42,7 @@ const filterLabels: Record<string, string> = {
   work: '',
   religion: '',
   orientation: '',
+  neurotype: '',
   orderBy: '',
   hasPhoto: '',
   diet: 'Diet',
@@ -185,6 +187,10 @@ export function formatFilters(
       } else if (key === 'orientation') {
         value = value.map((s) =>
           translate(`profile.orientation.${s}`, INVERTED_ORIENTATION_CHOICES[s] ?? s),
+        )
+      } else if (key === 'neurotype') {
+        value = value.map((s) =>
+          translate(`profile.neurotype.${s}`, INVERTED_NEUROTYPE_CHOICES[s] ?? s),
         )
       } else if (key === 'languages') {
         value = value.map((s) => translate(`profile.language.${s}`, INVERTED_LANGUAGE_CHOICES[s]))

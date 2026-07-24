@@ -69,6 +69,7 @@ export async function seedDbUser(
     age: userInfo.age,
     gender: userInfo.randomElement(userInfo.gender),
     orientation: userInfo.orientation,
+    neurotype: userInfo.neurotype,
     headline: userInfo.headline,
     keywords: profileKeywords,
     ethnicity: [userInfo.randomElement(userInfo.ethnicity)],
@@ -96,6 +97,8 @@ export async function seedDbUser(
     education_level: userInfo.randomElement(userInfo.education_level),
     languages: languagesKnown,
     orientation_details: 'Some orientation details',
+    neurotype_details: 'Some neurotype details',
+    accessibility_notes: userInfo.accessibility_notes,
     pinned_url: '/images/default-avatar.png',
   }
 

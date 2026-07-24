@@ -18,6 +18,7 @@
 - Languages — by languages spoken.
 - Politics — political beliefs or ideological alignment.
 - Religion — religious belief or affiliation.
+- Neurotype — neurodivergence identity (multi-select with extended list hidden behind "Show more").
 - MBTI — Myers–Briggs personality type.
 - Big Five — ranges of the Big Five personality traits.
 - Last Active — how recently they were active on the platform.

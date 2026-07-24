@@ -154,6 +154,7 @@ async function seedShowcaseProfile(profile: ShowcaseProfile, userId: string) {
       age: profile.age,
       gender: profile.gender,
       orientation: profile.orientation,
+      neurotype: profile.neurotype ?? null,
       headline: profile.headline,
       bio,
       bio_length: bioText.length,

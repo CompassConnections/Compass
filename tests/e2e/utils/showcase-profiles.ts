@@ -25,6 +25,8 @@ export interface ShowcaseProfile {
   age: number
   gender: string
   orientation: string[]
+  /** Optional — only some showcase profiles state a neurotype, as in real life. */
+  neurotype?: string[]
   headline: string
   /** Paragraphs of the bio, in order. */
   bio: string[]
@@ -256,6 +258,7 @@ export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
     age: 26,
     gender: 'female',
     orientation: ['queer'],
+    neurotype: ['autistic'],
     headline: 'Climate modeller. Meditation twice a day. Will talk about soil for hours.',
     bio: [
       'I model regional climate for a living, which means I spend most days being carefully precise about uncertainty and most evenings being asked whether we are doomed. (Short answer: the question is badly posed.)',
@@ -310,6 +313,7 @@ export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
     age: 61,
     gender: 'male',
     orientation: ['straight'],
+    neurotype: ['neurotypical'],
     headline: 'Retired GP, second act as a choir conductor, still learning Bach',
     bio: [
       'Forty years of general practice taught me that most of what people need is someone who will actually listen for more than four minutes. I retired two years ago and I am still adjusting to having time.',
@@ -418,6 +422,7 @@ export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
     age: 29,
     gender: 'non-binary',
     orientation: ['pansexual'],
+    neurotype: ['adhd', 'hsp'],
     headline: 'Game designer, amateur mycologist, host of a very small dinner party',
     bio: [
       'I design systems for a mid-size indie studio — mostly economies and progression, the invisible plumbing that makes a game feel fair. Before that I studied economics, which turns out to be the same job with worse graphics.',
@@ -641,6 +646,7 @@ export const SHOWCASE_PROFILES: ShowcaseProfile[] = [
     age: 36,
     gender: 'male',
     orientation: ['straight', 'demisexual'],
+    neurotype: ['autistic', 'adhd'],
     headline: 'Open-source maintainer looking for collaborators, not users',
     bio: [
       'I maintain a mid-sized open-source database tool that about four thousand companies depend on and roughly nine people contribute to. The maths of that is the most interesting problem in my life right now.',

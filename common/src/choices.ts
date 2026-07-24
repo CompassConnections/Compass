@@ -314,6 +314,27 @@ export const EXTRA_ORIENTATIONS = Object.values(ORIENTATION_CHOICES).filter(
   (v) => !DEFAULT_ORIENTATIONS.includes(v as any),
 )
 
+// Neurotype is framed as an identity, not a diagnosis: no "undiagnosed" or "prefer not to say" options,
+// and no psychiatric conditions. Anything a member doesn't want structured goes in `neurotype_details`.
+export const NEUROTYPE_CHOICES = {
+  Autistic: 'autistic',
+  ADHD: 'adhd',
+  Neurotypical: 'neurotypical',
+  // No combined "AuDHD" option on purpose — that is ticking Autistic and ADHD together.
+  Dyslexic: 'dyslexic',
+  Dyscalculic: 'dyscalculic',
+  'Highly sensitive (HSP)': 'hsp',
+} as const
+
+export const DEFAULT_NEUROTYPES = [
+  NEUROTYPE_CHOICES.Autistic,
+  NEUROTYPE_CHOICES.ADHD,
+  NEUROTYPE_CHOICES.Neurotypical,
+]
+export const EXTRA_NEUROTYPES = Object.values(NEUROTYPE_CHOICES).filter(
+  (v) => !DEFAULT_NEUROTYPES.includes(v as any),
+)
+
 export const LAST_ONLINE_CHOICES = {
   now: 'Currently online',
   today: 'Today',
@@ -375,6 +396,7 @@ export const INVERTED_CANNABIS_CHOICES = invert(CANNABIS_CHOICES)
 export const INVERTED_SUBSTANCE_INTENTION_CHOICES = invert(SUBSTANCE_INTENTION_CHOICES)
 export const INVERTED_SUBSTANCE_PREFERENCE_CHOICES = invert(SUBSTANCE_PREFERENCE_CHOICES)
 export const INVERTED_ORIENTATION_CHOICES = invert(ORIENTATION_CHOICES)
+export const INVERTED_NEUROTYPE_CHOICES = invert(NEUROTYPE_CHOICES)
 
 //Exported types for test files to use when referencing the keys of the choices objects
 export type PersonalityKey = keyof typeof MBTI_CHOICES

@@ -762,6 +762,7 @@ export const API = (_apiTypeCheck = {
         big5_neuroticism_max: z.coerce.number().optional(),
         religion: arraybeSchema.optional(),
         orientation: arraybeSchema.optional(),
+        neurotype: arraybeSchema.optional(),
         pref_relation_styles: arraybeSchema.optional(),
         pref_romantic_styles: arraybeSchema.optional(),
         diet: arraybeSchema.optional(),

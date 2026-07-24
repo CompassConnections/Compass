@@ -11,6 +11,9 @@ import {SignUpButton} from 'web/components/nav/sidebar'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import ProfileHeader, {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileAbout, {
+  hasAccessibility,
+  hasPersonality,
+  ProfileAccessibility,
   ProfileInterestsAndCauses,
   ProfileLinks,
   ProfilePersonality,
@@ -352,9 +355,15 @@ function ProfileContent(props: {
             </ProfileCard>
           )}
 
-          {(profile.mbti || profile.big5_agreeableness) && (
+          {hasPersonality(profile) && (
             <ProfileCard title={t('profile.personality', 'Personality')} className="p-5">
               <ProfilePersonality profile={profile} />
+            </ProfileCard>
+          )}
+
+          {hasAccessibility(profile) && (
+            <ProfileCard title={t('profile.accessibility_notes', 'Accessibility')} className="p-5">
+              <ProfileAccessibility profile={profile} />
             </ProfileCard>
           )}
 

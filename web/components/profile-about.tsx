@@ -6,6 +6,7 @@ import {
   INVERTED_EDUCATION_CHOICES,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
+  INVERTED_NEUROTYPE_CHOICES,
   INVERTED_ORIENTATION_CHOICES,
   INVERTED_POLITICAL_CHOICES,
   INVERTED_PSYCHEDELICS_CHOICES,
@@ -23,7 +24,7 @@ import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
-import {Home, Languages, Leaf, Salad} from 'lucide-react'
+import {Accessibility, Brain, Home, Languages, Leaf, Salad} from 'lucide-react'
 import React, {ReactNode} from 'react'
 import {BiSolidDrink} from 'react-icons/bi'
 import {FaHeart} from 'react-icons/fa'
@@ -416,6 +417,29 @@ function Orientation(props: {profile: Profile}) {
   )
 }
 
+function Neurotype(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const p = profile as any
+  const neurotype = p.neurotype as string[] | null | undefined
+  const neurotypeDetails = p.neurotype_details as string | null | undefined
+
+  if (!neurotype?.length && !neurotypeDetails) return null
+
+  const neurotypeText = neurotype?.length
+    ? formatChoiceList(neurotype, 'neurotype', INVERTED_NEUROTYPE_CHOICES, t)
+    : null
+
+  return (
+    <AboutRow
+      icon={<Brain className="h-5 w-5" />}
+      title={t('profile.neurotype', 'Neurotype')}
+      text={neurotypeText}
+      details={neurotypeDetails ? `"${neurotypeDetails}"` : undefined}
+    />
+  )
+}
+
 function Ethnicity(props: {profile: Profile}) {
   const t = useT()
   const {profile} = props
@@ -761,13 +785,69 @@ export function ProfileInterestsAndCauses(props: {profile: Profile}) {
   )
 }
 
+/**
+ * Whether the Personality card has anything to show. Exported so the card and its call site
+ * (`profile/profile-info.tsx`) can't drift apart and render an empty card.
+ */
+export function hasPersonality(profile: Profile) {
+  const p = profile as any
+  return !!(
+    profile.mbti ||
+    profile.big5_agreeableness ||
+    p.neurotype?.length ||
+    p.neurotype_details
+  )
+}
+
+/** Whether the Accessibility card has anything to show. Shared with its call site, as with `hasPersonality`. */
+export function hasAccessibility(profile: Profile) {
+  return !!(profile as any).accessibility_notes
+}
+
+/**
+ * Its own card below Personality rather than a row in Details: it is practical meet-up information, not a
+ * demographic attribute, and it reads as an aside when buried in a list of them.
+ *
+ * Rendered as the member wrote it — no choice mapping, no chips, line breaks preserved. The whole point of
+ * this field being free text is that the framing belongs to them, so the UI must not restructure it.
+ */
+export function ProfileAccessibility(props: {profile: Profile}) {
+  const {profile} = props
+  const notes = (profile as any).accessibility_notes as string | null | undefined
+
+  if (!notes) return null
+
+  return (
+    <Row className="items-start gap-2.5">
+      <div
+        className="bg-canvas-100 border-canvas-200 text-ink-500 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border"
+        style={{width: '32px', height: '32px', marginTop: '1px'}}
+      >
+        <Accessibility className="h-5 w-5" />
+      </div>
+      <div
+        style={{
+          fontSize: '14px',
+          color: 'rgb(var(--color-ink-900))',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {notes}
+      </div>
+    </Row>
+  )
+}
+
 export function ProfilePersonality(props: {profile: Profile}) {
   const {profile} = props
 
-  if (!profile.mbti && !profile.big5_agreeableness) return null
+  if (!hasPersonality(profile)) return null
 
   return (
     <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
+      {/* Grouped with MBTI/Big Five rather than with orientation in the Details card: it describes how
+          someone's mind works, and matters just as much for friendship and collaboration as for dating. */}
+      <Neurotype profile={profile} />
       <MBTI profile={profile} />
       <Big5Traits profile={profile} />
     </Col>

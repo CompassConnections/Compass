@@ -4,13 +4,16 @@ import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
   CANNABIS_CHOICES,
+  DEFAULT_NEUROTYPES,
   DEFAULT_ORIENTATIONS,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  EXTRA_NEUROTYPES,
   GENDERS,
   GENDERS_PLURAL,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  NEUROTYPE_CHOICES,
   ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
@@ -123,6 +126,11 @@ export const OptionalProfileUserForm = (props: {
     () => !!profile.gender && EXTRA_GENDERS.includes(profile.gender as any),
   )
   const [showAllOrientations, setShowAllOrientations] = useState(false)
+  const [showAllNeurotypes, setShowAllNeurotypes] = useState(
+    () =>
+      !!(profile as any).neurotype &&
+      ((profile as any).neurotype as string[]).some((v) => EXTRA_NEUROTYPES.includes(v as any)),
+  )
   const t = useT()
   const {locale} = useLocale()
 
@@ -1049,6 +1057,56 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Category title={t('profile.optional.category.psychology', 'Psychology')} />
+
+        {/* Sits with MBTI/Big Five rather than under Relationships: it describes how someone's mind
+            works, and it is just as relevant to friendship and collaboration as to dating. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.neurotype', 'Neurotype')}
+          </label>
+          <MultiCheckbox
+            choices={
+              Object.fromEntries(
+                Object.entries(NEUROTYPE_CHOICES).filter(
+                  ([, v]) =>
+                    showAllNeurotypes ||
+                    DEFAULT_NEUROTYPES.includes(v as any) ||
+                    ((profile as any)['neurotype'] ?? []).includes(v),
+                ),
+              ) as any
+            }
+            selected={(profile as any)['neurotype'] ?? []}
+            translationPrefix={'profile.neurotype'}
+            onChange={(selected) => setProfile('neurotype' as any, selected)}
+          />
+          {!showAllNeurotypes && (
+            <button
+              type="button"
+              className="text-primary-700 mt-1 text-sm font-medium hover:underline"
+              onClick={() => setShowAllNeurotypes(true)}
+            >
+              {t('profile.neurotype.show_more', 'Show more options')}
+            </button>
+          )}
+          {showAllNeurotypes && (
+            <>
+              <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+              <Input
+                type="text"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setProfile('neurotype_details' as any, e.target.value)
+                }
+                className={'w-full sm:w-[700px]'}
+                value={(profile as any)['neurotype_details'] ?? undefined}
+                placeholder={t(
+                  'profile.neurotype.details_placeholder',
+                  'Anything helpful to know about how you think or communicate…',
+                )}
+              />
+            </>
+          )}
+        </Col>
+
         <Col className={clsx(colClassName, 'max-w-[550px]')}>
           <label className={clsx(labelClassName)}>
             {t('profile.optional.mbti', 'MBTI Personality Type')}
@@ -1142,6 +1200,33 @@ export const OptionalProfileUserForm = (props: {
               'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
             )}
           </p>
+        </Col>
+
+        <Category title={t('profile.optional.accessibility_notes', 'Accessibility')} />
+
+        {/* Free text on purpose, not a checkbox list of conditions: a taxonomy exists mainly to be
+            filtered on, and filtering people out by disability is what this field must not enable.
+            Free text leaves the framing and the depth of disclosure with the member. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.accessibility_notes_hint',
+              'Optional, and public like the rest of your profile. Anything practical that helps someone meet you well — access needs, energy levels, sensory preferences, quieter venues.',
+            )}
+          </label>
+          <Textarea
+            data-testid="accessibility_notes"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setProfile('accessibility_notes' as any, e.target.value)
+            }
+            className={'w-full md:w-[700px] bg-canvas-50 border rounded-md p-2'}
+            value={(profile as any)['accessibility_notes'] ?? undefined}
+            maxLength={500}
+            placeholder={t(
+              'profile.optional.accessibility_notes_placeholder',
+              'e.g. I use a wheelchair, so step-free venues work best. Happy to answer questions.',
+            )}
+          />
         </Col>
 
         <Category title={t('profile.optional.diet', 'Diet')} />

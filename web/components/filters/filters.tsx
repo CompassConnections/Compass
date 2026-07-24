@@ -24,6 +24,7 @@ import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profil
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
 import {LanguageFilter, LanguageFilterText} from 'web/components/filters/language-filter'
 import {MbtiFilter, MbtiFilterText} from 'web/components/filters/mbti-filter'
+import {NeurotypeFilter, NeurotypeFilterText} from 'web/components/filters/neurotype-filter'
 import {OrientationFilter, OrientationFilterText} from 'web/components/filters/orientation-filter'
 import {PoliticalFilter, PoliticalFilterText} from 'web/components/filters/political-filter'
 import {
@@ -727,6 +728,25 @@ function Filters(props: {
         setOpenGroup={setOpenGroup}
         // icon={<BsPersonVcard className="h-4 w-4" />}
       >
+        {/* Grouped with MBTI/Big Five rather than under Relationship — it describes how someone's mind
+            works, and matters just as much for friendship and collaboration as for dating. */}
+        <FilterSection
+          title={t('profile.optional.neurotype', 'Neurotype')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny((filters as any).neurotype || undefined)}
+          selection={
+            <NeurotypeFilterText options={(filters as any).neurotype as string[] | undefined} />
+          }
+        >
+          <NeurotypeFilter
+            filters={filters}
+            updateFilter={updateFilter}
+            profile={youProfile}
+            className={''}
+          />
+        </FilterSection>
+
         <FilterSection
           title={t('profile.optional.mbti', 'MBTI')}
           openFilter={openFilter}

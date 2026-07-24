@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {OG_DESCRIPTION} from 'common/constants'
 import {RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {getProfileOgImageUrl} from 'common/profiles/og-image'
@@ -302,7 +303,7 @@ function UserPageInner(props: ActiveUserPageProps) {
         description={
           profile?.headline ||
           parseJsonContentToText(profile?.bio as JSONContent)?.slice(0, 250) ||
-          `${user.name} is on Compass`
+          OG_DESCRIPTION
         }
         url={`/${user.username}`}
         image={seoImage}

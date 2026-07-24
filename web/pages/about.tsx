@@ -17,7 +17,7 @@ import {
 } from '@heroicons/react/24/outline'
 import {GlobeAltIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {discordLink, formLink, githubRepo} from 'common/constants'
+import {discordLink, formLink, githubRepo, OG_DESCRIPTION} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps, useState} from 'react'
@@ -632,7 +632,7 @@ export default function About() {
     <PageBase trackPageView={'about'}>
       <SEO
         title={t('about.seo.title', 'About')}
-        description={t('about.seo.description', 'About Compass')}
+        description={t('about.seo.description', OG_DESCRIPTION)}
         url="/about"
       />
 

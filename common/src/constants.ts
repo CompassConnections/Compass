@@ -45,3 +45,6 @@ export type Locale = (typeof supportedLocales)[number]
 export type LocaleTuple = {
   [K in keyof typeof LOCALES]: [K, (typeof LOCALES)[K]]
 }[keyof typeof LOCALES]
+
+export const OG_DESCRIPTION =
+  'The free directory to find your people — fully searchable by values and demographics. No ads, no swipes.'

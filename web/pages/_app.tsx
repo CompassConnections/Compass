@@ -7,6 +7,7 @@ import {Keyboard} from '@capacitor/keyboard'
 import {StatusBar} from '@capacitor/status-bar'
 import * as Sentry from '@sentry/node'
 import clsx from 'clsx'
+import {OG_DESCRIPTION} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {IS_VERCEL, OG_CARD} from 'common/hosting/constants'
 import {debug} from 'common/logger'
@@ -218,15 +219,13 @@ function MyApp(props: AppProps<PageProps>) {
   }, [])
 
   const title = 'Compass'
-  const description =
-    'The free directory for finding your people — fully searchable by values and demographics. No ads, no swipes.'
 
   return (
     <>
       <Head>
         <title>{title}</title>
 
-        <meta name="description" content={description} key="description" />
+        <meta name="description" content={OG_DESCRIPTION} key="description" />
 
         {/*OG tags (WhatsApp, Facebook, etc.). These are the site-wide default: any page that
            renders <SEO> overrides them by `key`, and pages that don't (the home page among them)
@@ -237,7 +236,7 @@ function MyApp(props: AppProps<PageProps>) {
         <meta property="og:site_name" content="Compass" />
         <meta property="og:type" content="website" key="og-type" />
         <meta property="og:title" content={title} key="og-title" />
-        <meta property="og:description" content={description} key="og-description" />
+        <meta property="og:description" content={OG_DESCRIPTION} key="og-description" />
         <meta property="og:url" content={DEPLOYED_WEB_URL} key="og-url" />
         <meta property="og:image" content={OG_CARD.url} key="og-image" />
         <meta property="og:image:secure_url" content={OG_CARD.url} key="og-image-secure-url" />

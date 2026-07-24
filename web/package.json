@@ -49,6 +49,7 @@
     "@vercel/og": "0.5.20",
     "clsx": "2.1.1",
     "compressorjs": "1.1.1",
+    "d3-geo": "3.1.1",
     "dayjs": "1.11.19",
     "firebase": "11.1.0",
     "heic2any": "0.0.4",
@@ -66,7 +67,9 @@
     "react-icons": "5.5.0",
     "react-markdown": "10.1.0",
     "recharts": "3.2.1",
-    "tailwindcss": "^3.4"
+    "tailwindcss": "^3.4",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
   },
   "devDependencies": {
     "@capacitor/android": "7.4.4",
@@ -82,11 +85,12 @@
     "@types/node": "20.19.35",
     "@types/react": "19.2.3",
     "@types/react-dom": "19.2.3",
+    "@types/topojson-client": "3.1.5",
     "autoprefixer": "10.4.27",
     "concurrently": "8.2.2",
     "cross-env": "7.0.3",
     "next-sitemap": "4.2.3",
-    "postcss": "8.5.6",
+    "postcss": "8.5.10",
     "tsc-files": "1.1.3"
   }
 }

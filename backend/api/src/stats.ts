@@ -10,10 +10,6 @@ let cachedData: any = null
 let cacheTimestamp: number = 0
 const CACHE_DURATION_MS = HOUR_MS
 
-// How many countries the breakdown returns. The about page shows a short ranked list, so a long tail
-// would be payload nobody renders; `countryCount` still reports the full spread.
-const TOP_COUNTRIES = 8
-
 // Below this many respondents a field is not published at all. A distribution drawn from a handful of
 // people is noise, and naming the one member in a rare category is the kind of soft de-anonymisation a
 // public transparency page should not do. Mirrors the spirit of MIN_COUNTRIES on the frontend.
@@ -78,15 +74,13 @@ async function ageDistribution(pg: SupabaseDirectClient): Promise<Distribution |
                 when age < 25 then '18–24'
                 when age < 35 then '25–34'
                 when age < 45 then '35–44'
-                when age < 55 then '45–54'
-                else '55+'
+                else '45+'
               end as bucket,
               case
                 when age < 25 then 1
                 when age < 35 then 2
                 when age < 45 then 3
-                when age < 55 then 4
-                else 5
+                else 4
               end as ord
        from profiles
        where age is not null and age >= 18
@@ -192,7 +186,9 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     conversations: conversationCount.count,
     genderRatio: genderPercentage,
     genderCounts: genderRatio,
-    countries: countries.slice(0, TOP_COUNTRIES),
+    // The full ranked list, not a top-N: the /stats world map colours every country with members, and
+    // the ranked list under it slices its own head. Still a small payload (one row per country present).
+    countries,
     countryCount: countries.length,
     demographics,
   }

@@ -389,9 +389,10 @@ export default function ChartMembers() {
     void load()
   }, [])
 
-  // Colors from palette
+  // Colors from palette. The second series is a warm neutral taupe rather than a second loud hue —
+  // "Completed" is a subset of "Total", so it reads as a quieter companion line, not a rival category.
   const AMBER = 'rgb(193 127 62)' // primary-500
-  const SAGE = 'rgb(107 143 113)' // green-500
+  const NEUTRAL = 'rgb(150 132 108)' // warm taupe (ink-600-ish), replaces the old green
 
   return (
     <div>
@@ -425,8 +426,8 @@ export default function ChartMembers() {
                 <stop offset="95%" stopColor={AMBER} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradSage" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={SAGE} stopOpacity={0.14} />
-                <stop offset="95%" stopColor={SAGE} stopOpacity={0} />
+                <stop offset="5%" stopColor={NEUTRAL} stopOpacity={0.14} />
+                <stop offset="95%" stopColor={NEUTRAL} stopOpacity={0} />
               </linearGradient>
             </defs>
 
@@ -459,17 +460,17 @@ export default function ChartMembers() {
 
             <Legend content={<CustomLegend />} />
 
-            {/* Completed (sage, behind) */}
+            {/* Completed (warm neutral, behind) */}
             <Area
               type="monotone"
               dataKey="profilesCompletedCreations"
               name={t('stats.with_bio', 'Completed')}
-              stroke={SAGE}
+              stroke={NEUTRAL}
               strokeWidth={2}
               strokeDasharray="5 3"
               fill="url(#gradSage)"
               dot={false}
-              activeDot={{r: 4, fill: SAGE, stroke: 'rgb(247 244 239)', strokeWidth: 2}}
+              activeDot={{r: 4, fill: NEUTRAL, stroke: 'rgb(247 244 239)', strokeWidth: 2}}
             />
 
             {/* Total (amber, on top) */}

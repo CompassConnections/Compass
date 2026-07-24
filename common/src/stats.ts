@@ -52,9 +52,10 @@ export type Stats = {
   conversations: number
   genderRatio: Record<string, number>
   genderCounts: Record<string, number>
-  /** Top countries by profile count, descending. Profiles with no country set are excluded. */
+  /** Every country with at least one member, by profile count descending. Profiles with no country set
+   *  are excluded. The full list (not a top-N) so the map can shade every one; consumers slice their own. */
   countries: CountryCount[]
-  /** Distinct countries represented, including any outside the `countries` top-N. */
+  /** Distinct countries represented — same as `countries.length`, kept for callers that only need the number. */
   countryCount: number
   /**
    * Per-field breakdowns of the member base. A field is omitted entirely when too few members answered

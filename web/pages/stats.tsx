@@ -1,58 +1,56 @@
 import {
   AcademicCapIcon,
   ArrowTrendingUpIcon,
-  BoltIcon,
+  BuildingLibraryIcon,
   CakeIcon,
   CalendarDaysIcon,
-  ChatBubbleOvalLeftIcon,
-  CheckCircleIcon,
-  ClipboardDocumentListIcon,
-  EnvelopeIcon,
+  ChatBubbleLeftRightIcon,
   FingerPrintIcon,
   FlagIcon,
   GlobeAltIcon,
-  HandRaisedIcon,
   HeartIcon,
   LanguageIcon,
   LinkIcon,
   MagnifyingGlassIcon,
-  QuestionMarkCircleIcon,
-  ScaleIcon,
+  PuzzlePieceIcon,
   SunIcon,
-  UsersIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import {type DemographicField, type Stats} from 'common/stats'
-import {ComponentType, ReactNode, SVGProps, useEffect, useState} from 'react'
+import {type DemographicField, type Distribution, type Stats} from 'common/stats'
+import dynamic from 'next/dynamic'
+import {ComponentType, SVGProps, useEffect, useState} from 'react'
 import {SectionLabel} from 'web/components/about/section'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import ChartMembers from 'web/components/widgets/charts'
-import {CountrySpread, MIN_COUNTRIES} from 'web/components/widgets/country-spread'
+import {MIN_COUNTRIES} from 'web/components/widgets/country-spread'
 import {Reveal} from 'web/components/widgets/reveal'
 import {DistributionCard} from 'web/components/widgets/stat-distribution'
-import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
+import {DonutSegment, StatDonut} from 'web/components/widgets/stat-donut'
+import {eyebrow, Section, surface} from 'web/components/widgets/surface'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {getCount} from 'web/lib/supabase/users'
 
+// The map pulls in the world-atlas geometry (~100KB) plus d3-geo; code-split it so it never weighs on the
+// initial load, and never runs on the server — it's a client-only visual on an already client-fetched page.
+const WorldHeatmap = dynamic(
+  () => import('web/components/widgets/world-heatmap').then((m) => m.WorldHeatmap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className={clsx(surface, 'h-full min-h-[320px] animate-pulse p-6')}>
+        <div className="h-4 w-40 rounded bg-canvas-200" />
+        <div className="mt-6 h-[240px] rounded-xl bg-canvas-100" />
+      </div>
+    ),
+  },
+)
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
-
-interface StatCardProps {
-  value: string | number | null | undefined
-  label: string
-  icon: IconType
-  accent?: 'amber' | 'sage' | 'muted'
-}
-
-interface StatGroupProps {
-  title: string
-  /** Optional block sharing the group's row — the right column on large screens. */
-  aside?: ReactNode
-  children: ReactNode
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -62,66 +60,72 @@ function formatNumber(n: number): string {
   return n.toLocaleString()
 }
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+// ─── Hero band ──────────────────────────────────────────────────────────────────
 
-function StatCard({value, label, icon: Icon, accent = 'amber'}: StatCardProps) {
-  if (value === null || value === undefined || value === 0) return null
+/**
+ * The headline numbers as one dark, rule-divided band rather than a row of identical tiles — the tiles
+ * were the start of the "wall of same block" the rest of the page also fights. A single feature surface
+ * with an amber glow reads as an opening statement; it appears exactly once, so it never becomes texture.
+ */
+function HeroBand({
+  members,
+  active,
+  countries,
+  discussions,
+  messages,
+}: {
+  members: number | null
+  active: number | null
+  countries: number | null | undefined
+  discussions: number | null
+  messages: number | null | undefined
+}) {
+  const t = useT()
+  const items = [
+    {value: members, label: t('stats.highlight.members', 'Members')},
+    {value: active, label: t('stats.highlight.active', 'Active this month')},
+    {
+      value: countries && countries > 1 ? countries : undefined,
+      label: t('stats.highlight.countries', 'Countries'),
+    },
+    {value: discussions, label: t('stats.discussions', 'Discussions')},
+    {value: messages, label: t('stats.messages', 'Messages')},
+  ].filter((i) => !!i.value)
 
-  const formatted = typeof value === 'number' ? formatNumber(value) : value
-
-  const accentClasses = {
-    amber: 'text-primary-600',
-    sage: 'text-green-600',
-    muted: 'text-ink-700',
-  }
+  if (!items.length) return null
 
   return (
-    <div className={clsx(surface, surfaceHover, 'group p-5 sm:p-6')}>
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary-100 ring-1 ring-primary-200">
-        <Icon className="h-[18px] w-[18px] text-primary-600" strokeWidth={1.8} />
-      </div>
-
+    <div className="relative overflow-hidden rounded-3xl bg-canvas-950 px-6 py-8 sm:px-10 sm:py-10">
       <div
-        className={clsx(
-          'mb-2 text-3xl font-black leading-none tracking-tight',
-          accentClasses[accent],
-        )}
-      >
-        {formatted}
+        aria-hidden
+        className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-primary-500/20 blur-3xl"
+      />
+      <div className="relative flex flex-wrap gap-x-10 gap-y-7 sm:gap-x-14">
+        {items.map((item, i) => (
+          <div
+            key={item.label}
+            className={clsx(
+              i === 0 && 'sm:border-r sm:border-white/10 sm:pr-14',
+              i > 0 && 'min-w-[92px]',
+            )}
+          >
+            <div
+              className={clsx(
+                'font-black leading-none tracking-tight tabular-nums text-primary-400',
+                i === 0 ? 'text-5xl sm:text-6xl' : 'text-3xl sm:text-4xl',
+              )}
+            >
+              {typeof item.value === 'number' ? formatNumber(item.value) : item.value}
+            </div>
+            <div className={clsx(eyebrow, 'mt-2.5 text-white/55')}>{item.label}</div>
+          </div>
+        ))}
       </div>
-
-      <p className="text-xs font-semibold uppercase leading-tight tracking-wide text-ink-500">
-        {label}
-      </p>
     </div>
   )
 }
 
-// ─── Stat Group ───────────────────────────────────────────────────────────────
-
-function StatGroup({title, aside, children}: StatGroupProps) {
-  return (
-    <>
-      <SectionLabel>{title}</SectionLabel>
-      {/* With an `aside`, the cards give up half the width and drop to a 2×2 block beside it on large
-          screens; without one they keep the full-width 4-up row. The aside stacks underneath below
-          `lg` rather than squeezing — its country bars need the horizontal room. */}
-      <div className={clsx('grid gap-3 sm:gap-4', aside && 'items-start lg:grid-cols-2')}>
-        <div
-          className={clsx(
-            'grid grid-cols-2 gap-3 sm:gap-4',
-            aside ? 'md:grid-cols-2' : 'md:grid-cols-3 lg:grid-cols-4',
-          )}
-        >
-          {children}
-        </div>
-        {aside}
-      </div>
-    </>
-  )
-}
-
-// ─── Chart wrapper ────────────────────────────────────────────────────────────
+// ─── Growth chart ────────────────────────────────────────────────────────────
 
 function ChartCard() {
   const t = useT()
@@ -145,126 +149,179 @@ function ChartCard() {
   )
 }
 
-// ─── Hero highlight band ────────────────────────────────────────────────────────
+// ─── Activity panel ──────────────────────────────────────────────────────────
 
-function HighlightRow({
-  members,
-  active,
-  messages,
-  countries,
+/**
+ * A small labelled list of related counts (conversations, compatibility, democracy). Replaces three
+ * near-identical two-card sections with three compact panels in one row — same information, a fraction of
+ * the vertical run, and no more repeated card grid at the foot of the page.
+ */
+function ActivityPanel({
+  icon: Icon,
+  title,
+  rows,
 }: {
-  members: number | null
-  active: number | null
+  icon: IconType
+  title: string
+  rows: {label: string; value: number | null | undefined}[]
+}) {
+  const shown = rows.filter((r) => !!r.value)
+  if (!shown.length) return null
+  return (
+    <div className={clsx(surface, 'flex h-full flex-col p-5 sm:p-6')}>
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary-100 ring-1 ring-primary-200">
+          <Icon className="h-[18px] w-[18px] text-primary-600" strokeWidth={1.8} />
+        </div>
+        <h3 className="text-sm font-bold text-ink-900">{title}</h3>
+      </div>
+      <dl className="space-y-3">
+        {shown.map((r) => (
+          <div
+            key={r.label}
+            className="flex items-baseline justify-between gap-3 border-t border-canvas-200/70 pt-3 first:border-0 first:pt-0"
+          >
+            <dt className="text-sm text-ink-600">{r.label}</dt>
+            <dd className="text-lg font-black tabular-nums text-primary-600">
+              {formatNumber(r.value as number)}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+/**
+ * The three activity panels as a row, with empty ones dropped entirely rather than left as blank grid
+ * cells — a young platform may have votes but no messages yet, and a hole in the row reads as a bug.
+ */
+function ActivitySection({
+  data,
+  messages,
+}: {
+  data: Record<string, number | null>
   messages: number | null | undefined
-  countries: number | null | undefined
 }) {
   const t = useT()
-  const items: {
-    value: number | null | undefined
-    label: string
-    icon: IconType
-    accent: 'amber' | 'sage'
-  }[] = [
+  const panels = [
     {
-      value: members,
-      label: t('stats.highlight.members', 'Total Members'),
-      icon: UsersIcon,
-      accent: 'amber' as const,
+      icon: ChatBubbleLeftRightIcon,
+      title: t('stats.group.conversations', 'Conversations'),
+      rows: [
+        {label: t('stats.discussions', 'Discussions'), value: data.private_user_message_channels},
+        {label: t('stats.messages', 'Messages'), value: messages},
+      ],
     },
     {
-      value: active,
-      label: t('stats.highlight.active', 'Active (last month)'),
-      icon: BoltIcon,
-      accent: 'sage' as const,
+      icon: PuzzlePieceIcon,
+      title: t('stats.group.compatibility', 'Compatibility'),
+      rows: [
+        {
+          label: t('stats.compatibility_prompts', 'Prompts created'),
+          value: data.compatibility_prompts,
+        },
+        {label: t('stats.prompts_answered', 'Prompts answered'), value: data.compatibility_answers},
+      ],
     },
     {
-      value: messages,
-      label: t('stats.highlight.messages', 'Messages sent'),
-      icon: EnvelopeIcon,
-      accent: 'amber' as const,
+      icon: BuildingLibraryIcon,
+      title: t('stats.group.democracy', 'Democracy'),
+      rows: [
+        {label: t('stats.proposals', 'Proposals'), value: data.votes},
+        {label: t('stats.votes', 'Votes cast'), value: data.vote_results},
+      ],
     },
-    {
-      value: countries && countries > 1 ? countries : undefined,
-      label: t('stats.highlight.countries', 'Countries'),
-      icon: GlobeAltIcon,
-      accent: 'sage' as const,
-    },
-  ].filter((i) => !!i.value)
+  ].filter((p) => p.rows.some((r) => !!r.value))
 
-  if (!items.length) return null
+  if (!panels.length) return null
 
   return (
-    <div
-      className={clsx(
-        'grid grid-cols-2 gap-3 sm:gap-4',
-        items.length >= 4 ? 'lg:grid-cols-4' : 'sm:grid-cols-3',
-      )}
-    >
-      {items.map((item, i) => {
-        const Icon = item.icon
-        return (
-          <Reveal key={item.label} delay={i * 60}>
-            <div className="relative h-full overflow-hidden rounded-2xl border-[1.5px] border-canvas-900 bg-canvas-950 p-5 sm:p-6">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary-500/10 blur-2xl"
-              />
-              <div className="relative mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-canvas-900">
-                <Icon className="h-[18px] w-[18px] text-primary-400" strokeWidth={1.8} />
-              </div>
-              <div
-                className={clsx(
-                  'relative mb-2 text-3xl font-black leading-none tracking-tight sm:text-4xl',
-                  item.accent === 'sage' ? 'text-green-500' : 'text-primary-400',
-                )}
-              >
-                {typeof item.value === 'number' ? formatNumber(item.value) : item.value}
-              </div>
-              <p className="relative text-xs font-semibold uppercase tracking-wide text-white/60">
-                {item.label}
-              </p>
-            </div>
+    <Section>
+      <SectionLabel>{t('stats.group.activity', 'Activity & participation')}</SectionLabel>
+      <div
+        className={clsx(
+          'grid grid-cols-1 gap-3 sm:gap-4',
+          panels.length >= 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2',
+        )}
+      >
+        {panels.map((p, i) => (
+          <Reveal key={p.title} delay={i * 70}>
+            <ActivityPanel icon={p.icon} title={p.title} rows={p.rows} />
           </Reveal>
-        )
-      })}
-    </div>
+        ))}
+      </div>
+    </Section>
   )
 }
 
 // ─── Demographics ───────────────────────────────────────────────────────────────
 
 /**
- * The order and chrome of the "Who's on Compass" cards. The data (and whether a field appears at all)
- * comes from the `stats` payload — a field the backend withheld for too few respondents simply has no
- * entry here, and its `DistributionCard` renders nothing. Gender leads (with the country card beside it,
- * inserted separately below), then the rest run roughly most-universal first: nearly everyone has an age
- * and an education; a language or relationship-status breakdown is a deeper cut.
+ * The bar-list breakdowns, in a masonry rather than a fixed grid. Their natural heights differ (education
+ * has five rows, languages seven, "looking for" three), so a rigid grid would pad them all to the tallest
+ * in the row — the exact uniformity that made the section read as wallpaper. CSS columns let each card
+ * keep its own height and pack organically. Gender, age and countries are pulled out above as a donut /
+ * donut / map trio, so the wall is broken before the bar lists even begin.
  */
-const DEMOGRAPHIC_CARDS: {field: DemographicField; title: string; icon: IconType}[] = [
-  {field: 'gender', title: 'Gender', icon: ScaleIcon},
-  {field: 'age', title: 'Age', icon: CalendarDaysIcon},
-  {field: 'pref_relation_styles', title: 'Looking for', icon: MagnifyingGlassIcon},
-  {field: 'orientation', title: 'Orientation', icon: HeartIcon},
-  {field: 'relationship_status', title: 'Relationship status', icon: LinkIcon},
-  {field: 'ethnicity', title: 'Ethnicity', icon: GlobeAltIcon},
+const BAR_CARDS: {field: DemographicField; title: string; icon: IconType}[] = [
   {field: 'education_level', title: 'Education', icon: AcademicCapIcon},
   {field: 'political_beliefs', title: 'Politics', icon: FlagIcon},
   {field: 'religion', title: 'Religion & spirituality', icon: SunIcon},
-  {field: 'diet', title: 'Diet', icon: CakeIcon},
   {field: 'mbti', title: 'Personality (MBTI)', icon: FingerPrintIcon},
+  {field: 'diet', title: 'Diet', icon: CakeIcon},
+  {field: 'orientation', title: 'Orientation', icon: HeartIcon},
+  {field: 'ethnicity', title: 'Ethnicity', icon: GlobeAltIcon},
+  {field: 'pref_relation_styles', title: 'Looking for', icon: MagnifyingGlassIcon},
+  {field: 'relationship_status', title: 'Relationship status', icon: LinkIcon},
   {field: 'languages', title: 'Languages spoken', icon: LanguageIcon},
 ]
 
-// This section absorbed what used to be the standalone "Community" block: the gender split and the
-// country spread are just two more ways of answering "who's on Compass", so they sit in the same grid as
-// the profile-field breakdowns rather than in a section of their own. The bare member/active/endorsement
-// counts that lived there are dropped — the hero band above already carries the headline totals.
+// Gender is folded to man / woman / other for the donut: three slices read at a glance where the full
+// gender vocabulary would not, and "other" is exact (base − men − women) regardless of how the tail was
+// truncated. Colour follows the entity, on the brand's warm ramp; the legend carries identity.
+function genderSegments(
+  dist: Distribution | undefined,
+  t: ReturnType<typeof useT>,
+): DonutSegment[] {
+  if (!dist) return []
+  const male = dist.items.find((i) => i.value === 'male')?.count ?? 0
+  const female = dist.items.find((i) => i.value === 'female')?.count ?? 0
+  const other = Math.max(0, dist.base - male - female)
+  return [
+    {label: t('stats.gender.women', 'Women'), value: female, colorVar: '--color-primary-500'},
+    {label: t('stats.gender.men', 'Men'), value: male, colorVar: '--color-primary-300'},
+    {label: t('stats.gender.other', 'Other'), value: other, colorVar: '--color-ink-500'},
+  ].sort((a, b) => b.value - a.value)
+}
+
+// Age keeps its buckets in age order (not by size) and rides a light→dark amber ramp — an ordinal ramp
+// for an ordinal field, so "older" reads as "deeper" without a legend having to say so.
+const AGE_RAMP = [
+  '--color-primary-200',
+  '--color-primary-300',
+  '--color-primary-400',
+  '--color-primary-600',
+]
+
+function ageSegments(dist: Distribution | undefined): DonutSegment[] {
+  if (!dist) return []
+  return dist.items.map((it, i) => ({
+    label: it.value,
+    value: it.count,
+    colorVar: AGE_RAMP[Math.min(i, AGE_RAMP.length - 1)],
+  }))
+}
+
 function Demographics({stats}: {stats: Stats}) {
   const t = useT()
   const {demographics, countries, countryCount} = stats
-  const cards = DEMOGRAPHIC_CARDS.filter((c) => demographics[c.field])
+  const barCards = BAR_CARDS.filter((c) => demographics[c.field])
   const hasCountries = (countries?.length ?? 0) >= MIN_COUNTRIES
-  if (!cards.length && !hasCountries) return null
+  const gender = genderSegments(demographics.gender, t)
+  const age = ageSegments(demographics.age)
+
+  if (!barCards.length && !hasCountries && !gender.length && !age.length) return null
 
   return (
     <Section>
@@ -275,26 +332,54 @@ function Demographics({stats}: {stats: Stats}) {
           'Self-reported by members, shown as a share of everyone who answered. Multi-choice fields can add up to more than 100%.',
         )}
       </p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {/* Countries is a raw-count bar list rather than a percentage split (the full population per
-            country isn't in the payload), so it keeps `CountrySpread` instead of a `DistributionCard` —
-            wrapped in the same surface so it reads as one more block in the grid. */}
-        {hasCountries && (
-          <Reveal>
-            <div className={clsx(surface, 'flex h-full flex-col p-5 sm:p-6')}>
-              <CountrySpread countries={countries} countryCount={countryCount} />
-            </div>
-          </Reveal>
-        )}
-        {cards.map((c, i) => (
-          <Reveal key={c.field} delay={((i + (hasCountries ? 1 : 0)) % 3) * 70}>
-            <DistributionCard
-              field={c.field}
-              title={t(`stats.demographics.field.${c.field}`, c.title)}
-              icon={c.icon}
-              dist={demographics[c.field]}
+
+      {/* Feature block: a full-width map, then the two donuts side by side — three different marks
+          before the bar lists, so the section never opens on a grid of identical cards. */}
+      {hasCountries && (
+        <Reveal>
+          <WorldHeatmap countries={countries} countryCount={countryCount} />
+        </Reveal>
+      )}
+      <div className={clsx('grid gap-3 sm:grid-cols-2 sm:gap-4', hasCountries && 'mt-3 sm:mt-4')}>
+        {!!gender.length && (
+          <Reveal delay={80}>
+            <StatDonut
+              title={t('stats.demographics.field.gender', 'Gender')}
+              subtitle={t('stats.donut.shared', '{count} shared', {
+                count: demographics.gender?.base ?? 0,
+              })}
+              icon={UserGroupIcon}
+              segments={gender}
             />
           </Reveal>
+        )}
+        {!!age.length && (
+          <Reveal delay={140}>
+            <StatDonut
+              title={t('stats.demographics.field.age', 'Age')}
+              subtitle={t('stats.donut.shared', '{count} shared', {
+                count: demographics.age?.base ?? 0,
+              })}
+              icon={CalendarDaysIcon}
+              segments={age}
+            />
+          </Reveal>
+        )}
+      </div>
+
+      {/* Masonry bar lists. CSS columns give each card its own height. */}
+      <div className="mt-3 gap-3 [column-fill:_balance] sm:mt-4 sm:gap-4 sm:columns-2 lg:columns-3">
+        {barCards.map((c, i) => (
+          <div key={c.field} className="mb-3 break-inside-avoid sm:mb-4">
+            <Reveal delay={(i % 3) * 60}>
+              <DistributionCard
+                field={c.field}
+                title={t(`stats.demographics.field.${c.field}`, c.title)}
+                icon={c.icon}
+                dist={demographics[c.field]}
+              />
+            </Reveal>
+          </div>
         ))}
       </div>
     </Section>
@@ -314,9 +399,7 @@ export default function Stats() {
       const tables = [
         'profiles',
         'active_members',
-        'bookmarked_searches',
         'private_user_message_channels',
-        'profile_comments',
         'compatibility_prompts',
         'compatibility_answers',
         'votes',
@@ -324,7 +407,7 @@ export default function Stats() {
       ] as const
 
       const [settled, statsResult] = await Promise.allSettled([
-        Promise.allSettled(tables.map((t) => getCount(t))),
+        Promise.allSettled(tables.map((tbl) => getCount(tbl))),
         api('stats', {}),
       ])
 
@@ -374,89 +457,40 @@ export default function Stats() {
 
         {/* ── Loading skeleton ── */}
         {loading && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-            {Array.from({length: 6}).map((_, i) => (
-              <div key={i} className={clsx(surface, 'animate-pulse p-6')}>
-                <div className="mb-4 h-9 w-9 rounded-lg bg-canvas-200" />
-                <div className="mb-2 h-8 w-20 rounded bg-canvas-200" />
-                <div className="h-3 w-24 rounded bg-canvas-200" />
-              </div>
-            ))}
+          <div className="rounded-3xl bg-canvas-950 px-6 py-8 sm:px-10 sm:py-10">
+            <div className="flex flex-wrap gap-x-14 gap-y-7">
+              {Array.from({length: 4}).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-10 w-24 rounded bg-white/10" />
+                  <div className="mt-3 h-3 w-16 rounded bg-white/10" />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {!loading && (
           <>
-            {/* ── Hero highlight band ── */}
-            <HighlightRow
+            {/* ── Hero band ── */}
+            <HeroBand
               members={data.profiles}
               active={data.active_members}
-              messages={statsData?.messages}
               countries={statsData?.countryCount}
+              discussions={data.private_user_message_channels}
+              messages={statsData?.messages}
             />
 
-            {/* ── Who's on Compass (gender, countries + demographic breakdowns) ── */}
+            {/* ── Who's on Compass (map, donuts + demographic breakdowns) ── */}
             {statsData && <Demographics stats={statsData} />}
 
-            {/* ── Growth chart ── */}
+            {/* ── Growth over time ── */}
             <Section>
               <SectionLabel>{t('stats.group.growth', 'Growth over time')}</SectionLabel>
               <ChartCard />
             </Section>
 
-            {/* ── Conversations ── */}
-            <Section>
-              <StatGroup title={t('stats.group.conversations', 'Conversations')}>
-                <StatCard
-                  value={data.private_user_message_channels}
-                  label={t('stats.discussions', 'Discussions')}
-                  icon={ChatBubbleOvalLeftIcon}
-                  accent="amber"
-                />
-                <StatCard
-                  value={statsData?.messages}
-                  label={t('stats.messages', 'Messages')}
-                  icon={EnvelopeIcon}
-                  accent="sage"
-                />
-              </StatGroup>
-            </Section>
-
-            {/* ── Compatibility ── */}
-            <Section>
-              <StatGroup title={t('stats.group.compatibility', 'Compatibility')}>
-                <StatCard
-                  value={data.compatibility_prompts}
-                  label={t('stats.compatibility_prompts', 'Prompts Created')}
-                  icon={QuestionMarkCircleIcon}
-                  accent="amber"
-                />
-                <StatCard
-                  value={data.compatibility_answers}
-                  label={t('stats.prompts_answered', 'Prompts Answered')}
-                  icon={CheckCircleIcon}
-                  accent="sage"
-                />
-              </StatGroup>
-            </Section>
-
-            {/* ── Democracy ── */}
-            <Section>
-              <StatGroup title={t('stats.group.democracy', 'Democracy')}>
-                <StatCard
-                  value={data.votes}
-                  label={t('stats.proposals', 'Proposals')}
-                  icon={ClipboardDocumentListIcon}
-                  accent="amber"
-                />
-                <StatCard
-                  value={data.vote_results}
-                  label={t('stats.votes', 'Votes Cast')}
-                  icon={HandRaisedIcon}
-                  accent="sage"
-                />
-              </StatGroup>
-            </Section>
+            {/* ── Activity & participation ── */}
+            <ActivitySection data={data} messages={statsData?.messages} />
           </>
         )}
       </div>

@@ -35,6 +35,7 @@ import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/su
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {copyToClipboard} from 'web/lib/util/copy'
+import {nativeShare} from 'web/lib/util/share'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -359,8 +360,11 @@ function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string;
  * Universal, not mobile-only: the block's whole argument is that sharing is easy and in the reader's
  * interest, so a desktop with no button would undercut it. Phones get the native share sheet (they can
  * pick WhatsApp, Messages, ...); everywhere else — and any browser without the Web Share API — it copies
- * the link and confirms. The API is probed at click time, so there is no SSR/first-paint branch to get
+ * the link and confirms. The sheet is probed at click time, so there is no SSR/first-paint branch to get
  * wrong and the button always renders.
+ *
+ * `nativeShare` is what makes the Android app work: its WebView has no `navigator.share`, so a bare Web
+ * Share API check would silently degrade the app to copy-the-link.
  *
  * When the sharer is signed in the link carries their `?referrer=` tag, the same attribution the
  * /referrals page and users.ts already speak — so the shares this block is arguing for actually get
@@ -377,18 +381,21 @@ function ShareCTA() {
     : DEPLOYED_WEB_URL
 
   const onClick = async () => {
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-      try {
-        await navigator.share({
-          title: t('about.share.title', 'Compass'),
-          text: t('about.share.text', 'Thoughtful 1-on-1 connections, built in the open.'),
-          url: shareUrl,
-        })
-      } catch {
-        // The user dismissing the share sheet rejects the promise; not an error worth surfacing.
-      }
-      return
-    }
+    // The user dismissing the share sheet also reports false; re-copying the link is a harmless outcome.
+    const shared = await nativeShare({
+      title: t('about.share.title', 'Compass — Find your people'),
+      // Two paragraphs, and long for a share sheet, deliberately: this is the referral message a person
+      // sends their friends, so it carries the same three beats as the ShareStrip below — what Compass
+      // is, how it works, and why bringing someone is in the sharer's own interest, not a favour. The
+      // closing line is mutual on purpose: the receiver reads it, but the sender has to feel it too.
+      text: t(
+        'about.share.text',
+        "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
+      ),
+      url: shareUrl,
+    })
+    if (shared) return
+
     copyToClipboard(shareUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -426,8 +433,8 @@ function ShareCTA() {
  *
  * The ask is framed as self-interest rather than charity (it used to close with "thank you for
  * supporting our mission", which asks for a favour). Same argument as the share-compass email: growth is
- * a network effect the sharer benefits from, and even a friend who is not your match brings their world
- * with them. The headline states the payoff, the paragraph reframes the obvious objection, the benefits
+ * a network effect the sharer benefits from, and even a friend who is not who you're looking for brings
+ * their world with them. The headline states the payoff, the paragraph reframes the obvious objection, the benefits
  * make the payoff concrete, and the full-width bar at the base carries the one action.
  */
 function ShareStrip() {
@@ -492,12 +499,12 @@ function ShareStrip() {
                 'Compass gets better for you with every person you bring.',
               )}
             </h3>
-            {/* The reframe, condensed from the share-compass email: the friend you tell need not be your
-                match — they bring their world, and that is the reader's own upside. */}
+            {/* The reframe, condensed from the share-compass email: the friend you tell need not be who
+                you're looking for — they bring their world, and that is the reader's own upside. */}
             <p className="text-white/70 text-base leading-relaxed max-w-xl">
               {t(
                 'about.share.reframe',
-                "Even if a friend isn't your match, they bring their world with them — their friends, their circles, the thoughtful people you'd never have met otherwise. Sharing isn't just a favor to them. It's an investment in your own future connections.",
+                "Even if a friend isn't who you're looking for, they bring their world with them — their friends, their circles, the thoughtful people you'd never have met otherwise. Sharing isn't just a favor to them. It's an investment in your own future connections.",
               )}
             </p>
           </div>

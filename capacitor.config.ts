@@ -20,6 +20,7 @@ const config: CapacitorConfig = {
     '@capacitor/core',
     '@capacitor/keyboard',
     '@capacitor/push-notifications',
+    '@capacitor/share',
     '@capacitor/status-bar',
     '@capawesome/capacitor-live-update',
     '@capgo/capacitor-social-login',

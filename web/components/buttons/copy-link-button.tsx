@@ -8,6 +8,7 @@ import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/bu
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {copyToClipboard} from 'web/lib/util/copy'
+import {nativeShare} from 'web/lib/util/share'
 
 import {Tooltip} from '../widgets/tooltip'
 
@@ -167,19 +168,11 @@ export function SimpleCopyTextButton(props: {
   )
 }
 export async function mobileShare(url: string) {
-  try {
-    await navigator.share({
-      title: 'My Compass profile',
-      text: 'Thoughtful connections > swiping.',
-      url: url,
-    })
-    return true
-  } catch (e) {
-    if (!(e instanceof Error && e.message.includes('navigator.share is not a function'))) {
-      console.error('Failed to share', e)
-    }
-    return false
-  }
+  return nativeShare({
+    title: 'My Compass profile',
+    text: 'Thoughtful connections > swiping.',
+    url: url,
+  })
 }
 
 export const share = async (url: string) => {

@@ -64,6 +64,7 @@ jobs:
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
+          MEDIA_SOURCE_BASE_URL: ${{ vars.MEDIA_SOURCE_BASE_URL }}
         run: yarn build-sync-android
 
       - name: Build AAB

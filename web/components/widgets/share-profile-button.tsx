@@ -1,3 +1,4 @@
+import {ShareIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
 import {ColorType} from 'web/components/buttons/button'
@@ -33,6 +34,7 @@ export const ShareProfileButton = (props: {
       eventTrackingName="shareprofile"
       color={color}
       size="sm"
+      icon={ShareIcon}
       iconClassName={'hidden sm:inline'}
       // Same three-beat framing as the /about "Share Compass" message, trimmed to one line for a
       // single-profile share: what Compass is, and why this profile is worth a look.

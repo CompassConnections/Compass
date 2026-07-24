@@ -2,7 +2,7 @@ import {CheckIcon, ClipboardIcon, DocumentDuplicateIcon} from '@heroicons/react/
 import {LinkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {getXShareProfileUrl} from 'common/socials'
-import {ComponentProps, useState} from 'react'
+import {ComponentProps, ComponentType, SVGProps, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
 import {useT} from 'web/lib/locale'
@@ -23,11 +23,14 @@ export function CopyLinkOrShareButton(props: {
   color?: ColorType
   /** Optional OS-share-sheet content. When omitted, `mobileShare` uses its generic profile copy. */
   shareData?: {title?: string; text?: string}
+  /** Idle-state icon. Defaults to the link glyph; pass `ShareIcon` where the button reads as "share". */
+  icon?: ComponentType<SVGProps<SVGSVGElement>>
   trackingInfo?: {
     contractId: string
   }
 }) {
   const {url, size, children, className, iconClassName, tooltip, color, shareData} = props
+  const Icon = props.icon ?? LinkIcon
   const [isSuccess, setIsSuccess] = useState(false)
   const t = useT()
 
@@ -70,7 +73,7 @@ export function CopyLinkOrShareButton(props: {
             aria-hidden="true"
           />
         ) : (
-          <LinkIcon
+          <Icon
             strokeWidth={'2.5'}
             className={clsx(iconClassName, 'h-[1.1rem]')}
             aria-hidden="true"

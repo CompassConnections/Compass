@@ -8,6 +8,7 @@ import {deleteAccount} from 'web/lib/util/delete'
 import {ConfirmationButton} from '../buttons/confirmation-button'
 import {Col} from '../layout/col'
 import {Title} from '../widgets/title'
+import {SCARCITY_DELETION_REASONS, StayInsteadOfDelete} from './stay-instead-of-delete'
 
 export function DeleteAccountSurveyModal() {
   const [selectedReason, setSelectedReason] = useState<string | null>(null)
@@ -125,6 +126,8 @@ export function DeleteAccountSurveyModal() {
     }
   }
 
+  const showStayPitch = !!selectedReason && SCARCITY_DELETION_REASONS.includes(selectedReason)
+
   return (
     <ConfirmationButton
       openModalBtn={{
@@ -132,6 +135,14 @@ export function DeleteAccountSurveyModal() {
         label: t('delete_yourself.open_label', 'Delete account'),
         color: 'red',
       }}
+      cancelBtn={
+        showStayPitch
+          ? {
+              label: t('delete_survey.stay.keep_account', 'Keep my account'),
+              color: 'indigo',
+            }
+          : undefined
+      }
       submitBtn={{
         label: t('delete_yourself.submit', 'Delete account'),
         color: selectedReason ? 'red' : 'gray',
@@ -189,6 +200,12 @@ export function DeleteAccountSurveyModal() {
               ))}
             </div>
           </RadioGroup>
+
+          {showStayPitch && (
+            <div className="mt-4">
+              <StayInsteadOfDelete />
+            </div>
+          )}
 
           {
             <div className="mt-4">

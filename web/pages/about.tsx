@@ -26,7 +26,6 @@ import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
 import {SectionLabel} from 'web/components/about/section'
 import {VoteEvidence} from 'web/components/about/vote-evidence'
-import {GeneralButton} from 'web/components/buttons/general-button'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {MemberGrowth} from 'web/components/widgets/charts'
@@ -291,13 +290,18 @@ function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpC
         </h3>
         <p className="text-sm text-ink-600 leading-relaxed max-w-xl">{text}</p>
       </div>
-      <div className="shrink-0 -mb-3 -ml-3 sm:m-0">
-        <GeneralButton
-          url={buttonUrl}
-          content={buttonLabel}
-          color={'bg-transparent text-cta border-cta hover:bg-cta hover:text-white'}
-        />
-      </div>
+      {/* Same outline treatment as the home hero's "Learn how it works" secondary CTA, so the one
+          outlined button on each marketing page reads as the same control: ink label on a neutral
+          border, with the accent held back for hover. Written out rather than routed through
+          `GeneralButton`, whose wrapper adds padding this card's flex row doesn't want. */}
+      <Link
+        href={buttonUrl}
+        target={buttonUrl.startsWith('http') ? '_blank' : undefined}
+        rel={buttonUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+        className="shrink-0 px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-200 ease-out"
+      >
+        {buttonLabel}
+      </Link>
     </div>
   )
 }

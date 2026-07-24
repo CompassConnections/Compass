@@ -1422,6 +1422,8 @@
   "settings.title": "Einstellungen",
   "share_profile.on_linkedin": "Auf LinkedIn teilen",
   "share_profile.on_x": "Auf X teilen",
+  "share_profile.share.text": "Dachte, du möchtest dir dieses Profil auf Compass ansehen — ein kostenloses Verzeichnis, um deine Leute zu finden, durchsuchbar nach Werten, Interessen und Merkmalen. Keine Werbung, kein Wischen, kein zweifelhafter Algorithmus.",
+  "share_profile.share.title": "Ein sehenswertes Profil auf Compass",
   "share_profile.view_profile_card": "Profilkarte ansehen",
   "signin.continue": "Oder fortfahren mit",
   "signin.email": "E-Mail",

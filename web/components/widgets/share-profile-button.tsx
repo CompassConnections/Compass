@@ -34,8 +34,17 @@ export const ShareProfileButton = (props: {
       color={color}
       size="sm"
       iconClassName={'hidden sm:inline'}
+      // Same three-beat framing as the /about "Share Compass" message, trimmed to one line for a
+      // single-profile share: what Compass is, and why this profile is worth a look.
+      shareData={{
+        title: t('share_profile.share.title', 'A profile worth seeing on Compass'),
+        text: t(
+          'share_profile.share.text',
+          'Thought you might want to see this profile on Compass — a free directory for finding your people, searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.',
+        ),
+      }}
     >
-      <div className="text-sm">{t('button.share.label', 'Copy Link')}</div>
+      <div className="text-sm">{t('button.share.label', 'Share')}</div>
     </CopyLinkOrShareButton>
   )
 }

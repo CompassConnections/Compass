@@ -21,18 +21,24 @@ export function CopyLinkOrShareButton(props: {
   size?: SizeType
   children?: React.ReactNode
   color?: ColorType
+  /** Optional OS-share-sheet content. When omitted, `mobileShare` uses its generic profile copy. */
+  shareData?: {title?: string; text?: string}
   trackingInfo?: {
     contractId: string
   }
 }) {
-  const {url, size, children, className, iconClassName, tooltip, color} = props
+  const {url, size, children, className, iconClassName, tooltip, color, shareData} = props
   const [isSuccess, setIsSuccess] = useState(false)
   const t = useT()
 
-  const onClick = () => {
+  // Mirrors the /about "Share Compass" button: open the OS share sheet first, and only fall back to
+  // copying the link (with the "Copied!" confirmation) when no sheet appeared — on desktop, or when the
+  // user dismissed it. Firing both at once is what made this always say "Copied!" even after a real share.
+  const onClick = async () => {
     if (!url) return
+    const shared = await mobileShare(url, shareData)
+    if (shared) return
     copyToClipboard(url)
-    mobileShare(url)
     setIsSuccess(true)
     setTimeout(() => setIsSuccess(false), 2000) // Reset after 2 seconds
   }
@@ -167,10 +173,10 @@ export function SimpleCopyTextButton(props: {
     </IconButton>
   )
 }
-export async function mobileShare(url: string) {
+export async function mobileShare(url: string, shareData?: {title?: string; text?: string}) {
   return nativeShare({
-    title: 'My Compass profile',
-    text: 'Thoughtful connections > swiping.',
+    title: shareData?.title ?? 'My Compass profile',
+    text: shareData?.text ?? 'Thoughtful connections > swiping.',
     url: url,
   })
 }

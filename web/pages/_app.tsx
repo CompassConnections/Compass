@@ -218,7 +218,8 @@ function MyApp(props: AppProps<PageProps>) {
   }, [])
 
   const title = 'Compass'
-  const description = 'The platform for intentional connections'
+  const description =
+    'The free directory for finding your people — fully searchable by values and demographics. No ads, no swipes.'
 
   return (
     <>

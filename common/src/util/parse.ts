@@ -83,6 +83,61 @@ export function parseJsonContentToText(content: JSONContent | string | undefined
   return typeof content === 'string' ? content : richTextToString(content)
 }
 
+/**
+ * Inverse of `parseJsonContentToText`: turns plain text into a minimal Tiptap document. Used when
+ * an LLM hands us prose (e.g. a bio written from a voice transcript) that has to be stored in a
+ * rich-text column.
+ *
+ * A blank line always starts a new paragraph, and single newlines inside such a block are hard
+ * breaks. But when the text contains no blank line at all, single newlines are the only structure
+ * on offer, so they are read as paragraph breaks instead — LLMs routinely separate paragraphs with
+ * one `\n` however firmly the prompt asks for two, and the alternative is one giant paragraph.
+ */
+export function textToJSONContent(text: string): JSONContent {
+  const separator = /\n\s*\n/.test(text) ? /\n\s*\n+/ : '\n'
+  const paragraphs = text
+    .split(separator)
+    .map((block) => block.trim())
+    .filter((block) => block.length > 0)
+
+  return {
+    type: 'doc',
+    content: paragraphs.length
+      ? paragraphs.map((block) => ({
+          type: 'paragraph',
+          // Single newlines inside a block are line breaks, not paragraph breaks.
+          content: block
+            .split('\n')
+            .flatMap((line, i) => [
+              ...(i > 0 ? [{type: 'hardBreak'}] : []),
+              ...(line.trim() ? [{type: 'text', text: line.trim()}] : []),
+            ]),
+        }))
+      : [{type: 'paragraph'}],
+  }
+}
+
+/**
+ * Appends one rich-text document to another, so a second pass adds to what is already written
+ * instead of replacing it (e.g. recording a follow-up voice note to extend an existing bio).
+ *
+ * Each side is trimmed of its leading and trailing empty paragraphs first, so the join does not
+ * accumulate blank space every time something is appended.
+ */
+export function concatJSONContent(
+  first: JSONContent | null | undefined,
+  second: JSONContent | null | undefined,
+): JSONContent {
+  const blocksOf = (doc: JSONContent | null | undefined) => {
+    if (!doc) return []
+    const cleaned = cleanDoc(doc)
+    return Array.isArray(cleaned.content) ? cleaned.content : []
+  }
+
+  const content = [...blocksOf(first), ...blocksOf(second)]
+  return {type: 'doc', content: content.length ? content : [{type: 'paragraph'}]}
+}
+
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')

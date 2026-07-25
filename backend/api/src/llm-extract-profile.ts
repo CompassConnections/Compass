@@ -9,6 +9,8 @@ import {
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
+  NEUROTYPE_CHOICES,
+  ORIENTATION_CHOICES,
   POLITICAL_CHOICES,
   PSYCHEDELICS_CHOICES,
   RACE_CHOICES,
@@ -23,7 +25,7 @@ import {debug} from 'common/logger'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {removeNullOrUndefinedProps} from 'common/util/object'
-import {parseJsonContentToText} from 'common/util/parse'
+import {parseJsonContentToText, textToJSONContent} from 'common/util/parse'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
 import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
@@ -38,18 +40,26 @@ const CACHE_DIR = join(tmpdir(), 'compass-llm-cache')
 const CACHE_TTL_MS = 24 * HOUR_MS
 const PROCESSING_TTL_MS = 10 * MINUTE_MS
 
+type ExtractSource = 'text' | 'url' | 'voice'
+
 interface ParsedBody {
   content?: string
   url?: string
   locale?: string
+  source?: ExtractSource
 }
+
+// Bump whenever the extraction prompt changes. The cache key is otherwise derived purely from the
+// request, so a prompt fix would keep returning the old answer for the 24h TTL — which looks exactly
+// like the fix not working.
+const PROMPT_VERSION = 2
 
 function getCacheKey(parsedBody: ParsedBody): string {
   if (!USE_CACHE) return ''
   const hash = createHash('sha256')
   // Normalize: sort keys for consistent hashing
   const normalized = JSON.stringify(parsedBody, Object.keys(parsedBody).sort())
-  hash.update(normalized)
+  hash.update(`v${PROMPT_VERSION}:${normalized}`)
   return hash.digest('hex')
 }
 
@@ -79,6 +89,8 @@ async function validateProfileFields(
     'cannabis_intention',
     'psychedelics_pref',
     'cannabis_pref',
+    'orientation',
+    'neurotype',
   ]
   for (const key of toArray) {
     if (result[key] !== undefined) {
@@ -113,6 +125,10 @@ async function validateProfileFields(
     'occupation_title',
     'religious_beliefs',
     'political_details',
+    'gender_details',
+    'orientation_details',
+    'neurotype_details',
+    'accessibility_notes',
   ]
   for (const key of toString) {
     if (result[key] !== undefined) {
@@ -246,7 +262,10 @@ async function setCachedResult(cacheKey: string, result: any): Promise<void> {
     await fs.mkdir(CACHE_DIR, {recursive: true})
     const cacheFile = join(CACHE_DIR, `${cacheKey}.json`)
     await fs.writeFile(cacheFile, JSON.stringify(result), 'utf-8')
-    debug('Cached LLM result', {cacheKey: cacheKey.substring(0, 8), result})
+    debug('Cached LLM result', {
+      cacheKey: cacheKey.substring(0, 8),
+      result: JSON.stringify(result),
+    })
   } catch (error) {
     log('Failed to write cache', {cacheKey, error})
     // Don't throw - caching failure shouldn't break the main flow
@@ -296,11 +315,13 @@ async function processAndCache(
   content?: string | undefined,
   url?: string | undefined,
   locale?: string,
+  source?: ExtractSource,
 ): Promise<void> {
   log('Extracting profile from content', {
     contentLength: content?.length,
     url,
     locale,
+    source,
   })
   try {
     let bio: JSONContent | undefined
@@ -309,7 +330,7 @@ async function processAndCache(
       debug(JSON.stringify(bio, null, 2))
       content = parseJsonContentToText(bio)
     }
-    const profile = await callLLM(content, locale)
+    const profile = await callLLM(content, locale, source)
     if (bio) {
       profile.bio = bio
     }
@@ -422,7 +443,9 @@ async function _callClaude(text: string) {
 export async function callLLM(
   content: string,
   locale?: string,
+  source?: ExtractSource,
 ): Promise<Partial<ProfileWithoutUser>> {
+  const isVoice = source === 'voice'
   const [INTERESTS, CAUSE_AREAS, WORK_AREAS] = await Promise.all([
     getOptions('interests', locale),
     getOptions('causes', locale),
@@ -451,12 +474,19 @@ export async function callLLM(
     cannabis_intention: Object.values(SUBSTANCE_INTENTION_CHOICES),
     psychedelics_pref: Object.values(SUBSTANCE_PREFERENCE_CHOICES),
     cannabis_pref: Object.values(SUBSTANCE_PREFERENCE_CHOICES),
+    orientation: Object.values(ORIENTATION_CHOICES),
+    neurotype: Object.values(NEUROTYPE_CHOICES),
   }
 
   const PROFILE_FIELDS: Partial<Record<keyof ProfileWithoutUser, any>> = {
     // Basic info
     age: 'Number. Age in years (between 18 and 100).',
     gender: `String. One of: ${validChoices.pref_gender?.join(', ')}. If multiple mentioned, use the most likely one. Infer if you have enough evidence`,
+    gender_details:
+      'String. Free-form elaboration on their gender identity, only if they say more than the label itself.',
+    orientation: `Array. Any of: ${validChoices.orientation?.join(', ')}. Only if stated — never infer from the gender of a partner or of who they are looking for.`,
+    orientation_details:
+      'String. Free-form elaboration on their orientation, only if they say more than the label itself.',
     height_in_inches: 'Number. Height converted to inches.',
     city: 'String. Current city of residence (English spelling).',
     country: 'String. Current country of residence (English spelling).',
@@ -498,6 +528,11 @@ export async function callLLM(
     big5_agreeableness: 'Number 0–100. Only if explicitly self-reported, never infer.',
     big5_neuroticism: 'Number 0–100. Only if explicitly self-reported, never infer.',
 
+    // Neurotype is an identity here, not a diagnosis: only ever take the person's own words for it.
+    neurotype: `Array. Any of: ${validChoices.neurotype?.join(', ')}. Only if they identify this way themselves — never infer it from how they describe their personality, focus, energy or social life.`,
+    neurotype_details:
+      'String. Free-form elaboration on their neurotype, only if they say more than the label itself.',
+
     // Beliefs
     religion: `Array. Any of: ${validChoices.religion?.join(', ')}`,
     religious_beliefs:
@@ -511,7 +546,7 @@ export async function callLLM(
       'Number. Minimum preferred age of match (higher than 18, only if mentioned, do NOT infer).',
     pref_age_max:
       'Number. Maximum preferred age of match (lower than 100, only if mentioned, do NOT infer).',
-    pref_gender: `Array. Any of: ${validChoices.pref_gender?.join(', ')}`,
+    pref_gender: `Array. Any of: ${validChoices.pref_gender?.join(', ')}. Only the genders they actually name as sought. If they say gender does not matter to them, or is unimportant to their attraction, OMIT this field — an omitted field already means "no preference", so listing every option instead is both wrong and unreadable.`,
     pref_relation_styles: `Array. Any of: ${validChoices.pref_relation_styles?.join(', ')}`,
     pref_romantic_styles: `Array. Any of: ${validChoices.pref_romantic_styles?.join(', ')}`,
     relationship_status: `Array. Any of: ${validChoices.relationship_status?.join(', ')}`,
@@ -523,6 +558,8 @@ export async function callLLM(
     headline:
       'String. Summary of who they are, in their own voice (first person). Maximum 200 characters total. Cannot be null.',
     keywords: 'Array of 3–6 short tags summarising the person.',
+    accessibility_notes:
+      'String. Practical things that help someone meet them well — access needs, energy levels, sensory preferences, venue preferences. Only if mentioned; never infer a disability, and keep their own framing and wording.',
     links: `Object. Key is any of: ${SITE_ORDER.join(', ')}.`,
 
     // Taxonomies — match existing labels first, only add new if truly no close match exists
@@ -531,7 +568,25 @@ export async function callLLM(
     work: `Array. Use only existing labels, do not add new if no close match. Any of: ${validChoices.work?.join(', ')}`,
   }
 
-  const EXTRACTION_PROMPT = `You are a profile information extraction expert analyzing text from a personal webpage, bio, or similar source.
+  // For text and URL sources the bio is the source material itself, stored verbatim. A speech
+  // transcript makes a poor bio (filler words, false starts, no paragraphs), so for voice we ask
+  // the model to write it instead.
+  if (isVoice) {
+    PROFILE_FIELDS.bio =
+      'String. A first-person bio written from what the person said, in their own voice and their ' +
+      'own language. Keep their wording and personality wherever you can; only clean up filler ' +
+      'words, false starts, repetitions and transcription noise, and organise it into ' +
+      'paragraphs. Separate each paragraph from the next with a BLANK LINE, i.e. two newline ' +
+      'characters ("\\n\\n") — a single newline is not enough. Never add facts, opinions or ' +
+      'flourishes they did not say, and never write about them in the third person. Plain text ' +
+      'only — no markdown.'
+  }
+
+  const EXTRACTION_PROMPT = `You are a profile information extraction expert analyzing ${
+    isVoice
+      ? 'a speech-to-text transcript of someone talking about themselves out loud'
+      : 'text from a personal webpage, bio, or similar source'
+  }.
 
 TASK: Extract structured profile data and return it as a single valid JSON object.
 
@@ -540,12 +595,20 @@ RULES:
 - Omit the key in the output for missing fields
 - For taxonomy fields (interests, causes, work): match existing labels first; only add a new label if truly no existing one is close
 - For big5 scores: only populate if the person explicitly states a test result — never infer from personality description
-- Return valid JSON only — no markdown, no explanation, no extra text
+- Never answer a multi-choice field by selecting every option it offers. An expression of openness or indifference ("gender doesn't matter to me", "I'm open to anything") is not a selection of all values — omit the field, which already means "no preference"
+- Return valid JSON only — no markdown, no explanation, no extra text${
+    isVoice
+      ? `
+- The transcript is spoken language: expect filler words, false starts, self-corrections and speech-recognition errors. Read past them, and when the person corrects themselves keep the corrected version
+- Ignore anything the person says to the recorder rather than about themselves (e.g. "let me start over", "what else should I say")
+- Spoken numbers, places and names may be mis-transcribed; only fill a field when you are confident what was meant`
+      : ''
+  }
 
 SCHEMA (each value describes the expected type and accepted values):
 ${JSON.stringify(PROFILE_FIELDS, null, 2)}
 
-TEXT TO ANALYZE:
+${isVoice ? 'TRANSCRIPT TO ANALYZE' : 'TEXT TO ANALYZE'}:
 `
   const text = EXTRACTION_PROMPT + content
   if (text.length > MAX_CONTEXT_LENGTH) {
@@ -564,6 +627,10 @@ TEXT TO ANALYZE:
   try {
     parsed = typeof outputText === 'string' ? JSON.parse(outputText) : outputText
     parsed = await validateProfileFields(parsed, validChoices)
+    // The bio column holds rich text; the model answers with plain prose.
+    if (typeof parsed.bio === 'string') {
+      parsed.bio = parsed.bio.trim() ? textToJSONContent(parsed.bio) : undefined
+    }
     parsed = removeNullOrUndefinedProps(parsed)
   } catch (parseError) {
     log('Failed to parse LLM response as JSON', {outputText, parseError})
@@ -647,7 +714,7 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
 }
 
 export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (parsedBody) => {
-  const {url, locale} = parsedBody
+  const {url, locale, source} = parsedBody
   const content = parsedBody.content
 
   if (content && url) {
@@ -672,7 +739,7 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   await setProcessing(cacheKey)
 
   // Kick off async processing (don't await)
-  processAndCache(cacheKey, content, url, locale).catch((err) => {
+  processAndCache(cacheKey, content, url, locale, source).catch((err) => {
     log('Unexpected error in async processing', {cacheKey, error: err})
   })
 

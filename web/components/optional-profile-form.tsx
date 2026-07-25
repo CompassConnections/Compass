@@ -1,5 +1,6 @@
-import {InformationCircleIcon} from '@heroicons/react/24/outline'
+import {CameraIcon, InformationCircleIcon} from '@heroicons/react/24/outline'
 import * as Sentry from '@sentry/node'
+import {JSONContent} from '@tiptap/core'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {
@@ -32,6 +33,7 @@ import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
 import {removeNullOrUndefinedProps} from 'common/util/object'
+import {concatJSONContent, parseJsonContentToText} from 'common/util/parse'
 import {urlize} from 'common/util/string'
 import {MINUTE_MS, sleep} from 'common/util/time'
 import {invert, range} from 'lodash'
@@ -48,6 +50,7 @@ import {LLMExtractSection} from 'web/components/llm-extract-section'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
 import {City, CityRow, profileToCity, useCitySearch} from 'web/components/search-location'
 import {SocialLinksSection} from 'web/components/social-links-section'
+import {VoiceAutofillSection} from 'web/components/voice-autofill-section'
 import {Carousel} from 'web/components/widgets/carousel'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {Input} from 'web/components/widgets/input'
@@ -58,6 +61,8 @@ import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
+import {blobToBase64} from 'web/lib/util/blob'
+import {scrollIntoViewCentered} from 'web/lib/util/scroll'
 import {colClassName, labelClassName} from 'web/pages/signup'
 
 import {AddPhotosWidget} from './widgets/add-photos'
@@ -155,21 +160,31 @@ export const OptionalProfileUserForm = (props: {
   const resetBig5 = () => BIG5_KEYS.forEach((k) => setProfile(k, null))
 
   const [isExtracting, setIsExtracting] = useState(false)
+  const [autofillMode, setAutofillMode] = useState<'voice' | 'link'>('voice')
   const [parsingEditor, setParsingEditor] = useState<any>(null)
   const [extractionProgress, setExtractionProgress] = useState(0)
   const [extractionError, setExtractionError] = useState<string | null>(null)
+  // Auto-fill can populate every field on the page, which makes the profile *look* finished — but it
+  // can never supply a photo. Set on a successful extraction; the banner itself also checks that
+  // there is still no photo, so it disappears the moment one is added.
+  const [remindAboutPhotos, setRemindAboutPhotos] = useState(false)
+  const photosRef = useRef<HTMLDivElement>(null)
+  const hasPhotos = !!profile.photo_urls?.length || !!profile.pinned_url
+  const showPhotoReminder = remindAboutPhotos && !hasPhotos
 
-  const handleLLMExtract = async (): Promise<Partial<ProfileWithoutUser>> => {
-    const llmContent = parsingEditor?.getText?.() ?? ''
-    if (!llmContent) {
-      toast.error(t('profile.llm.extract.error_empty', 'Please enter content to extract from'))
-      return {}
-    }
+  const runExtraction = async (input: {
+    content?: string
+    url?: string
+    source: 'text' | 'url' | 'voice'
+  }): Promise<Partial<ProfileWithoutUser>> => {
     setIsExtracting(true)
     setExtractionProgress(0)
     setExtractionError(null)
     const startTime = Date.now()
-    setInterval(() => {
+    // Was leaking: the interval was never cleared, so every extraction left another timer behind
+    // driving the progress bar. Now that a user can extract several times in a row (record, review,
+    // fill, record again) that compounds, so it is cleared in `finally`.
+    const progressInterval = setInterval(() => {
       const elapsed = (Date.now() - startTime) / 1000
       if (elapsed < 20) {
         setExtractionProgress((elapsed / 30) * 100)
@@ -177,11 +192,7 @@ export const OptionalProfileUserForm = (props: {
         setExtractionProgress((2 / 3) * 100 + ((elapsed - 20) / 150) * 100)
       }
     }, 100)
-    const isInputUrl = isUrl(llmContent)
-    const payload = {
-      locale,
-      ...(isInputUrl ? {url: urlize(llmContent).trim()} : {content: llmContent.trim()}),
-    }
+    const payload = {locale, ...input}
     try {
       let extractedProfile: Partial<ProfileWithoutUser> = {}
       let status: string | undefined = 'pending'
@@ -234,7 +245,19 @@ export const OptionalProfileUserForm = (props: {
         } else if (key === 'keywords') setKeywordsString((value as string[]).join(', '))
         ;(extractedProfile as Record<string, unknown>)[key] = value
       }
-      if (!isInputUrl) extractedProfile.bio = parsingEditor?.getJSON?.()
+      // Pasted text *is* the bio, so it is stored verbatim. A URL's bio comes back from the fetched
+      // page, and a voice bio is written by the LLM — a raw speech transcript reads terribly.
+      if (input.source === 'text') extractedProfile.bio = parsingEditor?.getJSON?.()
+
+      // A follow-up is an addition, not a correction: someone who remembered one more
+      // thing to say should not lose everything they already had. Only the bio behaves this way —
+      // the structured fields still take the newest answer, since those are single-valued.
+      if (extractedProfile.bio) {
+        const existingBio = profile.bio as JSONContent | null | undefined
+        if (parseJsonContentToText(existingBio).trim()) {
+          extractedProfile.bio = concatJSONContent(existingBio, extractedProfile.bio as JSONContent)
+        }
+      }
       debug({
         text: parsingEditor?.getText?.(),
         json: parsingEditor?.getJSON?.(),
@@ -251,7 +274,7 @@ export const OptionalProfileUserForm = (props: {
         t('profile.llm.extract.success', 'Profile data extracted! Please review below.'),
       )
 
-      // clearInterval(progressInterval)
+      setRemindAboutPhotos(true)
       setExtractionProgress(100)
 
       return extractedProfile
@@ -269,10 +292,47 @@ export const OptionalProfileUserForm = (props: {
         extra: {payload}, // for the rest (nested, etc.)
       })
     } finally {
-      // clearInterval(progressInterval)
+      clearInterval(progressInterval)
       setIsExtracting(false)
     }
     return {}
+  }
+
+  const handleLLMExtract = async (): Promise<Partial<ProfileWithoutUser>> => {
+    const llmContent = parsingEditor?.getText?.() ?? ''
+    if (!llmContent) {
+      toast.error(t('profile.llm.extract.error_empty', 'Please enter content to extract from'))
+      return {}
+    }
+    return isUrl(llmContent)
+      ? runExtraction({url: urlize(llmContent).trim(), source: 'url'})
+      : runExtraction({content: llmContent.trim(), source: 'text'})
+  }
+
+  const handleTranscribe = async (blob: Blob): Promise<string | null> => {
+    setExtractionError(null)
+    try {
+      const audio = await blobToBase64(blob)
+      const {transcript} = await api('transcribe-audio', {
+        audio,
+        mimeType: blob.type || 'audio/webm',
+        locale,
+      })
+      return transcript
+    } catch (error) {
+      console.error(error)
+      setExtractionError(
+        t(
+          'profile.voice.error.transcription',
+          'We could not transcribe your recording. Your recording is still here — try again, or fill in your profile manually.',
+        ),
+      )
+      Sentry.captureException(error, {
+        user,
+        extra: {mimeType: blob.type, size: blob.size},
+      })
+      return null
+    }
   }
 
   const errorToast = () => {
@@ -282,6 +342,8 @@ export const OptionalProfileUserForm = (props: {
   const handleSubmit = async () => {
     let finalProfile = profile
 
+    // Not gated on the visible tab: the editor stays mounted either way, so text typed here is real
+    // content the user would not expect us to drop just because they switched tabs before saving.
     if (parsingEditor?.getText?.()?.trim()) {
       const extractedProfile = await handleLLMExtract()
       finalProfile = {...profile, ...extractedProfile}
@@ -399,18 +461,86 @@ export const OptionalProfileUserForm = (props: {
           </p>
         </div>
         <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
-        <LLMExtractSection
-          parsingEditor={parsingEditor}
-          setParsingEditor={setParsingEditor}
-          isExtracting={isExtracting}
-          isSubmitting={isSubmitting}
-          onExtract={handleLLMExtract}
-          progress={extractionProgress}
-        />
+        {/* Two ways in, one at a time: showing both a recorder and a text editor at once reads as
+            two things to do rather than a choice between them. */}
+        <Row className="w-full gap-1 rounded-xl bg-canvas-100 p-1 ring-1 ring-canvas-200">
+          {(
+            [
+              ['voice', t('profile.autofill.by_voice', 'By voice')],
+              ['link', t('profile.autofill.by_link', 'By link or text')],
+            ] as const
+          ).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setAutofillMode(mode)}
+              aria-pressed={autofillMode === mode}
+              disabled={isExtracting}
+              className={clsx(
+                'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed',
+                autofillMode === mode
+                  ? 'bg-canvas-0 text-ink-900 shadow-sm'
+                  : 'text-ink-700 hover:text-ink-900',
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </Row>
+        {/* Both panels stay mounted and the inactive one is hidden, rather than swapped out.
+            Unmounting the recorder would tear down an in-progress recording and drop any transcript
+            corrections the moment someone peeked at the other tab. `display: none` also keeps the
+            hidden panel out of the flex layout and away from assistive tech. */}
+        <div className={clsx(autofillMode !== 'voice' && 'hidden')}>
+          <VoiceAutofillSection
+            onTranscribe={handleTranscribe}
+            onExtract={async (transcript) => {
+              await runExtraction({content: transcript, source: 'voice'})
+            }}
+            isExtracting={isExtracting}
+            isSubmitting={isSubmitting}
+            progress={extractionProgress}
+          />
+        </div>
+        <div className={clsx(autofillMode !== 'link' && 'hidden')}>
+          <LLMExtractSection
+            parsingEditor={parsingEditor}
+            setParsingEditor={setParsingEditor}
+            isExtracting={isExtracting}
+            isSubmitting={isSubmitting}
+            onExtract={handleLLMExtract}
+            progress={extractionProgress}
+          />
+        </div>
         {extractionError && (
           <p className="border rounded-xl border-red-900 text-red-600 text-sm p-2">
             {extractionError}
           </p>
+        )}
+        {showPhotoReminder && (
+          <div
+            role="status"
+            className="flex items-start gap-3 rounded-xl bg-primary-100/60 ring-1 ring-primary-200 p-4"
+          >
+            <CameraIcon className="w-5 h-5 text-primary-700 shrink-0 mt-0.5" strokeWidth={1.8} />
+            <Col className="gap-2">
+              <p className="text-sm text-ink-700 leading-relaxed">
+                {t(
+                  'profile.optional.photo_reminder',
+                  'One thing we cannot fill in for you: your photos. They are still an important thing people look at (at least just to visually identify you), so do not leave without adding one or two.',
+                )}
+              </p>
+              <button
+                type="button"
+                className="text-primary-700 self-start text-sm font-medium hover:underline"
+                onClick={() => {
+                  if (photosRef.current) scrollIntoViewCentered(photosRef.current)
+                }}
+              >
+                {t('profile.optional.photo_reminder.cta', 'Take me to photos')}
+              </button>
+            </Col>
+          </div>
         )}
         {/* The rule that used to sit here (`border border-b`, which draws two) is now owned by
             `Category` itself, so every section boundary is drawn the same way. */}
@@ -636,7 +766,7 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
-        <Col className={clsx(colClassName)}>
+        <Col className={clsx(colClassName)} ref={photosRef}>
           <label className={clsx(labelClassName)}>{t('profile.optional.photos', 'Photos')}</label>
 
           {/*<div className="mb-1">*/}

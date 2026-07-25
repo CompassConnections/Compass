@@ -92,6 +92,7 @@ import {setLastOnlineTime} from './set-last-online-time'
 import {shipProfiles} from './ship-profiles'
 import {starProfile} from './star-profile'
 import {stats} from './stats'
+import {transcribeAudio} from './transcribe-audio'
 import {unsubscribe} from './unsubscribe'
 import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
@@ -653,6 +654,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   vote: vote,
   'validate-username': validateUsernameEndpoint,
   'llm-extract-profile': llmExtractProfileEndpoint,
+  'transcribe-audio': transcribeAudio,
   // 'user/:username': getUser,
   // 'user/:username/lite': getDisplayUser,
   // 'user/by-id/:id/lite': getDisplayUser,
@@ -678,7 +680,8 @@ Object.entries(handlers).forEach(([path, handler]) => {
 
   const apiRoute = [
     url,
-    express.json({limit: '1mb'}),
+    // Endpoints that carry binary payloads (e.g. base64 audio) declare a larger `bodyLimit`.
+    express.json({limit: (api as any).bodyLimit ?? '1mb'}),
     allowCorsUnrestricted,
     cache,
     typedEndpoint(path as any, handler as any),

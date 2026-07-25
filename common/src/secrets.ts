@@ -30,6 +30,7 @@ export const secrets = (
     'DB_ENC_MASTER_KEY_BASE64',
     'GOOGLE_CLIENT_SECRET',
     'GEMINI_API_KEY',
+    'OPENAI_API_KEY',
     // Some typescript voodoo to keep the string literal types while being not readonly.
   ] as const
 ).concat()

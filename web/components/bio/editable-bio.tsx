@@ -18,6 +18,13 @@ import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 
+/**
+ * Restores paragraph spacing for bios. The shared editor styling zeroes `p` margins at this size,
+ * which suits single-paragraph comments and chat bubbles but runs a multi-paragraph bio together.
+ * Must be `!important`: it competes with `prose-p:my-0` on the very same element.
+ */
+export const BIO_PARAGRAPH_SPACING = 'prose-p:!my-3'
+
 export function BioTips({onClick}: {onClick?: () => void}) {
   const t = useT()
   const tips = t(
@@ -170,6 +177,10 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
     // extensions: [StarterKit],
     max: MAX_DESCRIPTION_LENGTH,
     defaultValue: defaultValue,
+    // `proseClass` zeroes paragraph margins at this size — right for comments and chat bubbles,
+    // which are usually a single paragraph, but it makes a multi-paragraph bio render as one
+    // undifferentiated wall of text. `!` because it has to beat `prose-p:my-0` on the same element.
+    className: BIO_PARAGRAPH_SPACING,
     placeholder: t(
       'profile.bio.placeholder',
       "Tell us all the details about yourself — and what you're looking for!",

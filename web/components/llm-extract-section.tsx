@@ -45,7 +45,7 @@ export function LLMExtractSection({
       <div className="guidance">
         {t(
           'profile.llm.extract.guidance',
-          'Heads up: we use Google AI to extract your info. As we pay for the service, Google should not use this content to improve their models — but we never know. Prefer to keep things private? Just fill the form manually — no AI involved.',
+          'Heads up: we use Google AI to extract your info. As we pay for the service, Google should not use this content to improve their models — but we never know. Prefer to keep things fully internal? Just fill the form manually — no AI involved.',
         )}
       </div>
       <BaseTextEditor
@@ -66,6 +66,7 @@ export function LLMExtractSection({
         </div>
       )}
       <Button
+        color="indigo"
         onClick={onExtract}
         disabled={isExtracting || !parsingEditor?.getJSON?.() || isSubmitting}
         loading={isExtracting}

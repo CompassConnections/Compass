@@ -56,6 +56,13 @@ export type APIGenericSchema = {
   rateLimited?: boolean
 
   /**
+   * Maximum request body size, as an `express.json({limit})` value (e.g. '20mb').
+   * Only needed for endpoints carrying binary payloads such as base64-encoded audio.
+   * @default '1mb'
+   */
+  bodyLimit?: string
+
+  /**
    * Zod schema for request validation
    * - For GET requests: Validates query parameters
    * - For POST/PUT requests: Validates request body
@@ -1285,6 +1292,10 @@ export const API = (_apiTypeCheck = {
         content: z.string().min(1).optional(),
         url: z.string().url().optional(),
         locale: z.string().optional(),
+        // Where `content` came from. 'voice' means it is a speech transcript, so the LLM has to be
+        // told to read past filler words and to write the bio itself rather than us storing the
+        // transcript verbatim.
+        source: z.enum(['text', 'url', 'voice']).optional(),
       })
       .strict(),
     returns: {} as {
@@ -1292,6 +1303,27 @@ export const API = (_apiTypeCheck = {
       status: string
     },
     summary: 'Extract profile information from text using LLM',
+    tag: 'Profiles',
+  },
+  'transcribe-audio': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    // Audio arrives base64-encoded in the JSON body, which is far bigger than the default 1mb.
+    bodyLimit: '20mb',
+    props: z
+      .object({
+        // Base64-encoded audio (no data: URI prefix).
+        audio: z.string().min(1),
+        // Recording container/codec as reported by MediaRecorder, e.g. 'audio/webm;codecs=opus'.
+        mimeType: z.string().min(1),
+        locale: z.string().optional(),
+      })
+      .strict(),
+    returns: {} as {
+      transcript: string
+    },
+    summary: 'Transcribe a voice recording to text',
     tag: 'Profiles',
   },
   'get-user-journeys': {

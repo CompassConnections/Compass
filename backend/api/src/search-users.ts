@@ -44,6 +44,13 @@ function getSearchUserSQL(props: {
     //     ]
     //   :
     [select('*'), from('users')],
+    where(
+      `not users.is_banned_from_posting
+         and not exists (select 1
+                         from profiles
+                         where profiles.user_id = users.id
+                           and profiles.disabled)`,
+    ),
     term
       ? [
           where(

@@ -61,6 +61,7 @@ describe('searchUsers', () => {
       expect(sqlBuilderModules.renderSql).toBeCalledTimes(1)
       expect(sqlBuilderModules.renderSql).toBeCalledWith(
         ['Select', 'From'],
+        'Where',
         ['Where', 'OrderBy'],
         'Limit',
       )
@@ -69,8 +70,9 @@ describe('searchUsers', () => {
       expect(sqlBuilderModules.select).toBeCalledWith('*')
       expect(sqlBuilderModules.from).toBeCalledTimes(1)
       expect(sqlBuilderModules.from).toBeCalledWith('users')
-      expect(sqlBuilderModules.where).toBeCalledTimes(1)
-      expect(sqlBuilderModules.where).toBeCalledWith(
+      expect(sqlBuilderModules.where).toBeCalledTimes(2)
+      expect(sqlBuilderModules.where).toHaveBeenNthCalledWith(
+        2,
         sqlMatch("name_username_vector @@ websearch_to_tsquery('english', $1)"),
         [mockProps.term, 'ConstructPrefix'],
       )
@@ -117,7 +119,12 @@ describe('searchUsers', () => {
       expect(result[2]).toContain(mockAllUser[2].id)
 
       expect(sqlBuilderModules.renderSql).toBeCalledTimes(1)
-      expect(sqlBuilderModules.renderSql).toBeCalledWith(['Select', 'From'], 'OrderBy', 'Limit')
+      expect(sqlBuilderModules.renderSql).toBeCalledWith(
+        ['Select', 'From'],
+        undefined,
+        'OrderBy',
+        'Limit',
+      )
 
       expect(sqlBuilderModules.select).toBeCalledTimes(1)
       expect(sqlBuilderModules.select).toBeCalledWith('*')
@@ -134,6 +141,44 @@ describe('searchUsers', () => {
       )
       expect(mockPg.map).toBeCalledTimes(1)
       expect(mockPg.map).toBeCalledWith(mockSearchAllSql, null, expect.any(Function))
+    })
+
+    it('should filter out banned users and disabled profiles when excludeUnavailable is set', async () => {
+      const mockProps = {
+        term: 'mockTerm',
+        limit: 10,
+        page: 1,
+        excludeUnavailable: true,
+      }
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(sqlBuilderModules.renderSql as jest.Mock).mockReturnValue('mockSQL')
+      ;(sqlBuilderModules.select as jest.Mock).mockReturnValue('Select')
+      ;(sqlBuilderModules.from as jest.Mock).mockReturnValue('From')
+      ;(sqlBuilderModules.where as jest.Mock)
+        .mockReturnValueOnce('AvailableWhere')
+        .mockReturnValueOnce('TermWhere')
+      ;(searchHelpers.constructPrefixTsQuery as jest.Mock).mockReturnValue('ConstructPrefix')
+      ;(sqlBuilderModules.orderBy as jest.Mock).mockReturnValue('OrderBy')
+      ;(sqlBuilderModules.limit as jest.Mock).mockReturnValue('Limit')
+      ;(supabaseUsers.convertUser as jest.Mock).mockResolvedValue(null)
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+
+      await searchUsers(mockProps, mockAuth, mockReq)
+
+      expect(sqlBuilderModules.where).toBeCalledTimes(2)
+      expect(sqlBuilderModules.where).toHaveBeenNthCalledWith(
+        1,
+        sqlMatch('not users.is_banned_from_posting'),
+      )
+      expect(sqlBuilderModules.where).toHaveBeenNthCalledWith(1, sqlMatch('and profiles.disabled'))
+      expect(sqlBuilderModules.renderSql).toBeCalledWith(
+        ['Select', 'From'],
+        'AvailableWhere',
+        ['TermWhere', 'OrderBy'],
+        'Limit',
+      )
     })
   })
 })

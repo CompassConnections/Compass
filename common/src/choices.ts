@@ -52,7 +52,7 @@ export const EDUCATION_CHOICES = {
   College: 'some-college',
   Bachelors: 'bachelors',
   Masters: 'masters',
-  PhD: 'doctorate',
+  Doctorate: 'doctorate',
 } as const
 
 export const RELIGION_CHOICES = {

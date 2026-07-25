@@ -1075,6 +1075,7 @@
   "profile.voice.review_transcript": "Voici ce que nous avons entendu. Pas besoin de le nettoyer : les hésitations, les faux départs, les fois où vous avez changé d'avis en cours de phrase sont gérés pour vous, et rien de tout cela ne se retrouvera sur votre profil. La seule chose à corriger, c'est ce que nous avons mal entendu : les noms et les lieux sont les suspects habituels.",
   "profile.voice.fill_profile": "Remplir mon profil",
   "profile.voice.error.permission": "Nous n'avons pas pu accéder à votre microphone. Autorisez l'accès au microphone dans votre navigateur, puis réessayez.",
+  "profile.voice.error.permission_app": "Nous n'avons pas pu accéder à votre microphone. Autorisez la permission Microphone pour Compass dans les réglages de votre appareil, puis réessayez.",
   "profile.voice.error.unsupported": "Votre navigateur ne prend pas en charge l'enregistrement vocal. Essayez plutôt l'option lien ou texte.",
   "profile.voice.error.failed": "L'enregistrement a échoué. Veuillez réessayer.",
   "profile.voice.error.transcription": "Nous n'avons pas pu transcrire votre enregistrement. Il est toujours là — réessayez, ou remplissez votre profil manuellement.",

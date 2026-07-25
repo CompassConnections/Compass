@@ -1076,6 +1076,7 @@
   "profile.voice.review_transcript": "Das haben wir gehört. Sie müssen nichts aufräumen: Ähs, Fehlstarts und die Stellen, an denen Sie sich mitten im Satz korrigiert haben, übernehmen wir für Sie — nichts davon landet in Ihrem Profil. Zu korrigieren lohnt sich nur, was wir falsch verstanden haben: Namen und Orte sind die üblichen Verdächtigen.",
   "profile.voice.fill_profile": "Mein Profil ausfüllen",
   "profile.voice.error.permission": "Wir konnten nicht auf Ihr Mikrofon zugreifen. Erlauben Sie den Mikrofonzugriff in Ihrem Browser, und versuchen Sie es erneut.",
+  "profile.voice.error.permission_app": "Wir konnten nicht auf Ihr Mikrofon zugreifen. Erlauben Sie die Mikrofon-Berechtigung für Compass in Ihren Geräteeinstellungen, und versuchen Sie es erneut.",
   "profile.voice.error.unsupported": "Ihr Browser unterstützt keine Sprachaufnahme. Nutzen Sie stattdessen die Option Link oder Text.",
   "profile.voice.error.failed": "Die Aufnahme ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "profile.voice.error.transcription": "Wir konnten Ihre Aufnahme nicht transkribieren. Sie ist noch da — versuchen Sie es erneut, oder füllen Sie Ihr Profil manuell aus.",

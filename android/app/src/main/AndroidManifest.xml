@@ -88,6 +88,18 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- Voice auto-fill on the profile form. Capacitor's BridgeWebChromeClient already answers the
+         WebView's AUDIO_CAPTURE request by asking for these two at runtime, but Android silently
+         denies a runtime request for a permission that was never declared here — so getUserMedia
+         rejected with NotAllowedError and the web UI blamed the browser. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- Declaring RECORD_AUDIO implicitly marks android.hardware.microphone as required, which would
+         hide the app on Play from any device without a mic. Recording is one optional feature, so
+         keep distribution wide and let the UI degrade instead. -->
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 
     <!-- Firebase Cloud Messaging -->

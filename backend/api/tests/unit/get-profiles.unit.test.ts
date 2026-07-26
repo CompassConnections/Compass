@@ -319,4 +319,20 @@ describe('loadProfiles', () => {
       expect(profilesModule.loadProfiles(props)).rejects.toThrowError('Incompatible with user ID')
     })
   })
+
+  describe('when ordering by compatibility score', () => {
+    it('excludes profiles whose precomputed score was nulled out', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
+
+      await profilesModule.loadProfiles({
+        orderBy: 'compatibility_score',
+        compatibleWithUserId: 'user-1',
+      })
+
+      const [query] = mockPg.map.mock.calls[0]
+
+      expect(query).toContain('cs.score IS NOT NULL')
+    })
+  })
 })

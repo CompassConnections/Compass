@@ -29,11 +29,12 @@ export async function recomputeCompatibilityScoresForUser(
   // Load all answers for the target user
   const answersSelf = await getAnswersForUser(userId)
 
-  // If the user has no answered questions, set the score to null
+  // If the user has no answered questions, there's no valid score to keep for any pair
+  // involving them — remove the rows rather than nulling them out, so a row's existence
+  // always means "we have a valid score for this pair".
   if (!hasAnsweredQuestions(answersSelf)) {
     await pg.none(
-      `update compatibility_scores
-       set score = null
+      `delete from compatibility_scores
        where user_id_1 = $1
           or user_id_2 = $1`,
       [userId],

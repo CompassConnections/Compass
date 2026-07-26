@@ -659,6 +659,10 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
                     : '90 days',
       }),
 
+    // Precomputed scores can be nulled out (e.g. after the user deletes their last shared
+    // prompt) instead of the row being removed — don't surface those as matches.
+    orderByParam === 'compatibility_score' && where('cs.score IS NOT NULL'),
+
     // Exclude profiles that the requester has chosen to hide
     userId &&
       where(

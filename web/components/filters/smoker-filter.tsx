@@ -15,9 +15,8 @@ export function SmokerFilterText(props: {
   return (
     <Row className="items-center gap-0.5">
       <span className={clsx(highlightedClass, is_smoker != null && 'font-semibold')}>
-        {is_smoker == null && t('profile.smokes', 'Smokes') + ': '}
         {is_smoker == null
-          ? t('common.either', 'Either')
+          ? t('filter.tobacco', 'Tobacco')
           : is_smoker
             ? mobile
               ? t('common.yes', 'Yes')

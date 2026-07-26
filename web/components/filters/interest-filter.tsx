@@ -20,7 +20,7 @@ export function InterestFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t(`filter.any_${label}`, `Any ${label}`)}
+        {t(`filter.any_${label}`, `${label.charAt(0).toUpperCase()}${label.slice(1)}`)}
       </span>
     )
   }

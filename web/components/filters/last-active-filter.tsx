@@ -20,7 +20,7 @@ export function LastActiveFilterText(props: {
   return (
     <Row className="items-center gap-0.5">
       <span className={highlightedClass}>
-        {t('filter.last_active.label', 'Active')}: {label}
+        {key === DEFAULT_KEY ? t('filter.last_active.label', 'Last active') : label}
       </span>
     </Row>
   )

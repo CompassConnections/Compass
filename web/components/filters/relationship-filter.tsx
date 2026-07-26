@@ -17,7 +17,7 @@ export function RelationshipFilterText(props: {
   if (!relationship || relationshipLength < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.relationship.any_connection', 'Any connection')}
+        {t('filter.relationship.any_connection', 'Connection')}
       </span>
     )
   }

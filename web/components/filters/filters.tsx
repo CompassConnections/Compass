@@ -349,7 +349,7 @@ function Filters(props: {
             selection={
               <RelationshipStatusFilterText
                 options={filters.relationship_status as string[]}
-                defaultLabel={t('filter.relationship_status.any', 'Any status')}
+                defaultLabel={t('filter.relationship_status.any', 'Status')}
                 // highlightedClass={
                 //   hasAny(filters.relationship_status || undefined)
                 //     ? 'text-primary-600'
@@ -755,7 +755,7 @@ function Filters(props: {
           selection={
             <MbtiFilterText
               options={filters.mbti as string[] | undefined}
-              defaultLabel={t('filter.any_mbti', 'Any MBTI')}
+              defaultLabel={t('filter.any_mbti', 'MBTI')}
               // highlightedClass={hasAny(filters.mbti) ? 'text-primary-600' : 'text-ink-900'}
             />
           }
@@ -932,7 +932,7 @@ function FilterGroup(props: {
   const {title, children, openGroup, setOpenGroup, icon} = props
   const isOpen = openGroup === title
   // A group is a container for sections, and nothing about the old layout said so: an open "Background"
-  // and its "Any education" / "Any work" children sat at identical indent, weight and colour, so the
+  // and its "Education" / "Work" children sat at identical indent, weight and colour, so the
   // children read as siblings. The header now takes a filled pill when open and the children hang off
   // an indented accent rail, which is what actually communicates "these belong to that".
   return (

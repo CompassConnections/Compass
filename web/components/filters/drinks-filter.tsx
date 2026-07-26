@@ -36,7 +36,7 @@ export function DrinksFilterText(props: {
   if (noMin && noMax) {
     return (
       <span>
-        <span className="">{t('filter.any_drinks', 'Any drinks')}</span>
+        <span className="">{t('filter.any_drinks', 'Drinks')}</span>
       </span>
     )
   }

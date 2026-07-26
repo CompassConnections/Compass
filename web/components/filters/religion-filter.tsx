@@ -20,7 +20,7 @@ export function ReligionFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_religion', 'Any religion')}
+        {t('filter.any_religion', 'Religion')}
       </span>
     )
   }

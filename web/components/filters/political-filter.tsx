@@ -20,7 +20,7 @@ export function PoliticalFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_politics', 'Any politics')}
+        {t('filter.any_politics', 'Politics')}
       </span>
     )
   }

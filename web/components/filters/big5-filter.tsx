@@ -49,9 +49,7 @@ export function Big5FilterText(props: {filters: Partial<FilterFields>; highlight
   const hasAny = hasAnyBig5Filter(filters)
 
   if (!hasAny) {
-    return (
-      <span className={clsx(!hasAny && 'text-ink-600')}>{t('filter.big5.any', 'Any Big 5')}</span>
-    )
+    return <span className={clsx(!hasAny && 'text-ink-600')}>{t('filter.big5.any', 'Big 5')}</span>
   }
 
   return (

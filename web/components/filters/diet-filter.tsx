@@ -18,7 +18,7 @@ export function DietFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_diet', 'Any diet')}
+        {t('filter.any_diet', 'Diet')}
       </span>
     )
   }

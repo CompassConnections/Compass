@@ -17,7 +17,7 @@ export function PsychedelicsFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_psychedelics', 'Any psychedelics')}
+        {t('filter.any_psychedelics', 'Psychedelics')}
       </span>
     )
   }

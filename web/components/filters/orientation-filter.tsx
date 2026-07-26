@@ -25,7 +25,7 @@ export function OrientationFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_orientation', 'Any orientation')}
+        {t('filter.any_orientation', 'Orientation')}
       </span>
     )
   }

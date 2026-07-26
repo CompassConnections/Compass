@@ -29,16 +29,9 @@ export function LocationFilterText(props: {
   const t = useT()
   const locationLabel = labelPrefix
     ? t('filter.raised_in', labelPrefix)
-    : t('filter.location', 'Living')
+    : t('filter.location', 'Location')
   if (!location) {
-    return (
-      <span>
-        <span className="">{locationLabel} </span>
-        <span className={clsx('text-semibold', highlightedClass)}>
-          {t('filter.location.any', 'anywhere')}
-        </span>
-      </span>
-    )
+    return <span className={clsx('text-semibold', highlightedClass)}>{locationLabel}</span>
   }
 
   const formattedDistance = formatDistance(radius, measurementSystem)

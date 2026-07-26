@@ -20,7 +20,7 @@ export function EducationFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_education', 'Any education')}
+        {t('filter.any_education', 'Education')}
       </span>
     )
   }

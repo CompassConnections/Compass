@@ -18,11 +18,8 @@ export function GenderFilterText(props: {gender: Gender[] | undefined; highlight
   const t = useT()
   if (!gender || gender.length < 1) {
     return (
-      <span>
-        <span className={clsx('text-semibold', highlightedClass)}>
-          {t('filter.gender.any', 'Any')}
-        </span>{' '}
-        <span className="">{t('filter.gender.gender', 'gender')}</span>
+      <span className={clsx('text-semibold', highlightedClass)}>
+        {t('filter.gender.any', 'Gender')}
       </span>
     )
   }

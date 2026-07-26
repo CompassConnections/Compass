@@ -25,7 +25,7 @@ export function NeurotypeFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_neurotype', 'Any neurotype')}
+        {t('filter.any_neurotype', 'Neurotype')}
       </span>
     )
   }

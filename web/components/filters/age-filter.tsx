@@ -26,12 +26,7 @@ export function AgeFilterText(props: {
   const t = useT()
   if (noMinAge && noMaxAge) {
     return (
-      <span>
-        <span className={clsx('text-semibold', highlightedClass)}>
-          {t('filter.age.any', 'Any')}
-        </span>{' '}
-        <span className="">{t('filter.age.age', 'age')}</span>
-      </span>
+      <span className={clsx('text-semibold', highlightedClass)}>{t('filter.age.any', 'Age')}</span>
     )
   }
   if (noMinAge) {

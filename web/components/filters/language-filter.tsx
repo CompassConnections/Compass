@@ -19,7 +19,7 @@ export function LanguageFilterText(props: {
   if (!options || length < 1) {
     return (
       <span className={clsx('text-semibold', highlightedClass)}>
-        {t('filter.any_language', 'Any language')}
+        {t('filter.any_language', 'Language')}
       </span>
     )
   }

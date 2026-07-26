@@ -125,7 +125,7 @@ function LoadedNotificationsContent(props: {user: User}) {
           <div className={'text-ink-500 max-w-xs text-sm'}>
             {t(
               'notifications.empty_subtitle',
-              'When someone likes, matches with, or messages you, it will show up here.',
+              'When someone reciprocates your private interest or endorses you, or when we have platform announcements, it will show up here.',
             )}
           </div>
         </Col>

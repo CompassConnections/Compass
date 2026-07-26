@@ -99,6 +99,7 @@
   "about.repo.days_ago": "il y a {count} jours",
   "about.repo.link": "Lire le code source →",
   "add_photos.add_description": "Ajouter une description",
+  "add_photos.profile_picture_center_face_hint": "veillez à centrer votre visage sur cette photo, car c'est elle qui apparaît sur votre carte de profil",
   "add_photos.profile_picture_hint": "L'image mise en surbrillance est votre photo de profil",
   "answers.add.error_create": "Erreur lors de la création de la question de compatibilité. Réessayez ?",
   "answers.add.submit_own": "proposez la vôtre !",

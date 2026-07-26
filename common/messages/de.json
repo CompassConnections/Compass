@@ -99,6 +99,7 @@
   "about.repo.days_ago": "vor {count} Tagen",
   "about.repo.link": "Quellcode lesen →",
   "add_photos.add_description": "Beschreibung hinzufügen",
+  "add_photos.profile_picture_center_face_hint": "achten Sie darauf, dass Ihr Gesicht darauf zentriert ist, da dieses Bild auf Ihrer Profilkarte angezeigt wird",
   "add_photos.profile_picture_hint": "Das hervorgehobene Bild ist Ihr Profilbild",
   "answers.add.error_create": "Fehler beim Erstellen der Kompatibilitätsfrage. Erneut versuchen?",
   "answers.add.submit_own": "schlagen Sie Ihre eigene vor!",

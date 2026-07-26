@@ -160,6 +160,11 @@ export const AddPhotosWidget = (props: {
       {photo_urls?.length ? (
         <span className={'text-ink-500 text-xs italic'}>
           {t('add_photos.profile_picture_hint', 'The highlighted image is your profile picture')}
+          {' — '}
+          {t(
+            'add_photos.profile_picture_center_face_hint',
+            'make sure your face is centered in it, since this is what appears on your profile card',
+          )}
         </span>
       ) : null}
     </Col>

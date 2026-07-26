@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import {PrivateUser} from 'common/user'
 import {
   NOTIFICATION_DESTINATION_TYPES,
@@ -7,7 +8,7 @@ import {
 } from 'common/user-notification-preferences'
 import {debounce} from 'lodash'
 import {useCallback} from 'react'
-import {Row} from 'web/components/layout/row'
+import {Col} from 'web/components/layout/col'
 import {SwitchSetting} from 'web/components/switch-setting'
 import {WithPrivateUser} from 'web/components/user/with-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
@@ -30,11 +31,11 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
     privateUser.notificationPreferences,
     'notification-preferences',
   )
-  console.log({prefs})
 
   const t = useT()
 
-  const notificationTypes: {
+  // Split so the "when someone ..." heading only sits above the rows that actually complete it.
+  const socialNotificationTypes: {
     type: notification_preference
     question: string
   }[] = [
@@ -57,21 +58,6 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
       type: 'tagged_user',
       question: t('notifications.question.tagged_user', '... mentions you?'),
     },
-    {
-      type: 'new_search_alerts',
-      question: t('notifications.question.new_search_alerts', 'Alerts from bookmarked searches?'),
-    },
-    {
-      type: 'platform_updates',
-      question: t(
-        'notifications.question.platform_updates',
-        'Platform updates (share, growth, new features, etc.)?',
-      ),
-    },
-    {
-      type: 'opt_out_all',
-      question: t('notifications.question.opt_out_all', 'Opt out of all notifications?'),
-    },
     // {
     //   type: 'new_profile_like',
     //   question: '... likes your profile?',
@@ -86,36 +72,92 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
     // },
   ]
 
+  const otherNotificationTypes: {
+    type: notification_preference
+    question: string
+  }[] = [
+    {
+      type: 'new_search_alerts',
+      question: t('notifications.question.new_search_alerts', 'Alerts from bookmarked searches?'),
+    },
+    {
+      type: 'platform_updates',
+      question: t(
+        'notifications.question.platform_updates',
+        'Platform updates (share, growth, new features, etc.)?',
+      ),
+    },
+  ]
+
+  const renderOption = ({type, question}: {type: notification_preference; question: string}) => (
+    <NotificationOption
+      key={type}
+      type={type}
+      question={question}
+      selected={prefs[type] ?? NOTIFICATION_DESTINATION_TYPES}
+      onUpdate={(selected) => {
+        setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
+      }}
+      optOut={prefs.opt_out_all}
+    />
+  )
+
   return (
-    <Row className="mx-auto">
-      <div className="flex flex-col gap-8 p-2">
-        <Row className="justify-end gap-2">
-          {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
-            <span className="text-ink-600 max-w-12 w-fit">
-              {t(
-                `notifications.options.${destinationType}`,
-                destinationType === 'email' ? 'By email' : 'In the app',
-              )}
-            </span>
-          ))}
-        </Row>
-        <p className="text-ink-700 font-medium pr-32">
-          {t('notifications.heading', 'Where do you want to be notified when someone')}
-        </p>
-        {notificationTypes.map(({type, question}) => (
-          <NotificationOption
-            key={type}
-            type={type}
-            question={question}
-            selected={prefs[type] ?? NOTIFICATION_DESTINATION_TYPES}
-            onUpdate={(selected) => {
-              setPrefs((prevPrefs) => ({...prevPrefs, [type]: selected}))
-            }}
-            optOut={prefs.opt_out_all}
-          />
-        ))}
-      </div>
-    </Row>
+    <Col className="mt-4 w-full gap-6">
+      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
+        <div className="border-canvas-300 border-b px-4 py-3">
+          <p className="text-ink-900 font-medium">
+            {t('notifications.heading', 'Where do you want to be notified when someone')}
+          </p>
+        </div>
+        <DestinationHeader />
+        <Col className="divide-canvas-300 divide-y">
+          {socialNotificationTypes.map(renderOption)}
+        </Col>
+      </Col>
+
+      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
+        <div className="border-canvas-300 border-b px-4 py-3">
+          <p className="text-ink-900 font-medium">
+            {t('notifications.section.other', 'Other updates')}
+          </p>
+        </div>
+        <DestinationHeader />
+        <Col className="divide-canvas-300 divide-y">{otherNotificationTypes.map(renderOption)}</Col>
+      </Col>
+
+      {/* Master switch: its own card so it doesn't read as just another "other update". The toggles
+          still line up with the columns above, so it needs no repeated header. */}
+      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
+        {renderOption({
+          type: 'opt_out_all',
+          question: t('notifications.question.opt_out_all', 'Opt out of all notifications?'),
+        })}
+      </Col>
+    </Col>
+  )
+}
+
+// Same grid template as every option row, so the labels sit exactly over their toggles.
+const OPTION_GRID = 'grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center gap-x-2'
+
+const DestinationHeader = () => {
+  const t = useT()
+  return (
+    <div className={clsx(OPTION_GRID, 'border-canvas-300 border-b px-4 py-2')}>
+      <span />
+      {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
+        <span
+          key={destinationType}
+          className="text-ink-500 text-center text-xs font-medium uppercase tracking-wide"
+        >
+          {t(
+            `notifications.options.${destinationType}`,
+            destinationType === 'email' ? 'By email' : 'In the app',
+          )}
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -175,20 +217,17 @@ const NotificationOption = (props: {
   if (!selected) return
 
   return (
-    <>
-      {type === 'opt_out_all' && <div className="border-canvas-200 border-b"></div>}
-      <Row className="gap-4 sm:gap-16 w-full justify-between">
-        <div className="text-ink-700 font-medium">{question}</div>
-        <Row className="gap-3">
-          {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
-            <SwitchSetting
-              checked={selectedValues[destinationType]}
-              onChange={(checked) => setValue(checked, destinationType)}
-              disabled={optOut.includes(destinationType) && type !== 'opt_out_all'}
-            />
-          ))}
-        </Row>
-      </Row>
-    </>
+    <div className={clsx(OPTION_GRID, 'hover:bg-canvas-100 px-4 py-3 transition-colors')}>
+      <div className="text-ink-700 pr-2 text-sm">{question}</div>
+      {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
+        <div key={destinationType} className="flex justify-center">
+          <SwitchSetting
+            checked={selectedValues[destinationType]}
+            onChange={(checked) => setValue(checked, destinationType)}
+            disabled={optOut.includes(destinationType) && type !== 'opt_out_all'}
+          />
+        </div>
+      ))}
+    </div>
   )
 }

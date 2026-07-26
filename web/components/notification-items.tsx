@@ -1,4 +1,3 @@
-import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
 import {Notification} from 'common/notifications'
@@ -305,7 +304,11 @@ export function AvatarNotificationIcon(props: {
           size={'md'}
           noLink={true}
         />
-        <div className="absolute -bottom-2 -right-1 text-lg">{symbol}</div>
+        {symbol && (
+          <div className="bg-canvas-50 ring-canvas-300 absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[11px] leading-none ring-1">
+            {symbol}
+          </div>
+        )}
       </Link>
     </div>
   )
@@ -403,43 +406,56 @@ export function NotificationFrame(props: {
   const isMobile = useIsMobile()
 
   const frameObject = (
-    <Row className="cursor-pointer text-sm md:text-base">
-      <Row className="w-full items-start gap-3">
-        <Col className="relative h-full w-10 items-center">{icon}</Col>
-        <Col className="font w-full">
-          <span>{children}</span>
-          <div className="mt-1 line-clamp-3 text-xs md:text-sm">{subtitle}</div>
-        </Col>
+    <Row className="w-full cursor-pointer items-start gap-3 py-3 pl-3 pr-3 text-sm sm:pl-4 md:text-base">
+      <Col className="relative w-10 flex-none items-center pt-0.5">{icon}</Col>
+      <Col className="min-w-0 flex-1">
+        <span className="text-ink-900 [overflow-wrap:anywhere]">{children}</span>
+        {/* empty:hidden keeps the spacing tight for notifications that pass no subtitle */}
+        <div className="text-ink-600 mt-1 line-clamp-3 text-xs empty:hidden md:text-sm">
+          {subtitle}
+        </div>
+      </Col>
 
-        <Row className="mt-1 items-center justify-end gap-1 pr-1 sm:w-36">
-          {highlighted && !isMobile && <SparklesIcon className="text-primary-600 h-4 w-4" />}
-          <RelativeTimestampNoTooltip
-            time={notification.createdTime}
-            shortened={isMobile}
-            className={clsx('text-xs', highlighted ? 'text-primary-600' : 'text-ink-700')}
-          />
-        </Row>
+      <Row className="flex-none items-center gap-1.5 pt-0.5">
+        <RelativeTimestampNoTooltip
+          time={notification.createdTime}
+          shortened={isMobile}
+          className={clsx(
+            'whitespace-nowrap text-xs',
+            highlighted ? 'text-primary-600 font-medium' : 'text-ink-500',
+          )}
+        />
+        {/* unread dot — the only unread cue that survives on mobile, so it is not hidden there */}
+        {highlighted && (
+          <span className="bg-primary-500 h-2 w-2 flex-none rounded-full" aria-hidden="true" />
+        )}
       </Row>
     </Row>
   )
 
   return (
-    <Row className={clsx('hover:bg-primary-100 group p-2 transition-colors')}>
+    <div
+      className={clsx(
+        'group relative transition-colors',
+        highlighted ? 'bg-primary-50 hover:bg-primary-100' : 'hover:bg-canvas-100',
+      )}
+    >
       {customBackground}
+      {highlighted && (
+        <span className="bg-primary-500 absolute inset-y-0 left-0 w-[3px]" aria-hidden="true" />
+      )}
       {link && (
-        <Col className={'w-full'}>
-          <Link
-            href={link}
-            className={clsx('flex w-full flex-col')}
-            onClick={() => {
-              if (highlighted) {
-                setHighlighted(false)
-              }
-            }}
-          >
-            {frameObject}
-          </Link>
-        </Col>
+        <Link
+          href={link}
+          className={clsx('flex w-full flex-col')}
+          onClick={() => {
+            if (highlighted) {
+              setHighlighted(false)
+            }
+          }}
+        >
+          {frameObject}
+        </Link>
       )}
       {!link && (
         <Col
@@ -456,6 +472,6 @@ export function NotificationFrame(props: {
           {frameObject}
         </Col>
       )}
-    </Row>
+    </div>
   )
 }

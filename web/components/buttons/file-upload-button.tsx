@@ -22,7 +22,7 @@ export function FileUploadButton(props: {
       <input
         ref={ref}
         type="file"
-        accept=".gif,.jpg,.jpeg,.png,.webp, image/*"
+        accept=".gif,.jpg,.jpeg,.png,.webp,.mp4,.webm,.mov, image/*, video/*"
         multiple
         className="hidden"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

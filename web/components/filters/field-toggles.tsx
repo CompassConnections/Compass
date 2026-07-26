@@ -4,21 +4,23 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
+// Commented-out entries are fields the profile card no longer renders (they live on the profile
+// page). Kept here so they're one line away from coming back.
 const TOGGLE_FIELDS: Array<{key: keyof DisplayOptions; labelKey: string; fallbackLabel: string}> = [
   {key: 'showGender', labelKey: 'filter.show_gender', fallbackLabel: 'Gender'},
   {key: 'showCity', labelKey: 'filter.show_city', fallbackLabel: 'City'},
   {key: 'showAge', labelKey: 'filter.show_age', fallbackLabel: 'Age'},
   {key: 'showHeadline', labelKey: 'filter.show_headline', fallbackLabel: 'Headline'},
   {key: 'showKeywords', labelKey: 'filter.show_keywords', fallbackLabel: 'Keywords'},
-  {key: 'showSeeking', labelKey: 'filter.show_seeking', fallbackLabel: 'What they seek'},
-  {key: 'showOccupation', labelKey: 'filter.show_occupation', fallbackLabel: 'Work'},
-  {key: 'showInterests', labelKey: 'filter.show_interests', fallbackLabel: 'Interests'},
-  {key: 'showCauses', labelKey: 'filter.show_causes', fallbackLabel: 'Causes'},
-  {key: 'showDiet', labelKey: 'filter.show_diet', fallbackLabel: 'Diet'},
-  {key: 'showSmoking', labelKey: 'filter.show_smoking', fallbackLabel: 'Smoking'},
-  {key: 'showDrinks', labelKey: 'filter.show_drinks', fallbackLabel: 'Drinks'},
-  {key: 'showMBTI', labelKey: 'filter.show_mbti', fallbackLabel: 'MBTI'},
-  {key: 'showLanguages', labelKey: 'filter.show_languages', fallbackLabel: 'Languages'},
+  // {key: 'showSeeking', labelKey: 'filter.show_seeking', fallbackLabel: 'What they seek'},
+  // {key: 'showOccupation', labelKey: 'filter.show_occupation', fallbackLabel: 'Work'},
+  // {key: 'showInterests', labelKey: 'filter.show_interests', fallbackLabel: 'Interests'},
+  // {key: 'showCauses', labelKey: 'filter.show_causes', fallbackLabel: 'Causes'},
+  // {key: 'showDiet', labelKey: 'filter.show_diet', fallbackLabel: 'Diet'},
+  // {key: 'showSmoking', labelKey: 'filter.show_smoking', fallbackLabel: 'Smoking'},
+  // {key: 'showDrinks', labelKey: 'filter.show_drinks', fallbackLabel: 'Drinks'},
+  // {key: 'showMBTI', labelKey: 'filter.show_mbti', fallbackLabel: 'MBTI'},
+  // {key: 'showLanguages', labelKey: 'filter.show_languages', fallbackLabel: 'Languages'},
   {key: 'showBio', labelKey: 'filter.show_bio', fallbackLabel: 'Bio'},
   {key: 'showPhotos', labelKey: 'filter.show_photos', fallbackLabel: 'Profile photo'},
 ]

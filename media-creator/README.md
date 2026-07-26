@@ -110,6 +110,31 @@ canvas. Formats are defined in `src/theme.ts` (`FORMATS`) and registered in `src
 
 > Don't post the 9:16 story as a feed post — Instagram crops it to ~4:5. Use `IntroPost` for the feed.
 
+### Profile scroll b-roll (`ProfileScrollStory`)
+
+A 6-second silent scroll of one profile, made to sit **under the closing sentences of a talking-head
+clip** — not to stand on its own. No audio (the voice on the track is the audio), no captions, no logo
+animation. The profile URL is on screen from the first frame to the last, because most people meet a
+clip like this as a screenshot or a repost, with no link sticker attached.
+
+The motion is one steady scroll with a single hold on the "good news / bad news" paragraph, which is
+the passage such a voiceover is usually about. A little velocity-proportional blur covers the fast
+middle stretch; at 30fps a hard-edged scroll strobes.
+
+```bash
+node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
+npm run render:scroll      # -> out/compass-profile-scroll-story.mp4  9:16 (1080×1920)
+```
+
+`--out <dir>` is what keeps this from overwriting `public/profile/`, which the profile-tour video is
+built from. The scene reads three cards — header, details, bio — and stacks them in page order; the
+`SHOTS` table at the top of `src/scenes/ProfileScroll.tsx` carries their dimensions and the two
+offsets inside the bio card that the hold is aimed at, so a bio of a different length needs those
+numbers re-measured.
+
+> Long renders here can trip the 30s `delayRender` on `BrandFonts` (registered for the OG card, but
+> bundled into every composition). Hence `--timeout=120000` in the script.
+
 ## Stills
 
 ### Social preview card (`OgCard`)

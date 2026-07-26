@@ -14,6 +14,7 @@ import {uniq} from 'lodash'
 import {compareTwoStrings} from 'string-similarity'
 
 import Iframe from './tiptap-iframe'
+import Video from './tiptap-video'
 
 /** get first url in text. like "notion.so " -> "http://notion.so" "notion" -> null */
 export function getUrl(text: string) {
@@ -49,7 +50,8 @@ export function parseMentions(data: JSONContent): string[] {
 export const extensions = [
   StarterKit,
   Link,
-  Image.extend({renderText: () => '[image]'}),
+  Image.extend({renderText: () => '📷 Photo'}),
+  Video.extend({renderText: () => '🎥 Video'}),
   Mention, // user @mention
   Iframe.extend({
     renderText: ({node}) => ('[embed]' + node.attrs.src ? `(${node.attrs.src})` : ''),

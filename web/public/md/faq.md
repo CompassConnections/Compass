@@ -27,7 +27,7 @@ grounded in **shared values, trust, and understanding**, Compass is for you.
 
 - **Keyword Search**: Find people who share your niche interests (e.g., “Minimalism”, “Thinking, Fast and Slow”, “Indie
   film”).
-- **Transparent Database**: See all profiles, apply filters, and search freely — no hidden algorithms.
+- **Transparent Directory**: See all profiles, apply filters, and search freely — no hidden algorithms.
 - **Notification System**: Get alerts when new people match your searches — no endless scrolling required.
 - **Personality-Centered**: Values and ideas first. Photos stay secondary.
 - **Democratic & Open Source**: Built by the community, for the community — no ads, no hidden monetization.

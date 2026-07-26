@@ -180,7 +180,7 @@ export const Search = forwardRef<
             value={filters.orderBy || 'created_time'}
             className={clsx(
               '!h-10 w-auto !rounded-full !border-canvas-200 !bg-transparent !shadow-none text-xs text-ink-500',
-              highlightSort && 'border-blue-500 ring-2 ring-blue-300',
+              highlightSort && 'border-primary-500 ring-2 ring-primary-300',
             )}
           >
             <option value="created_time">{t('common.new', 'New')}</option>
@@ -190,11 +190,12 @@ export const Search = forwardRef<
             <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
           <Button
-            color={highlightFilters ? 'blue' : 'gray-white'}
+            color="gray-white"
             size="sm"
             className={clsx(
               '!h-10 !rounded-full border border-canvas-200',
-              highlightFilters && 'border-blue-500',
+              highlightFilters &&
+                'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
             )}
             onClick={handleOpenFilters}
           >
@@ -263,7 +264,7 @@ export const Search = forwardRef<
               <Tooltip
                 text={t(
                   'search.include_short_bios_tooltip',
-                  'To list all the profiles, tick "Include incomplete profiles"',
+                  'To list incomplete profiles, go to Filters, then Advanced, and tick "Include incomplete profiles"',
                 )}
               >
                 <QuestionMarkCircleIcon className="w-5 h-5" />

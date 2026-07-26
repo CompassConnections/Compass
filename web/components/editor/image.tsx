@@ -1,6 +1,7 @@
 import {Image} from '@tiptap/extension-image'
 import clsx from 'clsx'
 import {useState} from 'react'
+import {MediaModal} from 'web/components/media-modal'
 
 export const BasicImage = Image.extend({
   renderReact: (attrs: any) => <img loading="lazy" {...attrs} alt={attrs.alt ?? ''} />,
@@ -31,14 +32,7 @@ function ExpandingImage(props: {src: string; alt?: string; title?: string; size?
         )}
         height={size === 'md' ? 400 : 128}
       />
-      {expanded && (
-        <div
-          className="bg-opacity fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
-          onClick={() => setExpanded(false)}
-        >
-          <img alt={alt ?? ''} {...rest} className="max-h-full cursor-pointer object-contain" />
-        </div>
-      )}
+      <MediaModal url={rest.src} open={expanded} setOpen={setExpanded} />
     </>
   )
 }

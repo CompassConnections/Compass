@@ -31,8 +31,13 @@ const {chromium} = pw
 const HERE = dirname(fileURLToPath(import.meta.url))
 const args = process.argv.slice(2)
 const LOGIN = args.includes('--login')
-const URL = args.find((a) => !a.startsWith('--')) ?? 'http://localhost:3000/Martin'
-const OUT_DIR = join(HERE, '..', 'public', 'profile')
+// --out <dir> writes elsewhere under public/, so capturing a second profile doesn't
+// overwrite the artwork the profile-tour video is built from.
+const outAt = args.indexOf('--out')
+const OUT_NAME = outAt === -1 ? 'profile' : args[outAt + 1]
+const URL =
+  args.find((a, i) => !a.startsWith('--') && i !== outAt + 1) ?? 'http://localhost:3000/Martin'
+const OUT_DIR = join(HERE, '..', 'public', OUT_NAME)
 const PROFILE_DIR = join(HERE, '..', '.auth-profile')
 
 // Card title -> output file. Titles come from the ProfileCard headings in

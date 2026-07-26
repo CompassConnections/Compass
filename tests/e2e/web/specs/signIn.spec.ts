@@ -44,6 +44,7 @@ test.describe('when given valid input', () => {
         Number(filteredProfiles?.split(' ')[0]),
       )
 
+      // The seeking line only renders on the Large card, which this test selects above.
       const profile = await app.people.getProfileInfo()
       if (!profile) throw new Error('No profile found')
       const seeking = await getCardSeekingInfo(profile)

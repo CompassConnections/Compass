@@ -156,7 +156,7 @@ function Step1NoHiddenAlgorithms({onNext, onSkip}: OnboardingStepProps) {
       <p>
         {t(
           'onboarding.step1.body2',
-          'There is no engagement algorithm, no swipe-ranking, no boosted profiles, and no attention optimization. You can browse the full database, apply your own filters, and see exactly why someone matches with you.',
+          'There is no engagement algorithm, no swipe-ranking, no boosted profiles, and no attention optimization. You can browse the full directory, apply your own filters, and see exactly why someone matches with you.',
         )}
       </p>
       <p className="font-semibold text-ink-900">

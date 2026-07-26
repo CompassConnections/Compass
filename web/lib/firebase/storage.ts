@@ -60,8 +60,8 @@ export const uploadImage = async (
     return Promise.reject('File is over 20 MB')
   }
 
-  // 2️⃣ Compress if > 1MB
-  if (file.size > 1024 ** 2) {
+  // 2️⃣ Compress if > 1MB (images only; Compressor operates on raster images)
+  if (file.size > 1024 ** 2 && file.type.startsWith('image')) {
     file = await new Promise((resolve, reject) => {
       new Compressor(file, {
         quality: 0.6,

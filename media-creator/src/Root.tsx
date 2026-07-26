@@ -2,6 +2,7 @@ import {Composition, Still} from 'remotion'
 import {FORMATS} from './theme'
 import {Intro, INTRO_DURATION} from './scenes/Intro'
 import {OgCard} from './scenes/OgCard'
+import {ProfileScroll, PROFILE_SCROLL_DURATION} from './scenes/ProfileScroll'
 import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour'
 import {SearchDemo, SearchDemoProps, calculateSearchDemoMetadata} from './scenes/SearchDemo'
 import {SearchAlert, SearchAlertProps, calculateSearchAlertMetadata} from './scenes/SearchAlert'
@@ -45,6 +46,17 @@ export const RemotionRoot: React.FC = () => {
         fps={FORMATS.post.fps}
         width={FORMATS.post.width}
         height={FORMATS.post.height}
+      />
+      {/* Six-second silent b-roll of one profile, to lay under the closing sentences of a
+          talking-head story. Story format only — it is never a standalone post.
+            node scripts/capture-profile.mjs <profileUrl> --out profile-mhg1 && npm run render:scroll */}
+      <Composition
+        id="ProfileScrollStory"
+        component={ProfileScroll}
+        durationInFrames={PROFILE_SCROLL_DURATION}
+        fps={FORMATS.story.fps}
+        width={FORMATS.story.width}
+        height={FORMATS.story.height}
       />
       {/* Home-page hero clip. Not a social format: its canvas is the capture viewport, and both
           size and duration come from public/search/manifest.json via calculateMetadata, so a

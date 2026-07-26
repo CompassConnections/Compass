@@ -60,7 +60,7 @@ function UploadButton(props: {upload: UploadMutation}) {
 
   return (
     <Tooltip
-      text={t('sticky_format_menu.upload_image', 'Upload image')}
+      text={t('sticky_format_menu.upload_image', 'Upload photo or video')}
       className="flex items-stretch"
       placement="bottom"
     >

@@ -17,6 +17,7 @@
     "render:alert:dark": "remotion render SearchAlertDark out/compass-search-alert-dark.mp4 --crf 30",
     "render:carousel": "node scripts/render-carousel.mjs",
     "render:post": "remotion render IntroPost out/compass-intro-post.mp4",
+    "render:scroll": "remotion render ProfileScrollStory out/compass-profile-scroll-story.mp4 --timeout=120000",
     "render:search": "remotion render SearchDemoLight out/compass-search-demo-light.mp4 --crf 30",
     "render:search:dark": "remotion render SearchDemoDark out/compass-search-demo-dark.mp4 --crf 30",
     "render:story": "remotion render IntroStory out/compass-intro-story.mp4",

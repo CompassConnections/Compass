@@ -2,7 +2,6 @@ import {
   BellIcon,
   BookmarkIcon,
   ChatBubbleLeftRightIcon,
-  CheckIcon,
   CodeBracketIcon,
   EnvelopeIcon,
   FlagIcon,
@@ -11,7 +10,6 @@ import {
   LightBulbIcon,
   MagnifyingGlassIcon,
   MegaphoneIcon,
-  ShareIcon,
   SparklesIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline'
@@ -20,7 +18,7 @@ import clsx from 'clsx'
 import {discordLink, formLink, githubRepo, OG_DESCRIPTION} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import Link from 'next/link'
-import {ComponentType, ReactNode, SVGProps, useState} from 'react'
+import {ComponentType, ReactNode, SVGProps} from 'react'
 import {StatBand} from 'web/components/about/platform-stats'
 import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
@@ -30,11 +28,10 @@ import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
+import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
 import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
-import {copyToClipboard} from 'web/lib/util/copy'
-import {nativeShare} from 'web/lib/util/share'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -362,13 +359,8 @@ function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string;
  * The share control on the closing block.
  *
  * Universal, not mobile-only: the block's whole argument is that sharing is easy and in the reader's
- * interest, so a desktop with no button would undercut it. Phones get the native share sheet (they can
- * pick WhatsApp, Messages, ...); everywhere else — and any browser without the Web Share API — it copies
- * the link and confirms. The sheet is probed at click time, so there is no SSR/first-paint branch to get
- * wrong and the button always renders.
- *
- * `nativeShare` is what makes the Android app work: its WebView has no `navigator.share`, so a bare Web
- * Share API check would silently degrade the app to copy-the-link.
+ * interest, so a desktop with no button would undercut it. Uses the shared `ShareCTAButton` (mobile share
+ * sheet, desktop copy-and-confirm fallback).
  *
  * When the sharer is signed in the link carries their `?referrer=` tag, the same attribution the
  * /referrals page and users.ts already speak — so the shares this block is arguing for actually get
@@ -378,53 +370,26 @@ function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string;
 function ShareCTA() {
   const t = useT()
   const user = useUser()
-  const [copied, setCopied] = useState(false)
 
   const shareUrl = user?.username
     ? `${DEPLOYED_WEB_URL}/?referrer=${user.username}`
     : DEPLOYED_WEB_URL
 
-  const onClick = async () => {
-    // The user dismissing the share sheet also reports false; re-copying the link is a harmless outcome.
-    const shared = await nativeShare({
-      title: t('about.share.title', 'Compass — Find your people'),
+  return (
+    <ShareCTAButton
+      url={shareUrl}
+      shareTitle={t('about.share.title', 'Compass — Find your people')}
       // Two paragraphs, and long for a share sheet, deliberately: this is the referral message a person
       // sends their friends, so it carries the same three beats as the ShareStrip below — what Compass
       // is, how it works, and why bringing someone is in the sharer's own interest, not a favour. The
       // closing line is mutual on purpose: the receiver reads it, but the sender has to feel it too.
-      text: t(
+      shareText={t(
         'about.share.text',
         "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
-      ),
-      url: shareUrl,
-    })
-    if (shared) return
-
-    copyToClipboard(shareUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={clsx(
-        'inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold',
-        'transition-all duration-200 ease-out',
-        'bg-cta text-white border-cta hover:bg-cta-hover',
-        'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
       )}
-    >
-      {copied ? (
-        <CheckIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2.5} aria-hidden="true" />
-      ) : (
-        <ShareIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2} aria-hidden="true" />
-      )}
-      {copied
-        ? t('about.share.copied', 'Link copied!')
-        : t('about.share.button_cta', 'Share Compass')}
-    </button>
+      label={t('about.share.button_cta', 'Share Compass')}
+      copiedLabel={t('about.share.copied', 'Link copied!')}
+    />
   )
 }
 

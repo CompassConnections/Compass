@@ -13,13 +13,18 @@ export const useUploadMutation = (editor: Editor | null) =>
   useMutation(
     (files: File[]) =>
       // TODO: Images should be uploaded under a particular username
-      Promise.all(files.map((file) => uploadImage('default', file))),
+      Promise.all(
+        files.map(async (file) => ({
+          src: await uploadImage('default', file),
+          isVideo: file.type.startsWith('video'),
+        })),
+      ),
     {
-      onSuccess(urls) {
-        if (!editor || !urls.length) return
+      onSuccess(uploads) {
+        if (!editor || !uploads.length) return
         let trans = editor.chain().focus()
-        urls.forEach((src) => {
-          trans = trans.setImage({src})
+        uploads.forEach(({src, isVideo}) => {
+          trans = isVideo ? trans.setVideo({src}) : trans.setImage({src})
           trans = trans.createParagraphNear()
         })
         trans.run()

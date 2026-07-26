@@ -31,7 +31,7 @@ export const ProfileCardViewer = (props: {
         width={width}
         height={height}
         alt={t('profile_card.alt', "{username}'s profile card", {username: user.username})}
-        className={`rounded-2xl transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`rounded-2xl ring-1 ring-canvas-300/60 shadow-[0_8px_24px_-12px_rgb(44_36_22/0.35)] dark:ring-canvas-200/40 transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setLoaded(true)}
         priority
         loading="eager"

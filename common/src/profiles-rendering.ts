@@ -20,22 +20,28 @@ export type DisplayOptions = {
   showBio: boolean | null | undefined
 }
 
+/**
+ * What a profile card shows out of the box: city, age, headline, keywords, bio and the photo.
+ * Gender stays a toggle people can switch on, it's just off by default. The rest live on the
+ * profile page — their card renders are commented out in `web/components/profile-grid.tsx`, so
+ * those flags are inert until they're restored.
+ */
 export const initialDisplayOptions: DisplayOptions = {
   showPhotos: true,
-  showAge: undefined,
-  showGender: undefined,
-  showLanguages: true,
-  cardSize: 'medium',
+  showAge: true,
+  showCity: true,
   showHeadline: true,
   showKeywords: true,
-  showCity: true,
-  showOccupation: true,
-  showSeeking: true,
-  showInterests: true,
-  showCauses: false,
-  showDiet: true,
-  showSmoking: true,
-  showDrinks: true,
-  showMBTI: true,
   showBio: true,
+  cardSize: 'medium',
+  showGender: false,
+  showLanguages: false,
+  showOccupation: false,
+  showSeeking: false,
+  showInterests: false,
+  showCauses: false,
+  showDiet: false,
+  showSmoking: false,
+  showDrinks: false,
+  showMBTI: false,
 }

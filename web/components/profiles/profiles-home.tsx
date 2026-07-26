@@ -5,8 +5,9 @@ import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {DAY_MS} from 'common/util/time'
 import {isEqual} from 'lodash'
+import {Compass as CompassIcon, TrendingUp} from 'lucide-react'
 import {useRouter} from 'next/router'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {FiltersElement} from 'web/components/filters/filters'
@@ -21,7 +22,6 @@ import {useDisplayOptions} from 'web/hooks/use-display-options'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
-import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
@@ -30,6 +30,33 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {getStars} from 'web/lib/supabase/stars'
+
+function ProfileBanner(props: {
+  icon: ReactNode
+  onDismiss: () => void
+  dismissLabel: string
+  children: ReactNode
+}) {
+  const {icon, onDismiss, dismissLabel, children} = props
+  return (
+    <div className="relative w-full overflow-hidden rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 via-canvas-50 to-canvas-50 px-4 py-4 shadow-sm dark:border-primary-800/30 dark:from-primary-950/30 dark:via-canvas-50 dark:to-canvas-50 sm:px-5">
+      <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-primary-200/40 blur-3xl dark:bg-primary-700/20" />
+      <button
+        onClick={onDismiss}
+        aria-label={dismissLabel}
+        className="absolute right-2 top-2 rounded-full p-1.5 text-ink-400 transition-colors hover:bg-canvas-100 hover:text-ink-700"
+      >
+        <XMarkIcon className="h-4 w-4" />
+      </button>
+      <Row className="items-start gap-3 pr-7">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300">
+          {icon}
+        </div>
+        <Col className="min-w-0 items-start gap-2 text-left">{children}</Col>
+      </Row>
+    </div>
+  )
+}
 
 export function ProfilesHome() {
   const user = useUser()
@@ -48,7 +75,7 @@ export function ProfilesHome() {
     raisedInLocationFilterProps,
   } = useFilters(you ?? undefined, fromSignup)
 
-  const {displayOptions, updateDisplayOptions} = useDisplayOptions(you)
+  const {displayOptions, updateDisplayOptions} = useDisplayOptions()
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
@@ -78,8 +105,7 @@ export function ProfilesHome() {
   const t = useT()
   const {locale} = useLocale()
   const isClearedFilters = useIsClearedFilters(filters)
-  const isMobile = useIsMobile()
-  // Tracked separately from `isMobile` (640px) since the docked filters column only replaces
+  // Tracked separately from mobile (640px) since the docked filters column only replaces
   // the slide-over once there's room beside the grid, at the `lg` (1024px) breakpoint.
   const [isDesktop, setIsDesktop] = useState(false)
   useEffect(() => {
@@ -242,94 +268,77 @@ export function ProfilesHome() {
     <div className={clsx(showDockedFilters && 'lg:grid lg:grid-cols-12 lg:gap-4')}>
       <Col className={clsx(showDockedFilters && 'lg:col-span-9')}>
         {showSignupBanner && user && (
-          <div className="w-full bg-canvas-50 rounded-xl text-center py-3 px-3 relative">
-            <Col className="items-center justify-center gap-2">
-              <span className={'mb-2'}>
-                {t(
-                  'profiles.search_intention',
-                  'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.',
-                )}
-              </span>
-              <Row className="gap-2 mb-2">
-                <Button
-                  size="sm"
-                  color="gray-white"
-                  className={'border'}
-                  onClick={() => {
-                    searchInputRef.current?.focus()
-                  }}
-                >
-                  {t('profiles.try_keyword_search', 'Try a keyword search')}
-                </Button>
-                {isMobile && (
-                  <Button
-                    size="sm"
-                    color={'gray-white'}
-                    className={'border'}
-                    onClick={() => {
-                      if (!isMobile) return
-                      setHighlightFilters(true)
-                      setTimeout(() => {
-                        setHighlightFilters(false)
-                        setOpenFiltersModal(true)
-                      }, 500)
-                    }}
-                  >
-                    {t('profiles.show_filters', 'Show me the filters')}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  color={'gray-white'}
-                  className={'border'}
-                  onClick={() => {
-                    setHighlightSort(true)
-                    setTimeout(() => {
-                      setHighlightSort(false)
-                    }, 500)
-                  }}
-                >
-                  {t('profiles.sort_differently', 'Sort differently')}
-                </Button>
-              </Row>
-              <Row className="gap-2 mb-6 sm:mb-2">
-                <p>
-                  {t(
-                    'profiles.interactive_profiles',
-                    'Profiles are interactive — click any card to learn more and reach out.',
-                  )}
-                </p>
-              </Row>
-            </Col>
-            <Button
-              size="2xs"
-              color="gray-white"
-              onClick={() => setShowSignupBanner(false)}
-              className="absolute bottom-1 right-1"
-            >
-              {t('profiles.dismiss', 'Dismiss')}
-            </Button>
-          </div>
+          <ProfileBanner
+            icon={<CompassIcon className="h-5 w-5" />}
+            onDismiss={() => setShowSignupBanner(false)}
+            dismissLabel={t('profiles.dismiss', 'Dismiss')}
+          >
+            <p className="text-sm font-medium text-ink-900 sm:text-[15px]">
+              {t(
+                'profiles.search_intention',
+                'Compass works best when you search with intention. Try using keywords or filters instead of scrolling.',
+              )}
+            </p>
+            <Row className="flex-wrap gap-2">
+              <Button
+                size="sm"
+                color="gray-white"
+                className="border border-canvas-300 bg-canvas-0 !text-ink-700 !rounded-full transition-colors hover:!border-primary-300 hover:!bg-primary-50 hover:!text-primary-700 dark:bg-canvas-100"
+                onClick={() => {
+                  searchInputRef.current?.focus()
+                }}
+              >
+                {t('profiles.try_keyword_search', 'Try a keyword search')}
+              </Button>
+              <Button
+                size="sm"
+                color={'gray-white'}
+                className="border border-canvas-300 bg-canvas-0 !text-ink-700 !rounded-full transition-colors hover:!border-primary-300 hover:!bg-primary-50 hover:!text-primary-700 dark:bg-canvas-100"
+                onClick={() => {
+                  setHighlightFilters(true)
+                  setTimeout(() => {
+                    setHighlightFilters(false)
+                    setOpenFiltersModal(true)
+                  }, 500)
+                }}
+              >
+                {t('profiles.show_filters', 'Show me the filters')}
+              </Button>
+              <Button
+                size="sm"
+                color={'gray-white'}
+                className="border border-canvas-300 bg-canvas-0 !text-ink-700 !rounded-full transition-colors hover:!border-primary-300 hover:!bg-primary-50 hover:!text-primary-700 dark:bg-canvas-100"
+                onClick={() => {
+                  setHighlightSort(true)
+                  setTimeout(() => {
+                    setHighlightSort(false)
+                  }, 500)
+                }}
+              >
+                {t('profiles.sort_differently', 'Sort differently')}
+              </Button>
+            </Row>
+            <p className="text-xs text-ink-500">
+              {t(
+                'profiles.interactive_profiles',
+                'Profiles are interactive — click any card to learn more and reach out.',
+              )}
+            </p>
+          </ProfileBanner>
         )}
         {showEarlyBanner && !showSignupBanner && (
-          <div className="w-full bg-canvas-50 rounded-lg text-center py-3 px-3 relative">
-            <Col className="items-center justify-center gap-2">
-              <span className={'mb-2'}>
-                {t(
-                  'profiles.early_growth',
-                  `Compass is in its early growth phase — 700+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
-                )}
-              </span>
-            </Col>
-            <Button
-              size="2xs"
-              color="gray-white"
-              onClick={() => setShowEarlyBanner(false)}
-              className="absolute bottom-1 right-1"
-            >
-              {t('profiles.dismiss', 'Dismiss')}
-            </Button>
-          </div>
+          <ProfileBanner
+            icon={<TrendingUp className="h-5 w-5" />}
+            onDismiss={() => setShowEarlyBanner(false)}
+            dismissLabel={t('profiles.dismiss', 'Dismiss')}
+          >
+            <p className="text-sm font-medium text-ink-900 sm:text-[15px]">
+              {t(
+                'profiles.early_growth',
+                `Compass is in its early growth phase — 700+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
+              )}
+            </p>
+          </ProfileBanner>
         )}
         {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
         <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
@@ -353,7 +362,7 @@ export function ProfilesHome() {
           filtersElement={filtersElement}
         />
         {displayProfiles === undefined || compatibleProfiles === undefined ? (
-          <ProfileGridSkeleton count={6} />
+          <ProfileGridSkeleton cardSize={displayOptions.cardSize} />
         ) : (
           <>
             {fromSignup && isClearedFilters && (

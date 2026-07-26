@@ -14,10 +14,9 @@ import clsx from 'clsx'
 import {richTextToString} from 'common/util/parse'
 import Iframe from 'common/util/tiptap-iframe'
 import {debounce} from 'lodash'
-import Image from 'next/image'
 import {createElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {CustomLink} from 'web/components/links'
+import {MediaModal} from 'web/components/media-modal'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
@@ -28,6 +27,7 @@ import {nodeViewMiddleware} from '../editor/nodeview-middleware'
 import {StickyFormatMenu} from '../editor/sticky-format-menu'
 import {Upload, useUploadMutation} from '../editor/upload-extension'
 import {DisplayMention} from '../editor/user-mention/mention-extension'
+import {BasicVideo, DisplayVideo} from '../editor/video'
 import {Linkify} from './linkify'
 import {linkClass} from './site-link'
 
@@ -52,6 +52,7 @@ const editorExtensions = (simple = false): Extensions =>
       horizontalRule: simple ? false : {},
     }),
     simple ? DisplayImage : BasicImage,
+    simple ? DisplayVideo : BasicVideo,
     EmojiExtension,
     DisplayLink,
     DisplayMention,
@@ -183,10 +184,10 @@ export function useTextEditor(props: {
   editor.setOptions({
     editorProps: {
       handlePaste(_view, event) {
-        const imageFiles = getImages(event.clipboardData)
-        if (imageFiles.length) {
+        const mediaFiles = getMediaFiles(event.clipboardData)
+        if (mediaFiles.length) {
           event.preventDefault()
-          upload.mutate(imageFiles)
+          upload.mutate(mediaFiles)
           return true // Prevent image in text/html from getting pasted again
         }
 
@@ -208,7 +209,7 @@ export function useTextEditor(props: {
         // if dragged from outside
         if (!moved) {
           event.preventDefault()
-          upload.mutate(getImages(event.dataTransfer))
+          upload.mutate(getMediaFiles(event.dataTransfer))
         }
       },
     },
@@ -217,8 +218,10 @@ export function useTextEditor(props: {
   return editor
 }
 
-const getImages = (data: DataTransfer | null) =>
-  Array.from(data?.files ?? []).filter((file) => file.type.startsWith('image'))
+const getMediaFiles = (data: DataTransfer | null) =>
+  Array.from(data?.files ?? []).filter(
+    (file) => file.type.startsWith('image') || file.type.startsWith('video'),
+  )
 
 /** Breathing room left below the format toolbar when we scroll it back into view. */
 const TOOLBAR_VIEWPORT_GAP = 16
@@ -419,17 +422,7 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
       >
         {jsxContent}
       </div>
-      <Modal open={lightboxOpen} setOpen={setLightboxOpen}>
-        <div className={MODAL_CLASS}>
-          <Image
-            src={lightboxUrl}
-            width={1000}
-            height={1000}
-            alt=""
-            className="max-h-[90vh] w-auto"
-          />
-        </div>
-      </Modal>
+      <MediaModal url={lightboxUrl} open={lightboxOpen} setOpen={setLightboxOpen} />
     </>
   )
 }
@@ -437,18 +430,18 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
 function renderJSONContent(
   doc: JSONContent,
   size: 'sm' | 'md' | 'lg',
-  onImageClick?: (url: string) => void,
+  onMediaClick?: (url: string) => void,
 ): ReactNode {
-  return recurse(doc, 0, size, onImageClick)
+  return recurse(doc, 0, size, onMediaClick)
 }
 
 function recurse(
   node: JSONContent,
   key: number,
   size: 'sm' | 'md' | 'lg',
-  onImageClick?: (url: string) => void,
+  onMediaClick?: (url: string) => void,
 ): ReactNode {
-  const children = node.content?.map((n, i) => recurse(n, i, size, onImageClick))
+  const children = node.content?.map((n, i) => recurse(n, i, size, onMediaClick))
 
   switch (node.type) {
     case 'doc':
@@ -484,13 +477,30 @@ function recurse(
         <button
           key={key}
           type="button"
-          onClick={() => onImageClick?.(node.attrs?.src ?? '')}
+          onClick={() => onMediaClick?.(node.attrs?.src ?? '')}
           className="cursor-pointer"
         >
           <img
             src={node.attrs?.src}
             alt={node.attrs?.alt ?? ''}
             title={node.attrs?.title ?? undefined}
+            className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+          />
+        </button>
+      )
+    case 'video':
+      return (
+        <button
+          key={key}
+          type="button"
+          onClick={() => onMediaClick?.(node.attrs?.src ?? '')}
+          className="cursor-pointer"
+        >
+          <video
+            src={node.attrs?.src}
+            muted
+            playsInline
+            preload="metadata"
             className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
           />
         </button>

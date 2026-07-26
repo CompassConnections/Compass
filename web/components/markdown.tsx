@@ -7,14 +7,10 @@ import {CustomLink} from 'web/components/links'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 
-export const MD_PATHS = [
-  'constitution',
-  'faq',
-  'financials',
-  'members',
-  'support',
-  'tips-bio',
-] as const
+// `faq` is deliberately absent: /faq no longer renders through this generic loader. It parses its
+// markdown at build time (see web/lib/faq.ts) so the questions reach the served HTML and the page can
+// group, search, and deep-link them — none of which is possible with the file as one opaque blob.
+export const MD_PATHS = ['constitution', 'financials', 'members', 'support', 'tips-bio'] as const
 
 type Props = {
   content: string

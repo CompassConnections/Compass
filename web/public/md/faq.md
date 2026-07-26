@@ -1,17 +1,14 @@
 # FAQ – Compass
 
 Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether
-platonic, romantic, or collaborative. It’s made possible by contributions from the community, including code, ideas,
-feedback, and donations. Unlike typical apps, Compass prioritizes **values, interests, and personality over swipes and
-ads**, giving you full control over who you discover and how you connect.
+platonic, romantic, or collaborative. Unlike typical apps, Compass is a transparent directory that prioritizes **values,
+interests,
+and personality without any swipes and
+ads**, giving you full control over who you discover and how you connect. It’s made possible by contributions from the
+community, including code, ideas,
+feedback, and donations.
 
-## What’s new?
-
-Stay up to date with the latest releases, features, and improvements [here](/news).
-
-### Is Compass mentioned in the press?
-
-Yes. You can find media coverage, our media kit, brand assets, and press contact details on the [Press page](/press).
+## The basics
 
 ### Why is the platform called Compass?
 
@@ -40,89 +37,6 @@ grounded in **shared values, trust, and understanding**, Compass is for you.
 
 Both, and others things. You can specify whether you’re looking for **platonic, romantic, or collaborative
 connections**.
-
-### Who started Compass?
-
-Compass was founded by [Martin Braquet](https://www.martinbraquet.com), an engineer and researcher passionate about
-tackling humanity’s most pressing challenges — from climate change and AI safety to animal welfare.
-
-Martin has lived across Europe, the U.S., India, and Indonesia, immersing himself in diverse practices ranging from
-meditation retreats to sustainability-focused forest co-ops. These experiences shaped his conviction that deep
-one-to-one human connections are among the most meaningful drivers of well-being and positive change.
-
-Compass grew out of that conviction. While Martin has long been driven to reduce global risks and suffering, he also
-recognized that his own life — and the lives of many others — would be greatly enriched by more profound, close, and
-supportive relationships. Although he initiated the project, the platform is a gift from the community — shaped by
-contributors, donors, and supporters who help it thrive. Compass is many people's attempt to build an open, transparent,
-and community-driven platform where people can connect around shared values, curiosity, and care, without the
-distractions of swipes, ads, or superficiality.
-
-Martin continues to serve as an initiator and steward of Compass, but its direction is intentionally placed in the hands
-of the community through the Compass Constitution (as detailed in the next section).
-
-### Who keeps Compass alive and thriving?
-
-Compass is a **gift from the community** — built by its members like you who care about deep, meaningful connections.
-Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
-
-### How does governance work?
-
-Compass is run democratically under a [constitution](/constitution) that prevents central control and ensures long-term
-alignment with its mission.
-
-- Major decisions (scope, funding, rules) are [voted](/vote) on by **active contributors**.
-- The full constitution is **public and transparent**.
-- No corporate capture — Compass will always remain a community-owned project.
-
-### Is Compass really free?
-
-Yes. Compass will always be:
-
-- **Ad-free**
-- **Subscription-free**
-- **Open-source**
-
-Supported entirely by **donations**, not by selling your data or attention.
-
-### How do you sustain Compass without ads or subscriptions?
-
-Through **[donations](/support) and contributions from the community**. Options include:
-
-- Open Collective
-- Liberapay
-- Ko-fi
-- GitHub Sponsors
-- Patreon
-- PayPal
-- Sharing ideas, feedback, or code
-
-Every contribution, no matter the size — from a small code tweak to helping refine the interface, or simply spreading
-the word — is part of the gift that keeps Compass free, ad-free, and community-owned. All funding and expenses are \*
-\*publicly documented\*\* [here](/financials).
-
-### Is my data safe?
-
-Yes.
-
-- Your data will **never be sold**.
-- You can **control what is visible publicly**.
-- Chat messages are stored in the database with AES-256 encryption (it may move toward **end-to-end encryption** in
-  future versions).
-- Stored in secure Supabase and Firebase databases.
-
-### How is the compatibility score calculated?
-
-The **compatibility score** comes from answers to **compatibility prompts**. Each user provides:
-
-- **Their answer**
-- **Answers they would accept from others**
-- **A degree of importance** for each question
-
-Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See
-this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
-
-The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
-is **open source** and open to review, feedback, and improvement by the community.
 
 ### What are Events and why do they matter?
 
@@ -153,6 +67,93 @@ Examples of events you might find or create:
 
 Anyone can [create an event](/events) — whether you're looking to find a hiking buddy, start a writers' circle, or host
 a discussion about effective altruism. Events are how we turn shared values into shared lives.
+
+### How is the compatibility score calculated?
+
+The **compatibility score** comes from answers to **compatibility prompts**. Each user provides:
+
+- **Their answer**
+- **Answers they would accept from others**
+- **A degree of importance** for each question
+
+Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See
+this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
+
+The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
+is **open source** and open to review, feedback, and improvement by the community.
+
+## Money & governance
+
+### Is Compass really free?
+
+Yes. Compass will always be:
+
+- **Ad-free**
+- **Subscription-free**
+- **Open-source**
+
+Supported entirely by **donations**, not by selling your data or attention.
+
+### How do you sustain Compass without ads or subscriptions?
+
+Through **[donations](/support) and contributions from the community**. Options include:
+
+- Open Collective
+- Liberapay
+- Ko-fi
+- GitHub Sponsors
+- Patreon
+- PayPal
+- Sharing ideas, feedback, or code
+
+Every contribution, no matter the size — from a small code tweak to helping refine the interface, or simply spreading
+the word — is part of the gift that keeps Compass free, ad-free, and community-owned. All funding and expenses are \*
+\*publicly documented\*\* [here](/financials).
+
+### How does governance work?
+
+Compass is run democratically under a [constitution](/constitution) that prevents central control and ensures long-term
+alignment with its mission.
+
+- Major decisions (scope, funding, rules) are [voted](/vote) on by **active contributors**.
+- The full constitution is **public and transparent**.
+- No corporate capture — Compass will always remain a community-owned project.
+
+### Who started Compass?
+
+Compass was founded by [Martin Braquet](https://www.martinbraquet.com), an engineer and researcher passionate about
+tackling humanity’s most pressing challenges — from climate change and AI safety to animal welfare.
+
+Martin has lived across Europe, the U.S., India, and Indonesia, immersing himself in diverse practices ranging from
+meditation retreats to sustainability-focused forest co-ops. These experiences shaped his conviction that deep
+one-to-one human connections are among the most meaningful drivers of well-being and positive change.
+
+Compass grew out of that conviction. While Martin has long been driven to reduce global risks and suffering, he also
+recognized that his own life — and the lives of many others — would be greatly enriched by more profound, close, and
+supportive relationships. Although he initiated the project, the platform is a gift from the community — shaped by
+contributors, donors, and supporters who help it thrive. Compass is many people's attempt to build an open, transparent,
+and community-driven platform where people can connect around shared values, curiosity, and care, without the
+distractions of swipes, ads, or superficiality.
+
+Martin continues to serve as an initiator and steward of Compass, but its direction is intentionally placed in the hands
+of the community through the Compass Constitution (as detailed in the next section).
+
+### Who keeps Compass alive and thriving?
+
+Compass is a **gift from the community** — built by its members like you who care about deep, meaningful connections.
+Your participation, feedback, and contributions help keep it free, transparent, and ad-free for everyone.
+
+## Privacy & technology
+
+### Is my data safe?
+
+Yes.
+
+- Your data will **never be sold**.
+- You can **control what is visible publicly**.
+- Chat messages are stored in the database with AES-256 encryption (it may move toward **end-to-end encryption** in
+  future versions).
+- Stored in secure Supabase and Firebase databases.
 
 ### What platforms does Compass run on?
 
@@ -191,10 +192,27 @@ of the project:
 You can explore or test the API at [api.compassmeet.com](https://api.compassmeet.com). Developers can contribute new
 endpoints or suggest improvements.
 
+## Community & updates
+
+### How can I help?
+
+- **Spread the Word**: By far the best way to help is to grow it! Tell friends and family. Post about it on forums,
+  social media, etc. Share the URL or this [QR code](/referrals).
+- **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
+- **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
+- **Make and vote on proposals**: [vote here](/vote)
+- **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
+- **Donate**: [Support the infrastructure](/support)
+
+### How can I contact the community?
+
+You can reach us through the [contact form](/contact), the [feedback form](https://forms.gle/tKnXUMAbEreMK6FC6), or any
+of our [socials](/social).
+
 ### How fast is Compass growing?
 
 Compass has officially **launched** in October 2025 and is growing fast. You can explore real-time stats and transparent
-community data on our [**Growth & Stats page**](/stats). It includes information such as:
+community data on our [Growth & Stats page](/stats). It includes information such as:
 
 - Community growth over time
 - Number of active users
@@ -211,6 +229,16 @@ community data on our [**Growth & Stats page**](/stats). It includes information
 Because Compass is fully transparent and community-owned, you can see how the ecosystem evolves — not just in numbers,
 but in how people connect, collaborate, and help shape the platform together.
 
+### What’s new?
+
+Stay up to date with the latest releases, features, and improvements [here](/news).
+
+### Is Compass mentioned in the press?
+
+Yes. You can find media coverage, our media kit, brand assets, and press contact details on the [Press page](/press).
+
+## Vision & roadmap
+
 ### What’s the long-term vision?
 
 Our goal is for Compass to become what Linux is for software, Wikipedia is for knowledge, or Firefox is for browsing — a
@@ -224,18 +252,3 @@ expand the platform.
 
 Every action, whether sharing, donating, or contributing, directly helps Compass remain ad-free, subscription-free, and
 community-owned.
-
-### How can I help?
-
-- **Give Feedback**: [Fill out the suggestion form](https://forms.gle/tKnXUMAbEreMK6FC6)
-- **Join the Discussion**: [Discord Community](https://discord.gg/8Vd7jzqjun)
-- **Make and vote on proposals**: [vote here](/vote)
-- **Contribute to Development**: [View the code on GitHub](https://github.com/CompassConnections/Compass)
-- **Donate**: [Support the infrastructure](/support)
-- **Spread the Word**: Tell friends and family who value depth and real connection. Post about it on forums, social
-  media, etc. Share the URL or this [QR code](/referrals).
-
-### How can I contact the community?
-
-You can reach us through the [contact form](/contact), the [feedback form](https://forms.gle/tKnXUMAbEreMK6FC6), or any
-of our [socials](/social).

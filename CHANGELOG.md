@@ -102,6 +102,8 @@ only runs at tag-creation time, so it won't touch releases that already exist.
 - Added F-Droid publishing documentation and a React/TypeScript fundamentals guide; added `CLAUDE.md` to
   several sub-packages
 
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.12.0...1.13.0
+
 ---
 
 <!-- Backfill older releases above this line, following the same two-section pattern and marker described at the top of this file. -->

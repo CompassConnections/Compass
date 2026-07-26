@@ -220,7 +220,7 @@ export const Search = forwardRef<
         open={openFiltersModal && !suppressFiltersModal}
         setOpen={setOpenFiltersModal}
       >
-        <Row className="items-center justify-between px-3 pt-3">
+        <Row className="items-center justify-between px-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
           <span className="font-medium text-ink-900">{t('search.filters', 'Filters')}</span>
           <Button
             size="2xs"

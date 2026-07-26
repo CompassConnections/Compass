@@ -45,7 +45,7 @@ export function MediaModal(props: {url: string; open: boolean; setOpen: (open: b
         {/* close button, fixed so it stays visible whatever the media size */}
         <button
           onClick={() => setOpen(false)}
-          className="text-ink-700 hover:text-primary-400 focus:text-primary-400 fixed right-4 top-4 z-10 cursor-pointer outline-none"
+          className="text-ink-700 hover:text-primary-400 focus:text-primary-400 fixed right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 cursor-pointer outline-none"
         >
           <XMarkIcon className="h-8 w-8" />
           <div className="sr-only">Close</div>

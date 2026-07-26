@@ -14,7 +14,7 @@ export default function TooShortBio() {
   const t = useT()
   const text = t(
     'profile.bio.too_short_tooltip',
-    'Since your bio is too short, Compass\' algorithm filters out your profile from search results (unless "Include incomplete profiles" is selected). This ensures searches show meaningful profiles.',
+    "Since your bio is too short, Compass' algorithm filters out your profile from search results by default. This ensures searches show meaningful profiles.",
   )
   return (
     <p className="text-red-600">

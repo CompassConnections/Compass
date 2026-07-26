@@ -1,6 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {INVERTED_DIET_CHOICES, INVERTED_LANGUAGE_CHOICES} from 'common/choices'
+import {FilterFields} from 'common/filters'
 import {Gender} from 'common/gender'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
@@ -13,6 +14,7 @@ import {
   HandHeart,
   Languages,
   Salad,
+  SearchX,
   Sparkles,
   Wine,
 } from 'lucide-react'
@@ -20,17 +22,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, {useEffect, useRef, useState} from 'react'
 import {PiMagnifyingGlassBold} from 'react-icons/pi'
+import {LocationFilterProps} from 'web/components/filters/location-filter'
 import GenderIcon from 'web/components/gender-icon'
 import {IconWithInfo} from 'web/components/icons'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ProfileLocation} from 'web/components/profile/profile-location'
 import {getSeekingText} from 'web/components/profile-about'
+import {GetNotifiedButton} from 'web/components/searches/get-notified-button'
 import {CompatibleBadge} from 'web/components/widgets/compatible-badge'
 import {Content} from 'web/components/widgets/editor'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
 import {StarButton} from 'web/components/widgets/star-button'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
+import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {isDark, useTheme} from 'web/hooks/use-theme'
 import {useUser} from 'web/hooks/use-user'
@@ -91,6 +96,10 @@ export const ProfileGrid = (props: {
   hiddenUserIds?: string[]
   onUndoHidden?: (userId: string) => void
   displayOptions?: Partial<DisplayOptions>
+  filters: Partial<FilterFields>
+  locationFilterProps: LocationFilterProps
+  bookmarkedSearches: BookmarkedSearchesType[]
+  refreshBookmarkedSearches: () => void
 }) => {
   const {
     profiles,
@@ -104,6 +113,10 @@ export const ProfileGrid = (props: {
     hiddenUserIds,
     onUndoHidden,
     displayOptions,
+    filters,
+    locationFilterProps,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
   } = props
 
   const {cardSize} = displayOptions ?? {}
@@ -155,15 +168,29 @@ export const ProfileGrid = (props: {
         !isLoadingMore &&
         !isReloading &&
         other_profiles.length === 0 && (
-          <div className="py-8 text-center">
-            <p>{t('profile_grid.no_profiles', 'No profiles found.')}</p>
-            <p>
+          <Col className="items-center gap-3 py-16 px-4 text-center">
+            <div className="rounded-full bg-canvas-200 p-4">
+              <SearchX className="h-7 w-7 text-ink-400" />
+            </div>
+            <p className="text-lg font-medium text-ink-900">
+              {t('profile_grid.no_profiles', 'No profiles found')}
+            </p>
+            <p className="max-w-sm text-ink-500">
               {t(
                 'profile_grid.notification_cta',
-                "Feel free to click on Get Notified and we'll notify you when new users match your search!",
+                "We'll notify you as soon as someone new matches your search.",
               )}
             </p>
-          </div>
+            <GetNotifiedButton
+              filters={filters}
+              locationFilterProps={locationFilterProps}
+              bookmarkedSearches={bookmarkedSearches}
+              refreshBookmarkedSearches={refreshBookmarkedSearches}
+              color="cta"
+              size="lg"
+              className="mt-1"
+            />
+          </Col>
         )
       )}
     </div>
@@ -401,47 +428,54 @@ function ProfilePreview(props: {
                 className={clsx('pt-1 text-xs', cardSize !== 'large' && 'hidden sm:flex')}
               />
             )}
-            {onHide && (
-              <HideProfileButton
-                hiddenUserId={profile.user_id}
-                onHidden={onHide}
-                className="ml-1"
-                stopPropagation
-                eyeOff
-                onPointerDown={() => {
-                  hideButtonClickedRef.current = true
-                }}
-              />
-            )}
-            {hasStar !== undefined && (
-              <StarButton
-                targetProfile={profile}
-                isStarred={hasStar}
-                refresh={refreshStars}
-                size={'h-4 w-4'}
-                className="h-7 w-7 !rounded-lg !p-1 hover:border-primary-400 hover:bg-primary-50"
-                onPointerDown={() => {
-                  hideButtonClickedRef.current = true
-                }}
-              />
-            )}
-            {user && (
-              <div
-                className={clsx(cardSize !== 'large' && 'hidden sm:flex')}
-                data-testid="message-profile-button"
-              >
-                <SendMessageButton
-                  toUser={user}
-                  profile={profile}
-                  size={'h-4 w-4'}
-                  className={clsx('!p-1 w-7 h-7')}
-                  accentIfMessaged
+            <Row
+              className={clsx(
+                'items-start gap-1 transition-opacity',
+                'lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100',
+              )}
+            >
+              {onHide && (
+                <HideProfileButton
+                  hiddenUserId={profile.user_id}
+                  onHidden={onHide}
+                  className="ml-1"
+                  stopPropagation
+                  eyeOff
                   onPointerDown={() => {
                     hideButtonClickedRef.current = true
                   }}
                 />
-              </div>
-            )}
+              )}
+              {hasStar !== undefined && (
+                <StarButton
+                  targetProfile={profile}
+                  isStarred={hasStar}
+                  refresh={refreshStars}
+                  size={'h-4 w-4'}
+                  className="h-7 w-7 !rounded-lg !p-1 hover:border-primary-400 hover:bg-primary-50"
+                  onPointerDown={() => {
+                    hideButtonClickedRef.current = true
+                  }}
+                />
+              )}
+              {user && (
+                <div
+                  className={clsx(cardSize !== 'large' && 'hidden sm:flex')}
+                  data-testid="message-profile-button"
+                >
+                  <SendMessageButton
+                    toUser={user}
+                    profile={profile}
+                    size={'h-4 w-4'}
+                    className={clsx('!p-1 w-7 h-7')}
+                    accentIfMessaged
+                    onPointerDown={() => {
+                      hideButtonClickedRef.current = true
+                    }}
+                  />
+                </div>
+              )}
+            </Row>
           </Row>
 
           <div className={clsx('flex lg:flex-row h-full lg:justify-between', cardClass)}>

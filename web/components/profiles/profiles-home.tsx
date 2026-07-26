@@ -1,3 +1,5 @@
+import {XMarkIcon} from '@heroicons/react/24/solid'
+import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
@@ -77,6 +79,16 @@ export function ProfilesHome() {
   const {locale} = useLocale()
   const isClearedFilters = useIsClearedFilters(filters)
   const isMobile = useIsMobile()
+  // Tracked separately from `isMobile` (640px) since the docked filters column only replaces
+  // the slide-over once there's room beside the grid, at the `lg` (1024px) breakpoint.
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)')
+    const update = () => setIsDesktop(mql.matches)
+    update()
+    mql.addEventListener('change', update)
+    return () => mql.removeEventListener('change', update)
+  }, [])
   const [sendScrollWarning, setSendScrollWarning] = useState(true)
   const [recentlyHiddenIds, setRecentlyHiddenIds] = useState<string[]>([])
   const {refreshHiddenProfiles} = useHiddenProfiles()
@@ -224,9 +236,11 @@ export function ProfilesHome() {
     />
   )
 
+  const showDockedFilters = isDesktop && openFiltersModal
+
   return (
-    <div className="lg:grid lg:grid-cols-12 lg:gap-4">
-      <Col className={'lg:col-span-9'}>
+    <div className={clsx(showDockedFilters && 'lg:grid lg:grid-cols-12 lg:gap-4')}>
+      <Col className={clsx(showDockedFilters && 'lg:col-span-9')}>
         {showSignupBanner && user && (
           <div className="w-full bg-canvas-50 rounded-xl text-center py-3 px-3 relative">
             <Col className="items-center justify-center gap-2">
@@ -321,9 +335,10 @@ export function ProfilesHome() {
         <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
         <Search
           ref={searchInputRef}
-          openFilters={() => setOpenFiltersModal(true)}
+          openFilters={() => setOpenFiltersModal((open) => !open)}
           openFiltersModal={openFiltersModal}
           setOpenFiltersModal={setOpenFiltersModal}
+          suppressFiltersModal={isDesktop}
           highlightFilters={highlightFilters}
           highlightSort={highlightSort}
           youProfile={you}
@@ -361,14 +376,30 @@ export function ProfilesHome() {
               hiddenUserIds={recentlyHiddenIds}
               onUndoHidden={onUndoHidden}
               displayOptions={displayOptions}
+              filters={filters}
+              locationFilterProps={locationFilterProps}
+              bookmarkedSearches={bookmarkedSearches}
+              refreshBookmarkedSearches={refreshBookmarkedSearches}
             />
           </>
         )}
       </Col>
-      {/* Desktop: filters sidebar on the right */}
-      <div className="hidden lg:block lg:col-span-3 lg:sticky lg:top-4 lg:h-fit text-sm bg-canvas-50 rounded-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
-        {filtersElement}
-      </div>
+      {showDockedFilters && (
+        <div className="hidden lg:flex lg:flex-col lg:col-span-3 lg:sticky lg:top-4 lg:h-fit text-sm bg-canvas-50 rounded-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+          <Row className="items-center justify-between px-3 pt-3">
+            <span className="font-medium text-ink-900">{t('search.filters', 'Filters')}</span>
+            <Button
+              size="2xs"
+              color="gray-white"
+              onClick={() => setOpenFiltersModal(false)}
+              aria-label={t('common.close', 'Close')}
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </Button>
+          </Row>
+          {filtersElement}
+        </div>
+      )}
     </div>
   )
 }

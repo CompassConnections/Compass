@@ -1,33 +1,29 @@
 import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
+import {XMarkIcon} from '@heroicons/react/24/solid'
+import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
 import {debounce as debounceFn} from 'lodash'
-import {Bell} from 'lucide-react'
 import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
-import toast from 'react-hot-toast'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {RightModal} from 'web/components/layout/right-modal'
 import {Row} from 'web/components/layout/row'
 import {BookmarkSearchButton, BookmarkStarButton} from 'web/components/searches/button'
+import {GetNotifiedButton} from 'web/components/searches/get-notified-button'
 import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
-import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
-import {submitBookmarkedSearch} from 'web/lib/supabase/searches'
 
 import {LocationFilterProps} from './location-filter'
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(input)
 }
-
-const MAX_BOOKMARKED_SEARCHES = 10
 
 export const Search = forwardRef<
   HTMLInputElement,
@@ -47,6 +43,9 @@ export const Search = forwardRef<
     highlightFilters?: boolean
     highlightSort?: boolean
     setOpenFiltersModal?: (open: boolean) => void
+    // True when the parent renders filtersElement as a docked column instead (desktop),
+    // so this component's own slide-over shouldn't also open.
+    suppressFiltersModal?: boolean
     filtersElement: ReactElement
   }
 >((props, ref) => {
@@ -63,6 +62,7 @@ export const Search = forwardRef<
     openFilters,
     openFiltersModal: parentOpenFiltersModal,
     setOpenFiltersModal: parentSetOpenFiltersModal,
+    suppressFiltersModal,
     highlightFilters,
     highlightSort,
     filtersElement,
@@ -106,12 +106,8 @@ export const Search = forwardRef<
   // const [textToType, setTextToType] = useState(getRandomPair())
   // const [_, setCharIndex] = useState(0)
   // const [isHolding, setIsHolding] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
-  const [loadingBookmark, setLoadingBookmark] = useState(false)
   const [openBookmarks, setOpenBookmarks] = useState(false)
   const [openStarBookmarks, setOpenStarBookmarks] = useState(false)
-  const user = useUser()
-  const isClearedFilters = useIsClearedFilters(filters)
   // const choices = useChoicesContext()
 
   const [keywordInput, setKeywordInput] = useState(filters.name ?? '')
@@ -157,25 +153,21 @@ export const Search = forwardRef<
   //   return () => clearInterval(interval)
   // }, [textToType, isHolding])
 
-  useEffect(() => {
-    setTimeout(() => setBookmarked(false), 2000)
-  }, [bookmarked])
-
   return (
     <Col className={'text-ink-600 w-full gap-2 py-2 text-sm main-font'}>
-      <Row className={'mb-2 justify-between gap-2'}>
+      <Row className="mb-2 items-center justify-center gap-1.5 flex-wrap">
         <Input
           ref={ref}
           value={keywordInput}
           placeholder={placeholder}
-          className={'w-full sm:w-96'}
+          className="w-full max-w-md !h-14 !rounded-full !px-5 text-base shadow-md"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setKeywordInput(e.target.value)
           }}
           searchIcon
         />
 
-        <Row className="gap-2">
+        <Row className="gap-1.5 shrink-0 items-center">
           <Select
             ref={sortSelectRef}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -186,7 +178,10 @@ export const Search = forwardRef<
               }
             }}
             value={filters.orderBy || 'created_time'}
-            className={`w-18 border-ink-300 rounded-md${highlightSort ? ' border-blue-500 ring-2 ring-blue-300' : ''}`}
+            className={clsx(
+              '!h-10 w-auto !rounded-full !border-canvas-200 !bg-transparent !shadow-none text-xs text-ink-500',
+              highlightSort && 'border-blue-500 ring-2 ring-blue-300',
+            )}
           >
             <option value="created_time">{t('common.new', 'New')}</option>
             {youProfile && (
@@ -195,57 +190,50 @@ export const Search = forwardRef<
             <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
           <Button
-            color={highlightFilters ? 'blue' : 'none'}
+            color={highlightFilters ? 'blue' : 'gray-white'}
             size="sm"
-            className={`border-ink-300 border lg:hidden${highlightFilters ? ' border-blue-500' : ''}`}
+            className={clsx(
+              '!h-10 !rounded-full border border-canvas-200',
+              highlightFilters && 'border-blue-500',
+            )}
             onClick={handleOpenFilters}
           >
-            <IoFilterSharp className="h-5 w-5" />
+            <IoFilterSharp className="h-4 w-4 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('search.filters', 'Filters')}</span>
           </Button>
+          <GetNotifiedButton
+            filters={filters}
+            locationFilterProps={locationFilterProps}
+            bookmarkedSearches={bookmarkedSearches}
+            refreshBookmarkedSearches={refreshBookmarkedSearches}
+            onSaved={() => setOpenBookmarks(true)}
+            iconOnly
+            size="sm"
+            color="gray-white"
+            className="!h-10 !w-10 !rounded-full border border-canvas-200 !p-0"
+          />
         </Row>
       </Row>
       <RightModal
-        className="bg-canvas-50 w-2/3 text-sm lg:hidden h-full max-h-screen overflow-y-auto"
-        open={openFiltersModal}
+        className="bg-canvas-50 w-full sm:w-96 text-sm h-full max-h-screen overflow-y-auto"
+        open={openFiltersModal && !suppressFiltersModal}
         setOpen={setOpenFiltersModal}
       >
+        <Row className="items-center justify-between px-3 pt-3">
+          <span className="font-medium text-ink-900">{t('search.filters', 'Filters')}</span>
+          <Button
+            size="2xs"
+            color="gray-white"
+            onClick={() => setOpenFiltersModal(false)}
+            aria-label={t('common.close', 'Close')}
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </Button>
+        </Row>
         {filtersElement}
       </RightModal>
       <Row className="items-center justify-between w-full flex-wrap gap-2">
         <Row className={'mb-2 gap-2'}>
-          <Button
-            disabled={loadingBookmark}
-            loading={loadingBookmark}
-            onClick={() => {
-              if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
-                toast.error(
-                  `You can bookmark maximum ${MAX_BOOKMARKED_SEARCHES} searches; please delete one first.`,
-                )
-                setOpenBookmarks(true)
-                return
-              }
-              setLoadingBookmark(true)
-              submitBookmarkedSearch(filters, locationFilterProps, user?.id).finally(() => {
-                setLoadingBookmark(false)
-                setBookmarked(true)
-                refreshBookmarkedSearches()
-                setOpenBookmarks(true)
-              })
-            }}
-            // size={'xs'}
-            color={'none'}
-            className={'text-white bg-cta hover:bg-cta-hover rounded-xl text-xs transition-colors'}
-          >
-            <Bell className="h-4 w-4 mr-1 hidden sm:flex" />{' '}
-            {bookmarked
-              ? t('common.saved', 'Saved!')
-              : loadingBookmark
-                ? ''
-                : isClearedFilters
-                  ? t('common.notified_any', 'Get notified for any new profile')
-                  : t('common.notified', 'Get notified for selected filters')}
-          </Button>
-
           <BookmarkSearchButton
             refreshBookmarkedSearches={refreshBookmarkedSearches}
             bookmarkedSearches={bookmarkedSearches}

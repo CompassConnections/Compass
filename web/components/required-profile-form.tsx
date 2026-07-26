@@ -92,13 +92,13 @@ export const RequiredProfileUserForm = (props: {
       {/*    {t('profile.basics.subtitle', 'Write your own bio, your own way.')}*/}
       {/*  </div>*/}
       {/*)}*/}
-      <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-fit'}>
+      <Col className={'gap-8 pb-[env(safe-area-inset-bottom)] w-full'}>
         {(step === 0 || profileCreatedAlready) && (
           <Col className={'gap-2'}>
             <label className={clsx(labelClassName)}>
               {t('profile.basics.display_name', 'Display name')}
             </label>
-            <Row className={'items-center gap-2'}>
+            <Row className={'items-center gap-2 w-full'}>
               <Input
                 disabled={false}
                 type="text"
@@ -131,7 +131,7 @@ export const RequiredProfileUserForm = (props: {
                 <label className={clsx(labelClassName)}>
                   {t('profile.basics.username', 'Username')}
                 </label>
-                <Row className={'items-center gap-2'}>
+                <Row className={'items-center gap-2 w-full'}>
                   <Input
                     disabled={loadingUsername}
                     type="text"
@@ -182,8 +182,13 @@ export const RequiredProfileUserForm = (props: {
         )}
 
         {onSubmit && (
-          <Row className={'justify-end'}>
+          <Row>
             <Button
+              // `cta` (bg-cta), not the default `gray-outline`: this is the one committed action on
+              // the screen, and it should read as such — same token StepProgress uses for "done".
+              color="cta"
+              size="xl"
+              className="w-full"
               disabled={isDisabled}
               loading={isSubmitting}
               onClick={async () => {

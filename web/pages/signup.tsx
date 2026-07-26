@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
@@ -14,6 +15,7 @@ import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {initialRequiredState, RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {StepProgress} from 'web/components/widgets/step-progress'
+import {surface} from 'web/components/widgets/surface'
 import {useTracking} from 'web/hooks/use-tracking'
 import {api} from 'web/lib/api'
 import {auth, CACHED_REFERRAL_USERNAME_KEY} from 'web/lib/firebase/users'
@@ -154,11 +156,15 @@ export default function SignupPage() {
             className="mb-7"
           />
           {step === 0 ? (
-            <RequiredProfileUserForm
-              data={baseUser}
-              setData={setBaseUserState}
-              onSubmit={async () => advanceToStep(1)}
-            />
+            // Card + centered, matching the /onboarding screens that lead directly here — two short
+            // fields floating left in a wide column read as unfinished, not deliberate.
+            <div className={clsx(surface, 'mx-auto w-full max-w-md p-6 sm:p-10')}>
+              <RequiredProfileUserForm
+                data={baseUser}
+                setData={setBaseUserState}
+                onSubmit={async () => advanceToStep(1)}
+              />
+            </div>
           ) : step === 1 ? (
             <Col className={'w-full px-2 sm:px-6 py-4 mb-2 '}>
               <OptionalProfileUserForm

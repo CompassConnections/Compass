@@ -1,6 +1,8 @@
+import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/24/solid'
 import {githubRepoSlug} from 'common/constants'
 import {useEffect, useState} from 'react'
 import {Col} from 'web/components/layout/col'
+import {Row} from 'web/components/layout/row'
 import {CustomLink} from 'web/components/links'
 import {CustomMarkdown} from 'web/components/markdown'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
@@ -10,6 +12,22 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useT} from 'web/lib/locale'
 import {getPageData} from 'web/lib/util/page-data'
 import {isNativeMobile} from 'web/lib/util/webview'
+
+// Release notes are written with a user-facing summary followed by a technical section, separated by this
+// marker on its own line (see CHANGELOG.md). Only the summary renders by default; the technical section is
+// tucked behind a toggle. Releases predating this convention have no marker, so they render as-is.
+const TECHNICAL_SECTION_MARKER = '<!--tech-->'
+
+function splitReleaseNotes(body: string): {summary: string; technical: string | null} {
+  const markerIndex = body.indexOf(TECHNICAL_SECTION_MARKER)
+  if (markerIndex === -1) {
+    return {summary: body, technical: null}
+  }
+  return {
+    summary: body.slice(0, markerIndex).trim(),
+    technical: body.slice(markerIndex + TECHNICAL_SECTION_MARKER.length).trim(),
+  }
+}
 
 async function fetchReleases() {
   const releases = await fetch(`https://api.github.com/repos/${githubRepoSlug}/releases`)
@@ -109,36 +127,67 @@ export default function WhatsNew(props: {releases?: Release[]}) {
         <Col className="max-w-3xl mx-auto py-8 px-4 custom-link gap-6">
           <EnglishOnlyWarning />
           {releases.map((release: Release) => (
-            <div
-              key={release.id}
-              className="bg-canvas-50 border border-canvas-200 rounded-xl p-6 transition-all hover:border-primary-300 hover:shadow-sm"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="font-heading text-2xl font-medium text-ink-900 leading-tight">
-                  {release.name || release.tag_name}
-                </h2>
-                <span className="text-sm text-ink-300 font-mono whitespace-nowrap ml-4">
-                  {new Date(release.published_at).toISOString().split('T')[0]}
-                </span>
-              </div>
-              <div className="mb-5 prose prose-neutral dark:prose-invert text-ink-900">
-                <CustomMarkdown>
-                  {formatPullLinks(
-                    release.body || t('news.no_release_notes', '_No release notes provided._'),
-                  )}
-                </CustomMarkdown>
-              </div>
-              <CustomLink
-                href={release.html_url}
-                className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors"
-              >
-                {t('news.view_on_github', 'View on GitHub')}
-              </CustomLink>
-            </div>
+            <ReleaseCard key={release.id} release={release} />
           ))}
         </Col>
       )}
     </PageBase>
+  )
+}
+
+function ReleaseCard(props: {release: Release}) {
+  const {release} = props
+  const t = useT()
+  const [showTechnical, setShowTechnical] = useState(false)
+
+  const {summary, technical} = splitReleaseNotes(
+    formatPullLinks(release.body || t('news.no_release_notes', '_No release notes provided._')),
+  )
+
+  return (
+    <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-6 transition-all hover:border-primary-300 hover:shadow-sm">
+      <div className="flex justify-between items-start mb-4">
+        <h2 className="font-heading text-2xl font-medium text-ink-900 leading-tight">
+          {release.name || release.tag_name}
+        </h2>
+        <span className="text-sm text-ink-300 font-mono whitespace-nowrap ml-4">
+          {new Date(release.published_at).toISOString().split('T')[0]}
+        </span>
+      </div>
+      <div className="mb-5 prose prose-neutral dark:prose-invert text-ink-900">
+        <CustomMarkdown>{summary}</CustomMarkdown>
+      </div>
+      {technical && (
+        <div className="mb-5">
+          <button
+            onClick={() => setShowTechnical(!showTechnical)}
+            className="text-primary-500 hover:text-primary-700 z-10 select-none text-sm"
+          >
+            <Row className="items-center gap-0.5">
+              {showTechnical ? (
+                <ChevronUpIcon className="h-4 w-4" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" />
+              )}
+              {showTechnical
+                ? t('news.hide_technical_details', 'Hide technical details')
+                : t('news.show_technical_details', 'Show technical details')}
+            </Row>
+          </button>
+          {showTechnical && (
+            <div className="mt-3 prose prose-neutral dark:prose-invert text-ink-900">
+              <CustomMarkdown>{technical}</CustomMarkdown>
+            </div>
+          )}
+        </div>
+      )}
+      <CustomLink
+        href={release.html_url}
+        className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors"
+      >
+        {t('news.view_on_github', 'View on GitHub')}
+      </CustomLink>
+    </div>
   )
 }
 

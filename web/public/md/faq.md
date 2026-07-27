@@ -1,12 +1,9 @@
 # FAQ – Compass
 
-Compass is a **free, open-source platform to help people form deep, meaningful, and lasting connections** — whether
-platonic, romantic, or collaborative. Unlike typical apps, Compass is a transparent directory that prioritizes **values,
-interests,
-and personality without any swipes and
-ads**, giving you full control over who you discover and how you connect. It’s made possible by contributions from the
-community, including code, ideas,
-feedback, and donations.
+Compass is a **free platform for finding your people** — friends, partners, or collaborators — **based on who they are,
+not how they look**. Instead of swiping through whoever an algorithm picks for you, you search a fully open directory by
+values, interests, and personality, and decide for yourself who is worth meeting. No ads, no paywalls, no hidden
+ranking: Compass is built, funded, and moderated by the community that uses it.
 
 ## The basics
 

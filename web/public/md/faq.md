@@ -157,8 +157,8 @@ Yes.
 
 ### What platforms does Compass run on?
 
-Compass is mostly both as [website](https://www.compassmeet.com/)
-and [android](https://play.google.com/store/apps/details?id=com.compassconnections.app) application.
+Compass is both a [website](https://www.compassmeet.com/)
+and an [android](https://play.google.com/store/apps/details?id=com.compassconnections.app) application.
 
 On iPhone, you can install Compass as a Progressive Web App (PWA). Open Compass in Safari (not Chrome), tap the Share
 icon, then choose “Add to Home Screen.” After installing, open the app from your home screen and accept the notification

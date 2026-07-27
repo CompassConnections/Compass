@@ -9,13 +9,13 @@
 
 # Compass
 
-This repository contains the source code for [Compass](https://compassmeet.com) — a transparent platform for forming
-deep, authentic 1-on-1 connections with clarity and efficiency.
+This repository contains the source code for [Compass](https://compassmeet.com) — a transparent directory to find your
+people with ease — based on who they are, not how they look.
 
 ## Features
 
 - Extremely detailed profiles for deep connections
-- Radically transparent: user base fully searchable
+- Radically transparent: people directory fully searchable
 - Free, ad-free, not for profit (supported by donations)
 - Created, hosted, maintained, and moderated by volunteers
 - Open-source

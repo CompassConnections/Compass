@@ -20,7 +20,7 @@ import {
   Wine,
 } from 'lucide-react'
 import Link from 'next/link'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {PiMagnifyingGlassBold} from 'react-icons/pi'
 import {LocationFilterProps} from 'web/components/filters/location-filter'
 import GenderIcon from 'web/components/gender-icon'
@@ -82,6 +82,9 @@ type CardSizeConfig = {
 }
 
 const MIN_BIO_LINES = 2
+
+/** How long a touch has to stay down before it reveals the card actions instead of navigating. */
+const LONG_PRESS_MS = 400
 
 const CARD_SIZE_CONFIG: Record<CardSize, CardSizeConfig> = {
   small: {
@@ -484,6 +487,32 @@ function ProfilePreview(props: {
   const ringTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pointerStartRef = useRef<{x: number; y: number} | null>(null)
 
+  // Touch has no hover, so the actions can't hide behind one — a press and hold reveals them.
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [showActions, setShowActions] = useState(false)
+  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  /** Set once the hold fires, so the release that follows opens the actions instead of the profile. */
+  const longPressedRef = useRef(false)
+
+  const clearLongPress = () => {
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current)
+      longPressTimeoutRef.current = null
+    }
+  }
+
+  // Any press outside puts them away again — including a press on another card, which reveals its own.
+  useEffect(() => {
+    if (!showActions) return
+    const onDocumentPointerDown = (e: PointerEvent) => {
+      if (!cardRef.current?.contains(e.target as Node)) setShowActions(false)
+    }
+    document.addEventListener('pointerdown', onDocumentPointerDown)
+    return () => document.removeEventListener('pointerdown', onDocumentPointerDown)
+  }, [showActions])
+
+  useEffect(() => clearLongPress, [])
+
   const {theme} = useTheme()
   const isDarkTheme = isDark(theme)
 
@@ -521,9 +550,35 @@ function ProfilePreview(props: {
       return
     }
     pointerStartRef.current = {x: e.clientX, y: e.clientY}
+
+    longPressedRef.current = false
+    // Mouse users get the actions on hover, so holding the button down shouldn't hijack their click.
+    if (e.pointerType !== 'mouse') {
+      clearLongPress()
+      longPressTimeoutRef.current = setTimeout(() => {
+        longPressTimeoutRef.current = null
+        longPressedRef.current = true
+        setShowActions(true)
+      }, LONG_PRESS_MS)
+    }
+  }
+
+  // A press that turns into a scroll is not a hold.
+  const handlePointerMove = (e: React.PointerEvent) => {
+    const start = pointerStartRef.current
+    if (!start || !longPressTimeoutRef.current) return
+    if (Math.abs(e.clientX - start.x) > 10 || Math.abs(e.clientY - start.y) > 10) clearLongPress()
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
+    clearLongPress()
+
+    // The hold already did something — don't also navigate or run the press feedback.
+    if (longPressedRef.current) {
+      pointerStartRef.current = null
+      return
+    }
+
     if (pointerStartRef.current) {
       const dx = Math.abs(e.clientX - pointerStartRef.current.x)
       const dy = Math.abs(e.clientY - pointerStartRef.current.y)
@@ -550,7 +605,20 @@ function ProfilePreview(props: {
     pointerStartRef.current = null
   }
 
-  const handleClick = () => {}
+  const handleClick = (e: React.MouseEvent) => {
+    // Browsers still fire a click after the hold, which would navigate away from the actions we
+    // just revealed.
+    if (longPressedRef.current) {
+      e.preventDefault()
+      longPressedRef.current = false
+    }
+  }
+
+  // The hold would otherwise also pop the browser's own link menu on top of the actions. Only
+  // suppressed for a touch hold — right-click ("open in new tab") stays intact.
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (longPressedRef.current) e.preventDefault()
+  }
 
   // If this profile was just hidden, render a compact placeholder with Undo action.
   if (isHidden) {
@@ -650,6 +718,7 @@ function ProfilePreview(props: {
 
   return (
     <div
+      ref={cardRef}
       className={clsx(
         'relative overflow-hidden rounded-xl bg-canvas-50',
         isLoading && 'scale-[0.94] transition-transform duration-[80ms] ease-out',
@@ -660,10 +729,15 @@ function ProfilePreview(props: {
       <Link
         href={`/${user.username}`}
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={clearLongPress}
         onClick={handleClick}
+        onContextMenu={handleContextMenu}
         className={clsx(
           'relative overflow-hidden rounded-xl bg-canvas-50 person-card',
+          // Stops the hold from turning into a text selection / iOS link callout.
+          'select-none [-webkit-touch-callout:none]',
           !showRing && 'border border-canvas-300',
           'transition-all duration-[120ms] ease-in',
           'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[4px]',
@@ -728,10 +802,18 @@ function ProfilePreview(props: {
                 gap than sits between the actions themselves). With no score the actions take the
                 corner themselves. */}
             <Row className="shrink-0 items-center gap-2.5">
+              {/* Hidden until asked for: hover on desktop, a press and hold on touch. They stay
+                  clickable while invisible on desktop only — hovering is what uncovers them there,
+                  whereas on touch an invisible button is just a trap in the corner of the card. */}
               <Row
                 className={clsx(
                   'items-center gap-1 transition-opacity',
-                  'lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100',
+                  showActions
+                    ? 'opacity-100'
+                    : [
+                        'opacity-0 pointer-events-none lg:pointer-events-auto',
+                        'lg:group-hover:opacity-100 lg:group-focus-within:opacity-100',
+                      ],
                 )}
               >
                 {onHide && (

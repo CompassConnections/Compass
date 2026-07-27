@@ -1,38 +1,71 @@
-![Vercel](https://deploy-badge.vercel.app/vercel/compass)
-[![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
-[![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
-[![CD Android](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml)
-[![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
-[![CI E2E](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml)
-[![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
-[![Users](https://img.shields.io/badge/Users-700%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
+<div align="center">
 
 # Compass
 
-This repository contains the source code for [Compass](https://compassmeet.com) — a transparent directory to find your
-people with ease — based on who they are, not how they look.
+### Find your people — based on who they are, not how they look.
 
-## Features
+A free, open, and fully searchable directory for people who want deep, genuine connections —
+platonic, romantic, or collaborative.
 
-- Extremely detailed profiles for deep connections
-- Radically transparent: people directory fully searchable
-- Free, ad-free, not for profit (supported by donations)
-- Created, hosted, maintained, and moderated by volunteers
-- Open-source
-- Democratically governed
+**[Open the app](https://compassmeet.com)** · [About](https://www.compassmeet.com/about) ·
+[FAQ](https://www.compassmeet.com/faq) · [Chat with us on Discord](https://discord.gg/8Vd7jzqjun)
 
-You can find a lot of interesting info in the [About page](https://www.compassmeet.com/about) and
-the [FAQ](https://www.compassmeet.com/faq) as well.
-
-**We can’t do this alone.** Whatever your skills—coding, design, writing, moderation, marketing, or even small
-donations—you can make a real difference. [Contribute](https://www.compassmeet.com/support) in any way you can and help
-our community thrive!
-
-_Click the image below to watch a live demo:_
+[![Users](https://img.shields.io/badge/Users-700%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 [![Demo](https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/demo.png)](https://youtu.be/KxMK0tkhrts)
 
-## To Do
+_Click the image above to watch a live demo._
+
+</div>
+
+## Why Compass exists
+
+Most dating and networking apps ask one thing of you: pick a few photos and start swiping. An algorithm you never see
+decides who you are allowed to meet, and the app earns more when you keep scrolling than when you actually meet someone.
+
+Compass works the other way around. You write a genuinely detailed profile — what you believe, what you are curious
+about, how you spend your time, what you are looking for. Then you _search_, the way you would search a library
+catalog. Every profile is visible to everyone, so finding the handful of people you would truly click with is a matter of
+asking the right question, not waiting to be served.
+
+## How it works
+
+1. **Create your profile** — your values, interests, personality, and the kind of connection you want (friendship,
+   romance, collaboration, or all three). Photos are optional and never the point.
+2. **Search the directory** — filter by location, age, values, causes, politics, religion and more, or type a niche
+   keyword like _"Minimalism"_ or _"Indie film"_ and see who else cares about it.
+3. **Get notified** — save a search, and Compass tells you when someone new matches it. No endless scrolling.
+4. **Meet** — message people directly, or join [events](https://www.compassmeet.com/events) such as book clubs, walking
+   groups, and group calls, online and in person.
+
+## What makes it different
+
+| Most apps                                   | Compass                                                 |
+| ------------------------------------------- | ------------------------------------------------------- |
+| Photos first, endless swiping               | Values, ideas, and personality first                    |
+| A hidden algorithm decides who you see      | You search and filter the whole directory yourself      |
+| Ads, paywalls, and paid boosts              | Free, ad-free, and not-for-profit — funded by donations |
+| A company owns the platform                 | Volunteers build, host, and moderate it                 |
+| Closed source — you cannot see what it does | Every line of code is public and open to improvement    |
+
+Compass is also [democratically governed](https://www.compassmeet.com/constitution): the people who use and build it
+vote on how it evolves, and every penny it costs to run is published on the
+[financials page](https://www.compassmeet.com/financials).
+
+## How you can help
+
+**We can’t do this alone.** Compass is built entirely by volunteers, and plenty of the most useful contributions
+require no technical skills at all:
+
+- **Spread the word** — the platform only works if the people you would want to meet are on it.
+- **Write and translate** — improve the wording on the site, or help bring it to a new language.
+- **Design, moderate, or organize events** — make the experience friendlier and the community healthier.
+- **Donate** — hosting and services cost real money; small amounts genuinely help.
+- **Code** — see [Development](#development) below to get a local copy running in a few minutes.
+
+[**Contribute in any way you can**](https://www.compassmeet.com/support) and help our community thrive!
+
+## Roadmap
 
 No contribution is too small—whether it’s changing a color, resizing a button, tweaking a font, or improving wording.
 Bigger contributions like adding new profile fields, building modules, or improving onboarding are equally welcome. The
@@ -107,6 +140,14 @@ contributors.
 - [x] Show compatibility score in profile page
 
 ## Implementation
+
+![Vercel](https://deploy-badge.vercel.app/vercel/compass)
+[![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
+[![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
+[![CD Android](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml)
+[![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
+[![CI E2E](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml)
+[![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
 
 The web app is coded in Typescript using React as front-end. It includes:
 

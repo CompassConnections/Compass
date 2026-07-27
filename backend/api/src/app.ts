@@ -434,6 +434,24 @@ Authorization: Bearer YOUR_FIREBASE_JWT_TOKEN
 In the API docs, authenticate through the green button at the bottom right of this section (BearerAuth token).
 `
 
+const securitySchemes: OpenAPIV3.ComponentsObject['securitySchemes'] = {
+  BearerAuth: {
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    description: 'Firebase JWT token obtained through authentication',
+  },
+}
+
+if (IS_LOCAL) {
+  securitySchemes.ApiKeyAuth = {
+    type: 'apiKey',
+    in: 'header',
+    name: 'x-api-key',
+    description: 'API key for internal/non-user endpoints',
+  }
+}
+
 const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
@@ -494,22 +512,7 @@ Commit: ${git.revision} (${git.commitDate})`,
     },
   },
   paths: generateSwaggerPaths(API),
-  components: {
-    securitySchemes: {
-      BearerAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Firebase JWT token obtained through authentication',
-      },
-      ApiKeyAuth: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'x-api-key',
-        description: 'API key for internal/non-user endpoints',
-      },
-    },
-  },
+  components: {securitySchemes},
   tags: filterDefined([
     {
       name: 'General',
@@ -570,10 +573,6 @@ Commit: ${git.revision} (${git.commitDate})`,
     {
       name: 'Utilities',
       description: 'Helper functions and utilities',
-    },
-    {
-      name: 'Internal',
-      description: 'Internal API endpoints for system operations',
     },
     IS_LOCAL && {
       name: 'Local',
@@ -761,23 +760,8 @@ const responses = {
   },
 }
 
-swaggerDocument.paths['/internal/send-search-notifications'] = {
-  post: {
-    summary: 'Trigger daily search notifications',
-    description:
-      'Internal endpoint used by Compass schedulers to send daily notifications for bookmarked searches. Requires a valid `x-api-key` header.',
-    tags: ['Internal'],
-    security: [
-      {
-        ApiKeyAuth: [],
-      },
-    ],
-    requestBody: {
-      required: false,
-    },
-    responses: responses,
-  },
-} as any
+// `/internal/send-search-notifications` is deliberately omitted from the public OpenAPI spec: it has no
+// external consumer, and documenting it only advertises the `x-api-key` header and the scheduler surface.
 
 // Local Endpoints
 if (IS_LOCAL) {
@@ -832,7 +816,7 @@ app.use(allowCorsUnrestricted, (req, res) => {
       .status(404)
       .set('Content-Type', 'application/json')
       .json({
-        message: `This is the Compass API, but the requested route '${req.path}' does not exist. Please check your URL for any misspellings, the docs at https://api.compassmeet.com, or simply refer to app.ts on GitHub`,
+        message: `This is the Compass API, but the requested route '${req.path}' does not exist. Please check your URL for any misspellings, the docs at https://api.compassmeet.com, or simply check the code at https://github.com/CompassConnections/Compass/blob/main/backend/api/src/app.ts.`,
       })
   }
 })

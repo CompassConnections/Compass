@@ -10,6 +10,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
 import {Button, buttonClass} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
+import {linkifyTrailingUrl} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
@@ -19,7 +20,7 @@ import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
-import {linkifyTrailingUrl, useTextEditor} from 'web/components/widgets/editor'
+import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
@@ -211,7 +212,13 @@ export const SendMessageButton = (props: {
       >
         {text ? (
           <Button
-            className={clsx('h-fit gap-1', disabled && 'opacity-50 cursor-not-allowed')}
+            // Solid fill, tight radius, an envelope leading the label: the one control in Connect
+            // that should read as a button at a glance. The `cta` glow is dropped — at this size it
+            // haloed the button against the page instead of sitting on it.
+            className={clsx(
+              'h-fit gap-2 !rounded-[10px] !px-5 !py-3 !text-[15px] font-semibold !shadow-none',
+              disabled && 'opacity-50 cursor-not-allowed',
+            )}
             // `cta`, not `primary`: `primary` is the *tinted secondary* pill (see button.tsx), which
             // in the dark ramp is brown-on-brown and read as disabled on the one control that is the
             // whole point of the Connect section.
@@ -224,6 +231,7 @@ export const SendMessageButton = (props: {
             onPointerDown={onPointerDown}
             disabled={disabled}
           >
+            <BiEnvelope className="h-[18px] w-[18px] flex-none" />
             {text}
           </Button>
         ) : circleButton ? (

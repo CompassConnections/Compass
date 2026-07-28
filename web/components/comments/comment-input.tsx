@@ -14,9 +14,10 @@ import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 
+import {linkifyTrailingUrl} from '../editor/autolink'
 import {Row} from '../layout/row'
 import {Avatar} from '../widgets/avatar'
-import {linkifyTrailingUrl, TextEditor, useTextEditor} from '../widgets/editor'
+import {TextEditor, useTextEditor} from '../widgets/editor'
 import {LoadingIndicator} from '../widgets/loading-indicator'
 
 export function CommentInput(props: {

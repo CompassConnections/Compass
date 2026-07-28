@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {INVERTED_RELATIONSHIP_CHOICES, RELATIONSHIP_CHOICES} from 'common/choices'
 import {Profile} from 'common/profiles/profile'
-import {CheckIcon, InfoIcon, SparklesIcon} from 'lucide-react'
+import {CheckIcon, SparklesIcon} from 'lucide-react'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
@@ -39,6 +39,8 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   - You’re both notified.
   `,
   )
+  // The toggle that sets this is commented out above; kept so re-enabling it is one edit.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showHelp, setShowHelp] = useState<boolean>(false)
 
   const loadPreferences = async () => {
@@ -98,7 +100,9 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
         <SendMessageButton
           toUser={user}
           profile={profile}
-          text={t('messaging.send_thoughtful_message', 'Send them a thoughtful message')}
+          text={t('profile.connect.message_name', 'Message {name}', {
+            name: shortenName(user.name),
+          })}
         />
       ) : (
         <p className="text-ink-500 text-sm">
@@ -118,19 +122,19 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
             className="text-ink-400 font-dm-sans uppercase"
             style={{fontSize: '10px', letterSpacing: '0.18em'}}
           >
-            {t('profile.connect.private_connection_signal', 'Private connection signal')}
+            {t('profile.connect.private_connection_signal', 'Signal your interest — privately')}
           </h3>
           {/* Explaining the mechanism is only worth the row when the mechanism is available. */}
-          {hasSignalControls && (
-            <button
-              className="text-ink-500 hover:text-primary-600 flex flex-none items-center gap-1 text-xs transition-colors"
-              onClick={() => setShowHelp(!showHelp)}
-              aria-expanded={showHelp}
-            >
-              <InfoIcon className="h-3.5 w-3.5" />
-              {t('profile.connect.how_this_works', 'How this works')}
-            </button>
-          )}
+          {/*{hasSignalControls && (*/}
+          {/*  <button*/}
+          {/*    className="text-ink-500 hover:text-primary-600 flex flex-none items-center gap-1 text-xs transition-colors"*/}
+          {/*    onClick={() => setShowHelp(!showHelp)}*/}
+          {/*    aria-expanded={showHelp}*/}
+          {/*  >*/}
+          {/*    <InfoIcon className="h-3.5 w-3.5" />*/}
+          {/*    {t('profile.connect.how_this_works', 'How this works')}*/}
+          {/*  </button>*/}
+          {/*)}*/}
         </Row>
 
         {profile.allow_interest_indicating ? (
@@ -139,7 +143,8 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
               <p className="text-ink-500 mt-2 text-sm">
                 {t(
                   'profile.wont_be_notified_unless_mutual',
-                  'They won’t be notified unless the interest is mutual.',
+                  "Pick what you'd be open to with {name}. He is never notified unless he picks the same thing — then you both hear about it at once.",
+                  {name: shortenName(user.name)},
                 )}
               </p>
             )}

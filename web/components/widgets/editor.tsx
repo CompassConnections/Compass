@@ -6,7 +6,6 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import Underline from '@tiptap/extension-underline'
-import type {Node as PMNode} from '@tiptap/pm/model'
 import {TextSelection} from '@tiptap/pm/state'
 import type {Content, JSONContent} from '@tiptap/react'
 import {Editor, EditorContent, Extensions, mergeAttributes, useEditor} from '@tiptap/react'
@@ -14,7 +13,6 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import {richTextToString} from 'common/util/parse'
 import Iframe from 'common/util/tiptap-iframe'
-import {tokenize} from 'linkifyjs'
 import {debounce} from 'lodash'
 import {createElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CustomLink} from 'web/components/links'
@@ -22,6 +20,7 @@ import {MediaModal} from 'web/components/media-modal'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
+import {DEFAULT_PROTOCOL, SyncAutolink} from '../editor/autolink'
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
 import {BasicImage, DisplayImage} from '../editor/image'
@@ -32,9 +31,6 @@ import {DisplayMention} from '../editor/user-mention/mention-extension'
 import {BasicVideo, DisplayVideo} from '../editor/video'
 import {Linkify} from './linkify'
 import {linkClass} from './site-link'
-
-/** Protocol assumed for bare hosts like `example.com`. Shared with `linkifyTrailingUrl` below. */
-const DEFAULT_PROTOCOL = 'http'
 
 const DisplayLink = Link.extend({
   renderHTML({HTMLAttributes}) {
@@ -51,49 +47,6 @@ const DisplayLink = Link.extend({
   },
 })
 
-/**
- * Link a URL sitting at the very end of the doc.
- *
- * TipTap's autolink only fires once a separator is typed *after* a URL (a space, or the enter that
- * splits the block), so a message whose last word is a URL is submitted as plain text. Call this
- * right before reading the content out of the editor — same tokenize/validate rules as the autolink
- * plugin, so the result is identical to what you'd get by typing a trailing space.
- */
-export const linkifyTrailingUrl = (editor: Editor) => {
-  const linkType = editor.state.schema.marks.link
-  if (!linkType) return
-
-  const {doc} = editor.state
-  let block: {node: PMNode; pos: number} | undefined
-  doc.descendants((node, pos) => {
-    if (!node.isTextblock) return true
-    block = {node, pos}
-    return false // no textblocks nested inside a textblock
-  })
-  if (!block) return
-
-  // Hard breaks count as spaces, matching how the autolink plugin reads a block.
-  const text = doc.textBetween(block.pos, block.pos + block.node.nodeSize, undefined, ' ')
-  const lastWord = text.split(' ').filter(Boolean).pop()
-  if (!lastWord || !text.endsWith(lastWord)) return // trailing space: autolink already had its turn
-
-  // Tokenizing the whole word (rather than searching it for links) is what rejects `example.com1`:
-  // a link is only valid if it is the entire word, optionally wrapped in `()` or `[]`.
-  const tokens = tokenize(lastWord)
-  if (tokens.length !== 1 || !tokens[0].isLink) return // e.g. `example.com1` — not a whole-word link
-  const link = tokens[0].toObject(DEFAULT_PROTOCOL)
-
-  // `text` starts at the block's first content position, one past the block node itself.
-  const wordStart = block.pos + text.lastIndexOf(lastWord) + 1
-  const from = wordStart + link.start
-  const to = wordStart + link.end
-  const {code} = editor.state.schema.marks
-  if (doc.rangeHasMark(from, to, linkType)) return
-  if (code && doc.rangeHasMark(from, to, code)) return
-
-  editor.view.dispatch(editor.state.tr.addMark(from, to, linkType.create({href: link.href})))
-}
-
 const editorExtensions = (simple = false): Extensions =>
   nodeViewMiddleware([
     StarterKit.configure({
@@ -104,6 +57,7 @@ const editorExtensions = (simple = false): Extensions =>
     simple ? DisplayVideo : BasicVideo,
     EmojiExtension,
     DisplayLink,
+    SyncAutolink,
     DisplayMention,
     Iframe,
     Upload,

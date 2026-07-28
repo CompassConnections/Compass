@@ -16,7 +16,7 @@ import {safeLocalStorage} from 'web/lib/util/local'
 
 import {Row} from '../layout/row'
 import {Avatar} from '../widgets/avatar'
-import {TextEditor, useTextEditor} from '../widgets/editor'
+import {linkifyTrailingUrl, TextEditor, useTextEditor} from '../widgets/editor'
 import {LoadingIndicator} from '../widgets/loading-indicator'
 
 export function CommentInput(props: {
@@ -66,12 +66,6 @@ export function CommentInput(props: {
       return
     }
     editor.commands.focus('end')
-    // if last item is text, try to linkify it by adding and deleting a space
-    if (editor.state.selection.empty) {
-      editor.commands.insertContent(' ')
-      const endPos = editor.state.selection.from
-      editor.commands.deleteRange({from: endPos - 1, to: endPos})
-    }
 
     try {
       await onSubmitComment?.(editor, type)
@@ -157,6 +151,14 @@ export function CommentInputTextArea(props: {
   } = props
   const t = useT()
 
+  // Every way to submit from here — the enter/ctrl+enter handler below and the two buttons — goes
+  // through this, so a message ending in a URL gets that URL linked whichever one you used. TipTap's
+  // autolink can't do it itself: it only fires once you type a separator *after* the URL.
+  const submitWithTrailingLink = useEvent((type: CommentType) => {
+    if (editor) linkifyTrailingUrl(editor)
+    submit?.(type)
+  })
+
   // The editor no longer re-renders this component on every keystroke (see editor.tsx), so subscribe
   // to just the emptiness of the doc — that's all the send buttons below need to enable/disable.
   const isEmpty =
@@ -187,7 +189,7 @@ export function CommentInputTextArea(props: {
             !isDisabled
           ) {
             // console.log('handleKeyDown')
-            submit?.(commentTypes[0])
+            submitWithTrailingLink(commentTypes[0])
             event.preventDefault()
             return true
           }
@@ -195,7 +197,7 @@ export function CommentInputTextArea(props: {
         },
       },
     })
-  }, [editor, submit, submitOnEnter, commentTypes])
+  }, [editor, submitWithTrailingLink, submitOnEnter, commentTypes])
 
   useEffect(() => {
     if (!editor) return
@@ -221,7 +223,7 @@ export function CommentInputTextArea(props: {
             <button
               disabled={isDisabled || !editor || isEmpty}
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-2 transition-colors"
-              onClick={() => submit('repost')}
+              onClick={() => submitWithTrailingLink('repost')}
             >
               <BiRepost className="h-7 w-7" />
             </button>
@@ -251,7 +253,7 @@ export function CommentInputTextArea(props: {
               data-testid="conversation-message-submit"
               className="text-ink-500 hover:text-ink-700 active:bg-ink-300 disabled:text-ink-300 px-4 transition-colors"
               disabled={isDisabled || !editor || isEmpty}
-              onClick={() => submit('comment')}
+              onClick={() => submitWithTrailingLink('comment')}
             >
               <PaperAirplaneIcon className="m-0 h-[25px] w-[22px] p-0" />
             </button>

@@ -19,7 +19,7 @@ import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
-import {useTextEditor} from 'web/components/widgets/editor'
+import {linkifyTrailingUrl, useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePrivateUser, useUser} from 'web/hooks/use-user'
@@ -145,6 +145,7 @@ export const SendMessageButton = (props: {
     })
     if (!res) return
 
+    linkifyTrailingUrl(editor)
     const msgRes = await api('create-private-user-message', {
       channelId: res.channelId,
       content: editor.getJSON(),

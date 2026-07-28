@@ -11,7 +11,7 @@ import ReactMarkdown from 'react-markdown'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
+import {linkifyTrailingUrl, TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {NewTabLink} from 'web/components/widgets/new-tab-link'
 import {ShowMore} from 'web/components/widgets/show-more'
 import {updateProfile} from 'web/lib/api'
@@ -76,6 +76,7 @@ export function EditableBio(props: {profile: Profile; onSave: () => void; onCanc
 
   const saveBio = async () => {
     if (!editor) return
+    linkifyTrailingUrl(editor)
     // console.log(editor.getText().length)
     const {error} = await tryCatch(
       updateProfile({

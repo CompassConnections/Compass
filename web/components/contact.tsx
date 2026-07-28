@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
+import {linkifyTrailingUrl, TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {Title} from 'web/components/widgets/title'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
@@ -54,6 +54,7 @@ export function ContactComponent() {
               size="xs"
               onClick={async () => {
                 if (!editor) return
+                linkifyTrailingUrl(editor)
                 const data = {
                   content: editor.getJSON() as JSONContent,
                   userId: user?.id,

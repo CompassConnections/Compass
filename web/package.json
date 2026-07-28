@@ -54,6 +54,7 @@
     "dayjs": "1.11.19",
     "firebase": "11.1.0",
     "heic2any": "0.0.4",
+    "linkifyjs": "4.3.2",
     "lodash": "4.17.23",
     "lucide-react": "0.575.0",
     "nanoid": "5.0.9",

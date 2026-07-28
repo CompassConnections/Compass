@@ -11,7 +11,7 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
 import {Vote, VoteItem} from 'web/components/votes/vote-item'
-import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
+import {linkifyTrailingUrl, TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {Input} from 'web/components/widgets/input'
 import {Title} from 'web/components/widgets/title'
 import {useGetter} from 'web/hooks/use-getter'
@@ -101,6 +101,7 @@ export function VoteComponent() {
                 <Button
                   size="xs"
                   onClick={async () => {
+                    linkifyTrailingUrl(editor)
                     const data = {
                       title: title,
                       description: editor.getJSON() as JSONContent,

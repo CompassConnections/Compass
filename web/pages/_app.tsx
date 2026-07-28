@@ -99,6 +99,9 @@ function printBuildInfo() {
 
 const navigationHistory: string[] = []
 
+/** Set while the boot history entry is being re-stamped, so the no-op route change isn't tracked twice. */
+let isStampingHistoryEntry = false
+
 function useTrackedHistory() {
   // asPath includes the query string, so back restores the previous page
   // *with* its filters/search state (unlike usePathname, which drops it).
@@ -113,6 +116,42 @@ function useTrackedHistory() {
 function updateHistoryBack() {
   navigationHistory.pop()
   navigationHistory.pop()
+}
+
+/**
+ * Next stamps its own state (`__N`, `key`) onto a history entry only when *it* navigates. The entry the
+ * app boots on therefore has `history.state === null`, and popping back to it fires a popstate that Next's
+ * router ignores — that's why going back to the startup page used to need a `router.push`.
+ *
+ * A push, though, is a forward navigation: it creates a fresh history entry, so Next never restores the
+ * scroll position it snapshotted (scroll restoration only runs in the popstate path). On Android — where the
+ * hardware back button is the only way back — that meant returning from a profile dropped you at the top of
+ * the grid.
+ *
+ * Re-writing the boot entry with a shallow `replace` gives it Next state, so a real `back()` works and
+ * restores scroll. Returns whether the entry is now safe to `back()` into.
+ */
+function useStampedInitialHistoryEntry() {
+  const router = useRouter()
+  const [stamped, setStamped] = useState(false)
+  const {isReady} = router
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isReady || stamped) return
+    if ((window.history.state as any)?.__N) {
+      setStamped(true)
+      return
+    }
+    isStampingHistoryEntry = true
+    router
+      .replace(router.asPath, undefined, {shallow: true, scroll: false})
+      .then(() => setStamped(!!(window.history.state as any)?.__N))
+      .catch((e) => debug('failed to stamp initial history entry', e))
+      .finally(() => {
+        isStampingHistoryEntry = false
+      })
+    // Only ever runs for the entry the app booted on, once the router knows its real query.
+  }, [isReady])
+  return stamped
 }
 
 // specially treated props that may be present in the server/static props
@@ -158,7 +197,10 @@ function MyApp(props: AppProps<PageProps>) {
   useEffect(() => {
     initTracking()
 
-    const handleRouteChange = () => posthog?.capture('$pageview')
+    const handleRouteChange = () => {
+      if (isStampingHistoryEntry) return
+      posthog?.capture('$pageview')
+    }
     Router.events.on('routeChangeComplete', handleRouteChange)
 
     return () => {
@@ -167,15 +209,19 @@ function MyApp(props: AppProps<PageProps>) {
   }, [])
 
   useTrackedHistory()
+  const initialEntryStamped = useStampedInitialHistoryEntry()
   useEffect(() => {
     // All this is to handle the back button on mobile when returning to the startup page
-    // (router.back() does not go back to the startup / home page)
+    // (a plain router.back() only reaches the startup page once its history entry carries Next state —
+    // see useStampedInitialHistoryEntry)
     const handleBack = () => {
       debug('handleBack:', navigationHistory)
-      if (navigationHistory.length > 2) {
+      if (navigationHistory.length > 2 || (navigationHistory.length === 2 && initialEntryStamped)) {
+        // back() goes through popstate, which is the only path that restores the previous page's scroll.
         updateHistoryBack()
         router.back()
       } else if (navigationHistory.length === 2) {
+        // Fallback for when the boot entry couldn't be stamped: reachable, but scrolled to the top.
         const path = navigationHistory[0]
         updateHistoryBack()
         router.push(path)
@@ -186,7 +232,7 @@ function MyApp(props: AppProps<PageProps>) {
 
     window.addEventListener('appBackButton', handleBack)
     return () => window.removeEventListener('appBackButton', handleBack)
-  }, [router])
+  }, [router, initialEntryStamped])
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return

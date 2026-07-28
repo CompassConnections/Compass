@@ -9,7 +9,7 @@ import {
   PlayCircleIcon,
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import {githubRepo, supportEmail} from 'common/constants'
+import {defaultLocale, githubRepo, supportEmail} from 'common/constants'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps, useMemo, useState} from 'react'
 import {SectionLabel} from 'web/components/about/section'
@@ -19,6 +19,7 @@ import {SEO} from 'web/components/SEO'
 import {Reveal} from 'web/components/widgets/reveal'
 import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
+import {useIsClient} from 'web/hooks/use-is-client'
 import {useLocale, useT} from 'web/lib/locale'
 import {copyToClipboard} from 'web/lib/util/copy'
 
@@ -130,14 +131,31 @@ function useMediumLabels() {
 }
 
 /**
+ * The locale to format dates in — the default one until the client has mounted.
+ *
+ * This is what makes locale-formatted dates safe on this page, and it is not optional. `useT` loads its
+ * message bundle in an effect, so every translated string is English on the server *and* on the first
+ * client render, and only swaps afterwards. `Intl` is synchronous and would not wait: formatting straight
+ * off the context locale renders "9 février 2026" into a tree the server rendered as "February 9, 2026",
+ * which is a hydration mismatch — and is why the previous version of this page had its locale-formatted
+ * date commented out beside a raw ISO string. Deferring by one render puts the date on exactly the same
+ * schedule as the text around it.
+ */
+function useDateLocale(): Intl.LocalesArgument {
+  const {locale} = useLocale()
+  const isClient = useIsClient()
+  return isClient ? locale : defaultLocale
+}
+
+/**
  * The date, formatted in the reader's own locale.
  *
- * The previous version printed the raw ISO string, with the locale-formatted line commented out beside
- * it. It is pinned to UTC here, which is the thing that makes it safe: these are plain calendar dates
- * with no time, so without a fixed zone a reader west of Greenwich gets yesterday, and the server and
- * the client can disagree about which day it is at all.
+ * Pinned to UTC, which is the other half of what makes it safe: these are plain calendar dates with no
+ * time, so without a fixed zone a reader west of Greenwich gets yesterday.
  */
-function PressDate({date, locale}: {date: string; locale: Intl.LocalesArgument}) {
+function PressDate({date}: {date: string}) {
+  const locale = useDateLocale()
+
   const formatted = useMemo(() => {
     try {
       return new Date(`${date}T00:00:00Z`).toLocaleDateString(locale, {
@@ -162,7 +180,6 @@ function PressDate({date, locale}: {date: string; locale: Intl.LocalesArgument})
 function ItemMeta({item, className}: {item: PressItem; className?: string}) {
   const t = useT()
   const {label} = useMediumLabels()
-  const {locale} = useLocale()
   const Icon = MEDIUM_ICON[item.medium]
 
   return (
@@ -174,7 +191,7 @@ function ItemMeta({item, className}: {item: PressItem; className?: string}) {
       <span className="text-sm text-ink-400" aria-hidden>
         ·
       </span>
-      <PressDate date={item.date} locale={locale} />
+      <PressDate date={item.date} />
       <span className="text-sm text-ink-400" aria-hidden>
         ·
       </span>
@@ -338,7 +355,7 @@ function PressRow({item}: {item: PressItem}) {
  */
 function CoverageBand({items}: {items: PressItem[]}) {
   const t = useT()
-  const {locale} = useLocale()
+  const locale = useDateLocale()
 
   const outlets = new Set(items.map((i) => i.outlet)).size
   const since = useMemo(() => {

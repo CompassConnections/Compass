@@ -1,37 +1,57 @@
 import {
+  ArrowsUpDownIcon,
+  BanknotesIcon,
   BellIcon,
   BookmarkIcon,
   ChatBubbleLeftRightIcon,
   CodeBracketIcon,
+  DevicePhoneMobileIcon,
   EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
   FlagIcon,
   GiftIcon,
   HeartIcon,
   LightBulbIcon,
   MagnifyingGlassIcon,
   MegaphoneIcon,
+  PencilSquareIcon,
   SparklesIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline'
 import {GlobeAltIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {discordLink, formLink, githubRepo, OG_DESCRIPTION} from 'common/constants'
+import {
+  ANDROID_APP_URL,
+  discordLink,
+  FINANCIALS,
+  formLink,
+  githubRepo,
+  OG_DESCRIPTION,
+} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {DemographicField} from 'common/stats'
+import Image from 'next/image'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps} from 'react'
+import {FaAndroid, FaApple} from 'react-icons/fa'
 import {StatBand} from 'web/components/about/platform-stats'
 import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
 import {SectionLabel} from 'web/components/about/section'
 import {VoteEvidence} from 'web/components/about/vote-evidence'
 import {PageBase} from 'web/components/page-base'
+import {PressLogos} from 'web/components/press/press-logos'
 import {SEO} from 'web/components/SEO'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
 import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
+import {DistRow, labelFor} from 'web/components/widgets/stat-distribution'
 import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
+import {CORE_AGE_BUCKETS, shareOf, topOf} from 'web/lib/marketing-stats'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,26 +109,26 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
 
 // ─── Full-width Feature Card ──────────────────────────────────────────────────
 
-// function FeatureCardWide({icon, title, text}: FeatureCardProps) {
-//   return (
-//     <div
-//       className={clsx(
-//         surface,
-//         surfaceHover,
-//         'col-span-1 md:col-span-2 p-6 sm:p-7',
-//         'flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6',
-//       )}
-//     >
-//       <IconChip icon={icon} />
-//       <div className="min-w-0">
-//         <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
-//         {/* Capped: the card is full-width, so without this the line runs to ~800px at desktop, well
-//             past a readable measure. The wider page container buys layout room, not longer lines. */}
-//         <p className="text-sm text-ink-600 leading-relaxed max-w-3xl">{text}</p>
-//       </div>
-//     </div>
-//   )
-// }
+function FeatureCardWide({icon, title, text}: FeatureCardProps) {
+  return (
+    <div
+      className={clsx(
+        surface,
+        surfaceHover,
+        'col-span-1 md:col-span-2 p-6 sm:p-7',
+        'flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6',
+      )}
+    >
+      <IconChip icon={icon} />
+      <div className="min-w-0">
+        <h3 className="font-bold text-ink-900 mb-2">{title}</h3>
+        {/* Capped: the card is full-width, so without this the line runs to ~800px at desktop, well
+            past a readable measure. The wider page container buys layout room, not longer lines. */}
+        <p className="text-sm text-ink-600 leading-relaxed max-w-3xl">{text}</p>
+      </div>
+    </div>
+  )
+}
 
 // ─── Spotlight: "Get Notified About Searches" ─────────────────────────────────
 
@@ -261,6 +281,439 @@ function MissionStatement({title, text}: {title: string; text: string}) {
   )
 }
 
+// ─── Prose blocks ─────────────────────────────────────────────────────────────
+
+/**
+ * The shape every new text-only section on this page uses: eyebrow label, heading, body, optional links.
+ *
+ * The page had no vocabulary for prose — everything was a card with a fragment in it, which is why it
+ * could show a ballot without explaining the machinery behind it, or state "detailed profiles" without ever
+ * listing a field. Several of the things a reader most wants here (what's public, who runs it, what it
+ * costs) are three sentences, not a fragment, and this is where they live.
+ */
+function ProseBlock({
+  icon,
+  label,
+  title,
+  children,
+  links,
+  visual,
+}: {
+  icon: IconType
+  label: string
+  title: string
+  children: ReactNode
+  links?: {href: string; label: string; external?: boolean}[]
+  // Optional right-hand column for a block that has something to show, not just say — e.g. the costs
+  // block's funding bar. Without it, text capped at `max-w-2xl` inside a full-bleed card leaves a wide
+  // empty strip on desktop; `visual` is where that space goes to work instead of sitting blank.
+  visual?: ReactNode
+}) {
+  return (
+    <div className={clsx(surface, 'p-6 sm:p-8')}>
+      <div className={clsx(visual && 'lg:flex lg:items-start lg:justify-between lg:gap-10')}>
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 mb-4">
+            <IconChip icon={icon} />
+            <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>
+          </div>
+          <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-4 max-w-2xl text-balance">
+            {title}
+          </h3>
+          <div className="text-base text-ink-600 leading-relaxed max-w-2xl [&>p+p]:mt-4">
+            {children}
+          </div>
+          {links && (
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+              {links.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  target={l.external ? '_blank' : undefined}
+                  rel={l.external ? 'noopener noreferrer' : undefined}
+                  className="inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+        {visual}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The visual beside "Four steps, and you control all four." — the one concrete number already stated in
+ * each step's own text (20 minutes, 20+ filters, one tap, 200 characters), pulled out as a 2×2 grid rather
+ * than left buried in the paragraphs. Static: these are product facts, not measurements, so nothing here is
+ * fetched or can go stale. Deliberately not a screenshot or mockup — `NotifySpotlight` right below already
+ * carries the visual weight for step 3, and reusing a phone clip or composer mock here would just repeat a
+ * visual the page (or /) already shows.
+ *
+ * Currently disabled (see the commented-out call in `HowItWorks`) — kept rather than deleted in case the
+ * empty column next to the step list wants filling again later.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function StepStats() {
+  const t = useT()
+
+  const stats = [
+    {value: '20', label: t('about.how.stat.write', 'min to write a profile')},
+    {value: '20+', label: t('about.how.stat.search', 'filters to search with')},
+    {value: '1', label: t('about.how.stat.save', 'tap to save a search')},
+    {value: '200', label: t('about.how.stat.message', 'char minimum to message')},
+  ]
+
+  return (
+    <div className="mt-8 grid grid-cols-2 gap-3 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+      {stats.map((s) => (
+        <div key={s.label} className="rounded-lg border border-canvas-300 bg-canvas-0 p-3">
+          <div className="text-2xl font-bold text-primary-600">{s.value}</div>
+          <div className="mt-1 text-xs leading-snug text-ink-500">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * "How it works" — the loop, in four steps.
+ *
+ * The page used to open on the stat band and go straight into saved-search alerts, which is step three of
+ * four: a reader who has never used Compass was being sold the clever part before the basic one. Step 3 is
+ * deliberately one line, because `NotifySpotlight` immediately below it is that step at full length with
+ * the recording attached.
+ */
+function HowItWorks() {
+  const t = useT()
+
+  const steps = [
+    {
+      icon: PencilSquareIcon,
+      title: t('about.how.step1.title', 'Write a profile'),
+      text: t(
+        'about.how.step1.text',
+        'Twenty minutes, not two: a bio in your own words, prompt answers, the causes you care about, your politics, religion, diet, languages, education, personality type, and what you’re looking for. Every field is optional — what you leave blank stays blank.',
+      ),
+    },
+    {
+      icon: MagnifyingGlassIcon,
+      title: t('about.how.step2.title', 'Search everyone'),
+      text: t(
+        'about.how.step2.text',
+        'No feed, no queue, no daily allowance of people. More than twenty filters, plus free-text search that reads the prose in people’s bios — so "meditation" finds the person who wrote about it, not only the one who tagged it.',
+      ),
+    },
+    {
+      icon: BookmarkIcon,
+      title: t('about.how.step3.title', 'Save the search'),
+      text: t(
+        'about.how.step3.text',
+        'Nobody fits today? Save it, and we email you the day someone who does joins — the block below shows exactly how that works.',
+      ),
+    },
+    {
+      icon: ChatBubbleLeftRightIcon,
+      title: t('about.how.step4.title', 'Write something real'),
+      text: t(
+        'about.how.step4.text',
+        'A first message is 200 characters minimum and needs a verified email address. No "hey": the composer will not send until you’ve said something about the person you’re writing to.',
+      ),
+    },
+  ]
+
+  return (
+    <div className={clsx(surface, 'p-6 sm:p-8')}>
+      <div className="lg:flex lg:items-start lg:justify-between lg:gap-10">
+        <div className="min-w-0">
+          <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-6 text-balance">
+            {t('about.how.title', 'Four steps, and you control all four.')}
+          </h3>
+          <ol className="max-w-2xl">
+            {steps.map((s, i) => (
+              <FlowStep
+                key={s.title}
+                icon={s.icon}
+                title={s.title}
+                text={s.text}
+                last={i === steps.length - 1}
+              />
+            ))}
+          </ol>
+        </div>
+        {/*<StepStats />*/}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * "Who's here" — the membership, with its denominators.
+ *
+ * The long version of the home page's three-line qualifier. Home has to persuade a stranger in seconds and
+ * cannot spend a clause on "of the 394 who answered"; someone reading this page is deciding whether to
+ * publish a page about themselves, and the bases are the reason to believe the rest.
+ *
+ * No total here — `StatBand` states it once at the top of the page, and that is this page's whole allowance
+ * for it. Everything below is composition, which persuades and does not shrink.
+ *
+ * Percentages only for single-select fields; multi-select rows report each answer's own count. See
+ * `web/lib/marketing-stats.ts` — summing overlapping selections against a distinct-answerer base would
+ * overstate by an unknowable amount, and this page has just promised the reader it will not do that.
+ */
+function WhosHere() {
+  const t = useT()
+  const {data} = useAPIGetter('stats', {})
+
+  const age = shareOf(data, 'age', CORE_AGE_BUCKETS)
+  const gender = shareOf(data, 'gender', ['male'])
+  const degree = shareOf(data, 'education_level', ['bachelors', 'masters', 'doctorate'])
+  const rows: {label: string; base: number; barLabel: string; pct: number}[] = []
+
+  if (age) {
+    rows.push({
+      label: t('about.who.row.age', 'Age'),
+      base: age.base,
+      barLabel: t('about.who.bar.age', '25–44'),
+      pct: age.pct,
+    })
+  }
+  if (gender) {
+    rows.push({
+      label: t('about.who.row.gender', 'Gender'),
+      base: gender.base,
+      barLabel: t('about.who.bar.gender', 'Men'),
+      pct: gender.pct,
+    })
+  }
+  if (degree) {
+    rows.push({
+      label: t('about.who.row.education', 'Education'),
+      base: degree.base,
+      barLabel: t('about.who.bar.education', 'Bachelor’s+'),
+      pct: degree.pct,
+    })
+  }
+
+  // Religion and looking-for are multi-select, so only the single leading answer is shown — one line per
+  // field, matching age/gender/education, rather than the full ranked list. The complete breakdown for
+  // every field (including the ones cut here) is one click away at /stats; see `web/lib/marketing-stats.ts`
+  // for why a multi-select percentage is of respondents and can't be summed with the others.
+  const leading: [DemographicField, string][] = [
+    ['religion', t('about.who.row.religion', 'Religion')],
+    ['pref_relation_styles', t('about.who.row.looking', 'Looking for')],
+  ]
+  for (const [field, label] of leading) {
+    const top = topOf(data, field, 1)?.[0]
+    if (!top) continue
+    rows.push({
+      label,
+      base: top.base,
+      barLabel: labelFor(field, top.value),
+      pct: Math.max(1, Math.round((top.count / top.base) * 100)),
+    })
+  }
+
+  if (rows.length < 3) return null
+
+  return (
+    <div className={clsx(surface, 'p-6 sm:p-8')}>
+      <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-4 text-balance">
+        {t('about.who.title', 'The membership, in public.')}
+      </h3>
+      <p className="text-base text-ink-600 leading-relaxed max-w-2xl">
+        {t(
+          'about.who.intro.v3',
+          'Members skew single, highly educated, secular, and more plant-based than average — spread across more than fifty countries, with no single hub.',
+        )}
+      </p>
+      <dl className="mt-6 max-w-xl divide-y divide-canvas-200">
+        {rows.map((r) => (
+          <div key={r.label} className="flex items-center gap-6 py-3">
+            <dt className="w-24 flex-shrink-0 font-semibold text-ink-900 sm:w-32">
+              {r.label}{' '}
+              {/*<span className="font-normal text-ink-500">({r.base.toLocaleString()})</span>*/}
+            </dt>
+            <dd className="m-0 flex-1 min-w-0">
+              <DistRow label={r.barLabel} pct={r.pct} widthPct={r.pct} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <Link
+        href="/stats"
+        className="mt-5 inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+      >
+        {t('about.who.link', 'Every distribution out here →')}
+      </Link>
+    </div>
+  )
+}
+
+/**
+ * The funding bar beside "What it costs" — one stacked bar showing how the total spent breaks down between
+ * what members donated and what the founder covered, instead of leaving a reader to do that subtraction
+ * from three numbers in a paragraph.
+ *
+ * Donated and founder-covered are two shares of one measure (dollars spent), not two independent series, so
+ * this stays single-hue rather than reaching for a second color: the accent at full strength is "covered by
+ * the community", the same accent faded is "covered by the founder" — the exact opacity convention `DistRow`
+ * already uses to relate values within one field. A small flex gap between the two segments keeps them from
+ * reading as one continuous bar. Values come from `FINANCIALS`, the same constant the surrounding prose and
+ * the home-page strip read from, so the bar can never disagree with the sentence beside it.
+ */
+function CostsChart() {
+  const t = useT()
+  const {spent, donated, deficit} = FINANCIALS
+  const donatedPct = Math.round((donated / spent) * 100)
+  const deficitPct = 100 - donatedPct
+
+  return (
+    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
+        {t('about.costs.chart.title', 'Since launch')}
+      </p>
+      <p className="mb-4 text-2xl font-bold text-ink-900">${spent}</p>
+      <div className="flex h-2.5 w-full gap-0.5 overflow-hidden rounded-full bg-canvas-200">
+        <div className="h-full rounded-full bg-primary-500" style={{width: `${donatedPct}%`}} />
+        <div className="h-full rounded-full bg-primary-500/30" style={{width: `${deficitPct}%`}} />
+      </div>
+      <div className="mt-4 flex flex-col gap-2 text-[13px]">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 flex-shrink-0 rounded-full bg-primary-500" />
+          <span className="text-ink-700">{t('about.costs.chart.donated', 'Donated')}</span>
+          <span className="ml-auto tabular-nums text-ink-500">
+            ${donated} · {donatedPct}%
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 flex-shrink-0 rounded-full bg-primary-500/30" />
+          <span className="text-ink-700">{t('about.costs.chart.deficit', 'Founder-covered')}</span>
+          <span className="ml-auto tabular-nums text-ink-500">
+            ${deficit} · {deficitPct}%
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The visual beside "Your profile is a web page... and it's a switch." — the two states the prose
+ * describes, stacked as they'd actually appear, rather than left as an adjective ("public", "members-only")
+ * a reader has to picture. Static: this is a UI mechanism, not a number, so nothing here is fetched.
+ */
+function VisibilityToggleMock() {
+  const t = useT()
+
+  return (
+    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+      <div className="flex items-center gap-3 rounded-lg border border-canvas-300 bg-canvas-0 p-3">
+        <GlobeAltIcon className="h-4 w-4 flex-shrink-0 text-primary-600" />
+        <div className="min-w-0">
+          <div className="whitespace-nowrap text-[13px] font-semibold text-ink-900">
+            {t('about.public.mock.public', 'Public')}
+          </div>
+          <div className="text-xs text-ink-500">
+            {t('about.public.mock.public_sub', 'Anyone can find it')}
+          </div>
+        </div>
+      </div>
+      <div className="my-2 flex justify-center">
+        <ArrowsUpDownIcon className="h-4 w-4 text-ink-400" strokeWidth={1.8} />
+      </div>
+      <div className="flex items-center gap-3 rounded-lg border border-canvas-300 bg-canvas-0 p-3">
+        <EyeSlashIcon className="h-4 w-4 flex-shrink-0 text-ink-500" />
+        <div className="min-w-0">
+          <div className="whitespace-nowrap text-[13px] font-semibold text-ink-900">
+            {t('about.public.mock.members', 'Members-only')}
+          </div>
+          <div className="text-xs text-ink-500">
+            {t('about.public.mock.members_sub', 'Hidden, unindexed')}
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-xs text-ink-500">
+        {t('about.public.mock.caption', 'One tap switches between them, any time.')}
+      </p>
+    </div>
+  )
+}
+
+/**
+ * The Press section's logo strip now lives in `components/press/press-logos.tsx` — `/press` needs the same
+ * four marks, both as this strip and beside each individual article, and two copies of the per-logo height
+ * tuning would drift. See that file for why the logos keep their native color.
+ */
+
+/**
+ * The visual beside "Browser, Android, and a home-screen app on iPhone." — the three platforms named as
+ * rows instead of left as a sentence to parse. Static: this is where the product runs, not a number, so
+ * nothing here is fetched.
+ */
+function PlatformGlyphs() {
+  const t = useT()
+
+  const platforms = [
+    {
+      icon: GlobeAltIcon,
+      name: t('about.platforms.mock.browser', 'Browser'),
+      sub: t('about.platforms.mock.browser_sub', 'Any device'),
+    },
+    {
+      icon: FaAndroid,
+      name: t('about.platforms.mock.android', 'Android'),
+      sub: t('about.platforms.mock.android_sub', 'Google Play'),
+    },
+    {
+      icon: FaApple,
+      name: t('about.platforms.mock.iphone', 'iPhone'),
+      sub: t('about.platforms.mock.iphone_sub', 'Add to Home Screen'),
+    },
+  ]
+
+  return (
+    <div className="mt-8 flex flex-col gap-2 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+      {platforms.map((p) => (
+        <div
+          key={p.name}
+          className="flex items-center gap-3 rounded-lg border border-canvas-300 bg-canvas-0 p-3"
+        >
+          <p.icon className="h-4 w-4 flex-shrink-0 text-primary-600" />
+          <div className="min-w-0">
+            <div className="whitespace-nowrap text-[13px] font-semibold text-ink-900">{p.name}</div>
+            <div className="text-xs text-ink-500">{p.sub}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * The visual beside "Somebody has to start these things." — Martin's own photo, fetched live from his
+ * public profile rather than a static asset, so it can't drift if he changes it. This is the one member
+ * photo either marketing page shows: the "no real photos without consent" rule (see the "Deliberately out
+ * of scope" section of `docs/marketing-copy.md`) is about the membership generally, and obviously doesn't
+ * apply to the founder writing about himself in his own section. Renders nothing if the profile or its
+ * photo comes back empty rather than a broken image or an initials placeholder — same rule as `StatBand`.
+ */
+function FounderPhoto() {
+  const {data} = useAPIGetter('get-user-and-profile', {username: 'Martin'})
+  const photoUrl = data?.profile?.pinned_url
+
+  if (!photoUrl) return null
+
+  return (
+    <div className="relative mt-8 h-40 w-40 flex-shrink-0 overflow-hidden rounded-2xl ring-1 ring-canvas-200 lg:mt-0">
+      <Image src={photoUrl} alt="Martin Braquet" fill sizes="160px" className="object-cover" />
+    </div>
+  )
+}
+
 // ─── Help Cards ───────────────────────────────────────────────────────────────
 
 /**
@@ -295,7 +748,7 @@ function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpC
         href={buttonUrl}
         target={buttonUrl.startsWith('http') ? '_blank' : undefined}
         rel={buttonUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className="shrink-0 px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-200 ease-out"
+        className="inline-flex w-fit shrink-0 px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-200 ease-out"
       >
         {buttonLabel}
       </Link>
@@ -533,9 +986,13 @@ export default function About() {
     },
     {
       icon: GlobeAltIcon,
-      title: t('about.block.vision.title', 'Digital Public Good'),
+      // Its own keys. This card was borrowing `about.block.vision.*`, whose fr/de values are the longer
+      // Linux / Wikipedia / Firefox sentence — so French and German readers saw that sentence on a card
+      // whose English reads "Built by the people who use it". The vision line now has that key back, in
+      // the mission section where it belongs, and this card says only what it says.
+      title: t('about.block.public_good.title', 'Digital Public Good'),
       text: t(
-        'about.block.vision.text',
+        'about.block.public_good.text',
         'Built by the people who use it, for the benefit of everyone.',
       ),
     },
@@ -588,9 +1045,12 @@ export default function About() {
       icon: HeartIcon,
       id: 'donate',
       title: t('about.donate.title', 'Donate'),
+      // "Every contribution keeps the lights on" is a charity cliché that the "What it costs" block above
+      // makes redundant and slightly evasive. Same ask, with the receipt.
       text: t(
-        'about.donate.text',
-        'Support our not-for-profit infrastructure. Every contribution keeps the lights on.',
+        'about.donate.text.v2',
+        '${spent} spent, ${donated} donated, no salaries. Every expense is published before we ask again.',
+        {spent: FINANCIALS.spent, donated: FINANCIALS.donated},
       ),
       buttonLabel: t('about.donate.button', 'Donation Options →'),
       buttonUrl: '/support',
@@ -614,13 +1074,17 @@ export default function About() {
           <p className={clsx(eyebrow, 'text-primary-700 mb-4')}>
             {t('about.eyebrow', 'About Compass')}
           </p>
+          {/* "Why choose" is a shopping-comparison frame on a page whose job is evidence, and it argued
+              Compass was better before saying what it is — which is precisely the reader arriving cold
+              from a press article. New keys rather than reworded ones, since fr/de resolve ahead of these
+              fallbacks. */}
           <h1 className="text-[clamp(34px,5vw,56px)] text-ink-900 tracking-tight leading-[1.08] mb-5 max-w-3xl text-balance">
-            {t('about.title', 'Why Choose Compass?')}
+            {t('about.title.v2', 'What Compass is, and how it works.')}
           </h1>
-          <p className="text-lg sm:text-xl text-ink-700 max-w-xl leading-relaxed">
+          <p className="text-lg sm:text-xl text-ink-700 max-w-2xl leading-relaxed">
             {t(
-              'about.subtitle',
-              'To find your people with ease — based on who they are, not how they look.',
+              'about.subtitle.v2',
+              'A free, public directory of people looking for depth — friends, partners, or collaborators. Built by volunteers, funded by donations, governed by its members.',
             )}
           </p>
         </div>
@@ -629,6 +1093,16 @@ export default function About() {
             below is what made this page read as flat. Renders nothing if the stats call comes back
             empty, in which case the header simply meets the feature grid as it did before. */}
         <StatBand />
+
+        {/* ── How it works ──
+            Ahead of the feature blocks, because the block below it is step three of the loop and the page
+            never described steps one, two and four at all. */}
+        <Section>
+          <SectionLabel>{t('about.how.label', 'How it works')}</SectionLabel>
+          <Reveal>
+            <HowItWorks />
+          </Reveal>
+        </Section>
 
         {/* ── Features ── */}
         <Section>
@@ -659,6 +1133,49 @@ export default function About() {
           </div>
         </Section>
 
+        {/* ── Who's here ── */}
+        <Section>
+          <SectionLabel>{t('about.who.label', 'Who’s here')}</SectionLabel>
+          <Reveal>
+            <WhosHere />
+          </Reveal>
+        </Section>
+
+        {/* ── What's public ── */}
+        <Section>
+          <SectionLabel>{t('about.public.label', 'What’s public')}</SectionLabel>
+          <Reveal>
+            <ProseBlock
+              icon={EyeIcon}
+              label={t('about.public.eyebrow', 'Your profile')}
+              title={t(
+                'about.public.title',
+                'Your profile is a web page. That’s the point — and it’s a switch.',
+              )}
+              visual={<VisibilityToggleMock />}
+            >
+              <p>
+                {t(
+                  'about.public.p1',
+                  'Compass is a directory, so by default your profile is a public page that anyone can read and search engines can index. That is the deal that makes searching work at all: everyone can be found, so you can find anyone.',
+                )}
+              </p>
+              <p>
+                {t(
+                  'about.public.p2',
+                  'If that isn’t what you want, one tap makes your profile members-only — logged-out visitors see nothing, and we tell search engines not to index it. You can switch back whenever you like.',
+                )}
+              </p>
+              <p>
+                {t(
+                  'about.public.p3',
+                  'The rest is yours too: hide profiles you’d rather not see, block someone outright, report them to moderators, download everything we hold about you, or delete your account and its data for good. Messages are encrypted at rest. Nothing you write is sold — there is nobody to sell it to.',
+                )}
+              </p>
+            </ProseBlock>
+          </Reveal>
+        </Section>
+
         {/* ── Mission ── */}
         <Section>
           <SectionLabel>{t('about.mission.label', 'Why we exist')}</SectionLabel>
@@ -672,29 +1189,169 @@ export default function About() {
             />
           </Reveal>
           {/* Standalone rather than a grid cell: it is the only card in this section now that "One
-              Mission" has been promoted, and a one-item grid is just an indirection. */}
-          {/*<Reveal className="mt-4 sm:mt-5">*/}
-          {/*  <FeatureCardWide*/}
-          {/*    icon={GlobeAltIcon}*/}
-          {/*    title={t('about.block.vision.title', 'Vision')}*/}
-          {/*    text={t(*/}
-          {/*      'about.block.vision.text',*/}
-          {/*      'Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.',*/}
-          {/*    )}*/}
-          {/*  />*/}
-          {/*</Reveal>*/}
+              Mission" has been promoted, and a one-item grid is just an indirection.
+              Restored from the home page, where it was the closing quote. It is a claim a first-time
+              visitor cannot verify, sitting where they most needed a concrete reason; next to a mission
+              statement on the reference page it reads as positioning instead of as self-congratulation.
+              The `about.block.vision.*` keys already carry this exact sentence in fr and de — which is why
+              the "Digital Public Good" card above had to be given keys of its own, since it was borrowing
+              these and therefore rendering the Linux line to every French and German reader. */}
+          <Reveal className="mt-4 sm:mt-5">
+            <FeatureCardWide
+              icon={GlobeAltIcon}
+              title={t('about.block.vision.title', 'Vision')}
+              text={t(
+                'about.block.vision.text',
+                'Compass is to human connection what Linux, Wikipedia, and Firefox are to software and knowledge: a public good built by the people who use it, for the benefit of everyone.',
+              )}
+            />
+          </Reveal>
         </Section>
 
         {/* ── How a decision gets made ── */}
         <Section>
           <SectionLabel>{t('about.vote.label', 'How a decision gets made')}</SectionLabel>
 
+          {/* The section used to be a ballot with no explanation of the machinery behind it. */}
+          {/*<p className="mb-5 max-w-3xl text-base leading-relaxed text-ink-600">*/}
+          {/*  {t(*/}
+          {/*    'about.vote.intro',*/}
+          {/*    'Compass runs on a written constitution. Members who contribute — five hours of work, or $20 a year — can become voting members; new administrators need a unanimous vote of the current ones. Proposals are public, ballots are public, and the outcome binds the project. The vote below is a real one.',*/}
+          {/*  )}*/}
+          {/*</p>*/}
+
           <Reveal>
             <VoteEvidence />
           </Reveal>
+
+          {/* The turnout tension, named rather than managed. Twelve voters is a small number and hiding it
+              would cost more than it saves on the one page that has just promised the reader every claim
+              is checkable. */}
+          {/*<p className="mt-4 max-w-3xl text-base leading-relaxed text-ink-600">*/}
+          {/*  {t(*/}
+          {/*    'about.vote.kicker',*/}
+          {/*    'Twelve voters is a small turnout. We would rather show you the real one than a bigger number that isn’t real.',*/}
+          {/*  )}*/}
+          {/*  <span className="mt-2 flex flex-wrap gap-x-5 gap-y-2">*/}
+          {/*    {[*/}
+          {/*      {href: '/constitution', label: t('about.vote.constitution', 'The constitution →')},*/}
+          {/*      {href: '/vote', label: t('about.vote.votes', 'Open votes →')},*/}
+          {/*      {href: '/members', label: t('about.vote.members', 'Voting members →')},*/}
+          {/*    ].map((l) => (*/}
+          {/*      <Link*/}
+          {/*        key={l.href}*/}
+          {/*        href={l.href}*/}
+          {/*        className="text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"*/}
+          {/*      >*/}
+          {/*        {l.label}*/}
+          {/*      </Link>*/}
+          {/*    ))}*/}
+          {/*  </span>*/}
+          {/*</p>*/}
+
           <Reveal>
             <RepoActivity className="mt-4 sm:mt-5" />
           </Reveal>
+        </Section>
+
+        {/* ── Who's behind it, what it costs, where it runs ── */}
+        <Section>
+          <SectionLabel>{t('about.who_runs.label', 'Who runs it')}</SectionLabel>
+
+          <div className="grid gap-4 sm:gap-5">
+            <Reveal>
+              <ProseBlock
+                icon={UserGroupIcon}
+                label={t('about.founder.eyebrow', 'Who’s behind it')}
+                title={t('about.founder.title', 'Somebody has to start these things.')}
+                links={[{href: '/Martin', label: t('about.founder.link', 'Martin’s profile →')}]}
+                visual={<FounderPhoto />}
+              >
+                <p>
+                  {t(
+                    'about.founder.p1',
+                    'Compass was started by Martin Braquet, an engineer from Belgium, after years of living across Europe, the U.S., India and Indonesia and finding that the connections that mattered most were the hardest to make on purpose. He still stewards and actively improves the project, but the constitution puts direction in the members’ hands.',
+                  )}
+                </p>
+                <p>{t('about.founder.p2', 'Everyone who has built Compass is a volunteer.')}</p>
+              </ProseBlock>
+            </Reveal>
+
+            <Reveal delay={70}>
+              <ProseBlock
+                icon={BanknotesIcon}
+                label={t('about.costs.eyebrow', 'What it costs')}
+                title={t('about.costs.title', 'The entire budget, in three numbers.')}
+                links={[
+                  {href: '/financials', label: t('about.costs.books', 'See the books →')},
+                  {href: '/support', label: t('about.costs.donate', 'Donate →')},
+                ]}
+                visual={<CostsChart />}
+              >
+                {/* Figures come from `FINANCIALS` so this block, the home strip and /financials cannot
+                    quote three different numbers for the one claim the page is staking itself on. */}
+                <p>
+                  {t(
+                    'about.costs.p1',
+                    'Since launch, Compass has cost ${spent} to run — hosting, infrastructure, domains. Members have donated ${donated}. The remaining ${deficit} came out of the founder’s pocket. There are no salaries, no marketing budget and no private costs, and every line of it is published.',
+                    {
+                      spent: FINANCIALS.spent,
+                      donated: FINANCIALS.donated,
+                      deficit: FINANCIALS.deficit,
+                    },
+                  )}
+                </p>
+              </ProseBlock>
+            </Reveal>
+
+            <Reveal delay={140}>
+              <ProseBlock
+                icon={DevicePhoneMobileIcon}
+                label={t('about.platforms.eyebrow', 'Where it runs')}
+                title={t('about.platforms.title', 'Browser, Android, and iPhone.')}
+                links={[
+                  {
+                    href: ANDROID_APP_URL,
+                    label: t('about.platforms.android', 'Android app →'),
+                    external: true,
+                  },
+                ]}
+                visual={<PlatformGlyphs />}
+              >
+                <p>
+                  {t(
+                    'about.platforms.p1',
+                    'The web app works in any browser. There’s an Android app on Google Play. On iPhone, add Compass to your home screen from Safari and it behaves like an app. The interface is in English, French and German, and there is a public API.',
+                  )}
+                </p>
+              </ProseBlock>
+            </Reveal>
+          </div>
+        </Section>
+
+        {/* ── Press ──
+            Its own section rather than folded into "Where it runs": that block is about platforms, this
+            one is proof a stranger can check outside the site entirely. Unlike home's one-line mention,
+            this is the "full" version the outlets themselves get named with — real logos, fetched from
+            each outlet's own official site (dhnet.be, lavenir.net, matele.be, rcf.be), not a third-party
+            logo aggregator or a Wikipedia fair-use scan. */}
+        <Section>
+          <SectionLabel>{t('about.press.label', 'Press')}</SectionLabel>
+          <div className={clsx(surface, 'p-6 sm:p-8')}>
+            <p className="mb-6 max-w-2xl text-base leading-relaxed text-ink-600">
+              {t(
+                'about.press.text',
+                'Compass has been covered by RCF, La DH, L’Avenir and Matélé.',
+              )}
+            </p>
+            <PressLogos />
+            <Link
+              href="/press"
+              className="mt-6 inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+            >
+              {t('about.press.link', 'Read the coverage →')}
+            </Link>
+          </div>
         </Section>
 
         {/* ── Help ── */}

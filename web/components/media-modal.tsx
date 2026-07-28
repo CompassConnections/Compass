@@ -1,5 +1,5 @@
 import {Dialog, Transition} from '@headlessui/react'
-import {XMarkIcon} from '@heroicons/react/24/outline'
+import {ChevronLeftIcon, ChevronRightIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import {
   Fragment,
@@ -10,7 +10,9 @@ import {
   useState,
   type WheelEvent as ReactWheelEvent,
 } from 'react'
+import {useEvent} from 'web/hooks/use-event'
 import {isVideo} from 'web/lib/firebase/storage'
+import {useT} from 'web/lib/locale'
 
 const MIN_SCALE = 1
 const MAX_SCALE = 4
@@ -21,10 +23,64 @@ const ZOOM_ANIMATION_MS = 200
 
 type Point = {x: number; y: number}
 
+const SWIPE_MIN_DIST_PX = 50
+const SWIPE_MAX_OFF_AXIS_RATIO = 0.8
+
 // Enlarges an image or video to the largest size that fits within 90% of the
 // viewport in both dimensions, without cropping (aspect ratio preserved).
-export function MediaModal(props: {url: string; open: boolean; setOpen: (open: boolean) => void}) {
-  const {url, open, setOpen} = props
+//
+// Pass `url` for a single item, or `urls` + `index` to browse a gallery in place: arrow keys, the
+// on-screen chevrons, and a horizontal swipe all move between items. Swiping is ignored while the
+// image is zoomed in, where the same gesture pans.
+export function MediaModal(props: {
+  open: boolean
+  setOpen: (open: boolean) => void
+  /** Single-item form. */
+  url?: string
+  /** Gallery form — supply every item plus the one currently shown. */
+  urls?: string[]
+  index?: number
+  setIndex?: (index: number) => void
+  /** Caption rendered under the media, keyed by url. */
+  descriptions?: Record<string, string>
+}) {
+  const {open, setOpen, urls, index, setIndex, descriptions} = props
+  const t = useT()
+
+  const items = urls?.length ? urls : props.url ? [props.url] : []
+  const [internalIndex, setInternalIndex] = useState(index ?? 0)
+
+  // The caller may or may not own the index; follow it when it does, and keep our own when it doesn't.
+  useEffect(() => {
+    if (index != null) setInternalIndex(index)
+  }, [index])
+
+  const current = items[clamp(internalIndex, 0, Math.max(0, items.length - 1))]
+  const hasMultiple = items.length > 1
+  const caption = current ? descriptions?.[current] : undefined
+
+  const go = useEvent((delta: number) => {
+    if (!hasMultiple) return
+    const next = (internalIndex + delta + items.length) % items.length
+    setInternalIndex(next)
+    setIndex?.(next)
+  })
+
+  useEffect(() => {
+    if (!open || !hasMultiple) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') go(-1)
+      else if (e.key === 'ArrowRight') go(1)
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open, hasMultiple, go])
+
+  if (!current) return null
+
+  const url = current
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -61,23 +117,80 @@ export function MediaModal(props: {url: string; open: boolean; setOpen: (open: b
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="relative flex h-full w-full items-center justify-center">
-              {isVideo(url) ? (
-                <video
-                  src={url}
-                  controls
-                  autoPlay
-                  playsInline
-                  className="h-auto max-h-full w-auto max-w-full rounded object-contain"
-                />
-              ) : (
-                <ZoomableImage url={url} active={open} />
+            {/* A column, not a centred box: the caption needs its own row under the media, and the
+                media area has to be allowed to shrink (`min-h-0`) so a long caption cannot push it
+                past the bottom of the screen. */}
+            <Dialog.Panel className="relative flex h-full w-full flex-col items-center justify-center gap-4 px-4 pb-6 pt-16 sm:px-16">
+              {/* Inside the panel, not beside it: Headless UI closes the dialog on any click that
+                  lands outside the panel's subtree, which is what made paging dismiss the viewer.
+                  They are `fixed`, so they still sit against the viewport edges. */}
+              {hasMultiple && (
+                <>
+                  <NavButton
+                    side="left"
+                    label={t('media.previous', 'Previous')}
+                    onClick={() => go(-1)}
+                  />
+                  <NavButton side="right" label={t('media.next', 'Next')} onClick={() => go(1)} />
+                </>
+              )}
+
+              <div className="relative flex min-h-0 w-full flex-1 items-center justify-center">
+                {isVideo(url) ? (
+                  <video
+                    src={url}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="h-auto max-h-full w-auto max-w-full rounded object-contain"
+                  />
+                ) : (
+                  <ZoomableImage
+                    url={url}
+                    active={open}
+                    onSwipe={hasMultiple ? (direction) => go(direction) : undefined}
+                  />
+                )}
+              </div>
+
+              {(caption || hasMultiple) && (
+                <div className="flex w-full shrink-0 flex-col items-center gap-1.5">
+                  {caption && (
+                    <p className="text-ink-800 max-w-2xl whitespace-pre-wrap text-center text-sm">
+                      {caption}
+                    </p>
+                  )}
+                  {hasMultiple && (
+                    <div className="text-ink-500 text-xs tabular-nums">
+                      {internalIndex + 1} / {items.length}
+                    </div>
+                  )}
+                </div>
               )}
             </Dialog.Panel>
           </Transition.Child>
         </div>
       </Dialog>
     </Transition.Root>
+  )
+}
+
+function NavButton(props: {side: 'left' | 'right'; label: string; onClick: () => void}) {
+  const {side, label, onClick} = props
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className={`text-ink-700 hover:text-primary-400 focus:text-primary-400 bg-canvas-50/70 fixed top-1/2 z-10 -translate-y-1/2 rounded-full p-2 outline-none backdrop-blur transition-colors ${
+        side === 'left' ? 'left-2 sm:left-4' : 'right-2 sm:right-4'
+      }`}
+    >
+      {side === 'left' ? (
+        <ChevronLeftIcon className="h-6 w-6" />
+      ) : (
+        <ChevronRightIcon className="h-6 w-6" />
+      )}
+    </button>
   )
 }
 
@@ -110,8 +223,13 @@ function anchoredTranslate(
 // Pinch-to-zoom (mobile), scroll-to-zoom + drag-to-pan (desktop), and
 // double-tap/double-click-to-zoom, all anchored under the cursor/fingers —
 // the same interactions as WhatsApp's photo viewer.
-function ZoomableImage(props: {url: string; active: boolean}) {
-  const {url, active} = props
+function ZoomableImage(props: {
+  url: string
+  active: boolean
+  /** Called with -1 (previous) or 1 (next) on a horizontal swipe, when not zoomed in. */
+  onSwipe?: (direction: number) => void
+}) {
+  const {url, active, onSwipe} = props
   const containerRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const [scale, setScale] = useState(1)
@@ -221,6 +339,19 @@ function ZoomableImage(props: {url: string; active: boolean}) {
   }
 
   const endPointer = (e: ReactPointerEvent) => {
+    // Only a lone pointer at rest scale is a swipe — at scale > 1 the same drag is a pan, and with two
+    // pointers down it is a pinch.
+    if (onSwipe && scale === 1 && pointers.current.size === 1 && dragStart.current) {
+      const dx = e.clientX - dragStart.current.pointer.x
+      const dy = e.clientY - dragStart.current.pointer.y
+      if (
+        Math.abs(dx) > SWIPE_MIN_DIST_PX &&
+        Math.abs(dy) < Math.abs(dx) * SWIPE_MAX_OFF_AXIS_RATIO
+      ) {
+        onSwipe(dx < 0 ? 1 : -1)
+      }
+    }
+
     pointers.current.delete(e.pointerId)
     if (pointers.current.size < 2) pinchDistance.current = null
 

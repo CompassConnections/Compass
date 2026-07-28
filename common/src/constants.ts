@@ -21,6 +21,26 @@ export const formLink = 'https://forms.gle/tKnXUMAbEreMK6FC6'
 export const ANDROID_APP_URL =
   'https://play.google.com/store/apps/details?id=com.compassconnections.app'
 
+/**
+ * What Compass has cost and what it has been given, in USD, since launch.
+ *
+ * Lives here rather than in either page because the home strip and the about page both state it, and two
+ * copies of a number that is the whole point of the transparency argument would be the one place it must
+ * not drift. The authoritative breakdown is `web/public/md/financials.md` and the spreadsheet it links;
+ * update all of them together.
+ *
+ * Not queried live: unlike the member count there is no endpoint behind it, and inventing one to avoid a
+ * constant would put a bookkeeping figure on a page-load path.
+ */
+export const FINANCIALS = {
+  spent: 457,
+  donated: 145,
+  /** Covered out of pocket by the founder — kept derived so it can never disagree with the two above. */
+  get deficit() {
+    return this.spent - this.donated
+  },
+}
+
 export const IS_MAINTENANCE = false // set to true to enable the maintenance mode banner
 
 export const MIN_BIO_LENGTH = 250

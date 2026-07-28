@@ -91,7 +91,7 @@ export const ViewProfileCardButton = (props: {
           <rect x="2.5" y="5" width="15" height="11" rx="2" />
           <path d="M2.5 9h15" />
         </svg>
-        {t('share_profile.view_profile_card', 'Profile Card')}
+        {t('share_profile.view_profile_card', 'Card')}
       </button>
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
         <Col className="gap-4 bg-canvas-100/75 rounded-2xl justify-center">

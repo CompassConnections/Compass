@@ -430,6 +430,33 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* The opposite of .scrollbar-hide: a slim scrollbar that is always drawn, never an overlay that fades
+   out. Used by ScrollPanel, where the whole point is that the region reads as scrollable at a glance. */
+.scrollbar-visible {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--color-primary-400) / 0.55) rgb(var(--color-canvas-200));
+  overscroll-behavior: contain;
+}
+
+.scrollbar-visible::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: rgb(var(--color-canvas-200));
+  border-radius: 100px;
+  margin: 10px 0;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary-400) / 0.55);
+  border-radius: 100px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-primary-500) / 0.8);
+}
+
 text {
   font-family: icomoon, var(--font-main), emoji, sans-serif;
 }

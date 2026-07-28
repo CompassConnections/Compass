@@ -1,27 +1,19 @@
 import {
   EllipsisHorizontalIcon,
   EyeIcon,
-  EyeSlashIcon,
   LockClosedIcon,
   PencilIcon,
 } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
-import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
-import {User, UserActivity} from 'common/user'
-import Image from 'next/image'
-import Link from 'next/link'
+import {User} from 'common/user'
 import Router from 'next/router'
-import React, {useState} from 'react'
+import React from 'react'
 import toast from 'react-hot-toast'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
-import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {MediaModal} from 'web/components/media-modal'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ViewProfileCardButton} from 'web/components/photos-modal'
-import {linkClass} from 'web/components/widgets/site-link'
 import {StarButton} from 'web/components/widgets/star-button'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useUser} from 'web/hooks/use-user'
@@ -29,163 +21,8 @@ import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {disableProfile} from 'web/lib/util/disable'
-import {capitalizePure} from 'web/lib/util/time'
 
 import {ShareProfileButton} from '../widgets/share-profile-button'
-import ProfilePrimaryInfo from './profile-primary-info'
-
-export default function ProfileHeader(props: {
-  user: User
-  userActivity?: UserActivity
-  profile: Profile
-  simpleView?: boolean
-  isHiddenFromMe: boolean | undefined
-}) {
-  const {user, profile, userActivity, simpleView, isHiddenFromMe} = props
-  const currentUser = useUser()
-  const isCurrentUser = currentUser?.id === user.id
-  const disabled = profile.disabled
-  const t = useT()
-
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-
-  debug('ProfileProfileHeader', {
-    user,
-    profile,
-    userActivity,
-    currentUser,
-  })
-
-  return (
-    <Row className={'flex-wrap gap-4'}>
-      <Col>
-        {currentUser && !isCurrentUser && isHiddenFromMe && (
-          <div className="w-fit flex items-center gap-2 rounded-lg bg-canvas-200 px-4 py-3 text-sm text-primary-800 mb-4">
-            <EyeSlashIcon className="h-4 w-4 flex-none" />
-            {t(
-              'profile_grid.hidden_notice',
-              "You hid this person, so they don't appear in your search results.",
-            )}
-          </div>
-        )}
-        {currentUser && isCurrentUser && disabled && (
-          <div className="w-fit flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 mb-4">
-            <LockClosedIcon className="h-4 w-4 flex-none" />
-            {t(
-              'profile.header.disabled_notice',
-              'You disabled your profile, so no one else can access it.',
-            )}
-          </div>
-        )}
-        <Row className="w-full gap-6 flex-wrap">
-          {profile.pinned_url && (
-            <div className="h-[108px] w-[108px] flex-none">
-              <Image
-                priority={true}
-                src={profile.pinned_url}
-                height={300}
-                width={300}
-                sizes="(max-width: 640px) 100vw, 300px"
-                alt=""
-                className="h-full w-full cursor-pointer rounded-2xl object-cover"
-                onClick={() => setLightboxOpen(true)}
-              />
-            </div>
-          )}
-          <Col
-            className={clsx(
-              profile.pinned_url
-                ? 'max-w-[160px] sm:max-w-[300px]'
-                : 'max-w-[260px] sm:max-w-[400px]',
-            )}
-          >
-            <Row className={clsx('flex-wrap justify-between gap-2 py-1')}>
-              <Row className="items-center gap-1">
-                <Col className="gap-1">
-                  <Row className="items-center gap-1" data-testid="profile-display-name-age">
-                    {/*{!isCurrentUser && <OnlineIcon last_online_time={userActivity?.last_online_time}/>}*/}
-                    <span>
-                      {simpleView ? (
-                        <Link className={linkClass} href={`/${user.username}`}>
-                          <span
-                            className="font-heading text-4xl font-medium"
-                            style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
-                          >
-                            {user.name}
-                          </span>
-                        </Link>
-                      ) : (
-                        <span
-                          className="font-heading text-4xl font-medium"
-                          style={{lineHeight: '1.1', letterSpacing: '-0.01em'}}
-                        >
-                          {user.name}
-                        </span>
-                      )}
-                    </span>
-                  </Row>
-                  <ProfilePrimaryInfo profile={profile} />
-                </Col>
-              </Row>
-            </Row>
-          </Col>
-        </Row>
-        <Row
-          className={clsx('gap-2 flex-wrap py-2', 'max-w-full sm:max-w-[500px]')}
-          data-testid="profile-keywords"
-        >
-          {profile.keywords?.map(capitalizePure)?.map((tag, i) => (
-            <span
-              key={i}
-              className={'border-canvas-300 text-primary-700 bg-canvas-200'}
-              style={{
-                padding: '5px 13px',
-                borderRadius: '100px',
-                fontSize: '13px',
-                fontWeight: '400',
-                letterSpacing: '0.01em',
-                borderWidth: '1px',
-              }}
-            >
-              {tag.trim()}
-            </span>
-          ))}
-        </Row>
-      </Col>
-      {profile.headline && (
-        <div
-          className="relative max-w-xl px-4 py-3 text-ink-600  flex items-center justify-center"
-          data-testid="profile-headline"
-          style={{
-            fontSize: '15px',
-            lineHeight: '1.65',
-            borderLeft: '1.5px solid rgb(var(--color-primary-300))',
-            paddingLeft: '40px',
-          }}
-        >
-          <div className="h-fit relative">
-            <span
-              className="absolute -mt-6 text-3xl text-primary-300"
-              style={{fontFamily: 'serif'}}
-            >
-              "
-            </span>
-            <span className="italic">{profile.headline}</span>
-            <span
-              className="absolute -bottom-8 text-3xl text-primary-300"
-              style={{fontFamily: 'serif'}}
-            >
-              "
-            </span>
-          </div>
-        </div>
-      )}
-      {profile.pinned_url && (
-        <MediaModal url={profile.pinned_url} open={lightboxOpen} setOpen={setLightboxOpen} />
-      )}
-    </Row>
-  )
-}
 
 export function ProfileHeaderActions(props: {
   user: User

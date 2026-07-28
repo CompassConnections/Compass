@@ -59,48 +59,38 @@ export const ProfileCommentSection = (props: {
         <>
           {currentUser && profile.comments_enabled && (
             <>
-              <div className="mb-4 text-ink-600">
-                {isCurrentUser ? (
-                  <>
-                    {t(
-                      'profile.comments.current_user_hint',
-                      'Other users can write endorsements of you here.',
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {t(
-                      'profile.comments.other_user_hint',
-                      'If you know them, write something nice that adds to their profile.',
-                    )}
-                  </>
-                )}
-              </div>
-              {!isCurrentUser && (
-                <>
-                  {!showCommentInput ? (
+              {showCommentInput ? (
+                <ProfileCommentInput
+                  className="mb-4 mr-px mt-px"
+                  onUserId={onUser.id}
+                  trackingLocation={'contract page'}
+                />
+              ) : (
+                /* One compact row, not a panel. This is an invitation, and as a 170px dashed box it
+                   outweighed the endorsements it was asking for — and a dashed border reads as a drop
+                   zone, which is the wrong metaphor. The only card left in this region is the
+                   connection-signal one, which actually holds controls. */
+                <Row className="mb-6 flex-wrap items-center gap-x-4 gap-y-2">
+                  <div className="text-ink-500 text-sm">
+                    {isCurrentUser
+                      ? t(
+                          'profile.comments.current_user_hint',
+                          'Other users can write endorsements of you here.',
+                        )
+                      : t(
+                          'profile.comments.other_user_hint',
+                          'If you know them, write something nice that adds to their profile.',
+                        )}
+                  </div>
+                  {!isCurrentUser && (
                     <button
                       onClick={() => setShowCommentInput(true)}
-                      className="w-fit border-canvas-300 text-primary-700 bg-canvas-200 hover:bg-canvas-300 mb-4 rounded-full border px-4 py-2 text-sm transition-colors"
-                      style={{
-                        padding: '6px 16px',
-                        borderRadius: '100px',
-                        fontSize: '13px',
-                        fontWeight: '400',
-                        letterSpacing: '0.01em',
-                        borderWidth: '1px',
-                      }}
+                      className="border-canvas-300 text-primary-700 hover:border-primary-400 hover:bg-primary-50 w-fit shrink-0 rounded-full border px-4 py-2 text-sm transition-colors"
                     >
                       {t('profile.comments.write_button', 'Write public endorsement')}
                     </button>
-                  ) : (
-                    <ProfileCommentInput
-                      className="mb-4 mr-px mt-px"
-                      onUserId={onUser.id}
-                      trackingLocation={'contract page'}
-                    />
                   )}
-                </>
+                </Row>
               )}
             </>
           )}

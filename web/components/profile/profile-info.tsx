@@ -9,22 +9,26 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
 import {ConnectActions} from 'web/components/profile/connect-actions'
-import ProfileHeader, {ProfileHeaderActions} from 'web/components/profile/profile-header'
+import {ProfileHeaderActions} from 'web/components/profile/profile-header'
+import ProfileHero from 'web/components/profile/profile-hero'
 import ProfileAbout, {
   hasAccessibility,
+  hasBigFive,
   hasPersonality,
   ProfileAccessibility,
-  ProfileInterestsAndCauses,
+  ProfileBigFive,
+  ProfileCauses,
+  ProfileInterests,
   ProfileLinks,
   ProfilePersonality,
 } from 'web/components/profile-about'
-import ProfileCarousel from 'web/components/profile-carousel'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
-import {Subtitle} from 'web/components/widgets/subtitle'
+import {ScrollPanel} from 'web/components/widgets/scroll-panel'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useCompatibilityQuestionGroups} from 'web/hooks/use-questions'
+import {useScrolledPast} from 'web/hooks/use-scrolled-past'
 import {useUser} from 'web/hooks/use-user'
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
@@ -84,12 +88,14 @@ export function ProfileInfo(props: {
 
   const {data: userActivity} = useUserActivity(user?.id)
 
+  const {ref: heroRef, scrolledPast: scrolledPastHero} = useScrolledPast<HTMLDivElement>()
+
   // const isCurrentUser = currentUser?.id === user.id
 
   return (
     <>
       <div
-        className="bg-canvas-50 border-canvas-300 mb-6 flex items-center border-b px-4 sm:px-9 py-4"
+        className="bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 backdrop-blur"
         style={{
           borderBottomWidth: '1px',
           gap: '10px',
@@ -97,6 +103,28 @@ export function ProfileInfo(props: {
       >
         <div className="flex w-full items-center gap-2">
           <BackButton className={'hidden sm:flex'} />
+
+          {/* Identity fades in once the hero is gone, so who you are reading about — and how to reach
+              them — stays on screen all the way down the page. */}
+          <div
+            className={clsx(
+              'flex min-w-0 items-center gap-2.5 transition-opacity duration-200',
+              scrolledPastHero ? 'opacity-100' : 'pointer-events-none opacity-0',
+            )}
+            aria-hidden={!scrolledPastHero}
+          >
+            {/*{profile.pinned_url && (*/}
+            {/*  <Image*/}
+            {/*    src={profile.pinned_url}*/}
+            {/*    height={64}*/}
+            {/*    width={64}*/}
+            {/*    sizes="32px"*/}
+            {/*    alt=""*/}
+            {/*    className="h-8 w-8 flex-none rounded-lg object-cover"*/}
+            {/*  />*/}
+            {/*)}*/}
+            <span className="font-heading truncate text-lg font-medium">{user.name}</span>
+          </div>
 
           <div className="ml-auto flex items-center gap-2">
             <ProfileHeaderActions
@@ -113,7 +141,7 @@ export function ProfileInfo(props: {
       </div>
 
       <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0">
-        <Row className="relative items-start gap-6">
+        <div className="relative" ref={heroRef}>
           {/* Gradient overlay */}
           {/*<div*/}
           {/*  style={{*/}
@@ -141,10 +169,8 @@ export function ProfileInfo(props: {
           >
             {user.name?.charAt(0).toUpperCase()}
           </div>
-          <div
-            className={clsx('min-w-0 flex-1 animate-profile-appear', !profile.pinned_url && 'ml-6')}
-          >
-            <ProfileHeader
+          <div className="animate-profile-appear relative min-w-0">
+            <ProfileHero
               user={user}
               userActivity={userActivity}
               profile={profile}
@@ -152,7 +178,7 @@ export function ProfileInfo(props: {
               isHiddenFromMe={isHiddenFromMe}
             />
           </div>
-        </Row>
+        </div>
         {isProfileVisible ? (
           <ProfileContent
             user={user}
@@ -226,79 +252,180 @@ export function ProfileInfoSkeleton() {
         </div>
       </div>
 
+      {/* Mirrors the hero (square gallery + identity) and the two-column body, so nothing jumps on load. */}
       <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0 animate-pulse">
-        <Row className="gap-6 flex-wrap">
-          <div className="bg-canvas-200 h-[108px] w-[108px] flex-none rounded-2xl" />
-          <Col className="flex-1 gap-3 py-1 min-w-[160px]">
-            <div className="bg-canvas-200 h-8 w-2/3 max-w-[240px] rounded" />
-            <div className="bg-canvas-200 h-4 w-1/2 max-w-[180px] rounded" />
-            <div className="bg-canvas-200 h-4 w-2/5 max-w-[140px] rounded" />
+        <div className="flex flex-col gap-8 md:flex-row md:gap-10">
+          <Col className="flex-none gap-3" style={{width: 260}}>
+            <div className="bg-canvas-200 aspect-square w-full rounded-2xl" />
+            <Row className="gap-2">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-canvas-200 h-[52px] w-[52px] rounded-lg" />
+              ))}
+            </Row>
           </Col>
-        </Row>
+          <Col className="min-w-[160px] flex-1 gap-3 py-1">
+            <div className="bg-canvas-200 h-11 w-2/3 max-w-[320px] rounded" />
+            <div className="bg-canvas-200 h-4 w-1/2 max-w-[220px] rounded" />
+            <Row className="gap-2 flex-wrap py-2 max-w-full sm:max-w-[500px]">
+              <div className="bg-canvas-200 h-7 w-16 rounded-full" />
+              <div className="bg-canvas-200 h-7 w-20 rounded-full" />
+              <div className="bg-canvas-200 h-7 w-14 rounded-full" />
+              <div className="bg-canvas-200 h-7 w-24 rounded-full" />
+            </Row>
+            <div className="bg-canvas-200 h-16 w-full max-w-[340px] rounded-xl" />
+          </Col>
+        </div>
 
-        <Row className="gap-2 flex-wrap py-3 mt-2 max-w-full sm:max-w-[500px]">
-          <div className="bg-canvas-200 h-7 w-16 rounded-full" />
-          <div className="bg-canvas-200 h-7 w-20 rounded-full" />
-          <div className="bg-canvas-200 h-7 w-14 rounded-full" />
-          <div className="bg-canvas-200 h-7 w-24 rounded-full" />
-        </Row>
-
-        <div
-          className="bg-canvas-50 border-canvas-300 border mt-6"
-          style={{borderRadius: '14px', padding: '22px 24px'}}
-        >
-          <div className="bg-canvas-200 h-6 w-24 rounded mb-5" />
-          <Col className="gap-4">
+        <div className="mt-10 grid grid-cols-1 items-start gap-x-12 gap-y-12 lg:grid-cols-[minmax(0,700px)_minmax(300px,1fr)]">
+          <Col className="gap-3">
+            <div className="bg-canvas-200 h-3 w-20 rounded mb-3" />
             {[...Array(6)].map((_, i) => (
-              <Row key={i} className="items-center gap-2.5">
-                <div className="bg-canvas-200 h-8 w-8 flex-none rounded-lg" />
-                <Col className="flex-1 gap-1.5">
-                  <div className="bg-canvas-200 h-3 w-20 rounded" />
-                  <div className="bg-canvas-200 h-4 w-3/5 rounded" />
-                </Col>
-              </Row>
+              <div key={i} className="bg-canvas-200 h-4 w-full rounded" />
             ))}
+            <div className="bg-canvas-200 h-4 w-2/3 rounded" />
           </Col>
+
+          <div>
+            <div className="bg-canvas-200 h-3 w-20 rounded mb-3" />
+            <div className="border-canvas-300 mb-4 border-t" />
+            <Col className="gap-4">
+              {[...Array(6)].map((_, i) => (
+                <Row key={i} className="items-center gap-2.5">
+                  <div className="bg-canvas-200 h-8 w-8 flex-none rounded-lg" />
+                  <Col className="flex-1 gap-1.5">
+                    <div className="bg-canvas-200 h-3 w-20 rounded" />
+                    <div className="bg-canvas-200 h-4 w-3/5 rounded" />
+                  </Col>
+                </Row>
+              ))}
+            </Col>
+          </div>
         </div>
       </div>
     </>
   )
 }
 
-function ProfileCard(props: {title?: ReactNode; children: ReactNode; className?: string}) {
-  const {title, children, className} = props
-  // Check if children is null or undefined
-  if (children == null) {
-    return null
-  }
+/**
+ * The attribute rail's contents. Extracted so the rail can sit in its own grid area between the two
+ * halves of the prose column without the JSX becoming unreadable.
+ */
+function RailBlocks(props: {
+  profile: Profile
+  userActivity?: UserActivity
+  isCurrentUser: boolean
+}) {
+  const {profile, userActivity, isCurrentUser} = props
+  const t = useT()
+
+  // Blocks are spaced apart rather than divided inside a shared panel — with no card there is nothing
+  // for a divider to belong to, and whitespace is what separates the sections on the left too.
   return (
-    <div
-      className={clsx('bg-canvas-50 border-canvas-300 border', className)}
-      style={{borderRadius: '14px', padding: '22px 24px'}}
-    >
-      {title != null && <CardTitle>{title}</CardTitle>}
-      {children}
+    <div className="3xl:grid-cols-2 grid grid-cols-1 gap-x-10 gap-y-10">
+      <div className="flex min-w-0 flex-col gap-10">
+        <RailSection title={t('profile.details', 'Details')}>
+          <ProfileAbout
+            profile={profile}
+            userActivity={userActivity}
+            isCurrentUser={isCurrentUser}
+            omitConnectionGoals
+          />
+        </RailSection>
+      </div>
+
+      <div className="flex min-w-0 flex-col gap-10">
+        {!!profile.interests?.length && (
+          <RailSection title={t('profile.interests', 'Interests')}>
+            <ProfileInterests profile={profile} />
+          </RailSection>
+        )}
+
+        {!!profile.causes?.length && (
+          <RailSection title={t('profile.causes', 'Causes')}>
+            <ProfileCauses profile={profile} />
+          </RailSection>
+        )}
+
+        {hasPersonality(profile) && (
+          <RailSection title={t('profile.personality', 'Personality')}>
+            <ProfilePersonality profile={profile} />
+          </RailSection>
+        )}
+
+        {hasBigFive(profile) && (
+          <RailSection title={t('profile.big5', 'Big Five')}>
+            <ProfileBigFive profile={profile} />
+          </RailSection>
+        )}
+
+        {profile.links && Object.keys(profile.links).length > 0 && (
+          <RailSection title={t('profile.links', 'Links')}>
+            <ProfileLinks profile={profile} />
+          </RailSection>
+        )}
+
+        {hasAccessibility(profile) && (
+          <RailSection title={t('profile.accessibility_notes', 'Accessibility')}>
+            <ProfileAccessibility profile={profile} />
+          </RailSection>
+        )}
+      </div>
     </div>
   )
 }
 
-function CardTitle(props: {children: ReactNode; className?: string}) {
+/**
+ * A section of the main reading column. No border and no card — the column is prose, and whitespace
+ * plus a small-caps label separates sections better than five stacked boxes do.
+ */
+function Section(props: {title?: ReactNode; id?: string; children: ReactNode; testId?: string}) {
+  const {title, id, children, testId} = props
+  if (children == null) return null
+  return (
+    <section id={id} className="min-w-0 scroll-mt-24" data-testid={testId}>
+      {title != null && <SectionHeading>{title}</SectionHeading>}
+      {children}
+    </section>
+  )
+}
+
+/**
+ * A block of the attribute rail: label, rule, content — the same object as `Section` on the left, with
+ * a rule added because the rail's rows are also rule-separated and the heading needs to sit outside
+ * that run rather than look like the first of them.
+ *
+ * No card. `bg-canvas-50` is the elevated-surface token and should mean "raised, or you can act on
+ * this"; the rail is reference text, the same class of thing as the bio beside it. Boxing one and not
+ * the other was the last place two visual languages ran side by side on this page.
+ */
+function RailSection(props: {title?: ReactNode; children: ReactNode}) {
+  const {title, children} = props
+  if (children == null) return null
+  return (
+    <div className="min-w-0">
+      {title != null && (
+        <>
+          <SectionHeading className="!mb-3">{title}</SectionHeading>
+          <div className="border-canvas-300 border-t" />
+        </>
+      )}
+      {/* Every section gets the same breathing room under its rule. Details used to get it from its
+          first row's own padding, which left the sections that are not row-based — interests, causes,
+          Big Five, links — sitting hard against the rule. */}
+      <div className={clsx(title != null && 'pt-4')}>{children}</div>
+    </div>
+  )
+}
+
+function SectionHeading(props: {children: ReactNode; className?: string}) {
   const {children, className} = props
   return (
-    // <div
-    //   className={clsx(
-    //     'text-ink-900 mb-3.5 font-heading text-xl font-medium tracking-wide',
-    //     className,
-    //   )}
-    //   style={{letterSpacing: '0.01em'}}
-    // >
-    //   {children}
-    // </div>
-    <Subtitle
-      className={clsx('!mt-0 !mb-4 font-heading text-xl font-medium tracking-wide', className)}
+    <h2
+      className={clsx('text-ink-400 font-dm-sans mb-5 font-normal uppercase', className)}
+      style={{fontSize: '10px', letterSpacing: '0.18em'}}
     >
       {children}
-    </Subtitle>
+    </h2>
   )
 }
 
@@ -336,60 +463,50 @@ function ProfileContent(props: {
 
   return (
     <>
+      {/* Prose on the left, attributes in a sticky rail on the right. Prose is capped at a readable
+          measure and the rail takes whatever is left, so wide screens widen the attributes instead of
+          opening a gutter between the two columns.
+
+          The prose is split into two grid areas rather than one column so that stacking order on
+          mobile can differ from column order on desktop. Flattened into a single column the old DOM
+          order put the entire rail after Connect, which buried Details — a top-five thing to check —
+          under everything ranked below it. Explicit row/column placement at `lg` keeps the desktop
+          layout identical while mobile reads bio → details → prompts → endorsements → connect. */}
       <div
-        className="mt-4 grid grid-cols-1 items-start gap-6 md:grid-cols-[1fr_500px] xl:grid-cols-[1fr_800px] 3xl:grid-cols-[1fr_900px]"
+        className="mt-10 flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,700px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14"
         data-testid="profile-content"
       >
-        <Col className="gap-6">
-          <ProfileCard title={t('profile.details', 'Details')} className="p-5">
-            <ProfileAbout
-              profile={profile}
-              userActivity={userActivity}
-              isCurrentUser={isCurrentUser}
-            />
-          </ProfileCard>
-
-          {(!!profile.interests?.length || !!profile.causes?.length) && (
-            <ProfileCard title={t('profile.interests_and_causes', 'Interests')} className="p-5">
-              <ProfileInterestsAndCauses profile={profile} />
-            </ProfileCard>
-          )}
-
-          {hasPersonality(profile) && (
-            <ProfileCard title={t('profile.personality', 'Personality')} className="p-5">
-              <ProfilePersonality profile={profile} />
-            </ProfileCard>
-          )}
-
-          {hasAccessibility(profile) && (
-            <ProfileCard title={t('profile.accessibility_notes', 'Accessibility')} className="p-5">
-              <ProfileAccessibility profile={profile} />
-            </ProfileCard>
-          )}
-
-          {profile.links && Object.keys(profile.links).length > 0 && (
-            <ProfileCard title={t('profile.links', 'Links')} className="p-5">
-              <ProfileLinks profile={profile} />
-            </ProfileCard>
-          )}
-        </Col>
-        <Col className="gap-6">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           {profile.bio && (
-            <ProfileCard title={t('profile.bio.about_me', 'About Me')} className="p-0">
+            <Section title={t('profile.bio.about_me', 'About Me')}>
               <ProfileBio
                 isCurrentUser={isCurrentUser}
                 profile={profile}
                 refreshProfile={refreshProfile}
                 fromProfilePage={fromProfilePage}
               />
-            </ProfileCard>
+            </Section>
           )}
+        </div>
 
-          <ProfileCarousel profile={profile} />
+        {/* Pinned beside the prose, and scrollable within itself — see ScrollPanel for the cues that
+            make the second half of that obvious. Once wide enough for two readable columns it splits,
+            which roughly halves its height and leaves far less to scroll.
+            `row-span-2` gives the sticky element a containing block taller than itself, which is what
+            it needs to have anywhere to travel. */}
+        <ScrollPanel
+          className="lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          // `lg:pr-5` is the gutter the card's padding used to provide: without it the values, the
+          // Big Five numbers in particular, sit hard against the scrollbar and get clipped by it.
+          scrollClassName="lg:overflow-y-auto lg:max-h-[calc(100vh-8rem)] lg:pr-5"
+          fadeColorClass="from-canvas-100 to-transparent"
+        >
+          <RailBlocks profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
+        </ScrollPanel>
 
+        <Col className="min-w-0 gap-14 lg:col-start-1 lg:row-start-2">
           {showCompatibilityPrompts && (
-            <ProfileCard
-              className="p-5"
+            <Section
               title={
                 isCurrentUser
                   ? t('answers.display.your_prompts', 'Compatibility Prompts')
@@ -405,27 +522,26 @@ function ProfileContent(props: {
                 fromProfilePage={fromProfilePage}
                 profile={profile}
               />
-            </ProfileCard>
+            </Section>
           )}
 
+          {/* No wrapper surface: the section supplies its own — a dashed invitation while empty, the
+              endorsements themselves once there are any. A box around either just doubles the border. */}
           {currentUser && (
-            <ProfileCard
-              className="p-5"
-              title={t('profile.comments.section_title', 'Endorsements')}
-            >
+            <Section title={t('profile.comments.section_title', 'Endorsements')}>
               <ProfileCommentSection
                 onUser={user}
                 profile={profile}
                 currentUser={currentUser}
                 simpleView={!!fromProfilePage}
               />
-            </ProfileCard>
+            </Section>
           )}
 
           {!isCurrentUser && currentUser && (
-            <ProfileCard title={t('profile.connect.title', 'Connect')}>
+            <Section id="connect" title={t('profile.connect.title', 'Connect')}>
               <ConnectActions user={user} profile={profile} />
-            </ProfileCard>
+            </Section>
           )}
           {!currentUser && (
             <SignUpButton

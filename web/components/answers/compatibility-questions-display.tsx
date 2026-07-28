@@ -40,7 +40,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {db} from 'web/lib/supabase/db'
 
-import {CompatibleBadge} from '../widgets/compatible-badge'
+import {CompatibilityScoreBar} from '../widgets/compatible-badge'
 import {Subtitle} from '../widgets/profile-subtitle'
 import {
   AnswerCompatibilityQuestionButton,
@@ -176,19 +176,21 @@ export function CompatibilityQuestionsDisplay(props: {
       {pinnedAnswers.length > 0 && (
         <Col className="gap-3">
           <PinIcon />
-          {shownPinnedAnswers.map((answer) => (
-            <CompatibilityAnswerBlock
-              key={`pinned-${answer.question_id}`}
-              answer={answer}
-              yourQuestions={answeredQuestions}
-              user={user}
-              isCurrentUser={isCurrentUser}
-              refreshCompatibilityAll={refreshCompatibilityAll}
-              profile={profile}
-              fromProfilePage={fromProfilePage}
-              showCommunityInfo={showCommunityInfo}
-            />
-          ))}
+          <Col>
+            {shownPinnedAnswers.map((answer) => (
+              <CompatibilityAnswerBlock
+                key={`pinned-${answer.question_id}`}
+                answer={answer}
+                yourQuestions={answeredQuestions}
+                user={user}
+                isCurrentUser={isCurrentUser}
+                refreshCompatibilityAll={refreshCompatibilityAll}
+                profile={profile}
+                fromProfilePage={fromProfilePage}
+                showCommunityInfo={showCommunityInfo}
+              />
+            ))}
+          </Col>
           {NUM_PINNED_QUESTIONS_TO_SHOW < pinnedAnswers.length && (
             <Pagination
               page={pinnedPage}
@@ -200,10 +202,14 @@ export function CompatibilityQuestionsDisplay(props: {
           <div className="border-canvas-200 border-b" />
         </Col>
       )}
-      <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-4">
+      {/* Score first and full width — it is the number the whole section exists to produce, and it was
+          previously a badge squeezed between the search box and the sort control. No caption: the
+          section heading directly above already reads "Compatibility prompts". */}
+      {compatibilityScore && <CompatibilityScoreBar compatibility={compatibilityScore} hideLabel />}
+      <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-3">
         {answeredQuestions.length > 0 && (
           <>
-            <div className="relative mt-3 w-full max-w-[50%] xl:max-w-[400px]">
+            <div className="relative min-w-[180px] flex-1 sm:max-w-[340px]">
               {/*<input*/}
               {/*  type="text"*/}
               {/*  placeholder={t('answers.search_placeholder', 'Search prompts...')}*/}
@@ -217,7 +223,9 @@ export function CompatibilityQuestionsDisplay(props: {
               <Input
                 value={searchTerm}
                 placeholder={t('answers.search_placeholder', 'Search prompts...')}
-                className={'w-full'}
+                className={
+                  'w-full !h-10 !rounded-none !border-0 !border-b !border-canvas-300 !bg-transparent !px-0 !shadow-none [&_input]:!bg-transparent'
+                }
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setSearchTerm(e.target.value)
                 }}
@@ -225,16 +233,13 @@ export function CompatibilityQuestionsDisplay(props: {
               />
             </div>
             <CompatibilitySortWidget
-              className="text-sm sm:flex mt-4"
+              className="text-sm sm:flex"
               sort={sort}
               setSort={setSort}
               user={user}
               profile={profile}
             />
           </>
-        )}
-        {compatibilityScore && (
-          <CompatibleBadge compatibility={compatibilityScore} className={'mt-5 mr-4'} />
         )}
       </Row>
       {answeredQuestions.length == 0 ? (
@@ -260,21 +265,23 @@ export function CompatibilityQuestionsDisplay(props: {
         </span>
       ) : (
         <>
-          {shownAnswers.map((answer) => {
-            return (
-              <CompatibilityAnswerBlock
-                key={answer.question_id}
-                answer={answer}
-                yourQuestions={answeredQuestions}
-                user={user}
-                isCurrentUser={isCurrentUser}
-                refreshCompatibilityAll={refreshCompatibilityAll}
-                profile={profile}
-                fromProfilePage={fromProfilePage}
-                showCommunityInfo={showCommunityInfo}
-              />
-            )
-          })}
+          <Col>
+            {shownAnswers.map((answer) => {
+              return (
+                <CompatibilityAnswerBlock
+                  key={answer.question_id}
+                  answer={answer}
+                  yourQuestions={answeredQuestions}
+                  user={user}
+                  isCurrentUser={isCurrentUser}
+                  refreshCompatibilityAll={refreshCompatibilityAll}
+                  profile={profile}
+                  fromProfilePage={fromProfilePage}
+                  showCommunityInfo={showCommunityInfo}
+                />
+              )
+            })}
+          </Col>
           {shownAnswers.length === 0 && (
             <Col className="items-center py-8 text-center">
               <div className="text-ink-600 mb-2">
@@ -415,16 +422,30 @@ export function CompatibilityAnswerBlock(props: {
     <Col
       data-testid="profile-compatibility-section"
       className={clsx(
-        'bg-canvas-200/20 border border-canvas-200 flex-grow gap-2 whitespace-pre-line rounded-xl p-4 leading-relaxed',
+        // No card. A prompt is question → answer → alternatives, which is structurally the same object
+        // as a Details row, so it gets the same treatment: a rule, not a box.
+        'group border-canvas-200 flex-grow gap-2 whitespace-pre-line border-b py-6 leading-relaxed',
         className,
       )}
     >
-      <Row
-        className="justify-between gap-1 font-medium"
-        data-testid="profile-compatibility-question"
-      >
-        {question.question}
-        <Row className="gap-4 font-normal" data-testid="profile-compatibility-importance">
+      <Row className="items-baseline justify-between gap-4">
+        {/* Body sans, not the serif. The serif marks text a person wrote — the tagline, the bio, the
+            explanation below — and this question is platform boilerplate that reads identically on
+            every profile. At 19px Newsreader it also outweighed the answer, which is the part anyone
+            is actually here to read. It is the label of this row; the answer is the value. */}
+        <h3
+          // `font-figtree` is the body face: globals.css sets every h1–h6 to Newsreader at weight 700,
+          // so a heading element opts out of the serif explicitly or it does not opt out at all.
+          className="font-figtree text-ink-600 min-w-0 font-normal"
+          style={{fontSize: '16px', lineHeight: '1.45'}}
+          data-testid="profile-compatibility-question"
+        >
+          {question.question}
+        </h3>
+        <Row
+          className="shrink-0 items-center gap-2 font-normal"
+          data-testid="profile-compatibility-importance"
+        >
           {comparedProfile && isAnswered && (
             <div className="hidden sm:block">
               <CompatibilityDisplay
@@ -437,7 +458,15 @@ export function CompatibilityAnswerBlock(props: {
               />
             </div>
           )}
-          {!!currentUser && <PinQuestionButton questionId={question.id} />}
+          {/* Pinning is a rare action that was occupying permanent space in every row. It appears on
+              hover where there is a pointer, and stays put where there is not — a touch device has no
+              hover state to reveal it with. Focus reveals it too, so it stays keyboard-reachable. */}
+          {!!currentUser && (
+            <PinQuestionButton
+              questionId={question.id}
+              className="opacity-0 transition-opacity focus-visible:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+            />
+          )}
           {isCurrentUser && isAnswered && (
             <>
               <ImportanceButton
@@ -496,41 +525,54 @@ export function CompatibilityAnswerBlock(props: {
           )}
         </Row>
       </Row>
+      {/* The chosen answer is the value of the question above it, exactly as "Student" is the value of
+          "Work" — so it gets the value treatment rather than a pill. Pills in this design mean
+          "clickable", and this one never was. */}
       {answerText && (
-        <Row
-          className="border border-primary-200 bg-primary-50 text-primary-700 w-fit gap-1 rounded-full px-3 py-1 text-sm"
+        <div
+          className="text-primary-900 mt-1"
+          style={{fontSize: '18px', lineHeight: '1.35'}}
           data-testid="profile-compatibility-question-answer"
         >
           {answerText}
-        </Row>
+        </div>
       )}
-      <Row
-        className="px-2 text-sm text-ink-500 leading-relaxed pl-2 border-l-2 border-canvas-300 ml-1"
-        data-testid="profile-compatibility-question-answer-explanation"
-      >
-        {answer?.explanation && <Linkify className="" text={`"${answer.explanation}"`} />}
-      </Row>
+      {/* Free text the member wrote themselves — the only sentence in the block that is theirs, so it
+          keeps the serif italic the tagline uses. The keyline it used to hang off is gone. */}
+      {answer?.explanation && (
+        <div
+          className="font-heading text-ink-500 italic"
+          style={{fontSize: '15px', lineHeight: '1.55'}}
+          data-testid="profile-compatibility-question-answer-explanation"
+        >
+          <Linkify text={`“${answer.explanation}”`} />
+        </div>
+      )}
       {distinctPreferredAnswersText.length > 0 && (
-        <Col className="gap-2">
-          <div className="text-xs font-semibold uppercase tracking-wider text-ink-300">
+        <div
+          className="text-ink-500 mt-1"
+          style={{fontSize: '14px', lineHeight: '1.55'}}
+          data-testid="profile-compatibility-question-acceptable-answer"
+        >
+          <span
+            className="text-ink-400 font-dm-sans mr-2 uppercase"
+            style={{fontSize: '10px', letterSpacing: '0.16em'}}
+          >
             {preferredDoesNotIncludeAnswerText
               ? t('answers.display.acceptable', 'Acceptable')
               : t('answers.display.also_acceptable', 'Also acceptable')}
-          </div>
-          <Row
-            className="flex-wrap gap-2 mt-0"
-            data-testid="profile-compatibility-question-acceptable-answer"
-          >
-            {distinctPreferredAnswersText.map((text) => (
-              <Row
-                key={text}
-                className="border border-canvas-200 bg-canvas-100 text-ink-500 w-fit gap-1 rounded-full px-3 py-1 text-sm"
-              >
-                {text}
-              </Row>
-            ))}
-          </Row>
-        </Col>
+          </span>
+          {distinctPreferredAnswersText.map((text, i) => (
+            <span key={text}>
+              {i > 0 && (
+                <span aria-hidden className="text-ink-400 select-none">
+                  {' · '}
+                </span>
+              )}
+              {text}
+            </span>
+          ))}
+        </div>
       )}
       {!isAnswered && (
         <Row className="flex-wrap gap-2 mt-0">
@@ -545,7 +587,7 @@ export function CompatibilityAnswerBlock(props: {
                   setNewAnswer(_answer)
                   setEditOpen(true)
                 }}
-                className="bg-canvas-100 hover:bg-canvas-200 w-fit gap-1 rounded-xl px-2 py-1 text-sm"
+                className="border-canvas-300 text-ink-700 hover:border-primary-400 hover:bg-primary-50 w-fit gap-1 rounded-full border px-3 py-1 text-sm transition-colors"
               >
                 {label}
               </button>
@@ -682,14 +724,18 @@ function CompatibilityDisplay(props: {
         />
       ) : (
         <>
+          {/* Still a button, still opens the comparison modal — only the weight changed. Outlined
+              rather than filled: two solid badges per prompt, stacked down a long column, drowned the
+              questions they were annotating. */}
           <button
             onClick={() => setOpen(true)}
             className={clsx(
-              'border text-ink-1000 h-fit w-28 rounded-full px-2 py-0.5 text-xs transition-colors',
+              'font-dm-sans h-fit whitespace-nowrap rounded-full border px-2.5 py-1 uppercase transition-colors',
               answerCompatibility
-                ? 'bg-green-500/10 text-green-800 border-green-500/25 hover:bg-green-500/30'
-                : 'bg-red-500/20 text-red-800 border-red-500/25 hover:bg-red-500/30',
+                ? 'border-green-500/40 text-green-700 hover:bg-green-500/15'
+                : 'border-red-500/40 text-red-700 hover:bg-red-500/15',
             )}
+            style={{fontSize: '10px', letterSpacing: '0.12em'}}
           >
             {answerCompatibility
               ? t('answers.compatible', 'Compatible')
@@ -773,29 +819,27 @@ function ImportanceDisplay(props: {importance: number}) {
 function ImportanceButton(props: {importance: number; onClick: () => void; className?: string}) {
   const {importance, onClick, className} = props
 
-  // Color scheme based on importance level
+  // Outlined rather than filled, and no fixed width: importance is an annotation on the question, and
+  // a solid amber block per prompt read louder than the questions themselves down a long column. The
+  // ramp still steps down, now through border and text weight instead of a background.
   const importanceColors = {
     3: {
       // Very Important — full primary amber
-      background: 'rgb(var(--color-primary-50))',
       color: 'rgb(var(--color-primary-700))',
-      border: 'rgb(var(--color-primary-200))',
+      border: 'rgb(var(--color-primary-400))',
     },
     2: {
       // Important — softer amber, slightly stepped back
-      background: 'rgb(var(--color-primary-50))',
       color: 'rgb(var(--color-primary-600))',
-      border: 'rgb(var(--color-primary-100))',
+      border: 'rgb(var(--color-primary-200))',
     },
     1: {
       // Somewhat Important — warm neutral
-      background: 'rgb(var(--color-canvas-100))',
       color: 'rgb(var(--color-ink-500))',
       border: 'rgb(var(--color-canvas-300))',
     },
     0: {
       // Not Important — near-invisible
-      background: 'rgb(var(--color-canvas-50))',
       color: 'rgb(var(--color-ink-300))',
       border: 'rgb(var(--color-canvas-200))',
     },
@@ -808,12 +852,12 @@ function ImportanceButton(props: {importance: number; onClick: () => void; class
     <button
       onClick={onClick}
       className={clsx(
-        'h-fit rounded-full px-2 py-0.5 text-xs font-medium transition-colors',
-        importance === 1 ? 'w-36' : 'w-28',
+        'font-dm-sans hover:bg-canvas-50 h-fit whitespace-nowrap rounded-full px-2.5 py-1 uppercase transition-colors',
         className,
       )}
       style={{
-        background: colors.background,
+        fontSize: '10px',
+        letterSpacing: '0.12em',
         color: colors.color,
         border: `1px solid ${colors.border}`,
       }}

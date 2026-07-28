@@ -53,7 +53,10 @@ export function AnswerCompatibilityQuestionButton(props: {
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="bg-ink-100 dark:bg-ink-300 text-ink-1000 hover:bg-ink-200 hover:dark:bg-ink-400 w-28 rounded-full px-2 py-0.5 text-xs transition-colors"
+          // Matches the outlined importance/compatibility pills it sits beside in a prompt. It was the
+          // only solid one of the three, which read as the loudest thing in a block it is not about.
+          className="font-dm-sans border-canvas-300 text-ink-600 hover:border-primary-400 hover:bg-primary-50 h-fit whitespace-nowrap rounded-full border px-2.5 py-1 uppercase transition-colors"
+          style={{fontSize: '10px', letterSpacing: '0.12em'}}
         >
           {t('answers.answer.answer_yourself', 'Answer yourself')}
         </button>

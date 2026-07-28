@@ -21,6 +21,54 @@ export const CompatibleBadge = (props: {compatibility: CompatibilityScore; class
 }
 
 /**
+ * Same score as {@link CompatibleBadge}, given the room it deserves: a large figure over a filled
+ * track, headed by a label.
+ *
+ * This is the most decision-relevant number on a profile, and as a badge it was a 12px pill wedged
+ * between a search box and a dropdown. The bar carries the part the number alone does not — how far
+ * along the range it sits — using the same track and fill as the Big Five rows.
+ */
+export const CompatibilityScoreBar = (props: {
+  compatibility: CompatibilityScore
+  /** Drop the caption where the surrounding heading already says "compatibility". */
+  hideLabel?: boolean
+  className?: string
+}) => {
+  const {compatibility, hideLabel, className} = props
+  const t = useT()
+  const score = clamp(compatibility.score ?? 0, 0, 1)
+
+  return (
+    <Tooltip text={t('compatibility.tooltip', 'Compatibility score between you two')}>
+      <div className={clsx('w-full', className)} data-testid="compatibility-score-bar">
+        <Row className="items-baseline justify-between gap-3">
+          {!hideLabel && (
+            <span
+              className="text-ink-400 font-dm-sans uppercase"
+              style={{fontSize: '10px', letterSpacing: '0.18em'}}
+            >
+              {t('compatibility.label', 'Compatibility')}
+            </span>
+          )}
+          <span
+            className="font-heading text-primary-900 tabular-nums"
+            style={{fontSize: '26px', lineHeight: 1}}
+          >
+            {Math.round(score * 100)}%
+          </span>
+        </Row>
+        <div className="bg-canvas-200 mt-2 h-1.5 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-primary-500 h-full rounded-full transition-[width] duration-500"
+            style={{width: `${score * 100}%`}}
+          />
+        </div>
+      </div>
+    </Tooltip>
+  )
+}
+
+/**
  * Same score as {@link CompatibleBadge}, drawn as a progress ring. Used on profile cards where the
  * number has to be readable at a glance without competing with the name for attention.
  */

@@ -88,8 +88,10 @@ export class ProfilePage {
     this.ethnicityAboutSection = page.getByTestId('profile-content')
     this.dietAboutSection = page.getByTestId('profile-content')
     this.languagesAboutSection = page.getByTestId('profile-content')
-    this.seekingAboutSection = page.getByTestId('profile-content')
-    this.relationshipStatusAboutSection = page.getByTestId('profile-content')
+    // Connection goals moved out of the Details rail into the hero callout: they decide whether the
+    // rest of the profile is relevant at all, so they sit above the fold.
+    this.seekingAboutSection = page.getByTestId('profile-connection-goals')
+    this.relationshipStatusAboutSection = page.getByTestId('profile-connection-goals')
     this.educationAboutSection = page.getByTestId('profile-content')
     this.occupationAboutSection = page.getByTestId('profile-content')
     this.workAreaAboutSection = page.getByTestId('profile-content')

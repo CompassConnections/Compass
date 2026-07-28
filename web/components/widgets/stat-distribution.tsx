@@ -66,7 +66,10 @@ function orderItems(field: DemographicField, items: Distribution['items']): Dist
   )
 }
 
-function labelFor(field: DemographicField, value: string): string {
+// Exported so the home and about pages label the same raw values the same way this card does — they name a
+// few of these distributions in prose, and a "Bachelor's" here against a "bachelors" there would be the
+// kind of drift the shared choices maps exist to prevent.
+export function labelFor(field: DemographicField, value: string): string {
   // MBTI reads as the four-letter code plus its archetype — "INTJ" alone is jargon; "INTJ Architect"
   // tells the reader what it means without a second lookup.
   if (field === 'mbti') {
@@ -77,16 +80,21 @@ function labelFor(field: DemographicField, value: string): string {
   return LABELS[field]?.[value] ?? capitalize(value)
 }
 
-function DistRow({
+// Exported so the compact mini-charts on the home and about pages (a single field's top values, with no
+// surrounding card) draw the exact same bar as this one's own rows — one bar vocabulary everywhere a count
+// is shown as a fraction of a base, rather than a second one invented per page. `rank` defaults to 0
+// (no fade) for callers whose bar width is already the true percentage rather than normalised to a leader,
+// where the fade's job of distinguishing near-equal bars doesn't apply.
+export function DistRow({
   label,
   pct,
   widthPct,
-  rank,
+  rank = 0,
 }: {
   label: string
   pct: number
   widthPct: number
-  rank: number
+  rank?: number
 }) {
   return (
     <div className="flex items-center gap-3">

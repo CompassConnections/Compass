@@ -1,4 +1,3 @@
-import {ClockIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {
   INVERTED_CANNABIS_CHOICES,
@@ -24,23 +23,13 @@ import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
-import {Accessibility, Brain, Home, Languages, Leaf, Salad} from 'lucide-react'
 import React, {ReactNode} from 'react'
-import {BiSolidDrink} from 'react-icons/bi'
 import {FaHeart} from 'react-icons/fa'
-import {FaChild} from 'react-icons/fa6'
-import {HiOutlineGlobe} from 'react-icons/hi'
-import {LuBriefcase, LuCigarette, LuCigaretteOff, LuGraduationCap} from 'react-icons/lu'
-import {MdNoDrinks} from 'react-icons/md'
-import {PiGenderIntersexBold, PiHandsPrayingBold, PiMagnifyingGlassBold} from 'react-icons/pi'
-import {RiScales3Line} from 'react-icons/ri'
-import {TbBulb, TbCheck, TbHearts, TbMoodSad, TbUsers} from 'react-icons/tb'
+import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
 import {Col} from 'web/components/layout/col'
-import {Row} from 'web/components/layout/row'
 import {CustomLink} from 'web/components/links'
 import {UserHandles} from 'web/components/user/user-handles'
 import {useChoicesContext} from 'web/hooks/use-choices'
-import {CustomMushroom} from 'web/lib/icons/mushroom'
 import {useLocale, useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
 import {convertRace} from 'web/lib/util/convert-types'
@@ -51,27 +40,47 @@ export default function ProfileAbout(props: {
   profile: Profile
   userActivity?: UserActivity
   isCurrentUser: boolean
+  /** Set when the hero already shows connection goals, so the same rows aren't repeated here. */
+  omitConnectionGoals?: boolean
 }) {
-  const {profile, userActivity, isCurrentUser} = props
+  const {profile, userActivity, isCurrentUser, omitConnectionGoals} = props
 
   return (
-    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      <SeekingAndRelationship profile={profile} />
-      <GenderIdentity profile={profile} />
-      <Orientation profile={profile} />
-      <Children profile={profile} />
-      <Education profile={profile} />
+    <Col
+      className={clsx(
+        'divide-canvas-200 relative divide-y',
+        // The section supplies the space under its rule and the gap to the next block, so the first
+        // and last rows shed their own padding rather than doubling it.
+        '[&>div:first-child]:pt-0 [&>div:last-child]:pb-0',
+      )}
+    >
+      {/* Ordered by what decides whether someone reaches out, not by field category:
+          1. Goals — whether the rest of this is even relevant.
+          2. What they do — work, education, children.
+          3. What they believe — politics, religion, diet. Diet sits with the values group rather than
+             with the substances below it: on this platform vegan and vegetarian are far more often an
+             ethical position than a dietary habit, and they read as one.
+          4. Substances — real compatibility filters, but they narrow rather than describe.
+          5. Languages — practical.
+          6. Identity nuance — gender and orientation only render when the member wrote something of
+             their own about them, so they are elaboration, not a demographic checkbox to scan.
+          7. Background, then activity metadata. */}
+      {!omitConnectionGoals && <SeekingAndRelationship profile={profile} />}
       <OccupationAndWork profile={profile} />
+      <Education profile={profile} />
+      <Children profile={profile} />
       <Politics profile={profile} />
       <Religion profile={profile} />
-      <Ethnicity profile={profile} />
-      <RaisedIn profile={profile} />
+      <Diet profile={profile} />
       <Smoker profile={profile} />
       <Drinks profile={profile} />
       <Cannabis profile={profile} />
       <Psychedelics profile={profile} />
-      <Diet profile={profile} />
       <LanguagesSection profile={profile} />
+      <GenderIdentity profile={profile} />
+      <Orientation profile={profile} />
+      <Ethnicity profile={profile} />
+      <RaisedIn profile={profile} />
       {!isCurrentUser && (
         <>
           <LastOnline lastOnlineTime={userActivity?.last_online_time} />
@@ -81,67 +90,23 @@ export default function ProfileAbout(props: {
   )
 }
 
-function Divider() {
-  return (
-    <div
-      className="w-full"
-      style={{
-        height: '1px',
-        background: 'rgb(var(--color-canvas-200))',
-        margin: '12px 0',
-      }}
-    />
-  )
-}
-
-function SectionLabel(props: {compact?: boolean; children: ReactNode}) {
-  const {compact, children} = props
-  return (
-    <div
-      style={{
-        fontSize: compact ? '11px' : '12px',
-        fontWeight: '500',
-        color: 'rgb(var(--color-ink-300))',
-        textTransform: 'uppercase',
-        letterSpacing: '0.07em',
-        marginBottom: compact ? '1px' : '8px',
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-
-function Chip(props: {variant?: 'default' | 'primary' | 'muted'; children: ReactNode}) {
-  const {variant = 'default', children} = props
-  if (variant === 'muted') {
-    return (
-      <span
-        className="border-canvas-200 bg-canvas-100 text-ink-500"
-        style={{
-          padding: '4px 11px',
-          borderRadius: '100px',
-          fontSize: '12.5px',
-          borderWidth: '1px',
-        }}
-      >
-        {children}
-      </span>
-    )
-  }
-  const colorClass =
-    variant === 'primary'
-      ? 'border-primary-200 text-primary-700 bg-primary-50'
-      : 'border-canvas-300 text-primary-700 bg-canvas-200'
+/**
+ * A small qualifier attached to a value it cannot be read without — a romantic style under a
+ * connection goal, an intention under a substance answer. Deliberately quiet: it is a footnote to the
+ * line above it, not a peer of it.
+ *
+ * The louder filled variants this used to offer are gone with the interest and cause pills. Sets of
+ * tags are middot-separated text now (see `TagList`); a pill in this rail means something clickable.
+ */
+function Chip(props: {children: ReactNode}) {
+  const {children} = props
   return (
     <span
-      className={colorClass}
+      className="border-canvas-200 bg-canvas-100 text-ink-500"
       style={{
-        padding: '5px 13px',
+        padding: '4px 11px',
         borderRadius: '100px',
-        fontSize: '13px',
-        fontWeight: '400',
-        letterSpacing: '0.01em',
+        fontSize: '12.5px',
         borderWidth: '1px',
       }}
     >
@@ -150,47 +115,60 @@ function Chip(props: {variant?: 'default' | 'primary' | 'muted'; children: React
   )
 }
 
+/**
+ * One attribute as a label/value pair on a shared baseline, separated from its neighbours by a rule
+ * that spans the full width.
+ *
+ * The 32px bordered icon tiles this used to lead with are gone. Fifteen of them stacked in a narrow
+ * rail formed a column of decoration louder than the values beside it, and none of them disambiguated
+ * anything — the label already says "Education" in words.
+ *
+ * The label column widens on a wide rail and narrows again at `3xl`, where the rail splits into two
+ * sub-columns and each one is back to roughly its original width.
+ */
 function AboutRow(props: {
-  icon: ReactNode
   title: ReactNode
   text?: ReactNode
   details?: ReactNode
   children?: ReactNode
   testId?: string
-  divider?: boolean
 }) {
-  const {icon, title, text, details, children, testId, divider = true} = props
+  const {title, text, details, children, testId} = props
   return (
-    <>
-      <Row className="items-start gap-2.5" data-testid={testId}>
-        <div
-          className="bg-canvas-100 border-canvas-200 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-ink-500"
-          style={{width: '32px', height: '32px', marginTop: '1px'}}
-        >
-          {icon}
-        </div>
-        <Col className={'w-full'}>
-          <SectionLabel compact>{title}</SectionLabel>
-          {text != null && text !== '' && (
-            <div style={{fontSize: '14px', color: 'rgb(var(--color-ink-900))'}}>{text}</div>
-          )}
-          {details && (
-            <div className={'text-ink-500'} style={{fontSize: '12.5px', marginTop: '2px'}}>
-              {details}
-            </div>
-          )}
-          {children}
-        </Col>
-      </Row>
-      {divider && <Divider />}
-    </>
+    <div
+      className="3xl:grid-cols-[84px_minmax(0,1fr)] 3xl:gap-x-4 2xl:grid-cols-[120px_minmax(0,1fr)] 2xl:gap-x-6 grid grid-cols-[84px_minmax(0,1fr)] gap-x-4 py-4"
+      data-testid={testId}
+    >
+      <div className="text-ink-500" style={{fontSize: '14px', lineHeight: '1.5'}}>
+        {title}
+      </div>
+      <div className="min-w-0">
+        {text != null && text !== '' && (
+          <div className="text-primary-900" style={{fontSize: '16px', lineHeight: '1.4'}}>
+            {text}
+          </div>
+        )}
+        {details && (
+          <div
+            className="text-ink-500"
+            style={{fontSize: '14px', lineHeight: '1.55', marginTop: '4px'}}
+          >
+            {details}
+          </div>
+        )}
+        {children}
+      </div>
+    </div>
   )
 }
 
-function SeekingAndRelationship(props: {profile: Profile}) {
+/**
+ * Shared by the Details rail and the hero callout, so the two can't drift apart.
+ * Returns null when the member has nothing to show for connection goals.
+ */
+export function useConnectionGoals(profile: Profile) {
   const t = useT()
-  const {profile} = props
-  const seekingText = getSeekingText(profile, t)
+  const seekingText = getCompactSeekingText(profile, t)
   const relationship_status = profile.relationship_status ?? []
   const relationshipTypes = profile.pref_relation_styles ?? []
 
@@ -213,12 +191,69 @@ function SeekingAndRelationship(props: {profile: Profile}) {
       .filter(Boolean)
   }
 
+  return {seekingText, relationshipText, romanticStyles}
+}
+
+/**
+ * Connection goals for the hero — dealbreaker-class information that decides whether the rest of the
+ * profile is even relevant, so it is lifted out of the Details list.
+ *
+ * Presented as labelled facts under a hairline rule rather than a bordered callout. A tinted box says
+ * "notice this", which is the wrong instruction for the last thing in the hero: by the time the eye
+ * arrives it is already reading, and a box makes it stop and re-anchor.
+ */
+export function ProfileConnectionGoals(props: {profile: Profile}) {
+  const t = useT()
+  const goals = useConnectionGoals(props.profile)
+
+  if (!goals) return null
+
+  const {seekingText, relationshipText, romanticStyles} = goals
+
+  const status = [relationshipText, ...(romanticStyles ?? [])].filter(Boolean).join(' · ')
+
+  return (
+    <div
+      className="border-canvas-300 mt-2 flex max-w-2xl flex-wrap gap-x-16 gap-y-6 border-t pt-6"
+      data-testid="profile-connection-goals"
+    >
+      <HeroFact label={t('profile.looking_for', 'Looking for')}>{seekingText}</HeroFact>
+      {status && <HeroFact label={t('profile.status', 'Status')}>{status}</HeroFact>}
+    </div>
+  )
+}
+
+function HeroFact(props: {label: string; children: ReactNode}) {
+  const {label, children} = props
+  return (
+    <div className="min-w-0">
+      <div
+        className="text-ink-400 font-dm-sans uppercase"
+        style={{fontSize: '10px', letterSpacing: '0.18em', marginBottom: '7px'}}
+      >
+        {label}
+      </div>
+      <div className="text-ink-900" style={{fontSize: '15.5px'}}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function SeekingAndRelationship(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const goals = useConnectionGoals(profile)
+
+  if (!goals) return null
+
+  const {seekingText, relationshipText, romanticStyles} = goals
+
   // const key = relationship_status[0] as keyof typeof RELATIONSHIP_ICONS
   // const icon = RELATIONSHIP_ICONS[key] ?? FaHeart
 
   return (
     <AboutRow
-      icon={<PiMagnifyingGlassBold className="h-5 w-5" />}
       title={t('profile.connection_goals', 'Connection Goals')}
       text={seekingText}
       details={relationshipText}
@@ -226,9 +261,7 @@ function SeekingAndRelationship(props: {profile: Profile}) {
       {romanticStyles && (
         <div className="flex flex-wrap gap-2 mt-2">
           {romanticStyles!.map((r) => (
-            <Chip key={r} variant="muted">
-              {r}
-            </Chip>
+            <Chip key={r}>{r}</Chip>
           ))}
         </div>
       )}
@@ -276,6 +309,59 @@ export function getSeekingText(profile: Profile, t: any, short?: boolean | undef
   return `${getSeekingConnectionText(profile, t, short)} ${seekingGenderText} ${ageRangeText}`
 }
 
+/**
+ * The same facts as `getSeekingText`, as three middot-separated fragments:
+ * `Relationship · men · 30-40`.
+ *
+ * The sentence form ("Relationship with men between 30 - 40 years old") reads fine in prose but poorly
+ * as a value in a labelled column, where the label already supplies the grammar and the connecting
+ * words are just length.
+ */
+export function getCompactSeekingText(profile: Profile, t: any) {
+  const prefGender = profile.pref_gender
+  const min = profile.pref_age_min
+  const max = profile.pref_age_max
+
+  const connection = capitalizeFirst(getSeekingConnectionText(profile, t, true))
+
+  // An unconstrained preference is dropped rather than spelled out. "People" and "any age" restate the
+  // absence of a filter, which every reader already assumes — printing them spends two of the three
+  // slots on nothing. Capitalized when present so each fragment reads as its own fact rather than as
+  // one sentence broken by dots.
+  const anyGender =
+    !prefGender?.length || (prefGender.includes('male') && prefGender.includes('female'))
+
+  const genderText = anyGender
+    ? null
+    : prefGender
+        .map((gender) =>
+          capitalizeFirst(
+            t(`profile.gender.plural.${gender}`, convertGenderPlural(gender as Gender)),
+          ),
+        )
+        .join(', ')
+
+  const noMin = (min ?? MIN_INT) <= 18
+  const noMax = (max ?? MAX_INT) >= 99
+
+  const ageText =
+    noMin && noMax
+      ? null
+      : min == max
+        ? `${min}`
+        : noMax
+          ? t('profile.age_min_compact', '{min}+', {min})
+          : noMin
+            ? t('profile.age_max_compact', 'under {max}', {max})
+            : t('profile.age_range_compact', '{min}-{max}', {min, max})
+
+  return [connection, genderText, ageText].filter(Boolean).join(' · ')
+}
+
+function capitalizeFirst(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 function Education(props: {profile: Profile}) {
   const t = useT()
   const {profile} = props
@@ -295,13 +381,7 @@ function Education(props: {profile: Profile}) {
   }
   if (text.length === 0) return null
 
-  return (
-    <AboutRow
-      icon={<LuGraduationCap className="h-5 w-5" />}
-      title={t('profile.education', 'Education')}
-      text={text}
-    />
-  )
+  return <AboutRow title={t('profile.education', 'Education')} text={text} />
 }
 
 function OccupationAndWork(props: {profile: Profile}) {
@@ -327,14 +407,7 @@ function OccupationAndWork(props: {profile: Profile}) {
 
   const workText = workAreas?.join(' · ')
 
-  return (
-    <AboutRow
-      icon={<LuBriefcase className="h-5 w-5" />}
-      title={t('profile.work', 'Work')}
-      text={occupationText}
-      details={workText}
-    />
-  )
+  return <AboutRow title={t('profile.work', 'Work')} text={occupationText} details={workText} />
 }
 
 function Politics(props: {profile: Profile}) {
@@ -347,7 +420,6 @@ function Politics(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<RiScales3Line className="h-5 w-5" />}
       title={t('profile.politics', 'Politics')}
       text={formatChoiceList(politicalBeliefs, 'political', INVERTED_POLITICAL_CHOICES, t)}
       details={politicalDetails ? `"${politicalDetails}"` : undefined}
@@ -365,7 +437,6 @@ function Religion(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<PiHandsPrayingBold className="h-5 w-5" />}
       title={t('profile.religion', 'Religion')}
       text={formatChoiceList(religion, 'religion', INVERTED_RELIGION_CHOICES, t)}
       details={religiousBeliefs ? `"${religiousBeliefs}"` : undefined}
@@ -386,7 +457,6 @@ function GenderIdentity(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<PiGenderIntersexBold className="h-5 w-5" />}
       title={t('profile.gender_identity', 'Gender Identity')}
       text={text}
       details={`"${genderDetails}"`}
@@ -409,7 +479,6 @@ function Orientation(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<TbHearts className="h-5 w-5" />}
       title={t('profile.orientation', 'Orientation')}
       text={orientationText}
       details={orientationDetails ? `"${orientationDetails}"` : undefined}
@@ -432,7 +501,6 @@ function Neurotype(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<Brain className="h-5 w-5" />}
       title={t('profile.neurotype', 'Neurotype')}
       text={neurotypeText}
       details={neurotypeDetails ? `"${neurotypeDetails}"` : undefined}
@@ -449,13 +517,7 @@ function Ethnicity(props: {profile: Profile}) {
 
   const text = ethnicity.map((r: any) => t(`profile.race.${r}`, convertRace(r))).join(', ')
 
-  return (
-    <AboutRow
-      icon={<HiOutlineGlobe className="h-5 w-5" />}
-      title={t('profile.ethnicity', 'Ethnicity')}
-      text={text}
-    />
-  )
+  return <AboutRow title={t('profile.ethnicity', 'Ethnicity')} text={text} />
 }
 
 function Smoker(props: {profile: Profile}) {
@@ -464,13 +526,7 @@ function Smoker(props: {profile: Profile}) {
   const isSmoker = profile.is_smoker
   if (isSmoker == null) return null
   const text = isSmoker ? t('profile.smokes', 'Smokes') : t('profile.doesnt_smoke', "Doesn't smoke")
-  const icon = isSmoker ? (
-    <LuCigarette className="h-5 w-5" />
-  ) : (
-    <LuCigaretteOff className="h-5 w-5" />
-  )
-
-  return <AboutRow icon={icon} title={t('profile.smoking', 'Smoking')} text={text} />
+  return <AboutRow title={t('profile.smoking', 'Smoking')} text={text} />
 }
 
 function Drinks(props: {profile: Profile}) {
@@ -487,10 +543,7 @@ function Drinks(props: {profile: Profile}) {
         : t('profile.drinks_many', '{count} drinks per month', {
             count: drinksPerMonth,
           })
-  const icon =
-    drinksPerMonth === 0 ? <MdNoDrinks className="h-5 w-5" /> : <BiSolidDrink className="h-5 w-5" />
-
-  return <AboutRow icon={icon} title={t('profile.alcohol', 'Alcohol')} text={text} />
+  return <AboutRow title={t('profile.alcohol', 'Alcohol')} text={text} />
 }
 
 function Diet(props: {profile: Profile}) {
@@ -502,7 +555,6 @@ function Diet(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<Salad className="h-5 w-5" />}
       title={t('profile.diet', 'Diet')}
       text={formatChoiceList(diet, 'diet', INVERTED_DIET_CHOICES, t)}
     />
@@ -518,7 +570,6 @@ function LanguagesSection(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<Languages className="h-5 w-5" />}
       title={t('profile.languages', 'Languages')}
       text={formatChoiceList(languages, 'language', INVERTED_LANGUAGE_CHOICES, t)}
     />
@@ -538,15 +589,11 @@ function Cannabis(props: {profile: Profile}) {
   const prefText = formatPartnerPreferences(profile.cannabis_pref, t)
 
   return (
-    <AboutRow
-      icon={<Leaf className="h-5 w-5" />}
-      title={t('profile.cannabis', 'Cannabis')}
-      text={parts}
-    >
+    <AboutRow title={t('profile.cannabis', 'Cannabis')} text={parts}>
       {showIntentions && (
         <div className="flex flex-wrap gap-2 mt-2">
           {profile.cannabis_intention!.map((i) => (
-            <Chip key={i} variant="muted">
+            <Chip key={i}>
               {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
             </Chip>
           ))}
@@ -577,15 +624,11 @@ function Psychedelics(props: {profile: Profile}) {
   const prefText = formatPartnerPreferences(profile.psychedelics_pref, t)
 
   return (
-    <AboutRow
-      icon={<CustomMushroom className="h-5 w-5" />}
-      title={t('profile.psychedelics', 'Psychedelics')}
-      text={parts}
-    >
+    <AboutRow title={t('profile.psychedelics', 'Psychedelics')} text={parts}>
       {showIntentions && (
         <div className="flex flex-wrap gap-2 mt-2">
           {profile.psychedelics_intention!.map((i) => (
-            <Chip key={i} variant="muted">
+            <Chip key={i}>
               {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
             </Chip>
           ))}
@@ -633,12 +676,10 @@ function LastOnline(props: {lastOnlineTime?: string}) {
   return (
     <AboutRow
       testId="profile-about-last-online"
-      icon={<ClockIcon className="h-5 w-5" />}
       title={t('profile.activity', 'Activity')}
       text={t('profile.last_online', 'Active {time}', {
         time: fromNow(lastOnlineTime, true, t, locale),
       })}
-      divider={false}
     />
   )
 }
@@ -678,7 +719,6 @@ function Children(props: {profile: Profile}) {
 
   return (
     <AboutRow
-      icon={<FaChild className="h-5 w-5" />}
       title={t('profile.children', 'Children')}
       text={hasKidsText}
       details={wantsKidsText}
@@ -722,7 +762,6 @@ function RaisedIn(props: {profile: Profile}) {
   if (!locationText) return null
   return (
     <AboutRow
-      icon={<Home className="h-5 w-5" />}
       title={t('profile.raised_in', 'Raised In')}
       text={
         <CustomLink href={getGoogleMapsUrl(locationText)} className={'hover:text-primary-500'}>
@@ -733,55 +772,58 @@ function RaisedIn(props: {profile: Profile}) {
   )
 }
 
-export function ProfileInterestsAndCauses(props: {profile: Profile}) {
-  const {profile} = props
-  const t = useT()
+/**
+ * Interests and causes are separate rail sections rather than one block with an inner heading.
+ *
+ * Combined, "Causes" ended up labelled rule-then-label while its neighbour "Interests" was
+ * label-then-rule — two heading systems stacked against each other. Each is now a peer of Details and
+ * Links, and gets that same treatment from `RailSection`.
+ */
+function useSortedChoices(ids: string[] | null | undefined, group: 'interests' | 'causes') {
   const choices = useChoicesContext()
   const {locale} = useLocale()
-
-  const interests = profile.interests
-    ?.map((id) => choices?.['interests']?.[id])
+  return (ids
+    ?.map((id) => choices?.[group]?.[id])
     .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, locale)) as string[]
+    .sort((a, b) => a.localeCompare(b, locale)) ?? []) as string[]
+}
 
-  const causes = profile.causes
-    ?.map((id) => choices?.['causes']?.[id])
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, locale)) as string[]
+export function ProfileInterests(props: {profile: Profile}) {
+  const interests = useSortedChoices(props.profile.interests, 'interests')
+  if (!interests.length) return null
+  return <TagList items={interests} />
+}
 
-  if (!interests?.length && !causes?.length) return null
+export function ProfileCauses(props: {profile: Profile}) {
+  const causes = useSortedChoices(props.profile.causes, 'causes')
+  if (!causes.length) return null
+  return <TagList items={causes} />
+}
 
+/**
+ * An unordered set of taxonomy tags as one middot-separated run, matching how the Work row already
+ * lists work areas — the same shape of data, so it gets the same shape of presentation.
+ *
+ * These were pills, which read as buttons. Nothing here is clickable, and the Links block below is,
+ * so the affordance was pointing at the wrong things. Pills now mean "you can click this"; text means
+ * "you can read this". Middots rather than commas because several tags carry internal punctuation
+ * ("Animal welfare & rights", "Health & Medicine") that commas would blur together.
+ */
+function TagList(props: {items: string[]}) {
+  const {items} = props
   return (
-    <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      {interests && interests.length > 0 && (
-        <>
-          {/*<SectionLabel>{t('profile.interests', 'Interests')}</SectionLabel>*/}
-          <div className="flex flex-wrap gap-2">
-            {interests.map((interest, i) => (
-              <Chip key={i}>{interest}</Chip>
-            ))}
-          </div>
-        </>
-      )}
-      {causes && causes.length > 0 && (
-        <>
-          {interests && interests.length > 0 && (
-            <div
-              className="border-canvas-200"
-              style={{borderBottomWidth: '1px', margin: '12px 0'}}
-            />
+    <div className="text-primary-900" style={{fontSize: '15px', lineHeight: '1.65'}}>
+      {items.map((item, i) => (
+        <React.Fragment key={item}>
+          {i > 0 && (
+            <span aria-hidden className="text-ink-400 select-none">
+              {' · '}
+            </span>
           )}
-          <SectionLabel>{t('profile.causes', 'Causes')}</SectionLabel>
-          <div className="flex flex-wrap gap-2">
-            {causes.map((cause, i) => (
-              <Chip key={i} variant="primary">
-                {cause}
-              </Chip>
-            ))}
-          </div>
-        </>
-      )}
-    </Col>
+          {item}
+        </React.Fragment>
+      ))}
+    </div>
   )
 }
 
@@ -791,13 +833,21 @@ export function ProfileInterestsAndCauses(props: {profile: Profile}) {
  */
 export function hasPersonality(profile: Profile) {
   const p = profile as any
-  return !!(
-    profile.mbti ||
-    profile.big5_agreeableness ||
-    p.neurotype?.length ||
-    p.neurotype_details
-  )
+  return !!(profile.mbti || p.neurotype?.length || p.neurotype_details)
 }
+
+/** Big Five is its own rail section, so it needs its own emptiness check. */
+export function hasBigFive(profile: Profile) {
+  return BIG5_KEYS.some((key) => profile[key] != null)
+}
+
+const BIG5_KEYS = [
+  'big5_openness',
+  'big5_conscientiousness',
+  'big5_extraversion',
+  'big5_agreeableness',
+  'big5_neuroticism',
+] as const
 
 /** Whether the Accessibility card has anything to show. Shared with its call site, as with `hasPersonality`. */
 export function hasAccessibility(profile: Profile) {
@@ -818,23 +868,12 @@ export function ProfileAccessibility(props: {profile: Profile}) {
   if (!notes) return null
 
   return (
-    <Row className="items-start gap-2.5">
-      <div
-        className="bg-canvas-100 border-canvas-200 text-ink-500 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border"
-        style={{width: '32px', height: '32px', marginTop: '1px'}}
-      >
-        <Accessibility className="h-5 w-5" />
-      </div>
-      <div
-        style={{
-          fontSize: '14px',
-          color: 'rgb(var(--color-ink-900))',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        {notes}
-      </div>
-    </Row>
+    <div
+      className="text-primary-900"
+      style={{fontSize: '15px', lineHeight: '1.55', whiteSpace: 'pre-wrap'}}
+    >
+      {notes}
+    </div>
   )
 }
 
@@ -845,13 +884,17 @@ export function ProfilePersonality(props: {profile: Profile}) {
 
   return (
     <Col className={clsx('relative gap-3 overflow-hidden rounded')}>
-      {/* Grouped with MBTI/Big Five rather than with orientation in the Details card: it describes how
+      {/* Grouped with MBTI rather than with orientation in the Details card: it describes how
           someone's mind works, and matters just as much for friendship and collaboration as for dating. */}
       <Neurotype profile={profile} />
       <MBTI profile={profile} />
-      <Big5Traits profile={profile} />
     </Col>
   )
+}
+
+/** Big Five as a rail section of its own — see `ProfileInterests` for why the inner labels went away. */
+export function ProfileBigFive(props: {profile: Profile}) {
+  return <Big5Traits profile={props.profile} />
 }
 
 function MBTI(props: {profile: Profile}) {
@@ -864,8 +907,7 @@ function MBTI(props: {profile: Profile}) {
   const mbtiTypeName = mbtiType ? t(`profile.mbti.${mbtiType}`, MBTI_TYPE_NAMES[mbtiType]) : null
 
   return (
-    <div style={{marginBottom: '18px'}}>
-      <SectionLabel>{t('profile.mbti', 'MBTI')}</SectionLabel>
+    <div>
       <div
         className="border-canvas-200 bg-canvas-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2"
         style={{
@@ -943,7 +985,6 @@ function Big5Traits(props: {profile: Profile}) {
 
   return (
     <Col className="gap-3 w-full" data-testid="profile-about-big-five-personality-traits">
-      <SectionLabel>{t('profile.big5', 'Big Five')}</SectionLabel>
       <div className="flex flex-col gap-3">
         {traits.map((trait) => {
           if (trait.value === null || trait.value === undefined) return null

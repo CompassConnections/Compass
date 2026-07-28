@@ -136,9 +136,14 @@ export function StatBand() {
     return () => observer.disconnect()
   }, [armed, node, run])
 
-  const showCountries = !!data && data.countryCount > 1
+  // Countries used to be the second stat here and is now gone. Fifty-five countries across ~700 members is
+  // *dispersion*, not reach — it is the figure that quietly says "nobody near you" while presenting itself
+  // as an achievement, and it was the second thing on the page. Messages sits beside conversations instead
+  // and answers the question a visitor is actually asking of a small platform: does anyone reply. The full
+  // country breakdown still lives on /stats, where someone came to read numbers.
   const showConversations = !!data && data.conversations > 0
-  const lastDelay = STAGGER_MS * ((showCountries ? 1 : 0) + (showConversations ? 1 : 0))
+  const showMessages = !!data && data.messages > 0
+  const lastDelay = STAGGER_MS * ((showConversations ? 1 : 0) + (showMessages ? 1 : 0))
 
   useEffect(() => {
     if (!run) return
@@ -163,18 +168,18 @@ export function StatBand() {
         delay={0}
         run={run}
       />
-      {showCountries && (
-        <CountingStat
-          target={data.countryCount}
-          label={t('about.stat.countries', 'Countries')}
-          delay={next()}
-          run={run}
-        />
-      )}
       {showConversations && (
         <CountingStat
           target={data.conversations}
           label={t('about.stat.conversations', 'Conversations')}
+          delay={next()}
+          run={run}
+        />
+      )}
+      {showMessages && (
+        <CountingStat
+          target={data.messages}
+          label={t('about.stat.messages', 'Messages')}
           delay={next()}
           run={run}
         />
@@ -198,6 +203,13 @@ export function StatBand() {
           </span>
         }
       />
+      {/* One line, and only one. An earlier draft added a sentence here about how thinly the membership is
+          spread; it was cut because this is the page's second element and the reader has not yet been given
+          a single reason to want in — self-criticism before value is just discouragement. The same point is
+          made properly on the home page, attached to something to do about it. */}
+      <p className="w-full text-sm text-ink-500">
+        {t('about.stat.caption', 'Read live from the database, not from a press kit.')}
+      </p>
     </div>
   )
 }

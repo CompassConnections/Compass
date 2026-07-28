@@ -190,7 +190,10 @@ export const SendMessageButton = (props: {
 
   return (
     <>
+      {/* `w-fit`: Tooltip's reference element is a plain span, so in a flex column it stretched to the
+          full width and armed the tooltip across all the empty space beside the button. */}
       <Tooltip
+        className="w-fit"
         text={
           tooltipText ||
           (putAccent ? t('send_message.', 'Follow Up') : t('send_message.button_label', 'Message'))
@@ -200,7 +203,10 @@ export const SendMessageButton = (props: {
         {text ? (
           <Button
             className={clsx('h-fit gap-1', disabled && 'opacity-50 cursor-not-allowed')}
-            color={'primary'}
+            // `cta`, not `primary`: `primary` is the *tinted secondary* pill (see button.tsx), which
+            // in the dark ramp is brown-on-brown and read as disabled on the one control that is the
+            // whole point of the Connect section.
+            color={'cta'}
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
               onPointerDown?.()

@@ -1,59 +1,58 @@
 import {convertGender, Gender} from 'common/gender'
+import {getLocationText} from 'common/geodb'
 import {Profile} from 'common/profiles/profile'
+import {buildArray} from 'common/util/array'
 import {capitalize} from 'lodash'
-import {Calendar} from 'lucide-react'
-import {MdHeight} from 'react-icons/md'
-import {IconWithInfo} from 'web/components/icons'
-import {Row} from 'web/components/layout/row'
+import React from 'react'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
 
-import GenderIcon from '../gender-icon'
 import {formatProfileValue} from '../profile-about'
 import {ProfileLocation} from './profile-location'
 
+/**
+ * Place, age, height, gender as one editorial line separated by hairline slashes.
+ *
+ * The icons this used to carry were doing no work — nobody needs a pictogram to parse "32" as an age
+ * once it sits in this sequence — and four of them turned the line under the name into visual clutter
+ * at exactly the point the eye should be moving fastest.
+ */
 export default function ProfilePrimaryInfo(props: {profile: Profile; short?: boolean}) {
   const {profile, short = false} = props
   const t = useT()
   const {measurementSystem} = useMeasurementSystem()
+
+  const parts = buildArray<React.ReactNode>(
+    // Checked here rather than left to ProfileLocation: a component that renders null still counts as
+    // an entry, which would leave the line starting on a stray separator.
+    !!getLocationText(profile) && <ProfileLocation profile={profile} hideIcon />,
+    profile.age && String(profile.age),
+    !short &&
+      profile.height_in_inches != null &&
+      formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem, t),
+    !short &&
+      profile.gender &&
+      capitalize(t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender))),
+  )
+
+  if (parts.length === 0) return null
+
   return (
-    <Row
-      className="text-ink-500 gap-4 flex-wrap"
+    <div
+      className="text-ink-500 flex flex-wrap items-center"
       data-testid="profile-gender-location-height-inches"
-      style={{fontSize: '13.5px', gap: '6px 18px'}}
+      style={{fontSize: '15px'}}
     >
-      <ProfileLocation profile={profile} />
-      {profile.age && (
-        <IconWithInfo
-          text={t('profile.header.age', '{age} years old', {age: profile.age})}
-          icon={<Calendar className="text-ink-300" style={{width: '14px', height: '14px'}} />}
-        />
-      )}
-      {!short && profile.height_in_inches != null && (
-        <IconWithInfo
-          text={formatProfileValue(
-            'height_in_inches',
-            profile.height_in_inches,
-            measurementSystem,
-            t,
+      {parts.map((part, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && (
+            <span aria-hidden className="text-ink-400 px-3.5 select-none">
+              /
+            </span>
           )}
-          icon={<MdHeight className="text-ink-300" style={{width: '14px', height: '14px'}} />}
-        />
-      )}
-      {!short && profile.gender && (
-        <IconWithInfo
-          text={capitalize(
-            t(`profile.gender.${profile.gender}`, convertGender(profile.gender as Gender)),
-          )}
-          icon={
-            <GenderIcon
-              gender={profile.gender as Gender}
-              className="text-ink-300"
-              // style={{width: '14px', height: '14px'}}
-            />
-          }
-        />
-      )}
-    </Row>
+          <span>{part}</span>
+        </React.Fragment>
+      ))}
+    </div>
   )
 }

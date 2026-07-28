@@ -168,6 +168,19 @@ export const Search = forwardRef<
         />
 
         <Row className="gap-1.5 shrink-0 items-center">
+          <Button
+            color="gray-white"
+            size="sm"
+            className={clsx(
+              '!h-10 !rounded-full border border-canvas-200',
+              highlightFilters &&
+                'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
+            )}
+            onClick={handleOpenFilters}
+          >
+            <IoFilterSharp className="h-4 w-4 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('search.filters', 'Filters')}</span>
+          </Button>
           <Select
             ref={sortSelectRef}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -189,19 +202,6 @@ export const Search = forwardRef<
             )}
             <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
-          <Button
-            color="gray-white"
-            size="sm"
-            className={clsx(
-              '!h-10 !rounded-full border border-canvas-200',
-              highlightFilters &&
-                'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
-            )}
-            onClick={handleOpenFilters}
-          >
-            <IoFilterSharp className="h-4 w-4 sm:mr-1.5" />
-            <span className="hidden sm:inline">{t('search.filters', 'Filters')}</span>
-          </Button>
           <GetNotifiedButton
             filters={filters}
             locationFilterProps={locationFilterProps}

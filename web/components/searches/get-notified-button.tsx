@@ -58,6 +58,8 @@ export function GetNotifiedButton(props: {
       ? t('common.notified_any', 'Get notified for any new profile')
       : t('common.notified', 'Notify me when this search matches someone')
 
+  const buttonText = bookmarked ? label : t('common.get_notified', 'Get notified')
+
   const handleClick = () => {
     if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
       toast.error(
@@ -86,7 +88,7 @@ export function GetNotifiedButton(props: {
       aria-label={label}
     >
       <Bell className={clsx('h-4 w-4', !iconOnly && 'mr-1.5', bookmarked && 'fill-current')} />
-      {!iconOnly && (loading ? '' : label)}
+      {!iconOnly && (loading ? '' : buttonText)}
     </Button>
   )
 

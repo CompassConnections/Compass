@@ -66,11 +66,22 @@ export const ProfileCommentSection = (props: {
                   trackingLocation={'contract page'}
                 />
               ) : (
-                /* One compact row, not a panel. This is an invitation, and as a 170px dashed box it
-                   outweighed the endorsements it was asking for — and a dashed border reads as a drop
-                   zone, which is the wrong metaphor. The only card left in this region is the
-                   connection-signal one, which actually holds controls. */
+                /* One compact row, not a panel. This is an invitation, and as a 170px box it
+                   outweighed the endorsements it was asking for. The only card left in this region
+                   is the connection-signal one, which actually holds controls. */
                 <Row className="mb-6 flex-wrap items-center gap-x-4 gap-y-2">
+                  {/* Dashed, unfilled, in body ink rather than the accent: nobody arrives here
+                      meaning to write one, so the control should be findable when the thought
+                      occurs and invisible until then. A solid accent pill asked for the click
+                      harder than the endorsements below it asked to be read. */}
+                  {!isCurrentUser && (
+                    <button
+                      onClick={() => setShowCommentInput(true)}
+                      className="border-canvas-300 text-ink-500 hover:border-canvas-400 hover:text-ink-700 w-fit shrink-0 rounded-[10px] border border-dashed px-5 py-2.5 text-sm transition-colors"
+                    >
+                      {t('profile.comments.write_button', 'Write public endorsement')}
+                    </button>
+                  )}
                   <div className="text-ink-500 text-sm">
                     {isCurrentUser
                       ? t(
@@ -79,17 +90,10 @@ export const ProfileCommentSection = (props: {
                         )
                       : t(
                           'profile.comments.other_user_hint',
-                          'If you know them, write something nice that adds to their profile.',
+                          'Know {name}? A few honest sentences help strangers trust him.',
+                          {name: onUser.name},
                         )}
                   </div>
-                  {!isCurrentUser && (
-                    <button
-                      onClick={() => setShowCommentInput(true)}
-                      className="border-canvas-300 text-primary-700 hover:border-primary-400 hover:bg-primary-50 w-fit shrink-0 rounded-full border px-4 py-2 text-sm transition-colors"
-                    >
-                      {t('profile.comments.write_button', 'Write public endorsement')}
-                    </button>
-                  )}
                 </Row>
               )}
             </>

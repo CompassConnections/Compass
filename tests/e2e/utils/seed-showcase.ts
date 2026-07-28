@@ -58,7 +58,7 @@ const DEFAULT_AVATAR = '/images/default-avatar.png'
  * Missing portraits are not fatal: the profile still seeds, it just wears the default avatar.
  *
  * `pinned_url` and `photo_urls` are disjoint: the pinned photo must NOT also appear in `photo_urls`.
- * `ProfileGallery` renders `buildArray(pinned_url, photo_urls)` without deduping, so a shared entry
+ * `useProfilePhotos` renders `buildArray(pinned_url, photo_urls)` without deduping, so a shared entry
  * shows up twice. (The photo editor wraps the same call in `uniq`, which masks it while editing.)
  */
 function resolvePhotos(profile: ShowcaseProfile) {

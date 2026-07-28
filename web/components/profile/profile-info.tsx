@@ -11,6 +11,8 @@ import {SignUpButton} from 'web/components/nav/sidebar'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileHero from 'web/components/profile/profile-hero'
+import ProfilePhotoCarousel from 'web/components/profile/profile-photo-carousel'
+import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import ProfileAbout, {
   hasAccessibility,
   hasBigFive,
@@ -461,6 +463,7 @@ function ProfileContent(props: {
   const isCurrentUser = currentUser?.id === user.id
   const t = useT()
 
+  const photos = useProfilePhotos(profile)
   const {answeredQuestions} = useCompatibilityQuestionGroups(user.id)
   const showCompatibilityPrompts = currentUser && (isCurrentUser || answeredQuestions.length > 0)
 
@@ -479,7 +482,7 @@ function ProfileContent(props: {
         className="mt-10 flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,700px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14"
         data-testid="profile-content"
       >
-        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+        <Col className="min-w-0 gap-14 lg:col-start-1 lg:row-start-1">
           {profile.bio && (
             <Section title={t('profile.bio.about_me', 'About Me')}>
               <ProfileBio
@@ -490,7 +493,18 @@ function ProfileContent(props: {
               />
             </Section>
           )}
-        </div>
+
+          {/* The rest of the photos, sideways under the bio rather than as thumbnails beside the
+              hero: here they are large enough to be looked at instead of counted. */}
+          <ProfilePhotoCarousel
+            urls={photos.visibleUrls.slice(1)}
+            descriptions={profile.image_descriptions as Record<string, string>}
+            lockedCount={photos.lockedCount}
+            indexOffset={1}
+            onSelect={photos.openAt}
+          />
+          {photos.lightbox}
+        </Col>
 
         {/* Pinned beside the prose, and scrollable within itself — see ScrollPanel for the cues that
             make the second half of that obvious. Once wide enough for two readable columns it splits,

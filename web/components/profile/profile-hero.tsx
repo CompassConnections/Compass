@@ -3,12 +3,14 @@ import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
 import Link from 'next/link'
-import React from 'react'
+import React, {useRef} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import ProfileGallery from 'web/components/profile/profile-gallery'
+import ProfileHeroPhoto from 'web/components/profile/profile-hero-photo'
+import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import {ProfileConnectionGoals} from 'web/components/profile-about'
 import {linkClass} from 'web/components/widgets/site-link'
+import {useElementSize} from 'web/hooks/use-element-size'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {capitalizePure} from 'web/lib/util/time'
@@ -23,6 +25,9 @@ import ProfilePrimaryInfo from './profile-primary-info'
  *
  * No call to action here on purpose: reaching out belongs to the top bar (always reachable) and the
  * Connect section at the end, not to the moment someone is still deciding who they are looking at.
+ *
+ * One photo shares the band, matched to the height of the text beside it; the rest run as a
+ * carousel underneath, where they get room to be seen.
  */
 export default function ProfileHero(props: {
   user: User
@@ -35,6 +40,14 @@ export default function ProfileHero(props: {
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const t = useT()
+
+  const photos = useProfilePhotos(profile)
+
+  // The photo is matched to the height of the text, so both are measured rather than guessed.
+  const bandRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const bandSize = useElementSize(bandRef)
+  const textSize = useElementSize(textRef)
 
   const name = (
     <span
@@ -68,11 +81,34 @@ export default function ProfileHero(props: {
         </Notice>
       )}
 
-      <div className="flex flex-col gap-10 md:flex-row md:items-start md:gap-16">
-        <ProfileGallery profile={profile} />
+      {/* The text is capped rather than left to fill the row, and the photo follows it directly:
+          pinned to the far margin it read as a second column with a gutter of dead space between
+          the two, and the tagline stretched to a measure nobody wants to read. Whatever is left
+          over on a wide screen sits to the right of the photo. */}
+      {/* `items-start`, never `stretch`: the photo takes its size from the text column, so stretching
+          that column to the row height would feed the photo its own height back. A short profile
+          then kept whatever size the photo happened to start at instead of shrinking to the text. */}
+      <div ref={bandRef} className="flex flex-col gap-10 md:flex-row md:items-start md:gap-[72px]">
+        {photos.visibleUrls.length > 0 && (
+          <ProfileHeroPhoto
+            // Right of the text on desktop, above it when stacked: a photo is what you look at
+            // first either way, and on a wide screen the name should still open the line.
+            className="md:order-last"
+            url={photos.visibleUrls[0]}
+            textHeight={textSize?.height}
+            bandWidth={bandSize?.width}
+            onClick={photos.isLocked ? undefined : () => photos.openAt(0)}
+          />
+        )}
 
-        <Col className="min-w-0 flex-1 gap-7">
-          <Col className="gap-3">
+        <Col ref={textRef} className="min-w-0 flex-1 gap-7 md:max-w-3xl">
+          {/* Place, age, height, gender read as an eyebrow above the name rather than a line under
+              it: they are how you file someone, not what you call them, and above the display type
+              they are read once and passed over instead of competing with the tagline. */}
+          {/* The eyebrow needs air under it: at display size the name's own line box provides
+              almost none, and 8px read as the two lines being one block. */}
+          <Col className="gap-4">
+            <ProfilePrimaryInfo profile={profile} eyebrow />
             <div data-testid="profile-display-name-age">
               {simpleView ? (
                 <Link className={linkClass} href={`/${user.username}`}>
@@ -82,29 +118,7 @@ export default function ProfileHero(props: {
                 name
               )}
             </div>
-            <ProfilePrimaryInfo profile={profile} />
           </Col>
-
-          {/* Outlined rather than filled, squared rather than pill: five filled pills read as five
-              buttons. These are labels, and the eye should pass over them on the way to the tagline. */}
-          {profile.keywords && profile.keywords.length > 0 && (
-            <Row className="max-w-3xl flex-wrap gap-2" data-testid="profile-keywords">
-              {profile.keywords.map(capitalizePure).map((tag, i) => (
-                <span
-                  key={i}
-                  className="border-canvas-300 text-primary-800 font-dm-sans rounded-[3px] border uppercase"
-                  style={{
-                    padding: '6px 11px',
-                    fontSize: '11px',
-                    fontWeight: '400',
-                    letterSpacing: '0.13em',
-                  }}
-                >
-                  {tag.trim()}
-                </span>
-              ))}
-            </Row>
-          )}
 
           {/* The tagline is the one thing on this page written to be read as a voice, so it gets the
               serif italic at display size instead of a quoted aside pinned behind a rule. */}
@@ -122,9 +136,34 @@ export default function ProfileHero(props: {
             </div>
           )}
 
+          {/* Outlined rather than filled, squared rather than pill: five filled pills read as five
+              buttons. These are labels, and the eye should land on them last, after the tagline.
+              Same tracking as the eyebrow they echo, and a border kept under the eyebrow's weight so
+              a row of them does not out-shout the line that opens the block. */}
+          {profile.keywords && profile.keywords.length > 0 && (
+            <Row className="max-w-3xl flex-wrap gap-2" data-testid="profile-keywords">
+              {profile.keywords.map(capitalizePure).map((tag, i) => (
+                <span
+                  key={i}
+                  className="border-canvas-300/70 text-primary-800 font-dm-sans rounded-[3px] border uppercase"
+                  style={{
+                    padding: '6px 11px',
+                    fontSize: '11px',
+                    fontWeight: '400',
+                    letterSpacing: '0.16em',
+                  }}
+                >
+                  {tag.trim()}
+                </span>
+              ))}
+            </Row>
+          )}
+
           <ProfileConnectionGoals profile={profile} />
         </Col>
       </div>
+
+      {photos.lightbox}
     </Col>
   )
 }

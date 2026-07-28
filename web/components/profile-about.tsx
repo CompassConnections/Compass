@@ -30,6 +30,7 @@ import {Col} from 'web/components/layout/col'
 import {CustomLink} from 'web/components/links'
 import {UserHandles} from 'web/components/user/user-handles'
 import {useChoicesContext} from 'web/hooks/use-choices'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useLocale, useT} from 'web/lib/locale'
 import {getSeekingConnectionText} from 'web/lib/profile/seeking'
 import {convertRace} from 'web/lib/util/convert-types'
@@ -64,7 +65,9 @@ export default function ProfileAbout(props: {
           5. Languages — practical.
           6. Identity nuance — gender and orientation only render when the member wrote something of
              their own about them, so they are elaboration, not a demographic checkbox to scan.
-          7. Background, then activity metadata. */}
+          7. Background, then height, then activity metadata. Height sits down here rather than in
+             the hero line: it is a number people filter on, not part of how anyone introduces
+             themselves, and beside the name it was taking the weight of one. */}
       {!omitConnectionGoals && <SeekingAndRelationship profile={profile} />}
       <OccupationAndWork profile={profile} />
       <Education profile={profile} />
@@ -81,6 +84,7 @@ export default function ProfileAbout(props: {
       <Orientation profile={profile} />
       <Ethnicity profile={profile} />
       <RaisedIn profile={profile} />
+      <Height profile={profile} />
       {!isCurrentUser && (
         <>
           <LastOnline lastOnlineTime={userActivity?.last_online_time} />
@@ -518,6 +522,21 @@ function Ethnicity(props: {profile: Profile}) {
   const text = ethnicity.map((r: any) => t(`profile.race.${r}`, convertRace(r))).join(', ')
 
   return <AboutRow title={t('profile.ethnicity', 'Ethnicity')} text={text} />
+}
+
+function Height(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const {measurementSystem} = useMeasurementSystem()
+
+  if (profile.height_in_inches == null) return null
+
+  return (
+    <AboutRow
+      title={t('profile.optional.height', 'Height')}
+      text={formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem, t)}
+    />
+  )
 }
 
 function Smoker(props: {profile: Profile}) {

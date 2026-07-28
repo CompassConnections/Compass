@@ -134,30 +134,16 @@ export function ProfileFormNav(props: {className?: string}) {
  * length. The need is greater here than on desktop, since every field stacks and the page runs
  * roughly three times longer; the answer just has to cost one row instead of a screen.
  *
- * It hides while you scroll down and returns when you scroll up. A permanent bar would spend 44px of
- * an already short viewport on something wanted a few times per session, and the bottom edge is
- * already taken by the nav bar and the floating Save button.
+ * It stays pinned for the whole form. It previously hid on scroll down to save 44px of a short
+ * viewport, but a bar that is only there when you scroll the wrong way reads as gone — you cannot
+ * see where you are without scrolling backwards first, which is exactly what the index exists to
+ * avoid.
  */
 export function ProfileFormSectionBar(props: {className?: string}) {
   const {className} = props
   const {sections, activeId, activeIndex, goTo} = useFormSections()
   const [open, setOpen] = useState(false)
-  const [hidden, setHidden] = useState(false)
   const t = useT()
-
-  useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      // The 8px deadband stops momentum jitter from flickering the bar on and off.
-      if (Math.abs(y - lastY) > 8) {
-        setHidden(y > lastY && y > 160)
-        lastY = y
-      }
-    }
-    window.addEventListener('scroll', onScroll, {passive: true})
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   if (sections.length === 0) return null
 
@@ -169,8 +155,7 @@ export function ProfileFormSectionBar(props: {className?: string}) {
           status bar in the Capacitor shell; the variable is 0 in a browser, so one rule covers both. */}
       <div
         className={clsx(
-          'bg-canvas-100/95 border-canvas-300 sticky top-[var(--tnh)] z-20 -mx-6 border-b px-6 backdrop-blur transition-transform duration-200',
-          hidden && '-translate-y-full',
+          'bg-canvas-100/95 border-canvas-300 sticky top-[var(--tnh)] z-20 -mx-6 border-b px-6 backdrop-blur',
           className,
         )}
       >

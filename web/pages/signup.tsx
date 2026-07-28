@@ -146,7 +146,9 @@ export default function SignupPage() {
         // the same form gets on /profile, with the page's whole right half empty.
         <Col className={'w-full px-6 py-4'}>
           <div className="mx-auto w-full max-w-4xl">
-            <BackButton className="-ml-2 mb-2 self-start" />
+            {/* No negative margin: the chevron lines up with the column's left edge, like every
+                other thing on the page. Pulled out by 2 it hung into the page gutter. */}
+            <BackButton className="mb-2 self-start" />
             {/* The flow had no progress indicator at all: two substantial form steps that looked alike,
               so the only way to learn there were two was to finish the first. The bar is deliberately
               the same component as /onboarding — those three screens lead directly here, and a reader
@@ -158,7 +160,10 @@ export default function SignupPage() {
                 current: step + 1,
                 total: TOTAL_STEPS,
               })}
-              className="mb-7"
+              // Step 2 puts the section bar directly under this. `mb-7` plus the form row's own top
+              // padding left 44px of empty page between the two, which read as the bar belonging to
+              // the form below rather than to the header above it.
+              className={step === 1 ? 'mb-4' : 'mb-7'}
             />
           </div>
           {step === 0 ? (
@@ -175,10 +180,10 @@ export default function SignupPage() {
             // Same index as /profile: this is the same eighteen-section form, and it is longer here
             // because nothing is filled in yet. Hidden below `xl`, where there is no gutter to put it
             // in without pushing a list of links above the first field.
-            <div className={'mx-auto mb-2 flex w-full max-w-6xl gap-10 py-4'}>
+            <div className={'mx-auto mb-2 flex w-full max-w-6xl gap-10 pb-4'}>
               <ProfileFormNav className="sticky top-8 hidden h-fit w-52 shrink-0 xl:flex" />
               <Col className={'w-full min-w-0 max-w-3xl'}>
-                <ProfileFormSectionBar className="xl:hidden" />
+                <ProfileFormSectionBar className="mb-4 xl:hidden" />
                 <OptionalProfileUserForm
                   profile={profileForm}
                   setProfile={setProfileState}

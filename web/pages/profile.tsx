@@ -112,7 +112,9 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         url={`/profile`}
       />
       <Col className="w-full">
-        <BackButton className="ml-2 mb-2 self-start" />
+        {/* `ml-4` rather than `ml-2`: the button carries 2 of hit-area padding, so this is what puts
+            the chevron on the same left edge as the form column's `px-6` below. */}
+        <BackButton className="ml-4 mb-2 self-start" />
         {/* The index sits in the left gutter from `xl` up, where there is room for it beside a form
             capped at 3xl. Below that it is hidden rather than stacked: a list of eighteen links above
             the first field would be a second thing to read before starting. */}
@@ -120,7 +122,7 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
           <ProfileFormNav className="sticky top-8 hidden h-fit w-52 shrink-0 xl:flex" />
           <Col className={'w-full min-w-0 max-w-3xl'}>
             {/* Same index, one row instead of a column, wherever the rail does not fit. */}
-            <ProfileFormSectionBar className="xl:hidden" />
+            <ProfileFormSectionBar className="mb-4 xl:hidden" />
             <RequiredProfileUserForm
               data={baseUser}
               setData={setBaseUserState}

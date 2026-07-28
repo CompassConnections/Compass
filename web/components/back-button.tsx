@@ -22,7 +22,10 @@ export function BackButton(props: {className?: string}) {
       type="button"
       onClick={() => router.back()}
       className={clsx(
-        'text-ink-500 hover:text-primary-700 inline-flex items-center gap-1 text-sm transition-all',
+        // `-m-2 p-2` is hit area only: on mobile the label is hidden and the button was the 16px
+        // chevron itself, well under a thumb's worth of target. The negative margin cancels the
+        // padding, so the chevron stays exactly where every caller already positions it.
+        'text-ink-500 hover:text-primary-700 -m-2 inline-flex items-center gap-1 p-2 text-sm transition-all',
         className,
       )}
     >

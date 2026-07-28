@@ -8,7 +8,6 @@ import {removeUndefinedProps} from 'common/util/object'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
-import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {PageBase} from 'web/components/page-base'
@@ -112,13 +111,13 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         url={`/profile`}
       />
       <Col className="w-full">
-        {/* `ml-4` rather than `ml-2`: the button carries 2 of hit-area padding, so this is what puts
-            the chevron on the same left edge as the form column's `px-6` below. */}
-        <BackButton className="ml-4 mb-2 self-start" />
         {/* The index sits in the left gutter from `xl` up, where there is room for it beside a form
             capped at 3xl. Below that it is hidden rather than stacked: a list of eighteen links above
-            the first field would be a second thing to read before starting. */}
-        <div className="mx-auto flex w-full max-w-6xl gap-10 px-6 py-4">
+            the first field would be a second thing to read before starting.
+
+            No top padding: the section bar is the first thing on the page and pins to the very top,
+            so any gap above it is a strip of bare page that scrolling text passes through. */}
+        <div className="mx-auto flex w-full max-w-6xl gap-10 px-6 pb-4">
           <ProfileFormNav className="sticky top-8 hidden h-fit w-52 shrink-0 xl:flex" />
           <Col className={'w-full min-w-0 max-w-3xl'}>
             {/* Same index, one row instead of a column, wherever the rail does not fit. */}

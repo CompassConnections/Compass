@@ -1,12 +1,19 @@
 import clsx from 'clsx'
 import {ChevronDownIcon} from 'lucide-react'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 type FormSection = {id: string; title: string}
+
+/**
+ * Which container to index. Defaults to the profile form, which is what this was written for; the
+ * settings page passes its own, since "a column of `[data-form-section]` elements you can be
+ * scrolled through" is the whole contract and neither page needs to know about the other.
+ */
+const DEFAULT_ROOT = '[data-profile-form]'
 
 /**
  * The profile form's sections and which one is currently being read.
@@ -18,18 +25,15 @@ type FormSection = {id: string; title: string}
  * Shared by both presentations below so the rail and the mobile chip cannot disagree about where you
  * are.
  */
-function useFormSections() {
+function useFormSections(root: string) {
   const [sections, setSections] = useState<FormSection[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
 
   useEffect(() => {
-    const form = document.querySelector('[data-profile-form]')
-    if (!form) return
-
     // Bail when the list is unchanged. `setSections` with a fresh array on every call re-renders,
     // which mutates the DOM, which fires the observer again — a loop that also thrashed the scroll
     // listener below, since it re-subscribes whenever `sections` changes identity.
-    const read = () =>
+    const read = (form: Element) =>
       setSections((prev) => {
         const next = Array.from(form.querySelectorAll<HTMLElement>('[data-form-section]')).map(
           (node) => ({id: node.id, title: node.dataset.formSection ?? ''}),
@@ -40,14 +44,34 @@ function useFormSections() {
         return same ? prev : next
       })
 
-    read()
-
     // Sections come and go with the form's own conditionals — Family only exists once a relationship
     // is being sought — so the list is re-read when the form's subtree changes.
-    const mutations = new MutationObserver(read)
-    mutations.observe(form, {childList: true, subtree: true})
-    return () => mutations.disconnect()
-  }, [])
+    let sectionChanges: MutationObserver | undefined
+    const attach = () => {
+      const form = document.querySelector(root)
+      if (!form) return false
+      read(form)
+      sectionChanges = new MutationObserver(() => read(form))
+      sectionChanges.observe(form, {childList: true, subtree: true})
+      return true
+    }
+
+    // The root is not necessarily in the DOM when this hook mounts — the settings page renders its
+    // sections behind an async user fetch, so on that page the first query always misses. Giving up
+    // there meant the index simply never appeared. Wait for it instead.
+    let rootArrival: MutationObserver | undefined
+    if (!attach()) {
+      rootArrival = new MutationObserver(() => {
+        if (attach()) rootArrival?.disconnect()
+      })
+      rootArrival.observe(document.body, {childList: true, subtree: true})
+    }
+
+    return () => {
+      rootArrival?.disconnect()
+      sectionChanges?.disconnect()
+    }
+  }, [root])
 
   useEffect(() => {
     if (sections.length === 0) return
@@ -83,7 +107,17 @@ function useFormSections() {
     sections,
     activeId,
     activeIndex: activeIndex === -1 ? 0 : activeIndex,
-    goTo: (id: string) => document.getElementById(id)?.scrollIntoView({behavior: 'smooth'}),
+    /**
+     * `offset` is what is pinned over the top of the page — the sticky section bar plus the native
+     * top inset. `scrollIntoView` lands the heading at viewport top, which on mobile is underneath
+     * the bar itself, so the section you picked is the one you cannot see.
+     */
+    goTo: (id: string, offset = 0) => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const top = el.getBoundingClientRect().top + window.scrollY - offset
+      window.scrollTo({top: Math.max(top, 0), behavior: 'smooth'})
+    },
   }
 }
 
@@ -94,9 +128,9 @@ function useFormSections() {
  * reach Substances is to scroll past everything before it, and there is no way to tell how much is
  * left — which is the difference between a form that feels long and one that feels endless.
  */
-export function ProfileFormNav(props: {className?: string}) {
-  const {className} = props
-  const {sections, activeId, goTo} = useFormSections()
+export function ProfileFormNav(props: {className?: string; root?: string}) {
+  const {className, root = DEFAULT_ROOT} = props
+  const {sections, activeId, goTo} = useFormSections(root)
 
   if (sections.length === 0) return null
 
@@ -139,11 +173,32 @@ export function ProfileFormNav(props: {className?: string}) {
  * see where you are without scrolling backwards first, which is exactly what the index exists to
  * avoid.
  */
-export function ProfileFormSectionBar(props: {className?: string}) {
-  const {className} = props
-  const {sections, activeId, activeIndex, goTo} = useFormSections()
+export function ProfileFormSectionBar(props: {className?: string; root?: string}) {
+  const {className, root = DEFAULT_ROOT} = props
+  const {sections, activeId, activeIndex, goTo} = useFormSections(root)
   const [open, setOpen] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
+  const pendingId = useRef<string | null>(null)
   const t = useT()
+
+  // Scroll once the modal is gone rather than on the tap. The dialog scroll-locks the document while
+  // it is open, and in the Android WebView that lock is a fixed body whose scroll position is put
+  // back on release — so a scroll issued while the modal was still leaving got undone, and picking a
+  // section left the form exactly where it was. The delay clears Modal's 75ms leave transition,
+  // after which the lock is off.
+  useEffect(() => {
+    if (open || !pendingId.current) return
+    const id = pendingId.current
+    pendingId.current = null
+    const timer = setTimeout(() => {
+      const bar = barRef.current
+      // What the bar covers where it is pinned: its own height — the native top inset included,
+      // since that inset is its padding — plus whatever it is pinned below.
+      const offset = bar ? bar.offsetHeight + (parseFloat(getComputedStyle(bar).top) || 0) : 0
+      goTo(id, offset)
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [open])
 
   if (sections.length === 0) return null
 
@@ -151,11 +206,15 @@ export function ProfileFormSectionBar(props: {className?: string}) {
 
   return (
     <>
-      {/* `--tnh` is the native top inset (globals.css). Pinned at `top-0` this sat under the Android
-          status bar in the Capacitor shell; the variable is 0 in a browser, so one rule covers both. */}
+      {/* `--tnh` is the native top inset (globals.css). The bar pins at `top-0` and carries the inset
+          as its own padding rather than pinning below it: pinned at `top-[var(--tnh)]` the band
+          between the viewport top and the bar was left uncovered, so form text scrolled out from
+          under the bar and reappeared in it, under the Android status bar. The variable is 0 in a
+          browser, so one rule covers both. */}
       <div
+        ref={barRef}
         className={clsx(
-          'bg-canvas-100/95 border-canvas-300 sticky top-[var(--tnh)] z-20 -mx-6 border-b px-6 backdrop-blur',
+          'bg-canvas-100/95 border-canvas-300 sticky top-0 z-20 -mx-6 border-b px-6 pt-[var(--tnh)] backdrop-blur',
           className,
         )}
       >
@@ -181,14 +240,18 @@ export function ProfileFormSectionBar(props: {className?: string}) {
           >
             {t('profile.form.sections', 'Sections')}
           </div>
-          <Col className="w-full">
+          {/* Eighteen rows are taller than the panel, so the list scrolls inside it rather than
+              spilling past the bottom of the screen. The padding is what the native bottom inset and
+              the app's own bottom nav (61px, `pb-page-base`) cover: without it the last section sits
+              under the Android navigation bar, where it can be neither read nor tapped. */}
+          <Col className="min-h-0 w-full flex-1 overflow-y-auto pb-[calc(61px+var(--bnh))] lg:pb-2">
             {sections.map(({id, title}, i) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => {
+                  pendingId.current = id
                   setOpen(false)
-                  goTo(id)
                 }}
                 aria-current={id === activeId ? 'true' : undefined}
                 className={clsx(

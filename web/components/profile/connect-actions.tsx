@@ -143,7 +143,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
               <p className="text-ink-500 mt-2 text-sm">
                 {t(
                   'profile.wont_be_notified_unless_mutual',
-                  "Pick what you'd be open to with {name}. He is never notified unless he picks the same thing — then you both hear about it at once.",
+                  "Pick what you'd be open to with {name}. They're never notified unless they pick the same thing — then you both hear about it at once.",
                   {name: shortenName(user.name)},
                 )}
               </p>

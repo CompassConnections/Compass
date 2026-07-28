@@ -90,7 +90,7 @@ export const ProfileCommentSection = (props: {
                         )
                       : t(
                           'profile.comments.other_user_hint',
-                          'Know {name}? A few honest sentences help strangers trust him.',
+                          'Know {name}? A few honest sentences help strangers trust them.',
                           {name: onUser.name},
                         )}
                   </div>

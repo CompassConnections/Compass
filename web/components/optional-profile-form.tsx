@@ -777,9 +777,13 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
-        <Col className={clsx(colClassName)} ref={photosRef}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.photos', 'Photos')}</label>
+        {/* Its own section rather than the tail of Personal Information. Photos are a hero field —
+            the first thing anyone looks at on the finished profile — and as the last row of a
+            section about height and ethnicity they were something you scrolled past on the way
+            somewhere else, with no entry in the index to come back to. */}
+        <Category title={t('profile.optional.category.photos', 'Photos')} />
 
+        <Col className={clsx(colClassName)} ref={photosRef}>
           {/*<div className="mb-1">*/}
           {/*  A real or stylized photo of you is required.*/}
           {/*</div>*/}

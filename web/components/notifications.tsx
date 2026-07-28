@@ -11,6 +11,7 @@ import {useCallback} from 'react'
 import {Col} from 'web/components/layout/col'
 import {SwitchSetting} from 'web/components/switch-setting'
 import {WithPrivateUser} from 'web/components/user/with-user'
+import {surface} from 'web/components/widgets/surface'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -104,31 +105,33 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
 
   return (
     <Col className="mt-4 w-full gap-6">
-      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
-        <div className="border-canvas-300 border-b px-4 py-3">
+      <Col className={clsx(surface, 'overflow-hidden')}>
+        <div className="border-canvas-200/70 border-b px-4 py-3">
           <p className="text-ink-900 font-medium">
             {t('notifications.heading', 'Where do you want to be notified when someone')}
           </p>
         </div>
         <DestinationHeader />
-        <Col className="divide-canvas-300 divide-y">
+        <Col className="divide-canvas-200/70 divide-y">
           {socialNotificationTypes.map(renderOption)}
         </Col>
       </Col>
 
-      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
-        <div className="border-canvas-300 border-b px-4 py-3">
+      <Col className={clsx(surface, 'overflow-hidden')}>
+        <div className="border-canvas-200/70 border-b px-4 py-3">
           <p className="text-ink-900 font-medium">
             {t('notifications.section.other', 'Other updates')}
           </p>
         </div>
         <DestinationHeader />
-        <Col className="divide-canvas-300 divide-y">{otherNotificationTypes.map(renderOption)}</Col>
+        <Col className="divide-canvas-200/70 divide-y">
+          {otherNotificationTypes.map(renderOption)}
+        </Col>
       </Col>
 
       {/* Master switch: its own card so it doesn't read as just another "other update". The toggles
           still line up with the columns above, so it needs no repeated header. */}
-      <Col className="border-canvas-300 bg-canvas-50 overflow-hidden rounded-xl border">
+      <Col className={clsx(surface, 'overflow-hidden')}>
         {renderOption({
           type: 'opt_out_all',
           question: t('notifications.question.opt_out_all', 'Opt out of all notifications?'),
@@ -144,7 +147,7 @@ const OPTION_GRID = 'grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center g
 const DestinationHeader = () => {
   const t = useT()
   return (
-    <div className={clsx(OPTION_GRID, 'border-canvas-300 border-b px-4 py-2')}>
+    <div className={clsx(OPTION_GRID, 'border-canvas-200/70 border-b px-4 py-2')}>
       <span />
       {SHOWN_NOTIFICATION_DESTINATION_TYPES.map((destinationType) => (
         <span

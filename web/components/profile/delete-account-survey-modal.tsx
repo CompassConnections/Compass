@@ -131,9 +131,12 @@ export function DeleteAccountSurveyModal() {
   return (
     <ConfirmationButton
       openModalBtn={{
-        className: 'p-2',
+        className: 'p-2 w-full sm:w-fit',
         label: t('delete_yourself.open_label', 'Delete account'),
-        color: 'red',
+        // Outline, not solid. On the settings page this was the only coloured button among a dozen
+        // grey ones, which made the irreversible action the most prominent thing on the page. The
+        // modal's own confirm button is still solid red — the emphasis belongs where the decision is.
+        color: 'red-outline',
       }}
       cancelBtn={
         showStayPitch

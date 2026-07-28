@@ -58,9 +58,25 @@ export class SettingsPage {
     await this.measurementSystemToggle.click()
   }
 
+  /**
+   * The theme control is three radio pills (Light / Dark / Auto), not the single cycling button it
+   * used to be, so "toggle" means advancing to the next option rather than clicking one element.
+   */
   async toggleDisplayTheme() {
     await expect(this.themeToggle).toBeVisible()
-    await this.themeToggle.click()
+    const options = this.themeToggle.getByRole('radio')
+    const count = await options.count()
+    let checked = 0
+    for (let i = 0; i < count; i++) {
+      if ((await options.nth(i).getAttribute('aria-checked')) === 'true') checked = i
+    }
+    await options.nth((checked + 1) % count).click()
+  }
+
+  async setDisplayTheme(theme: 'light' | 'dark' | 'auto') {
+    const option = this.page.getByTestId(`settings-theme-${theme}`)
+    await expect(option).toBeVisible()
+    await option.click()
   }
 
   async setFont(font: FontsTuple) {

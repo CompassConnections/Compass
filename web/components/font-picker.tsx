@@ -24,7 +24,7 @@ export function FontPicker(props: {className?: string} = {}) {
       value={font}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFont(e.target.value as FontOption)}
       className={clsx(
-        'rounded-md border border-gray-300 px-2 py-1 text-sm bg-canvas-50',
+        'rounded-lg border border-canvas-300 bg-canvas-50 px-3 py-2 text-sm text-ink-1000 transition-colors hover:border-primary-400 focus:border-primary-500 focus:outline-none',
         className,
       )}
     >

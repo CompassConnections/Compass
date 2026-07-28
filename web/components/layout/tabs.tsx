@@ -168,8 +168,18 @@ export function ControlledTabs(props: TabProps & {activeIndex: number}) {
   )
 }
 
-export function UncontrolledTabs(props: TabProps & {defaultIndex?: number}) {
-  const {defaultIndex, onClick, ...rest} = props
+export function UncontrolledTabs(
+  props: TabProps & {
+    defaultIndex?: number
+    /**
+     * Fires with the active index, including the one restored from cache on mount — `onClick` only
+     * ever reports a change the user just made, which is not enough for a caller that has to render
+     * something else alongside the active tab (the settings page's section index).
+     */
+    onActiveIndexChange?: (index: number) => void
+  },
+) {
+  const {defaultIndex, onClick, onActiveIndexChange, ...rest} = props
   const [activeIndex, setActiveIndex] = usePersistentInMemoryState(
     defaultIndex ?? 0,
     `tab-${props.trackingName}-${props.name ?? props.tabs[0]?.title}`,
@@ -184,6 +194,10 @@ export function UncontrolledTabs(props: TabProps & {defaultIndex?: number}) {
       if (i < props.tabs.length) setActiveIndex(i)
     }
   }, [])
+
+  useEffect(() => {
+    onActiveIndexChange?.(activeIndex)
+  }, [activeIndex])
 
   return (
     <ControlledTabs

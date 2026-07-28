@@ -49,7 +49,13 @@ export function buttonClass(size: SizeType, color: ColorType) {
     color === 'green' && [solid, 'bg-teal-500 hover:bg-teal-600'],
     color === 'green-outline' && [outline, 'text-teal-500 hover:bg-teal-500'],
     color === 'red' && [solid, 'bg-red-500 hover:bg-red-600'],
-    color === 'red-outline' && [outline, 'text-scarlet-500 hover:bg-scarlet-500'],
+    // `scarlet` is this theme's *grey* "no" token (`--color-no-500` is 140 140 140), so the red
+    // outline button rendered as a grey one — indistinguishable from `gray-outline` beside it. The
+    // red ramp is the actual red. Hover also flips the label to white, or red-on-red was unreadable.
+    color === 'red-outline' && [
+      outline,
+      'text-red-500 !ring-red-500/40 hover:bg-red-500 hover:text-white',
+    ],
     color === 'yellow' && [solid, 'bg-yellow-400 hover:bg-yellow-500'],
     color === 'yellow-outline' && [outline, 'text-yellow-500 hover:bg-yellow-500'],
     color === 'blue' && [solid, 'bg-blue-400 hover:bg-blue-500'],

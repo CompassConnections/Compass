@@ -31,6 +31,14 @@ export function MoreOptionsUserButton(props: {user: User}) {
   const isTrusted = useTrusted()
   const t = useT()
 
+  const banUser = async () => {
+    await toast.promise(api('ban-user', {userId, unban: false, reason: 'confirmed_abuse'}), {
+      loading: t('more_options_user.banning', 'Banning...'),
+      success: () => t('more_options_user.user_banned', 'User banned!'),
+      error: () => t('more_options_user.error_banning', 'Error banning user'),
+    })
+  }
+
   if (!currentPrivateUser) return <div />
 
   const createdTime = new Date(user.createdTime).toLocaleDateString('en-us', {
@@ -107,27 +115,11 @@ export function MoreOptionsUserButton(props: {user: User}) {
                   {t('more_options_user.admin', 'Admin')}
                 </span>
                 <Row className="flex-wrap gap-2">
-                  <Button
-                    color={'red'}
-                    size="xs"
-                    onClick={async () => {
-                      await toast.promise(
-                        api('ban-user', {
-                          userId,
-                          unban: user.isBannedFromPosting ?? false,
-                        }),
-                        {
-                          loading: t('more_options_user.banning', 'Banning...'),
-                          success: () => {
-                            return t('more_options_user.user_banned', 'User banned!')
-                          },
-                          error: () => {
-                            return t('more_options_user.error_banning', 'Error banning user')
-                          },
-                        },
-                      )
-                    }}
-                  >
+                  {/* Banning from here is a moderator's deliberate call on a profile they've just
+                    looked at, so it's always the permanent kind — the provisional hold exists for
+                    the automatic rate limit, not for someone who decided. Unbanning lives on the
+                    banned-profile banner, where the case is actually reviewed. */}
+                  <Button color={'red'} size="xs" onClick={banUser}>
                     {user.isBannedFromPosting
                       ? t('more_options_user.banned', 'Banned')
                       : t('more_options_user.ban_user', 'Ban User')}

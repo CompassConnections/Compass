@@ -20,6 +20,7 @@ import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
+import {AccountOnHoldNotice} from 'web/components/moderation/account-on-hold'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
 import {ReportUser} from 'web/components/profile/report-user'
@@ -518,11 +519,7 @@ export const PrivateChat = (props: {
           </span>
         </div>
       ) : user.isBannedFromPosting ? (
-        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-          <span className="text-ink-500 text-sm">
-            {t('messages.cannot_message_you_banned', "You can't text them as you got banned.")}
-          </span>
-        </div>
+        <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
       ) : noOtherUser ? (
         <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
           <span className="text-ink-500 text-sm">

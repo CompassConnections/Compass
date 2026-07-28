@@ -15,6 +15,10 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {usePrivateMessageMembershipsContext} from 'web/components/messaging/private-message-memberships-context'
+import {
+  AccountOnHoldNotice,
+  isAutoBanUnderReviewError,
+} from 'web/components/moderation/account-on-hold'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
@@ -59,6 +63,9 @@ export const SendMessageButton = (props: {
 
   const [openComposeModal, setOpenComposeModal] = useState(false)
   const [error, setError] = useState('')
+  // Set instead of `error` when the daily new-conversation limit auto-banned them: that case gets the
+  // full explanation panel rather than a one-line red error, since the outcome deserves context.
+  const [onHold, setOnHold] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const previousDirectMessageChannel = findKey(
@@ -131,7 +138,8 @@ export const SendMessageButton = (props: {
     const res = await api('create-private-user-message-channel', {
       userIds: [toUser.id],
     }).catch((e) => {
-      setError(e.message)
+      if (isAutoBanUnderReviewError(e)) setOnHold(true)
+      else setError(e.message)
       setSubmitting(false)
       return
     })
@@ -333,7 +341,9 @@ export const SendMessageButton = (props: {
 
             {/* skipEmailVerification is dev-only and cannot be enabled in a production build; the API
               still rejects unverified senders. See web/lib/dev-flags.ts. */}
-            {firebaseUser?.emailVerified || skipEmailVerification ? (
+            {onHold ? (
+              <AccountOnHoldNotice reason={'auto_rate_limit'} className="max-w-xl mt-2" />
+            ) : firebaseUser?.emailVerified || skipEmailVerification ? (
               <>
                 {/* Topics box: a 40% tint rather than solid canvas-100. At full strength the fill sat a
                   whole step away from the modal's canvas-50 surface and read as a separate panel. The
@@ -414,8 +424,9 @@ export const SendMessageButton = (props: {
             )}
           </Col>
 
-          {/* Pinned footer — outside the scroller, so it is visible no matter how long the message is. */}
-          {(firebaseUser?.emailVerified || skipEmailVerification) && (
+          {/* Pinned footer — outside the scroller, so it is visible no matter how long the message is.
+            Hidden once the account is on hold: there is nothing left to send until we've reviewed it. */}
+          {(firebaseUser?.emailVerified || skipEmailVerification) && !onHold && (
             <Col className={'w-full shrink-0 gap-3.5 pt-4'}>
               {/* Progress toward the minimum length, with the count beside it. */}
               <div className={'w-full flex items-center gap-3.5'}>

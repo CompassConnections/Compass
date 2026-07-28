@@ -682,7 +682,8 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     'username', users.username,
     'avatarUrl', users.avatar_url,
     'createdTime', users.created_time,
-    'isBannedFromPosting', users.is_banned_from_posting
+    'isBannedFromPosting', users.is_banned_from_posting,
+    'banReason', users.ban_reason
   ) as user`
   if (orderByParam === 'compatibility_score') {
     selectCols += ', cs.score as compatibility_score'

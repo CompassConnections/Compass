@@ -6,6 +6,10 @@ import {buildArray} from 'common/util/array'
 import {useRouter} from 'next/router'
 import {useState} from 'react'
 import {Row} from 'web/components/layout/row'
+import {
+  AccountOnHoldNotice,
+  isAutoBanUnderReviewError,
+} from 'web/components/moderation/account-on-hold'
 import {SelectUsers} from 'web/components/select-users'
 import {usePrivateUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
@@ -35,6 +39,8 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
   const router = useRouter()
   const t = useT()
   const [errorText, setErrorText] = useState<string>('')
+  // The daily new-conversation limit auto-ban gets the full explanation panel instead of a red line.
+  const [onHold, setOnHold] = useState(false)
 
   const [users, setUsers] = useState<DisplayUser[]>([])
   const createChannel = async () => {
@@ -42,7 +48,8 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
       userIds: users.map((user) => user.id),
     }).catch((e: APIError) => {
       console.error(e)
-      setErrorText(String(e))
+      if (isAutoBanUnderReviewError(e)) setOnHold(true)
+      else setErrorText(String(e))
       return
     })
     if (!res) {
@@ -64,9 +71,15 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
             .concat(buildArray(privateUser?.id))}
         />
       </Col>
+      {onHold && (
+        <div className={'bg-canvas-50 px-3 pb-2'}>
+          {/* compact: the modal above it is a fixed 20rem tall, so keep this panel to its essentials. */}
+          <AccountOnHoldNotice reason={'auto_rate_limit'} compact />
+        </div>
+      )}
       {errorText && <p className={'bg-canvas-50 text-red-500 px-5'}>{errorText}</p>}
       <Row className={'bg-canvas-50 justify-end rounded-b-md p-2'}>
-        <Button disabled={users.length === 0} onClick={createChannel}>
+        <Button disabled={users.length === 0 || onHold} onClick={createChannel}>
           {t('messages.create', 'Create')}
         </Button>
       </Row>

@@ -12,9 +12,11 @@ import {useRouter} from 'next/router'
 import {useEffect, useMemo, useState} from 'react'
 import {HomeLoadingAnimation} from 'web/components/home/home-loading-animation'
 import {Col} from 'web/components/layout/col'
+import {BannedUserModBar} from 'web/components/moderation/banned-user-mod-bar'
 import {PageBase} from 'web/components/page-base'
 import {ProfileInfo, ProfileInfoSkeleton} from 'web/components/profile/profile-info'
 import {SEO} from 'web/components/SEO'
+import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
@@ -134,6 +136,9 @@ export default function UserPage(props: UserPageProps) {
   const nativeMobile = isNativeMobile()
   const router = useRouter()
   const t = useT()
+  // Mods see banned profiles instead of the suspension wall: deciding whether to unban or confirm
+  // the ban means reading the profile, which is exactly what the wall hides.
+  const isMod = useAdminOrMod()
   const username = (props.username ?? router.query.username) as string
   const fromSignup = router?.query?.fromSignup === 'true'
 
@@ -230,7 +235,7 @@ export default function UserPage(props: UserPageProps) {
     return <Custom404 customText={fetchedProps.notFoundCustomText} />
   }
 
-  if (fetchedProps.user?.isBannedFromPosting) {
+  if (fetchedProps.user?.isBannedFromPosting && !isMod) {
     return (
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
@@ -261,6 +266,7 @@ function UserPageInner(props: ActiveUserPageProps) {
 
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user?.id
+  const isMod = useAdminOrMod()
 
   useSaveReferral(currentUser, {defaultReferrerUsername: username})
   useTracking('view profile', {username: user?.username})
@@ -278,7 +284,9 @@ function UserPageInner(props: ActiveUserPageProps) {
 
   // debug('profile:', user?.username, profile, clientProfile, staticProfile)
 
-  if (!isCurrentUser && profile?.disabled) {
+  // Same exception as the ban wall above: a mod reviewing a case has to be able to read the profile,
+  // and a banned account that also disabled itself would otherwise be unreviewable.
+  if (!isCurrentUser && !isMod && profile?.disabled) {
     return (
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
@@ -316,6 +324,7 @@ function UserPageInner(props: ActiveUserPageProps) {
 
       {currentUser !== undefined ? (
         <Col className={'gap-4'}>
+          {isMod && user.isBannedFromPosting && <BannedUserModBar user={user} className="mx-2" />}
           {profile ? (
             <ProfileInfo
               key={profile.user_id}

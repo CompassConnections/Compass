@@ -1,4 +1,5 @@
 import {ENV_CONFIG, MOD_USERNAMES, WEB_URL} from 'common/envs/constants'
+import {BanReason} from 'common/moderation/ban'
 import {User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
 
@@ -8,6 +9,7 @@ export type DisplayUser = {
   username: string
   avatarUrl: string
   isBannedFromPosting?: boolean
+  banReason?: BanReason | null
 }
 
 export type FullUser = User & {

@@ -1611,6 +1611,7 @@ export type Database = {
       users: {
         Row: {
           avatar_url: string | null
+          ban_reason: string | null
           created_time: string
           data: Json
           id: string
@@ -1621,6 +1622,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          ban_reason?: string | null
           created_time?: string
           data: Json
           id?: string
@@ -1631,6 +1633,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          ban_reason?: string | null
           created_time?: string
           data?: Json
           id?: string

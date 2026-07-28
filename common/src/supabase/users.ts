@@ -49,4 +49,4 @@ export function convertPrivateUser(row: Row<'private_users'> | null): PrivateUse
   return row.data as PrivateUser
 }
 
-export const displayUserColumns = `id,name,username, avatar_url as "avatarUrl",is_banned_from_posting as "isBannedFromPosting"`
+export const displayUserColumns = `id,name,username, avatar_url as "avatarUrl",is_banned_from_posting as "isBannedFromPosting",ban_reason as "banReason"`

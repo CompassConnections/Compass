@@ -27,6 +27,7 @@ import GenderIcon from 'web/components/gender-icon'
 import {IconWithInfo} from 'web/components/icons'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
+import {AccountOnHoldNotice} from 'web/components/moderation/account-on-hold'
 import {ProfileAvatar} from 'web/components/profile/profile-avatar'
 import {ProfileLocation} from 'web/components/profile/profile-location'
 import {getSeekingText} from 'web/components/profile-about'
@@ -311,9 +312,9 @@ export const ProfileGrid = (props: {
       {isLoadingMore && <ProfileGridSkeleton count={columnCount} cardSize={cardSize} />}
 
       {user?.isBannedFromPosting ? (
-        <div className="py-8 text-center">
-          <p>You can't see profiles as you got banned.</p>
-        </div>
+        <Col className="items-center py-8">
+          <AccountOnHoldNotice reason={user.banReason} className="max-w-xl" />
+        </Col>
       ) : (
         !isLoadingMore &&
         !isReloading &&

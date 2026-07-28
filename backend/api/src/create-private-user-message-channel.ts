@@ -3,6 +3,11 @@ import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DOMAIN} from 'common/envs/constants'
+import {
+  AUTO_BAN_REVIEW_HOURS,
+  AUTO_BAN_UNDER_REVIEW_CODE,
+  MAX_NEW_CHANNELS_PER_DAY,
+} from 'common/moderation/ban'
 import {filterDefined} from 'common/util/array'
 import * as admin from 'firebase-admin'
 import {uniq} from 'lodash'
@@ -10,10 +15,6 @@ import {getProfile} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {updateUser} from 'shared/supabase/users'
 import {getPrivateUser, getUser} from 'shared/utils'
-
-// Max number of new conversations a user may start within a rolling 24h window.
-// Creating one more than this auto-bans them for suspected spam.
-const MAX_NEW_CHANNELS_PER_DAY = 5
 
 export const createPrivateUserMessageChannel: APIHandler<
   'create-private-user-message-channel'
@@ -94,7 +95,7 @@ export const createPrivateUserMessageChannel: APIHandler<
   )
 
   if (Number(recentChannelCount) >= MAX_NEW_CHANNELS_PER_DAY) {
-    await updateUser(creatorId, {isBannedFromPosting: true})
+    await updateUser(creatorId, {isBannedFromPosting: true, banReason: 'auto_rate_limit'})
     try {
       const message = `
       🔨 **Auto-ban: conversation spam** 🔨
@@ -106,7 +107,16 @@ export const createPrivateUserMessageChannel: APIHandler<
     } catch (e) {
       console.error('Failed to send auto-ban discord report', e)
     }
-    throw APIErrors.forbidden('You are banned')
+    // Tagged with AUTO_BAN_UNDER_REVIEW_CODE so the client can show the "on hold, being reviewed"
+    // explanation rather than a bare "You are banned" — most people who trip this are genuine and
+    // get unbanned once a human looks at the profile.
+    throw APIErrors.forbidden(
+      `You've started too many new conversations in the past 24 hours, so your account is temporarily on hold. We do this automatically to protect our members from spam, scams and harassment. Our team reviews every case within ${AUTO_BAN_REVIEW_HOURS} hours and restores accounts that look genuine — nothing you've written is lost.`,
+      {
+        context: AUTO_BAN_UNDER_REVIEW_CODE,
+        resolution: 'Contact us at /contact if you want to tell us about your account.',
+      },
+    )
   }
 
   const channel = await pg.one(

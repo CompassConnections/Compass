@@ -1,3 +1,5 @@
+import {BanReason} from 'common/moderation/ban'
+
 import {notification_preferences} from './user-notification-preferences'
 
 export type BaseUser = {
@@ -10,6 +12,8 @@ export type User = BaseUser & {
   createdTime: number
   avatarUrl: string
   isBannedFromPosting?: boolean
+  // Why they are banned, when they are. Drives what we tell them — see common/moderation/ban.ts.
+  banReason?: BanReason | null
   userDeleted?: boolean
 }
 

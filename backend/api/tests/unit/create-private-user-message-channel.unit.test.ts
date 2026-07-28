@@ -2,6 +2,7 @@ import {createPrivateUserMessageChannel} from 'api/create-private-user-message-c
 import {AuthedUser} from 'api/helpers/endpoint'
 import * as privateMessageModules from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
+import {AUTO_BAN_UNDER_REVIEW_CODE} from 'common/moderation/ban'
 import {sqlMatch} from 'common/test-utils'
 import * as utilArrayModules from 'common/util/array'
 import * as admin from 'firebase-admin'
@@ -181,9 +182,12 @@ describe('createPrivateUserMessageChannel', () => {
 
       await expect(
         createPrivateUserMessageChannel(mockBody, mockAuth, mockReq),
-      ).rejects.toThrowError('You are banned')
+      ).rejects.toThrowError(/temporarily on hold/)
 
-      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {isBannedFromPosting: true})
+      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {
+        isBannedFromPosting: true,
+        banReason: 'auto_rate_limit',
+      })
       expect(sendDiscordMessage).toHaveBeenCalledTimes(1)
       expect(sendDiscordMessage).toHaveBeenCalledWith(
         expect.stringContaining('Auto-ban'),
@@ -194,6 +198,18 @@ describe('createPrivateUserMessageChannel', () => {
       expect(privateMessageModules.addUsersToPrivateMessageChannel).not.toHaveBeenCalled()
     })
 
+    it('tags the error so the client can show the "under review" explanation', async () => {
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+      ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
+
+      const error = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq).catch(
+        (e) => e,
+      )
+
+      expect(error.code).toBe(403)
+      expect(error.details).toMatchObject({context: AUTO_BAN_UNDER_REVIEW_CODE})
+    })
+
     it('still bans when the Discord notification fails', async () => {
       ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
       ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('Discord down'))
@@ -201,9 +217,12 @@ describe('createPrivateUserMessageChannel', () => {
 
       await expect(
         createPrivateUserMessageChannel(mockBody, mockAuth, mockReq),
-      ).rejects.toThrowError('You are banned')
+      ).rejects.toThrowError(/temporarily on hold/)
 
-      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {isBannedFromPosting: true})
+      expect(updateUser).toHaveBeenCalledWith(mockAuth.uid, {
+        isBannedFromPosting: true,
+        banReason: 'auto_rate_limit',
+      })
       expect(errorSpy).toHaveBeenCalledWith(
         expect.stringContaining('Failed to send auto-ban discord report'),
         expect.any(Error),

@@ -7,6 +7,7 @@ import {
   zBoolean,
 } from 'common/api/zod-types'
 import {ChatMessage} from 'common/chat-message'
+import {BAN_REASONS} from 'common/moderation/ban'
 import {Notification} from 'common/notifications'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
@@ -300,6 +301,9 @@ export const API = (_apiTypeCheck = {
       .object({
         userId: z.string(),
         unban: z.boolean().optional(),
+        // Why they are being banned; decides what the member is told. Defaults to a provisional
+        // 'under_review' hold, so a moderator has to opt in to the permanent copy.
+        reason: z.enum(BAN_REASONS).optional(),
       })
       .strict(),
     summary: 'Ban or unban a user',

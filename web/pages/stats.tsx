@@ -100,13 +100,19 @@ function HeroBand({
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-primary-500/20 blur-3xl"
       />
-      <div className="relative flex flex-wrap gap-x-10 gap-y-7 sm:gap-x-14">
+      {/* Mobile is a 2-column grid rather than a wrapping flex row: with flex-wrap the tiles are sized by
+          their digits, so the labels never line up and the last stat is left dangling at a different
+          x-offset than the one above it. The grid keeps every label on a shared baseline and gives the
+          headline number its own full-width row, which is where the emphasis belonged anyway. From `sm`
+          up there is room for the single-row band, so it reverts to the flex layout. */}
+      <div className="relative grid grid-cols-2 gap-x-8 gap-y-7 sm:flex sm:flex-wrap sm:gap-x-14">
         {items.map((item, i) => (
           <div
             key={item.label}
             className={clsx(
-              i === 0 && 'sm:border-r sm:border-white/10 sm:pr-14',
-              i > 0 && 'min-w-[92px]',
+              i === 0 &&
+                'col-span-2 border-b border-white/10 pb-7 sm:border-b-0 sm:border-r sm:border-white/10 sm:pb-0 sm:pr-14',
+              i > 0 && 'sm:min-w-[92px]',
             )}
           >
             <div

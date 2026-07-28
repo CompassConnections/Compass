@@ -12,6 +12,7 @@ import {ensureDeviceToken} from 'web/components/auth-context'
 import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
+import {ProfileFormNav, ProfileFormSectionBar} from 'web/components/profile-form-nav'
 import {initialRequiredState, RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {StepProgress} from 'web/components/widgets/step-progress'
@@ -140,21 +141,26 @@ export default function SignupPage() {
           </div>
         </Col>
       ) : (
-        <Col className={'w-full max-w-4xl px-6 py-4'}>
-          <BackButton className="-ml-2 mb-2 self-start" />
-          {/* The flow had no progress indicator at all: two substantial form steps that looked alike,
+        // Width is set per step rather than on the shared column. Step 1 is the eighteen-section form
+        // plus its index, and inside a 4xl column the index left it about 550px wide — narrower than
+        // the same form gets on /profile, with the page's whole right half empty.
+        <Col className={'w-full px-6 py-4'}>
+          <div className="mx-auto w-full max-w-4xl">
+            <BackButton className="-ml-2 mb-2 self-start" />
+            {/* The flow had no progress indicator at all: two substantial form steps that looked alike,
               so the only way to learn there were two was to finish the first. The bar is deliberately
               the same component as /onboarding — those three screens lead directly here, and a reader
               who has just watched a 3-segment bar fill should recognise this as the next one. */}
-          <StepProgress
-            current={step + 1}
-            total={TOTAL_STEPS}
-            label={t('common.step_progress', 'Step {current} of {total}', {
-              current: step + 1,
-              total: TOTAL_STEPS,
-            })}
-            className="mb-7"
-          />
+            <StepProgress
+              current={step + 1}
+              total={TOTAL_STEPS}
+              label={t('common.step_progress', 'Step {current} of {total}', {
+                current: step + 1,
+                total: TOTAL_STEPS,
+              })}
+              className="mb-7"
+            />
+          </div>
           {step === 0 ? (
             // Card + centered, matching the /onboarding screens that lead directly here — two short
             // fields floating left in a wide column read as unfinished, not deliberate.
@@ -166,15 +172,22 @@ export default function SignupPage() {
               />
             </div>
           ) : step === 1 ? (
-            <Col className={'w-full px-2 sm:px-6 py-4 mb-2 '}>
-              <OptionalProfileUserForm
-                profile={profileForm}
-                setProfile={setProfileState}
-                user={baseUser}
-                bottomNavBarVisible={false}
-                onSubmit={handleFinalSubmit}
-              />
-            </Col>
+            // Same index as /profile: this is the same eighteen-section form, and it is longer here
+            // because nothing is filled in yet. Hidden below `xl`, where there is no gutter to put it
+            // in without pushing a list of links above the first field.
+            <div className={'mx-auto mb-2 flex w-full max-w-6xl gap-10 py-4'}>
+              <ProfileFormNav className="sticky top-8 hidden h-fit w-52 shrink-0 xl:flex" />
+              <Col className={'w-full min-w-0 max-w-3xl'}>
+                <ProfileFormSectionBar className="xl:hidden" />
+                <OptionalProfileUserForm
+                  profile={profileForm}
+                  setProfile={setProfileState}
+                  user={baseUser}
+                  bottomNavBarVisible={false}
+                  onSubmit={handleFinalSubmit}
+                />
+              </Col>
+            </div>
           ) : (
             <CompassLoadingIndicator />
           )}
@@ -189,7 +202,9 @@ export default function SignupPage() {
 // they sat as far apart from each other as consecutive fields did. The vertical rhythm between
 // fields comes from the parent `Col`'s `gap-8`, not from here.
 export const colClassName = 'items-start gap-1.5 w-full'
-export const labelClassName = 'font-semibold text-md text-ink-900'
+// Quiet, not bold. A form label names the field; the input is the thing with content in it, and
+// `font-semibold text-ink-900` gave the two equal weight down a fifty-field page.
+export const labelClassName = 'text-ink-500 text-sm font-normal'
 
 function getInitialBaseUser() {
   const emailName = auth.currentUser?.email?.replace(/@.*$/, '')

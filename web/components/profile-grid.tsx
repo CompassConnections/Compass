@@ -20,7 +20,7 @@ import {
   Wine,
 } from 'lucide-react'
 import Link from 'next/link'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import {PiMagnifyingGlassBold} from 'react-icons/pi'
 import {LocationFilterProps} from 'web/components/filters/location-filter'
 import GenderIcon from 'web/components/gender-icon'
@@ -38,6 +38,7 @@ import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observe
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {ColumnCountOptions, useColumnCount} from 'web/hooks/use-column-count'
+import {useLongPressReveal} from 'web/hooks/use-long-press-reveal'
 import {isDark, useTheme} from 'web/hooks/use-theme'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -82,9 +83,6 @@ type CardSizeConfig = {
 }
 
 const MIN_BIO_LINES = 2
-
-/** How long a touch has to stay down before it reveals the card actions instead of navigating. */
-const LONG_PRESS_MS = 400
 
 const CARD_SIZE_CONFIG: Record<CardSize, CardSizeConfig> = {
   small: {
@@ -488,30 +486,15 @@ function ProfilePreview(props: {
   const pointerStartRef = useRef<{x: number; y: number} | null>(null)
 
   // Touch has no hover, so the actions can't hide behind one — a press and hold reveals them.
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [showActions, setShowActions] = useState(false)
-  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  /** Set once the hold fires, so the release that follows opens the actions instead of the profile. */
-  const longPressedRef = useRef(false)
-
-  const clearLongPress = () => {
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current)
-      longPressTimeoutRef.current = null
-    }
-  }
-
-  // Any press outside puts them away again — including a press on another card, which reveals its own.
-  useEffect(() => {
-    if (!showActions) return
-    const onDocumentPointerDown = (e: PointerEvent) => {
-      if (!cardRef.current?.contains(e.target as Node)) setShowActions(false)
-    }
-    document.addEventListener('pointerdown', onDocumentPointerDown)
-    return () => document.removeEventListener('pointerdown', onDocumentPointerDown)
-  }, [showActions])
-
-  useEffect(() => clearLongPress, [])
+  const {
+    containerRef: cardRef,
+    revealed: showActions,
+    longPressedRef,
+    start: startLongPress,
+    move: moveLongPress,
+    cancel: clearLongPress,
+    handlers: longPressHandlers,
+  } = useLongPressReveal<HTMLDivElement>()
 
   const {theme} = useTheme()
   const isDarkTheme = isDark(theme)
@@ -551,23 +534,12 @@ function ProfilePreview(props: {
     }
     pointerStartRef.current = {x: e.clientX, y: e.clientY}
 
-    longPressedRef.current = false
-    // Mouse users get the actions on hover, so holding the button down shouldn't hijack their click.
-    if (e.pointerType !== 'mouse') {
-      clearLongPress()
-      longPressTimeoutRef.current = setTimeout(() => {
-        longPressTimeoutRef.current = null
-        longPressedRef.current = true
-        setShowActions(true)
-      }, LONG_PRESS_MS)
-    }
+    startLongPress(e)
   }
 
   // A press that turns into a scroll is not a hold.
   const handlePointerMove = (e: React.PointerEvent) => {
-    const start = pointerStartRef.current
-    if (!start || !longPressTimeoutRef.current) return
-    if (Math.abs(e.clientX - start.x) > 10 || Math.abs(e.clientY - start.y) > 10) clearLongPress()
+    moveLongPress(e)
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -605,20 +577,9 @@ function ProfilePreview(props: {
     pointerStartRef.current = null
   }
 
-  const handleClick = (e: React.MouseEvent) => {
-    // Browsers still fire a click after the hold, which would navigate away from the actions we
-    // just revealed.
-    if (longPressedRef.current) {
-      e.preventDefault()
-      longPressedRef.current = false
-    }
-  }
-
-  // The hold would otherwise also pop the browser's own link menu on top of the actions. Only
-  // suppressed for a touch hold — right-click ("open in new tab") stays intact.
-  const handleContextMenu = (e: React.MouseEvent) => {
-    if (longPressedRef.current) e.preventDefault()
-  }
+  // Browsers still fire a click after the hold, which would navigate away from the actions we just
+  // revealed; the hold would likewise pop the browser's own link menu on top of them.
+  const {onClick: handleClick, onContextMenu: handleContextMenu} = longPressHandlers
 
   // If this profile was just hidden, render a compact placeholder with Undo action.
   if (isHidden) {

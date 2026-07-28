@@ -70,17 +70,24 @@ export const AddPhotosWidget = (props: {
       />
       <Row className="flex-wrap gap-2">
         <div className="relative" data-testid="profile-upload-photo">
+          {/* Dashed and captioned, matching the empty states elsewhere. A flat grey rectangle with a
+              64px plus in it read as a failed image rather than an invitation — and this is the most
+              valuable field on the form. `text-gray-500` was also an off-palette literal that does not
+              flip with the theme. */}
           <label
             className={clsx(
-              'bg-canvas-50 hover:bg-ink-300 text-ink-0 dark:text-ink-500 hover:dark:text-ink-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center rounded-md transition-colors',
+              'border-canvas-300 text-ink-500 hover:border-primary-400 hover:text-primary-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition-colors',
               uploadingImages && 'opacity-50 cursor-not-allowed',
             )}
             htmlFor="photo-upload"
           >
             {uploadingImages ? (
-              <div className="mx-auto my-auto h-16 w-16 animate-spin rounded-full border-b-2 border-gray-500"></div>
+              <div className="border-primary-500 h-10 w-10 animate-spin rounded-full border-b-2" />
             ) : (
-              <PlusIcon className="mx-auto my-auto h-16 w-16 text-gray-500" />
+              <>
+                <PlusIcon className="h-8 w-8" />
+                <span className="text-sm">{t('profile.optional.add_photos', 'Add photos')}</span>
+              </>
             )}
           </label>
         </div>

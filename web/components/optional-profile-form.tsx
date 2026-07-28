@@ -444,16 +444,16 @@ export const OptionalProfileUserForm = (props: {
           nothing below it to scroll into — the document simply ends, and no amount of
           `scrollIntoView` can lift its toolbar off the bottom edge. This reserves scrollable room
           below the form so the toolbar can clear the viewport edge (and the floating submit button). */}
-      <Col className={'gap-8 max-w-3xl pb-32'}>
+      <Col className={'gap-8 max-w-3xl pb-32'} data-profile-form>
         {/* This sentence is the single most abandonment-reducing thing on the page — it tells you the
             eighteen sections below are all skippable. It was rendered in `.guidance`: 14px at 70%
             opacity, i.e. styled like fine print, which is exactly backwards. */}
-        <div className="flex items-start gap-3 rounded-xl bg-primary-100/60 ring-1 ring-primary-200 p-4">
+        <div className="border-primary-400 flex items-start gap-3 border-l-2 pl-4">
           <InformationCircleIcon
-            className="w-5 h-5 text-primary-700 shrink-0 mt-0.5"
+            className="w-5 h-5 text-primary-600 shrink-0 mt-0.5"
             strokeWidth={1.8}
           />
-          <p className="text-sm text-ink-700 leading-relaxed">
+          <p className="text-sm text-ink-600 leading-relaxed">
             {t(
               'profile.optional.subtitle',
               'Although all the fields below are optional, they will help people better understand you and connect with you.',
@@ -463,7 +463,10 @@ export const OptionalProfileUserForm = (props: {
         <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
         {/* Two ways in, one at a time: showing both a recorder and a text editor at once reads as
             two things to do rather than a choice between them. */}
-        <Row className="w-full gap-1 rounded-xl bg-canvas-100 p-1 ring-1 ring-canvas-200">
+        {/* Underlined tabs rather than a segmented pill. The selected segment was `bg-canvas-0` —
+            pure black in the dark ramp — so the active tab read as a hole punched in the page rather
+            than the raised one. An underline needs no fill to say which is selected. */}
+        <Row className="border-canvas-300 w-full gap-6 border-b">
           {(
             [
               ['voice', t('profile.autofill.by_voice', 'By voice')],
@@ -477,10 +480,10 @@ export const OptionalProfileUserForm = (props: {
               aria-pressed={autofillMode === mode}
               disabled={isExtracting}
               className={clsx(
-                'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed',
+                '-mb-px border-b-2 px-1 pb-3 text-sm transition-colors disabled:cursor-not-allowed',
                 autofillMode === mode
-                  ? 'bg-canvas-0 text-ink-900 shadow-sm'
-                  : 'text-ink-700 hover:text-ink-900',
+                  ? 'border-primary-500 text-ink-1000'
+                  : 'border-transparent text-ink-500 hover:text-ink-800',
               )}
             >
               {label}
@@ -608,13 +611,15 @@ export const OptionalProfileUserForm = (props: {
             )}
             {showAllGenders && (
               <>
-                <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+                <p className={clsx(labelClassName, 'mt-1')}>
+                  {t('profile.optional.details', 'Details')}
+                </p>
                 <Input
                   type="text"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setProfile('gender_details', e.target.value)
                   }
-                  className={'w-full sm:w-[700px]'}
+                  className={'w-full'}
                   value={(profile as any)['gender_details'] ?? undefined}
                   placeholder={t(
                     'profile.gender.details_placeholder',
@@ -658,7 +663,9 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx(labelClassName)}>{t('profile.optional.height', 'Height')}</label>
           <Row className={'gap-2'}>
             <Col>
-              <span>{t('profile.optional.feet', 'Feet')}</span>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.feet', 'Feet')}
+              </span>
               <Input
                 type="number"
                 data-testid="height-feet"
@@ -673,7 +680,9 @@ export const OptionalProfileUserForm = (props: {
               />
             </Col>
             <Col>
-              <span>{t('profile.optional.inches', 'Inches')}</span>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.inches', 'Inches')}
+              </span>
               <Input
                 type="number"
                 data-testid="height-inches"
@@ -693,7 +702,9 @@ export const OptionalProfileUserForm = (props: {
               {t('common.or', 'OR').toUpperCase()}
             </div>
             <Col>
-              <span>{t('profile.optional.centimeters', 'Centimeters')}</span>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.centimeters', 'Centimeters')}
+              </span>
               <Input
                 type="number"
                 data-testid="height-centimeters"
@@ -814,7 +825,9 @@ export const OptionalProfileUserForm = (props: {
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setProfile('headline', e.target.value)
             }
-            className={'w-full md:w-[700px] bg-canvas-50 border rounded-md p-2'}
+            className={
+              'w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
+            }
             value={profile['headline'] ?? undefined}
             maxLength={250}
           />
@@ -841,7 +854,7 @@ export const OptionalProfileUserForm = (props: {
                 .filter(Boolean)
               setProfile('keywords', keywords)
             }}
-            className={'w-full sm:w-[600px]'}
+            className={'w-full'}
             value={keywordsString}
             placeholder={t(
               'profile.optional.keywords_placeholder',
@@ -849,6 +862,26 @@ export const OptionalProfileUserForm = (props: {
             )}
           />
         </Col>
+
+        {/* Third, not last. Bio is the longest thing anyone writes and the third thing anyone reads on
+            the finished profile — burying it under fifty attribute fields meant most people met it
+            with the form already exhausted. It follows the hero fields it belongs with: photos,
+            headline, keywords. */}
+        <Category title={t('profile.basics.bio', 'Bio')} />
+        <label className={clsx('guidance')}>
+          {t(
+            'profile.optional.bio_description',
+            'Here you can write a long document about who you are and what you are looking for. It includes nice formatting like headers, bold, italic, lists, links, embedded images, and more.',
+          )}
+        </label>
+        <SignupBio
+          profile={profile}
+          onChange={(e: Editor) => {
+            debug('bio changed', e, profile.bio)
+            setProfile('bio', e.getJSON())
+            setProfile('bio_length', e.getText().length)
+          }}
+        />
 
         <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")} />
 
@@ -865,7 +898,7 @@ export const OptionalProfileUserForm = (props: {
           </label>
           <Row className={'gap-2'}>
             <Col>
-              <span>{t('common.min', 'Min')}</span>
+              <span className={clsx(labelClassName, 'mb-1')}>{t('common.min', 'Min')}</span>
               <Select
                 data-testid="pref-age-min"
                 value={profile['pref_age_min'] ?? ''}
@@ -885,7 +918,7 @@ export const OptionalProfileUserForm = (props: {
               </Select>
             </Col>
             <Col>
-              <span>{t('common.max', 'Max')}</span>
+              <span className={clsx(labelClassName, 'mb-1')}>{t('common.max', 'Max')}</span>
               <Select
                 data-testid="pref-age-max"
                 value={profile['pref_age_max'] ?? ''}
@@ -918,6 +951,84 @@ export const OptionalProfileUserForm = (props: {
             onChange={(selected) => {
               setProfile('pref_relation_styles', selected)
             }}
+          />
+        </Col>
+
+        <Category title={t('profile.optional.category.work', 'Work')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {profile['company']
+              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {
+                  company: profile['company'],
+                })
+              : t('profile.optional.job_title', 'Job title')}
+          </label>
+          <Input
+            data-testid="job-title"
+            type="text"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile('occupation_title', e.target.value)
+            }
+            className={'w-52'}
+            value={profile['occupation_title'] ?? undefined}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>{t('profile.optional.company', 'Company')}</label>
+          <Input
+            data-testid="company"
+            type="text"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile('company', e.target.value)
+            }
+            className={'w-52'}
+            value={profile['company'] ?? undefined}
+          />
+        </Col>
+
+        <AddOptionEntry
+          title={t('profile.optional.work', 'Work Area')}
+          choices={workChoices}
+          setChoices={setWorkChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'work'}
+        />
+
+        <Category title={t('profile.optional.category.education', 'Education')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.education_level', 'Highest completed education level')}
+          </label>
+          <Carousel className="max-w-full">
+            <ChoicesToggleGroup
+              currentChoice={profile['education_level']}
+              choicesMap={Object.fromEntries(
+                Object.entries(EDUCATION_CHOICES).map(([k, v]) => [
+                  t(`profile.education.${v}`, k),
+                  v,
+                ]) as any,
+              )}
+              setChoice={(c) => setProfile('education_level', c)}
+            />
+          </Carousel>
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.university', 'University')}
+          </label>
+          <Input
+            data-testid="university"
+            type="text"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile('university', e.target.value)
+            }
+            className={'w-52'}
+            value={profile['university'] ?? undefined}
           />
         </Col>
 
@@ -968,13 +1079,15 @@ export const OptionalProfileUserForm = (props: {
                 )}
                 {showAllOrientations && (
                   <>
-                    <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
+                    <p className={clsx(labelClassName, 'mt-1')}>
+                      {t('profile.optional.details', 'Details')}
+                    </p>
                     <Input
                       type="text"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setProfile('orientation_details', e.target.value)
                       }
-                      className={'w-full sm:w-[700px]'}
+                      className={'w-full'}
                       value={(profile as any)['orientation_details'] ?? undefined}
                       placeholder={t(
                         'profile.orientation.details_placeholder',
@@ -1040,104 +1153,6 @@ export const OptionalProfileUserForm = (props: {
           </>
         )}
 
-        <Category title={t('profile.optional.interests', 'Interests')} />
-        <AddOptionEntry
-          // title={t('profile.optional.interests', 'Interests')}
-          choices={interestChoices}
-          setChoices={setInterestChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'interests'}
-        />
-
-        <Category title={t('profile.optional.category.morality', 'Morality')} />
-        <AddOptionEntry
-          title={t('profile.optional.causes', 'Causes')}
-          choices={causeChoices}
-          setChoices={setCauseChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'causes'}
-        />
-
-        <Category title={t('profile.optional.category.education', 'Education')} />
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.education_level', 'Highest completed education level')}
-          </label>
-          <Carousel className="max-w-full">
-            <ChoicesToggleGroup
-              currentChoice={profile['education_level']}
-              choicesMap={Object.fromEntries(
-                Object.entries(EDUCATION_CHOICES).map(([k, v]) => [
-                  t(`profile.education.${v}`, k),
-                  v,
-                ]) as any,
-              )}
-              setChoice={(c) => setProfile('education_level', c)}
-            />
-          </Carousel>
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.university', 'University')}
-          </label>
-          <Input
-            data-testid="university"
-            type="text"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setProfile('university', e.target.value)
-            }
-            className={'w-52'}
-            value={profile['university'] ?? undefined}
-          />
-        </Col>
-
-        <Category title={t('profile.optional.category.work', 'Work')} />
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {profile['company']
-              ? t('profile.optional.job_title_at_company', 'Job title at {company}', {
-                  company: profile['company'],
-                })
-              : t('profile.optional.job_title', 'Job title')}
-          </label>
-          <Input
-            data-testid="job-title"
-            type="text"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setProfile('occupation_title', e.target.value)
-            }
-            className={'w-52'}
-            value={profile['occupation_title'] ?? undefined}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.company', 'Company')}</label>
-          <Input
-            data-testid="company"
-            type="text"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setProfile('company', e.target.value)
-            }
-            className={'w-52'}
-            value={profile['company'] ?? undefined}
-          />
-        </Col>
-
-        <AddOptionEntry
-          title={t('profile.optional.work', 'Work Area')}
-          choices={workChoices}
-          setChoices={setWorkChoices}
-          profile={profile}
-          setProfile={setProfile}
-          label={'work'}
-        />
-
         <Category title={t('profile.optional.political_beliefs', 'Political beliefs')} />
 
         <Col className={clsx(colClassName)}>
@@ -1150,14 +1165,14 @@ export const OptionalProfileUserForm = (props: {
             translationPrefix={'profile.political'}
             onChange={(selected) => setProfile('political_beliefs', selected)}
           />
-          <p>{t('profile.optional.details', 'Details')}</p>
+          <p className={clsx(labelClassName)}>{t('profile.optional.details', 'Details')}</p>
           <Input
             data-testid="political-belief-details"
             type="text"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('political_details', e.target.value)
             }
-            className={'w-full sm:w-[700px]'}
+            className={'w-full'}
             value={profile['political_details'] ?? undefined}
           />
         </Col>
@@ -1174,188 +1189,15 @@ export const OptionalProfileUserForm = (props: {
             translationPrefix={'profile.religion'}
             onChange={(selected) => setProfile('religion', selected)}
           />
-          <p>{t('profile.optional.details', 'Details')}</p>
+          <p className={clsx(labelClassName)}>{t('profile.optional.details', 'Details')}</p>
           <Input
             data-testid="religious-belief-details"
             type="text"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setProfile('religious_beliefs', e.target.value)
             }
-            className={'w-full sm:w-[700px]'}
+            className={'w-full'}
             value={profile['religious_beliefs'] ?? undefined}
-          />
-        </Col>
-
-        <Category title={t('profile.optional.category.psychology', 'Psychology')} />
-
-        {/* Sits with MBTI/Big Five rather than under Relationships: it describes how someone's mind
-            works, and it is just as relevant to friendship and collaboration as to dating. */}
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.neurotype', 'Neurotype')}
-          </label>
-          <MultiCheckbox
-            choices={
-              Object.fromEntries(
-                Object.entries(NEUROTYPE_CHOICES).filter(
-                  ([, v]) =>
-                    showAllNeurotypes ||
-                    DEFAULT_NEUROTYPES.includes(v as any) ||
-                    ((profile as any)['neurotype'] ?? []).includes(v),
-                ),
-              ) as any
-            }
-            selected={(profile as any)['neurotype'] ?? []}
-            translationPrefix={'profile.neurotype'}
-            onChange={(selected) => setProfile('neurotype' as any, selected)}
-          />
-          {!showAllNeurotypes && (
-            <button
-              type="button"
-              className="text-primary-700 mt-1 text-sm font-medium hover:underline"
-              onClick={() => setShowAllNeurotypes(true)}
-            >
-              {t('profile.neurotype.show_more', 'Show more options')}
-            </button>
-          )}
-          {showAllNeurotypes && (
-            <>
-              <p className="mt-1">{t('profile.optional.details', 'Details')}</p>
-              <Input
-                type="text"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setProfile('neurotype_details' as any, e.target.value)
-                }
-                className={'w-full sm:w-[700px]'}
-                value={(profile as any)['neurotype_details'] ?? undefined}
-                placeholder={t(
-                  'profile.neurotype.details_placeholder',
-                  'Anything helpful to know about how you think or communicate…',
-                )}
-              />
-            </>
-          )}
-        </Col>
-
-        <Col className={clsx(colClassName, 'max-w-[550px]')}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.mbti', 'MBTI Personality Type')}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile['mbti'] as any}
-            choicesMap={MBTI_CHOICES}
-            setChoice={(c) => setProfile('mbti', c)}
-            className="grid grid-cols-4 xs:grid-cols-8"
-          />
-        </Col>
-
-        {/* Big Five personality traits (0–100) */}
-        <Col className={clsx(colClassName)}>
-          <Row className="w-full items-center justify-between gap-3">
-            <label className={clsx(labelClassName)}>
-              {t('profile.big5', 'Big Five Personality Traits')}
-            </label>
-            {/* A slider cannot express "unset": drag one and there is no gesture that puts it back,
-                so before this the first accidental touch permanently committed a score. Clearing
-                writes `null` rather than `undefined` on purpose — the edit path
-                (`pages/profile.tsx`) strips undefined but persists null, so undefined would silently
-                leave the old value in the database. Signup strips both, which is also correct there:
-                an unset trait should not be sent at all. */}
-            {anyBig5Set && (
-              <button
-                type="button"
-                onClick={resetBig5}
-                className="text-sm font-medium text-primary-700 hover:underline shrink-0"
-              >
-                {t('profile.big5_reset', 'Reset')}
-              </button>
-            )}
-          </Row>
-          <p className="guidance custom-link">
-            {t(
-              'profile.big5_guidance',
-              'The Big Five personality trait model is a scientific model that groups variation in personality into five separate factors (',
-            )}
-            {/* CustomLink ships no colour of its own, so this inherited a 2.70:1 amber. */}
-            <CustomLink
-              href={'https://en.wikipedia.org/wiki/Big_Five_personality_traits'}
-              className="text-primary-700 font-medium hover:underline"
-            >
-              {t('profile.big5_wikipedia_link', 'Wikipedia article')}
-            </CustomLink>
-            {t(
-              'profile.big5_guidance_suffix',
-              '). You can take a free well-cited public-domain approximate test ',
-            )}
-            <CustomLink href={'https://emilywilloughby.com/research/bfas'}>
-              {t('profile.big5_test_link', 'here')}
-            </CustomLink>
-            {t('profile.big5_guidance_end', '.')}
-          </p>
-          <div className={clsx('space-y-4', 'w-full max-w-[550px]')}>
-            <Big5Slider
-              label={t('profile.big5_openness', 'Openness')}
-              value={profile.big5_openness ?? 50}
-              isSet={typeof profile.big5_openness === 'number'}
-              onChange={(v) => setProfile('big5_openness', v)}
-            />
-            <Big5Slider
-              label={t('profile.big5_conscientiousness', 'Conscientiousness')}
-              value={profile.big5_conscientiousness ?? 50}
-              isSet={typeof profile.big5_conscientiousness === 'number'}
-              onChange={(v) => setProfile('big5_conscientiousness', v)}
-            />
-            <Big5Slider
-              label={t('profile.big5_extraversion', 'Extraversion')}
-              value={profile.big5_extraversion ?? 50}
-              isSet={typeof profile.big5_extraversion === 'number'}
-              onChange={(v) => setProfile('big5_extraversion', v)}
-            />
-            <Big5Slider
-              label={t('profile.big5_agreeableness', 'Agreeableness')}
-              value={profile.big5_agreeableness ?? 50}
-              isSet={typeof profile.big5_agreeableness === 'number'}
-              onChange={(v) => setProfile('big5_agreeableness', v)}
-            />
-            <Big5Slider
-              label={t('profile.big5_neuroticism', 'Neuroticism')}
-              value={profile.big5_neuroticism ?? 50}
-              isSet={typeof profile.big5_neuroticism === 'number'}
-              onChange={(v) => setProfile('big5_neuroticism', v)}
-            />
-          </div>
-          <p className="text-sm text-ink-700">
-            {t(
-              'profile.big5_hint',
-              'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
-            )}
-          </p>
-        </Col>
-
-        <Category title={t('profile.optional.accessibility_notes', 'Accessibility')} />
-
-        {/* Free text on purpose, not a checkbox list of conditions: a taxonomy exists mainly to be
-            filtered on, and filtering people out by disability is what this field must not enable.
-            Free text leaves the framing and the depth of disclosure with the member. */}
-        <Col className={clsx(colClassName)}>
-          <label className={clsx('guidance')}>
-            {t(
-              'profile.optional.accessibility_notes_hint',
-              'Optional, and public like the rest of your profile. Anything practical that helps someone meet you well — access needs, energy levels, sensory preferences, quieter venues.',
-            )}
-          </label>
-          <Textarea
-            data-testid="accessibility_notes"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setProfile('accessibility_notes' as any, e.target.value)
-            }
-            className={'w-full md:w-[700px] bg-canvas-50 border rounded-md p-2'}
-            value={(profile as any)['accessibility_notes'] ?? undefined}
-            maxLength={500}
-            placeholder={t(
-              'profile.optional.accessibility_notes_placeholder',
-              'e.g. I use a wheelchair, so step-free venues work best. Happy to answer questions.',
-            )}
           />
         </Col>
 
@@ -1372,6 +1214,26 @@ export const OptionalProfileUserForm = (props: {
             onChange={(selected) => setProfile('diet', selected)}
           />
         </Col>
+
+        <Category title={t('profile.optional.category.morality', 'Morality')} />
+        <AddOptionEntry
+          title={t('profile.optional.causes', 'Causes')}
+          choices={causeChoices}
+          setChoices={setCauseChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'causes'}
+        />
+
+        <Category title={t('profile.optional.interests', 'Interests')} />
+        <AddOptionEntry
+          // title={t('profile.optional.interests', 'Interests')}
+          choices={interestChoices}
+          setChoices={setInterestChoices}
+          profile={profile}
+          setProfile={setProfile}
+          label={'interests'}
+        />
 
         <Category title={t('profile.optional.category.substances', 'Substances')} />
 
@@ -1500,6 +1362,154 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        <Category title={t('profile.optional.category.psychology', 'Psychology')} />
+
+        {/* Sits with MBTI/Big Five rather than under Relationships: it describes how someone's mind
+            works, and it is just as relevant to friendship and collaboration as to dating. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.neurotype', 'Neurotype')}
+          </label>
+          <MultiCheckbox
+            choices={
+              Object.fromEntries(
+                Object.entries(NEUROTYPE_CHOICES).filter(
+                  ([, v]) =>
+                    showAllNeurotypes ||
+                    DEFAULT_NEUROTYPES.includes(v as any) ||
+                    ((profile as any)['neurotype'] ?? []).includes(v),
+                ),
+              ) as any
+            }
+            selected={(profile as any)['neurotype'] ?? []}
+            translationPrefix={'profile.neurotype'}
+            onChange={(selected) => setProfile('neurotype' as any, selected)}
+          />
+          {!showAllNeurotypes && (
+            <button
+              type="button"
+              className="text-primary-700 mt-1 text-sm font-medium hover:underline"
+              onClick={() => setShowAllNeurotypes(true)}
+            >
+              {t('profile.neurotype.show_more', 'Show more options')}
+            </button>
+          )}
+          {showAllNeurotypes && (
+            <>
+              <p className={clsx(labelClassName, 'mt-1')}>
+                {t('profile.optional.details', 'Details')}
+              </p>
+              <Input
+                type="text"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setProfile('neurotype_details' as any, e.target.value)
+                }
+                className={'w-full'}
+                value={(profile as any)['neurotype_details'] ?? undefined}
+                placeholder={t(
+                  'profile.neurotype.details_placeholder',
+                  'Anything helpful to know about how you think or communicate…',
+                )}
+              />
+            </>
+          )}
+        </Col>
+
+        <Col className={clsx(colClassName, 'max-w-[550px]')}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.mbti', 'MBTI Personality Type')}
+          </label>
+          <ChoicesToggleGroup
+            currentChoice={profile['mbti'] as any}
+            choicesMap={MBTI_CHOICES}
+            setChoice={(c) => setProfile('mbti', c)}
+            className="grid grid-cols-4 xs:grid-cols-8"
+          />
+        </Col>
+
+        {/* Big Five personality traits (0–100) */}
+        <Col className={clsx(colClassName)}>
+          <Row className="w-full items-center justify-between gap-3">
+            <label className={clsx(labelClassName)}>
+              {t('profile.big5', 'Big Five Personality Traits')}
+            </label>
+            {/* A slider cannot express "unset": drag one and there is no gesture that puts it back,
+                so before this the first accidental touch permanently committed a score. Clearing
+                writes `null` rather than `undefined` on purpose — the edit path
+                (`pages/profile.tsx`) strips undefined but persists null, so undefined would silently
+                leave the old value in the database. Signup strips both, which is also correct there:
+                an unset trait should not be sent at all. */}
+            {anyBig5Set && (
+              <button
+                type="button"
+                onClick={resetBig5}
+                className="text-sm font-medium text-primary-700 hover:underline shrink-0"
+              >
+                {t('profile.big5_reset', 'Reset')}
+              </button>
+            )}
+          </Row>
+          <p className="guidance custom-link">
+            {t(
+              'profile.big5_guidance',
+              'The Big Five personality trait model is a scientific model that groups variation in personality into five separate factors (',
+            )}
+            {/* CustomLink ships no colour of its own, so this inherited a 2.70:1 amber. */}
+            <CustomLink
+              href={'https://en.wikipedia.org/wiki/Big_Five_personality_traits'}
+              className="text-primary-700 font-medium hover:underline"
+            >
+              {t('profile.big5_wikipedia_link', 'Wikipedia article')}
+            </CustomLink>
+            {t(
+              'profile.big5_guidance_suffix',
+              '). You can take a free well-cited public-domain approximate test ',
+            )}
+            <CustomLink href={'https://emilywilloughby.com/research/bfas'}>
+              {t('profile.big5_test_link', 'here')}
+            </CustomLink>
+            {t('profile.big5_guidance_end', '.')}
+          </p>
+          <div className={clsx('space-y-4', 'w-full max-w-[550px]')}>
+            <Big5Slider
+              label={t('profile.big5_openness', 'Openness')}
+              value={profile.big5_openness ?? 50}
+              isSet={typeof profile.big5_openness === 'number'}
+              onChange={(v) => setProfile('big5_openness', v)}
+            />
+            <Big5Slider
+              label={t('profile.big5_conscientiousness', 'Conscientiousness')}
+              value={profile.big5_conscientiousness ?? 50}
+              isSet={typeof profile.big5_conscientiousness === 'number'}
+              onChange={(v) => setProfile('big5_conscientiousness', v)}
+            />
+            <Big5Slider
+              label={t('profile.big5_extraversion', 'Extraversion')}
+              value={profile.big5_extraversion ?? 50}
+              isSet={typeof profile.big5_extraversion === 'number'}
+              onChange={(v) => setProfile('big5_extraversion', v)}
+            />
+            <Big5Slider
+              label={t('profile.big5_agreeableness', 'Agreeableness')}
+              value={profile.big5_agreeableness ?? 50}
+              isSet={typeof profile.big5_agreeableness === 'number'}
+              onChange={(v) => setProfile('big5_agreeableness', v)}
+            />
+            <Big5Slider
+              label={t('profile.big5_neuroticism', 'Neuroticism')}
+              value={profile.big5_neuroticism ?? 50}
+              isSet={typeof profile.big5_neuroticism === 'number'}
+              onChange={(v) => setProfile('big5_neuroticism', v)}
+            />
+          </div>
+          <p className="text-sm text-ink-700">
+            {t(
+              'profile.big5_hint',
+              'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
+            )}
+          </p>
+        </Col>
+
         <Category title={t('profile.optional.languages', 'Languages')} />
 
         <Col className={clsx(colClassName)}>
@@ -1508,7 +1518,7 @@ export const OptionalProfileUserForm = (props: {
           {/*</label>*/}
           <div className="grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="col-span-full max-h-60 overflow-y-auto w-full">
+              <div className="scrollbar-visible col-span-full max-h-60 overflow-y-auto w-full pr-2">
                 <MultiCheckbox
                   choices={LANGUAGE_CHOICES}
                   selected={profile.languages || []}
@@ -1539,25 +1549,38 @@ export const OptionalProfileUserForm = (props: {
         {/*  />*/}
         {/*</Col>*/}
 
+        <Category title={t('profile.optional.accessibility_notes', 'Accessibility')} />
+
+        {/* Free text on purpose, not a checkbox list of conditions: a taxonomy exists mainly to be
+            filtered on, and filtering people out by disability is what this field must not enable.
+            Free text leaves the framing and the depth of disclosure with the member. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.accessibility_notes_hint',
+              'Optional, and public like the rest of your profile. Anything practical that helps someone meet you well — access needs, energy levels, sensory preferences, quieter venues.',
+            )}
+          </label>
+          <Textarea
+            data-testid="accessibility_notes"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setProfile('accessibility_notes' as any, e.target.value)
+            }
+            className={
+              'w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
+            }
+            value={(profile as any)['accessibility_notes'] ?? undefined}
+            maxLength={500}
+            placeholder={t(
+              'profile.optional.accessibility_notes_placeholder',
+              'e.g. I use a wheelchair, so step-free venues work best. Happy to answer questions.',
+            )}
+          />
+        </Col>
+
         <Category title={t('profile.optional.socials', 'Socials')} />
 
         <SocialLinksSection profile={profile} setProfile={setProfile} />
-
-        <Category title={t('profile.basics.bio', 'Bio')} className={'mt-0'} />
-        <label className={clsx('guidance')}>
-          {t(
-            'profile.optional.bio_description',
-            'Here you can write a long document about who you are and what you are looking for. It includes nice formatting like headers, bold, italic, lists, links, embedded images, and more.',
-          )}
-        </label>
-        <SignupBio
-          profile={profile}
-          onChange={(e: Editor) => {
-            debug('bio changed', e, profile.bio)
-            setProfile('bio', e.getJSON())
-            setProfile('bio_length', e.getText().length)
-          }}
-        />
 
         <Row className={'justify-end'}>
           <Button
@@ -1598,6 +1621,7 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
         value={query}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         placeholder={t('profile.optional.search_city', 'Search city...')}
+        className={'w-full sm:w-[420px]'}
         onFocus={() => setFocused(true)}
         onBlur={(e) => {
           // Do not hide the dropdown if clicking inside the dropdown
@@ -1642,16 +1666,39 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
  * the header now closes the previous section as much as it opens its own. The negative margin is gone
  * — the parent `Col` already supplies `gap-8`, which is the spacing this was fighting.
  */
+function slugifySectionTitle(title: string) {
+  return (
+    'form-section-' +
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  )
+}
+
 function Category({title, className}: {title: string; className?: string}) {
   return (
-    // `mt-6` on top of the parent's `gap-8`, against `pt-5` below: the rule has to sit closer to the
-    // heading it introduces than to the section it closes, or it reads as a trailing underline for the
-    // previous block. Even spacing on both sides is the default mistake here.
-    <div className={clsx('w-full border-t border-canvas-200 mt-6 pt-5', className)}>
-      {/* `!mt-0`: the global h1–h6 rule puts a 24px margin on this, which silently doubled the space
-          below the rule and made the spacing symmetric again. It is also what the old `mb-[-8px]` on
-          this component was compensating for. */}
-      <h3 className="font-heading text-2xl font-bold tracking-tight text-ink-900 !mt-0">{title}</h3>
+    // Label above the rule, not below it — the same object as a section heading on the rendered
+    // profile, so the form is built in the visual language of the thing it produces. `mt-6` on top of
+    // the parent's `gap-8` keeps the heading closer to the section it opens than to the one it closes.
+    //
+    // `data-form-section` is what ProfileFormNav reads to build its index: the markup stays the source
+    // of truth for which sections exist and in what order. `scroll-mt-24` keeps a jumped-to heading
+    // clear of the sticky header rather than tucked under it.
+    <div
+      id={slugifySectionTitle(title)}
+      data-form-section={title}
+      className={clsx('w-full mt-6 scroll-mt-24', className)}
+    >
+      {/* `!mt-0` / `!mb-0`: the global h1–h6 rule sets Newsreader at weight 700 with a 24px margin, so
+          a heading element has to opt out of all three explicitly or it opts out of none. */}
+      <h3
+        className="font-dm-sans text-ink-400 !mt-0 !mb-3 font-normal uppercase !leading-none"
+        style={{fontSize: '10px', letterSpacing: '0.18em'}}
+      >
+        {title}
+      </h3>
+      <div className="border-canvas-300 border-t" />
     </div>
   )
 }

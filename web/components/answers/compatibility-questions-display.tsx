@@ -31,6 +31,7 @@ import {Linkify} from 'web/components/widgets/linkify'
 import {Pagination} from 'web/components/widgets/pagination'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
+import {useLongPressReveal} from 'web/hooks/use-long-press-reveal'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePinnedQuestionIds} from 'web/hooks/use-pinned-question-ids'
 import {useProfile} from 'web/hooks/use-profile'
@@ -387,6 +388,13 @@ export function CompatibilityAnswerBlock(props: {
     setNewAnswer(props.answer)
   }, [props.answer])
 
+  // Touch has no hover to uncover the pin with, so a press and hold on the prompt does it instead.
+  const {
+    containerRef: rowRef,
+    revealed: showPin,
+    handlers: longPressHandlers,
+  } = useLongPressReveal<HTMLDivElement>()
+
   const comparedProfile = isCurrentUser
     ? null
     : fromProfilePage
@@ -420,11 +428,16 @@ export function CompatibilityAnswerBlock(props: {
 
   return (
     <Col
+      ref={rowRef}
       data-testid="profile-compatibility-section"
+      {...longPressHandlers}
       className={clsx(
         // No card. A prompt is question → answer → alternatives, which is structurally the same object
         // as a Details row, so it gets the same treatment: a rule, not a box.
         'group border-canvas-200 flex-grow gap-2 whitespace-pre-line border-b py-6 leading-relaxed',
+        // Stops the hold from turning into a text selection / iOS callout — but only where there is
+        // no hover, so a pointer user can still select and copy the question and answer.
+        '[@media(hover:none)]:select-none [@media(hover:none)]:[-webkit-touch-callout:none]',
         className,
       )}
     >
@@ -459,12 +472,21 @@ export function CompatibilityAnswerBlock(props: {
             </div>
           )}
           {/* Pinning is a rare action that was occupying permanent space in every row. It appears on
-              hover where there is a pointer, and stays put where there is not — a touch device has no
-              hover state to reveal it with. Focus reveals it too, so it stays keyboard-reachable. */}
+              hover where there is a pointer and on a press and hold where there is not. Focus reveals
+              it too, so it stays keyboard-reachable. While hidden it is also unclickable on touch —
+              an invisible button there is just a trap next to the question. */}
           {!!currentUser && (
             <PinQuestionButton
               questionId={question.id}
-              className="opacity-0 transition-opacity focus-visible:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+              className={clsx(
+                'transition-opacity',
+                showPin
+                  ? 'opacity-100'
+                  : [
+                      'opacity-0 [@media(hover:none)]:pointer-events-none',
+                      'focus-visible:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100',
+                    ],
+              )}
             />
           )}
           {isCurrentUser && isAnswered && (

@@ -3,7 +3,8 @@ import {User} from 'common/user'
 import {useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
-import {ShareProfileButtons} from 'web/components/widgets/share-profile-button'
+import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
+import {useProfileShareUrl} from 'web/components/widgets/share-profile-button'
 import {useT} from 'web/lib/locale'
 
 import {ProfileCardViewer} from './profile-card-viewer'
@@ -70,8 +71,9 @@ export const ViewProfileCardButton = (props: {
   const {user, profile, width, height} = props
   const [open, setOpen] = useState<boolean>(false)
   const t = useT()
+  // Hooks run before the guard below, so the empty-username fallback is only ever a placeholder.
+  const shareUrl = useProfileShareUrl(user?.username ?? '')
   if (!user || !profile) return
-  const username = user.username
   return (
     <>
       <button
@@ -96,11 +98,21 @@ export const ViewProfileCardButton = (props: {
       <Modal open={open} setOpen={setOpen} size={'lg'} className={''}>
         <Col className="gap-4 bg-canvas-100/75 rounded-2xl justify-center">
           <ProfileCardViewer user={user} profile={profile} width={width} height={height} />
-          <ShareProfileButtons
-            username={username}
-            className={'justify-center gap-4 text-3xl pb-4'}
-            buttonClassName={'hover:bg-canvas-200'}
-          />
+          {/* One primary share action rather than the former X / LinkedIn / share trio: the OS share
+              sheet already covers every destination those two buttons hard-coded, so the row was three
+              controls competing to be the same thing. Same CTA styling as the /about closing block. */}
+          <div className="flex justify-center pb-4">
+            <ShareCTAButton
+              url={shareUrl}
+              shareTitle={t('share_profile.share.title', 'A profile worth seeing on Compass')}
+              shareText={t(
+                'share_profile.share.text',
+                'Thought you might want to see this profile on Compass — a free directory for finding your people, searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.',
+              )}
+              label={t('button.share.label', 'Share')}
+              copiedLabel={t('copy_link_button.link_copied', 'Link copied!')}
+            />
+          </div>
         </Col>
       </Modal>
     </>

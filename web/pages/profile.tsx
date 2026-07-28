@@ -12,6 +12,7 @@ import {BackButton} from 'web/components/back-button'
 import {Col} from 'web/components/layout/col'
 import {OptionalProfileUserForm} from 'web/components/optional-profile-form'
 import {PageBase} from 'web/components/page-base'
+import {ProfileFormNav, ProfileFormSectionBar} from 'web/components/profile-form-nav'
 import {RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
@@ -110,23 +111,31 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
         description={t('profile.seo.description', 'Your Profile')}
         url={`/profile`}
       />
-      <Col className="items-center">
+      <Col className="w-full">
         <BackButton className="ml-2 mb-2 self-start" />
-        <Col className={'w-full px-6 py-4'}>
-          <RequiredProfileUserForm
-            data={baseUser}
-            setData={setBaseUserState}
-            profileCreatedAlready
-          />
-          <div className={'h-4'} />
-          <OptionalProfileUserForm
-            profile={profile}
-            setProfile={setProfileState}
-            user={baseUser}
-            buttonLabel={t('profile.save', 'Save')}
-            onSubmit={submitForm}
-          />
-        </Col>
+        {/* The index sits in the left gutter from `xl` up, where there is room for it beside a form
+            capped at 3xl. Below that it is hidden rather than stacked: a list of eighteen links above
+            the first field would be a second thing to read before starting. */}
+        <div className="mx-auto flex w-full max-w-6xl gap-10 px-6 py-4">
+          <ProfileFormNav className="sticky top-8 hidden h-fit w-52 shrink-0 xl:flex" />
+          <Col className={'w-full min-w-0 max-w-3xl'}>
+            {/* Same index, one row instead of a column, wherever the rail does not fit. */}
+            <ProfileFormSectionBar className="xl:hidden" />
+            <RequiredProfileUserForm
+              data={baseUser}
+              setData={setBaseUserState}
+              profileCreatedAlready
+            />
+            <div className={'h-4'} />
+            <OptionalProfileUserForm
+              profile={profile}
+              setProfile={setProfileState}
+              user={baseUser}
+              buttonLabel={t('profile.save', 'Save')}
+              onSubmit={submitForm}
+            />
+          </Col>
+        </div>
       </Col>
     </PageBase>
   )

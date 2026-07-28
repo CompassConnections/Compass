@@ -94,8 +94,11 @@ export function ProfileInfo(props: {
 
   return (
     <>
+      {/* The bar sticks to the viewport top, which on native sits under the Android/iOS status bar.
+          Pull it up through the body's safe-area padding and add that inset back as padding, so the
+          bar's background fills the status-bar strip while its buttons stay clear of the native nav. */}
       <div
-        className="bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 backdrop-blur"
+        className="bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 -mt-[env(safe-area-inset-top)] pt-[calc(1rem+env(safe-area-inset-top))] backdrop-blur"
         style={{
           borderBottomWidth: '1px',
           gap: '10px',

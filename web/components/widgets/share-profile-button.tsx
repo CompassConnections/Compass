@@ -11,18 +11,25 @@ import {Row} from 'web/components/layout/row'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
+/**
+ * The link a share of `username`'s profile should carry: tagged with the sharer's `?referrer=` so the
+ * share gets credited to them, bare when the sharer is signed out or is the profile's own owner.
+ */
+export const useProfileShareUrl = (username: string) => {
+  const currentUser = useUser()
+  return currentUser && currentUser.username !== username
+    ? `https://${ENV_CONFIG.domain}/${username}?referrer=${currentUser.username}`
+    : `https://${ENV_CONFIG.domain}/${username}`
+}
+
 export const ShareProfileButton = (props: {
   username: string
   className?: string
   color?: ColorType
 }) => {
   const {username, className, color} = props
-  const currentUser = useUser()
   const t = useT()
-  const shareUrl =
-    currentUser && currentUser.username !== username
-      ? `https://${ENV_CONFIG.domain}/${username}?referrer=${currentUser.username}`
-      : `https://${ENV_CONFIG.domain}/${username}`
+  const shareUrl = useProfileShareUrl(username)
 
   return (
     <CopyLinkOrShareButton

@@ -161,8 +161,10 @@ export function VoiceAutofillSection(props: {
               fold on short viewports. Talking points stay visible while recording — they are the
               script. On mobile they stack, mic underneath. */}
           <Col className="gap-4 sm:flex-row sm:items-center">
-            <div className="flex-1 rounded-xl bg-canvas-50 ring-1 ring-canvas-200 p-4">
-              <p className="text-sm font-semibold text-ink-900">
+            {/* A keyline, not a ringed card. These are talking points beside the mic, not a panel of
+                their own — and the page has no other boxes left to be consistent with. */}
+            <div className="border-canvas-300 flex-1 border-l pl-4">
+              <p className="text-ink-800 text-sm">
                 {t('profile.voice.prompts.title', 'Talk freely, or use these as a starting point:')}
               </p>
               <ul className="mt-2 space-y-1 text-sm text-ink-700">

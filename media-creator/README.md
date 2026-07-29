@@ -112,14 +112,32 @@ canvas. Formats are defined in `src/theme.ts` (`FORMATS`) and registered in `src
 
 ### Profile scroll b-roll (`ProfileScrollStory`)
 
-A 6-second silent scroll of one profile, made to sit **under the closing sentences of a talking-head
+A 12-second silent scroll of one profile, made to sit **under the closing sentences of a talking-head
 clip** — not to stand on its own. No audio (the voice on the track is the audio), no captions, no logo
 animation. The profile URL is on screen from the first frame to the last, because most people meet a
 clip like this as a screenshot or a repost, with no link sticker attached.
 
-The motion is one steady scroll with a single hold on the "good news / bad news" paragraph, which is
-the passage such a voiceover is usually about. A little velocity-proportional blur covers the fast
-middle stretch; at 30fps a hard-edged scroll strobes.
+**Duration is the constant, not the speed:** the clip is cut to a fixed slot under a voice track, so a
+longer profile scrolls faster rather than running longer. Change `DURATION_SECONDS` if the voiceover it
+sits under is a different length.
+
+What is _not_ constant is the scroll rate. Time is spent in proportion to how long something takes to
+**read**, not to how many pixels it occupies — an even scroll gives a photograph the same seconds as an
+equal height of prose, and on a full-length profile that works out to over a dozen lines of body text
+per second. So the clip rests on three things and glides over the rest:
+
+1. the header — face, name, pull-quote
+2. the opening paragraphs of the bio, the passage that reads as a person rather than a form
+3. the Details table — the politics/religion/diet/cannabis rows that say "not a swiping app"
+
+Under a voice track this matters more than it would for a standalone video: uniform motion gives the eye
+nowhere to land, and a half-listening viewer takes away nothing. The glides between stops aren't filler —
+a bio streaming past too fast to read is still legibly _long_, which is the point being made.
+
+The `STOPS` table at the top of the scene is `[seconds, source-px y]` pairs, where y is the absolute
+y in `full.png` that sits at the top of the frame (`-1` means the page bottom). `interpolate` eases
+within each segment, so every move accelerates out of a stop and decelerates into the next. A different
+profile needs those y values re-measured against its own `full.png` — nothing else.
 
 ```bash
 node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
@@ -127,10 +145,9 @@ npm run render:scroll      # -> out/compass-profile-scroll-story.mp4  9:16 (1080
 ```
 
 `--out <dir>` is what keeps this from overwriting `public/profile/`, which the profile-tour video is
-built from. The scene reads three cards — header, details, bio — and stacks them in page order; the
-`SHOTS` table at the top of `src/scenes/ProfileScroll.tsx` carries their dimensions and the two
-offsets inside the bio card that the hold is aimed at, so a bio of a different length needs those
-numbers re-measured.
+built from. The scene draws the single `full.png` full-page shot rather than the per-card clips, so a
+profile of any length needs no re-measuring — only the `FULL` dimensions at the top of
+`src/scenes/ProfileScroll.tsx` updated to match the new PNG.
 
 > Long renders here can trip the 30s `delayRender` on `BrandFonts` (registered for the OG card, but
 > bundled into every composition). Hence `--timeout=120000` in the script.

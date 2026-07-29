@@ -47,7 +47,7 @@ export const RemotionRoot: React.FC = () => {
         width={FORMATS.post.width}
         height={FORMATS.post.height}
       />
-      {/* Six-second silent b-roll of one profile, to lay under the closing sentences of a
+      {/* Twelve-second silent b-roll of one whole profile, to lay under the closing sentences of a
           talking-head story. Story format only — it is never a standalone post.
             node scripts/capture-profile.mjs <profileUrl> --out profile-mhg1 && npm run render:scroll */}
       <Composition

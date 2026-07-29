@@ -1,87 +1,104 @@
 import React from 'react'
-import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion'
-import {FORMATS, colors, fonts} from '../theme'
+import {
+  AbsoluteFill,
+  Easing,
+  Img,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion'
+import {colors, fonts, FORMATS} from '../theme'
 
-// A six-second silent b-roll scroll of a single profile, made to sit *under* the
+// A twelve-second silent b-roll scroll of a single profile, made to sit *under* the
 // closing sentences of a talking-head clip rather than to stand on its own:
 //
 //   - no audio, no captions, no logo animation — the voice on the track is the audio
 //   - the profile URL is on screen from frame 0 to the last frame, because most
 //     people meet this clip as a screenshot or a repost, without a link sticker
-//   - a beat on the header, a readable pass down the details, then a slightly
-//     slower pass down the whole of the bio, ending on its last line
+//   - a pass over the whole page in page order, but not at a constant speed: it
+//     rests on three things a viewer can actually read and glides over the rest
 //
-// Artwork is real screenshots of the live page, captured by scripts/capture-profile.mjs:
+// Artwork is a real full-page screenshot of the live page, captured by
+// scripts/capture-profile.mjs:
 //   node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
-// Re-run that after any profile-UI change; update SHOTS below if a card's height moves.
+// Re-run that after any profile-UI change; update FULL and STOPS below if the page moves.
 
-const DIR = 'profile-mhg1'
-const PROFILE_URL = 'compassmeet.com/mhg1'
+const USERNAME = 'mhg1'
+const DIR = `profile-${USERNAME}`
+const PROFILE_URL = `compassmeet.com/${USERNAME}`
 
-// CSS-px dimensions reported by the capture script. The PNGs are 2× these numbers;
-// we scale by width, so only the ratio matters. Order is the order they are stacked.
-const SHOTS = [
-  {src: `${DIR}/01-header.png`, w: 844, h: 758},
-  {src: `${DIR}/02-details.png`, w: 844, h: 3102},
-  {src: `${DIR}/06-bio.png`, w: 844, h: 3424},
-] as const
+// Pixel dimensions of the full-page PNG as written by the capture script (it shoots
+// at DPR 2, so these are 2× the CSS numbers). We scale by width, so only the ratio
+// matters.
+const FULL = {src: `${DIR}/full.png`, w: 860, h: 8612}
 
-const GAP = 36 // page gutter between cards, in source px
-
-const BIO_INDEX = 2 // the card the second half of the clip reads through
-
-// A hair of the card's top edge left showing, so the bio reads as part of a page
-// rather than as a full-bleed slab of text.
-const BIO_HEADROOM = 40
+// The page's own top bar, cropped off the head of the shot: it is chrome, not profile,
+// and holding on it would spend the opening beat on nothing. In source-PNG px, so 100
+// here is 50 CSS px.
+const CROP_TOP = 200
+// Blank canvas below the sign-up button, cropped off the tail so the clip doesn't
+// spend its last beat resting on nothing.
+const CROP_BOTTOM = 8460
 
 // ─── Motion ─────────────────────────────────────────────────────────────────
-// Timing is expressed as scroll *speed*, not as a frame budget, so the clip stays
-// legible whatever the profile's length: a longer bio makes a longer video rather
-// than a faster, unreadable one. Duration falls out of the geometry below.
+// Twelve seconds flat, whatever the profile's length — this clip is cut to a fixed
+// slot under a voice track, so duration is the constant and scroll speed is what gives.
 //
-// The bio is the point of the clip, so it moves slowest. The details run a little
-// quicker — skimmable rather than readable, which is what that card is.
-const HOLD_FRAMES = 30 // 1.0s beat on his photo and name before anything moves
-const DETAILS_SPEED = 28 // px per frame
-const BIO_SPEED = 18.5 // px per frame
+// What does NOT give is an even speed. Time here is spent in proportion to how long
+// something takes to *read*, not to how many pixels it occupies: a constant scroll
+// spends as long on 800px of photograph as on 800px of prose, and at this page's
+// length that works out to ~14 lines of body text per second — nobody reads a word.
+//
+// So the clip rests on three things and glides over everything else. Under a voice
+// track this matters more than it would for a standalone video: uniform motion gives
+// the eye nowhere to land, and a viewer half-listening takes away nothing at all.
+// Three stops, three impressions. The glides in between are not filler — a bio
+// streaming past too fast to read is still legibly *long*, which is the point.
+//
+// Anchors are absolute source-PNG y, i.e. what sits at the top of the frame. Re-measure
+// them against a fresh full.png; everything else here is derived.
+const DURATION_SECONDS = 12
+const STOPS = [
+  // [seconds, source-px y]
+  // CROP_TOP, not 0: the anchor is an absolute source-px y, so opening at 0 would
+  // scroll back above the crop line and put the page's own Card/Share bar on screen.
+  [0.0, CROP_TOP], // the face, his name, the pull-quote's first line
+  [1.1, CROP_TOP],
+  [3.6, 2115], // "First, the good news / The bad news" — the passage that reads as a person
+  [4.9, 2115],
+  [8.5, 5340], // the rest of the bio streams past, arriving at Details
+  [9.6, 5340], // the key/value table: politics, religion, cannabis, psychedelics
+  [DURATION_SECONDS, -1], // -1 = the page bottom, resolved below
+] as const
 
 // ─── Geometry ───────────────────────────────────────────────────────────────
 // Derived at module scope because the composition's duration depends on it, and
-// that has to be known before the component renders. Canvas width is the story
-// format's, which is the only format this scene is registered for.
-const SCALE = FORMATS.story.width / SHOTS[0].w
-const TOPS: number[] = []
-let cursor = 0
-for (const shot of SHOTS) {
-  TOPS.push(cursor)
-  cursor += shot.h + GAP
-}
-const PAGE_HEIGHT = (cursor - GAP) * SCALE
+// that has to be known before the component renders. Canvas is the story format's,
+// which is the only format this scene is registered for.
+const SCALE = FORMATS.story.width / FULL.w
+const PAGE_HEIGHT = (CROP_BOTTOM - CROP_TOP) * SCALE
 
-// Where the details pass stops: the top of the bio card, just below the frame edge.
-const BIO_Y = -(TOPS[BIO_INDEX] * SCALE - BIO_HEADROOM)
-// Where it finishes: the bottom of the bio card resting on the bottom of the frame,
-// which on this page is also the end of the scroll.
+export const PROFILE_SCROLL_DURATION = DURATION_SECONDS * FORMATS.story.fps
+
+// Where the scroll finishes: the bottom of the page resting on the bottom of the frame.
 const END_Y = -(PAGE_HEIGHT - FORMATS.story.height)
 
-const DETAILS_END = HOLD_FRAMES + Math.round(Math.abs(BIO_Y) / DETAILS_SPEED)
-export const PROFILE_SCROLL_DURATION =
-  DETAILS_END + Math.round(Math.abs(END_Y - BIO_Y) / BIO_SPEED)
+const FRAMES = STOPS.map(([t]) => Math.round(t * FORMATS.story.fps))
+const OFFSETS = STOPS.map(([, y]) => (y < 0 ? END_Y : -((y - CROP_TOP) * SCALE)))
 
 export const ProfileScroll: React.FC = () => {
   const frame = useCurrentFrame()
   const {width} = useVideoConfig()
 
-  const y = interpolate(
-    frame,
-    [0, HOLD_FRAMES, DETAILS_END, PROFILE_SCROLL_DURATION],
-    [0, 0, BIO_Y, END_Y],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp',
-      easing: (t) => t, // per-segment linear; the segments themselves are the rhythm
-    },
-  )
+  // interpolate eases *within each segment*, which is what the dwells need: every move
+  // accelerates away from a stop and decelerates into the next one, so the clip reads as
+  // someone thumbing down a page rather than as a series of cuts.
+  const y = interpolate(frame, FRAMES, OFFSETS, {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.ease),
+  })
 
   return (
     <AbsoluteFill style={{backgroundColor: colors.canvas100, overflow: 'hidden'}}>
@@ -96,19 +113,16 @@ export const ProfileScroll: React.FC = () => {
           willChange: 'transform',
         }}
       >
-        {SHOTS.map((shot, i) => (
-          <Img
-            key={shot.src}
-            src={staticFile(shot.src)}
-            style={{
-              position: 'absolute',
-              top: TOPS[i] * SCALE,
-              left: 0,
-              width,
-              height: shot.h * SCALE,
-            }}
-          />
-        ))}
+        <Img
+          src={staticFile(FULL.src)}
+          style={{
+            position: 'absolute',
+            top: -CROP_TOP * SCALE,
+            left: 0,
+            width,
+            height: FULL.h * SCALE,
+          }}
+        />
       </div>
 
       <UrlBar url={PROFILE_URL} />

@@ -60,4 +60,5 @@ BEGIN;
 \i backend/supabase/migrations/20260709_add_last_checked_at_to_bookmarked_searches.sql
 \i backend/supabase/migrations/20260724_add_neurotype_to_profiles.sql
 \i backend/supabase/migrations/20260724_add_accessibility_notes_to_profiles.sql
+\i backend/supabase/migrations/20260728_add_ban_reason_to_users.sql
 COMMIT;

@@ -136,7 +136,7 @@ export function ChatMessageItem(props: {
                       size={'sm'}
                       content={chat.content}
                       key={chat.id}
-                      className={'!text-ink-1000'}
+                      className={isMe ? '!text-ink-900' : '!text-ink-700'}
                     />
                   </div>
                 </Row>

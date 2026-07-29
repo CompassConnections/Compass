@@ -1,33 +1,49 @@
 import clsx from 'clsx'
 import {useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
-import {Button} from 'web/components/buttons/button'
 import {Row} from 'web/components/layout/row'
+import {surface} from 'web/components/widgets/surface'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 export type VoteChoice = 'for' | 'abstain' | 'against'
 
+// Solid pill per choice — outline-only would read as three identical buttons distinguished only by a
+// label, which is easy to misclick. Filling them lets a voter recognize "for" vs "against" by color
+// alone, the same way the priority menu below relies on shape rather than reading text under time
+// pressure.
+// `teal` is remapped in tailwind.config.js to the "yes" ramp, which is greyscale, not a color — using
+// it here would render "for" as a grey button indistinguishable from a disabled one. `green` is the
+// real green ramp.
+const CHOICE_COLOR: Record<VoteChoice, string> = {
+  for: 'bg-green-500 hover:bg-green-600 text-white',
+  abstain: 'bg-yellow-400 hover:bg-yellow-500 text-ink-900',
+  against: 'bg-red-500 hover:bg-red-600 text-white',
+}
+
 function VoteButton(props: {
-  color: string
+  choice: VoteChoice
   count: number
   title: string
   disabled?: boolean
   onClick?: () => void
 }) {
-  const {color, count, title, disabled, onClick} = props
+  const {choice, count, title, disabled, onClick} = props
   return (
-    <Button
-      size="xs"
+    <button
+      type="button"
       disabled={disabled}
-      className={clsx('px-2 xs:px-4 py-2 rounded-lg', color)}
       onClick={onClick}
-      color={'gray-white'}
+      className={clsx(
+        'inline-flex items-center gap-1.5 rounded-full px-3 xs:px-4 py-2 text-sm font-medium',
+        'transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+        CHOICE_COLOR[choice],
+      )}
     >
-      <div className="font-semibold mx-1 xs:mx-2">{count}</div>
-      <div className="text-sm">{title}</div>
-    </Button>
+      <span className="font-semibold">{count}</span>
+      <span>{title}</span>
+    </button>
   )
 }
 
@@ -113,32 +129,24 @@ export function VoteButtons(props: {
   }
 
   return (
-    <Row className={clsx('gap-2 xs:gap-4 mt-2 flex-wrap', className)}>
+    <Row className={clsx('gap-2 xs:gap-3 flex-wrap', className)}>
       <div className="relative" ref={containerRef}>
         <VoteButton
-          color={clsx('bg-[rgb(22,163,74)] hover:bg-[rgb(21,128,61)] text-white hover:text-white')}
+          choice="for"
           count={counts.for}
           title={t('vote.for', 'For')}
           disabled={disabled}
           onClick={() => handleVote('for')}
         />
         {showPriority && (
-          <div
-            className={clsx(
-              'absolute z-10 mt-2 w-40 rounded-md border border-ink-200 bg-canvas-50 shadow-lg',
-              'dark:bg-ink-900',
-            )}
-          >
-            <div className="px-3 py-2 text-sm font-semibold bg-canvas-25">
+          <div className={clsx(surface, 'absolute z-10 mt-2 w-44 overflow-hidden p-1')}>
+            <div className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-ink-500">
               {t('vote.priority', 'Priority')}
             </div>
             {priorities.map((p) => (
               <button
                 key={p.value}
-                className={clsx(
-                  'w-full text-left px-3 py-2 text-sm hover:bg-ink-100 bg-canvas-50',
-                  'dark:hover:bg-canvas-25',
-                )}
+                className="w-full rounded-lg px-3 py-2 text-left text-sm text-ink-800 hover:bg-canvas-100"
                 onClick={async () => {
                   setShowPriority(false)
                   await sendVote('for', p.value)
@@ -151,14 +159,14 @@ export function VoteButtons(props: {
         )}
       </div>
       <VoteButton
-        color={clsx('bg-[rgb(217,119,6)] hover:bg-[rgb(180,83,9)] text-white hover:text-white')}
+        choice="abstain"
         count={counts.abstain}
         title={t('vote.abstain', 'Abstain')}
         disabled={disabled}
         onClick={() => handleVote('abstain')}
       />
       <VoteButton
-        color={clsx('bg-[rgb(220,38,38)] hover:bg-[rgb(185,28,28)] text-white hover:text-white')}
+        choice="against"
         count={counts.against}
         title={t('vote.against', 'Against')}
         disabled={disabled}

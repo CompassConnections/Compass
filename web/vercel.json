@@ -9,5 +9,5 @@
       "headers": [{"key": "Cache-Control", "value": "no-cache"}]
     }
   ],
-  "ignoreCommand": "git fetch --unshallow 2>/dev/null && echo $VERCEL_GIT_PREVIOUS_SHA $VERCEL_GIT_COMMIT_SHA && git diff $VERCEL_GIT_PREVIOUS_SHA $VERCEL_GIT_COMMIT_SHA --quiet -- ./ ../common/"
+  "ignoreCommand": "git fetch origin --unshallow || git fetch origin --deepen=200 || true; echo \"prev=$VERCEL_GIT_PREVIOUS_SHA cur=$VERCEL_GIT_COMMIT_SHA\"; if [ -z \"$VERCEL_GIT_PREVIOUS_SHA\" ] || ! git cat-file -e \"$VERCEL_GIT_PREVIOUS_SHA^{commit}\" 2>/dev/null; then echo 'no usable previous sha - building'; exit 1; fi; git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" \"$VERCEL_GIT_COMMIT_SHA\" -- ./ ../common/"
 }

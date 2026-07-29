@@ -1,3 +1,4 @@
+import {ArrowRightIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {QuestionWithStats} from 'common/api/types'
 import {debug} from 'common/logger'
@@ -151,8 +152,20 @@ function CompatibilityOnboardingScreen({onNext, onSkip}: {onNext: () => void; on
       </div>
 
       <Col className="gap-4">
-        <Button onClick={onNext} size="lg" className="w-full max-w-xs mx-auto">
+        {/* Same fix as the /onboarding screens: this was falling through to `Button`'s default
+            `gray-outline`, so the screen's only real action was a hairline pill quieter than the
+            "Do this later" link under it. `cta` matches the forward action in the signup flow. */}
+        <Button
+          onClick={onNext}
+          size="xl"
+          color="cta"
+          className="group w-full max-w-xs mx-auto gap-2 py-3.5 text-lg"
+        >
           {t('compatibility.onboarding.start', 'Start answering')}
+          <ArrowRightIcon
+            className="w-5 h-5 transition-transform group-hover:translate-x-1"
+            strokeWidth={2.5}
+          />
         </Button>
         <button onClick={onSkip} className="text-sm text-ink-500 hover:text-ink-700 underline">
           {t('compatibility.onboarding.later', 'Do this later')}

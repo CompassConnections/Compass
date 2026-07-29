@@ -1,4 +1,4 @@
-import {CheckIcon} from '@heroicons/react/24/outline'
+import {ArrowRightIcon, CheckIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Router from 'next/router'
 import {useEffect, useState} from 'react'
@@ -120,8 +120,22 @@ function OnboardingScreen({
       )}
 
       <Col className="gap-4 mt-9">
-        <Button onClick={onNext} size="lg" className="w-full">
+        {/* This is the one action the screen wants you to take, but it was rendering with `Button`'s
+            default `gray-outline` — a hairline pill with `text-ink-700` copy, quieter than the
+            underlined "Skip onboarding" sitting right below it. `cta` is the conversion style the
+            sign-up button already uses, so the flow's forward action looks the same throughout.
+            The arrow nudges right on hover to signal "next" rather than "submit". */}
+        <Button
+          onClick={onNext}
+          size="xl"
+          color="cta"
+          className="group w-full gap-2 py-3.5 text-lg"
+        >
           {continueText ?? t('common.continue', 'Continue')}
+          <ArrowRightIcon
+            className="w-5 h-5 transition-transform group-hover:translate-x-1"
+            strokeWidth={2.5}
+          />
         </Button>
         <div className="flex items-center justify-between gap-4">
           {/* Back moved down here beside Skip. It used to sit alone above the title, where it read as

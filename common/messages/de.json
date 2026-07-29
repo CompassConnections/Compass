@@ -1340,6 +1340,7 @@
   "profile_grid.hide_profile": "Nicht mehr in den Suchergebnissen anzeigen",
   "profile_grid.no_profiles": "Keine Profile gefunden.",
   "profile_grid.notification_cta": "Klicken Sie gern auf „Benachrichtigen“, und wir informieren Sie, sobald neue Nutzer Ihrer Suche entsprechen.",
+  "profile_grid.searched_for": "Deine Suche",
   "profile_grid.profile_hidden_short": "Du wirst {name} nicht mehr in deinen Suchergebnissen sehen.",
   "profile_grid.undo": "Rückgängig",
   "profile_grid.unhide_profile": "Wieder in den Suchergebnissen anzeigen",

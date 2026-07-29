@@ -2,6 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {INVERTED_DIET_CHOICES, INVERTED_LANGUAGE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
+import {formatFilters, locationType} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
@@ -40,6 +41,7 @@ import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {ColumnCountOptions, useColumnCount} from 'web/hooks/use-column-count'
 import {useLongPressReveal} from 'web/hooks/use-long-press-reveal'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {isDark, useTheme} from 'web/hooks/use-theme'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -268,6 +270,21 @@ export const ProfileGrid = (props: {
 
   const user = useUser()
   const t = useT()
+  const choicesIdsToLabels = useChoicesContext()
+  const {measurementSystem} = useMeasurementSystem()
+
+  // Same summary the Saved Searches modal shows, so the empty state spells out what was searched.
+  const searchSummary = useMemo(
+    () =>
+      formatFilters(
+        filters,
+        locationFilterProps?.location ? (locationFilterProps as unknown as locationType) : null,
+        choicesIdsToLabels,
+        measurementSystem,
+        t,
+      ) ?? [],
+    [filters, locationFilterProps, choicesIdsToLabels, measurementSystem, t],
+  )
 
   const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id)
 
@@ -326,12 +343,23 @@ export const ProfileGrid = (props: {
             <p className="text-lg font-medium text-ink-900">
               {t('profile_grid.no_profiles', 'No profiles found')}
             </p>
-            <p className="max-w-sm text-ink-500">
-              {t(
-                'profile_grid.notification_cta',
-                "We'll notify you as soon as someone new matches your search.",
-              )}
-            </p>
+            {searchSummary.length > 0 && (
+              <Col className="mt-1 max-w-md gap-2 items-center">
+                <div className="text-xs uppercase tracking-wide text-ink-400">
+                  {t('profile_grid.searched_for', 'Your search')}
+                </div>
+                <Row className="flex-wrap justify-center gap-1.5">
+                  {searchSummary.map((entry) => (
+                    <span
+                      key={entry}
+                      className="rounded-full border border-canvas-200 bg-canvas-0 px-2.5 py-1 text-xs text-ink-700"
+                    >
+                      {entry}
+                    </span>
+                  ))}
+                </Row>
+              </Col>
+            )}
             <GetNotifiedButton
               filters={filters}
               locationFilterProps={locationFilterProps}
@@ -341,6 +369,12 @@ export const ProfileGrid = (props: {
               size="lg"
               className="mt-1"
             />
+            <p className="max-w-sm text-ink-500">
+              {t(
+                'profile_grid.notification_cta',
+                "We'll notify you as soon as someone new matches your search.",
+              )}
+            </p>
           </Col>
         )
       )}

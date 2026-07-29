@@ -1339,6 +1339,7 @@
   "profile_grid.hide_profile": "Ne plus afficher dans les résultats de recherche",
   "profile_grid.no_profiles": "Aucun profil trouvé.",
   "profile_grid.notification_cta": "N'hésitez pas à cliquer sur \"Recevoir notifs\" et nous vous préviendrons quand de nouveaux utilisateurs correspondront à votre recherche !",
+  "profile_grid.searched_for": "Votre recherche",
   "profile_grid.profile_hidden_short": "Vous ne verrez plus {name} dans vos résultats de recherche.",
   "profile_grid.undo": "Annuler",
   "profile_grid.unhide_profile": "Afficher à nouveau dans les résultats de recherche",

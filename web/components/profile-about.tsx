@@ -62,10 +62,12 @@ export default function ProfileAbout(props: {
              with the substances below it: on this platform vegan and vegetarian are far more often an
              ethical position than a dietary habit, and they read as one.
           4. Substances — real compatibility filters, but they narrow rather than describe.
-          5. Languages — practical.
-          6. Identity nuance — gender and orientation only render when the member wrote something of
-             their own about them, so they are elaboration, not a demographic checkbox to scan.
-          7. Background, then height, then activity metadata. Height sits down here rather than in
+          5. Orientation — sits above languages because it is closer to who someone is looking for than
+             to the practical details below it.
+          6. Languages — practical.
+          7. Gender identity — only renders when the member wrote something of their own about it, so it
+             is elaboration, not a demographic checkbox to scan.
+          8. Background, then height, then activity metadata. Height sits down here rather than in
              the hero line: it is a number people filter on, not part of how anyone introduces
              themselves, and beside the name it was taking the weight of one. */}
       {!omitConnectionGoals && <SeekingAndRelationship profile={profile} />}
@@ -79,9 +81,9 @@ export default function ProfileAbout(props: {
       <Drinks profile={profile} />
       <Cannabis profile={profile} />
       <Psychedelics profile={profile} />
+      <Orientation profile={profile} />
       <LanguagesSection profile={profile} />
       <GenderIdentity profile={profile} />
-      <Orientation profile={profile} />
       <Ethnicity profile={profile} />
       <RaisedIn profile={profile} />
       <Height profile={profile} />

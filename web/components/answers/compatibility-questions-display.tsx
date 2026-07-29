@@ -13,7 +13,7 @@ import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
 import {keyBy, sortBy} from 'lodash'
 import {PinIcon} from 'lucide-react'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {AddCompatibilityQuestionButton} from 'web/components/answers/add-compatibility-question-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
@@ -61,6 +61,25 @@ import {PinQuestionButton} from './pin-question-button'
 
 const NUM_QUESTIONS_TO_SHOW = 8
 const NUM_PINNED_QUESTIONS_TO_SHOW = 4
+
+// Matches the `scroll-mt-24` on the paginated lists (6rem), which is what keeps a scrolled-to first prompt
+// clear of the sticky header.
+const LIST_SCROLL_OFFSET = 96
+
+/**
+ * Changing page is a request for new content to read, and reading starts at the first prompt — so put the
+ * top of that list back in view instead of leaving the reader parked at the tail of the new page. The
+ * paginator itself is not lost: it sits where they left it, one scroll down past the prompts they came for.
+ *
+ * Only scrolls when the top has actually drifted out of reach (short list, or the reader is already up
+ * there) — a jump that changes nothing reads as a glitch.
+ */
+const scrollListIntoView = (ref: RefObject<HTMLDivElement | null>) => {
+  const el = ref.current
+  if (!el) return
+  if (el.getBoundingClientRect().top >= LIST_SCROLL_OFFSET) return
+  el.scrollIntoView({block: 'start', behavior: 'smooth'})
+}
 
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
@@ -145,7 +164,16 @@ export function CompatibilityQuestionsDisplay(props: {
     )
   }, [answers, compatibilityQuestions, comparedAnswers, searchTerm, sort])
 
+  // Each list scrolls to its own top, not to a shared one — paging the pinned list must not yank the
+  // reader down to the main list, or vice versa.
+  const listRef = useRef<HTMLDivElement>(null)
+  const pinnedListRef = useRef<HTMLDivElement>(null)
+
   const [page, setPage] = useState(0)
+  const goToPage = (p: number) => {
+    setPage(p)
+    scrollListIntoView(listRef)
+  }
   const currentSlice = page * NUM_QUESTIONS_TO_SHOW
   const shownAnswers = sortedAndFilteredAnswers.slice(
     currentSlice,
@@ -160,6 +188,10 @@ export function CompatibilityQuestionsDisplay(props: {
   }, [answers, pinnedQuestionIds])
 
   const [pinnedPage, setPinnedPage] = useState(0)
+  const goToPinnedPage = (p: number) => {
+    setPinnedPage(p)
+    scrollListIntoView(pinnedListRef)
+  }
   const pinnedCurrentSlice = pinnedPage * NUM_PINNED_QUESTIONS_TO_SHOW
   const shownPinnedAnswers = pinnedAnswers.slice(
     pinnedCurrentSlice,
@@ -177,7 +209,7 @@ export function CompatibilityQuestionsDisplay(props: {
       {pinnedAnswers.length > 0 && (
         <Col className="gap-3">
           <PinIcon />
-          <Col>
+          <Col ref={pinnedListRef} className="scroll-mt-24">
             {shownPinnedAnswers.map((answer) => (
               <CompatibilityAnswerBlock
                 key={`pinned-${answer.question_id}`}
@@ -197,7 +229,7 @@ export function CompatibilityQuestionsDisplay(props: {
               page={pinnedPage}
               pageSize={NUM_PINNED_QUESTIONS_TO_SHOW}
               totalItems={pinnedAnswers.length}
-              setPage={setPinnedPage}
+              setPage={goToPinnedPage}
             />
           )}
           <div className="border-canvas-200 border-b" />
@@ -266,7 +298,7 @@ export function CompatibilityQuestionsDisplay(props: {
         </span>
       ) : (
         <>
-          <Col>
+          <Col ref={listRef} className="scroll-mt-24">
             {shownAnswers.map((answer) => {
               return (
                 <CompatibilityAnswerBlock
@@ -300,7 +332,7 @@ export function CompatibilityQuestionsDisplay(props: {
           page={page}
           pageSize={NUM_QUESTIONS_TO_SHOW}
           totalItems={sortedAndFilteredAnswers.length}
-          setPage={setPage}
+          setPage={goToPage}
         />
       )}
       {isCurrentUser && !fromProfilePage && (
@@ -450,7 +482,7 @@ export function CompatibilityAnswerBlock(props: {
           // `font-figtree` is the body face: globals.css sets every h1–h6 to Newsreader at weight 700,
           // so a heading element opts out of the serif explicitly or it does not opt out at all.
           className="font-figtree text-ink-600 min-w-0 font-normal"
-          style={{fontSize: '16px', lineHeight: '1.45'}}
+          style={{fontSize: '18px', lineHeight: '1.45'}}
           data-testid="profile-compatibility-question"
         >
           {question.question}

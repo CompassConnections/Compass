@@ -51,12 +51,16 @@ This project uses three complementary test types. Use the right level for the jo
 Quick commands
 
 ```bash
-# Jest (unit + integration)
-yarn test
+# Jest for one workspace, or one file within it — the default while working
+yarn --cwd=backend/api test path/to/file.unit.test.ts
 
 # Playwright (E2E)
 yarn test:e2e
 ```
+
+> **Don't run `yarn test` across the whole monorepo.** It is slow and almost all of it is unrelated to
+> any given change. Run only the workspaces a change actually touches, and prefer naming the specific
+> files. The full suite is CI's job.
 
 ### Where to put test files
 
@@ -150,12 +154,18 @@ standards ensures consistency, maintainability, and comprehensive test coverage.
 #### Running Tests
 
 ```bash
-# Run all tests
-yarn test
+# Run one workspace's tests
+yarn --cwd=web test
 
-# Run specific test file
-yarn test path/to/test.unit.test.ts
+# Run a specific test file (the workspace script already passes --config, so Jest args just append)
+yarn --cwd=backend/api test path/to/test.unit.test.ts
+
+# Run by test name
+yarn --cwd=web test -t "renders profile card"
 ```
+
+Scope runs to the workspaces your change touches — see the note under
+[Test types at a glance](#test-types-at-a-glance).
 
 #### Test Standards
 

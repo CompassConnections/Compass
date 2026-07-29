@@ -20,7 +20,7 @@ export function RelativeTimestamp(props: {
   const t = useT()
   return (
     <DateTimeTooltip
-      className="text-ink-400 ml-1 whitespace-nowrap"
+      className="text-ink-500 ml-1 whitespace-nowrap"
       time={time}
       placement={placement}
     >

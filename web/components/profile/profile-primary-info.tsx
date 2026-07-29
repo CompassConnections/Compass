@@ -41,19 +41,19 @@ export default function ProfilePrimaryInfo(props: {
 
   return (
     <div
-      className={clsx(
-        'text-ink-500 flex flex-wrap items-center',
-        eyebrow && 'font-dm-sans uppercase',
-      )}
+      className={clsx('text-ink-500 flex flex-wrap items-center', eyebrow && 'font-microcaps')}
       data-testid="profile-gender-location-height-inches"
-      style={eyebrow ? {fontSize: '11px', letterSpacing: '0.16em'} : {fontSize: '15px'}}
+      style={eyebrow ? undefined : {fontSize: '15px'}}
     >
       {parts.map((part, i) => (
         <React.Fragment key={i}>
+          {/* `ink-500/50` rather than `ink-400`: the latter is the one neutral grey in a warm ramp
+              (#A0A0A0 light, #646464 dark) and read as a different, colder family than the text it
+              separates. Half-strength ink-500 stays warm and still steps back. */}
           {i > 0 && (
             <span
               aria-hidden
-              className={clsx('text-ink-400 select-none', eyebrow ? 'px-2.5' : 'px-3.5')}
+              className={clsx('text-ink-500/50 select-none', eyebrow ? 'px-2.5' : 'px-3.5')}
             >
               /
             </span>

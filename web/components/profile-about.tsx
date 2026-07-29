@@ -216,30 +216,79 @@ export function ProfileConnectionGoals(props: {profile: Profile}) {
 
   const {seekingText, relationshipText, romanticStyles} = goals
 
-  const status = [relationshipText, ...(romanticStyles ?? [])].filter(Boolean).join(' · ')
+  const status = [relationshipText, ...(romanticStyles ?? [])].filter(Boolean).join(DOT_SEPARATOR)
 
   return (
     <div
       className="border-canvas-300 mt-2 flex max-w-2xl flex-wrap gap-x-16 gap-y-6 border-t pt-6"
       data-testid="profile-connection-goals"
     >
-      <HeroFact label={t('profile.looking_for', 'Looking for')}>{seekingText}</HeroFact>
-      {status && <HeroFact label={t('profile.status', 'Status')}>{status}</HeroFact>}
+      {/* Split back apart at render: `seekingText` is still consumed as one plain string by
+          `SeekingAndRelationship`, so the builders keep returning strings. */}
+      <HeroFact label={t('profile.looking_for', 'Looking for')}>
+        <DottedList items={seekingText.split(DOT_SEPARATOR)} />
+      </HeroFact>
+      {status && (
+        <HeroFact label={t('profile.status', 'Status')}>
+          <DottedList items={status.split(DOT_SEPARATOR)} />
+        </HeroFact>
+      )}
     </div>
   )
 }
 
+export const DOT_SEPARATOR = ' · '
+
+/**
+ * A run of fragments joined by middots, with the middots stepped back from the words.
+ *
+ * The separator is punctuation, not content, so it should not sit at the same weight as the text it
+ * divides — the eyebrow over the name has always dimmed its own slashes, and these now match.
+ *
+ * Carries no colour or size of its own: every caller has a different register (a hero fact, a tag
+ * run, a qualifier under a rail value) and the run should inherit whichever it lands in.
+ */
+function DottedList(props: {items: string[]}) {
+  const {items} = props
+  return (
+    <>
+      {items.map((item, i) => (
+        <React.Fragment key={i}>
+          {/* The spaces around the middot are load-bearing, not decoration: they are the only
+              soft-wrap opportunities in the run. Spacing the separator with padding instead leaves the
+              whole list one unbreakable inline chain, which overflows any container narrower than the
+              full run — the Interests block pushed the grid wide enough to scroll the page sideways. */}
+          {i > 0 && (
+            <>
+              {' '}
+              <span aria-hidden className="text-ink-500/50 select-none">
+                ·
+              </span>{' '}
+            </>
+          )}
+          {item}
+        </React.Fragment>
+      ))}
+    </>
+  )
+}
+
+/**
+ * Label over value, for the two facts that close the hero.
+ *
+ * Both lines stepped down from where they were. The label was `ink-400`, the one neutral grey in a
+ * warm ramp, at 10px — 2.15:1 in light and 3.0:1 in dark, under AA either way for text that small.
+ * The value was `ink-900`, which in dark (#F7F4EF) is within a percent of the name's white, so a
+ * third-tier fact was rendering at the brightest value on the page. Only the name keeps that now.
+ */
 function HeroFact(props: {label: string; children: ReactNode}) {
   const {label, children} = props
   return (
     <div className="min-w-0">
-      <div
-        className="text-ink-400 font-dm-sans uppercase"
-        style={{fontSize: '10px', letterSpacing: '0.18em', marginBottom: '7px'}}
-      >
+      <div className="text-ink-500 font-microcaps" style={{marginBottom: '7px'}}>
         {label}
       </div>
-      <div className="text-ink-900" style={{fontSize: '15.5px'}}>
+      <div className="text-ink-700 font-dm-sans" style={{fontSize: '15.5px'}}>
         {children}
       </div>
     </div>
@@ -361,7 +410,7 @@ export function getCompactSeekingText(profile: Profile, t: any) {
             ? t('profile.age_max_compact', 'under {max}', {max})
             : t('profile.age_range_compact', '{min}-{max}', {min, max})
 
-  return [connection, genderText, ageText].filter(Boolean).join(' · ')
+  return [connection, genderText, ageText].filter(Boolean).join(DOT_SEPARATOR)
 }
 
 function capitalizeFirst(s: string) {
@@ -610,16 +659,19 @@ function Cannabis(props: {profile: Profile}) {
   const prefText = formatPartnerPreferences(profile.cannabis_pref, t)
 
   return (
-    <AboutRow title={t('profile.cannabis', 'Cannabis')} text={parts}>
-      {showIntentions && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {profile.cannabis_intention!.map((i) => (
-            <Chip key={i}>
-              {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
-            </Chip>
-          ))}
-        </div>
-      )}
+    <AboutRow
+      title={t('profile.cannabis', 'Cannabis')}
+      text={parts}
+      details={
+        showIntentions && (
+          <DottedList
+            items={profile.cannabis_intention!.map((i) =>
+              t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i]),
+            )}
+          />
+        )
+      }
+    >
       {prefText && (
         <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
           {prefText}
@@ -645,16 +697,19 @@ function Psychedelics(props: {profile: Profile}) {
   const prefText = formatPartnerPreferences(profile.psychedelics_pref, t)
 
   return (
-    <AboutRow title={t('profile.psychedelics', 'Psychedelics')} text={parts}>
-      {showIntentions && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {profile.psychedelics_intention!.map((i) => (
-            <Chip key={i}>
-              {t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i])}
-            </Chip>
-          ))}
-        </div>
-      )}
+    <AboutRow
+      title={t('profile.psychedelics', 'Psychedelics')}
+      text={parts}
+      details={
+        showIntentions && (
+          <DottedList
+            items={profile.psychedelics_intention!.map((i) =>
+              t(`profile.substance_intention.${i}`, INVERTED_SUBSTANCE_INTENTION_CHOICES[i]),
+            )}
+          />
+        )
+      }
+    >
       {prefText && (
         <div className={'text-ink-500 mt-2'} style={{fontSize: '12.5px'}}>
           {prefText}
@@ -834,16 +889,7 @@ function TagList(props: {items: string[]}) {
   const {items} = props
   return (
     <div className="text-primary-900" style={{fontSize: '15px', lineHeight: '1.65'}}>
-      {items.map((item, i) => (
-        <React.Fragment key={item}>
-          {i > 0 && (
-            <span aria-hidden className="text-ink-400 select-none">
-              {' · '}
-            </span>
-          )}
-          {item}
-        </React.Fragment>
-      ))}
+      <DottedList items={items} />
     </div>
   )
 }

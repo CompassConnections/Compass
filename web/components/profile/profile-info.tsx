@@ -39,6 +39,8 @@ import {getStars} from 'web/lib/supabase/stars'
 
 import {BackButton} from '../back-button'
 
+const signupMessage = 'Sign up to connect with them for free'
+
 export function ProfileInfo(props: {
   profile: Profile
   user: User
@@ -209,12 +211,7 @@ export function ProfileInfo(props: {
               <div className="from-canvas-50 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
             </Col>
             <Row className="gap-2">
-              <SignUpButton
-                text={t(
-                  'profile.info.signup_to_see',
-                  'Sign up to see their full profile or connect with them',
-                )}
-              />
+              <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />
             </Row>
           </Col>
         )}
@@ -567,14 +564,7 @@ function ProfileContent(props: {
               )}
             </Col>
           )}
-          {!currentUser && (
-            <SignUpButton
-              text={t(
-                'profile.info.signup_to_see',
-                'Sign up to see their full profile or connect with them',
-              )}
-            />
-          )}
+          {!currentUser && <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />}
         </Col>
       </div>
       {/*<LikesDisplay*/}

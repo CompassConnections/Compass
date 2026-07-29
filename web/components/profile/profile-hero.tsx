@@ -121,7 +121,17 @@ export default function ProfileHero(props: {
           </Col>
 
           {/* The tagline is the one thing on this page written to be read as a voice, so it gets the
-              serif italic at display size instead of a quoted aside pinned behind a rule. */}
+              serif italic at display size instead of a quoted aside pinned behind a rule.
+              The colour has to be per-theme, because the primary ramp inverts and no single step is an
+              accent on both grounds. Dark gets `primary-700` (#DCAB71), warm gold that steps down from
+              the name's white — as `primary-900` it was #F3E4CE, within a few percent of the name, so
+              the amber did no work. Light gets no accent at all: any amber dark enough to clear AA on
+              the beige canvas is a mid-brown (700 is #855022), which reads as muddy rather than warm.
+              There the italic serif is already doing the differentiating, and `ink-700` just steps it
+              back from the black of the name.
+              The negative indent hangs the opening quote into the margin so the first word lines up
+              with the name's first letter; without it the glyph pushes the text right by ~0.35em and
+              the tagline looks accidentally indented. */}
           {profile.headline && (
             <div
               className="font-heading text-primary-900 max-w-[38ch] italic sm:max-w-[52ch]"
@@ -130,29 +140,29 @@ export default function ProfileHero(props: {
                 fontSize: 'clamp(1.15rem, 1.5vw, 1.5rem)',
                 lineHeight: '1.5',
                 fontWeight: 400,
+                textIndent: '-0.38em',
               }}
             >
               “{profile.headline}”
             </div>
           )}
 
-          {/* Outlined rather than filled, squared rather than pill: five filled pills read as five
-              buttons. These are labels, and the eye should land on them last, after the tagline.
-              Same tracking as the eyebrow they echo, and a border kept under the eyebrow's weight so
-              a row of them does not out-shout the line that opens the block. */}
+          {/* Unboxed: the rail already established that an outline means "you can click this" (see the
+              `Chip` docstring in profile-about), and nothing here is clickable. The border was also
+              carrying almost no weight — `canvas-300` sits at 1.30:1 on the light canvas and 1.75:1 on
+              the dark one, so the boxes read as ghosts rather than as objects, and no single value
+              fixes both: the ink ramp inverts, so any border strong enough to register in light is a
+              cage in dark.
+              Separation comes from the gap instead, opened to 24px because without a box the only
+              thing dividing two tags is space, and 8px against the 0.16em tracking inside them read as
+              one continuous run.
+              Colour is off the brand ramp on purpose: as `primary-800` these were near-cream in dark
+              mode, so the thing meant to be read last was as bright as the tagline, and amber stopped
+              meaning anything by being used twice. */}
           {profile.keywords && profile.keywords.length > 0 && (
-            <Row className="max-w-3xl flex-wrap gap-2" data-testid="profile-keywords">
+            <Row className="max-w-3xl flex-wrap gap-x-6 gap-y-2.5" data-testid="profile-keywords">
               {profile.keywords.map(capitalizePure).map((tag, i) => (
-                <span
-                  key={i}
-                  className="border-canvas-300/70 text-primary-800 font-dm-sans rounded-[3px] border uppercase"
-                  style={{
-                    padding: '6px 11px',
-                    fontSize: '11px',
-                    fontWeight: '400',
-                    letterSpacing: '0.16em',
-                  }}
-                >
+                <span key={i} className="text-ink-700 font-microcaps">
                   {tag.trim()}
                 </span>
               ))}

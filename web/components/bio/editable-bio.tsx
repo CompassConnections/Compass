@@ -149,7 +149,7 @@ export function SignupBio(props: {
   }, [profile?.bio, editor])
 
   return (
-    <Col className="relative w-full -mt-4">
+    <Col className="relative w-full -mt-4" data-testid="signup-bio">
       <BaseBio
         defaultValue={profile?.bio}
         onBlur={(editor) => {

@@ -177,6 +177,7 @@ export const Search = forwardRef<
                 'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
             )}
             onClick={handleOpenFilters}
+            data-testid="open-filters-button"
           >
             <IoFilterSharp className="h-4 w-4 sm:mr-1.5" />
             <span className="hidden sm:inline">{t('search.filters', 'Filters')}</span>

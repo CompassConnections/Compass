@@ -18,6 +18,7 @@ export class ProfilePage {
   private readonly disableProfileDropdownOption: Locator
   private readonly displayNameAndAgeSection: Locator
   private readonly genderLocationHightInInchesSection: Locator
+  private readonly heightSection: Locator
   private readonly headlineSection: Locator
   private readonly keywordsSection: Locator
   private readonly politicalAboutSection: Locator
@@ -80,6 +81,7 @@ export class ProfilePage {
     this.genderLocationHightInInchesSection = page.getByTestId(
       'profile-gender-location-height-inches',
     )
+    this.heightSection = page.getByTestId('profile-height')
     this.politicalAboutSection = page.getByTestId('profile-content')
     this.religiousAboutSection = page.getByTestId('profile-content')
     this.interestsAboutSection = page.getByTestId('profile-content')
@@ -341,10 +343,14 @@ export class ProfilePage {
       await expect(this.genderLocationHightInInchesSection).toContainText(location, {
         ignoreCase: true,
       })
-    if (heightFeet) await expect(this.genderLocationHightInInchesSection).toContainText(heightFeet)
-    if (heightInches)
-      await expect(this.genderLocationHightInInchesSection).toContainText(heightInches)
     if (age) await expect(this.genderLocationHightInInchesSection).toContainText(age)
+    // Height left this line and now lives in the Details rail (see ProfilePrimaryInfo), which
+    // renders it as a single formatted string — `5' 10"` in imperial — rather than two fields.
+    if (heightFeet || heightInches) {
+      await expect(this.heightSection).toBeVisible()
+      if (heightFeet) await expect(this.heightSection).toContainText(`${heightFeet}'`)
+      if (heightInches) await expect(this.heightSection).toContainText(`${heightInches}"`)
+    }
   }
 
   async verifyEthnicityOrigin(origin: string) {

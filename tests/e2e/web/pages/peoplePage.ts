@@ -14,6 +14,7 @@ import {
 } from 'common/choices'
 
 import {MinMaxNumbers} from '../utils/accountInformation'
+import {optionChip} from '../utils/optionChip'
 
 export type BackgroundFilter = {
   location?: string
@@ -94,6 +95,8 @@ export class PeoplePage {
   private readonly searchBox: Locator
   private readonly savedPeopleButton: Locator
   private readonly profileCount: Locator
+  private readonly filtersButton: Locator
+  private readonly filtersPanel: Locator
   private readonly resetFilters: Locator
   private readonly yourFiltersCheckbox: Locator
   private readonly incompleteProfilesCheckbox: Locator
@@ -130,6 +133,7 @@ export class PeoplePage {
   private readonly profileStar: Locator
   private readonly profileMessage: Locator
   private readonly messageInput: Locator
+  private readonly messageSubmit: Locator
   private readonly profileName: Locator
   private readonly profileAgeGender: Locator
   private readonly profileSeeking: Locator
@@ -141,32 +145,34 @@ export class PeoplePage {
     this.searchBox = page.getByRole('textbox', {name: 'Search anything...'})
     this.savedPeopleButton = page.getByRole('button', {name: 'Saved People'})
     this.profileCount = page.getByTestId('people-profile-count')
+    this.filtersButton = page.getByTestId('open-filters-button')
+    this.filtersPanel = page.getByTestId('people-filters')
     this.resetFilters = page.getByRole('button', {name: 'Reset filters'})
     this.yourFiltersCheckbox = page.getByText('Your filters', {exact: true})
     this.incompleteProfilesCheckbox = page.getByText('Include incomplete profiles', {exact: true})
-    this.connectionTypeDropdown = page.getByRole('button', {name: 'Any connection'})
-    this.locationDropdown = page.getByRole('button', {name: 'Living anywhere'})
-    this.ageRangeDropdown = page.getByRole('button', {name: 'Any age'})
-    this.genderDropdown = page.getByRole('button', {name: 'Any gender'})
+    this.connectionTypeDropdown = page.getByRole('button', {name: 'Connection'})
+    this.locationDropdown = page.getByRole('button', {name: 'Location'})
+    this.ageRangeDropdown = page.getByRole('button', {name: 'Age'})
+    this.genderDropdown = page.getByRole('button', {name: 'Gender'})
     this.backgroundDropdown = page.getByRole('button', {name: 'Background'})
-    this.backgroundLocation = page.getByRole('button', {name: 'Grew up anywhere'})
-    this.backgroundEducation = page.getByText('Any education', {exact: true})
-    this.backgroundWork = page.getByText('Any work', {exact: true})
+    this.backgroundLocation = page.getByRole('button', {name: 'Grew up'})
+    this.backgroundEducation = page.getByText('Education', {exact: true})
+    this.backgroundWork = page.getByText('Work', {exact: true})
     this.lifestyleDropdown = page.getByRole('button', {name: 'Lifestyle'})
-    this.lifestyleInterests = page.getByRole('button', {name: 'Any interests'})
-    this.lifestyleCauses = page.getByRole('button', {name: 'Any causes'})
-    this.lifestyleDiet = page.getByRole('button', {name: 'Any diet'})
-    this.lifestyleAlcohol = page.getByRole('button', {name: 'Any drinks'})
+    this.lifestyleInterests = page.getByRole('button', {name: 'Interests'})
+    this.lifestyleCauses = page.getByRole('button', {name: 'Causes'})
+    this.lifestyleDiet = page.getByRole('button', {name: 'Diet'})
+    this.lifestyleAlcohol = page.getByRole('button', {name: 'Drinks'})
     this.lifestyleSmoker = page.getByTestId('lifestyle-smoker')
-    this.lifestylePsychedelics = page.getByRole('button', {name: 'Any psychedelics'})
-    this.lifestyleCannabis = page.getByRole('button', {name: 'Any cannabis'})
-    this.lifestyleLanguages = page.getByRole('button', {name: 'Any language'})
+    this.lifestylePsychedelics = page.getByRole('button', {name: 'Psychedelics'})
+    this.lifestyleCannabis = page.getByRole('button', {name: 'Cannabis'})
+    this.lifestyleLanguages = page.getByRole('button', {name: 'Language'})
     this.valuesAndBeliefsDropdown = page.getByRole('button', {name: 'Values & Beliefs'})
-    this.valuesAndBeliefsPolitics = page.getByRole('button', {name: 'Any politics'})
-    this.valuesAndBeliefsReligion = page.getByRole('button', {name: 'Any religion'})
+    this.valuesAndBeliefsPolitics = page.getByRole('button', {name: 'Politics'})
+    this.valuesAndBeliefsReligion = page.getByRole('button', {name: 'Religion'})
     this.personalityDropdown = page.getByRole('button', {name: 'Personality'})
-    this.personalityMbti = page.getByRole('button', {name: 'Any MBTI'})
-    this.personalityBigFive = page.getByRole('button', {name: 'Any Big 5'})
+    this.personalityMbti = page.getByRole('button', {name: 'MBTI'})
+    this.personalityBigFive = page.getByRole('button', {name: 'Big 5'})
     this.advancedDropdown = page.getByRole('button', {name: 'Advanced'})
     this.advancedActive = page.getByTestId('advanced-active')
     this.advancedPhotos = page.getByText('Photos', {exact: true})
@@ -177,6 +183,7 @@ export class PeoplePage {
     this.profileStar = page.getByTestId('star-profile-button')
     this.profileMessage = page.getByTestId('message-profile-button')
     this.messageInput = page.locator('.tiptap')
+    this.messageSubmit = page.getByTestId('send-message-submit')
     this.profileName = page.getByTestId('people-profile-name')
     this.profileAgeGender = page.getByTestId('people-profile-age-gender')
     this.profileSeeking = page.getByTestId('people-profile-seeking')
@@ -249,11 +256,16 @@ export class PeoplePage {
     }
   }
 
+  /** See {@link optionChip} — filter options are chips, not clickable checkboxes. */
+  optionChip(label: string): Locator {
+    return optionChip(this.page, label)
+  }
+
   async selectOption(trigger: Locator, label: string) {
     await expect(trigger).toBeVisible()
     await trigger.click()
 
-    const option = this.page.getByLabel(label, {exact: true})
+    const option = this.optionChip(label)
     await expect(option).toBeVisible()
     await option.click()
   }
@@ -274,22 +286,44 @@ export class PeoplePage {
     await this.page.waitForTimeout(1000)
   }
 
+  /**
+   * The filters panel starts closed, and the "Filters" button toggles it — so clicking it
+   * unconditionally would close an already-open panel. Everything below that reaches into the panel
+   * calls this first; it is a no-op when the panel is already open.
+   */
+  async openFilters() {
+    if (await this.filtersPanel.isVisible()) return
+    await expect(this.filtersButton).toBeVisible()
+    await this.filtersButton.click()
+    await expect(this.filtersPanel).toBeVisible()
+  }
+
+  async closeFilters() {
+    if (!(await this.filtersPanel.isVisible())) return
+    await this.filtersButton.click()
+    await expect(this.filtersPanel).not.toBeVisible()
+  }
+
   async resetFilter() {
+    await this.openFilters()
     await expect(this.resetFilters).toBeVisible()
     await this.resetFilters.click()
   }
 
   async setYourFilters() {
+    await this.openFilters()
     await expect(this.yourFiltersCheckbox).toBeVisible()
     await this.yourFiltersCheckbox.click()
   }
 
   async setIncludeIncompleteProfiles() {
+    await this.openFilters()
     await expect(this.incompleteProfilesCheckbox).toBeVisible()
     await this.incompleteProfilesCheckbox.click()
   }
 
   async setConnectionTypeFilter(connectionType: ConnectionTypeTuple) {
+    await this.openFilters()
     await this.selectOption(this.connectionTypeDropdown, connectionType[0])
     // await expect(this.connectionTypeDropdown).toBeVisible()
     // await this.connectionTypeDropdown.click()
@@ -298,6 +332,7 @@ export class PeoplePage {
   }
 
   async setLocationFilter(location: string) {
+    await this.openFilters()
     await expect(this.locationDropdown).toBeVisible()
     await this.locationDropdown.click()
     await expect(this.page.getByRole('textbox', {name: 'Search city...'})).toBeVisible()
@@ -305,12 +340,14 @@ export class PeoplePage {
   }
 
   async setAgeRangeFilter(ageRange: MinMaxNumbers) {
+    await this.openFilters()
     await expect(this.ageRangeDropdown).toBeVisible()
     await this.ageRangeDropdown.click()
     await this.sliderHelper(ageRange)
   }
 
   async setGenderTypeFilter(genderType: InterestedInGenderTuple) {
+    await this.openFilters()
     await this.selectOption(this.genderDropdown, genderType[0])
     // await expect(this.genderDropdown).toBeVisible()
     // await this.genderDropdown.click()
@@ -319,6 +356,7 @@ export class PeoplePage {
   }
 
   async setBackgroundFilter(background: BackgroundFilter) {
+    await this.openFilters()
     await expect(this.backgroundDropdown).toBeVisible()
     await this.backgroundDropdown.click()
     if (background.location) {
@@ -330,19 +368,22 @@ export class PeoplePage {
     if (background.education) {
       await expect(this.backgroundEducation).toBeVisible()
       await this.backgroundEducation.click()
-      await expect(this.page.getByLabel(background.education[0], {exact: true})).toBeVisible()
-      await this.page.getByLabel(background.education[0], {exact: true}).click()
+      const education = this.optionChip(background.education[0])
+      await expect(education).toBeVisible()
+      await education.click()
     }
 
     if (background.work) {
       await expect(this.backgroundWork).toBeVisible()
       await this.backgroundWork.click()
-      await expect(this.page.getByLabel(background.work, {exact: true})).toBeVisible()
-      await this.page.getByLabel(background.work, {exact: true}).click()
+      const work = this.optionChip(background.work)
+      await expect(work).toBeVisible()
+      await work.click()
     }
   }
 
   async setLifestyleFilter(lifestyle: LifestyleFilter) {
+    await this.openFilters()
     await expect(this.lifestyleDropdown).toBeVisible()
     await this.lifestyleDropdown.click()
 
@@ -370,6 +411,7 @@ export class PeoplePage {
   }
 
   async setValuesAndBeliefsFilter(values: BeliefsFilter) {
+    await this.openFilters()
     await expect(this.valuesAndBeliefsDropdown).toBeVisible()
     await this.valuesAndBeliefsDropdown.click()
 
@@ -380,6 +422,7 @@ export class PeoplePage {
   }
 
   async setPersonalityFilter(personality: PersonalityFilter) {
+    await this.openFilters()
     await expect(this.personalityDropdown).toBeVisible()
     await this.personalityDropdown.click()
 
@@ -421,6 +464,7 @@ export class PeoplePage {
   }
 
   async setAdvancedFilter(advanced: AdvancedFilter) {
+    await this.openFilters()
     await expect(this.advancedDropdown).toBeVisible()
     await this.advancedDropdown.click()
 
@@ -436,6 +480,7 @@ export class PeoplePage {
   }
 
   async setDisplayFilter(display: DisplayFilter) {
+    await this.openFilters()
     await expect(this.displayDropdown).toBeVisible()
     await this.displayDropdown.click()
 
@@ -489,13 +534,21 @@ export class PeoplePage {
     for (let i = 0; i < profiles.length; i++) {
       const profileName = await profiles[i].getByTestId('people-profile-name').textContent()
       if (profileName?.toLowerCase() === displayName.toLowerCase()) {
-        await profiles[i].getByTestId('message-profile-button').click()
+        const card = profiles[i]
+        // Card actions are revealed on hover (opacity-0 until lg:group-hover), so hover the card
+        // before reaching for the button rather than relying on the click's implicit hover.
+        await card.hover()
+        await card.getByTestId('message-profile-button').click()
         await expect(this.messageInput).toBeVisible()
         await this.messageInput.fill(message)
-        await this.page.getByTestId('conversation-message-submit').click()
+        // The modal composer passes `hideSubmitButton` and renders its own send control in a pinned
+        // footer, so this is `send-message-submit` — not the `conversation-message-submit` used by
+        // the in-conversation composer on the messages page.
+        await this.messageSubmit.click()
         return
       }
     }
+    throw new Error(`No profile card found for ${displayName}`)
   }
 
   async verifySavedPerson(displayName: string | null | undefined) {

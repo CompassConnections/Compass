@@ -452,6 +452,7 @@ export const SendMessageButton = (props: {
 
               <button
                 type={'button'}
+                data-testid="send-message-submit"
                 onClick={sendMessage}
                 disabled={!isReady || submitting}
                 className={clsx(

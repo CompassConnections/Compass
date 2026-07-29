@@ -14,6 +14,8 @@ import {
   ReligionTuple,
 } from 'common/choices'
 
+import {clickCheckbox, optionChip, optionChipInput} from '../utils/optionChip'
+
 export type ChildrenExpectation =
   | ['Strongly against', 0]
   | ['Against', 1]
@@ -107,7 +109,9 @@ export class SignUpPage {
     this.usernameField = page.getByPlaceholder('Username')
     this.usernameError = page.getByTestId('signup-username')
     this.nextButton = page.getByRole('button', {name: 'Next', exact: true})
-    this.bioField = page.locator('h3:has-text("Bio") ~ * .tiptap')
+    // Anchored on the editor itself rather than on markup around the "Bio" heading: the heading now
+    // sits inside its own `data-form-section` wrapper, so it no longer has the editor as a sibling.
+    this.bioField = page.getByTestId('signup-bio').locator('.tiptap')
     this.locationField = page.getByPlaceholder('Search city...')
     this.headlineField = page.getByTestId('headline')
     this.keywordsField = page.getByTestId('keywords')
@@ -259,15 +263,15 @@ export class SignUpPage {
     if (!interestedIn) return
     if (interestedIn[0] === 'Men') {
       await expect(this.interestedInMenCheckbox).toBeVisible()
-      await this.interestedInMenCheckbox.click()
+      await clickCheckbox(this.interestedInMenCheckbox)
       await expect(this.interestedInMenCheckbox).toBeChecked()
     } else if (interestedIn[0] === 'Women') {
       await expect(this.interestedInWomenCheckbox).toBeVisible()
-      await this.interestedInWomenCheckbox.click()
+      await clickCheckbox(this.interestedInWomenCheckbox)
       await expect(this.interestedInWomenCheckbox).toBeChecked()
     } else {
       await expect(this.interestedInOtherCheckbox).toBeVisible()
-      await this.interestedInOtherCheckbox.click()
+      await clickCheckbox(this.interestedInOtherCheckbox)
       await expect(this.interestedInOtherCheckbox).toBeChecked()
     }
   }
@@ -284,23 +288,23 @@ export class SignUpPage {
 
   async setConnectionType(type: ConnectionTypeTuple | undefined) {
     if (!type) return
-    await expect(this.page.getByLabel(`${type[0]}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${type[0]}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${type[0]}`, {exact: true})).toBeChecked()
+    await expect(optionChip(this.page, type[0])).toBeVisible()
+    await optionChip(this.page, type[0]).click()
+    await expect(optionChipInput(this.page, type[0])).toBeChecked()
   }
 
   async setRelationshipStatus(status: RelationshipStatusTuple | undefined) {
     if (!status) return
-    await expect(this.page.getByLabel(`${status[0]}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${status[0]}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${status[0]}`, {exact: true})).toBeChecked()
+    await expect(optionChip(this.page, status[0])).toBeVisible()
+    await optionChip(this.page, status[0]).click()
+    await expect(optionChipInput(this.page, status[0])).toBeChecked()
   }
 
   async setRelationshipStyle(style: RelationshipStyleTuple | undefined) {
     if (!style) return
-    await expect(this.page.getByLabel(`${style[0]}`, {exact: true})).toBeVisible()
-    await this.page.getByLabel(`${style[0]}`, {exact: true}).click()
-    await expect(this.page.getByLabel(`${style[0]}`, {exact: true})).toBeChecked()
+    await expect(optionChip(this.page, style[0])).toBeVisible()
+    await optionChip(this.page, style[0]).click()
+    await expect(optionChipInput(this.page, style[0])).toBeChecked()
   }
 
   async fillCurrentNumberOfChildren(numberOfKids: string | undefined) {
@@ -344,7 +348,7 @@ export class SignUpPage {
 
       if (isExisting) {
         await expect(this.page.getByRole('checkbox', {name: `${interest[i]}`})).toBeVisible()
-        await this.page.getByRole('checkbox', {name: `${interest[i]}`}).click()
+        await clickCheckbox(this.page.getByRole('checkbox', {name: `${interest[i]}`}))
       } else {
         await expect(this.addInterestsField).toBeVisible()
         await expect(this.addInterestsButton).toBeVisible()
@@ -365,7 +369,7 @@ export class SignUpPage {
 
       if (isExisting) {
         await expect(this.page.getByRole('checkbox', {name: `${cause[i]}`})).toBeVisible()
-        await this.page.getByRole('checkbox', {name: `${cause[i]}`}).click()
+        await clickCheckbox(this.page.getByRole('checkbox', {name: `${cause[i]}`}))
       } else {
         await expect(this.addCausesField).toBeVisible()
         await expect(this.addCausesButton).toBeVisible()
@@ -406,12 +410,12 @@ export class SignUpPage {
     if (!workArea || workArea?.length === 0) return
 
     for (let i = 0; i < workArea.length; i++) {
-      const checkbox = this.page.getByLabel(`${workArea[i]}`, {exact: true})
-      const isExisting = (await checkbox.count()) > 0
+      const chip = optionChip(this.page, workArea[i])
+      const isExisting = (await chip.count()) > 0
 
       if (isExisting) {
-        await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
-        await this.page.getByLabel(`${workArea[i]}`, {exact: true}).click()
+        await expect(chip).toBeVisible()
+        await chip.click()
         await this.page.waitForTimeout(500)
       } else {
         await expect(this.addWorkAreaField).toBeVisible()
@@ -420,8 +424,8 @@ export class SignUpPage {
         await this.addWorkAreaButton.click()
         await this.page.waitForTimeout(500)
       }
-      await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeVisible()
-      await expect(this.page.getByLabel(`${workArea[i]}`, {exact: true})).toBeChecked()
+      await expect(optionChip(this.page, workArea[i])).toBeVisible()
+      await expect(optionChipInput(this.page, workArea[i])).toBeChecked()
     }
   }
 
@@ -431,7 +435,7 @@ export class SignUpPage {
   ) {
     if (politicalBeliefs) {
       await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`}).click()
+      await clickCheckbox(this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`}))
       await expect(this.page.getByRole('checkbox', {name: `${politicalBeliefs[0]}`})).toBeChecked()
     }
 
@@ -466,7 +470,7 @@ export class SignUpPage {
       ).toBeChecked()
     } else {
       await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`}).click()
+      await clickCheckbox(this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`}))
       await expect(this.page.getByRole('checkbox', {name: `${religiousBeliefs[0]}`})).toBeChecked()
     }
 
@@ -482,159 +486,71 @@ export class SignUpPage {
     await expect(this.page.getByText(`${personalityType}`, {exact: true})).toBeChecked()
   }
 
-  async setOpennessPersonalityValue(value: number | undefined) {
+  /**
+   * Walk a Big Five slider to `value` with arrow keys.
+   *
+   * The value label reads "–", not a number, until the trait has been touched — the form
+   * deliberately distinguishes "unset" from 50 (see `Big5Slider` in optional-profile-form.tsx).
+   * Clicking the thumb doesn't clear that: Radix only emits onValueChange when the value actually
+   * changes, and the thumb already sits at the default. So nudge it with a key press first,
+   * otherwise `parseInt('–')` is NaN, every comparison below is false, and the trait is silently
+   * left unset — which then shows up much later as a missing Big Five section on the profile.
+   */
+  private async setBig5Value(slider: Locator, valueLabel: Locator, value: number | undefined) {
     if (!value) return
-    await expect(this.opennessPersonalitySlider).toBeVisible()
-    await expect(this.opennessPersonalityValue).toBeVisible()
-    await this.opennessPersonalitySlider.click()
-    const originalValue = await this.opennessPersonalityValue.textContent()
-    if (!originalValue) return
-    if (parseInt(originalValue) < value) {
-      while (true) {
-        const actualValue = await this.opennessPersonalityValue.textContent()
-        if (!actualValue) break
+    await expect(slider).toBeVisible()
+    await expect(valueLabel).toBeVisible()
+    await slider.click()
 
-        if (parseInt(actualValue) >= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowRight')
-      }
-    }
-    if (parseInt(originalValue) > value) {
-      while (true) {
-        const actualValue = await this.opennessPersonalityValue.textContent()
-        if (!actualValue) break
+    const readValue = async () => parseInt((await valueLabel.textContent()) ?? '')
+    if (isNaN(await readValue())) await slider.press('ArrowRight')
 
-        if (parseInt(actualValue) <= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowLeft')
+    const MAX_ITERATIONS = 200
+    for (let i = 0; ; i++) {
+      if (i > MAX_ITERATIONS) {
+        throw new Error(`Big Five slider did not reach ${value} within ${MAX_ITERATIONS} presses`)
       }
+      const actual = await readValue()
+      if (isNaN(actual)) throw new Error('Big Five slider has no numeric value')
+      if (actual === value) return
+      await slider.press(actual < value ? 'ArrowRight' : 'ArrowLeft')
     }
+  }
+
+  async setOpennessPersonalityValue(value: number | undefined) {
+    await this.setBig5Value(this.opennessPersonalitySlider, this.opennessPersonalityValue, value)
   }
 
   async setConscientiousnessPersonalityValue(value: number | undefined) {
-    if (!value) return
-    await expect(this.conscientiousnessPersonalitySlider).toBeVisible()
-    await expect(this.conscientiousnessPersonalityValue).toBeVisible()
-    await this.conscientiousnessPersonalitySlider.click()
-    const originalValue = await this.conscientiousnessPersonalityValue.textContent()
-    if (!originalValue) return
-    if (parseInt(originalValue) < value) {
-      while (true) {
-        const actualValue = await this.conscientiousnessPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) >= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowRight')
-      }
-    }
-    if (parseInt(originalValue) > value) {
-      while (true) {
-        const actualValue = await this.conscientiousnessPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) <= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowLeft')
-      }
-    }
+    await this.setBig5Value(
+      this.conscientiousnessPersonalitySlider,
+      this.conscientiousnessPersonalityValue,
+      value,
+    )
   }
 
   async setExtraversionPersonalityValue(value: number | undefined) {
-    if (!value) return
-    await expect(this.extraversionPersonalitySlider).toBeVisible()
-    await expect(this.extraversionPersonalityValue).toBeVisible()
-    await this.extraversionPersonalitySlider.click()
-    const originalValue = await this.extraversionPersonalityValue.textContent()
-    if (!originalValue) return
-    if (parseInt(originalValue) < value) {
-      while (true) {
-        const actualValue = await this.extraversionPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) >= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowRight')
-      }
-    }
-    if (parseInt(originalValue) > value) {
-      while (true) {
-        const actualValue = await this.extraversionPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) <= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowLeft')
-      }
-    }
+    await this.setBig5Value(
+      this.extraversionPersonalitySlider,
+      this.extraversionPersonalityValue,
+      value,
+    )
   }
 
   async setAgreeablenessPersonalityValue(value: number | undefined) {
-    if (!value) return
-    await expect(this.agreeablenessPersonalitySlider).toBeVisible()
-    await expect(this.agreeablenessPersonalityValue).toBeVisible()
-    await this.agreeablenessPersonalitySlider.click()
-    const originalValue = await this.agreeablenessPersonalityValue.textContent()
-    if (!originalValue) return
-    if (parseInt(originalValue) < value) {
-      while (true) {
-        const actualValue = await this.agreeablenessPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) >= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowRight')
-      }
-    }
-    if (parseInt(originalValue) > value) {
-      while (true) {
-        const actualValue = await this.agreeablenessPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) <= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowLeft')
-      }
-    }
+    await this.setBig5Value(
+      this.agreeablenessPersonalitySlider,
+      this.agreeablenessPersonalityValue,
+      value,
+    )
   }
 
   async setNeuroticismPersonalityValue(value: number | undefined) {
-    if (!value) return
-    await expect(this.neuroticismPersonalitySlider).toBeVisible()
-    await expect(this.neuroticismPersonalityValue).toBeVisible()
-    await this.neuroticismPersonalitySlider.click()
-    const originalValue = await this.neuroticismPersonalityValue.textContent()
-    if (!originalValue) return
-    if (parseInt(originalValue) < value) {
-      while (true) {
-        const actualValue = await this.neuroticismPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) >= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowRight')
-      }
-    }
-    if (parseInt(originalValue) > value) {
-      while (true) {
-        const actualValue = await this.neuroticismPersonalityValue.textContent()
-        if (!actualValue) break
-
-        if (parseInt(actualValue) <= value) {
-          break
-        }
-        await this.page.keyboard.press('ArrowLeft')
-      }
-    }
+    await this.setBig5Value(
+      this.neuroticismPersonalitySlider,
+      this.neuroticismPersonalityValue,
+      value,
+    )
   }
 
   async setDietType(dietType: DietTuple | undefined) {
@@ -645,7 +561,7 @@ export class SignUpPage {
       await expect(this.page.locator('label').filter({hasText: 'Other'}).nth(4)).toBeChecked()
     } else {
       await expect(this.page.getByRole('checkbox', {name: `${dietType[0]}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${dietType[0]}`}).click()
+      await clickCheckbox(this.page.getByRole('checkbox', {name: `${dietType[0]}`}))
       await expect(this.page.getByRole('checkbox', {name: `${dietType[0]}`})).toBeChecked()
     }
   }
@@ -670,10 +586,10 @@ export class SignUpPage {
 
   async setLanguages(language: LanguageTuple[] | undefined) {
     if (!language || language.length === 0) return
-    await this.page.getByRole('checkbox', {name: `English`}).click()
+    await clickCheckbox(this.page.getByRole('checkbox', {name: `English`}))
     for (let i = 0; i < language.length; i++) {
       await expect(this.page.getByRole('checkbox', {name: `${language[i][0]}`})).toBeVisible()
-      await this.page.getByRole('checkbox', {name: `${language[i][0]}`}).click()
+      await clickCheckbox(this.page.getByRole('checkbox', {name: `${language[i][0]}`}))
       await expect(this.page.getByRole('checkbox', {name: `${language[i][0]}`})).toBeChecked()
     }
   }

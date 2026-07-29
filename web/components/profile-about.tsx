@@ -584,6 +584,7 @@ function Height(props: {profile: Profile}) {
 
   return (
     <AboutRow
+      testId="profile-height"
       title={t('profile.optional.height', 'Height')}
       text={formatProfileValue('height_in_inches', profile.height_in_inches, measurementSystem, t)}
     />

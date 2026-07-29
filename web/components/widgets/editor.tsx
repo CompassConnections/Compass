@@ -31,6 +31,7 @@ import {DisplayMention} from '../editor/user-mention/mention-extension'
 import {BasicVideo, DisplayVideo} from '../editor/video'
 import {Linkify} from './linkify'
 import {linkClass} from './site-link'
+import {VideoThumbnail} from './video-thumbnail'
 
 const DisplayLink = Link.extend({
   renderHTML({HTMLAttributes}) {
@@ -496,20 +497,12 @@ function recurse(
       )
     case 'video':
       return (
-        <button
+        <VideoThumbnail
           key={key}
-          type="button"
+          src={node.attrs?.src ?? ''}
           onClick={() => onMediaClick?.(node.attrs?.src ?? '')}
-          className="cursor-pointer"
-        >
-          <video
-            src={node.attrs?.src}
-            muted
-            playsInline
-            preload="metadata"
-            className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
-          />
-        </button>
+          className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+        />
       )
     case 'table':
       return (

@@ -2,9 +2,12 @@ import clsx from 'clsx'
 import Video from 'common/util/tiptap-video'
 import {useState} from 'react'
 import {MediaModal} from 'web/components/media-modal'
+import {firstFrameSrc, VideoThumbnail} from 'web/components/widgets/video-thumbnail'
 
 export const BasicVideo = Video.extend({
-  renderReact: (attrs: any) => <video src={attrs.src} controls preload="metadata" />,
+  // Controls are their own play affordance here; the fragment is what keeps the frame behind them
+  // from being blank.
+  renderReact: (attrs: any) => <video src={firstFrameSrc(attrs.src)} controls preload="metadata" />,
 })
 
 export const DisplayVideo = Video.extend({
@@ -21,16 +24,10 @@ function ExpandingVideo(props: {src: string; size?: 'md'}) {
 
   return (
     <>
-      <video
-        {...rest}
-        muted
-        playsInline
-        preload="metadata"
+      <VideoThumbnail
+        src={rest.src}
         onClick={() => setExpanded(true)}
-        className={clsx(
-          'cursor-pointer object-contain',
-          size === 'md' ? 'max-h-[400px]' : 'h-[128px]',
-        )}
+        className={clsx(size === 'md' ? 'max-h-[400px]' : 'h-[128px]')}
       />
       <MediaModal url={rest.src} open={expanded} setOpen={setExpanded} />
     </>

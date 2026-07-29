@@ -830,7 +830,7 @@ export const OptionalProfileUserForm = (props: {
               setProfile('headline', e.target.value)
             }
             className={
-              'w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
+              'text-ink-700 w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
             }
             value={profile['headline'] ?? undefined}
             maxLength={250}
@@ -1571,7 +1571,7 @@ export const OptionalProfileUserForm = (props: {
               setProfile('accessibility_notes' as any, e.target.value)
             }
             className={
-              'w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
+              'text-ink-700 w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
             }
             value={(profile as any)['accessibility_notes'] ?? undefined}
             maxLength={500}

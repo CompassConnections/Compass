@@ -72,7 +72,10 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
     'prose dark:prose-invert max-w-none leading-relaxed',
     'prose-a:text-primary-700 prose-a:no-underline',
-    size === 'sm' ? 'prose-sm' : 'text-md',
+    // `prose-base`, not `text-md` — the latter is not a Tailwind class and silently did nothing.
+    // Sizing here has to go through the typography size modifiers: the plugin sets font-size on this
+    // element itself, so a `text-*` class collides with it at equal specificity.
+    size === 'sm' ? 'prose-sm' : 'prose-base',
     size !== 'lg' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
     '[&>p]:prose-li:my-0',
     'prose-h1:text-ink-900 prose-h2:text-ink-900 prose-h3:text-ink-900',

@@ -102,7 +102,7 @@
 
     /* Ink - Text Colors */
     --color-ink-500: 140 128 112; /* Muted Warm Gray (#8C8070) */
-    --color-ink-600: 120 108 92;
+    --color-ink-600: 110 98 82; /* body text — 4.88:1 on canvas-100; 120/108/92 sat at 4.21:1, under AA */
     --color-ink-700: 100 88 72;
     --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
 

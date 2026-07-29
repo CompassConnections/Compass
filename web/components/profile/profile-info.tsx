@@ -281,7 +281,7 @@ export function ProfileInfoSkeleton() {
           </Col>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 items-start gap-x-12 gap-y-12 lg:grid-cols-[minmax(0,700px)_minmax(300px,1fr)]">
+        <div className="mt-10 grid grid-cols-1 items-start gap-x-12 gap-y-12 lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)]">
           <Col className="gap-3">
             <div className="bg-canvas-200 h-3 w-20 rounded mb-3" />
             {[...Array(6)].map((_, i) => (
@@ -479,7 +479,7 @@ function ProfileContent(props: {
           under everything ranked below it. Explicit row/column placement at `lg` keeps the desktop
           layout identical while mobile reads bio → details → prompts → endorsements → connect. */}
       <div
-        className="mt-10 flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,700px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14"
+        className="mt-10 flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14"
         data-testid="profile-content"
       >
         <Col className="min-w-0 gap-14 lg:col-start-1 lg:row-start-1">
@@ -542,23 +542,30 @@ function ProfileContent(props: {
             </Section>
           )}
 
-          {/* No wrapper surface: the section supplies its own — a dashed invitation while empty, the
-              endorsements themselves once there are any. A box around either just doubles the border. */}
+          {/* Endorsements and Connect are one movement — what others vouch for, then how to reach out —
+              so they sit closer to each other than to the sections above. Nested rather than given a
+              margin: the parent's gap would still apply between siblings and fight it.
+              Gated on `currentUser` because an empty wrapper is still a flex item, and would add a
+              phantom 56px gap for logged-out visitors. */}
           {currentUser && (
-            <Section title={t('profile.comments.section_title', 'Endorsements')}>
-              <ProfileCommentSection
-                onUser={user}
-                profile={profile}
-                currentUser={currentUser}
-                simpleView={!!fromProfilePage}
-              />
-            </Section>
-          )}
+            <Col className="min-w-0 gap-8">
+              {/* No wrapper surface: the section supplies its own — a dashed invitation while empty, the
+                  endorsements themselves once there are any. A box around either just doubles the border. */}
+              <Section title={t('profile.comments.section_title', 'Endorsements')}>
+                <ProfileCommentSection
+                  onUser={user}
+                  profile={profile}
+                  currentUser={currentUser}
+                  simpleView={!!fromProfilePage}
+                />
+              </Section>
 
-          {!isCurrentUser && currentUser && (
-            <Section id="connect" title={t('profile.connect.title', 'Connect')}>
-              <ConnectActions user={user} profile={profile} />
-            </Section>
+              {!isCurrentUser && (
+                <Section id="connect" title={t('profile.connect.title', 'Connect')}>
+                  <ConnectActions user={user} profile={profile} />
+                </Section>
+              )}
+            </Col>
           )}
           {!currentUser && (
             <SignUpButton

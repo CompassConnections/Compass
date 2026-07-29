@@ -19,7 +19,7 @@ export const Input = forwardRef(
     // caret is in a child input, so a plain `focus:` variant never fires and the field lights up
     // nowhere. The ring is the only thing telling you which of forty fields you are typing into.
     const rowClassName = clsx(
-      'bg-canvas-50 h-12 rounded-xl border border-canvas-300 px-4 shadow-sm items-center gap-2',
+      'text-ink-700 bg-canvas-50 h-12 rounded-xl border border-canvas-300 px-4 shadow-sm items-center gap-2',
       'transition-all duration-150 hover:border-primary-300',
       'focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-500/25',
       className,

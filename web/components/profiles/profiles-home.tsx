@@ -143,6 +143,8 @@ export function ProfilesHome() {
       limit: 20,
       compatibleWithUserId: user?.id,
       locale,
+      // The grid only renders a card per profile; the full row is several times the size.
+      projection: 'card',
       ...filters,
     })
     if (!!profiles?.length && isEqual(getProfilesArgs, args)) {
@@ -213,6 +215,7 @@ export function ProfilesHome() {
           compatibleWithUserId: user?.id,
           after: lastProfile?.id.toString(),
           locale,
+          projection: 'card',
           ...filters,
         }) as any,
       )

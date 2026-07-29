@@ -21,6 +21,10 @@ export function convertRow(row: ProfileAndUserRow | undefined): Profile | null {
   }
   delete profile.bio_text
   delete profile.bio_tsv
+  // Already folded into `user` above, and not part of the `Profile` type — sending them twice is
+  // just egress.
+  delete profile.name
+  delete profile.username
   return profile as Profile
 }
 

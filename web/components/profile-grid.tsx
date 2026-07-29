@@ -537,10 +537,12 @@ function ProfilePreview(props: {
   const headline = showHeadline !== false ? profile.headline?.trim() : undefined
   const bioText = useMemo(() => {
     if (showBio === false) return ''
+    // The `card` projection sends a pre-truncated snippet instead of the rich-text document.
+    if (profile.bio_snippet !== undefined) return profile.bio_snippet
     return parseJsonContentToText(profile.bio as JSONContent)
       .replace(/\s+/g, ' ')
       .trim()
-  }, [profile.bio, showBio])
+  }, [profile.bio, profile.bio_snippet, showBio])
 
   // Keep the total amount of text roughly constant per card: the longer the headline, the fewer
   // bio lines we show. A card with no headline gives the whole budget to the bio, and vice versa.

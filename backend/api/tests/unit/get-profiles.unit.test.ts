@@ -32,6 +32,7 @@ describe('getProfiles', () => {
       const props = {
         limit: 2,
         orderBy: 'last_online_time' as const,
+        projection: 'full' as const,
       }
       const mockReq = {} as any
 
@@ -56,6 +57,7 @@ describe('getProfiles', () => {
       const props = {
         limit: 2,
         orderBy: 'last_online_time' as const,
+        projection: 'full' as const,
       }
       const mockReq = {} as any
       const results: any = await profilesModule.getProfiles(props, mockReq, mockReq)
@@ -317,6 +319,77 @@ describe('loadProfiles', () => {
       }
 
       expect(profilesModule.loadProfiles(props)).rejects.toThrowError('Incompatible with user ID')
+    })
+  })
+
+  describe('when using the card projection', () => {
+    const bio = {
+      type: 'doc',
+      content: [{type: 'paragraph', content: [{type: 'text', text: 'Hello there'}]}],
+    }
+
+    it('selects only the columns the card renders', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
+
+      await profilesModule.loadProfiles({projection: 'card'})
+
+      const [query] = mockPg.map.mock.calls[0]
+
+      expect(query).toContain('profiles.headline')
+      expect(query).toContain('profiles.pinned_url')
+      // Heavy fields the card never reads.
+      expect(query).not.toContain('profiles.photo_urls')
+      expect(query).not.toContain('profiles.image_descriptions')
+      expect(query).not.toContain('profiles.links')
+    })
+
+    it('still filters out sparse profiles without that join', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
+
+      await profilesModule.loadProfiles({projection: 'card'})
+
+      const [query] = mockPg.map.mock.calls[0]
+
+      // The sparse-profile filter must not depend on the output joins.
+      expect(query).not.toContain('array_length(profile_work.work, 1)')
+      expect(query).toContain('FROM profile_work')
+      expect(query).toContain('bio_length >= 100')
+    })
+
+    it('keeps the work join for the full projection', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
+
+      await profilesModule.loadProfiles({projection: 'full'})
+
+      const [query] = mockPg.map.mock.calls[0]
+
+      expect(query).toContain('AS work')
+    })
+
+    it('replaces the rich-text bio with a plain-text snippet', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([{bio} as any])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(1)
+
+      const {profiles} = await profilesModule.loadProfiles({projection: 'card'})
+
+      expect(profiles[0].bio_snippet).toEqual('Hello there')
+      expect(profiles[0]).not.toHaveProperty('bio')
+    })
+
+    it('truncates a long bio', async () => {
+      const longBio = {
+        type: 'doc',
+        content: [{type: 'paragraph', content: [{type: 'text', text: 'a'.repeat(1000)}]}],
+      }
+      ;(mockPg.map as jest.Mock).mockResolvedValue([{bio: longBio} as any])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(1)
+
+      const {profiles} = await profilesModule.loadProfiles({projection: 'card'})
+
+      expect(profiles[0].bio_snippet).toEqual(`${'a'.repeat(600)}…`)
     })
   })
 

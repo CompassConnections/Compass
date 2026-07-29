@@ -810,6 +810,10 @@ export const API = (_apiTypeCheck = {
           .enum(['last_online_time', 'created_time', 'compatibility_score'])
           .optional()
           .default('last_online_time'),
+        // `card` trims the response to the fields the profile grid renders, and replaces the
+        // rich-text `bio` with a truncated `bio_snippet`. Defaults to `full` so existing API
+        // consumers keep getting the complete row.
+        projection: z.enum(['card', 'full']).optional().default('full'),
       })
       .strict(),
     returns: {} as {

@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node'
+import {type JSONContent} from '@tiptap/core'
 import {type APIHandler} from 'api/helpers/endpoint'
 import {
   DIET_CHOICES,
@@ -16,6 +17,7 @@ import {
   ROMANTIC_CHOICES,
 } from 'common/choices'
 import {OptionTableKey} from 'common/profiles/constants'
+import {parseJsonContentToText} from 'common/util/parse'
 import {compact} from 'lodash'
 import {log} from 'shared/monitoring/log'
 import {convertRow} from 'shared/profiles/supabase'
@@ -110,6 +112,8 @@ export type profileQueryType = {
   skipCount?: boolean | undefined
   last_active?: string | undefined
   locale?: string | undefined
+  /** Which columns to return — see {@link ProfileProjection}. Defaults to `full`. */
+  projection?: ProfileProjection | undefined
 } & {
   [K in OptionTableKey]?: string[] | undefined
 }
@@ -159,7 +163,69 @@ const arrayChoiceFields = [
   {field: 'ethnicity', choices: RACE_CHOICES},
 ]
 
-const EXCLUDED_PROFILE_COLS = new Set(['search_text', 'search_tsv'])
+// Search-only columns. `bio_text`/`bio_tsv` were already stripped from the response by `convertRow`,
+// but they were still being read out of Postgres on every query — `bio_tsv` is a tsvector roughly the
+// size of the bio itself, so 20 of them per page is real DB→API transfer for bytes nobody reads.
+const EXCLUDED_PROFILE_COLS = new Set(['search_text', 'search_tsv', 'bio_text', 'bio_tsv'])
+
+/**
+ * Which profile columns to return.
+ *
+ * `full` is every column (minus {@link EXCLUDED_PROFILE_COLS}) and stays the default, since callers
+ * hand the row to code that expects a complete `Profile`. `card` returns only what the profile grid
+ * actually renders — the row is ~80 columns wide and the card reads about a quarter of them, so the
+ * rest is pure egress. See {@link PROFILE_CARD_COLS}.
+ */
+export type ProfileProjection = 'card' | 'full'
+
+/**
+ * The profile columns the grid card in `web/components/profile-grid.tsx` reads, directly or through
+ * `ProfileAvatar` / `ProfileLocation` / `ProfileDetailRail` / `SendMessageButton`. Keep in sync with
+ * that component. `interests` / `causes` / `work` are not here — they come from their own joins.
+ *
+ * `bio` is selected but never sent: it is replaced by {@link toBioSnippet} before the response.
+ */
+const PROFILE_CARD_COLS = [
+  'id',
+  'user_id',
+  'created_time',
+  'age',
+  'gender',
+  'headline',
+  'bio',
+  'bio_length',
+  'keywords',
+  'pinned_url',
+  'city',
+  'country',
+  'region_code',
+  'occupation_title',
+  'diet',
+  'drinks_per_month',
+  'is_smoker',
+  'languages',
+  'mbti',
+  'pref_relation_styles',
+]
+
+/**
+ * A card shows at most 6 lines of headline + bio, and the widest card fits ~78 characters to a line.
+ * 600 leaves room to spare while cutting a long bio down to a fraction of its size.
+ */
+const BIO_SNIPPET_CHARS = 600
+
+/**
+ * The card renders `parseJsonContentToText(profile.bio)` clamped to a few lines, so shipping the whole
+ * rich-text document is wasted. Computed here rather than read from the `bio_text` column: that column
+ * is built with `string_agg(DISTINCT ...)` for search, which reorders and dedupes the text nodes — fine
+ * for a tsvector, wrong for something a person reads.
+ */
+const toBioSnippet = (bio: unknown) => {
+  const text = parseJsonContentToText(bio as JSONContent)
+    .replace(/\s+/g, ' ')
+    .trim()
+  return text.length > BIO_SNIPPET_CHARS ? `${text.slice(0, BIO_SNIPPET_CHARS)}…` : text
+}
 
 let profileCols: any
 
@@ -246,6 +312,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     skipId,
     locale = 'en',
     last_active,
+    projection = 'card',
   } = props
 
   log('get-profiles', {...props, userIds: userIds && `${userIds.length} ids`})
@@ -330,6 +397,16 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       JOIN ${label} ON ${label}.id = profile_${label}.option_id
       WHERE profile_${label}.profile_id = profiles.id
         AND ${label}.id = ANY (ARRAY[$(values)])
+      )`
+  }
+
+  /** "Has this profile picked any option at all?" — the `array_length(...) > 0` test on the
+   *  aggregate join, expressed so it does not need the join. */
+  function getManyToManyAnyClause(label: OptionTableKey) {
+    return `EXISTS (
+      SELECT 1 FROM profile_${label}
+      JOIN ${label} ON ${label}.id = profile_${label}.option_id
+      WHERE profile_${label}.profile_id = profiles.id
       )`
   }
 
@@ -626,12 +703,14 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
     userIds && where(`profiles.user_id = any($(userIds))`, {userIds}),
 
+    // Deliberately EXISTS rather than `array_length(profile_work.work, 1) > 0`: reading the aggregate
+    // joins here would tie this filter to joins that are only there to shape the output.
     !shortBio &&
       where(
         `bio_length >= ${100}
        OR headline IS NOT NULL
-       OR array_length(profile_work.work, 1) > 0
-       OR array_length(profile_interests.interests, 1) > 0
+       OR ${getManyToManyAnyClause('work')}
+       OR ${getManyToManyAnyClause('interests')}
        OR occupation_title IS NOT NULL
        `,
       ),
@@ -675,7 +754,12 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       ),
   ]
 
-  const profileCols = (await getProfileCols()) ?? 'profiles.*' // stored at module level
+  const profileCols =
+    projection === 'card'
+      ? PROFILE_CARD_COLS.map((c) => `profiles.${c}`).join(', ')
+      : ((await getProfileCols()) ?? 'profiles.*') // stored at module level
+  // `users.name` / `users.username` feed `convertRow`, which folds them into the `user` object and
+  // then drops the top-level copies — they are not part of the response.
   let selectCols = `${profileCols}, users.name, users.username, jsonb_build_object(
     'id', users.id,
     'name', users.name,
@@ -706,7 +790,14 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
   const profiles = await pg.map(query, [], convertRow)
 
-  // console.debug('profiles:', profiles)
+  if (projection === 'card') {
+    for (const profile of profiles) {
+      profile.bio_snippet = toBioSnippet(profile.bio)
+      delete (profile as any).bio
+    }
+  }
+
+  console.debug('profiles:', profiles)
 
   const countQuery = renderSql(select(`count(*) as count`), ...tableSelection, ...filters)
 

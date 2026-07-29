@@ -4,7 +4,15 @@ import {User} from 'common/user'
 
 export type ProfileRow = Row<'profiles'>
 export type ProfileWithoutUser = ProfileRow & {[K in OptionTableKey]?: string[]}
-export type Profile = ProfileWithoutUser & {user: User}
+export type Profile = ProfileWithoutUser & {
+  user: User
+  /**
+   * Plain-text, truncated `bio`. List endpoints that only ever render a snippet send this instead of
+   * the full rich-text `bio` document — see the `card` projection in the backend's `get-profiles`.
+   * When it is set, `bio` is absent.
+   */
+  bio_snippet?: string
+}
 
 export const getProfileRowWithFrontendSupabase = async (
   userId: string,

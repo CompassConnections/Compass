@@ -32,6 +32,7 @@ import {sendDiscordMessage} from 'common/discord/core'
 import {DEPLOYED_WEB_URL, IS_DEV} from 'common/envs/constants'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {filterDefined} from 'common/util/array'
+import compression from 'compression'
 import cors from 'cors'
 import * as crypto from 'crypto'
 import express, {type ErrorRequestHandler, type RequestHandler} from 'express'
@@ -153,6 +154,9 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 }
 
 export const app = express()
+// Cloud Run's frontend does not compress responses for us, so without this every JSON body goes out
+// raw. API payloads are repetitive (the same keys across every row of a list) and compress heavily.
+app.use(compression())
 app.use(requestMonitoring)
 
 const schemaCache = new WeakMap<ZodTypeAny, any>()

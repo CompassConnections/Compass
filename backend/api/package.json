@@ -31,6 +31,7 @@
     "@mozilla/readability": "0.6.0",
     "@sentry/node": "10.41.0",
     "@tiptap/core": "2.10.4",
+    "compression": "^1.8.0",
     "cors": "2.8.5",
     "dayjs": "1.11.19",
     "express": "5.0.0",
@@ -52,6 +53,7 @@
     "zod": "^3.25"
   },
   "devDependencies": {
+    "@types/compression": "1.8.1",
     "@types/cors": "2.8.17",
     "@types/jsdom": "28.0.1",
     "@types/jsonwebtoken": "^9.0.0",

@@ -75,8 +75,8 @@ describe('loadProfiles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockPg = {
-      map: jest.fn(),
-      one: jest.fn(),
+      map: jest.fn().mockResolvedValue([]),
+      one: jest.fn().mockResolvedValue(0),
     }
 
     jest.spyOn(supabaseInit, 'createSupabaseDirectClient').mockReturnValue(mockPg)
@@ -93,6 +93,7 @@ describe('loadProfiles', () => {
           limit: 10,
           name: 'John',
           is_smoker: true,
+          projection: 'full' as const,
         }
 
         ;(mockPg.map as jest.Mock).mockResolvedValue([])

@@ -797,7 +797,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     }
   }
 
-  console.debug('profiles:', profiles)
+  // console.debug('profiles:', profiles)
 
   const countQuery = renderSql(select(`count(*) as count`), ...tableSelection, ...filters)
 

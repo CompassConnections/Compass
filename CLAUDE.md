@@ -41,13 +41,14 @@ yarn lint             # ESLint across all packages
 yarn lint-fix
 yarn typecheck        # tsc --noEmit across all packages
 yarn prettier
-yarn test             # Jest unit + integration across all workspaces
 yarn test:coverage
 yarn test:e2e         # Playwright E2E (spins up services)
 yarn test:e2e:dev     # Playwright against an already-running dev server
 ```
 
-Single workspace / single test (the workspace `test` script already passes `--config`, so append Jest args):
+**Don't run `yarn test` (the whole monorepo).** It is slow and mostly unrelated to any given change.
+Run only the workspaces the change touches, naming specific files where you can — the full suite is
+CI's job. The workspace `test` script already passes `--config`, so Jest args just append:
 
 ```bash
 yarn --cwd=common test

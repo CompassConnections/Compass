@@ -813,7 +813,7 @@ export const API = (_apiTypeCheck = {
         // `card` trims the response to the fields the profile grid renders, and replaces the
         // rich-text `bio` with a truncated `bio_snippet`. Defaults to `full` so existing API
         // consumers keep getting the complete row.
-        projection: z.enum(['card', 'full']).optional().default('full'),
+        projection: z.enum(['card', 'full']).optional().default('card'),
       })
       .strict(),
     returns: {} as {

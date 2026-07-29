@@ -5,9 +5,9 @@ import {CheckIcon, SparklesIcon} from 'lucide-react'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
-import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
+import {Section} from 'web/components/profile/section'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useProfile} from 'web/hooks/use-profile'
@@ -95,52 +95,50 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   const hasSignalControls = !!profile.allow_interest_indicating && !noSharedTypes
 
   return (
-    <Col className="w-full gap-8">
-      {profile.allow_direct_messaging || matches.length > 0 ? (
-        <SendMessageButton
-          toUser={user}
-          profile={profile}
-          text={t('profile.connect.message_name', 'Message {name}', {
-            name: shortenName(user.name),
-          })}
-        />
-      ) : (
-        <p className="text-ink-500 text-sm">
-          {t('profile.connect.direct_messaging_disabled', '{user} turned off direct messaging', {
-            user: user.name,
-          })}
-        </p>
-      )}
+    <>
+      <Section id="connect" title={t('profile.connect.title', 'Connect')}>
+        {profile.allow_direct_messaging || matches.length > 0 ? (
+          <SendMessageButton
+            toUser={user}
+            profile={profile}
+            text={t('profile.connect.message_name', 'Message {name}', {
+              name: shortenName(user.name),
+            })}
+          />
+        ) : (
+          <p className="text-ink-500 text-sm">
+            {t('profile.connect.direct_messaging_disabled', '{user} turned off direct messaging', {
+              user: user.name,
+            })}
+          </p>
+        )}
+      </Section>
 
-      {/* No surface at all. The chips are pills, and a pill is already this page's signal for "you can
+      {/* Its own section rather than a subheading under Connect: it is a distinct thing to do, not a
+          detail of messaging, and a smaller heading nested inside another read as one.
+          No surface at all. The chips are pills, and a pill is already this page's signal for "you can
           click this" — the card was restating it in a heavier way, and it made this block outweigh the
           two actions above it, which are boxless despite being just as actionable. Nothing on this page
           is a card now; affordance is carried by the controls themselves. */}
-      <div>
-        <Row className="items-baseline justify-between gap-3">
-          <h3
-            className="text-ink-400 font-dm-sans uppercase"
-            style={{fontSize: '10px', letterSpacing: '0.18em'}}
-          >
-            {t('profile.connect.private_connection_signal', 'Signal your interest — privately')}
-          </h3>
-          {/* Explaining the mechanism is only worth the row when the mechanism is available. */}
-          {/*{hasSignalControls && (*/}
-          {/*  <button*/}
-          {/*    className="text-ink-500 hover:text-primary-600 flex flex-none items-center gap-1 text-xs transition-colors"*/}
-          {/*    onClick={() => setShowHelp(!showHelp)}*/}
-          {/*    aria-expanded={showHelp}*/}
-          {/*  >*/}
-          {/*    <InfoIcon className="h-3.5 w-3.5" />*/}
-          {/*    {t('profile.connect.how_this_works', 'How this works')}*/}
-          {/*  </button>*/}
-          {/*)}*/}
-        </Row>
+      <Section
+        title={t('profile.connect.private_connection_signal', 'Signal your interest — privately')}
+      >
+        {/* Explaining the mechanism is only worth the row when the mechanism is available. */}
+        {/*{hasSignalControls && (*/}
+        {/*  <button*/}
+        {/*    className="text-ink-500 hover:text-primary-600 flex flex-none items-center gap-1 text-xs transition-colors"*/}
+        {/*    onClick={() => setShowHelp(!showHelp)}*/}
+        {/*    aria-expanded={showHelp}*/}
+        {/*  >*/}
+        {/*    <InfoIcon className="h-3.5 w-3.5" />*/}
+        {/*    {t('profile.connect.how_this_works', 'How this works')}*/}
+        {/*  </button>*/}
+        {/*)}*/}
 
         {profile.allow_interest_indicating ? (
           <>
             {hasSignalControls && (
-              <p className="text-ink-500 mt-2 text-sm">
+              <p className="text-ink-500 text-sm">
                 {t(
                   'profile.wont_be_notified_unless_mutual',
                   "Pick what you'd be open to with {name}. They're never notified unless they pick the same thing — then you both hear about it at once.",
@@ -158,7 +156,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
             {/* Every option locked means the chips can only say "no" three times over, in a shape that
                 still looks pressable. Say it once instead, and give back the height. */}
             {noSharedTypes ? (
-              <p className="text-ink-500 mt-3 text-sm">
+              <p className="text-ink-500 text-sm">
                 {t(
                   'profile.connect.no_shared_types',
                   "You and {name} aren't open to the same kind of connection.",
@@ -239,13 +237,13 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
             )}
           </>
         ) : (
-          <p className="text-ink-500 mt-2 text-sm">
+          <p className="text-ink-500 text-sm">
             {t('profile.turned_off_interest_indicators', '{user} turned off interest indicators', {
               user: user.name,
             })}
           </p>
         )}
-      </div>
-    </Col>
+      </Section>
+    </>
   )
 }

@@ -13,6 +13,7 @@ import {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileHero from 'web/components/profile/profile-hero'
 import ProfilePhotoCarousel from 'web/components/profile/profile-photo-carousel'
 import {useProfilePhotos} from 'web/components/profile/profile-photos'
+import {Section, SectionHeading} from 'web/components/profile/section'
 import ProfileAbout, {
   hasAccessibility,
   hasBigFive,
@@ -377,21 +378,6 @@ function RailBlocks(props: {
 }
 
 /**
- * A section of the main reading column. No border and no card — the column is prose, and whitespace
- * plus a small-caps label separates sections better than five stacked boxes do.
- */
-function Section(props: {title?: ReactNode; id?: string; children: ReactNode; testId?: string}) {
-  const {title, id, children, testId} = props
-  if (children == null) return null
-  return (
-    <section id={id} className="min-w-0 scroll-mt-24" data-testid={testId}>
-      {title != null && <SectionHeading>{title}</SectionHeading>}
-      {children}
-    </section>
-  )
-}
-
-/**
  * A block of the attribute rail: label, rule, content — the same object as `Section` on the left, with
  * a rule added because the rail's rows are also rule-separated and the heading needs to sit outside
  * that run rather than look like the first of them.
@@ -416,18 +402,6 @@ function RailSection(props: {title?: ReactNode; children: ReactNode}) {
           Big Five, links — sitting hard against the rule. */}
       <div className={clsx(title != null && 'pt-4')}>{children}</div>
     </div>
-  )
-}
-
-function SectionHeading(props: {children: ReactNode; className?: string}) {
-  const {children, className} = props
-  return (
-    <h2
-      className={clsx('text-ink-400 font-dm-sans mb-5 font-normal uppercase', className)}
-      style={{fontSize: '10px', letterSpacing: '0.18em'}}
-    >
-      {children}
-    </h2>
   )
 }
 
@@ -557,11 +531,9 @@ function ProfileContent(props: {
                 />
               </Section>
 
-              {!isCurrentUser && (
-                <Section id="connect" title={t('profile.connect.title', 'Connect')}>
-                  <ConnectActions user={user} profile={profile} />
-                </Section>
-              )}
+              {/* Renders its own sections — reaching out and signalling interest privately are two
+                  separate things to do, and each gets the same heading as everything else here. */}
+              {!isCurrentUser && <ConnectActions user={user} profile={profile} />}
             </Col>
           )}
           {!currentUser && <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />}

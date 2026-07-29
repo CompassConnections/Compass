@@ -78,6 +78,7 @@ export const updateConnectionInterests: APIHandler<'update-connection-interest'>
             },
           ),
           url: `/${currentUser.username}`,
+          collapseKey: `connection-${currentUser.id}`,
         }
         try {
           await sendWebNotifications(pg, targetUserId, JSON.stringify(payload))

@@ -89,6 +89,9 @@ interface PushPayload {
   url: string
   data?: Record<string, string>
   imageUrl?: string
+  // Notifications sharing a collapseKey replace each other instead of stacking, so a
+  // conversation only ever occupies one slot in the tray. See sendPushToToken.
+  collapseKey?: string
 }
 
 export async function sendPushToToken(
@@ -100,10 +103,14 @@ export async function sendPushToToken(
   const message: TokenMessage = {
     token,
     android: {
+      // FCM-side: if the device is offline, only the latest message of a conversation is delivered
+      collapseKey: payload.collapseKey,
       notification: {
         title: payload.title,
         body: payload.body,
         imageUrl: payload.imageUrl || undefined, // 👈 publicly accessible HTTPS URL
+        // Tray-side: a new notification replaces the previous one carrying the same tag
+        tag: payload.collapseKey,
       },
     },
     data: {

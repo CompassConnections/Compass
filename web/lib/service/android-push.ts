@@ -42,7 +42,9 @@ export default function AndroidPush() {
       if (endpoint === window.location.pathname) return
       const author = notif?.title
       const message = notif?.body
-      toast.success(`${author}: "${message}"`)
+      // Reuse the endpoint as the toast id so successive messages from the same
+      // conversation replace each other rather than piling up.
+      toast.success(`${author}: "${message}"`, {id: endpoint})
     })
   }, [user?.id, isAndroid])
 

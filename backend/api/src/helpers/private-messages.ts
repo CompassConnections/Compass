@@ -186,6 +186,7 @@ const notifyOtherUserInChannelIfInactive = async (
     title: `${creator.name}`,
     body: textContent,
     url: `/messages/${channelId}`,
+    collapseKey: `channel-${channelId}`,
   }
   try {
     await sendWebNotifications(pg, receiverId, JSON.stringify(payload))

@@ -29,6 +29,7 @@ import {Avatar} from 'web/components/widgets/avatar'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
+import {useHideBottomNavOnKeyboard} from 'web/hooks/use-hide-bottom-nav-on-keyboard'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {
   usePrivateMessages,
@@ -117,6 +118,7 @@ export const PrivateChat = (props: {
 }) => {
   const {user, channel, memberIds} = props
   const t = useT()
+  useHideBottomNavOnKeyboard()
   const channelId = channel.channel_id
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
@@ -436,7 +438,7 @@ export const PrivateChat = (props: {
           </Modal>
         )}
       </Row>
-      <Col className="relative h-[calc(100dvh-210px-var(--hloss))] lg:h-[calc(100dvh-184px-var(--hloss))] xl:px-0">
+      <Col className="relative h-[calc(100dvh-149px-var(--bnv)-var(--hloss))] lg:h-[calc(100dvh-184px-var(--hloss))] xl:px-0">
         <div
           ref={outerDiv}
           className="relative h-full overflow-y-auto"

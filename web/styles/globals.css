@@ -6,6 +6,7 @@
   /*--font-main: "Crimson Pro", "EB Garamond", Georgia, "Times New Roman", Times, serif;*/
   --font-main: 'Atkinson Hyperlegible Next', Georgia, 'Times New Roman', Times, serif;
   --bnh: env(safe-area-inset-bottom); /* native bottom nav height */
+  --bnv: 61px; /* our own mobile bottom nav bar height */
   --tnh: env(safe-area-inset-top); /* native top nav height */
   --hloss: calc(var(--bnh) + var(--tnh)); /* mobile height loss due to native top and bottom bars */
   --filter-offset: 0px; /* padding for filters on mobile */
@@ -30,13 +31,23 @@
 }
 
 .keyboard-open .pb-page-base {
-  padding-bottom: calc(61px);
+  padding-bottom: var(--bnv);
 }
 
 .pb-page-base {
-  padding-bottom: calc(61px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--bnv) + env(safe-area-inset-bottom));
   /*bottom: calc(48px);*/
   /*padding-bottom: env(safe-area-inset-bottom);*/
+}
+
+/* Pages that opt in via useHideBottomNavOnKeyboard() (e.g. private messages): while the keyboard is
+   up the bar would sit between the keyboard and the composer, so drop it and reclaim its height. */
+.keyboard-open.hide-bottom-nav {
+  --bnv: 0px;
+}
+
+.keyboard-open.hide-bottom-nav .bottom-nav {
+  display: none;
 }
 
 /* When keyboard is open, remove safe area offset */

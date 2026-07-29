@@ -46,6 +46,9 @@ self.addEventListener('push', (event) => {
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     data: data.url || '/',
+    // Notifications sharing a tag replace each other, so a conversation only ever
+    // occupies one slot instead of stacking one entry per message.
+    tag: data.collapseKey || undefined,
   }
   event.waitUntil(self.registration.showNotification(title, options))
 })

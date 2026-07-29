@@ -104,6 +104,20 @@ export default tseslint.config(
     },
   },
   {
+    // Service workers run in a ServiceWorkerGlobalScope, not a window. Matched by a
+    // cwd-independent glob so this applies whether eslint runs from web/ or the repo root.
+    files: ['**/public/service-worker.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        clients: 'readonly',
+        caches: 'readonly',
+        skipWaiting: 'readonly',
+        registration: 'readonly',
+      },
+    },
+  },
+  {
     ignores: [
       'public/mtg/*',
       '.next/*',
@@ -111,7 +125,6 @@ export default tseslint.config(
       'eslint.config.mjs',
       'out/*',
       'coverage/*',
-      'public/service-worker.js',
       'pages_unused/*',
       'tailwind.config.js',
     ],

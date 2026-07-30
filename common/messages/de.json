@@ -1155,6 +1155,7 @@
   "profile.optional.age_range": "Im Alter zwischen",
   "profile.optional.big5_hint": "Ziehen Sie jeden Schieber, um festzulegen, wo Sie sich bei diesen Merkmalen sehen (0 = niedrig, 100 = hoch).",
   "profile.optional.bio_description": "Hier kannst du ein langes Dokument über dich selbst und was du suchst schreiben. Es enthält schöne Formatierungen wie Überschriften, Fett, Kursiv, Listen, Links, eingebettete Bilder und mehr.",
+  "profile.optional.category.background": "Herkunft",
   "profile.optional.category.education": "Bildung",
   "profile.optional.category.family": "Familie",
   "profile.optional.category.interested_in": "Wen ich suche",

@@ -730,56 +730,9 @@ export const OptionalProfileUserForm = (props: {
           </Row>
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.ethnicity', 'Ethnicity/origin')}
-          </label>
-          <MultiCheckbox
-            choices={RACE_CHOICES}
-            translationPrefix={'profile.race'}
-            selected={profile['ethnicity'] ?? []}
-            onChange={(selected) => setProfile('ethnicity', selected)}
-          />
-        </Col>
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.raised_in', 'Place you grew up')}
-          </label>
-          <label className={clsx('guidance')}>
-            {t(
-              'profile.optional.raised_in_hint',
-              'Especially useful if you grew up in a different country than where you live now—and if it reflects your cultural references, values, and life experiences.',
-            )}
-          </label>
-          {profile.raised_in_geodb_city_id ? (
-            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
-              <CityRow
-                city={profileToRaisedInCity(profile as Profile)!}
-                onSelect={() => {}}
-                className="pointer-events-none"
-              />
-              <button
-                className="text-ink-700 hover:text-primary-700 text-sm underline"
-                onClick={() => {
-                  setProfileRaisedInCity(undefined)
-                }}
-              >
-                {t('common.change', 'Change')}
-              </button>
-            </Row>
-          ) : (
-            <CitySearchBox
-              onCitySelected={(city: City | undefined) => {
-                setProfileRaisedInCity(city)
-              }}
-            />
-          )}
-        </Col>
-
         {/* Its own section rather than the tail of Personal Information. Photos are a hero field —
             the first thing anyone looks at on the finished profile — and as the last row of a
-            section about height and ethnicity they were something you scrolled past on the way
+            section about height and gender they were something you scrolled past on the way
             somewhere else, with no entry in the index to come back to. */}
         <Category title={t('profile.optional.category.photos', 'Photos')} />
 
@@ -1514,6 +1467,59 @@ export const OptionalProfileUserForm = (props: {
           </p>
         </Col>
 
+        {/* Ethnicity and where you grew up used to sit at the tail of Personal Information, between
+            height and photos. They are secondary — nobody fills the top of the form to answer them —
+            and there they pushed the fields people do come for further down. Grouped here with
+            languages instead, which is the same kind of cultural-background information. */}
+        <Category title={t('profile.optional.category.background', 'Background')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.ethnicity', 'Ethnicity/origin')}
+          </label>
+          <MultiCheckbox
+            choices={RACE_CHOICES}
+            translationPrefix={'profile.race'}
+            selected={profile['ethnicity'] ?? []}
+            onChange={(selected) => setProfile('ethnicity', selected)}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.raised_in', 'Place you grew up')}
+          </label>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.raised_in_hint',
+              'Especially useful if you grew up in a different country than where you live now—and if it reflects your cultural references, values, and life experiences.',
+            )}
+          </label>
+          {profile.raised_in_geodb_city_id ? (
+            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
+              <CityRow
+                city={profileToRaisedInCity(profile as Profile)!}
+                onSelect={() => {}}
+                className="pointer-events-none"
+              />
+              <button
+                className="text-ink-700 hover:text-primary-700 text-sm underline"
+                onClick={() => {
+                  setProfileRaisedInCity(undefined)
+                }}
+              >
+                {t('common.change', 'Change')}
+              </button>
+            </Row>
+          ) : (
+            <CitySearchBox
+              onCitySelected={(city: City | undefined) => {
+                setProfileRaisedInCity(city)
+              }}
+            />
+          )}
+        </Col>
+
         <Category title={t('profile.optional.languages', 'Languages')} />
 
         <Col className={clsx(colClassName)}>
@@ -1553,6 +1559,13 @@ export const OptionalProfileUserForm = (props: {
         {/*  />*/}
         {/*</Col>*/}
 
+        <Category title={t('profile.optional.socials', 'Socials')} />
+
+        <SocialLinksSection profile={profile} setProfile={setProfile} />
+
+        {/* Socials before Accessibility to match the profile's own rail order (Links, then
+            Accessibility), and so the last thing before Submit is a short optional textarea rather
+            than an empty platform picker. */}
         <Category title={t('profile.optional.accessibility_notes', 'Accessibility')} />
 
         {/* Free text on purpose, not a checkbox list of conditions: a taxonomy exists mainly to be
@@ -1581,10 +1594,6 @@ export const OptionalProfileUserForm = (props: {
             )}
           />
         </Col>
-
-        <Category title={t('profile.optional.socials', 'Socials')} />
-
-        <SocialLinksSection profile={profile} setProfile={setProfile} />
 
         <Row className={'justify-end'}>
           <Button

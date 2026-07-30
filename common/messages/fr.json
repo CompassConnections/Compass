@@ -1154,6 +1154,7 @@
   "profile.optional.age_range": "Âgés entre",
   "profile.optional.big5_hint": "Faites glisser chaque curseur pour définir où vous vous situez sur ces traits (0 = faible, 100 = élevé).",
   "profile.optional.bio_description": "Vous pouvez ici écrire un long document sur qui vous êtes et ce que vous recherchez. Il inclut une mise en forme agréable comme des titres, du gras, de l'italique, des listes, des liens, des images intégrées, et plus encore.",
+  "profile.optional.category.background": "Origines",
   "profile.optional.category.education": "Éducation",
   "profile.optional.category.family": "Famille",
   "profile.optional.category.interested_in": "Ce que je recherche",

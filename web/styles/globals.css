@@ -10,6 +10,7 @@
   --tnh: env(safe-area-inset-top); /* native top nav height */
   --hloss: calc(var(--bnh) + var(--tnh)); /* mobile height loss due to native top and bottom bars */
   --filter-offset: 0px; /* padding for filters on mobile */
+  --vvh: 100dvh; /* visual viewport height; overridden in px by useVisualViewportHeight() */
   touch-action: pan-y;
 }
 

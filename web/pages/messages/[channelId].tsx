@@ -38,6 +38,7 @@ import {
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
+import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
 import {api} from 'web/lib/api'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
@@ -119,6 +120,7 @@ export const PrivateChat = (props: {
   const {user, channel, memberIds} = props
   const t = useT()
   useHideBottomNavOnKeyboard()
+  useVisualViewportHeight()
   const channelId = channel.channel_id
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
@@ -275,9 +277,13 @@ export const PrivateChat = (props: {
   const [replyToUserInfo, setReplyToUserInfo] = useState<any>()
 
   return (
-    <Col className="w-full">
+    // Sized to the visual viewport (see useVisualViewportHeight) so the keyboard can't push the header
+    // off-screen: the header and composer are fixed rows, only the message list scrolls.
+    <Col className="w-full overflow-hidden h-[calc(var(--vvh,100dvh)-var(--hloss)-var(--bnv))] lg:h-[calc(100dvh-var(--hloss)-1.5rem)]">
       <Row
-        className={'bg-canvas-0 border border-canvas-200 h-14 items-center gap-2 rounded-xl px-2'}
+        className={
+          'bg-canvas-0 border border-canvas-200 h-14 shrink-0 items-center gap-2 rounded-xl px-2'
+        }
       >
         <BackButton className="self-stretch mr-2" />
         {members && members.length > 0 ? (
@@ -438,10 +444,12 @@ export const PrivateChat = (props: {
           </Modal>
         )}
       </Row>
-      <Col className="relative h-[calc(100dvh-149px-var(--bnv)-var(--hloss))] lg:h-[calc(100dvh-184px-var(--hloss))] xl:px-0">
+      <Col className="relative min-h-0 flex-1 xl:px-0">
+        {/* overscroll-contain: at the top of the feed, further upward scrolling stays here instead of
+            chaining to the document and dragging the header/composer with it. */}
         <div
           ref={outerDiv}
-          className="relative h-full overflow-y-auto"
+          className="relative h-full overflow-y-auto overscroll-contain"
           style={{
             transform: isSafari ? 'translate3d(0, 0, 0)' : 'none',
           }}
@@ -511,38 +519,45 @@ export const PrivateChat = (props: {
           </div>
         </div>
       </Col>
-      {allUsersBanned ? (
-        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-          <span className="text-ink-500 text-sm">
-            {t(
-              'messages.cannot_message_banned',
-              "The profile was removed for suspicious activity; never send money to someone you haven't met.",
-            )}
-          </span>
-        </div>
-      ) : user.isBannedFromPosting ? (
-        <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
-      ) : noOtherUser ? (
-        <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-          <span className="text-ink-500 text-sm">
-            {t(
-              'messages.cannot_message_deleted',
-              "You can't text them as they deleted their account.",
-            )}
-          </span>
-        </div>
-      ) : (
-        <CommentInputTextArea
-          editor={editor}
-          user={user}
-          submit={submitMessage}
-          isSubmitting={isSubmitting}
-          submitOnEnter={!isMobile}
-          replyTo={replyToUserInfo}
-          isEditing={!!editingMessage}
-          cancelEditing={cancelEditing}
-        />
-      )}
+      {/* relative z-10: the composer is a static box, so the positioned message bubbles above it would
+          otherwise paint over its border / focus ring as they scroll past. */}
+      <div className="relative z-10 shrink-0">
+        {allUsersBanned ? (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+            <span className="text-ink-500 text-sm">
+              {t(
+                'messages.cannot_message_banned',
+                "The profile was removed for suspicious activity; never send money to someone you haven't met.",
+              )}
+            </span>
+          </div>
+        ) : user.isBannedFromPosting ? (
+          <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
+        ) : noOtherUser ? (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+            <span className="text-ink-500 text-sm">
+              {t(
+                'messages.cannot_message_deleted',
+                "You can't text them as they deleted their account.",
+              )}
+            </span>
+          </div>
+        ) : (
+          <CommentInputTextArea
+            editor={editor}
+            // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
+            // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
+            maxHeight="max-h-[calc(var(--vvh)*0.4)]"
+            user={user}
+            submit={submitMessage}
+            isSubmitting={isSubmitting}
+            submitOnEnter={!isMobile}
+            replyTo={replyToUserInfo}
+            isEditing={!!editingMessage}
+            cancelEditing={cancelEditing}
+          />
+        )}
+      </div>
     </Col>
   )
 }

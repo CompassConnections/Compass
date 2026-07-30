@@ -38,7 +38,8 @@ export function MessageReactions({message, className, setMessages}: MessageReact
   if (reactionGroups.length === 0) return null
 
   return (
-    <div className={clsx('mt-1 flex flex-wrap gap-1', className)}>
+    // negative top margin: tuck the chips up against the bubble they belong to
+    <div className={clsx('-mt-1 flex flex-wrap gap-1', className)}>
       {reactionGroups.map(({emoji, users}) => {
         const hasReacted = users.includes(user?.id || '')
         return (

@@ -9,6 +9,7 @@ import {FileUploadButton} from '../buttons/file-upload-button'
 import {LoadingIndicator} from '../widgets/loading-indicator'
 import {Tooltip} from '../widgets/tooltip'
 import {EmbedModal} from './embed-modal'
+import {EMOJI_ENABLED} from './emoji/emoji-enabled'
 import type {UploadMutation} from './upload-extension'
 
 /* Toolbar, with buttons for images and embeds */
@@ -39,13 +40,15 @@ export function StickyFormatMenu(props: {
           <CodeBracketIcon className="h-5 w-5" aria-hidden="true" />
         </ToolbarButton>
       )}
-      <ToolbarButton
-        key={'emoji-button'}
-        label={t('sticky_format_menu.add_emoji', 'Add emoji')}
-        onClick={() => insertEmoji(editor)}
-      >
-        <FaceSmileIcon className="h-5 w-5" />
-      </ToolbarButton>
+      {EMOJI_ENABLED && (
+        <ToolbarButton
+          key={'emoji-button'}
+          label={t('sticky_format_menu.add_emoji', 'Add emoji')}
+          onClick={() => insertEmoji(editor)}
+        >
+          <FaceSmileIcon className="h-5 w-5" />
+        </ToolbarButton>
+      )}
 
       <EmbedModal editor={editor} open={iframeOpen} setOpen={setIframeOpen} />
       <div className="grow" />

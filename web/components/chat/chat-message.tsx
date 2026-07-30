@@ -15,6 +15,10 @@ import {Avatar} from 'web/components/widgets/avatar'
 import {Content} from 'web/components/widgets/editor'
 import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
 
+// Long-press on a message to open the emoji picker — off for now. Reactions can still be added from the
+// message's "..." menu, and existing ones still show and toggle.
+const LONG_PRESS_REACTIONS_ENABLED = false
+
 export function ChatMessageItem(props: {
   chats: ChatMessage[]
   currentUser: DisplayUser | undefined | null
@@ -58,6 +62,7 @@ export function ChatMessageItem(props: {
         : {username: '', avatarUrl: undefined, id: ''}
 
   const startLongPress = (messageId: number) => {
+    if (!LONG_PRESS_REACTIONS_ENABLED) return
     hasMovedRef.current = false
     lastPositionRef.current = null
     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current)

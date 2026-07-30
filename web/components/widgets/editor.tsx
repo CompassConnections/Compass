@@ -21,6 +21,7 @@ import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
 import {DEFAULT_PROTOCOL, SyncAutolink} from '../editor/autolink'
+import {EMOJI_ENABLED} from '../editor/emoji/emoji-enabled'
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
 import {BasicImage, DisplayImage} from '../editor/image'
@@ -56,7 +57,7 @@ const editorExtensions = (simple = false): Extensions =>
     }),
     simple ? DisplayImage : BasicImage,
     simple ? DisplayVideo : BasicVideo,
-    EmojiExtension,
+    ...(EMOJI_ENABLED ? [EmojiExtension] : []),
     DisplayLink,
     SyncAutolink,
     DisplayMention,
@@ -385,7 +386,9 @@ export function TextEditor(props: {
       )}
     >
       <FloatingFormatMenu editor={editor} advanced={!simple} />
-      <div className={clsx(`overflow-auto`, maxHeight)}>
+      {/* overscroll-contain: a drag started in the editor stays here instead of chaining out and
+          scrolling whatever is behind it (e.g. the chat page) */}
+      <div className={clsx(`overflow-auto overscroll-contain`, maxHeight)}>
         <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 

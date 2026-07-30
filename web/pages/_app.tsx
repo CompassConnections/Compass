@@ -140,15 +140,40 @@ function MyApp(props: AppProps<PageProps>) {
 
   useEffect(() => {
     debug('isAndroidWebView app:', isAndroidApp())
-    if (!Capacitor.isNativePlatform()) return
     const onShow = () => document.body.classList.add('keyboard-open')
     const onHide = () => document.body.classList.remove('keyboard-open')
 
-    Keyboard.addListener('keyboardWillShow', onShow)
-    Keyboard.addListener('keyboardWillHide', onHide)
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener('keyboardWillShow', onShow)
+      Keyboard.addListener('keyboardWillHide', onHide)
+
+      return () => {
+        Keyboard.removeAllListeners()
+      }
+    }
+
+    // Mobile browsers have no keyboard events, so infer the keyboard from the visual viewport: it
+    // shrinks by the keyboard's height while the layout viewport (window.innerHeight) stays put.
+    // Without this, `keyboard-open` never fires outside the app and the page keeps reserving the
+    // bottom nav's height, leaving a gap between the composer and the keyboard.
+    const vv = window.visualViewport
+    if (!vv) return
+    // Comfortably above the ~60px the collapsing URL bar accounts for, well below any keyboard.
+    const KEYBOARD_MIN_PX = 150
+    const update = () => {
+      const hidden = window.innerHeight - (vv.height + vv.offsetTop)
+      if (hidden > KEYBOARD_MIN_PX) onShow()
+      else onHide()
+    }
+
+    update()
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
 
     return () => {
-      Keyboard.removeAllListeners()
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+      onHide()
     }
   }, [])
 

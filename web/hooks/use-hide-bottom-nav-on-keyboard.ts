@@ -9,7 +9,8 @@ import {useEffect} from 'react'
  * for navigation nobody is using mid-message.
  *
  * The keyboard state itself is tracked in `_app.tsx`, which toggles `keyboard-open` on `<body>` from
- * the Capacitor keyboard events; the rules live in `globals.css` so showing/hiding costs no re-render.
+ * the Capacitor keyboard events in the app, and from the visual viewport shrinking in a mobile
+ * browser; the rules live in `globals.css` so showing/hiding costs no re-render.
  * Zeroing `--bnv` there also reclaims the bar's height for the page below it.
  */
 export const useHideBottomNavOnKeyboard = () => {

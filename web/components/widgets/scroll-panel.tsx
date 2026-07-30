@@ -83,7 +83,16 @@ export function ScrollPanel(props: {
 
   return (
     <div className={clsx('relative', className)}>
-      <div ref={scrollRef} className={clsx('scrollbar-visible', scrollClassName)}>
+      {/* `!overscroll-y-auto`: `.scrollbar-visible` sets `overscroll-behavior: contain`, which is right
+          while the panel has somewhere to go — the page shouldn't lurch once the rail hits its end — but
+          wrong when the content fits. There, containment swallows the wheel entirely and the pointer sits
+          over a dead zone; releasing it lets the gesture chain to the page, so a short rail scrolls the
+          document just like the prose column beside it. `!` because both are single-class selectors and
+          the utility would otherwise lose on source order. */}
+      <div
+        ref={scrollRef}
+        className={clsx('scrollbar-visible', !scrollable && '!overscroll-y-auto', scrollClassName)}
+      >
         {children}
       </div>
 

@@ -34,12 +34,7 @@ export function UnseenMessagesBubble(props: {className?: string}) {
   if (!privateUser) {
     return null
   }
-  return (
-    <InternalUnseenMessagesBubble
-      bubbleClassName={clsx('-mr-4', className)}
-      privateUser={privateUser}
-    />
-  )
+  return <InternalUnseenMessagesBubble className={className} privateUser={privateUser} />
 }
 
 export function PrivateMessagesIcon(props: {
@@ -51,24 +46,22 @@ export function PrivateMessagesIcon(props: {
   const privateUser = usePrivateUser()
   const Icon = solid ? BiSolidEnvelope : BiEnvelope
   return (
-    <Row className="relative justify-center">
+    // Sized to the icon itself so the count badge can anchor to its top-right corner instead of
+    // being centered on top of the envelope.
+    <Row className="relative flex-shrink-0">
+      <Icon className={className} />
       {privateUser && (
         <InternalUnseenMessagesBubble
-          bubbleClassName={clsx('-mt-2', bubbleClassName)}
+          className={clsx('absolute -right-1.5 -top-1.5', bubbleClassName)}
           privateUser={privateUser}
         />
       )}
-      <Icon className={className} />
     </Row>
   )
 }
 
-function InternalUnseenMessagesBubble(props: {
-  privateUser: PrivateUser
-  bubbleClassName?: string
-  className?: string
-}) {
-  const {privateUser, className, bubbleClassName} = props
+function InternalUnseenMessagesBubble(props: {privateUser: PrivateUser; className?: string}) {
+  const {privateUser, className} = props
 
   const unseenChannels = useContext(UnseenMessageChannelsContext)
   const pathName = usePathname()
@@ -78,20 +71,13 @@ function InternalUnseenMessagesBubble(props: {
   if (unseenChannels.length === 0 || !sendToBrowser || pathName === '/messages') return null
 
   return (
-    <Row
+    <div
       className={clsx(
-        'absolute left-6 lg:left-0 right-0 top-1 items-center justify-center',
+        'text-ink-0 bg-primary-500 pointer-events-none flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none',
         className,
       )}
     >
-      <div
-        className={clsx(
-          'text-ink-0 bg-primary-500 min-w-[15px] rounded-full p-[2px] text-center text-[10px] leading-3 ',
-          bubbleClassName,
-        )}
-      >
-        {unseenChannels.length}
-      </div>
-    </Row>
+      {unseenChannels.length > 9 ? '9+' : unseenChannels.length}
+    </div>
   )
 }

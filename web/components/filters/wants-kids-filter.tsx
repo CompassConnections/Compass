@@ -62,7 +62,7 @@ export function KidsLabel(props: {strength: number; highlightedClass?: string; m
   const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
   const t = useT()
 
-  const strength = props.strength ? Number(props.strength) : DEFAULT_KEY
+  const strength = props.strength != null ? Number(props.strength) : DEFAULT_KEY
 
   return (
     <Row className="items-center gap-0.5">
@@ -73,12 +73,13 @@ export function KidsLabel(props: {strength: number; highlightedClass?: string; m
           highlightedClass,
         )}
       >
-        {strength === DEFAULT_KEY && t('filter.label.wants_kids_strength', 'Wants Kids') + ': '}
-        {strength == wantsKidsLabelsWithIcon.no_preference.strength
-          ? wantsKidsLabelsWithIcon.no_preference.name
-          : strength == wantsKidsLabelsWithIcon.wants_kids.strength
-            ? wantsKidsLabelsWithIcon.wants_kids.name
-            : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
+        {strength === DEFAULT_KEY
+          ? t('filter.label.wants_kids_strength', 'Desire for Kids')
+          : strength == wantsKidsLabelsWithIcon.no_preference.strength
+            ? wantsKidsLabelsWithIcon.no_preference.name
+            : strength == wantsKidsLabelsWithIcon.wants_kids.strength
+              ? wantsKidsLabelsWithIcon.wants_kids.name
+              : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
       </span>
     </Row>
   )

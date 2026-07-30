@@ -33,8 +33,9 @@ export function HasKidsLabel(props: {
     <Row className="items-center gap-0.5">
       {/*<FaChild className="h-4 w-4" />*/}
       <span className={clsx(highlightedClass, has_kids !== DEFAULT_KEY && 'font-semibold')}>
-        {has_kids === DEFAULT_KEY && t('filter.label.has_kids', 'Kids') + ': '}
-        {t(`profile.has_kids.${labelKey}`, labelValue)}
+        {has_kids === DEFAULT_KEY
+          ? t('filter.label.has_kids', 'Kids')
+          : t(`profile.has_kids.${labelKey}`, labelValue)}
       </span>
     </Row>
   )

@@ -31,6 +31,7 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useHideBottomNavOnKeyboard} from 'web/hooks/use-hide-bottom-nav-on-keyboard'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {usePreserveScrollFromBottom} from 'web/hooks/use-preserve-scroll-from-bottom'
 import {
   usePrivateMessages,
   useSortedPrivateMessageMemberships,
@@ -177,6 +178,10 @@ export const PrivateChat = (props: {
     user?.id,
     loadMoreMessages,
   )
+
+  // When the keyboard opens the list shrinks by the keyboard height; re-anchor to the bottom so the
+  // messages the user was reading stay on screen instead of sliding under the composer.
+  usePreserveScrollFromBottom(outerDiv)
 
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null)
   // console.log('editingMessage', editingMessage)

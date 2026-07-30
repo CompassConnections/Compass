@@ -51,7 +51,7 @@ import {GenderFilter, GenderFilterText} from './gender-filter'
 import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
 import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
-import {MyMatchesToggle} from './my-matches-toggle'
+import {LookingForToggle} from './looking-for-toggle'
 import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
@@ -198,8 +198,8 @@ function Filters(props: {
   filters: Partial<FilterFields>
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
-  setYourFilters: (checked: boolean) => void
-  isYourFilters: boolean
+  setLookingForFilters: (checked: boolean) => void
+  isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
@@ -213,8 +213,8 @@ function Filters(props: {
     youProfile,
     updateFilter,
     clearFilters,
-    setYourFilters,
-    isYourFilters,
+    setLookingForFilters,
+    isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
@@ -249,10 +249,10 @@ function Filters(props: {
       <FilterGuide className={'justify-between px-4 py-2'} />
 
       <Row className="justify-between px-2">
-        <MyMatchesToggle
-          setYourFilters={setYourFilters}
+        <LookingForToggle
+          setLookingForFilters={setLookingForFilters}
           youProfile={youProfile}
-          checked={isYourFilters}
+          checked={isLookingForFilters}
           hidden={!youProfile}
         />
       </Row>
@@ -971,8 +971,8 @@ export function FiltersElement(props: {
   youProfile: Profile | undefined | null
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
-  setYourFilters: (checked: boolean) => void
-  isYourFilters: boolean
+  setLookingForFilters: (checked: boolean) => void
+  isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
   displayOptions: Partial<DisplayOptions>
@@ -983,8 +983,8 @@ export function FiltersElement(props: {
     youProfile,
     updateFilter,
     clearFilters,
-    setYourFilters,
-    isYourFilters,
+    setLookingForFilters,
+    isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
     displayOptions,
@@ -999,8 +999,8 @@ export function FiltersElement(props: {
       youProfile={youProfile}
       updateFilter={updateFilter}
       clearFilters={clearFilters}
-      setYourFilters={setYourFilters}
-      isYourFilters={isYourFilters}
+      setLookingForFilters={setLookingForFilters}
+      isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}

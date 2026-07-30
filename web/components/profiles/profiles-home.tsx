@@ -69,8 +69,8 @@ export function ProfilesHome() {
     filters,
     updateFilter,
     clearFilters,
-    setYourFilters,
-    isYourFilters,
+    setLookingForFilters,
+    isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
   } = useFilters(you ?? undefined, fromSignup)
@@ -256,8 +256,8 @@ export function ProfilesHome() {
       youProfile={you}
       updateFilter={updateFilter}
       clearFilters={clearFilters}
-      setYourFilters={setYourFilters}
-      isYourFilters={isYourFilters}
+      setLookingForFilters={setLookingForFilters}
+      isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       displayOptions={displayOptions}

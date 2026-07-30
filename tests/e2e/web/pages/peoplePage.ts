@@ -98,7 +98,7 @@ export class PeoplePage {
   private readonly filtersButton: Locator
   private readonly filtersPanel: Locator
   private readonly resetFilters: Locator
-  private readonly yourFiltersCheckbox: Locator
+  private readonly lookingForCheckbox: Locator
   private readonly incompleteProfilesCheckbox: Locator
   private readonly connectionTypeDropdown: Locator
   private readonly locationDropdown: Locator
@@ -148,7 +148,7 @@ export class PeoplePage {
     this.filtersButton = page.getByTestId('open-filters-button')
     this.filtersPanel = page.getByTestId('people-filters')
     this.resetFilters = page.getByRole('button', {name: 'Reset filters'})
-    this.yourFiltersCheckbox = page.getByText('Your filters', {exact: true})
+    this.lookingForCheckbox = page.getByText("Who I'm looking for", {exact: true})
     this.incompleteProfilesCheckbox = page.getByText('Include incomplete profiles', {exact: true})
     this.connectionTypeDropdown = page.getByRole('button', {name: 'Connection'})
     this.locationDropdown = page.getByRole('button', {name: 'Location'})
@@ -310,10 +310,10 @@ export class PeoplePage {
     await this.resetFilters.click()
   }
 
-  async setYourFilters() {
+  async setLookingForFilters() {
     await this.openFilters()
-    await expect(this.yourFiltersCheckbox).toBeVisible()
-    await this.yourFiltersCheckbox.click()
+    await expect(this.lookingForCheckbox).toBeVisible()
+    await this.lookingForCheckbox.click()
   }
 
   async setIncludeIncompleteProfiles() {

@@ -474,7 +474,7 @@
   "filter.location.any": "überall",
   "filter.location.search_city": "Stadt suchen...",
   "filter.location.set_any_city": "Auf jede Stadt einstellen",
-  "filter.mine_toggle": "Meine Filter",
+  "filter.looking_for_toggle": "Wen ich suche",
   "filter.multiple": "Mehrere",
   "filter.near": "in der Nähe von",
   "filter.neurotype.show_more": "Mehr Neurotypen anzeigen",

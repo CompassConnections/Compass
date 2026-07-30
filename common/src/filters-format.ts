@@ -35,7 +35,7 @@ const filterLabels: Record<string, string> = {
   has_kids: '',
   wants_kids_strength: '',
   is_smoker: '',
-  pref_relation_styles: 'Seeking',
+  pref_relation_styles: '',
   pref_romantic_styles: '',
   interests: '',
   causes: '',

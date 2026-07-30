@@ -41,7 +41,7 @@
 // import {GenderFilter, GenderFilterText} from './gender-filter'
 // import {LastActiveFilter, LastActiveFilterText} from './last-active-filter'
 // import {LocationFilter, LocationFilterProps, LocationFilterText} from './location-filter'
-// import {MyMatchesToggle} from './my-matches-toggle'
+// import {LookingForToggle} from './looking-for-toggle'
 // import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 //
 // export function DesktopFilters(props: {
@@ -49,8 +49,8 @@
 //   youProfile: Profile | undefined | null
 //   updateFilter: (newState: Partial<FilterFields>) => void
 //   clearFilters: () => void
-//   setYourFilters: (checked: boolean) => void
-//   isYourFilters: boolean
+//   setLookingForFilters: (checked: boolean) => void
+//   isLookingForFilters: boolean
 //   locationFilterProps: LocationFilterProps
 //   raisedInLocationFilterProps?: LocationFilterProps
 //   includeRelationshipFilters: boolean | undefined
@@ -61,8 +61,8 @@
 //     youProfile,
 //     updateFilter,
 //     clearFilters,
-//     setYourFilters,
-//     isYourFilters,
+//     setLookingForFilters,
+//     isLookingForFilters,
 //     locationFilterProps,
 //     raisedInLocationFilterProps,
 //     includeRelationshipFilters,
@@ -76,10 +76,10 @@
 //     <>
 //       <ResetFiltersButton clearFilters={clearFilters} />
 //
-//       <MyMatchesToggle
-//         setYourFilters={setYourFilters}
+//       <LookingForToggle
+//         setLookingForFilters={setLookingForFilters}
 //         youProfile={youProfile}
-//         on={isYourFilters}
+//         on={isLookingForFilters}
 //         hidden={!youProfile}
 //       />
 //

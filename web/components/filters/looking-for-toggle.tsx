@@ -4,19 +4,21 @@ import {Profile} from 'common/profiles/profile'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
-export function MyMatchesToggle(props: {
-  setYourFilters: (checked: boolean) => void
+export function LookingForToggle(props: {
+  setLookingForFilters: (checked: boolean) => void
   youProfile: Profile | undefined | null
   checked: boolean
   hidden: boolean
 }) {
-  const {setYourFilters, checked, hidden} = props
+  const {setLookingForFilters, checked, hidden} = props
   const t = useT()
   if (hidden) {
     return <></>
   }
 
-  const label = t('filter.mine_toggle', 'Your filters')
+  // Same wording as the profile editor's "Who I'm looking for" section, since that's exactly the set of
+  // fields this copies into the search (age, gender, connection type).
+  const label = t('filter.looking_for_toggle', "Who I'm looking for")
 
   // Same chip styling as IncompleteProfilesToggle so the two boolean toggles in this panel
   // read as one consistent control, not a checkbox next to a pill.
@@ -35,7 +37,7 @@ export function MyMatchesToggle(props: {
           type="checkbox"
           className="sr-only"
           checked={checked}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYourFilters(e.target.checked)}
+          onChange={() => setLookingForFilters(!checked)}
         />
         {checked && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={3} />}
         <span className="whitespace-nowrap">{label}</span>

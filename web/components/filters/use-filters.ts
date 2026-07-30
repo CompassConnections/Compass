@@ -4,17 +4,28 @@ import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {debug} from 'common/logger'
 import {kmToMiles} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
-import {
-  wantsKidsDatabase,
-  wantsKidsDatabaseToWantsKidsFilter,
-  wantsKidsToHasKidsFilter,
-} from 'common/wants-kids'
-import {debounce, isEqual} from 'lodash'
-import {useCallback, useEffect} from 'react'
+import {removeNullOrUndefinedProps} from 'common/util/object'
+import {debounce, isEqual, mapValues, omitBy} from 'lodash'
+import {useCallback, useEffect, useRef} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {getLocale} from 'web/lib/locale-cookie'
+import {safeLocalStorage} from 'web/lib/util/local'
+
+// Set once we've seeded a browser's filters from the profile; see the seeding effect below.
+const SEEDED_FILTERS_KEY = 'profile-filters-seeded'
+
+// Comparable form of a filter set: unset values, emptied multi-selects and the sort order all drop out,
+// and multi-selects compare regardless of the order the user picked them in.
+const normalize = (f: Partial<FilterFields>) =>
+  mapValues(
+    omitBy(
+      removeNullOrUndefinedProps({...f, orderBy: undefined}),
+      (v) => Array.isArray(v) && v.length === 0,
+    ),
+    (v) => (Array.isArray(v) ? [...v].sort() : v),
+  )
 
 export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
@@ -118,89 +129,63 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     setRadius: debouncedSetRaisedInRadius,
   }
 
-  const yourFilters: Partial<FilterFields> = {
-    // pref_gender: you?.gender?.length ? [you.gender] : undefined,
+  // Mirrors the "Who I'm looking for" section of the profile only — age, gender and connection type.
+  // The rest of the profile describes who you are, not who you want to see, so copying it into the
+  // search (diet, religion, politics, interests, ...) narrowed the results to people just like you.
+  const lookingForFilters: Partial<FilterFields> = {
     genders: you?.pref_gender?.length ? you.pref_gender : undefined,
-    education_levels: you?.education_level ? [you.education_level] : undefined,
     pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
     pref_age_min: (you?.pref_age_min ?? MIN_INT) > 18 ? you?.pref_age_min : undefined,
     pref_relation_styles: you?.pref_relation_styles?.length ? you.pref_relation_styles : undefined,
-    pref_romantic_styles: you?.pref_romantic_styles?.length ? you.pref_romantic_styles : undefined,
-    diet: you?.diet?.length ? you.diet : undefined,
-    political_beliefs: you?.political_beliefs?.length ? you.political_beliefs : undefined,
-    interests: you?.interests?.length ? you.interests : undefined,
-    work: you?.work?.length ? you.work : undefined,
-    causes: you?.causes?.length ? you.causes : undefined,
-    mbti: you?.mbti ? [you.mbti] : undefined,
-    relationship_status: you?.relationship_status?.length ? you.relationship_status : undefined,
-    languages: you?.languages?.length ? you.languages : undefined,
-    religion: you?.religion?.length ? you.religion : undefined,
-    wants_kids_strength: wantsKidsDatabaseToWantsKidsFilter(
-      (you?.wants_kids_strength ?? 2) as wantsKidsDatabase,
-    ),
-    has_kids: wantsKidsToHasKidsFilter((you?.wants_kids_strength ?? 2) as wantsKidsDatabase),
-    is_smoker: you?.is_smoker,
   }
-  debug(you, yourFilters)
+  debug(you, lookingForFilters)
 
-  const isYourFilters =
-    !!you &&
-    (!location || location.id === you.geodb_city_id) &&
-    isEqual(
-      filters.genders?.length ? filters.genders : undefined,
-      yourFilters.genders?.length ? yourFilters.genders : undefined,
-    ) &&
-    // ((!you.gender && !filters.pref_gender?.length) ||
-    //   (filters.pref_gender?.length == 1 &&
-    //     isEqual(filters.pref_gender?.length ? filters.pref_gender[0] : undefined, you.gender))) &&
-    ((!you.education_level && !filters.education_levels?.length) ||
-      (filters.education_levels?.length == 1 &&
-        isEqual(
-          filters.education_levels?.length ? filters.education_levels[0] : undefined,
-          you.education_level,
-        ))) &&
-    ((!you.mbti && !filters.mbti?.length) ||
-      (filters.mbti?.length == 1 &&
-        isEqual(filters.mbti?.length ? filters.mbti[0] : undefined, you.mbti))) &&
-    isEqual(new Set(filters.pref_romantic_styles), new Set(you.pref_romantic_styles)) &&
-    isEqual(new Set(filters.pref_relation_styles), new Set(you.pref_relation_styles)) &&
-    isEqual(new Set(filters.diet), new Set(you.diet)) &&
-    isEqual(new Set(filters.political_beliefs), new Set(you.political_beliefs)) &&
-    isEqual(new Set(filters.interests), new Set(you.interests)) &&
-    isEqual(new Set(filters.causes), new Set(you.causes)) &&
-    isEqual(new Set(filters.work), new Set(you.work)) &&
-    isEqual(new Set(filters.relationship_status), new Set(you.relationship_status)) &&
-    isEqual(new Set(filters.languages), new Set(you.languages)) &&
-    isEqual(new Set(filters.religion), new Set(you.religion)) &&
-    filters.pref_age_max == yourFilters.pref_age_max &&
-    filters.pref_age_min == yourFilters.pref_age_min &&
-    filters.wants_kids_strength == yourFilters.wants_kids_strength &&
-    filters.is_smoker == yourFilters.is_smoker
+  // Checked only when the search is *exactly* the looking-for preferences and nothing else — adding any
+  // other filter (education, location, a search term, ...) unchecks the chip, since the results are no
+  // longer just "who I'm looking for". Order within a multi-select doesn't matter, and an emptied
+  // multi-select ([]) counts the same as an untouched one.
+  const isLookingForFilters =
+    !!you && isEqual(normalize(filters), normalize({...initialFilters, ...lookingForFilters}))
 
-  const setYourFilters = (checked: boolean) => {
-    if (checked) {
-      updateFilter(yourFilters)
-      setRadius(defaultRadius)
-      debouncedSetRadius(defaultRadius) // clear any pending debounced sets
-      if (you?.geodb_city_id && you.city && you.city_latitude && you.city_longitude) {
-        setLocation({
-          id: you?.geodb_city_id,
-          name: you?.city,
-          lat: you?.city_latitude,
-          lon: you?.city_longitude,
-        })
-      }
-    } else {
-      clearFilters()
-    }
+  // Checking the chip *replaces* the search rather than merging into it: it means "show me only who I'm
+  // looking for", so anything else already selected (a relationship status, a city, ...) has to go —
+  // otherwise the chip would light up next to filters it doesn't stand for.
+  //
+  // One setFilters call, not clearFilters() + updateFilter(): usePersistentLocalState resolves updater
+  // functions against a ref that's only refreshed on render, so a second call in the same handler still
+  // sees the pre-click filters. Worse, it drops out entirely when its result deep-equals them — which is
+  // exactly the case here whenever the extra filter was added *on top of* the looking-for ones, leaving
+  // only the clear behind.
+  const setLookingForFilters = (checked: boolean) => {
+    setFilters({...baseFilters, ...(checked ? lookingForFilters : {})})
+    setLocation(undefined)
+    setRaisedInLocation(undefined)
   }
+
+  // First visit on this browser (fresh account, or localStorage cleared): start from the "who I'm
+  // looking for" filters rather than an empty search, so the first page of profiles is already someone
+  // you could match with.
+  // The flag is read straight out of localStorage on the first render instead of through
+  // usePersistentLocalState, because the decision has to be made before that hook's own hydration
+  // effect has run — and before the location effects above write the filters key.
+  const hasSeededFilters = useRef<boolean | undefined>(undefined)
+  if (hasSeededFilters.current === undefined) {
+    hasSeededFilters.current = safeLocalStorage?.getItem(SEEDED_FILTERS_KEY) === 'true'
+  }
+
+  useEffect(() => {
+    if (hasSeededFilters.current || !you) return
+    hasSeededFilters.current = true
+    safeLocalStorage?.setItem(SEEDED_FILTERS_KEY, 'true')
+    updateFilter(lookingForFilters)
+  }, [you])
 
   return {
     filters,
     updateFilter,
     clearFilters,
-    setYourFilters,
-    isYourFilters,
+    setLookingForFilters,
+    isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
   }

@@ -45,11 +45,16 @@ export function PrivateMessagesIcon(props: {
   const {solid, className, bubbleClassName} = props
   const privateUser = usePrivateUser()
   const Icon = solid ? BiSolidEnvelope : BiEnvelope
+  // Margin utilities (`mx-auto`, `my-1`, ...) belong on the wrapper, everything else (size, color)
+  // stays on the icon. Otherwise the wrapper stretches to the full width of its parent — e.g. the
+  // bottom-nav item — and the badge anchors to that far edge instead of the envelope's corner.
+  const classes = (className ?? '').split(/\s+/).filter(Boolean)
+  const isMargin = (c: string) => /^-?m[xytrbl]?-/.test(c)
   return (
     // Sized to the icon itself so the count badge can anchor to its top-right corner instead of
     // being centered on top of the envelope.
-    <Row className="relative flex-shrink-0">
-      <Icon className={className} />
+    <Row className={clsx('relative w-fit flex-shrink-0', classes.filter(isMargin))}>
+      <Icon className={clsx(classes.filter((c) => !isMargin(c)))} />
       {privateUser && (
         <InternalUnseenMessagesBubble
           className={clsx('absolute -right-1.5 -top-1.5', bubbleClassName)}

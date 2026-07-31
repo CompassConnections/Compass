@@ -81,9 +81,6 @@ ALTER TABLE profiles
     ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-DROP POLICY IF EXISTS "public read" ON profiles;
-CREATE POLICY "public read" ON profiles
-    FOR SELECT USING (true);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON public.profiles USING btree (user_id);

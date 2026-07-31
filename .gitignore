@@ -109,3 +109,5 @@ test-results
 # them same-origin. Push new renders with media-creator's `npm run upload:media`.
 
 *.back
+
+scripts/audit/

@@ -59,7 +59,7 @@ yarn --cwd=web test -t "renders profile card"
 Database:
 
 ```bash
-./scripts/migrate.sh supabase/migrations/<file>.sql   # apply a migration to dev
+./scripts/migrate.sh backend/supabase/migrations/<file>.sql   # apply a migration to dev
 yarn --cwd=backend/api regen-types-dev                # rebuild common/src/supabase/schema.ts
 ```
 

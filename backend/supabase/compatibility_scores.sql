@@ -29,10 +29,10 @@ ALTER TABLE compatibility_scores
 -- Row Level Security
 ALTER TABLE compatibility_scores ENABLE ROW LEVEL SECURITY;
 
--- Public read policy (scores are not sensitive by themselves)
-DROP POLICY IF EXISTS "public read" ON compatibility_scores;
-CREATE POLICY "public read" ON compatibility_scores
-    FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked, so the client cannot read this table at all (migration 20260731_lock_activity_stars_compat.sql
+-- dropped the former "public read" policy). Only the service-role backend reads it — get-profiles joins
+-- it, bypassing RLS — which keeps the pairwise match graph from being enumerated over PostgREST.
 
 -- Update modified_time on any row update
 CREATE OR REPLACE FUNCTION set_modified_time_compat_scores()

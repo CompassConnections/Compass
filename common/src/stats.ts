@@ -46,6 +46,9 @@ export type Distribution = {
 export type Stats = {
   users: number
   profiles: number
+  /** Members with a `user_activity.last_online_time` within the last 30 days. Aggregated server-side and
+   *  cached here so the client no longer reads the whole `user_activity` table for a count. */
+  activeMembers: number
   upcomingEvents: number
   messages: number
   /** Message channels that carry at least one message — empty channels aren't conversations. */
@@ -63,6 +66,14 @@ export type Stats = {
    * noise and a soft privacy leak, so the card simply doesn't render rather than showing a weak bar.
    */
   demographics: Partial<Record<DemographicField, Distribution>>
+  /**
+   * Daily new-profile counts for the member-growth charts — one row per UTC day the platform gained a
+   * profile, oldest first. `total` is all new profiles that day; `completed` is the subset with a
+   * filled-out bio or occupation. Aggregated server-side and cached with the rest of /stats so the
+   * client never pulls one row per profile (which also keeps it under the PostgREST max-rows cap as the
+   * member base grows). `day` is an ISO `YYYY-MM-DD` string.
+   */
+  memberGrowth: {day: string; total: number; completed: number}[]
 }
 
 /**

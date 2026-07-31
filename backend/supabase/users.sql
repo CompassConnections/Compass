@@ -22,10 +22,6 @@ ALTER TABLE users
     ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-DROP POLICY IF EXISTS "public read" ON users;
-CREATE POLICY "public read" ON users
-    FOR SELECT
-    USING (true);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS user_username_idx ON public.users USING btree (username);

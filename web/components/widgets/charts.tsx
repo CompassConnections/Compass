@@ -10,19 +10,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getCompletedProfilesCreations, getProfilesCreations} from 'web/lib/supabase/users'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function buildCounts(rows: any[]) {
-  const counts: Record<string, number> = {}
-  for (const r of rows) {
-    const date = new Date(r.created_time).toISOString().split('T')[0]
-    counts[date] = (counts[date] || 0) + 1
-  }
-  return counts
-}
 
 function cumulativeFromCounts(counts: Record<string, number>, sortedDates: string[]) {
   const out: Record<string, number> = {}
@@ -178,10 +169,10 @@ function CustomLegend({payload}: any) {
  * transparency is the one failure mode worth engineering against, and it is also why this renders
  * nothing at all rather than a placeholder when the query comes back empty.
  *
- * Scaling caveat, inherited from `getProfilesCreations`: this pulls one row per profile and rolls the
- * cumulative curve up in the browser. Fine at the current size, and identical to what /stats already
- * does, but it grows linearly — past a few thousand members this wants an aggregate endpoint
- * returning daily totals instead.
+ * Data comes from the cached /stats endpoint (`Stats.memberGrowth`) as daily totals — the browser only
+ * rolls those up into the cumulative curve. This used to pull one row per profile straight from
+ * PostgREST, which grew linearly and forced max-rows to sit above the member count; the aggregate keeps
+ * the payload flat (one row per day) regardless of how many members join.
  */
 // How long the line takes to draw itself in on reveal. Reused as the delay before the endpoint dot
 // fades in, so the dot lands exactly when the line reaches it rather than floating ahead of it.
@@ -199,12 +190,13 @@ export function MemberGrowth() {
   useEffect(() => {
     async function load() {
       try {
-        const profiles = await getProfilesCreations()
-        if (!profiles?.length) return setFailed(true)
+        const {memberGrowth} = await api('stats', {})
+        if (!memberGrowth?.length) return setFailed(true)
 
-        const counts = buildCounts(profiles)
-        const dates = Object.keys(counts).sort((a, b) => a.localeCompare(b))
-        const range = buildDailyRange(dates[0], dates[dates.length - 1])
+        // The endpoint already returns one row per day, oldest first — no per-profile rolling needed.
+        const counts = Object.fromEntries(memberGrowth.map((d) => [d.day, d.total]))
+        const days = memberGrowth.map((d) => d.day)
+        const range = buildDailyRange(days[0], days[days.length - 1])
         const cumulative = cumulativeFromCounts(counts, range)
 
         setData(
@@ -358,21 +350,14 @@ export default function ChartMembers() {
 
   useEffect(() => {
     async function load() {
-      const [allProfiles, completedProfiles] = await Promise.all([
-        getProfilesCreations(),
-        getCompletedProfilesCreations(),
-      ])
+      const {memberGrowth} = await api('stats', {})
+      if (!memberGrowth?.length) return
 
-      const countsAll = buildCounts(allProfiles)
-      const countsCompleted = buildCounts(completedProfiles)
+      const countsAll = Object.fromEntries(memberGrowth.map((d) => [d.day, d.total]))
+      const countsCompleted = Object.fromEntries(memberGrowth.map((d) => [d.day, d.completed]))
 
-      const allDates = Object.keys(countsAll)
-      const completedDates = Object.keys(countsCompleted)
-      const sorted = [...allDates, ...completedDates].sort((a, b) => a.localeCompare(b))
-      const minDateStr = sorted[0]
-      const maxDateStr = sorted[sorted.length - 1]
-
-      const dates = buildDailyRange(minDateStr, maxDateStr)
+      const days = memberGrowth.map((d) => d.day)
+      const dates = buildDailyRange(days[0], days[days.length - 1])
       const cumAll = cumulativeFromCounts(countsAll, dates)
       const cumCompleted = cumulativeFromCounts(countsCompleted, dates)
 

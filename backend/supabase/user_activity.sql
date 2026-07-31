@@ -7,9 +7,10 @@ CREATE TABLE user_activity
 -- Row Level Security
 ALTER TABLE user_activity ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "public read" ON user_activity;
-CREATE POLICY "public read" ON user_activity
-    FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked, so the client cannot read this table directly (migration 20260731_lock_activity_stars_compat.sql
+-- dropped the former "public read" policy). The client reads one row via get_user_activity(uid); the
+-- active-member count moved to the cached /stats aggregate.
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_user_activity_last_online_time

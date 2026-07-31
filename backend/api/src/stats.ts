@@ -120,6 +120,8 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     conversationCount,
     genderStats,
     countryStats,
+    memberGrowthRows,
+    activeMembersCount,
     demographicResults,
   ] = await Promise.all([
     pg.one(`SELECT COUNT(*)::int as count FROM users`),
@@ -142,6 +144,26 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
          where country is not null and country <> ''
          group by country
          order by count desc, country asc`,
+    ),
+    // Daily new-profile counts for the growth charts. Bucketed by UTC day to match the frontend's
+    // date keying, and aggregated here so the client no longer pulls one row per profile via PostgREST
+    // (which both grows unboundedly and is what forced max-rows to sit above the member count).
+    // `completed` mirrors the old getCompletedProfilesCreations filter: a real bio or an occupation.
+    pg.manyOrNone(
+      `select to_char(day, 'YYYY-MM-DD') as day, total, completed
+         from (
+           select (created_time at time zone 'utc')::date as day,
+                  count(*)::int as total,
+                  count(*) filter (where bio_length >= 100)::int as completed
+             from profiles
+             group by 1
+         ) t
+         order by day`,
+    ),
+    // Active members = distinct users seen online in the last 30 days. Moved off the client (which used
+    // to read the whole user_activity table for this count) into the cached /stats aggregate.
+    pg.one(
+      `select count(*)::int as count from user_activity where last_online_time > now() - interval '30 days'`,
     ),
     Promise.all(
       demographicFields.map(([field, {multi}]) =>
@@ -181,6 +203,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
   const result = {
     users: userCount.count,
     profiles: profileCount.count,
+    activeMembers: activeMembersCount.count,
     upcomingEvents: eventsCount.count,
     messages: messagesCount.count,
     conversations: conversationCount.count,
@@ -191,6 +214,11 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     countries,
     countryCount: countries.length,
     demographics,
+    memberGrowth: (memberGrowthRows ?? []).map((r: any) => ({
+      day: r.day,
+      total: r.total,
+      completed: r.completed,
+    })),
   }
 
   // Update cache

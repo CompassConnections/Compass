@@ -75,7 +75,7 @@ function HeroBand({
   messages,
 }: {
   members: number | null
-  active: number | null
+  active: number | null | undefined
   countries: number | null | undefined
   discussions: number | null
   messages: number | null | undefined
@@ -404,7 +404,6 @@ export default function Stats() {
     async function load() {
       const tables = [
         'profiles',
-        'active_members',
         'private_user_message_channels',
         'compatibility_prompts',
         'compatibility_answers',
@@ -480,7 +479,7 @@ export default function Stats() {
             {/* ── Hero band ── */}
             <HeroBand
               members={data.profiles}
-              active={data.active_members}
+              active={statsData?.activeMembers}
               countries={statsData?.countryCount}
               discussions={data.private_user_message_channels}
               messages={statsData?.messages}

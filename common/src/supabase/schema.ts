@@ -13,6 +13,7 @@ export type Database = {
           created_time: string
           creator_id: string
           id: number
+          last_checked_at: string | null
           last_notified_at: string | null
           location: Json | null
           search_filters: Json | null
@@ -22,6 +23,7 @@ export type Database = {
           created_time?: string
           creator_id: string
           id?: never
+          last_checked_at?: string | null
           last_notified_at?: string | null
           location?: Json | null
           search_filters?: Json | null
@@ -31,6 +33,7 @@ export type Database = {
           created_time?: string
           creator_id?: string
           id?: never
+          last_checked_at?: string | null
           last_notified_at?: string | null
           location?: Json | null
           search_filters?: Json | null
@@ -137,6 +140,13 @@ export type Database = {
             referencedRelation: 'users'
             referencedColumns: ['id']
           },
+          {
+            foreignKeyName: 'compatibility_answers_question_id_fkey'
+            columns: ['question_id']
+            isOneToOne: false
+            referencedRelation: 'compatibility_prompts'
+            referencedColumns: ['id']
+          },
         ]
       }
       compatibility_answers_free: {
@@ -173,6 +183,13 @@ export type Database = {
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'compatibility_answers_free_question_id_fkey'
+            columns: ['question_id']
+            isOneToOne: false
+            referencedRelation: 'compatibility_prompts'
             referencedColumns: ['id']
           },
         ]
@@ -425,6 +442,38 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      email_unsubscribe_tokens: {
+        Row: {
+          created_at: string
+          notification_type: string | null
+          token: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          notification_type?: string | null
+          token: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          notification_type?: string | null
+          token?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'email_unsubscribe_tokens_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       events: {
         Row: {
@@ -1442,7 +1491,7 @@ export type Database = {
       reports: {
         Row: {
           content_id: string
-          content_owner_id: string
+          content_owner_id: string | null
           content_type: string
           created_time: string | null
           description: string | null
@@ -1453,7 +1502,7 @@ export type Database = {
         }
         Insert: {
           content_id: string
-          content_owner_id: string
+          content_owner_id?: string | null
           content_type: string
           created_time?: string | null
           description?: string | null
@@ -1464,7 +1513,7 @@ export type Database = {
         }
         Update: {
           content_id?: string
-          content_owner_id?: string
+          content_owner_id?: string | null
           content_type?: string
           created_time?: string | null
           description?: string | null
@@ -1589,24 +1638,6 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
-      }
-      user_waitlist: {
-        Row: {
-          created_time: string
-          email: string
-          id: number
-        }
-        Insert: {
-          created_time?: string
-          email: string
-          id?: number
-        }
-        Update: {
-          created_time?: string
-          email?: string
-          id?: number
-        }
-        Relationships: []
       }
       users: {
         Row: {
@@ -1795,6 +1826,17 @@ export type Database = {
         Args: never
         Returns: Record<string, unknown>[]
       }
+      get_display_users: {
+        Args: {ids: string[]}
+        Returns: {
+          avatar_url: string
+          ban_reason: string
+          id: string
+          is_banned_from_posting: boolean
+          name: string
+          username: string
+        }[]
+      }
       get_love_question_answers_and_lovers: {
         Args: {p_question_id: number}
         Returns: Record<string, unknown>[]
@@ -1802,6 +1844,127 @@ export type Database = {
       get_love_question_answers_and_profiles: {
         Args: {p_question_id: number}
         Returns: Record<string, unknown>[]
+      }
+      get_profile_by_user_id: {
+        Args: {uid: string}
+        Returns: {
+          accessibility_notes: string | null
+          age: number | null
+          allow_direct_messaging: boolean | null
+          allow_interest_indicating: boolean | null
+          big5_agreeableness: number | null
+          big5_conscientiousness: number | null
+          big5_extraversion: number | null
+          big5_neuroticism: number | null
+          big5_openness: number | null
+          bio: Json | null
+          bio_length: number | null
+          bio_text: string | null
+          bio_tsv: unknown
+          born_in_location: string | null
+          cannabis: string | null
+          cannabis_intention: string[] | null
+          cannabis_pref: string[] | null
+          city: string | null
+          city_latitude: number | null
+          city_longitude: number | null
+          comments_enabled: boolean
+          company: string | null
+          country: string | null
+          created_time: string
+          diet: string[] | null
+          disabled: boolean
+          drinks_per_month: number | null
+          education_level: string | null
+          ethnicity: string[] | null
+          gender: string | null
+          gender_details: string | null
+          geodb_city_id: string | null
+          has_kids: number | null
+          headline: string | null
+          height_in_inches: number | null
+          id: number
+          image_descriptions: Json | null
+          is_smoker: boolean | null
+          keywords: string[] | null
+          languages: string[] | null
+          last_modification_time: string
+          links: Json
+          looking_for_matches: boolean
+          mbti: string | null
+          messaging_status: string
+          neurotype: string[] | null
+          neurotype_details: string | null
+          occupation: string | null
+          occupation_title: string | null
+          orientation: string[] | null
+          orientation_details: string | null
+          photo_urls: string[] | null
+          pinned_url: string | null
+          political_beliefs: string[] | null
+          political_details: string | null
+          pref_age_max: number | null
+          pref_age_min: number | null
+          pref_gender: string[] | null
+          pref_relation_styles: string[] | null
+          pref_romantic_styles: string[] | null
+          psychedelics: string | null
+          psychedelics_intention: string[] | null
+          psychedelics_pref: string[] | null
+          raised_in_city: string | null
+          raised_in_country: string | null
+          raised_in_geodb_city_id: string | null
+          raised_in_lat: number | null
+          raised_in_lon: number | null
+          raised_in_radius: number | null
+          raised_in_region_code: string | null
+          referred_by_username: string | null
+          region_code: string | null
+          relationship_status: string[] | null
+          religion: string[] | null
+          religious_belief_strength: number | null
+          religious_beliefs: string | null
+          search_text: string | null
+          search_tsv: unknown
+          university: string | null
+          user_id: string
+          visibility: Database['public']['Enums']['lover_visibility']
+          wants_kids_strength: number | null
+        }[]
+        SetofOptions: {
+          from: '*'
+          to: 'profiles'
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_profile_stars: {
+        Args: {creator: string}
+        Returns: {
+          created_time: string
+          creator_id: string
+          star_id: string
+          target_id: string
+        }[]
+        SetofOptions: {
+          from: '*'
+          to: 'profile_stars'
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_user_activity: {
+        Args: {uid: string}
+        Returns: {
+          last_online_time: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: '*'
+          to: 'user_activity'
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_votes_with_results: {
         Args: {order_by?: string}

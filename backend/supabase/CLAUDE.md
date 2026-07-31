@@ -2,17 +2,17 @@
 
 Per-table SQL definitions and `make` targets that regenerate TypeScript types from the live database.
 
-The **active migrations** that get applied to the DB live in [
-`../../supabase/migrations/`](../../supabase/migrations/) —
-see [`../../supabase/CLAUDE.md`](../../supabase/CLAUDE.md). This folder is for table-shape reference and the regen
-tooling, not for what's actually run.
+The **active migrations** are authored here in [`migrations/`](migrations/) — this is the source of truth.
+Apply them with `./scripts/migrate.sh backend/supabase/migrations/<file>.sql` (see
+[`../../supabase/CLAUDE.md`](../../supabase/CLAUDE.md)). The `supabase/migrations/` folder at the repo root
+is generated/derived and gitignored — don't add migrations there.
 
 ## Layout
 
 ```
 backend/supabase/
 ├── makefile                Regen type / schema targets
-├── migrations/             Older migrations kept for history (current ones are in /supabase/migrations)
+├── migrations/             Active migrations — YYYYMMDD_<name>.sql, applied in filename order (source of truth)
 ├── migration.sql           One-off SQL helpers
 ├── users.sql, profiles.sql, ...   Reference shapes — one file per table
 ├── functions.sql, functions_others.sql   Postgres functions
@@ -35,9 +35,8 @@ These targets are also exposed as `yarn --cwd=backend/api regen-types-dev` / `re
 ## Conventions
 
 - SQL is lowercase by convention across the codebase.
-- Adding a new table: create a new migration in [`../../supabase/migrations/`](../../supabase/migrations/),
-  apply it (see `../../supabase/CLAUDE.md`), then run `make regen-types-dev` so the types in `common/` pick
-  it up.
+- Adding a new table: create a new migration in [`migrations/`](migrations/), apply it (see
+  `../../supabase/CLAUDE.md`), then run `make regen-types-dev` so the types in `common/` pick it up.
 - Don't hand-edit `common/src/supabase/schema.ts` — it gets overwritten by `regen-types`.
 
 ## Related docs

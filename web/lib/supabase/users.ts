@@ -2,7 +2,6 @@ import type {DisplayUser} from 'common/api/user-types'
 import {APIError} from 'common/api/utils'
 import {convertPartialUser} from 'common/supabase/users'
 import {run, TableName} from 'common/supabase/utils'
-import {MONTH_MS} from 'common/util/time'
 import {api} from 'web/lib/api'
 
 import {db} from './db'
@@ -49,33 +48,20 @@ export async function searchUsers(prompt: string, limit: number) {
 }
 
 export async function getDisplayUsers(userIds: string[]) {
-  const {data} = await run(
-    db
-      .from('users')
-      .select(`id, name, username, avatar_url, is_banned_from_posting`)
-      .in('id', userIds),
-  )
+  // Direct SELECT on `users` is revoked from the anon/authenticated roles (bulk-read cap). The capped
+  // get_display_users() function requires ids and returns at most 100 rows.
+  const {data} = await run(db.rpc('get_display_users' as any, {ids: userIds}))
 
-  return data.map(convertPartialUser) as unknown as DisplayUser[]
+  return (data as any[]).map(convertPartialUser) as unknown as DisplayUser[]
 }
 
-export async function getProfilesCreations() {
-  const {data} = await run(db.from('profiles').select(`id, created_time`).order('created_time'))
-  return data
-}
+// Member-growth series now comes pre-aggregated (daily totals) from the cached /stats endpoint —
+// see `Stats.memberGrowth` and backend/api/src/stats.ts. The client no longer pulls one row per
+// profile, so nothing here needs an unbounded read of the profiles table.
 
-export async function getCompletedProfilesCreations() {
-  const {data} = await run(
-    db
-      .from('profiles')
-      .select(`id, created_time`)
-      .or(`bio_length.gte.100,occupation_title.not.is.null`)
-      .order('created_time'),
-  )
-  return data
-}
-
-export async function getCount(table: TableName | 'active_members') {
+// Active-member count moved to the cached /stats endpoint (`Stats.activeMembers`) — the client no longer
+// reads the whole user_activity table, whose anon SELECT grant is now revoked.
+export async function getCount(table: TableName) {
   if (table == 'private_user_messages') {
     const result = await api('get-messages-count')
     return result.count
@@ -85,15 +71,6 @@ export async function getCount(table: TableName | 'active_members') {
     // channel members, so a client-side count would only see the caller's own channels.
     const result = await api('get-channels-count')
     return result.count
-  }
-  if (table == 'active_members') {
-    const {count} = await run(
-      db
-        .from('user_activity')
-        .select('*', {count: 'exact', head: true})
-        .gt('last_online_time', new Date(Date.now() - MONTH_MS).toISOString()), // last month
-    )
-    return count
   }
   const {count} = await run(db.from(table as any).select('*', {count: 'exact', head: true}))
   return count

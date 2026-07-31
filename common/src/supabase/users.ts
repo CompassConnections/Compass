@@ -1,20 +1,13 @@
 import {PrivateUser, User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
 
-import {
-  convertObjectToSQLRow,
-  convertSQLtoTS,
-  millisToTs,
-  Row,
-  run,
-  SupabaseClient,
-  tsToMillis,
-} from './utils'
+import {convertObjectToSQLRow, convertSQLtoTS, millisToTs, Row, tsToMillis} from './utils'
 
-export async function getUserForStaticProps(db: SupabaseClient, username: string) {
-  const {data} = await run(db.from('users').select().ilike('username', username))
-  return convertUser(data[0] ?? null)
-}
+// Can't read users table from font-end supabase to avoid scraping. Create rpc if needed.
+// export async function getUserForStaticProps(db: SupabaseClient, username: string) {
+//   const {data} = await run(db.from('users').select().ilike('username', username))
+//   return convertUser(data[0] ?? null)
+// }
 
 function toTS(row: any): any {
   return convertSQLtoTS<'users', User>(row, {

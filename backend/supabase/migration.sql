@@ -18,7 +18,6 @@ BEGIN;
 \i backend/supabase/profile_likes.sql
 \i backend/supabase/profile_ships.sql
 \i backend/supabase/profile_stars.sql
-\i backend/supabase/user_waitlist.sql
 \i backend/supabase/user_events.sql
 \i backend/supabase/user_notifications.sql
 \i backend/supabase/functions_others.sql
@@ -32,7 +31,6 @@ BEGIN;
 \i backend/supabase/interests_translations.sql
 \i backend/supabase/push_subscriptions.sql
 \i backend/supabase/push_subscriptions_mobile.sql
-\i backend/supabase/temp_users.sql
 \i backend/supabase/user_activity.sql
 \i backend/supabase/votes.sql
 \i backend/supabase/vote_results.sql

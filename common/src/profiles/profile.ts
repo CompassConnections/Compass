@@ -21,9 +21,10 @@ export const getProfileRowWithFrontendSupabase = async (
   // Do not use this method when running server-side (like in getStaticProps),
   // use the direct connection through the API via getProfileRow instead.
 
-  // Fetch profile
-  const profileRes = await run(db.from('profiles').select('*').eq('user_id', userId))
-  const profile = profileRes.data?.[0]
+  // Fetch profile. Direct SELECT on `profiles` is revoked from the anon/authenticated roles (bulk-read
+  // cap); reads go through the capped get_profile_by_user_id() SECURITY DEFINER function instead.
+  const profileRes = await run(db.rpc('get_profile_by_user_id' as any, {uid: userId}))
+  const profile = profileRes.data?.[0] as ProfileRow | undefined
   if (!profile) return null
 
   // Parallel instead of sequential

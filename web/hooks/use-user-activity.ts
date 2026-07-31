@@ -12,10 +12,11 @@ export function useUserActivity(userId: string | undefined) {
 
   const refresh = async () => {
     if (!userId) return
-    const {data} = await run(
-      db.from('user_activity').select('*').eq('user_id', userId).limit(1).single(),
-    )
-    if (data) setUserActivity(data as unknown as UserActivity)
+    // Direct SELECT on user_activity is revoked from the anon/authenticated roles; read the single row
+    // through the capped get_user_activity() SECURITY DEFINER function.
+    const {data} = await run(db.rpc('get_user_activity' as any, {uid: userId}))
+    const activity = (data as any[])?.[0]
+    if (activity) setUserActivity(activity as unknown as UserActivity)
   }
 
   useEffect(() => {

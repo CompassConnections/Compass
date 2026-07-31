@@ -16,9 +16,6 @@ psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
 
 
 # psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
-# -c 'drop table temp_users cascade;'
-
-# psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \
 # -f ./temp-users-dump.sql \
 
 # psql -U $DB_USER -d postgres -h $DB_NAME -p $PORT -w \

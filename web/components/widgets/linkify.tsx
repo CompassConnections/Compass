@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import {Fragment} from 'react'
+import {internalPathOf} from 'web/lib/util/link'
 
 import {linkClass} from './site-link'
 
@@ -25,10 +26,12 @@ export function Linkify(props: {text: string; className?: string}) {
     const whitespace = match.match(/^\s/)
     const symbol = match.trim().substring(0, 1)
     const tag = match.trim().substring(1)
-    const href =
+    const rawHref =
       {
         '@': `/${tag}`,
       }[symbol] ?? match.trim()
+    // A compassmeet.com URL routes client-side, so the app never hands it off to the OS browser.
+    const href = internalPathOf(rawHref) ?? rawHref
 
     return (
       <>
@@ -58,7 +61,7 @@ export function Linkify(props: {text: string; className?: string}) {
 }
 
 export const getLinkTarget = (href: string, newTab?: boolean) => {
-  // TODO: make this more robust against domain changes?
-  if (href.startsWith('http') && !href.startsWith(`https://compassmeet`)) return '_blank'
+  // mailto:/tel: keep the caller's default — only a genuine off-site page wants a new tab.
+  if (/^https?:\/\//i.test(href) && !internalPathOf(href)) return '_blank'
   return newTab ? '_blank' : '_self'
 }

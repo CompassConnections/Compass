@@ -8,7 +8,7 @@ import {deleteAccount} from 'web/lib/util/delete'
 import {ConfirmationButton} from '../buttons/confirmation-button'
 import {Col} from '../layout/col'
 import {Title} from '../widgets/title'
-import {SCARCITY_DELETION_REASONS, StayInsteadOfDelete} from './stay-instead-of-delete'
+import {shouldShowStayPitch, StayInsteadOfDelete} from './stay-instead-of-delete'
 
 export function DeleteAccountSurveyModal() {
   const [selectedReason, setSelectedReason] = useState<string | null>(null)
@@ -126,7 +126,7 @@ export function DeleteAccountSurveyModal() {
     }
   }
 
-  const showStayPitch = !!selectedReason && SCARCITY_DELETION_REASONS.includes(selectedReason)
+  const showStayPitch = shouldShowStayPitch(selectedReason)
 
   return (
     <ConfirmationButton

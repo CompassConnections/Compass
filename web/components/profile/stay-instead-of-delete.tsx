@@ -6,15 +6,19 @@ import {Col} from '../layout/col'
 import {Row} from '../layout/row'
 
 /**
- * Reasons that boil down to "there aren't enough people here (yet)". Deleting is the one move that
- * makes that worse for the person doing it: they stop being found, and they stop being told when
- * someone who fits shows up.
+ * Reasons where the pitch to stay would be tone-deaf: the person already found someone, so keeping a
+ * profile findable is not something they want. Every other reason gets the pitch — deleting is the
+ * one move that makes things worse for the person doing it: they stop being found, and they stop
+ * being told when someone who fits shows up.
  */
-export const SCARCITY_DELETION_REASONS = [
-  'not_enough_relevant_people',
-  'platform_not_active_enough',
-  'low_response_rate',
+export const NO_STAY_PITCH_DELETION_REASONS = [
+  'found_connection_on_compass',
+  'found_connection_elsewhere',
 ]
+
+/** Whether to show the "one thing before you go" pitch for a stated deletion reason. */
+export const shouldShowStayPitch = (reason: string | null) =>
+  !!reason && !NO_STAY_PITCH_DELETION_REASONS.includes(reason)
 
 function Point(props: {icon: ReactNode; title: string; body: string}) {
   const {icon, title, body} = props

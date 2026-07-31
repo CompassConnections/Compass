@@ -2,6 +2,7 @@ import {createPrivateUserMessageChannel} from 'api/create-private-user-message-c
 import {AuthedUser} from 'api/helpers/endpoint'
 import * as privateMessageModules from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
+import * as constants from 'common/envs/constants'
 import {AUTO_BAN_UNDER_REVIEW_CODE} from 'common/moderation/ban'
 import {sqlMatch} from 'common/test-utils'
 import * as utilArrayModules from 'common/util/array'
@@ -11,6 +12,13 @@ import {updateUser} from 'shared/supabase/users'
 import * as sharedUtils from 'shared/utils'
 
 jest.mock('shared/supabase/init')
+// Keep the real constants (DOMAIN, ...) but stub the staff checks: `isAdminId` returns true for
+// everyone when running locally, which would otherwise exempt the test user from the spam guard.
+jest.mock('common/envs/constants', () => ({
+  ...jest.requireActual('common/envs/constants'),
+  isAdminId: jest.fn(),
+  isModUsername: jest.fn(),
+}))
 jest.mock('common/util/array')
 jest.mock('common/discord/core')
 jest.mock('api/helpers/private-messages')
@@ -33,6 +41,8 @@ describe('createPrivateUserMessageChannel', () => {
     ;(admin.auth as jest.Mock).mockReturnValue({
       getUser: jest.fn().mockResolvedValue({emailVerified: true}),
     })
+    ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
+    ;(constants.isModUsername as jest.Mock).mockReturnValue(false)
   })
   afterEach(() => {
     jest.restoreAllMocks()
@@ -227,6 +237,23 @@ describe('createPrivateUserMessageChannel', () => {
         expect.stringContaining('Failed to send auto-ban discord report'),
         expect.any(Error),
       )
+    })
+
+    it.each([
+      ['an admin', 'isAdminId'],
+      ['a moderator', 'isModUsername'],
+    ])('never bans %s, however many conversations they start', async (_label, staffCheck) => {
+      ;((constants as any)[staffCheck] as jest.Mock).mockReturnValue(true)
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({id: '333'})
+
+      const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
+
+      expect(results.status).toBe('success')
+      expect(updateUser).not.toHaveBeenCalled()
+      expect(sendDiscordMessage).not.toHaveBeenCalled()
+      // The 24h count query is skipped entirely: the only pg.one is the channel insert.
+      expect(mockPg.one).toHaveBeenCalledTimes(1)
+      expect(privateMessageModules.addUsersToPrivateMessageChannel).toHaveBeenCalledTimes(1)
     })
 
     it('does not ban when still under the limit', async () => {

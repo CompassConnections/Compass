@@ -2,7 +2,7 @@ import {getConnectionInterests} from 'api/get-connection-interests'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
-import {DOMAIN} from 'common/envs/constants'
+import {DOMAIN, isAdminId, isModUsername} from 'common/envs/constants'
 import {
   AUTO_BAN_REVIEW_HOURS,
   AUTO_BAN_UNDER_REVIEW_CODE,
@@ -81,20 +81,26 @@ export const createPrivateUserMessageChannel: APIHandler<
       channelId: Number(currentChannel.channel_id),
     }
 
+  // Admins and mods are exempt: they legitimately reach out to many members (support, moderation,
+  // onboarding), and auto-banning the people who handle the review queue would be self-defeating.
+  const isStaff = isAdminId(creatorId) || isModUsername(creator.username)
+
   // Spam guard: count how many conversations this user has started in the last 24h.
   // If they've already created MAX_NEW_CHANNELS_PER_DAY, this new one is over the
   // limit — ban them right away and flag it to the admins for review.
-  const {count: recentChannelCount} = await pg.one(
-    `select count(*) as count
+  const {count: recentChannelCount} = isStaff
+    ? {count: 0}
+    : await pg.one(
+        `select count(*) as count
      from private_user_message_channel_members m
      join private_user_message_channels c on c.id = m.channel_id
      where m.user_id = $1
        and m.role = 'creator'
        and c.created_time > now() - interval '24 hours'`,
-    [creatorId],
-  )
+        [creatorId],
+      )
 
-  if (Number(recentChannelCount) >= MAX_NEW_CHANNELS_PER_DAY) {
+  if (!isStaff && Number(recentChannelCount) >= MAX_NEW_CHANNELS_PER_DAY) {
     await updateUser(creatorId, {isBannedFromPosting: true, banReason: 'auto_rate_limit'})
     try {
       const message = `

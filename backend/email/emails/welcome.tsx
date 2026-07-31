@@ -1,4 +1,15 @@
-import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Html,
+  Link,
+  Preview,
+  Section,
+  Text,
+} from '@react-email/components'
+import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {type User} from 'common/user'
 import {container, content, Footer, main, paragraph} from 'email/utils'
 import React from 'react'
@@ -23,6 +34,10 @@ export const WelcomeEmail = ({
 }: WelcomeEmailProps) => {
   const name = toUser.name.split(' ')[0]
   const t = createT(locale)
+
+  // Tagged with their own username, so a share made in the first hour is still credited to them — the
+  // same attribution /referrals and the about-page share block already speak.
+  const referralUrl = `${DEPLOYED_WEB_URL}/?referrer=${toUser.username}`
 
   return (
     <Html>
@@ -63,9 +78,17 @@ export const WelcomeEmail = ({
                 marginBottom: '24px',
               }}
             >
+              {/* A new key rather than a reword of `email.welcome.intro`, since fr and de resolve ahead
+                  of this fallback and would otherwise keep serving the old sentence. The old one described
+                  Compass by what it isn't ("no ads, no hidden algorithms, no subscriptions") and never
+                  said the one thing a new member needs on day zero: that this is a searchable directory
+                  and searching is the thing to go do. Same vocabulary as the home hero ("Don't Swipe.
+                  Search.", "No algorithm decides for you who's worth writing to") and the /about subtitle
+                  ("a free, public directory of people looking for depth"), so the email a member reads
+                  first and the page that convinced them read as one product. */}
               {t(
-                'email.welcome.intro',
-                'Compass is a free, community-owned platform built to help people form deep, meaningful connections — platonic, romantic, or collaborative. There are no ads, no hidden algorithms, and no subscriptions — just a transparent, open-source space shaped by people like you.',
+                'email.welcome.intro.v2',
+                'Compass is a free, public directory for finding your people — friends, partners, or collaborators. Every profile is written by hand and fully searchable: values, interests, politics, diet, languages, and twenty-odd other filters, plus free-text search that reads what people actually wrote. No swiping, no ads, and no algorithm deciding for you who’s worth writing to. It’s built by volunteers, funded by donations, and governed by its members.',
               )}
             </Text>
 
@@ -138,21 +161,85 @@ export const WelcomeEmail = ({
             {/*  </a>*/}
             {/*</Text>*/}
 
-            <Text
+            {/*<Text*/}
+            {/*  style={{*/}
+            {/*    marginTop: '40px',*/}
+            {/*    fontSize: '13px',*/}
+            {/*    color: '#8c8070',*/}
+            {/*    lineHeight: '1.75',*/}
+            {/*    fontStyle: 'italic',*/}
+            {/*    fontFamily: "'Cormorant Garamond', serif",*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  {t(*/}
+            {/*    'email.welcome.thanks',*/}
+            {/*    'Your presence and participation are what make Compass possible. Thank you for helping us build an internet space that prioritizes depth, trust, and community over monetization.',*/}
+            {/*  )}*/}
+            {/*</Text>*/}
+
+            {/* The one ask this email makes, and deliberately not a share ask: on day zero the reader has
+                had no experience of Compass yet, so asking them to recommend it costs credibility and
+                converts badly. A reply costs them one sentence, and it is what opens the founder sequence
+                (see martin/outreach/new-members.md, Contact #1). It also gives before it asks — the offer
+                to hand back two or three profiles is the reciprocity turn, moved to day zero because it
+                is cheap and it is the thing a new member actually wants.
+
+                No button here on purpose: "Confirm My Email" must stay the only button in this email, or
+                the account never gets created and nothing else matters. */}
+            <div
               style={{
-                marginTop: '40px',
-                fontSize: '13px',
-                color: '#8c8070',
-                lineHeight: '1.75',
-                fontStyle: 'italic',
-                fontFamily: "'Cormorant Garamond', serif",
+                // borderTop: '1px solid #ece7de',
+                // marginTop: '32px',
+                paddingTop: '24px',
               }}
             >
-              {t(
-                'email.welcome.thanks',
-                'Your presence and participation are what make Compass possible. Thank you for helping us build an internet space that prioritizes depth, trust, and community over monetization.',
-              )}
-            </Text>
+              <Text
+                style={{
+                  ...paragraph,
+                  fontSize: '15px',
+                  lineHeight: '1.75',
+                  color: '#1e1a14',
+                  marginBottom: '16px',
+                }}
+              >
+                {t(
+                  'email.welcome.founder_note',
+                  "I'm Martin, I started Compass, and this address reaches me directly. Hit reply and tell me two things: what brought you here, and who you're hoping to find. I answer every one, and I can usually point you straight at two or three people worth writing to.",
+                )}
+              </Text>
+
+              <Text style={{...paragraph, fontSize: '15px', marginTop: '0'}}>
+                Martin Braquet
+                <br />
+                <span style={{fontSize: '12px', color: '#8c8070'}}>
+                  {t('email.welcome.signature_title', 'Founder, Compass')}
+                </span>
+              </Text>
+
+              {/* The share seed. A P.S. rather than a section, because at this moment it is a thought to
+                  plant, not an action to demand — the real ask comes a week later once a saved search has
+                  fired. Framed as the reader's own upside, the same argument as the /about closing block:
+                  growth is a network effect they benefit from, never a favour to us. */}
+              <Text
+                style={{
+                  marginTop: '24px',
+                  fontSize: '13px',
+                  lineHeight: '1.7',
+                  color: '#8c8070',
+                }}
+              >
+                {t(
+                  'email.welcome.ps',
+                  'P.S. — Compass is still small enough that this genuinely matters: it gets better for you with every person you bring, because even a friend who isn’t who you’re looking for brings their whole circle with them. If someone comes to mind while you’re writing your profile, here’s your link — it’s tagged to you: ',
+                )}
+                <Link
+                  href={referralUrl}
+                  style={{color: '#c17f3e', textDecoration: 'none', wordBreak: 'break-all'}}
+                >
+                  {referralUrl.replace(/^https?:\/\//, '')}
+                </Link>
+              </Text>
+            </div>
           </Section>
 
           <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />

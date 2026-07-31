@@ -107,8 +107,11 @@ export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) =
 
   const subject = t('email.welcome.subject', 'Welcome to Compass!')
 
+  // From Martin rather than the generic `fromEmail`, and replying to him rather than to the shared
+  // hello@ inbox that `sendEmail` defaults to: this email now asks the reader to hit reply and talk to
+  // the founder, and that ask is only true if the reply actually lands in his inbox.
   return await sendEmail({
-    from: fromEmail,
+    from: 'Martin from Compass <martin@compassmeet.com>',
     subject,
     to: privateUser.email,
     html: await render(

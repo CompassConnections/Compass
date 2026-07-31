@@ -27,6 +27,12 @@ export function isModId(id: string) {
   return MOD_USERNAMES.includes(id)
 }
 
+// Mods are listed by username, so callers holding a user object should check that rather than the
+// id (`isModId` only matches when the id happens to be a mod username).
+export function isModUsername(username: string | null | undefined) {
+  return !!username && MOD_USERNAMES.includes(username)
+}
+
 console.debug(`Running in ${HOSTING_ENV} (${ENV})`)
 
 // class MissingKeyError implements Error {

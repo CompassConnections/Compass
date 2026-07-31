@@ -483,10 +483,13 @@ function ProfileContent(props: {
             `row-span-2` gives the sticky element a containing block taller than itself, which is what
             it needs to have anywhere to travel. */}
         <ScrollPanel
-          className="lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          className="lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1"
           // `lg:pr-5` is the gutter the card's padding used to provide: without it the values, the
           // Big Five numbers in particular, sit hard against the scrollbar and get clipped by it.
-          scrollClassName="lg:overflow-y-auto lg:max-h-[calc(100vh-8rem)] lg:pr-5"
+          // The offset is small because nothing is pinned over the top of this page on desktop — the
+          // nav is the left column, not a bar — so anything larger is just unused viewport: the rail
+          // is the tallest thing here and every pixel of the cap is a pixel less to scroll.
+          scrollClassName="lg:overflow-y-auto lg:max-h-[calc(100vh-3rem)] lg:pr-5"
           fadeColorClass="from-canvas-100 to-transparent"
         >
           <RailBlocks profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />

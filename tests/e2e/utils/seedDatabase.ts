@@ -104,6 +104,7 @@ export async function seedDbUser(
 
   const fullProfile = {
     ...mediumProfile,
+    exercise: userInfo.randomElement(userInfo.exercise),
     cannabis: userInfo.randomElement(userInfo.cannabis),
     psychedelics: userInfo.randomElement(userInfo.psychedelics),
     cannabis_intention: [userInfo.randomElement(userInfo.cannabis_intention)],

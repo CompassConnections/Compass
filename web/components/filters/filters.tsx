@@ -18,6 +18,7 @@ import {
 import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
+import {ExerciseFilter, ExerciseFilterText} from 'web/components/filters/exercise-filter'
 import {FieldToggles} from 'web/components/filters/field-toggles'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
 import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profiles-toggle'
@@ -525,6 +526,23 @@ function Filters(props: {
             locationFilterProps={raisedInLocationFilterProps}
           />
         </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.languages', 'Languages')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.languages || undefined)}
+          selection={
+            <LanguageFilterText
+              options={filters.languages as string[] | undefined}
+              // highlightedClass={
+              //   hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
+              // }
+            />
+          }
+        >
+          <LanguageFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
       </FilterGroup>
 
       {/* Lifestyle Group */}
@@ -572,6 +590,16 @@ function Filters(props: {
           }
         >
           <DietFilter filters={filters} updateFilter={updateFilter} />
+        </FilterSection>
+
+        <FilterSection
+          title={t('profile.optional.exercise', 'Exercise')}
+          openFilter={openFilter}
+          setOpenFilter={setOpenFilter}
+          isActive={hasAny(filters.exercise || undefined)}
+          selection={<ExerciseFilterText options={filters.exercise as string[] | undefined} />}
+        >
+          <ExerciseFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
 
         <FilterSection
@@ -650,23 +678,6 @@ function Filters(props: {
           }
         >
           <CannabisFilter filters={filters} updateFilter={updateFilter} />
-        </FilterSection>
-
-        <FilterSection
-          title={t('profile.optional.languages', 'Languages')}
-          openFilter={openFilter}
-          setOpenFilter={setOpenFilter}
-          isActive={hasAny(filters.languages || undefined)}
-          selection={
-            <LanguageFilterText
-              options={filters.languages as string[] | undefined}
-              // highlightedClass={
-              //   hasAny(filters.languages || undefined) ? 'text-primary-600' : 'text-ink-900'
-              // }
-            />
-          }
-        >
-          <LanguageFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
       </FilterGroup>
 

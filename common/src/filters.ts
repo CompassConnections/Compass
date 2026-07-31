@@ -16,6 +16,8 @@ export type FilterFields = {
   genders: string[] | null | undefined
   cannabis: string[] | null | undefined
   psychedelics: string[] | null | undefined
+  // Scalar on the profile, multi-select as a filter — same shape as `cannabis` above.
+  exercise: string[] | null | undefined
   education_levels: string[] | null | undefined
   mbti: string[] | null | undefined
   name: string | null | undefined
@@ -91,6 +93,7 @@ export const initialFilters: Partial<FilterFields> = {
   has_kids: undefined,
   wants_kids_strength: undefined,
   is_smoker: undefined,
+  exercise: undefined,
   psychedelics: undefined,
   cannabis: undefined,
   psychedelics_intention: undefined,

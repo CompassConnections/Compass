@@ -3,6 +3,7 @@ import {
   CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  EXERCISE_CHOICES,
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
@@ -60,6 +61,7 @@ class UserAccountInformationForSeeding {
   political_beliefs = Object.values(POLITICAL_CHOICES)
   religion = Object.values(RELIGION_CHOICES)
   diet = Object.values(DIET_CHOICES)
+  exercise = Object.values(EXERCISE_CHOICES)
   drinks_per_month = faker.number.int({min: 4, max: 40})
   height_in_inches = faker.number.float({min: 56, max: 78, fractionDigits: 2})
   ethnicity = Object.values(RACE_CHOICES)

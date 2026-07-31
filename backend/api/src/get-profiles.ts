@@ -4,6 +4,7 @@ import {type APIHandler} from 'api/helpers/endpoint'
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  EXERCISE_CHOICES,
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
@@ -88,6 +89,7 @@ export type profileQueryType = {
   wants_kids_strength?: number | undefined
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
+  exercise?: string[] | undefined
   shortBio?: boolean | undefined
   psychedelics?: string[] | undefined
   cannabis?: string[] | undefined
@@ -147,6 +149,7 @@ const choiceFields = [
   {field: 'gender', choices: GENDERS},
   {field: 'education_level', choices: EDUCATION_CHOICES},
   {field: 'mbti', choices: MBTI_CHOICES},
+  {field: 'exercise', choices: EXERCISE_CHOICES},
 ]
 
 // Define array choice fields to search
@@ -290,6 +293,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     causes,
     work,
     is_smoker,
+    exercise,
     shortBio,
     psychedelics,
     cannabis,
@@ -628,6 +632,8 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
           `is_smoker = $(is_smoker)`,
         {is_smoker},
       ),
+
+    exercise?.length && where(`exercise = ANY($(exercise))`, {exercise}),
 
     psychedelics?.length &&
       where(

@@ -6,6 +6,7 @@ import {
   CANNABIS_CHOICES,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  EXERCISE_CHOICES,
   GENDERS,
   LANGUAGE_CHOICES,
   MBTI_CHOICES,
@@ -113,6 +114,7 @@ async function validateProfileFields(
     'gender',
     'education_level',
     'mbti',
+    'exercise',
     'psychedelics',
     'cannabis',
     'headline',
@@ -467,6 +469,7 @@ export async function callLLM(
     relationship_status: Object.values(RELATIONSHIP_STATUS_CHOICES),
     cannabis: Object.values(CANNABIS_CHOICES),
     education_level: Object.values(EDUCATION_CHOICES),
+    exercise: Object.values(EXERCISE_CHOICES),
     gender: Object.values(GENDERS),
     mbti: Object.values(MBTI_CHOICES),
     psychedelics: Object.values(PSYCHEDELICS_CHOICES),
@@ -511,6 +514,7 @@ export async function callLLM(
       'Number 0–4. How strongly they want kids (0 = definitely not, 4 = definitely yes).',
     diet: `Array. Any of: ${validChoices.diet?.join(', ')}`,
     ethnicity: `Array. Any of: ${validChoices.ethnicity?.join(', ')}`,
+    exercise: `String. One of: ${validChoices.exercise?.join(', ')}. How often they exercise, only if explicitly stated.`,
 
     // Substances
     psychedelics: `String. One of: ${validChoices.psychedelics?.join(', ')}. Usage frequency of psychedelics/plant medicine, only if explicitly stated.`,

@@ -56,7 +56,10 @@ BEGIN;
 \i backend/supabase/email_unsubscribe_tokens.sql
 \i backend/supabase/migrations/20260524_add_orientation_to_profiles.sql
 \i backend/supabase/migrations/20260709_add_last_checked_at_to_bookmarked_searches.sql
-\i backend/supabase/migrations/20260724_add_neurotype_to_profiles.sql
 \i backend/supabase/migrations/20260724_add_accessibility_notes_to_profiles.sql
+\i backend/supabase/migrations/20260724_add_neurotype_to_profiles.sql
 \i backend/supabase/migrations/20260728_add_ban_reason_to_users.sql
+\i backend/supabase/migrations/20260730_cap_profiles_users_reads.sql
+\i backend/supabase/migrations/20260731_add_exercise_to_profiles.sql
+\i backend/supabase/migrations/20260731_lock_activity_stars_compat.sql
 COMMIT;

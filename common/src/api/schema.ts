@@ -788,6 +788,7 @@ export const API = (_apiTypeCheck = {
         wants_kids_strength: z.coerce.number().optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),
+        exercise: arraybeSchema.optional(),
         psychedelics: arraybeSchema.optional(),
         cannabis: arraybeSchema.optional(),
         psychedelics_intention: arraybeSchema.optional(),

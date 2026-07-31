@@ -9,6 +9,7 @@ import {
   DEFAULT_ORIENTATIONS,
   DIET_CHOICES,
   EDUCATION_CHOICES,
+  EXERCISE_CHOICES,
   EXTRA_NEUROTYPES,
   GENDERS,
   GENDERS_PLURAL,
@@ -1158,20 +1159,6 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.diet', 'Diet')} />
-
-        <Col className={clsx(colClassName)}>
-          {/*<label className={clsx(labelClassName)}>*/}
-          {/*  {t('profile.optional.diet', 'Diet')}*/}
-          {/*</label>*/}
-          <MultiCheckbox
-            choices={DIET_CHOICES}
-            selected={profile['diet'] ?? []}
-            translationPrefix={'profile.diet'}
-            onChange={(selected) => setProfile('diet', selected)}
-          />
-        </Col>
-
         <Category title={t('profile.optional.category.morality', 'Morality')} />
         <AddOptionEntry
           title={t('profile.optional.causes', 'Causes')}
@@ -1191,6 +1178,38 @@ export const OptionalProfileUserForm = (props: {
           setProfile={setProfile}
           label={'interests'}
         />
+
+        <Category title={t('profile.optional.category.lifestyle', 'Lifestyle')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>{t('profile.optional.diet', 'Diet')}</label>
+          <MultiCheckbox
+            choices={DIET_CHOICES}
+            selected={profile['diet'] ?? []}
+            translationPrefix={'profile.diet'}
+            onChange={(selected) => setProfile('diet', selected)}
+          />
+        </Col>
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.exercise', 'Exercise')}
+          </label>
+          <Select
+            value={profile['exercise'] ?? ''}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setProfile('exercise', e.target.value || null)
+            }
+            className={'w-full sm:w-80'}
+          >
+            <option value=""></option>
+            {Object.entries(EXERCISE_CHOICES).map(([label, value]) => (
+              <option key={value} value={value}>
+                {t(`profile.exercise.${value}`, label)}
+              </option>
+            ))}
+          </Select>
+        </Col>
 
         <Category title={t('profile.optional.category.substances', 'Substances')} />
 

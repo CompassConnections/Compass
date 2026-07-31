@@ -2,6 +2,7 @@ import {
   INVERTED_CANNABIS_CHOICES,
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
+  INVERTED_EXERCISE_CHOICES,
   INVERTED_GENDERS,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
@@ -35,6 +36,7 @@ const filterLabels: Record<string, string> = {
   has_kids: '',
   wants_kids_strength: '',
   is_smoker: '',
+  exercise: 'Exercise',
   pref_relation_styles: '',
   pref_romantic_styles: '',
   interests: '',
@@ -198,6 +200,10 @@ export function formatFilters(
         value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
       } else if (key === 'genders') {
         value = value.map((s) => translate(`profile.gender.${s}`, INVERTED_GENDERS[s]))
+      } else if (key === 'exercise') {
+        value = value.map((s) =>
+          translate(`profile.exercise.${s}`, INVERTED_EXERCISE_CHOICES[s] ?? s),
+        )
       } else if (key === 'cannabis') {
         value = value.map((s) => translate(`profile.cannabis.${s}`, INVERTED_CANNABIS_CHOICES[s]))
       } else if (key === 'psychedelics') {

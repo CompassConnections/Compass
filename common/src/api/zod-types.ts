@@ -99,6 +99,7 @@ const optionalProfilesSchema = z.object({
   image_descriptions: z.any().optional().nullable(),
   interests: z.array(z.string()).optional().nullable(),
   is_smoker: zBoolean.optional().nullable(),
+  exercise: z.string().optional().nullable(),
   links: z.record(linkValueSchema).optional(),
   mbti: z.string().optional().nullable(),
   occupation: z.string().optional().nullable(),

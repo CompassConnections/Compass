@@ -1192,6 +1192,7 @@ export type Database = {
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
+          exercise: string | null
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null
@@ -1276,6 +1277,7 @@ export type Database = {
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
+          exercise?: string | null
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -1360,6 +1362,7 @@ export type Database = {
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
+          exercise?: string | null
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -1877,6 +1880,7 @@ export type Database = {
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
+          exercise: string | null
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null

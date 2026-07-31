@@ -63,6 +63,10 @@ Database:
 yarn --cwd=backend/api regen-types-dev                # rebuild common/src/supabase/schema.ts
 ```
 
+Every new migration must also be appended to `backend/supabase/migration.sql` (`\i
+backend/supabase/migrations/<file>.sql`, before the closing `COMMIT;`) — that ordered list is what rebuilds
+the schema from scratch.
+
 ## Adding an API endpoint (3 files across 2 packages)
 
 1. **Schema** — add entry (method, `authed`, Zod `props`, `returns`) in `common/src/api/schema.ts`.

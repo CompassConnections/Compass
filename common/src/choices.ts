@@ -47,6 +47,14 @@ export const DIET_CHOICES = {
   Other: 'other',
 } as const
 
+// Frequency buckets rather than intensity or identity labels: "active"/"moderate" are self-graded and
+// drift a full bucket between users, whereas sessions-per-week reads the same to everyone.
+export const EXERCISE_CHOICES = {
+  'Once a week or less': 'rarely',
+  '2–4 times a week': 'sometimes',
+  '5+ times a week': 'often',
+} as const
+
 export const EDUCATION_CHOICES = {
   'High school': 'high-school',
   College: 'some-college',
@@ -384,6 +392,7 @@ export const INVERTED_RELATIONSHIP_STATUS_CHOICES = invert(RELATIONSHIP_STATUS_C
 export const INVERTED_ROMANTIC_CHOICES = invert(ROMANTIC_CHOICES)
 export const INVERTED_POLITICAL_CHOICES = invert(POLITICAL_CHOICES)
 export const INVERTED_DIET_CHOICES = invert(DIET_CHOICES)
+export const INVERTED_EXERCISE_CHOICES = invert(EXERCISE_CHOICES)
 export const INVERTED_EDUCATION_CHOICES = invert(EDUCATION_CHOICES)
 export const INVERTED_RELIGION_CHOICES = invert(RELIGION_CHOICES)
 export const INVERTED_LANGUAGE_CHOICES = invert(LANGUAGE_CHOICES)

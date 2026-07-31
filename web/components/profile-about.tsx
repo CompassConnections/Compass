@@ -3,6 +3,7 @@ import {
   INVERTED_CANNABIS_CHOICES,
   INVERTED_DIET_CHOICES,
   INVERTED_EDUCATION_CHOICES,
+  INVERTED_EXERCISE_CHOICES,
   INVERTED_LANGUAGE_CHOICES,
   INVERTED_MBTI_CHOICES,
   INVERTED_NEUROTYPE_CHOICES,
@@ -77,6 +78,7 @@ export default function ProfileAbout(props: {
       <Politics profile={profile} />
       <Religion profile={profile} />
       <Diet profile={profile} />
+      <Exercise profile={profile} />
       <Smoker profile={profile} />
       <Drinks profile={profile} />
       <Cannabis profile={profile} />
@@ -628,6 +630,21 @@ function Diet(props: {profile: Profile}) {
     <AboutRow
       title={t('profile.diet', 'Diet')}
       text={formatChoiceList(diet, 'diet', INVERTED_DIET_CHOICES, t)}
+    />
+  )
+}
+
+function Exercise(props: {profile: Profile}) {
+  const t = useT()
+  const {profile} = props
+  const exercise = profile.exercise
+
+  if (!exercise) return null
+
+  return (
+    <AboutRow
+      title={t('profile.exercise', 'Exercise')}
+      text={t(`profile.exercise.${exercise}`, INVERTED_EXERCISE_CHOICES[exercise] ?? exercise)}
     />
   )
 }

@@ -127,7 +127,13 @@ export function RangeSlider(props: {
 
   return (
     <RxSlider.Root
-      className={clsx(className, 'relative flex h-7 touch-none select-none items-center')}
+      className={clsx(
+        className,
+        'relative flex h-7 touch-none select-none items-center',
+        // mark labels are absolutely positioned below the track, so they'd otherwise spill past
+        // the container's own padding and get clipped
+        marks && 'mb-5',
+      )}
       value={dragValues}
       step={step ?? 1}
       onValueChange={(vals: number[]) => setDragValues([vals[0], vals[1]])} // update continuously for UI feedback

@@ -288,7 +288,7 @@ function HeroFact(props: {label: string; children: ReactNode}) {
       <div className="text-ink-500 font-microcaps" style={{marginBottom: '7px'}}>
         {label}
       </div>
-      <div className="text-ink-700 font-dm-sans" style={{fontSize: '15.5px'}}>
+      <div className="text-primary-900 font-dm-sans" style={{fontSize: '15.5px'}}>
         {children}
       </div>
     </div>

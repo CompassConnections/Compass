@@ -175,9 +175,6 @@ export const Search = forwardRef<
             size="sm"
             className={clsx(
               '!h-10 !rounded-full border border-canvas-200',
-              // With the panel closed there was nothing on screen saying the grid is a filtered
-              // view, so an active count tints the button and rides along as a badge.
-              activeFilterCount > 0 && '!border-primary-200 !bg-primary-50 !text-primary-700',
               highlightFilters &&
                 'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
             )}

@@ -16,14 +16,21 @@ import {RefObject, useEffect, useRef} from 'react'
  */
 export const usePreserveScrollFromBottom = (ref: RefObject<HTMLElement | null>) => {
   const distanceFromBottom = useRef(0)
+  const measuredAtClientHeight = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
 
     const measure = () => {
+      // Scroll events are dispatched at the next rendering step, so a programmatic scroll (e.g. the
+      // chat scrolling to the bottom on open) can be delivered *after* the container has already been
+      // resized — and would then report a distance from the bottom the user never had. Ignore those:
+      // the resize handler below is about to restore the distance measured before the resize.
+      if (el.clientHeight !== measuredAtClientHeight.current) return
       distanceFromBottom.current = Math.max(0, el.scrollHeight - el.clientHeight - el.scrollTop)
     }
+    measuredAtClientHeight.current = el.clientHeight
     measure()
     el.addEventListener('scroll', measure, {passive: true})
 
@@ -31,6 +38,7 @@ export const usePreserveScrollFromBottom = (ref: RefObject<HTMLElement | null>) 
     // changes scrollHeight, not clientHeight, so this leaves those flows to their own scroll handling.
     const observer = new ResizeObserver(() => {
       el.scrollTop = Math.max(0, el.scrollHeight - el.clientHeight - distanceFromBottom.current)
+      measuredAtClientHeight.current = el.clientHeight
     })
     observer.observe(el)
 

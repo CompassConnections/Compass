@@ -56,6 +56,20 @@ import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
 
+// Same count the open panel shows in its summary, so the collapsed hint and the panel can never
+// disagree about how narrowed the search is.
+export function getActiveFilterCount(
+  filters: Partial<FilterFields>,
+  locationFilterProps: LocationFilterProps,
+  raisedInLocationFilterProps: LocationFilterProps,
+) {
+  return countActiveFilters(
+    removeNullOrUndefinedProps({...filters, orderBy: undefined}),
+    locationFilterProps,
+    raisedInLocationFilterProps,
+  )
+}
+
 function countActiveFilters(
   filters: Partial<FilterFields>,
   locationFilterProps: LocationFilterProps,

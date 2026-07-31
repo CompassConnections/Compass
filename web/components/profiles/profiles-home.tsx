@@ -10,7 +10,7 @@ import {useRouter} from 'next/router'
 import {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
-import {FiltersElement} from 'web/components/filters/filters'
+import {FiltersElement, getActiveFilterCount} from 'web/components/filters/filters'
 import {Search} from 'web/components/filters/search'
 import {useFilters} from 'web/components/filters/use-filters'
 import {Col} from 'web/components/layout/col'
@@ -267,6 +267,12 @@ export function ProfilesHome() {
 
   const showDockedFilters = isDesktop && openFiltersModal
 
+  const activeFilterCount = getActiveFilterCount(
+    filters,
+    locationFilterProps,
+    raisedInLocationFilterProps,
+  )
+
   return (
     <div className={clsx(showDockedFilters && 'lg:grid lg:grid-cols-12 lg:gap-4')}>
       <Col className={clsx(showDockedFilters && 'lg:col-span-9')}>
@@ -362,6 +368,7 @@ export function ProfilesHome() {
           bookmarkedSearches={bookmarkedSearches}
           refreshBookmarkedSearches={refreshBookmarkedSearches}
           profileCount={profileCount}
+          activeFilterCount={activeFilterCount}
           filtersElement={filtersElement}
         />
         {displayProfiles === undefined || compatibleProfiles === undefined ? (

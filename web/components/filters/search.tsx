@@ -38,6 +38,7 @@ export const Search = forwardRef<
     bookmarkedSearches: BookmarkedSearchesType[]
     refreshBookmarkedSearches: () => void
     profileCount: number | undefined
+    activeFilterCount?: number
     openFilters?: () => void
     openFiltersModal?: boolean
     highlightFilters?: boolean
@@ -59,6 +60,7 @@ export const Search = forwardRef<
     starredUsers,
     refreshStars,
     profileCount,
+    activeFilterCount = 0,
     openFilters,
     openFiltersModal: parentOpenFiltersModal,
     setOpenFiltersModal: parentSetOpenFiltersModal,
@@ -173,14 +175,30 @@ export const Search = forwardRef<
             size="sm"
             className={clsx(
               '!h-10 !rounded-full border border-canvas-200',
+              // With the panel closed there was nothing on screen saying the grid is a filtered
+              // view, so an active count tints the button and rides along as a badge.
+              activeFilterCount > 0 && '!border-primary-200 !bg-primary-50 !text-primary-700',
               highlightFilters &&
                 'border-primary-500 ring-2 ring-primary-300 bg-primary-50 text-primary-700',
             )}
             onClick={handleOpenFilters}
             data-testid="open-filters-button"
+            aria-label={
+              activeFilterCount > 0
+                ? `${t('search.filters', 'Filters')} (${activeFilterCount})`
+                : t('search.filters', 'Filters')
+            }
           >
             <IoFilterSharp className="h-4 w-4 sm:mr-1.5" />
             <span className="hidden sm:inline">{t('search.filters', 'Filters')}</span>
+            {activeFilterCount > 0 && (
+              <span
+                className="ml-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary-100 px-1 text-[11px] font-medium text-primary-700"
+                data-testid="active-filter-count"
+              >
+                {activeFilterCount}
+              </span>
+            )}
           </Button>
           <Select
             ref={sortSelectRef}

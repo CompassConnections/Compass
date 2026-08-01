@@ -17,9 +17,11 @@ export type PartialProfile = Pick<
 > &
   Partial<ProfileRow>
 
+const avatarUrl =
+  'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/user-images%2FMartin%2Flove-images%2FeD09lRtuRF.jpg?alt=media&token=db41b5f2-b1c0-4df9-aa9c-11d44c970947'
 export const mockUser: User = {
   createdTime: 0,
-  avatarUrl: 'https://martinbraquet.com/wp-content/uploads/BDo_Tbzj.jpeg',
+  avatarUrl: avatarUrl,
   id: '0k1suGSJKVUnHbCPEhHNpgZPkUP2',
   username: 'Martin',
   name: 'Martin',
@@ -27,7 +29,7 @@ export const mockUser: User = {
 
 export const jamesUser: User = {
   createdTime: 0,
-  avatarUrl: 'https://martinbraquet.com/wp-content/uploads/BDo_Tbzj.jpeg',
+  avatarUrl: avatarUrl,
   id: '5LZ4LgYuySdL1huCWe7bti02ghx2',
   username: 'James',
   name: 'James',

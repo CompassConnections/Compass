@@ -98,7 +98,6 @@ export function ProfilesHome() {
     'profiles-home-show-early-banner',
     7 * DAY_MS,
   )
-  const [openFiltersModal, setOpenFiltersModal] = useState(false)
   const [highlightFilters, setHighlightFilters] = useState(false)
   const [highlightSort, setHighlightSort] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -115,6 +114,16 @@ export function ProfilesHome() {
     mql.addEventListener('change', update)
     return () => mql.removeEventListener('change', update)
   }, [])
+  // Remembered across visits so people who browse with the filters open get them back.
+  // Desktop only: on mobile the panel is a full-screen slide-over, and restoring that on
+  // load would hide the grid behind a modal, so there it stays session state.
+  const [openDockedFilters, setOpenDockedFilters] = usePersistentLocalState<boolean>(
+    false,
+    'profiles-filters-open',
+  )
+  const [openFiltersSlideOver, setOpenFiltersSlideOver] = useState(false)
+  const openFiltersModal = isDesktop ? openDockedFilters : openFiltersSlideOver
+  const setOpenFiltersModal = isDesktop ? setOpenDockedFilters : setOpenFiltersSlideOver
   const [sendScrollWarning, setSendScrollWarning] = useState(true)
   const [recentlyHiddenIds, setRecentlyHiddenIds] = useState<string[]>([])
   const {refreshHiddenProfiles} = useHiddenProfiles()

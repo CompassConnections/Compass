@@ -6,7 +6,7 @@ import {
   getMarkRange,
 } from '@tiptap/core'
 import type {Mark, MarkType, Node as PMNode} from '@tiptap/pm/model'
-import {Plugin, PluginKey} from '@tiptap/pm/state'
+import {Plugin, PluginKey, type Transaction} from '@tiptap/pm/state'
 import {tokenize} from 'linkifyjs'
 
 /** Protocol assumed for bare hosts like `example.com`. Matches what `Link` is configured with. */
@@ -26,42 +26,57 @@ const hrefOf = (text: string) => {
 }
 
 /**
- * Link a URL sitting at the very end of the doc.
+ * Add link marks to every bare URL in the doc that doesn't have one yet, writing into `tr`.
  *
- * TipTap's autolink only fires once a separator is typed *after* a URL (a space, or the enter that
- * splits the block), so a message whose last word is a URL is submitted as plain text. Call this
- * right before reading the content out of the editor — same rules as the autolink plugin, so the
- * result is identical to what you'd get by typing a trailing space.
+ * Returns whether anything was marked. Shared by the on-send pass and the on-paste plugin so both
+ * agree, to the character, on what counts as a URL.
  */
-export const linkifyTrailingUrl = (editor: Editor) => {
-  const linkType = editor.state.schema.marks.link
-  if (!linkType) return
+const addLinkMarks = (doc: PMNode, tr: Transaction, linkType: MarkType, codeType?: MarkType) => {
+  let changed = false
 
-  const {doc} = editor.state
-  let block: {node: PMNode; pos: number} | undefined
   doc.descendants((node, pos) => {
-    if (!node.isTextblock) return true
-    block = {node, pos}
+    if (!node.isTextblock) return true // a list item / table cell / blockquote: keep descending
+    if (node.type.spec.code) return false // a code block is literal text, not prose
+
+    // The block's first content position, one past the block node itself. Leaf nodes (hard breaks,
+    // mentions, emoji) are read as a single space, which is both what the autolink plugin does and
+    // what keeps string offsets lined up one-to-one with document positions.
+    const start = pos + 1
+    const text = doc.textBetween(start, pos + node.nodeSize - 1, undefined, ' ')
+
+    tokenize(text).forEach((token) => {
+      if (!token.isLink) return
+      const from = start + token.startIndex()
+      const to = start + token.endIndex()
+      if (doc.rangeHasMark(from, to, linkType)) return // already linked, by hand or by autolink
+      if (codeType && doc.rangeHasMark(from, to, codeType)) return
+      tr.addMark(from, to, linkType.create({href: token.toObject(DEFAULT_PROTOCOL).href}))
+      changed = true
+    })
+
     return false // no textblocks nested inside a textblock
   })
-  if (!block) return
 
-  // Hard breaks count as spaces, matching how the autolink plugin reads a block.
-  const text = doc.textBetween(block.pos, block.pos + block.node.nodeSize, undefined, ' ')
-  const lastWord = text.split(' ').filter(Boolean).pop()
-  if (!lastWord || !text.endsWith(lastWord)) return // trailing space: autolink already had its turn
+  return changed
+}
 
-  const href = hrefOf(lastWord)
-  if (!href) return
+/**
+ * Link every bare URL in the doc, including protocol-less ones like `compassmeet.com/heartborne`.
+ *
+ * TipTap's autolink only fires on the keystroke *after* a URL (a space, or the enter that splits the
+ * block), so a message whose last word is a URL is submitted as plain text — and text arriving any
+ * way other than typing (paste, programmatic insert) is never seen by it at all. Call this right
+ * before reading the content out of the editor; it uses the same rules as the autolink plugin, so
+ * the result is what you'd have got by typing every URL and following it with a space.
+ */
+export const linkifyUrls = (editor: Editor) => {
+  const {schema, tr, doc} = editor.state
+  const linkType = schema.marks.link
+  if (!linkType) return
 
-  // `text` starts at the block's first content position, one past the block node itself.
-  const from = block.pos + text.lastIndexOf(lastWord) + 1
-  const to = from + lastWord.length
-  const {code} = editor.state.schema.marks
-  if (doc.rangeHasMark(from, to, linkType)) return
-  if (code && doc.rangeHasMark(from, to, code)) return
-
-  editor.view.dispatch(editor.state.tr.addMark(from, to, linkType.create({href})))
+  if (addLinkMarks(doc, tr, linkType, schema.marks.code)) {
+    editor.view.dispatch(tr.setMeta('preventAutolink', true))
+  }
 }
 
 /** Every distinct link-marked run of text overlapping [from, to], each expanded to its full extent. */
@@ -150,6 +165,34 @@ export const SyncAutolink = Extension.create({
           })
 
           return tr.steps.length ? tr : undefined
+        },
+      }),
+
+      /**
+       * Linkify pasted URLs.
+       *
+       * TipTap's own paste handling only links a URL pasted *over a selection*; a plain paste is left
+       * to the autolink plugin, which never sees it because it only reacts to typed separators. So
+       * pasting a list of links yields a list of plain text. Re-scanning the whole doc after a paste
+       * is cheap at the sizes this editor holds (a message, a bio) and, unlike scanning the pasted
+       * slice, it also catches a URL completed by the paste landing next to existing text.
+       */
+      new Plugin({
+        key: new PluginKey('linkifyOnPaste'),
+        appendTransaction: (transactions, _oldState, newState) => {
+          const pasted = transactions.some(
+            (transaction) =>
+              transaction.docChanged &&
+              (transaction.getMeta('paste') || transaction.getMeta('uiEvent') === 'drop'),
+          )
+          const prevented = transactions.some((transaction) =>
+            transaction.getMeta('preventAutolink'),
+          )
+          if (!pasted || prevented) return
+
+          const {tr} = newState
+          const {code} = newState.schema.marks
+          return addLinkMarks(newState.doc, tr, linkType, code) ? tr : undefined
         },
       }),
     ]

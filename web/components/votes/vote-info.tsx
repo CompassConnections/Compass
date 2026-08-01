@@ -9,7 +9,7 @@ import Link from 'next/link'
 import {useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
-import {linkifyTrailingUrl} from 'web/components/editor/autolink'
+import {linkifyUrls} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
@@ -167,7 +167,7 @@ export function VoteComponent() {
                     size="sm"
                     color="cta"
                     onClick={async () => {
-                      linkifyTrailingUrl(editor)
+                      linkifyUrls(editor)
                       const data = {
                         title: title,
                         description: editor.getJSON() as JSONContent,

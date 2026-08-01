@@ -5,7 +5,7 @@ import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
-import {linkifyTrailingUrl} from 'web/components/editor/autolink'
+import {linkifyUrls} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
@@ -55,7 +55,7 @@ export function ContactComponent() {
               size="xs"
               onClick={async () => {
                 if (!editor) return
-                linkifyTrailingUrl(editor)
+                linkifyUrls(editor)
                 const data = {
                   content: editor.getJSON() as JSONContent,
                   userId: user?.id,

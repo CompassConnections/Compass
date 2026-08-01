@@ -20,7 +20,7 @@ import {MediaModal} from 'web/components/media-modal'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
-import {DEFAULT_PROTOCOL, SyncAutolink} from '../editor/autolink'
+import {DEFAULT_PROTOCOL, linkifyUrls, SyncAutolink} from '../editor/autolink'
 import {EMOJI_ENABLED} from '../editor/emoji/emoji-enabled'
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
@@ -207,6 +207,9 @@ export function useTextEditor(props: {
           if (available > 0 && text.length > 0) {
             const croppedText = text.slice(0, available)
             editor.commands.insertContent(croppedText)
+            // This insert is a command, not a paste transaction, so the on-paste plugin doesn't see
+            // it. Link its URLs here instead.
+            linkifyUrls(editor)
           }
           return true
         }

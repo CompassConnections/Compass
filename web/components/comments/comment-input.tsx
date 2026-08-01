@@ -14,7 +14,7 @@ import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 
-import {linkifyTrailingUrl} from '../editor/autolink'
+import {linkifyUrls} from '../editor/autolink'
 import {Row} from '../layout/row'
 import {Avatar} from '../widgets/avatar'
 import {TextEditor, useTextEditor} from '../widgets/editor'
@@ -156,7 +156,7 @@ export function CommentInputTextArea(props: {
   // through this, so a message ending in a URL gets that URL linked whichever one you used. TipTap's
   // autolink can't do it itself: it only fires once you type a separator *after* the URL.
   const submitWithTrailingLink = useEvent((type: CommentType) => {
-    if (editor) linkifyTrailingUrl(editor)
+    if (editor) linkifyUrls(editor)
     submit?.(type)
   })
 

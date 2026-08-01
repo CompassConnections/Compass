@@ -9,7 +9,7 @@ import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
 import ReactMarkdown from 'react-markdown'
 import {Button} from 'web/components/buttons/button'
-import {linkifyTrailingUrl} from 'web/components/editor/autolink'
+import {linkifyUrls} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
@@ -77,7 +77,7 @@ export function EditableBio(props: {profile: Profile; onSave: () => void; onCanc
 
   const saveBio = async () => {
     if (!editor) return
-    linkifyTrailingUrl(editor)
+    linkifyUrls(editor)
     // console.log(editor.getText().length)
     const {error} = await tryCatch(
       updateProfile({

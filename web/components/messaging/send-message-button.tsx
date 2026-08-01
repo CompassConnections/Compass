@@ -10,7 +10,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
 import {Button, buttonClass} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
-import {linkifyTrailingUrl} from 'web/components/editor/autolink'
+import {linkifyUrls} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
@@ -146,7 +146,7 @@ export const SendMessageButton = (props: {
     })
     if (!res) return
 
-    linkifyTrailingUrl(editor)
+    linkifyUrls(editor)
     const msgRes = await api('create-private-user-message', {
       channelId: res.channelId,
       content: editor.getJSON(),

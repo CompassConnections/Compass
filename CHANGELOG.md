@@ -24,6 +24,105 @@ only runs at tag-creation time, so it won't touch releases that already exist.
 
 ---
 
+## 1.14.0 — 2026-08-02
+
+### New features
+
+- Referral links are now editable — pick your own link, and the share button and QR code update with it
+- Redesigned settings: theme, font and language pickers, plus clearer account and privacy controls
+- Added exercise habits to profiles, with a matching filter
+- Profile form now has a section index — sticky on desktop, a collapsible bar on mobile
+- Long-press a profile card on touch devices to reveal its actions
+- Links you type in bios, comments and messages are detected automatically, and stay correct when edited
+- Emoji reactions on messages can now be toggled off
+- When no profiles match, the search page shows a summary of the filters you applied
+- The Filters button now shows how many filters are active
+
+### Improvements
+
+- Redesigned the home, about, profile and press pages
+- New profile photo experience: a hero photo with a swipeable carousel underneath
+- Redesigned proposals: color-coded vote buttons, status indicators, and filters
+- Redesigned the new-message email with an avatar, profile link, and conversation context
+- Warmer welcome email with a founder's note and your referral link
+- Notifications from the same conversation now collapse into one instead of stacking up
+- Renamed "My Matches" to "Looking For" for clarity
+- Grouped "Background" fields (ethnicity, raised in) with cultural information; moved orientation above
+  languages; gave photos their own category in the optional profile form
+- Going back now restores your scroll position instead of jumping to the top
+- Better mobile keyboard handling: the bottom nav gets out of the way and the message view keeps its place
+- Compass links now open inside the app instead of bouncing out to the browser
+- The filters panel docks on desktop and slides over on mobile, remembering its state
+- More inclusive pronoun wording on profile connect and comment sections
+- Various typography and contrast polish across profiles, chat, and timestamps
+- Clearer, shorter FAQ introduction
+
+### Trust & safety
+
+- Clearer explanation when an account is on hold, tailored to the reason
+- Moderators can act on a banned account directly from their profile
+- Staff accounts are exempt from the spam guard
+- Tightened database access so profile and activity data can no longer be pulled in bulk
+
+<!--tech-->
+
+### Security & database
+
+- Revoked bulk-read grants on `profiles`, `users`, `user_activity`, `profile_stars` and
+  `compatibility_scores`; client reads now go through row-limited security-definer functions
+  (`20260730_cap_profiles_users_reads.sql`, `20260731_lock_activity_stars_compat.sql`)
+- Added `ban_reason` to `users` (`20260728_add_ban_reason_to_users.sql`) and `exercise` to `profiles`
+  (`20260731_add_exercise_to_profiles.sql`)
+- Aggregate stats moved server-side into `stats.ts` now that the client can no longer scan tables
+- Dropped the obsolete `temp_users` / `user_waitlist` reference SQL and the import-profile finalize script
+- Fixed redundant parentheses in the `is_banned_from_posting` condition
+
+### Backend & API
+
+- Enabled `compression` middleware to cut response payload size
+- OpenAPI: centralized the `securitySchemes` definition and omitted internal endpoints from the public spec
+- `projection` defaults to `card` in the profiles schema
+- Backend support for `banReason` on ban actions
+- API version bumped 1.51.0 → 1.57.1
+
+### Web
+
+- Added `SyncAutolink`, a TipTap extension that updates or removes link marks as URLs are edited;
+  `linkifyUrls` replaces `linkifyTrailingUrl` throughout; `linkifyjs` upgraded to 4.3.2
+- New hooks: `useScrollRestoration`, `useLongPressReveal`, `useHideBottomNavOnKeyboard`, `useScrolledPast`
+- Visual-viewport-based keyboard handling in `_app.tsx`; fixed scroll measuring during programmatic updates
+  and container resizes; allowed scroll chaining in short panels
+- Replaced `ProfileGallery` with modular `ProfileHeroPhoto`, `ProfilePhotoCarousel` and a shared
+  `useProfilePhotos`
+- Extracted `Section`/`SectionHeading`, `ScrollPanel`, `CompatibleBadge` and `DottedList`; added a
+  `font-microcaps` utility
+- Push notifications use `collapseKey` for deduplication; added `ServiceWorkerGlobalScope` globals to the
+  ESLint config
+- Moved the Vercel build-ignore logic into a standalone script that handles a missing previous SHA
+
+### Android
+
+- versionCode 134 → 145, versionName 1.32.0 → 1.35.0
+- Deep links to compassmeet.com resolve via client-side navigation instead of an OS handoff
+
+### Testing
+
+- Capped `ts-jest` worker usage to prevent memory exhaustion on high-core-count machines
+- Raised the Playwright expect timeout to 60 seconds
+- Extracted `clickCheckbox` and `optionChip` helpers and added missing `data-testid` attributes
+- `get-profiles` tests now mock the database client
+
+### Tooling & docs
+
+- Added a GitHub Action that announces published releases on Mastodon (`@compassmeet`)
+- Added the iOS implementation plan (`docs/ios.md`) and reputation-system design notes
+- Revamped the README; testing docs and `CLAUDE.md` now discourage monorepo-wide `yarn test`
+- Deduplicated `yarn.lock`; upgraded `compression` and `react-is`
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.13.0...1.14.0
+
+---
+
 ## 1.13.0 — 2026-07-27
 
 ### New features

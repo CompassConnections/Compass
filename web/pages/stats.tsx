@@ -402,8 +402,10 @@ export default function Stats() {
 
   useEffect(() => {
     async function load() {
+      // No 'profiles' here: the anon/authenticated SELECT grant on that table was revoked (bulk-read
+      // cap, migration 20260730_cap_profiles_users_reads.sql), so the PostgREST count threw and the
+      // member count silently dropped out of the hero band. It comes from the cached /stats aggregate.
       const tables = [
-        'profiles',
         'private_user_message_channels',
         'compatibility_prompts',
         'compatibility_answers',
@@ -478,7 +480,7 @@ export default function Stats() {
           <>
             {/* ── Hero band ── */}
             <HeroBand
-              members={data.profiles}
+              members={statsData?.profiles ?? null}
               active={statsData?.activeMembers}
               countries={statsData?.countryCount}
               discussions={data.private_user_message_channels}

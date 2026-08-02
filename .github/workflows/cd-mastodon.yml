@@ -1,0 +1,58 @@
+name: Announce Release on Mastodon
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to announce (defaults to the latest release)'
+        required: false
+      dry_run:
+        description: 'Print the post without sending it'
+        type: boolean
+        default: false
+
+jobs:
+  announce:
+    name: Announce
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Fetched rather than read from github.event so that workflow_dispatch and the release event take the
+      # same path, and so release bodies (backticks, quotes, newlines) never pass through shell expansion.
+      - name: Resolve release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          if [ -n "$TAG" ]; then
+            gh api "repos/${{ github.repository }}/releases/tags/$TAG" > "$RUNNER_TEMP/release.json"
+          else
+            gh api "repos/${{ github.repository }}/releases/latest" > "$RUNNER_TEMP/release.json"
+          fi
+
+          # Prereleases and drafts are not user-facing news, so they are not announced.
+          if [ "$(jq -r '.prerelease or .draft' "$RUNNER_TEMP/release.json")" = "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping: release is a draft or prerelease."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post to Mastodon
+        if: steps.release.outputs.skip != 'true'
+        env:
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          MASTODON_INSTANCE: ${{ vars.MASTODON_INSTANCE }}
+          RELEASE_JSON_PATH: ${{ runner.temp }}/release.json
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: node .github/scripts/post-release-to-mastodon.mjs

@@ -51,6 +51,8 @@ type QueueQueryRow = {
 /**
  * The whole queue in one query.
  *
+ * Banned and disabled members are dropped from both populations before anything else.
+ *
  * Two populations, deliberately sized differently: every member there is already a thread with is
  * returned, because a conversation in flight is never something to page through; members never
  * contacted are capped to the most recent handful, because that set is otherwise the entire
@@ -83,10 +85,12 @@ const QUEUE_SQL = `
     select u.id as user_id, null::bigint as channel_id
     from users u
       left join outreach_contacts oc on oc.user_id = u.id
+      left join profiles p on p.user_id = u.id
     where u.id != $(adminId)
       and u.id not in (select user_id from counterparts)
       and u.created_time <= now() - make_interval(days => $(minSignupDays))
       and not coalesce(u.is_banned_from_posting, false)
+      and not coalesce(p.disabled, false)
       and coalesce(oc.stage, '') != 'excluded'
     order by u.created_time desc
     limit $(newMemberLimit)
@@ -134,6 +138,8 @@ const QUEUE_SQL = `
     left join last_message lm on lm.channel_id = c.channel_id
   where coalesce(oc.stage, '') != 'excluded'
     and not coalesce(u.is_banned_from_posting, false)
+    -- A disabled profile is someone who has stepped away; there is nothing to reach out about.
+    and not coalesce(p.disabled, false)
 `
 
 export const getOutreachQueue: APIHandler<'get-outreach-queue'> = async (props, auth) => {

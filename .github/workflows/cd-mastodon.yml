@@ -1,8 +1,24 @@
 name: Announce Release on Mastodon
 
 on:
+  # Fires for releases published by a human through the GitHub UI. Releases created by `scripts/release.sh`
+  # do NOT reach here: GitHub suppresses events triggered with the default GITHUB_TOKEN to prevent
+  # workflows from recursively triggering each other, so cd.yml calls this workflow directly instead.
   release:
     types: [ published ]
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Release tag to announce (defaults to the latest release)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Print the post without sending it'
+        type: boolean
+        default: false
+    secrets:
+      MASTODON_ACCESS_TOKEN:
+        required: false
   workflow_dispatch:
     inputs:
       tag:

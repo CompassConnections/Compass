@@ -9,6 +9,16 @@ cd "$(dirname "$0")"/..
 
 tag=$(node -p "require('./package.json').version")
 
+# Report back to the calling workflow (.github/workflows/cd.yml) so the announce job only runs when a
+# release was actually created. GITHUB_OUTPUT is unset when this script is run locally, hence the guard.
+set_output() {
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "$1" >> "$GITHUB_OUTPUT"
+  fi
+}
+
+set_output "tag=$tag"
+
 tagged=$(git tag -l $tag)
 if [ -z "$tagged" ]; then
   git tag -a "$tag" -m "Release $tag"
@@ -46,9 +56,11 @@ if [ -z "$tagged" ]; then
     echo "Created release (no CHANGELOG.md entry found for $tag, used --generate-notes)"
   fi
   rm -f "$notes_file"
+  set_output "released=true"
 
 # Release to ...
 
 else
   echo "Tag $tag already exists"
+  set_output "released=false"
 fi

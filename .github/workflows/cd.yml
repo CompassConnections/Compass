@@ -13,6 +13,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      tag: ${{ steps.release.outputs.tag }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
@@ -25,6 +28,7 @@ jobs:
           node-version: '22'
 
       - name: Tag and release
+        id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -32,3 +36,17 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           ./scripts/release.sh
+
+  # Called directly rather than left to the `release: published` event, which GitHub does not emit for
+  # releases created with the default GITHUB_TOKEN. Gated on `released` so a re-run that finds the tag
+  # already present does not announce the same version twice.
+  announce:
+    name: Announce
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    uses: ./.github/workflows/cd-mastodon.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+      dry_run: false
+    secrets:
+      MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}

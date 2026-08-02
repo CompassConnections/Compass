@@ -10,6 +10,7 @@ import ProfileHeroPhoto from 'web/components/profile/profile-hero-photo'
 import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import {ProfileConnectionGoals} from 'web/components/profile-about'
 import {linkClass} from 'web/components/widgets/site-link'
+import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useElementSize} from 'web/hooks/use-element-size'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -39,6 +40,7 @@ export default function ProfileHero(props: {
   const {user, profile, isHiddenFromMe, simpleView} = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
+  const isMod = useAdminOrMod()
   const t = useT()
 
   const photos = useProfilePhotos(profile)
@@ -77,6 +79,17 @@ export default function ProfileHero(props: {
           {t(
             'profile.header.disabled_notice',
             'You disabled your profile, so no one else can access it.',
+          )}
+        </Notice>
+      )}
+      {/* Everyone else is turned away at the page level, so a mod reading this is the only visitor
+          there is — say so, or the page looks like an ordinary profile. */}
+      {!isCurrentUser && isMod && profile.disabled && (
+        <Notice icon={<LockClosedIcon className="h-4 w-4 flex-none" />} tone="danger">
+          {t(
+            'profile.header.disabled_notice_mod',
+            '{name} disabled their profile. Only moderators can see this page.',
+            {name: user.name},
           )}
         </Notice>
       )}

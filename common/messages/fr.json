@@ -972,6 +972,7 @@
   "profile.has_kids_one": "A {count} enfant",
   "profile.header.age": "{age} ans",
   "profile.header.disabled_notice": "Vous avez désactivé votre profil, personne d'autre ne peut y accéder.",
+  "profile.header.disabled_notice_mod": "{name} a désactivé son profil. Seuls les modérateurs peuvent voir cette page.",
   "profile.header.menu.disable_profile": "Désactiver le profil",
   "profile.header.menu.enable_profile": "Activer le profil",
   "profile.header.menu.limit_members": "Limiter aux membres uniquement",

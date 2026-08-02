@@ -726,6 +726,38 @@ export type Database = {
         }
         Relationships: []
       }
+      outreach_contacts: {
+        Row: {
+          created_time: string
+          next_action: string | null
+          stage: string | null
+          updated_time: string
+          user_id: string
+        }
+        Insert: {
+          created_time?: string
+          next_action?: string | null
+          stage?: string | null
+          updated_time?: string
+          user_id: string
+        }
+        Update: {
+          created_time?: string
+          next_action?: string | null
+          stage?: string | null
+          updated_time?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'outreach_contacts_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       private_user_message_channel_members: {
         Row: {
           channel_id: number

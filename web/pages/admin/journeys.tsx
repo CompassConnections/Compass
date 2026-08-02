@@ -6,6 +6,7 @@ import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NoSEO} from 'web/components/NoSEO'
+import {PageBase} from 'web/components/page-base'
 import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
@@ -32,7 +33,7 @@ export default function Journeys() {
   if (!authorized) return <p>Not authorized</p>
 
   return (
-    <Row>
+    <PageBase className="col-span-10 p-2 sm:pt-0">
       <NoSEO />
       <div className="text-ink-900 mx-8">
         <div className={'text-primary-700 my-1 text-2xl'}>User Journeys</div>
@@ -111,6 +112,6 @@ export default function Journeys() {
           })}
         </Row>
       </div>
-    </Row>
+    </PageBase>
   )
 }

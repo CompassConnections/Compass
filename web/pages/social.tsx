@@ -3,12 +3,13 @@ import {
   discordLink,
   githubRepo,
   instagramLink,
+  mastodonLink,
   redditLink,
   supportEmail,
   xLink,
 } from 'common/constants'
 import {ComponentType, ReactNode, SVGProps} from 'react'
-import {FaDiscord, FaGithub, FaInstagram, FaReddit} from 'react-icons/fa'
+import {FaDiscord, FaGithub, FaInstagram, FaMastodon, FaReddit} from 'react-icons/fa'
 import {FaXTwitter} from 'react-icons/fa6'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
@@ -23,6 +24,9 @@ interface SocialLink {
   label: string
   icon: ReactNode
   primary?: boolean
+  // Extra rel tokens, merged with the defaults. `me` is what lets Mastodon verify that this site and the
+  // account belong to the same owner (it needs the matching link on the profile too).
+  rel?: string
 }
 
 interface SectionCardProps {
@@ -34,12 +38,12 @@ interface SectionCardProps {
 
 // ─── Social Link Button ───────────────────────────────────────────────────────
 
-function SocialLinkButton({url, label, icon, primary}: SocialLink) {
+function SocialLinkButton({url, label, icon, primary, rel}: SocialLink) {
   return (
     <a
       href={url}
       target="_blank"
-      rel="noopener noreferrer"
+      rel={rel ? `${rel} noopener noreferrer` : 'noopener noreferrer'}
       className={`
         inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl
         border-[1.5px] text-sm font-semibold
@@ -152,6 +156,12 @@ export default function Social() {
           label: t('social.x', 'X / Twitter'),
           icon: <FaXTwitter className="w-4 h-4" />,
           primary: true,
+        },
+        {
+          url: mastodonLink,
+          label: t('social.mastodon', 'Mastodon'),
+          icon: <FaMastodon className="w-4 h-4" />,
+          rel: 'me',
         },
         {
           url: instagramLink,

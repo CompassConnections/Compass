@@ -67,6 +67,7 @@ import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
 import {getMe} from './get-me'
 import {getNotifications} from './get-notifications'
+import {getOutreachQueue} from './get-outreach-queue'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
@@ -98,6 +99,7 @@ import {unsubscribe} from './unsubscribe'
 import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
+import {updateOutreachContact} from './update-outreach-contact'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfileEndpoint} from './update-profile'
 import {updateUserLocale} from './update-user-locale'
@@ -614,6 +616,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-channels-count': getChannelsCountEndpoint,
   'get-notifications': getNotifications,
   'get-options': getOptionsEndpoint,
+  'get-outreach-queue': getOutreachQueue,
+  'update-outreach-contact': updateOutreachContact,
   'get-profile-answers': getProfileAnswers,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,

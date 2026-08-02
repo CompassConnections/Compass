@@ -9,6 +9,7 @@ import {
 import {ChatMessage} from 'common/chat-message'
 import {BAN_REASONS} from 'common/moderation/ban'
 import {Notification} from 'common/notifications'
+import {MAX_NEXT_ACTION_LENGTH, OUTREACH_STAGES, OutreachRow} from 'common/outreach/outreach'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
@@ -1347,6 +1348,38 @@ export const API = (_apiTypeCheck = {
       events: Row<'user_events'>[]
     },
     summary: 'Get user journeys (events) for users created within the last N hours. Admin only.',
+    tag: 'Admin',
+  },
+  'get-outreach-queue': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        // Members with an existing thread are always returned in full. This caps only the
+        // never-contacted bucket, which would otherwise be the entire member list on every load.
+        newMemberLimit: z.coerce.number().min(1).max(100).optional(),
+        // Skip the first few days after signup so a member has had time to fill their profile in
+        // before being judged on how complete it is.
+        minSignupDays: z.coerce.number().min(0).max(30).optional(),
+      })
+      .strict(),
+    returns: {} as {rows: OutreachRow[]},
+    summary: 'Get the member outreach queue. Admin only.',
+    tag: 'Admin',
+  },
+  'update-outreach-contact': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        userId: z.string(),
+        stage: z.enum(OUTREACH_STAGES).nullable().optional(),
+        nextAction: z.string().max(MAX_NEXT_ACTION_LENGTH).nullable().optional(),
+      })
+      .strict(),
+    summary: 'Set the outreach stage or next action for a member. Admin only.',
     tag: 'Admin',
   },
 } as const)

@@ -3,6 +3,7 @@ import {
   HomeIcon,
   NewspaperIcon,
   QuestionMarkCircleIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 import {
   CogIcon,
@@ -15,6 +16,7 @@ import {
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {IS_MAINTENANCE} from 'common/constants'
+import {isAdminId} from 'common/envs/constants'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
@@ -198,6 +200,13 @@ const Events = {
   href: '/events',
   icon: CalendarIcon,
 }
+// Not translated on purpose: only admins ever see it, and it's an internal-tools index.
+const Admin = {
+  key: 'nav.admin',
+  name: 'Admin',
+  href: '/admin',
+  icon: WrenchScrewdriverIcon,
+}
 
 // Stable component for Messages icon to prevent re-mounting on every render
 const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...props} />
@@ -238,13 +247,14 @@ const getDesktopNavigation = (user: User | null | undefined) => {
       },
       Settings,
       ...base,
+      isAdminId(user.id) && Admin,
     )
 
   return buildArray(...base)
 }
 
 const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void) => {
-  if (user) return buildArray(Settings, ...base)
+  if (user) return buildArray(Settings, ...base, isAdminId(user.id) && Admin)
 
   return buildArray(...base)
 }

@@ -17,6 +17,7 @@ export const stoatLink = 'https://stt.gg/YKQp81yA'
 export const redditLink = 'https://www.reddit.com/r/CompassConnect'
 export const xLink = 'https://x.com/compassmeet'
 export const instagramLink = 'https://www.instagram.com/compassmeet/'
+export const mastodonLink = 'https://mastodon.social/@compassmeet'
 export const formLink = 'https://forms.gle/tKnXUMAbEreMK6FC6'
 export const ANDROID_APP_URL =
   'https://play.google.com/store/apps/details?id=com.compassconnections.app'

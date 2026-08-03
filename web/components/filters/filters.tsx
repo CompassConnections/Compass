@@ -5,7 +5,7 @@ import {FilterFields} from 'common/filters'
 import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
-import {Profile} from 'common/profiles/profile'
+import {Profile, ProfileRow} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
@@ -34,12 +34,14 @@ import {
 } from 'web/components/filters/relationship-status-filter'
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
+import {SearchAsMemberFilter} from 'web/components/filters/search-as-member-filter'
 import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
+import {useAdmin} from 'web/hooks/use-admin'
 import {useChoicesContext} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
@@ -214,6 +216,7 @@ function Filters(props: {
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
   setLookingForFilters: (checked: boolean) => void
+  applyLookingForFilters: (profile: ProfileRow | undefined | null) => void
   isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
@@ -229,6 +232,7 @@ function Filters(props: {
     updateFilter,
     clearFilters,
     setLookingForFilters,
+    applyLookingForFilters,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
@@ -238,6 +242,7 @@ function Filters(props: {
     choices,
   } = props
 
+  const isAdmin = useAdmin()
   const [openFilter, setOpenFilter] = useState<string | undefined>(undefined)
   const [openGroup, setOpenGroup] = useState<string | undefined>(undefined)
 
@@ -844,6 +849,19 @@ function Filters(props: {
           <HasPhotoFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
 
+        {/* SEARCH AS MEMBER — admin only */}
+        {isAdmin && (
+          <FilterSection
+            title="Search as member"
+            testId="advanced-search-as-member"
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            selection={<span>Search as member</span>}
+          >
+            <SearchAsMemberFilter applyLookingForFilters={applyLookingForFilters} />
+          </FilterSection>
+        )}
+
         {/* INCOMPLETE PROFILES — lives here rather than pinned above the list: it is a rarely-changed
             escape hatch, not something to weigh on every search. */}
         <Col className="px-3.5 py-2">
@@ -997,6 +1015,7 @@ export function FiltersElement(props: {
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
   setLookingForFilters: (checked: boolean) => void
+  applyLookingForFilters: (profile: ProfileRow | undefined | null) => void
   isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
@@ -1009,6 +1028,7 @@ export function FiltersElement(props: {
     updateFilter,
     clearFilters,
     setLookingForFilters,
+    applyLookingForFilters,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
@@ -1025,6 +1045,7 @@ export function FiltersElement(props: {
       updateFilter={updateFilter}
       clearFilters={clearFilters}
       setLookingForFilters={setLookingForFilters}
+      applyLookingForFilters={applyLookingForFilters}
       isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}

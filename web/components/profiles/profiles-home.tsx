@@ -70,6 +70,7 @@ export function ProfilesHome() {
     updateFilter,
     clearFilters,
     setLookingForFilters,
+    applyLookingForFilters,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
@@ -266,6 +267,7 @@ export function ProfilesHome() {
       updateFilter={updateFilter}
       clearFilters={clearFilters}
       setLookingForFilters={setLookingForFilters}
+      applyLookingForFilters={applyLookingForFilters}
       isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}

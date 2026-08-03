@@ -3,7 +3,7 @@ import {MAX_INT, MIN_INT} from 'common/constants'
 import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
 import {debug} from 'common/logger'
 import {kmToMiles} from 'common/measurement-utils'
-import {Profile} from 'common/profiles/profile'
+import {Profile, ProfileRow} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {debounce, isEqual, mapValues, omitBy} from 'lodash'
 import {useCallback, useEffect, useRef} from 'react'
@@ -26,6 +26,21 @@ const normalize = (f: Partial<FilterFields>) =>
     ),
     (v) => (Array.isArray(v) ? [...v].sort() : v),
   )
+
+// Mirrors the "Who I'm looking for" section of the profile only — age, gender and connection type.
+// The rest of the profile describes who you are, not who you want to see, so copying it into the
+// search (diet, religion, politics, interests, ...) narrowed the results to people just like you.
+// Takes any profile, not just your own, so admins can run the search as another member sees it.
+export const getLookingForFilters = (
+  profile: ProfileRow | undefined | null,
+): Partial<FilterFields> => ({
+  genders: profile?.pref_gender?.length ? profile.pref_gender : undefined,
+  pref_age_max: (profile?.pref_age_max ?? MAX_INT) < 100 ? profile?.pref_age_max : undefined,
+  pref_age_min: (profile?.pref_age_min ?? MIN_INT) > 18 ? profile?.pref_age_min : undefined,
+  pref_relation_styles: profile?.pref_relation_styles?.length
+    ? profile.pref_relation_styles
+    : undefined,
+})
 
 export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const isLooking = useIsLooking()
@@ -129,15 +144,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     setRadius: debouncedSetRaisedInRadius,
   }
 
-  // Mirrors the "Who I'm looking for" section of the profile only — age, gender and connection type.
-  // The rest of the profile describes who you are, not who you want to see, so copying it into the
-  // search (diet, religion, politics, interests, ...) narrowed the results to people just like you.
-  const lookingForFilters: Partial<FilterFields> = {
-    genders: you?.pref_gender?.length ? you.pref_gender : undefined,
-    pref_age_max: (you?.pref_age_max ?? MAX_INT) < 100 ? you?.pref_age_max : undefined,
-    pref_age_min: (you?.pref_age_min ?? MIN_INT) > 18 ? you?.pref_age_min : undefined,
-    pref_relation_styles: you?.pref_relation_styles?.length ? you.pref_relation_styles : undefined,
-  }
+  const lookingForFilters = getLookingForFilters(you)
   debug(you, lookingForFilters)
 
   // Checked only when the search is *exactly* the looking-for preferences and nothing else — adding any
@@ -156,10 +163,14 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   // sees the pre-click filters. Worse, it drops out entirely when its result deep-equals them — which is
   // exactly the case here whenever the extra filter was added *on top of* the looking-for ones, leaving
   // only the clear behind.
-  const setLookingForFilters = (checked: boolean) => {
-    setFilters({...baseFilters, ...(checked ? lookingForFilters : {})})
+  const applyLookingForFilters = (profile: ProfileRow | undefined | null) => {
+    setFilters({...baseFilters, ...getLookingForFilters(profile)})
     setLocation(undefined)
     setRaisedInLocation(undefined)
+  }
+
+  const setLookingForFilters = (checked: boolean) => {
+    applyLookingForFilters(checked ? you : undefined)
   }
 
   // First visit on this browser (fresh account, or localStorage cleared): start from the "who I'm
@@ -185,6 +196,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     updateFilter,
     clearFilters,
     setLookingForFilters,
+    applyLookingForFilters,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,

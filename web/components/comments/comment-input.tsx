@@ -217,7 +217,7 @@ export function CommentInputTextArea(props: {
   }, [replyTo, editor])
 
   return (
-    <TextEditor editor={editor} maxHeight={maxHeight} className={className} simple hideEmbed>
+    <TextEditor editor={editor} maxHeight={maxHeight} className={className} hideEmbed>
       <Row className={''}>
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>

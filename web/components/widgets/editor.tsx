@@ -283,8 +283,13 @@ function getScrollParent(el: HTMLElement | null): HTMLElement | null {
 
 export function TextEditor(props: {
   editor: Editor | null
-  simple?: boolean // show heading in toolbar
   hideEmbed?: boolean // hide toolbar
+  /**
+   * `minimal` (default) — media buttons only; formatting lives in the bubble menu on selection.
+   * Right for chat and comments, where the composer should stay small and rich text is rare.
+   * `full` — also show block formatting (headings, lists, quote), for long-form fields like the bio.
+   */
+  toolbar?: 'minimal' | 'full'
   children?: ReactNode // additional toolbar buttons
   className?: string
   onBlur?: () => void
@@ -293,8 +298,8 @@ export function TextEditor(props: {
 }) {
   const {
     editor,
-    simple,
     hideEmbed,
+    toolbar = 'minimal',
     children,
     className,
     onBlur,
@@ -388,7 +393,8 @@ export function TextEditor(props: {
         className,
       )}
     >
-      <FloatingFormatMenu editor={editor} advanced={!simple} />
+      {/* Only where the bar has no formatting of its own — see FloatingFormatMenu's doc comment. */}
+      {toolbar === 'minimal' && <FloatingFormatMenu editor={editor} />}
       {/* overscroll-contain: a drag started in the editor stays here instead of chaining out and
           scrolling whatever is behind it (e.g. the chat page) */}
       <div className={clsx(`overflow-auto overscroll-contain`, maxHeight)}>
@@ -396,7 +402,7 @@ export function TextEditor(props: {
       </div>
 
       <div ref={toolbarRef}>
-        <StickyFormatMenu editor={editor} hideEmbed={hideEmbed}>
+        <StickyFormatMenu editor={editor} hideEmbed={hideEmbed} full={toolbar === 'full'}>
           {children}
         </StickyFormatMenu>
       </div>

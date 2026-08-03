@@ -218,7 +218,7 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
         </p>
       )}
       <BioTips onClick={onClickTips} />
-      <TextEditor editor={editor} onBlur={() => onBlur?.(editor)} />
+      <TextEditor editor={editor} toolbar="full" onBlur={() => onBlur?.(editor)} />
     </div>
   )
 }

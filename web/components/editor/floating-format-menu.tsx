@@ -3,17 +3,25 @@ import {Editor} from '@tiptap/core'
 import {BubbleMenu, useEditorState} from '@tiptap/react'
 import clsx from 'clsx'
 import {getUrl} from 'common/util/parse'
-import {Bold, Italic, Type} from 'lucide-react'
+import {Bold, Italic} from 'lucide-react'
 import {useState} from 'react'
 
 // see https://tiptap.dev/guide/menus
 
-export function FloatingFormatMenu(props: {
-  editor: Editor | null
-  /** show more formatting options */
-  advanced?: boolean
-}) {
-  const {editor, advanced} = props
+/**
+ * Bold, italic and link, on selection.
+ *
+ * Only rendered by editors whose toolbar is `minimal` (chat, comments) — there this is the *only*
+ * formatting surface, since their bottom bar carries media buttons alone. Editors with the `full`
+ * toolbar deliberately don't show it: everything here is in their always-visible bar, and this menu
+ * covers the line above the selection and collides with iOS's native selection callout, so keeping
+ * both would mean the flakier of two redundant surfaces.
+ *
+ * No underline: on the web it reads as a broken link. `Ctrl+U` still works — the extension stays
+ * loaded so existing content that has it keeps rendering.
+ */
+export function FloatingFormatMenu(props: {editor: Editor | null}) {
+  const {editor} = props
 
   const [url, setUrl] = useState<string | null>(null)
 
@@ -24,8 +32,6 @@ export function FloatingFormatMenu(props: {
     selector: ({editor}) =>
       editor
         ? {
-            h1: editor.isActive('heading', {level: 1}),
-            h2: editor.isActive('heading', {level: 2}),
             bold: editor.isActive('bold'),
             italic: editor.isActive('italic'),
             link: editor.isActive('link'),
@@ -56,22 +62,6 @@ export function FloatingFormatMenu(props: {
     >
       {url === null ? (
         <>
-          {advanced && (
-            <>
-              <IconButton
-                icon={Type}
-                onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
-                isActive={active.h1}
-              />
-              <IconButton
-                icon={Type}
-                onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
-                isActive={active.h2}
-                className="!h-4"
-              />
-              <Divider />
-            </>
-          )}
           <IconButton
             icon={Bold}
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -82,6 +72,7 @@ export function FloatingFormatMenu(props: {
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={active.italic}
           />
+          <Divider />
           <IconButton
             icon={LinkIcon}
             onClick={() => (active.link ? unsetLink() : setUrl(''))}

@@ -2,16 +2,30 @@ import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {isAdminId} from 'common/envs/constants'
 import {
   DORMANT_AFTER_DAYS,
+  EMPTY_ROOM_INACTIVE_DAYS,
+  EMPTY_ROOM_MAX_NEARBY,
   getOutreachTier,
   getProfileCompleteness,
+  LocalDensity,
+  OUTREACH_RADIUS_KM,
   OutreachRow,
   OutreachStage,
   OutreachStatus,
+  OutreachTrigger,
 } from 'common/outreach/outreach'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 const DEFAULT_NEW_MEMBER_LIMIT = 20
 const DEFAULT_MIN_SIGNUP_DAYS = 3
+
+/**
+ * How recently an event has to have happened to still be a reason to write today.
+ *
+ * The whole argument for triggering on events is that the ask lands while the moment is fresh. An
+ * alert that fired in March is not a moment, it is a fact — so past this window the badge goes away
+ * rather than sitting there implying the iron is still hot.
+ */
+const TRIGGER_RECENCY_DAYS = 14
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000
 
@@ -46,6 +60,10 @@ type QueueQueryRow = {
   compatibility_answer_count: string
   saved_search_count: string
   referred_count: string
+  nearby_count: string | null
+  alert_fired: boolean
+  got_member_reply: boolean
+  sent_member_message: boolean
 }
 
 /**
@@ -129,7 +147,47 @@ const QUEUE_SQL = `
          (select count(*) from bookmarked_searches bs where bs.creator_id = u.id)
                                                                  as saved_search_count,
          (select count(*) from profiles rp where rp.referred_by_username = u.username)
-                                                                 as referred_count
+                                                                 as referred_count,
+         -- Members within the outreach radius of them. Null when they have no coordinates, which is
+         -- not the same as zero: one is a fact about the world, the other about their profile.
+         case
+             when p.city_latitude is null then null
+             else (select count(*)
+                   from profiles np
+                            join users nu on nu.id = np.user_id
+                   where np.user_id != u.id
+                     and np.looking_for_matches
+                     and not coalesce(nu.is_banned_from_posting, false)
+                     and not coalesce(np.disabled, false)
+                     and np.city_latitude is not null
+                     and calculate_earth_distance_km(p.city_latitude, p.city_longitude,
+                                                     np.city_latitude, np.city_longitude)
+                         < $(radiusKm))
+             end                                                 as nearby_count,
+         -- A saved-search alert actually reached them recently. last_notified_at is only stamped on
+         -- searches that matched, so this is "the product visibly worked", not "they have a search".
+         exists (select 1
+                 from bookmarked_searches bs
+                 where bs.creator_id = u.id
+                   and bs.last_notified_at > now() - make_interval(days => $(triggerRecencyDays)))
+                                                                 as alert_fired,
+         -- Another member (not me) wrote to them. Admin messages are excluded deliberately: founder
+         -- outreach is not the platform working, and counting it would make every thread self-fulfilling.
+         exists (select 1
+                 from private_user_messages pm
+                          join private_user_message_channel_members mem
+                               on mem.channel_id = pm.channel_id and mem.user_id = u.id
+                 where pm.user_id != u.id
+                   and pm.user_id != $(adminId)
+                   and pm.visibility != 'system_status')         as got_member_reply,
+         -- They have written to someone who is not me, so they have committed to using it.
+         exists (select 1
+                 from private_user_messages pm
+                          join private_user_message_channel_members other
+                               on other.channel_id = pm.channel_id and other.user_id != u.id
+                 where pm.user_id = u.id
+                   and other.user_id != $(adminId)
+                   and pm.visibility != 'system_status')         as sent_member_message
   from candidates c
     join users u on u.id = c.user_id
     left join profiles p on p.user_id = u.id
@@ -153,6 +211,8 @@ export const getOutreachQueue: APIHandler<'get-outreach-queue'> = async (props, 
     adminId: auth.uid,
     minSignupDays: props.minSignupDays ?? DEFAULT_MIN_SIGNUP_DAYS,
     newMemberLimit: props.newMemberLimit ?? DEFAULT_NEW_MEMBER_LIMIT,
+    radiusKm: OUTREACH_RADIUS_KM,
+    triggerRecencyDays: TRIGGER_RECENCY_DAYS,
   })
 
   return {rows: rows.map((row) => toOutreachRow(row, auth.uid))}
@@ -182,6 +242,12 @@ const toOutreachRow = (row: QueueQueryRow, adminId: string): OutreachRow => {
 
   const savedSearchCount = Number(row.saved_search_count)
 
+  // `nearby` is left empty here on purpose: naming the nearest few costs a second distance query per
+  // member, and the queue renders a hundred rows. The dashboard only needs the number; the messages
+  // that actually quote names go through `getLocalDensity`.
+  const localDensity: LocalDensity | null =
+    row.nearby_count === null ? null : {count: Number(row.nearby_count), city: row.city, nearby: []}
+
   return {
     user: {
       id: row.id,
@@ -205,7 +271,34 @@ const toOutreachRow = (row: QueueQueryRow, adminId: string): OutreachRow => {
     channelId: row.channel_id === null ? null : Number(row.channel_id),
     savedSearchCount,
     referredCount: Number(row.referred_count),
+    localDensity,
+    triggers: getTriggers(row, localDensity, daysSinceLastOnline),
   }
+}
+
+/**
+ * Which peak-willingness events have fired for this member.
+ *
+ * These are what the day numbers in the sequence were always standing in for. A calendar date says
+ * "value has probably landed by now"; these say it did, and name the moment — which is the difference
+ * between an ask that reads as timed and one that reads as automated.
+ */
+const getTriggers = (
+  row: QueueQueryRow,
+  localDensity: LocalDensity | null,
+  daysSinceLastOnline: number | null,
+): OutreachTrigger[] => {
+  const triggers: OutreachTrigger[] = []
+
+  if (row.alert_fired) triggers.push('search_alert_fired')
+  if (row.got_member_reply) triggers.push('first_reply_received')
+  if (row.sent_member_message) triggers.push('sent_first_message')
+
+  const roomIsEmpty = localDensity !== null && localDensity.count < EMPTY_ROOM_MAX_NEARBY
+  const goneQuiet = daysSinceLastOnline === null || daysSinceLastOnline >= EMPTY_ROOM_INACTIVE_DAYS
+  if (roomIsEmpty || goneQuiet) triggers.push('empty_room')
+
+  return triggers
 }
 
 const getStatus = (

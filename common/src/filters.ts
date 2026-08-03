@@ -133,4 +133,46 @@ export const initialFilters: Partial<FilterFields> = {
 
 export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]
 
+/**
+ * Filters that are set on every search and narrow nobody: sort order, and the flag that *widens* the
+ * results to incomplete profiles.
+ */
+const NON_NARROWING_FILTER_KEYS: string[] = ['orderBy', 'shortBio']
+
+/**
+ * The language filter is pre-set to the signup locale rather than chosen, so for the English majority
+ * it is furniture, not a decision — and English is the language most of the directory speaks anyway,
+ * so it narrows almost nobody. Picking a *different* language is a real choice and still counts.
+ */
+const DEFAULT_LANGUAGE_FILTER = 'english'
+
+/**
+ * Whether a search actually asks for someone in particular.
+ *
+ * A saved search with nothing set matches every new member, so it fires on every signup forever —
+ * which is not an alert, it is a subscription to the whole directory. Worse, it makes the signal
+ * useless: "their saved search matched" stops meaning anything once it matches everyone.
+ *
+ * Shared by the save button, the endpoint behind it, and the alert job, so all three agree on what
+ * counts as a search rather than each deciding separately.
+ */
+export const hasSearchCriteria = (
+  filters: Partial<FilterFields> | null | undefined,
+  location?: unknown,
+): boolean => {
+  // A location filter is a constraint in its own right, and is stored outside search_filters.
+  if (location) return true
+  if (!filters || typeof filters !== 'object') return false
+
+  return Object.entries(filters).some(([key, value]) => {
+    if (NON_NARROWING_FILTER_KEYS.includes(key)) return false
+    if (value === undefined || value === null || value === '') return false
+    if (key === 'languages' && Array.isArray(value)) {
+      return value.some((language) => language !== DEFAULT_LANGUAGE_FILTER)
+    }
+    if (Array.isArray(value)) return value.length > 0
+    return true
+  })
+}
+
 export type OriginLocation = {id: string; name: string | null; lat: number; lon: number}

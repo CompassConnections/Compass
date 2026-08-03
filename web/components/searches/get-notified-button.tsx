@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {FilterFields} from 'common/filters'
+import {FilterFields, hasSearchCriteria} from 'common/filters'
 import {Bell} from 'lucide-react'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -43,6 +43,9 @@ export function GetNotifiedButton(props: {
   const user = useUser()
   const t = useT()
   const isClearedFilters = useIsClearedFilters(filters)
+  // An unfiltered search matches everyone who ever signs up, so it would fire on every signup and
+  // stop meaning anything. Same rule the endpoint enforces — see `hasSearchCriteria`.
+  const canSave = hasSearchCriteria(filters, locationFilterProps?.location)
   const [bookmarked, setBookmarked] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -54,13 +57,19 @@ export function GetNotifiedButton(props: {
 
   const label = bookmarked
     ? t('common.saved', 'Saved!')
-    : isClearedFilters
-      ? t('common.notified_any', 'Get notified for any new profile')
-      : t('common.notified', 'Notify me when this search matches someone')
+    : !canSave
+      ? t(
+          'common.notified_needs_filter',
+          'Add a filter first — an empty search would notify you about everyone',
+        )
+      : isClearedFilters
+        ? t('common.notified_any', 'Get notified for any new profile')
+        : t('common.notified', 'Notify me when this search matches someone')
 
   const buttonText = bookmarked ? label : t('common.get_notified', 'Get notified')
 
   const handleClick = () => {
+    if (!canSave) return
     if (bookmarkedSearches.length >= MAX_BOOKMARKED_SEARCHES) {
       toast.error(
         `You can bookmark maximum ${MAX_BOOKMARKED_SEARCHES} searches; please delete one first.`,
@@ -79,7 +88,7 @@ export function GetNotifiedButton(props: {
 
   const button = (
     <Button
-      disabled={loading}
+      disabled={loading || !canSave}
       loading={loading}
       onClick={handleClick}
       size={size}
@@ -92,5 +101,7 @@ export function GetNotifiedButton(props: {
     </Button>
   )
 
-  return iconOnly ? <Tooltip text={label}>{button}</Tooltip> : button
+  // The full-width variant normally says what it does on the face of it, but a disabled button with no
+  // explanation is just a dead control — so the reason gets a tooltip there too.
+  return iconOnly || !canSave ? <Tooltip text={label}>{button}</Tooltip> : button
 }

@@ -534,6 +534,41 @@ gcloud scheduler jobs create http daily-saved-search-notifications \
 
 View it [here](https://console.cloud.google.com/cloudscheduler).
 
+Set up the two outreach email jobs. They partition the directory between them — members with enough
+people nearby get the personalised city-number share email, members below that threshold get the
+empty-room one — and both skip anyone already in a hand-written founder thread. Each member can only
+ever receive each kind once; the `outreach_sends` ledger decides that, not the schedule, so running
+either job twice is harmless.
+
+```bash
+gcloud scheduler jobs create http weekly-city-number-emails \
+  --schedule="0 15 * * *" \
+  --uri="https://api.compassmeet.com/internal/send-city-number-emails" \
+  --http-method=POST \
+  --headers="x-api-key=<API_KEY>,Content-Type=application/json" \
+  --message-body='{"batchSize":10}' \
+  --time-zone="UTC" \
+  --location=us-west1
+
+gcloud scheduler jobs create http weekly-empty-room-emails \
+  --schedule="0 15 * * *" \
+  --uri="https://api.compassmeet.com/internal/send-empty-room-emails" \
+  --http-method=POST \
+  --headers="x-api-key=<API_KEY>,Content-Type=application/json" \
+  --message-body='{"batchSize":10}' \
+  --time-zone="UTC" \
+  --location=us-west1
+```
+
+Both accept `{"dryRun": true}`, which walks the full candidate list and returns the same counts
+without sending or writing the ledger — worth running once by hand before the first real one:
+
+```bash
+curl -X POST https://api.compassmeet.com/internal/send-city-number-emails \
+  -H "x-api-key: <API_KEY>" -H 'Content-Type: application/json' \
+  -d '{"dryRun":true}'
+```
+
 ##### API Deploy CD
 
 ```shell

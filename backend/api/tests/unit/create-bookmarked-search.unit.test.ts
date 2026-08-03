@@ -43,4 +43,20 @@ describe('createBookmarkedSearch', () => {
       ])
     })
   })
+
+  describe('when the search has no filters', () => {
+    it('should reject rather than save a search that matches every new member', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      await expect(
+        createBookmarkedSearch(
+          {search_filters: {orderBy: 'created_time', shortBio: true}, location: null},
+          mockAuth,
+          mockReq,
+        ),
+      ).rejects.toThrow(/at least one filter/)
+      expect(mockPg.one).not.toBeCalled()
+    })
+  })
 })

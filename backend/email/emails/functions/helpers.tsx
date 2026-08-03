@@ -2,12 +2,14 @@ import {render} from '@react-email/render'
 import {defaultLocale} from 'common/constants'
 import {debug} from 'common/logger'
 import {milesToKm} from 'common/measurement-utils'
+import {LocalDensity, OUTREACH_RADIUS_KM} from 'common/outreach/outreach'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
 import {
   getNotificationDestinationsForUser,
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
+import EmptyRoomEmail from 'email/empty-room'
 import NewSearchAlertsEmail from 'email/new-search-alerts'
 import ShareCompassEmail, {hasNearbyCount, NEARBY_RADIUS_MILES} from 'email/share-compass'
 import WelcomeEmail from 'email/welcome'
@@ -201,7 +203,16 @@ export const sendNewEndorsementEmail = async (
   })
 }
 
-export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUser) => {
+/**
+ * @param density Precomputed local numbers, quoted verbatim instead of the historical 200-mile count.
+ *   The outreach job passes this so the figure a member is emailed is the same one the dashboard shows
+ *   next to their name; called without it (the ad-hoc script path) nothing changes.
+ */
+export const sendShareCompassEmail = async (
+  toUser: User,
+  privateUser: PrivateUser,
+  density?: LocalDensity,
+) => {
   const notificationType = 'platform_updates'
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
@@ -217,15 +228,17 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
   const t = createT(locale)
   console.log(`Sending email to ${privateUser.email} in ${locale ?? defaultLocale} (${toUser.id})`)
 
-  const profile = await getProfile(toUser.id)
-  const city = profile?.city ?? undefined
-  const nearbyCount = profile
-    ? await getNearbyMemberCount(profile, milesToKm(NEARBY_RADIUS_MILES)).catch((e) => {
-        // A failed count must not block the send — fall back to the generic copy.
-        debug('Failed to count nearby members', toUser.id, e)
-        return undefined
-      })
-    : undefined
+  const profile = density ? undefined : await getProfile(toUser.id)
+  const city = density ? (density.city ?? undefined) : (profile?.city ?? undefined)
+  const nearbyCount = density
+    ? density.count
+    : profile
+      ? await getNearbyMemberCount(profile, milesToKm(NEARBY_RADIUS_MILES)).catch((e) => {
+          // A failed count must not block the send — fall back to the generic copy.
+          debug('Failed to count nearby members', toUser.id, e)
+          return undefined
+        })
+      : undefined
 
   const personalised = hasNearbyCount(nearbyCount, city)
 
@@ -252,6 +265,61 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
         locale={locale}
         nearbyCount={nearbyCount}
         city={city}
+        nearbyRadiusKm={density ? OUTREACH_RADIUS_KM : undefined}
+        nearbyProfiles={density?.nearby}
+      />,
+    ),
+    headers: {
+      'List-Unsubscribe': `<mailto:unsubscribe@compassmeet.com?subject=${token}>, <${unsubscribeUrlOneClick}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      'List-ID': 'Compass <compassmeet.com>',
+    },
+  })
+}
+
+/**
+ * Contact #E. Sent once per member, ever — the caller claims the send through `outreach_sends` before
+ * calling this, so nothing here re-checks it.
+ */
+export const sendEmptyRoomEmail = async (
+  toUser: User,
+  privateUser: PrivateUser,
+  density: {count: number; city: string},
+  opts?: {wasInactive?: boolean},
+) => {
+  const notificationType = 'platform_updates'
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
+    privateUser,
+    notificationType,
+  )
+  const email = privateUser.email
+  if (!email || !sendToEmail) {
+    debug('No email or user turned off emails', toUser.username, toUser.id)
+    return
+  }
+
+  const locale = privateUser?.locale
+  const t = createT(locale)
+
+  const token = await createUnsubscribeToken(toUser.id, notificationType)
+  const unsubscribeUrlOneClick = getUnsubscribeUrlOneClick(token)
+
+  return await sendEmail({
+    // From Martin rather than from Compass: it is a message admitting the product does not work for
+    // them yet, and that is not a thing a platform says about itself.
+    from: 'Martin from Compass <martin@compassmeet.com>',
+    replyTo: 'martin@compassmeet.com',
+    subject: t('email.empty_room.subject', 'The honest number for {city}', {city: density.city}),
+    to: email,
+    html: await render(
+      <EmptyRoomEmail
+        toUser={toUser}
+        unsubscribeUrl={unsubscribeUrl}
+        email={email}
+        locale={locale}
+        nearbyCount={density.count}
+        city={density.city}
+        wasInactive={opts?.wasInactive}
       />,
     ),
     headers: {

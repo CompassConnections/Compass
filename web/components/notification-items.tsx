@@ -35,8 +35,12 @@ export function NotificationItem(props: {notification: Notification}) {
     return <ProfileLikeNotification {...params} />
   } else if (reason === 'new_profile_ship') {
     return <ProfileShipNotification {...params} />
+  } else if (reason === 'new_search_alerts') {
+    return <SearchAlertNotification {...params} />
   } else if (reason === 'connection_interest_match') {
     return <ConnectionInterestMatchNotification {...params} />
+  } else if (reason === 'referred_member_joined') {
+    return <ReferralJoinedNotification {...params} />
   } else {
     return <BaseNotification {...params} />
   }
@@ -254,6 +258,97 @@ export function ConnectionInterestMatchNotification(props: {
         type,
       })}
       !
+    </NotificationFrame>
+  )
+}
+
+/**
+ * A saved-search alert. `sourceSlug` is the profile itself when the alert named one person, and the
+ * alert's own page when it named several — the same destination the push notification opens.
+ */
+export function SearchAlertNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+  isChildOfGroup?: boolean
+}) {
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
+  const {sourceUserName, sourceUserUsername, sourceText} = notification
+  const t = useT()
+  const count = Number(notification.data?.count ?? 1)
+
+  return (
+    <NotificationFrame
+      notification={notification}
+      isChildOfGroup={isChildOfGroup}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={<AvatarNotificationIcon notification={notification} symbol={'🔔'} />}
+      link={notification.sourceSlug}
+      subtitle={
+        <div className="line-clamp-2">
+          <Linkify text={sourceText} />
+        </div>
+      }
+    >
+      {count > 1 ? (
+        <span>
+          {t('notifications.search_alert.item_many', '{count} people match your saved search', {
+            count,
+          })}
+        </span>
+      ) : (
+        <>
+          <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
+          <span>{t('notifications.search_alert.item_one', 'matches your saved search')}</span>
+        </>
+      )}
+    </NotificationFrame>
+  )
+}
+
+/**
+ * Someone signed up from this member's link.
+ *
+ * The row leads with their name as a link rather than a flat sentence, because the useful next move is
+ * to go and look at who arrived. The row itself opens `/referrals` — the page that holds the running
+ * credit — and the subtitle names the tally, which is the part that makes a second share feel worth it.
+ */
+export function ReferralJoinedNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+  isChildOfGroup?: boolean
+}) {
+  const {notification, highlighted, setHighlighted, isChildOfGroup} = props
+  const {sourceUserName, sourceUserUsername} = notification
+  const t = useT()
+  const count = Number(notification.data?.referredCount ?? 0)
+
+  return (
+    <NotificationFrame
+      notification={notification}
+      isChildOfGroup={isChildOfGroup}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={<AvatarNotificationIcon notification={notification} symbol={'🎉'} />}
+      link={'/referrals'}
+      subtitle={
+        count > 1 ? (
+          <span>
+            {t('notifications.referral.total', '{count} people have joined from your link', {
+              count,
+            })}
+          </span>
+        ) : (
+          <span>
+            {t('notifications.referral.first', 'The first person to join from your link.')}
+          </span>
+        )
+      }
+    >
+      <NotificationUserLink name={sourceUserName} username={sourceUserUsername} />{' '}
+      <span>{t('notifications.referral.joined', 'joined Compass from your link')}</span>
     </NotificationFrame>
   )
 }

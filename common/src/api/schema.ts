@@ -1397,6 +1397,24 @@ export const API = (_apiTypeCheck = {
     summary: 'Get the member outreach queue. Admin only.',
     tag: 'Admin',
   },
+  'get-my-referrals': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as {
+      count: number
+      members: {
+        id: string
+        name: string
+        username: string
+        avatarUrl: string | null
+        joinedTime: string
+      }[]
+    },
+    summary: 'The members who joined from your referral link.',
+    tag: 'Users',
+  },
   'update-outreach-contact': {
     method: 'POST',
     authed: true,
@@ -1409,6 +1427,32 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Set the outreach stage or next action for a member. Admin only.',
+    tag: 'Admin',
+  },
+  'get-search-alert': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({id: z.coerce.number()}).strict(),
+    returns: {} as {
+      profiles: Profile[]
+      /** The saved searches that matched, for naming what this alert was. Deleted ones are dropped. */
+      searches: {id: number; name: string | null; filters: any; location: any}[]
+      createdTime: number
+      /** Members the alert named who are no longer visible — deleted, disabled or banned since. */
+      goneCount: number
+    },
+    summary: 'The people one saved-search alert was about. Owner only.',
+    tag: 'Search',
+  },
+  'create-outreach-search': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as {searchId: number},
+    summary:
+      'Save a search on a member’s behalf, built from the preferences already on their profile. Admin only.',
     tag: 'Admin',
   },
   'get-testimonials': {

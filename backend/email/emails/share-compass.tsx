@@ -1,6 +1,6 @@
 import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
-import {DEPLOYED_WEB_URL} from 'common/envs/constants'
-import {formatDistance} from 'common/measurement-utils'
+import {DEPLOYED_WEB_URL, ENV_CONFIG} from 'common/envs/constants'
+import {formatDistance, kmToMiles} from 'common/measurement-utils'
 import {getXShareProfileUrl} from 'common/socials'
 import {type User} from 'common/user'
 import {UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
@@ -27,10 +27,25 @@ interface ShareCompassEmailProps {
   unsubscribeUrl: string
   email?: string
   locale?: string
-  /** Members within NEARBY_RADIUS_MILES of this user's city. Undefined when unknown. */
+  /** Members within `nearbyRadiusKm` of this user's city. Undefined when unknown. */
   nearbyCount?: number
   /** This user's city, e.g. "Brussels". Undefined when unknown. */
   city?: string
+  /**
+   * The radius `nearbyCount` was measured at. Defaults to the historical 200 miles; the outreach job
+   * passes the much tighter `OUTREACH_RADIUS_KM` so the number here is the same one the dashboard and
+   * Contact #E quote, rather than a second, friendlier figure for the same member.
+   */
+  nearbyRadiusKm?: number
+  /**
+   * A few members near them, rendered as plain profile links.
+   *
+   * This is the lowest-friction version of the ask and the one worth putting in a mass email: "I
+   * joined a platform to meet someone, you should too" is a confession, "these three people are
+   * interesting" is a recommendation, and only the second one gets pasted into a group chat. Profile
+   * links already carry `?referrer=`, so it is credited exactly like the signup link.
+   */
+  nearbyProfiles?: {name: string; username: string}[]
 }
 
 export const ShareCompassEmail = ({
@@ -40,13 +55,21 @@ export const ShareCompassEmail = ({
   locale,
   nearbyCount,
   city,
+  nearbyRadiusKm,
+  nearbyProfiles,
 }: ShareCompassEmailProps) => {
   const name = toUser.name.split(' ')[0]
   const t = createT(locale)
 
   const profileShareUrl = getXShareProfileUrl(t, toUser.username)
   const personalised = hasNearbyCount(nearbyCount, city)
-  const radius = formatDistance(NEARBY_RADIUS_MILES, locale === 'en' ? 'imperial' : 'metric')
+  const radius = formatDistance(
+    nearbyRadiusKm === undefined ? NEARBY_RADIUS_MILES : kmToMiles(nearbyRadiusKm),
+    !locale || locale === 'en' ? 'imperial' : 'metric',
+  )
+  // Tagged so anyone who follows a link from this email is credited to the member who was sent it.
+  const profileUrl = (username: string) =>
+    `https://${ENV_CONFIG.domain}/${username}?referrer=${toUser.username}`
 
   return (
     <Html>
@@ -59,7 +82,7 @@ export const ShareCompassEmail = ({
             })
           : t(
               'email.share.preview',
-              "600 people in 6 months — here's how you help write what's next",
+              "700 people in 6 months — here's how you help write what's next",
             )}
       </Preview>
       <Body style={main}>
@@ -79,7 +102,7 @@ export const ShareCompassEmail = ({
                 <Text style={paragraph}>
                   {t(
                     'email.share.growth_nearby',
-                    'Right now, {count} members are within {radius} of {city}. Not 600 scattered across the world — {count} people in reach of you, who chose depth over algorithms and values over vanity metrics.',
+                    'Right now, {count} members are within {radius} of {city}. People in reach of you, who chose depth over algorithms and values over vanity metrics.',
                     {
                       count: String(nearbyCount),
                       radius,
@@ -88,18 +111,18 @@ export const ShareCompassEmail = ({
                   )}
                 </Text>
 
-                <Text style={paragraph}>
-                  {t(
-                    'email.share.growth_nearby_context',
-                    "That's what 6 months and 600 members across the platform look like where you live. It's a real signal — and it's only the beginning.",
-                  )}
-                </Text>
+                {/*<Text style={paragraph}>*/}
+                {/*  {t(*/}
+                {/*    'email.share.growth_nearby_context',*/}
+                {/*    "That's what 6 months and 700 members across the platform look like where you live. It's a real signal — and it's only the beginning.",*/}
+                {/*  )}*/}
+                {/*</Text>*/}
               </>
             ) : (
               <Text style={paragraph}>
                 {t(
                   'email.share.growth',
-                  "In just 6 months, over 600 people have found their way here. That's 600 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
+                  "In just 6 months, over 700 people have found their way here. That's 700 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
                 )}
               </Text>
             )}
@@ -121,6 +144,24 @@ export const ShareCompassEmail = ({
                 "Fair. Maybe the person you tell isn't someone you'd personally connect with on Compass. But think one step further: they bring their world with them — their friends, their colleagues, the thoughtful people in their circles. People you've never met, who might be exactly who you're looking for. Sharing with one friend isn't just a favour to them. It's an investment in your own future connections.",
               )}
             </Text>
+
+            {!!nearbyProfiles?.length && (
+              <Section style={{marginTop: '24px'}}>
+                <Text style={paragraph}>
+                  {t(
+                    'email.share.link_profiles',
+                    "The easiest version, and the one I'd do myself: don't recommend Compass to anyone. Just link a few profiles you found interesting and let people read them. Here are three near you to start with —",
+                  )}
+                </Text>
+                {nearbyProfiles.map((p) => (
+                  <Text key={p.username} style={{...paragraph, margin: '4px 0'}}>
+                    <Link href={profileUrl(p.username)}>
+                      {p.name} — compassmeet.com/{p.username}
+                    </Link>
+                  </Text>
+                ))}
+              </Section>
+            )}
 
             <Text style={{...paragraph, fontWeight: 'bold', fontSize: '16px'}}>
               {t('email.share.cta_heading', 'How to share:')}

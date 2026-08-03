@@ -19,6 +19,8 @@ import {hideProfile} from 'api/hide-profile'
 import {reactToMessage} from 'api/react-to-message'
 import {saveSubscription} from 'api/save-subscription'
 import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
+import {sendCityNumberEmails} from 'api/send-city-number-emails'
+import {sendEmptyRoomEmails} from 'api/send-empty-room-emails'
 import {sendSearchNotifications} from 'api/send-search-notifications'
 import {localSendTestEmail} from 'api/test'
 import {unhideProfile} from 'api/unhide-profile'
@@ -54,6 +56,7 @@ import {createBookmarkedSearch} from './create-bookmarked-search'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
 import {createEvent} from './create-event'
+import {createOutreachSearch} from './create-outreach-search'
 import {createPrivateUserMessage} from './create-private-user-message'
 import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
 import {createTestimonial} from './create-testimonial'
@@ -67,10 +70,12 @@ import {getCurrentPrivateUser} from './get-current-private-user'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
 import {getMe} from './get-me'
+import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
+import {getSearchAlert} from './get-search-alert'
 import {getSupabaseToken} from './get-supabase-token'
 import {getTestimonials} from './get-testimonials'
 import {getTestimonialsMod} from './get-testimonials-mod'
@@ -626,7 +631,10 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-notifications': getNotifications,
   'get-options': getOptionsEndpoint,
   'get-outreach-queue': getOutreachQueue,
+  'get-my-referrals': getMyReferrals,
   'update-outreach-contact': updateOutreachContact,
+  'create-outreach-search': createOutreachSearch,
+  'get-search-alert': getSearchAlert,
   'get-testimonials': getTestimonials,
   'get-testimonials-mod': getTestimonialsMod,
   'create-testimonial': createTestimonial,
@@ -738,6 +746,49 @@ app.post(pathWithPrefix('/internal/send-search-notifications'), async (req, res)
     return res.status(500).json({error: 'Internal server error'})
   }
 })
+
+/**
+ * The two automated outreach jobs. They partition the directory between them — above the nearby-count
+ * threshold gets the personalised share email, below it gets Contact #E — and both refuse to touch
+ * anyone already in a hand-written founder thread. Run them on separate schedules; running either
+ * twice is harmless, since the send ledger is what decides, not the cadence.
+ */
+const internalOutreachJob = (
+  path: string,
+  run: (opts: {batchSize?: number; dryRun?: boolean}) => Promise<unknown>,
+  failureMessage: string,
+) =>
+  // JSON parsing is per-route here rather than app-wide, so an internal endpoint that reads a body
+  // has to ask for it explicitly. Without this `req.body` is undefined and every run silently uses
+  // the default batch size.
+  app.post(pathWithPrefix(path), express.json(), async (req, res) => {
+    const apiKey = req.header('x-api-key')
+    if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
+      return res.status(401).json({error: 'Unauthorized'})
+    }
+
+    try {
+      const batchSize = req.body?.batchSize ? Number(req.body.batchSize) : undefined
+      const result = await run({batchSize, dryRun: !!req.body?.dryRun})
+      return res.status(200).json(result)
+    } catch (err) {
+      console.error(failureMessage, err)
+      await sendDiscordMessage(failureMessage, 'health')
+      return res.status(500).json({error: 'Internal server error'})
+    }
+  })
+
+internalOutreachJob(
+  '/internal/send-city-number-emails',
+  sendCityNumberEmails,
+  'Failed to send city-number outreach emails...',
+)
+
+internalOutreachJob(
+  '/internal/send-empty-room-emails',
+  sendEmptyRoomEmails,
+  'Failed to send empty-room (Contact #E) outreach emails...',
+)
 
 const responses = {
   200: {

@@ -64,4 +64,6 @@ BEGIN;
 \i backend/supabase/migrations/20260731_lock_activity_stars_compat.sql
 \i backend/supabase/migrations/20260801_add_outreach_contacts.sql
 \i backend/supabase/migrations/20260803_add_testimonials.sql
+\i backend/supabase/migrations/20260803_add_outreach_sends.sql
+\i backend/supabase/migrations/20260804_add_search_alert_sends.sql
 COMMIT;

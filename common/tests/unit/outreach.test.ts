@@ -1,4 +1,5 @@
 import {
+  getLookingForSearchFilters,
   getOutreachTier,
   getProfileCompleteness,
   ProfileCompletenessInput,
@@ -108,5 +109,46 @@ describe('getOutreachTier', () => {
     const stale = {completeness: 0.5, daysSinceLastOnline: 60, repliedToUs: false}
     expect(getOutreachTier({...stale, savedSearchCount: 0})).toBe('C')
     expect(getOutreachTier({...stale, savedSearchCount: 2})).toBe('B')
+  })
+})
+
+describe('getLookingForSearchFilters', () => {
+  it('maps stated preferences onto the filter keys the search actually reads', () => {
+    expect(
+      getLookingForSearchFilters({
+        prefAgeMin: 28,
+        prefAgeMax: 40,
+        prefGender: ['female'],
+        prefRelationStyles: ['friendship'],
+      }),
+    ).toEqual({
+      // Their preferred gender becomes the candidate's own gender, not the candidate's preference.
+      genders: ['female'],
+      pref_relation_styles: ['friendship'],
+      pref_age_min: 28,
+      pref_age_max: 40,
+    })
+  })
+
+  it('keeps a partial preference rather than dropping the whole search', () => {
+    expect(
+      getLookingForSearchFilters({
+        prefAgeMin: null,
+        prefAgeMax: null,
+        prefGender: [],
+        prefRelationStyles: ['relationship'],
+      }),
+    ).toEqual({pref_relation_styles: ['relationship']})
+  })
+
+  it('returns null when they said nothing, so no one gets an alert for everybody', () => {
+    expect(
+      getLookingForSearchFilters({
+        prefAgeMin: null,
+        prefAgeMax: null,
+        prefGender: null,
+        prefRelationStyles: null,
+      }),
+    ).toBeNull()
   })
 })

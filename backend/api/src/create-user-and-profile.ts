@@ -16,6 +16,7 @@ import * as admin from 'firebase-admin'
 import {getIp, track} from 'shared/analytics'
 import {getBucket} from 'shared/firebase-utils'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
+import {notifyReferrerOfSignup} from 'shared/outreach/referrals'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -165,6 +166,19 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       await sendDiscordMessage(message, 'members')
     } catch (e) {
       console.error('Failed to send discord new profile', e)
+    }
+    try {
+      // The one moment a sharer can be told their share worked. Miss it and `?referrer=` stays a
+      // number nobody ever sees.
+      if (newProfileRow.referred_by_username) {
+        await notifyReferrerOfSignup(
+          {name: user.name, username: user.username, avatarUrl: user.avatarUrl},
+          newProfileRow.referred_by_username,
+          pg,
+        )
+      }
+    } catch (e) {
+      console.error('Failed to notify referrer of signup', e)
     }
     try {
       const nProfiles = await pg.one<number>(`SELECT count(*) FROM profiles`, [], (r) =>

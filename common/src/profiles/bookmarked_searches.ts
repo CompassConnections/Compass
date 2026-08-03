@@ -4,6 +4,8 @@ export interface MatchPrivateUser {
 }
 
 export interface MatchUser {
+  /** Always present — this is the `user` object `get-profiles` builds. Needed to record who an alert named. */
+  id: string
   name: string
   username: string
   avatarUrl?: string | null

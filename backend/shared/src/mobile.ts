@@ -78,6 +78,7 @@ export async function sendMobileNotifications(
   payload: PushPayload,
 ) {
   const subscriptions = await getMobileSubscriptionsFromDB(pg, userId)
+  console.log('Sending mobile notifications to:', subscriptions.length, 'devices')
   for (const subscription of subscriptions) {
     await sendPushToToken(pg, userId, subscription.token, payload)
   }

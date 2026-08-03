@@ -73,6 +73,7 @@ const SAVED_SEARCH = {
  */
 const MATCHES = [
   {
+    id: 'showcase-julien',
     name: 'Julien Sarr',
     username: 'juliensarr',
     avatarUrl: '/images/showcase/juliensarr-1.jpg',

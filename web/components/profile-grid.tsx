@@ -467,7 +467,9 @@ function ProfileDetailRail(props: {profile: Profile; className?: string}) {
   )
 }
 
-function ProfilePreview(props: {
+// Exported so a page that already knows exactly which profiles to show (the search-alert page) can
+// render the same card without the grid's loading, filtering and saved-search machinery.
+export function ProfilePreview(props: {
   profile: Profile
   compatibilityScore: CompatibilityScore | undefined
   hasStar: boolean

@@ -3,14 +3,19 @@ jest.mock('api/get-profiles')
 jest.mock('api/profile-snapshot')
 jest.mock('email/functions/helpers')
 jest.mock('common/discord/core')
+jest.mock('shared/mobile')
+jest.mock('shared/supabase/notifications')
 
 import * as profileModules from 'api/get-profiles'
 import * as snapshotModules from 'api/profile-snapshot'
 import * as searchNotificationModules from 'api/send-search-notifications'
 import * as helperModules from 'email/functions/helpers'
+import * as mobileModules from 'shared/mobile'
 import * as supabaseInit from 'shared/supabase/init'
+import * as notificationModules from 'shared/supabase/notifications'
 
 const CREATOR_ID = 'creator-1'
+const SEND_ID = 42
 
 const search = (id: number, creator_id = CREATOR_ID) => ({
   id,
@@ -40,6 +45,8 @@ describe('sendSearchNotifications', () => {
     mockPg = {
       manyOrNone: jest.fn(),
       none: jest.fn().mockResolvedValue(undefined),
+      // The only `one` in this path is the search_alert_sends insert.
+      one: jest.fn().mockResolvedValue({id: SEND_ID}),
     }
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
 
@@ -54,6 +61,9 @@ describe('sendSearchNotifications', () => {
       (_pg: any, _schema: string, fn: any) => fn(mockPg),
     )
     ;(helperModules.sendSearchAlertsEmail as jest.Mock).mockResolvedValue(null)
+    ;(mobileModules.sendWebNotifications as jest.Mock).mockResolvedValue(undefined)
+    ;(mobileModules.sendMobileNotifications as jest.Mock).mockResolvedValue(undefined)
+    ;(notificationModules.insertNotificationToSupabase as jest.Mock).mockResolvedValue(undefined)
   })
 
   afterEach(() => {
@@ -61,12 +71,21 @@ describe('sendSearchNotifications', () => {
   })
 
   /** searches, then users, then private_users */
-  const mockQueries = (searches: any[]) => {
+  const mockQueries = (
+    searches: any[],
+    // An empty `notificationPreferences` is what a member who never touched their settings has, and
+    // it means every destination is on.
+    privateUserData: any = {email: 'creator@example.com', notificationPreferences: {}},
+  ) => {
     mockPg.manyOrNone
       .mockResolvedValueOnce(searches)
       .mockResolvedValueOnce([{id: CREATOR_ID, name: 'Creator'}])
-      .mockResolvedValueOnce([{id: CREATOR_ID, data: {email: 'creator@example.com'}}])
+      .mockResolvedValueOnce([{id: CREATOR_ID, data: privateUserData}])
   }
+
+  /** The payload handed to both push transports. */
+  const pushPayload = () =>
+    JSON.parse((mobileModules.sendWebNotifications as jest.Mock).mock.calls[0][2])
 
   it('notifies about a profile that did not match before it was modified', async () => {
     mockQueries([search(1)])
@@ -80,7 +99,7 @@ describe('sendSearchNotifications', () => {
     expect(helperModules.sendSearchAlertsEmail).toBeCalledTimes(1)
     expect(helperModules.sendSearchAlertsEmail).toBeCalledWith(
       {id: CREATOR_ID, name: 'Creator'},
-      {email: 'creator@example.com'},
+      {email: 'creator@example.com', notificationPreferences: {}},
       [
         {
           id: CREATOR_ID,
@@ -195,6 +214,83 @@ describe('sendSearchNotifications', () => {
 
     await searchNotificationModules.sendSearchNotifications()
 
+    expect(snapshotModules.promoteStagingSnapshot).toBeCalledTimes(1)
+  })
+
+  it('records who the alert named, and pushes to the same person it emailed', async () => {
+    mockQueries([search(1)])
+    ;(profileModules.loadProfiles as jest.Mock)
+      .mockResolvedValueOnce({profiles: [profile('woman-1')]})
+      .mockResolvedValueOnce({profiles: []})
+
+    await searchNotificationModules.sendSearchNotifications()
+
+    expect(mockPg.one).toBeCalledWith(expect.stringContaining('insert into search_alert_sends'), {
+      creatorId: CREATOR_ID,
+      searchIds: [1],
+      matchedUserIds: ['woman-1'],
+    })
+    expect(mobileModules.sendWebNotifications).toBeCalledTimes(1)
+    expect(mobileModules.sendMobileNotifications).toBeCalledTimes(1)
+    expect(notificationModules.insertNotificationToSupabase).toBeCalledTimes(1)
+  })
+
+  it('sends a single match straight to their profile, not to the alert page', async () => {
+    mockQueries([search(1)])
+    ;(profileModules.loadProfiles as jest.Mock)
+      .mockResolvedValueOnce({profiles: [profile('woman-1')]})
+      .mockResolvedValueOnce({profiles: []})
+
+    await searchNotificationModules.sendSearchNotifications()
+
+    expect(pushPayload().url).toEqual('/woman-1')
+  })
+
+  it('sends several matches to the alert page, which is the only place they exist as a set', async () => {
+    ;(snapshotModules.getChangedUserIds as jest.Mock).mockResolvedValue(['woman-1', 'woman-2'])
+    mockQueries([search(1)])
+    ;(profileModules.loadProfiles as jest.Mock)
+      .mockResolvedValueOnce({profiles: [profile('woman-1'), profile('woman-2')]})
+      .mockResolvedValueOnce({profiles: []})
+
+    await searchNotificationModules.sendSearchNotifications()
+
+    expect(mockPg.one).toBeCalledWith(expect.anything(), {
+      creatorId: CREATOR_ID,
+      searchIds: [1],
+      matchedUserIds: ['woman-1', 'woman-2'],
+    })
+    expect(pushPayload().url).toEqual(`/alerts/${SEND_ID}`)
+  })
+
+  it('does not push to someone who turned search alerts off, but still emails them', async () => {
+    // `email` is left on, so this isolates the push gate from the email one.
+    mockQueries([search(1)], {
+      email: 'creator@example.com',
+      notificationPreferences: {new_search_alerts: ['email']},
+    })
+    ;(profileModules.loadProfiles as jest.Mock)
+      .mockResolvedValueOnce({profiles: [profile('woman-1')]})
+      .mockResolvedValueOnce({profiles: []})
+
+    await searchNotificationModules.sendSearchNotifications()
+
+    expect(helperModules.sendSearchAlertsEmail).toBeCalledTimes(1)
+    expect(mobileModules.sendWebNotifications).not.toBeCalled()
+    expect(mobileModules.sendMobileNotifications).not.toBeCalled()
+    expect(notificationModules.insertNotificationToSupabase).not.toBeCalled()
+  })
+
+  it('does not fail the run when the push fails, so the email is never re-sent', async () => {
+    mockQueries([search(1)])
+    ;(profileModules.loadProfiles as jest.Mock)
+      .mockResolvedValueOnce({profiles: [profile('woman-1')]})
+      .mockResolvedValueOnce({profiles: []})
+    ;(mobileModules.sendWebNotifications as jest.Mock).mockRejectedValue(new Error('gone'))
+
+    const result = await searchNotificationModules.sendSearchNotifications()
+
+    expect(result).toEqual({status: 'success', notified: 1, failed: 0})
     expect(snapshotModules.promoteStagingSnapshot).toBeCalledTimes(1)
   })
 })

@@ -1421,7 +1421,7 @@ export const API = (_apiTypeCheck = {
     // cache. The cost is that a freshly approved testimonial can take a minute to appear publicly.
     cache: 'public, max-age=60, stale-while-revalidate=300',
     summary: 'Get every approved testimonial, most featured first.',
-    tag: 'General',
+    tag: 'Testimonials',
   },
   'get-testimonials-mod': {
     method: 'GET',
@@ -1438,7 +1438,7 @@ export const API = (_apiTypeCheck = {
     // CDN-cached under a public key, and a moderator's response landing in that cache would serve
     // unpublished testimonials to everyone.
     summary: 'Get testimonials in any state, with moderation fields. Mods and admins only.',
-    tag: 'Admin',
+    tag: 'Testimonials',
   },
   'create-testimonial': {
     method: 'POST',
@@ -1455,7 +1455,7 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {status: 'pending'},
     summary: 'Submit a testimonial for moderation.',
-    tag: 'General',
+    tag: 'Testimonials',
   },
   'update-testimonial-status': {
     method: 'POST',
@@ -1471,7 +1471,7 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Approve, reject, hide or feature a testimonial. Mods and admins only.',
-    tag: 'Admin',
+    tag: 'Testimonials',
   },
 } as const)
 

@@ -569,6 +569,11 @@ Commit: ${git.revision} (${git.commitDate})`,
       description: 'Voting system for user content and polls',
     },
     {
+      name: 'Testimonials',
+      description:
+        'The public testimonials wall, plus the moderation endpoints that decide what appears on it',
+    },
+    {
       name: 'Moderation',
       description: 'Report system and user moderation',
     },

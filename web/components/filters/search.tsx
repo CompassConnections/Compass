@@ -105,6 +105,9 @@ export const Search = forwardRef<
 
   const placeholder = t('search.placeholder', 'Search anything...')
 
+  const peopleLabel = (count: number) =>
+    count === 1 ? t('common.person', 'person') : t('common.people', 'people')
+
   // const [textToType, setTextToType] = useState(getRandomPair())
   // const [_, setCharIndex] = useState(0)
   // const [isHolding, setIsHolding] = useState(false)
@@ -236,16 +239,23 @@ export const Search = forwardRef<
         open={openFiltersModal && !suppressFiltersModal}
         setOpen={setOpenFiltersModal}
       >
-        <Row className="items-center justify-between px-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+        <Row className="sticky top-0 z-10 items-center justify-between gap-2 bg-canvas-50 px-3 pb-2 pt-[calc(0.75rem+env(safe-area-inset-top))]">
           <span className="font-medium text-ink-900">{t('search.filters', 'Filters')}</span>
-          <Button
-            size="2xs"
-            color="gray-white"
-            onClick={() => setOpenFiltersModal(false)}
-            aria-label={t('common.close', 'Close')}
-          >
-            <XMarkIcon className="h-5 w-5" />
-          </Button>
+          <Row className="items-center gap-2">
+            {profileCount !== undefined && (
+              <span className="text-sm text-ink-500" data-testid="filters-profile-count">
+                {profileCount} {peopleLabel(profileCount)}
+              </span>
+            )}
+            <Button
+              size="2xs"
+              color="gray-white"
+              onClick={() => setOpenFiltersModal(false)}
+              aria-label={t('common.close', 'Close')}
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </Button>
+          </Row>
         </Row>
         {filtersElement}
       </RightModal>
@@ -271,10 +281,7 @@ export const Search = forwardRef<
         {(profileCount ?? 0) > 0 && (
           <Row className="text-sm text-ink-500 gap-2">
             <p data-testid="people-profile-count">
-              {profileCount}{' '}
-              {(profileCount ?? 0) > 1
-                ? t('common.people', 'people')
-                : t('common.person', 'person')}
+              {profileCount} {peopleLabel(profileCount ?? 0)}
             </p>
             {!filters.shortBio && (
               <Tooltip

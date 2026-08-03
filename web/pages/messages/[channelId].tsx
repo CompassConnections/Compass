@@ -7,6 +7,7 @@ import {User} from 'common/user'
 import {buildArray, filterDefined} from 'common/util/array'
 import {cleanDoc, richTextToString} from 'common/util/parse'
 import {DAY_MS, YEAR_MS} from 'common/util/time'
+import dayjs from 'dayjs'
 import {keyBy, uniq} from 'lodash'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useState} from 'react'
@@ -116,10 +117,11 @@ export const getFirstName = (name: string) => {
 
 /**
  * Renders the loaded messages as a plain-text transcript, oldest first:
- *   Martin (me): hello
+ *   [2026-08-03 14:32] Martin (me): hello
  *
- *   Liz: hi
- * System status messages (joined/left the chat) are left out.
+ *   [2026-08-03 14:35] Liz: hi
+ * Timestamps are in the reader's local timezone. System status messages (joined/left the chat) are
+ * left out.
  */
 export const messagesToPlainText = (
   messages: ChatMessage[] | undefined,
@@ -141,7 +143,12 @@ export const messagesToPlainText = (
       .slice()
       .reverse()
       .filter((m) => m.visibility !== 'system_status')
-      .map((m) => `${nameOf(m.userId)}: ${richTextToString(m.content).trim()}`)
+      .map(
+        (m) =>
+          `[${dayjs(m.createdTime).format('YYYY-MM-DD HH:mm')}] ${nameOf(m.userId)}: ${richTextToString(
+            m.content,
+          ).trim()}`,
+      )
       .join('\n\n')
   )
 }

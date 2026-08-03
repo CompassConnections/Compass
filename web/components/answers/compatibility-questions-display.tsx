@@ -482,7 +482,7 @@ export function CompatibilityAnswerBlock(props: {
           // `font-figtree` is the body face: globals.css sets every h1–h6 to Newsreader at weight 700,
           // so a heading element opts out of the serif explicitly or it does not opt out at all.
           className="font-figtree text-ink-600 min-w-0 font-normal"
-          style={{fontSize: '18px', lineHeight: '1.45'}}
+          style={{fontSize: '16px', lineHeight: '1.45'}}
           data-testid="profile-compatibility-question"
         >
           {question.question}
@@ -585,7 +585,7 @@ export function CompatibilityAnswerBlock(props: {
       {answerText && (
         <div
           className="text-primary-900 mt-1"
-          style={{fontSize: '18px', lineHeight: '1.35'}}
+          style={{fontSize: '16px', lineHeight: '1.35'}}
           data-testid="profile-compatibility-question-answer"
         >
           {answerText}

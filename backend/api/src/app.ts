@@ -56,6 +56,7 @@ import {createCompatibilityQuestion} from './create-compatibility-question'
 import {createEvent} from './create-event'
 import {createPrivateUserMessage} from './create-private-user-message'
 import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
+import {createTestimonial} from './create-testimonial'
 import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
@@ -71,6 +72,8 @@ import {getOutreachQueue} from './get-outreach-queue'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfiles} from './get-profiles'
 import {getSupabaseToken} from './get-supabase-token'
+import {getTestimonials} from './get-testimonials'
+import {getTestimonialsMod} from './get-testimonials-mod'
 import {getUserAndProfileHandler} from './get-user-and-profile'
 import {getUserDataExport} from './get-user-data-export'
 import {getUserJourneys} from './get-user-journeys'
@@ -102,6 +105,7 @@ import {updateNotifSettings} from './update-notif-setting'
 import {updateOutreachContact} from './update-outreach-contact'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfileEndpoint} from './update-profile'
+import {updateTestimonialStatus} from './update-testimonial-status'
 import {updateUserLocale} from './update-user-locale'
 import {validateUsernameEndpoint} from './validate-username'
 
@@ -618,6 +622,10 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-options': getOptionsEndpoint,
   'get-outreach-queue': getOutreachQueue,
   'update-outreach-contact': updateOutreachContact,
+  'get-testimonials': getTestimonials,
+  'get-testimonials-mod': getTestimonialsMod,
+  'create-testimonial': createTestimonial,
+  'update-testimonial-status': updateTestimonialStatus,
   'get-profile-answers': getProfileAnswers,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,

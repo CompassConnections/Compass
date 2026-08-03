@@ -1,4 +1,5 @@
 import {RadioGroup} from '@headlessui/react'
+import clsx from 'clsx'
 import router from 'next/router'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
@@ -7,14 +8,28 @@ import {deleteAccount} from 'web/lib/util/delete'
 
 import {ConfirmationButton} from '../buttons/confirmation-button'
 import {Col} from '../layout/col'
+import {
+  EMPTY_TESTIMONIAL_DRAFT,
+  isTestimonialDraftValid,
+  TestimonialDraftState,
+  toTestimonialProps,
+} from '../testimonials/testimonial-form'
 import {Title} from '../widgets/title'
 import {shouldShowStayPitch, StayInsteadOfDelete} from './stay-instead-of-delete'
+import {
+  canDeleteWithTestimonialPrompt,
+  shouldPromptForTestimonial,
+  TestimonialBeforeDelete,
+} from './testimonial-before-delete'
 
 export function DeleteAccountSurveyModal() {
   const [selectedReason, setSelectedReason] = useState<string | null>(null)
   const [reasonFreeText, setReasonFreeText] = useState('')
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [testimonialDraft, setTestimonialDraft] =
+    useState<TestimonialDraftState>(EMPTY_TESTIMONIAL_DRAFT)
+  const [testimonialOptedOut, setTestimonialOptedOut] = useState(false)
   const t = useT()
 
   const reasonsMap: Record<string, string> = {
@@ -83,6 +98,24 @@ export function DeleteAccountSurveyModal() {
     other: t('delete_survey.reasons.other', 'Other'),
   }
 
+  const promptForTestimonial = shouldPromptForTestimonial(selectedReason)
+
+  // Sent only when they actually finished one: opting out, picking a different reason after typing
+  // something, or leaving the box half-written must not smuggle a draft through. The validity check
+  // also has to be here rather than only on the submit button, because everything below keys off
+  // this — a half-written draft must not yet count as having replaced the details field.
+  const testimonialToSend =
+    promptForTestimonial && !testimonialOptedOut && isTestimonialDraftValid(testimonialDraft)
+      ? toTestimonialProps(testimonialDraft)
+      : undefined
+
+  /**
+   * The free-text box exists to find out why someone left, which a testimonial already answers at
+   * length. Asking them to write the same thing twice — and blocking the button until they do — is
+   * how a thoughtful reply turns into "n/a" in both fields.
+   */
+  const detailsRequired = !testimonialToSend
+
   const handleDeleteAccount = async () => {
     setDeleteError(null) // Clear previous errors
 
@@ -97,6 +130,7 @@ export function DeleteAccountSurveyModal() {
           deleteAccount({
             reasonCategory: selectedReason,
             reasonDetails: reasonFreeText,
+            testimonial: testimonialToSend,
           }),
           {
             loading: t('delete_yourself.toast.loading', 'Deleting account...'),
@@ -147,10 +181,20 @@ export function DeleteAccountSurveyModal() {
           : undefined
       }
       submitBtn={{
-        label: t('delete_yourself.submit', 'Delete account'),
+        label: testimonialToSend
+          ? t('delete_survey.testimonial.submit', 'Share it and delete my account')
+          : t('delete_yourself.submit', 'Delete account'),
         color: selectedReason ? 'red' : 'gray',
         isSubmitting: isSubmitting,
-        disabled: !(selectedReason && reasonFreeText),
+        // The testimonial ask is a gate, not a wall: it blocks the button only until they have either
+        // written something usable or ticked the opt-out. Both take a moment; neither can be missed.
+        // A written testimonial also stands in for the details box, so there is never a moment where
+        // two long-form fields are required at once.
+        disabled:
+          !selectedReason ||
+          (detailsRequired && !reasonFreeText) ||
+          (promptForTestimonial &&
+            !canDeleteWithTestimonialPrompt(testimonialDraft, testimonialOptedOut)),
       }}
       onSubmitWithSuccess={handleDeleteAccount}
       disabled={false}
@@ -204,22 +248,42 @@ export function DeleteAccountSurveyModal() {
             </div>
           </RadioGroup>
 
+          {promptForTestimonial && (
+            <div className="mt-4">
+              <TestimonialBeforeDelete
+                draft={testimonialDraft}
+                setDraft={setTestimonialDraft}
+                optedOut={testimonialOptedOut}
+                setOptedOut={setTestimonialOptedOut}
+              />
+            </div>
+          )}
+
           {showStayPitch && (
             <div className="mt-4">
               <StayInsteadOfDelete />
             </div>
           )}
 
-          {
+          {detailsRequired && (
             <div className="mt-4">
-              <label htmlFor="otherReason" className="block text-sm font-medium">
-                {t('delete_survey.other_placeholder', 'Please share more details')}*
+              <label
+                htmlFor="otherReason"
+                className={clsx('block text-sm font-medium', !detailsRequired && 'text-ink-400')}
+              >
+                {t('delete_survey.other_placeholder', 'Please share more details')}
+                {detailsRequired && '*'}
               </label>
               <div className="mt-1">
                 <textarea
                   id="otherReason"
+                  data-testid="delete-survey-details"
                   rows={3}
-                  className="block w-full bg-canvas-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  // Disabled rather than hidden: a field that vanishes as you type in another one
+                  // reads as a bug, and the greyed-out box with a reason under it is what makes it
+                  // obvious the testimonial replaced it.
+                  disabled={!detailsRequired}
+                  className="block w-full bg-canvas-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder={t('delete_survey.other_placeholder', 'Please share more details')}
                   value={reasonFreeText}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -228,7 +292,7 @@ export function DeleteAccountSurveyModal() {
                 />
               </div>
             </div>
-          }
+          )}
         </div>
 
         {/* Error message display */}

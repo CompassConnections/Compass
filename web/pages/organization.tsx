@@ -116,6 +116,7 @@ export default function Organization() {
       ),
       links: [
         {url: '/stats', label: t('organization.stats', 'Key metrics & growth'), primary: true},
+        {url: '/testimonials', label: t('organization.testimonials', 'Member stories')},
         {url: '/press', label: t('press.title', 'Press')},
         {url: '/financials', label: t('organization.financials', 'Financial transparency')},
       ],

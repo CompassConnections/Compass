@@ -5,8 +5,16 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser} from 'shared/utils'
 
 import {APIErrors, APIHandler} from './helpers/endpoint'
+import {
+  insertTestimonial,
+  notifyTestimonialSubmitted,
+  TestimonialQueryRow,
+} from './helpers/testimonials'
 
-export const deleteMe: APIHandler<'me/delete'> = async ({reasonCategory, reasonDetails}, auth) => {
+export const deleteMe: APIHandler<'me/delete'> = async (
+  {reasonCategory, reasonDetails, testimonial},
+  auth,
+) => {
   const user = await getUser(auth.uid)
   if (!user) {
     throw APIErrors.unauthorized('Your account was not found')
@@ -17,6 +25,28 @@ export const deleteMe: APIHandler<'me/delete'> = async ({reasonCategory, reasonD
   }
 
   const pg = createSupabaseDirectClient()
+
+  // A parting testimonial, written on the way out. Saved before anything is destroyed, and best-effort
+  // for the same reason the reason log is: someone who has decided to leave must not be held hostage
+  // by a failing insert. The `on delete set null` on author_id is what lets it outlive the row below.
+  let testimonialRow: TestimonialQueryRow | null = null
+  if (testimonial) {
+    try {
+      testimonialRow = await insertTestimonial(pg, {
+        authorId: userId,
+        authorName: user.name,
+        authorUsername: user.username,
+        authorAvatarUrl: user.avatarUrl ?? null,
+        body: testimonial.body,
+        headline: testimonial.headline,
+        rating: testimonial.rating,
+        showAuthor: testimonial.showAuthor,
+        source: 'deletion_survey',
+      })
+    } catch (e) {
+      console.error('Error storing parting testimonial:', e)
+    }
+  }
 
   // Store deletion reason before deleting the account
   try {
@@ -46,5 +76,22 @@ export const deleteMe: APIHandler<'me/delete'> = async ({reasonCategory, reasonD
     debug(`Deleted user ${userId} from Firebase Auth and Supabase`)
   } catch (e) {
     console.error('Error deleting user from Firebase Auth:', e)
+  }
+
+  // Bound to a const so the narrowing survives into the closure below.
+  const row = testimonialRow
+  if (!row) return
+
+  // After the response, so a slow or down Discord cannot make a deletion look like it failed to the
+  // person who just asked for it.
+  return {
+    result: undefined,
+    continue: async () => {
+      try {
+        await notifyTestimonialSubmitted(row, {fromDeletion: true})
+      } catch (e) {
+        console.error('Failed to send discord testimonial notification', e)
+      }
+    },
   }
 }

@@ -1,5 +1,6 @@
 import {
   CalendarIcon,
+  // ChatBubbleBottomCenterTextIcon, // re-add with the Testimonials nav item below
   HomeIcon,
   NewspaperIcon,
   QuestionMarkCircleIcon,
@@ -176,6 +177,14 @@ const Vote = {
   href: '/vote',
   icon: MdThumbUp,
 }
+// Hidden from the nav until there are testimonials to send people to — an empty wall is worse proof
+// than no wall. Uncomment this and its entry in `base` below once the first stories are approved.
+// const Testimonials = {
+//   key: 'nav.testimonials',
+//   name: 'Stories',
+//   href: '/testimonials',
+//   icon: ChatBubbleBottomCenterTextIcon,
+// }
 const Contact = {
   key: 'nav.contact',
   name: 'Contact',
@@ -211,6 +220,8 @@ const Admin = {
 // Stable component for Messages icon to prevent re-mounting on every render
 const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...props} />
 
+// Testimonials belongs next to About because it answers the same question — "is this for me?" — with
+// the one kind of evidence we cannot write ourselves. Add it back here when unhiding it above.
 const base = [About, faq, Vote, Events, News, Social, Organization, Contact]
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {

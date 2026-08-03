@@ -43,6 +43,10 @@ import {VoteEvidence} from 'web/components/about/vote-evidence'
 import {PageBase} from 'web/components/page-base'
 import {PressLogos} from 'web/components/press/press-logos'
 import {SEO} from 'web/components/SEO'
+import {
+  TestimonialsTeaser,
+  useHasTestimonials,
+} from 'web/components/testimonials/testimonials-teaser'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
 import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
@@ -961,6 +965,7 @@ function ShareStrip() {
 
 export default function About() {
   const t = useT()
+  const hasTestimonials = useHasTestimonials()
 
   // The two cards that support the spotlight claim above them. "Get Notified About Searches" used to be
   // the middle of these three; it is now the spotlight block, so what is left is the pair that sets it
@@ -1140,6 +1145,18 @@ export default function About() {
             <WhosHere />
           </Reveal>
         </Section>
+
+        {/* ── What members say ── */}
+        {/* The whole section is gated, heading and spacing included, so it cannot appear as an empty
+            promise on a page that is otherwise all claims. */}
+        {hasTestimonials && (
+          <Section>
+            <SectionLabel>{t('about.testimonials.label', 'What members say')}</SectionLabel>
+            <Reveal>
+              <TestimonialsTeaser />
+            </Reveal>
+          </Section>
+        )}
 
         {/* ── What's public ── */}
         <Section>

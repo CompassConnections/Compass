@@ -16,6 +16,15 @@ import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
+import {
+  MAX_MODERATOR_NOTE_LENGTH,
+  MAX_TESTIMONIAL_BODY_LENGTH,
+  MAX_TESTIMONIAL_HEADLINE_LENGTH,
+  MIN_TESTIMONIAL_BODY_LENGTH,
+  ModTestimonial,
+  PublicTestimonial,
+  TESTIMONIAL_STATUSES,
+} from 'common/testimonials/testimonials'
 import {PrivateUser, User} from 'common/user'
 import {NOTIFICATION_PREFERENCE_TYPES} from 'common/user-notification-preferences'
 import {arrify} from 'common/util/array'
@@ -472,6 +481,26 @@ export const API = (_apiTypeCheck = {
       .object({
         reasonCategory: z.string().nullable().optional(),
         reasonDetails: z.string().optional(),
+        /**
+         * A parting testimonial, offered when the stated reason is that they found someone here.
+         *
+         * Carried on the deletion call rather than posted separately because the account is destroyed
+         * moments later: two calls means a window where the delete succeeds and the testimonial is
+         * rejected for having no author, which loses the one thing worth keeping.
+         */
+        testimonial: z
+          .object({
+            body: z
+              .string()
+              .trim()
+              .min(MIN_TESTIMONIAL_BODY_LENGTH)
+              .max(MAX_TESTIMONIAL_BODY_LENGTH),
+            headline: z.string().trim().max(MAX_TESTIMONIAL_HEADLINE_LENGTH).nullable().optional(),
+            rating: z.number().int().min(1).max(5).nullable().optional(),
+            showAuthor: zBoolean.optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict(),
     summary: 'Delete the authenticated user account',
@@ -1380,6 +1409,68 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Set the outreach stage or next action for a member. Admin only.',
+    tag: 'Admin',
+  },
+  'get-testimonials': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {testimonials: PublicTestimonial[]},
+    // The wall is the same for everyone and changes only when a moderator acts, so it is worth a real
+    // cache. The cost is that a freshly approved testimonial can take a minute to appear publicly.
+    cache: 'public, max-age=60, stale-while-revalidate=300',
+    summary: 'Get every approved testimonial, most featured first.',
+    tag: 'General',
+  },
+  'get-testimonials-mod': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        // Omitted means every status, which is what the moderation queue wants.
+        status: z.enum(TESTIMONIAL_STATUSES).optional(),
+      })
+      .strict(),
+    returns: {} as {testimonials: ModTestimonial[]},
+    // Deliberately a separate endpoint from `get-testimonials` rather than a flag on it: that one is
+    // CDN-cached under a public key, and a moderator's response landing in that cache would serve
+    // unpublished testimonials to everyone.
+    summary: 'Get testimonials in any state, with moderation fields. Mods and admins only.',
+    tag: 'Admin',
+  },
+  'create-testimonial': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        body: z.string().trim().min(MIN_TESTIMONIAL_BODY_LENGTH).max(MAX_TESTIMONIAL_BODY_LENGTH),
+        headline: z.string().trim().max(MAX_TESTIMONIAL_HEADLINE_LENGTH).nullable().optional(),
+        rating: z.number().int().min(1).max(5).nullable().optional(),
+        /** False publishes the words without the name. */
+        showAuthor: zBoolean.optional(),
+      })
+      .strict(),
+    returns: {} as {status: 'pending'},
+    summary: 'Submit a testimonial for moderation.',
+    tag: 'General',
+  },
+  'update-testimonial-status': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        id: z.number().int(),
+        status: z.enum(TESTIMONIAL_STATUSES).optional(),
+        // Higher floats to the top of the wall; null returns it to plain reverse-chronological order.
+        featuredRank: z.number().int().min(0).max(1000).nullable().optional(),
+        moderatorNote: z.string().max(MAX_MODERATOR_NOTE_LENGTH).nullable().optional(),
+      })
+      .strict(),
+    summary: 'Approve, reject, hide or feature a testimonial. Mods and admins only.',
     tag: 'Admin',
   },
 } as const)

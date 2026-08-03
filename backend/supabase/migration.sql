@@ -63,4 +63,5 @@ BEGIN;
 \i backend/supabase/migrations/20260731_add_exercise_to_profiles.sql
 \i backend/supabase/migrations/20260731_lock_activity_stars_compat.sql
 \i backend/supabase/migrations/20260801_add_outreach_contacts.sql
+\i backend/supabase/migrations/20260803_add_testimonials.sql
 COMMIT;

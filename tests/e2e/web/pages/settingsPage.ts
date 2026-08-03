@@ -22,6 +22,7 @@ export class SettingsPage {
   private readonly deleteSurveyModal: Locator
   private readonly deleteSurveyReasons: Locator
   private readonly deleteSurveyDetails: Locator
+  private readonly testimonialOptOut: Locator
 
   constructor(public readonly page: Page) {
     this.localePicker = page.getByTestId('sidebar-locale-picker')
@@ -44,7 +45,10 @@ export class SettingsPage {
     this.cancelButton = page.getByRole('button', {name: 'Cancel'})
     this.deleteSurveyModal = page.getByTestId('delete-survey-modal')
     this.deleteSurveyReasons = page.getByTestId('delete-account-survey-reasons')
-    this.deleteSurveyDetails = page.getByRole('textbox')
+    // By test id rather than by role: the testimonial composer adds two more textboxes to this modal,
+    // so `getByRole('textbox')` now resolves to several elements and fails strict-mode.
+    this.deleteSurveyDetails = page.getByTestId('delete-survey-details')
+    this.testimonialOptOut = page.getByTestId('testimonial-opt-out')
   }
 
   async setLocale(locale: LocaleTuple) {
@@ -171,5 +175,12 @@ export class SettingsPage {
     await this.deleteSurveyReasons.locator('div').nth(1).click()
     await expect(this.deleteSurveyDetails).toBeVisible()
     await this.deleteSurveyDetails.fill(reason)
+
+    // "I found a meaningful connection on Compass" — the first reason, and the one this helper
+    // happens to pick — asks for a testimonial and blocks the submit until it is written or declined.
+    // Declining is what a deletion test wants; the writing path has its own coverage.
+    if (await this.testimonialOptOut.isVisible()) {
+      await this.testimonialOptOut.check()
+    }
   }
 }

@@ -5,13 +5,13 @@ import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {buildArray, filterDefined} from 'common/util/array'
-import {cleanDoc} from 'common/util/parse'
+import {cleanDoc, richTextToString} from 'common/util/parse'
 import {DAY_MS, YEAR_MS} from 'common/util/time'
-import {uniq} from 'lodash'
+import {keyBy, uniq} from 'lodash'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
-import {FaFlag, FaUserFriends, FaUserMinus} from 'react-icons/fa'
+import {FaFlag, FaRegCopy, FaUserFriends, FaUserMinus} from 'react-icons/fa'
 import {GiSpeakerOff} from 'react-icons/gi'
 import {BackButton} from 'web/components/back-button'
 import {ChatMessageItem, SystemChatMessageItem} from 'web/components/chat/chat-message'
@@ -45,6 +45,7 @@ import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {useGroupedMessages, usePaginatedScrollingMessages} from 'web/lib/supabase/chat-messages'
+import {copyToClipboard} from 'web/lib/util/copy'
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
@@ -111,6 +112,38 @@ export const getFirstName = (name: string) => {
   const parts = name.trim().split(/\s+/)
   const first = parts[0].endsWith('.') && parts.length > 1 ? parts.slice(0, 2).join(' ') : parts[0]
   return first
+}
+
+/**
+ * Renders the loaded messages as a plain-text transcript, oldest first:
+ *   Martin (me): hello
+ *
+ *   Liz: hi
+ * System status messages (joined/left the chat) are left out.
+ */
+export const messagesToPlainText = (
+  messages: ChatMessage[] | undefined,
+  user: User,
+  otherUsers: DisplayUser[] | undefined,
+  t: ReturnType<typeof useT>,
+) => {
+  const usersById = keyBy(filterDefined(otherUsers ?? []), 'id')
+  const nameOf = (userId: string) => {
+    if (userId === user.id)
+      return `${getFirstName(user.name)} ${t('messages.copy.me_suffix', '(me)')}`
+    const name = usersById[userId]?.name
+    return name ? getFirstName(name) : t('messages.deleted_user', 'Deleted user')
+  }
+
+  return (
+    (messages ?? [])
+      // usePrivateMessages returns newest first; a transcript reads oldest first.
+      .slice()
+      .reverse()
+      .filter((m) => m.visibility !== 'system_status')
+      .map((m) => `${nameOf(m.userId)}: ${richTextToString(m.content).trim()}`)
+      .join('\n\n')
+  )
 }
 
 export const PrivateChat = (props: {
@@ -389,6 +422,19 @@ export const PrivateChat = (props: {
                   channelId: channelId,
                 })
                 router.push('/messages')
+              },
+            },
+            {
+              icon: <FaRegCopy className="h-5 w-5" />,
+              name: t('messages.menu.copy_plain_text', 'Copy as plain text'),
+              onClick: () => {
+                const text = messagesToPlainText(messages, user, otherUsers, t)
+                if (!text) {
+                  toast.error(t('messages.toast.copy_empty', 'No messages to copy'))
+                  return
+                }
+                copyToClipboard(text)
+                toast.success(t('messages.toast.copy_success', 'Conversation copied'))
               },
             },
           )}

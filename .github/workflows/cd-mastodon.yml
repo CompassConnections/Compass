@@ -5,7 +5,7 @@ on:
   # do NOT reach here: GitHub suppresses events triggered with the default GITHUB_TOKEN to prevent
   # workflows from recursively triggering each other, so cd.yml calls this workflow directly instead.
   release:
-    types: [ published ]
+    types: [published]
   workflow_call:
     inputs:
       tag:

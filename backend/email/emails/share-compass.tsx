@@ -1,5 +1,6 @@
 import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {formatDistance} from 'common/measurement-utils'
 import {getXShareProfileUrl} from 'common/socials'
 import {type User} from 'common/user'
 import {UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
@@ -9,11 +10,27 @@ import {createT} from 'shared/locale'
 
 import {mockUser} from './functions/mock'
 
+/** Radius used for the "members near you" line. Stored in miles, like every other radius here. */
+export const NEARBY_RADIUS_MILES = 200
+
+/**
+ * Below this, the number reads as discouraging rather than compelling ("3 people near you"),
+ * so we fall back to the generic growth copy.
+ */
+export const MIN_NEARBY_COUNT = 5
+
+export const hasNearbyCount = (nearbyCount?: number, city?: string): boolean =>
+  nearbyCount !== undefined && nearbyCount >= MIN_NEARBY_COUNT && !!city
+
 interface ShareCompassEmailProps {
   toUser: User
   unsubscribeUrl: string
   email?: string
   locale?: string
+  /** Members within NEARBY_RADIUS_MILES of this user's city. Undefined when unknown. */
+  nearbyCount?: number
+  /** This user's city, e.g. "Brussels". Undefined when unknown. */
+  city?: string
 }
 
 export const ShareCompassEmail = ({
@@ -21,17 +38,29 @@ export const ShareCompassEmail = ({
   unsubscribeUrl,
   email,
   locale,
+  nearbyCount,
+  city,
 }: ShareCompassEmailProps) => {
   const name = toUser.name.split(' ')[0]
   const t = createT(locale)
 
   const profileShareUrl = getXShareProfileUrl(t, toUser.username)
+  const personalised = hasNearbyCount(nearbyCount, city)
+  const radius = formatDistance(NEARBY_RADIUS_MILES, locale === 'en' ? 'imperial' : 'metric')
 
   return (
     <Html>
       <Head />
       <Preview>
-        {t('email.share.preview', "600 people in 6 months — here's how you help write what's next")}
+        {personalised
+          ? t('email.share.preview_nearby', '{count} people near {city} are already on Compass', {
+              count: String(nearbyCount),
+              city: city as string,
+            })
+          : t(
+              'email.share.preview',
+              "600 people in 6 months — here's how you help write what's next",
+            )}
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -45,12 +74,35 @@ export const ShareCompassEmail = ({
               )}
             </Text>
 
-            <Text style={paragraph}>
-              {t(
-                'email.share.growth',
-                "In just 6 months, over 600 people have found their way here. That's 600 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
-              )}
-            </Text>
+            {personalised ? (
+              <>
+                <Text style={paragraph}>
+                  {t(
+                    'email.share.growth_nearby',
+                    'Right now, {count} members are within {radius} of {city}. Not 600 scattered across the world — {count} people in reach of you, who chose depth over algorithms and values over vanity metrics.',
+                    {
+                      count: String(nearbyCount),
+                      radius,
+                      city: city as string,
+                    },
+                  )}
+                </Text>
+
+                <Text style={paragraph}>
+                  {t(
+                    'email.share.growth_nearby_context',
+                    "That's what 6 months and 600 members across the platform look like where you live. It's a real signal — and it's only the beginning.",
+                  )}
+                </Text>
+              </>
+            ) : (
+              <Text style={paragraph}>
+                {t(
+                  'email.share.growth',
+                  "In just 6 months, over 600 people have found their way here. That's 600 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
+                )}
+              </Text>
+            )}
 
             <Text style={paragraph}>
               {t(
@@ -147,6 +199,8 @@ ShareCompassEmail.PreviewProps = {
   toUser: mockUser,
   email: 'someone@gmail.com',
   unsubscribeUrl: UNSUBSCRIBE_URL,
+  nearbyCount: 47,
+  city: 'Brussels',
   // locale: 'fr',
 } as ShareCompassEmailProps
 

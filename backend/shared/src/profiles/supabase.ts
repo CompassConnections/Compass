@@ -112,6 +112,41 @@ export const getCompatibleProfiles = async (profile: ProfileRow, radiusKm: numbe
   )
 }
 
+// Number of other active members whose city is within `radiusKm` of this profile's city.
+// Returns undefined when the profile has no city coordinates, so callers can fall back to
+// non-personalised copy rather than showing a misleading zero.
+export const getNearbyMemberCount = async (
+  profile: Pick<ProfileRow, 'user_id' | 'city_latitude' | 'city_longitude'>,
+  radiusKm: number,
+): Promise<number | undefined> => {
+  if (profile.city_latitude == null || profile.city_longitude == null) return undefined
+
+  const pg = createSupabaseDirectClient()
+  const row = await pg.one<{count: string}>(
+    `
+        select count(*) as count
+        from profiles
+                 join
+             users on users.id = profiles.user_id
+        where profiles.user_id != $(user_id)
+          and profiles.looking_for_matches
+          and not coalesce(users.is_banned_from_posting, false)
+          and not coalesce(profiles.disabled, false)
+          and profiles.city_latitude is not null
+          and profiles.city_longitude is not null
+          and calculate_earth_distance_km($(city_latitude), $(city_longitude), profiles.city_latitude,
+                                          profiles.city_longitude) < $(radiusKm)
+    `,
+    {
+      user_id: profile.user_id,
+      city_latitude: profile.city_latitude,
+      city_longitude: profile.city_longitude,
+      radiusKm,
+    },
+  )
+  return Number(row.count)
+}
+
 export const getCompatibilityAnswers = async (userIds: string[]) => {
   const pg = createSupabaseDirectClient()
   return await pg.manyOrNone<Row<'compatibility_answers'>>(

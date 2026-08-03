@@ -1,6 +1,7 @@
 import {render} from '@react-email/render'
 import {defaultLocale} from 'common/constants'
 import {debug} from 'common/logger'
+import {milesToKm} from 'common/measurement-utils'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {PrivateUser, User} from 'common/user'
 import {
@@ -8,12 +9,12 @@ import {
   UNSUBSCRIBE_URL,
 } from 'common/user-notification-preferences'
 import NewSearchAlertsEmail from 'email/new-search-alerts'
-import ShareCompassEmail from 'email/share-compass'
+import ShareCompassEmail, {hasNearbyCount, NEARBY_RADIUS_MILES} from 'email/share-compass'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'
 import React from 'react'
 import {createT} from 'shared/locale'
-import {getProfile} from 'shared/profiles/supabase'
+import {getNearbyMemberCount, getProfile} from 'shared/profiles/supabase'
 import {getOptionsIdsToLabels} from 'shared/supabase/options'
 import {createUnsubscribeToken, getUnsubscribeUrlOneClick} from 'shared/unsubscribe-tokens'
 
@@ -216,10 +217,24 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
   const t = createT(locale)
   console.log(`Sending email to ${privateUser.email} in ${locale ?? defaultLocale} (${toUser.id})`)
 
-  const subject = t(
-    'email.share.preview',
-    "600 people in 6 months — here's how you help write what's next",
-  )
+  const profile = await getProfile(toUser.id)
+  const city = profile?.city ?? undefined
+  const nearbyCount = profile
+    ? await getNearbyMemberCount(profile, milesToKm(NEARBY_RADIUS_MILES)).catch((e) => {
+        // A failed count must not block the send — fall back to the generic copy.
+        debug('Failed to count nearby members', toUser.id, e)
+        return undefined
+      })
+    : undefined
+
+  const personalised = hasNearbyCount(nearbyCount, city)
+
+  const subject = personalised
+    ? t('email.share.preview_nearby', '{count} people near {city} are already on Compass', {
+        count: String(nearbyCount),
+        city: city as string,
+      })
+    : t('email.share.preview', "600 people in 6 months — here's how you help write what's next")
 
   const token = await createUnsubscribeToken(toUser.id, notificationType)
   const unsubscribeUrlOneClick = getUnsubscribeUrlOneClick(token)
@@ -235,6 +250,8 @@ export const sendShareCompassEmail = async (toUser: User, privateUser: PrivateUs
         unsubscribeUrl={unsubscribeUrl}
         email={email}
         locale={locale}
+        nearbyCount={nearbyCount}
+        city={city}
       />,
     ),
     headers: {

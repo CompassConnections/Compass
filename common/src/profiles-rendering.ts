@@ -1,11 +1,19 @@
 export type CardSize = 'small' | 'medium' | 'large'
 
+/**
+ * `masonry` lets each card be only as tall as its content, so a sparse profile stays short.
+ * `uniform` gives every card the same tile size, which reads as a tidier grid at the cost of
+ * empty space under the shorter cards.
+ */
+export type GridLayout = 'masonry' | 'uniform'
+
 export type DisplayOptions = {
   showPhotos: boolean | null | undefined
   showAge: boolean | null | undefined
   showGender: boolean | null | undefined
   showLanguages: boolean | null | undefined
   cardSize: CardSize
+  gridLayout: GridLayout
   showHeadline: boolean | null | undefined
   showKeywords: boolean | null | undefined
   showCity: boolean | null | undefined
@@ -34,6 +42,7 @@ export const initialDisplayOptions: DisplayOptions = {
   showKeywords: true,
   showBio: true,
   cardSize: 'medium',
+  gridLayout: 'masonry',
   showGender: false,
   showLanguages: false,
   showOccupation: false,

@@ -20,6 +20,7 @@ import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
 import {ExerciseFilter, ExerciseFilterText} from 'web/components/filters/exercise-filter'
 import {FieldToggles} from 'web/components/filters/field-toggles'
+import {GridLayoutSelector} from 'web/components/filters/grid-layout-selector'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
 import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profiles-toggle'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
@@ -339,6 +340,10 @@ function Filters(props: {
         title={t('profile.optional.gender', 'Gender')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
+        // An active section shows its selection in place of its title, and gender's selection is
+        // icons only — so there is no text to target once anything is picked. The marketing capture
+        // (media-creator/scripts/capture-search.mjs) opens this section by test id for that reason.
+        testId="gender"
         isActive={hasAny(filters.genders)}
         selection={
           <GenderFilterText
@@ -879,6 +884,12 @@ function Filters(props: {
       >
         <div className="px-4">
           <CardSizeSelector
+            updateDisplayOptions={updateDisplayOptions}
+            displayOptions={displayOptions}
+          />
+        </div>
+        <div className="px-4 pt-3">
+          <GridLayoutSelector
             updateDisplayOptions={updateDisplayOptions}
             displayOptions={displayOptions}
           />

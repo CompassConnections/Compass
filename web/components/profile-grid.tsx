@@ -6,7 +6,7 @@ import {formatFilters, locationType} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
-import {CardSize, DisplayOptions} from 'common/profiles-rendering'
+import {CardSize, DisplayOptions, GridLayout} from 'common/profiles-rendering'
 import {parseJsonContentToText} from 'common/util/parse'
 import {clamp} from 'lodash'
 import {
@@ -161,16 +161,73 @@ export function ProfileGridSkeleton(props: {
   count?: number
   className?: string
   cardSize?: CardSize
+  gridLayout?: GridLayout
 }) {
-  const {count = 20, className, cardSize} = props
+  const {count = 20, className, cardSize, gridLayout} = props
   const config = CARD_SIZE_CONFIG[cardSize ?? 'medium']
+  const isUniform = gridLayout === 'uniform'
 
-  // Same measured-width masonry as the real grid, so the layout doesn't reflow when profiles land.
+  // Same measured-width layout as the real grid, so it doesn't reflow when profiles land.
   const gridRef = useRef<HTMLDivElement>(null)
   const columnCount = useColumnCount(gridRef, config.columns)
 
-  // Varied heights so the skeleton previews the masonry rather than a uniform grid.
-  const bioLines = [3, 2, 4, 2, 3, 3]
+  // Varied heights so the skeleton previews the masonry. Uniform tiles are all the same height,
+  // so there's nothing to vary there.
+  const bioLines = isUniform ? [3] : [3, 2, 4, 2, 3, 3]
+
+  const card = (i: number) => (
+    <div
+      key={i}
+      className={clsx(
+        'rounded-xl border border-canvas-300 bg-canvas-50 animate-pulse space-y-3',
+        config.padding,
+      )}
+    >
+      <div className="flex flex-row items-center gap-3">
+        <div
+          className="shrink-0 rounded-full bg-canvas-200"
+          style={{height: config.avatarPx, width: config.avatarPx}}
+        />
+        <div className="flex-1 space-y-2">
+          {/* name */}
+          <div className="h-4 bg-canvas-200 rounded w-2/5" />
+          {/* location */}
+          <div className="h-3 bg-canvas-200 rounded w-1/3" />
+        </div>
+        {/* compatibility ring */}
+        <div
+          className="shrink-0 rounded-full bg-canvas-200"
+          style={{height: config.ringPx, width: config.ringPx}}
+        />
+      </div>
+      {/* headline */}
+      <div className="h-4 bg-canvas-200 rounded w-4/5" />
+      {/* bio lines */}
+      <div className="space-y-1.5">
+        {Array.from({length: bioLines[i % bioLines.length]}).map((_, j) => (
+          <div key={j} className="h-3 bg-canvas-200 rounded" style={{width: `${95 - j * 12}%`}} />
+        ))}
+      </div>
+      {/* keyword pills */}
+      <div className="flex gap-2 pt-1">
+        <div className="h-6 bg-canvas-200 rounded-full w-16" />
+        <div className="h-6 bg-canvas-200 rounded-full w-20" />
+        <div className="h-6 bg-canvas-200 rounded-full w-14" />
+      </div>
+    </div>
+  )
+
+  if (isUniform) {
+    return (
+      <div
+        ref={gridRef}
+        className={clsx('grid items-stretch gap-4 py-4', className)}
+        style={{gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`}}
+      >
+        {Array.from({length: count}).map((_, i) => card(i))}
+      </div>
+    )
+  }
 
   return (
     <div ref={gridRef} className={clsx('flex items-start gap-4 py-4', className)}>
@@ -179,51 +236,7 @@ export function ProfileGridSkeleton(props: {
           {Array.from({length: count})
             .map((_, i) => i)
             .filter((i) => i % columnCount === columnIndex)
-            .map((i) => (
-              <div
-                key={i}
-                className={clsx(
-                  'rounded-xl border border-canvas-300 bg-canvas-50 animate-pulse space-y-3',
-                  config.padding,
-                )}
-              >
-                <div className="flex flex-row items-center gap-3">
-                  <div
-                    className="shrink-0 rounded-full bg-canvas-200"
-                    style={{height: config.avatarPx, width: config.avatarPx}}
-                  />
-                  <div className="flex-1 space-y-2">
-                    {/* name */}
-                    <div className="h-4 bg-canvas-200 rounded w-2/5" />
-                    {/* location */}
-                    <div className="h-3 bg-canvas-200 rounded w-1/3" />
-                  </div>
-                  {/* compatibility ring */}
-                  <div
-                    className="shrink-0 rounded-full bg-canvas-200"
-                    style={{height: config.ringPx, width: config.ringPx}}
-                  />
-                </div>
-                {/* headline */}
-                <div className="h-4 bg-canvas-200 rounded w-4/5" />
-                {/* bio lines */}
-                <div className="space-y-1.5">
-                  {Array.from({length: bioLines[i % bioLines.length]}).map((_, j) => (
-                    <div
-                      key={j}
-                      className="h-3 bg-canvas-200 rounded"
-                      style={{width: `${95 - j * 12}%`}}
-                    />
-                  ))}
-                </div>
-                {/* keyword pills */}
-                <div className="flex gap-2 pt-1">
-                  <div className="h-6 bg-canvas-200 rounded-full w-16" />
-                  <div className="h-6 bg-canvas-200 rounded-full w-20" />
-                  <div className="h-6 bg-canvas-200 rounded-full w-14" />
-                </div>
-              </div>
-            ))}
+            .map((i) => card(i))}
         </Col>
       ))}
     </div>
@@ -265,8 +278,9 @@ export const ProfileGrid = (props: {
     refreshBookmarkedSearches,
   } = props
 
-  const {cardSize} = displayOptions ?? {}
+  const {cardSize, gridLayout} = displayOptions ?? {}
   const config = CARD_SIZE_CONFIG[cardSize ?? 'medium']
+  const isUniform = (gridLayout ?? 'masonry') === 'uniform'
 
   const user = useUser()
   const t = useT()
@@ -299,34 +313,54 @@ export const ProfileGrid = (props: {
     return cols
   }, [other_profiles, columnCount])
 
+  const renderCard = (profile: Profile) => (
+    <ProfilePreview
+      key={profile.id}
+      profile={profile}
+      compatibilityScore={compatibilityScores?.[profile.user_id]}
+      hasStar={starredUserIds?.includes(profile.user_id) ?? false}
+      refreshStars={refreshStars}
+      onHide={onHide}
+      isHidden={hiddenUserIds?.includes(profile.user_id) ?? false}
+      onUndoHidden={onUndoHidden}
+      displayOptions={displayOptions}
+      fillHeight={isUniform}
+    />
+  )
+
   return (
     <div className="relative" data-testid="people-profile-grid">
-      <div
-        ref={gridRef}
-        className={clsx('flex items-start gap-4 py-4', isReloading && 'animate-pulse opacity-80')}
-      >
-        {columns.map((column, columnIndex) => (
-          <Col key={columnIndex} className="min-w-0 flex-1 gap-4">
-            {column.map((profile) => (
-              <ProfilePreview
-                key={profile.id}
-                profile={profile}
-                compatibilityScore={compatibilityScores?.[profile.user_id]}
-                hasStar={starredUserIds?.includes(profile.user_id) ?? false}
-                refreshStars={refreshStars}
-                onHide={onHide}
-                isHidden={hiddenUserIds?.includes(profile.user_id) ?? false}
-                onUndoHidden={onUndoHidden}
-                displayOptions={displayOptions}
-              />
-            ))}
-          </Col>
-        ))}
-      </div>
+      {isUniform ? (
+        // Every tile the same size: `auto-rows-fr` makes each row as tall as its tallest card, so
+        // the shorter ones end in empty space. Tidier than masonry, at that cost.
+        <div
+          ref={gridRef}
+          className={clsx(
+            'grid auto-rows-fr items-stretch gap-4 py-4',
+            isReloading && 'animate-pulse opacity-80',
+          )}
+          style={{gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`}}
+        >
+          {other_profiles.map(renderCard)}
+        </div>
+      ) : (
+        <div
+          ref={gridRef}
+          className={clsx('flex items-start gap-4 py-4', isReloading && 'animate-pulse opacity-80')}
+        >
+          {columns.map((column, columnIndex) => (
+            <Col key={columnIndex} className="min-w-0 flex-1 gap-4">
+              {column.map(renderCard)}
+            </Col>
+          ))}
+        </div>
+      )}
 
       <LoadMoreUntilNotVisible loadMore={loadMore} />
 
-      {isLoadingMore && <ProfileGridSkeleton count={columnCount} cardSize={cardSize} />}
+      {isLoadingMore && (
+        <ProfileGridSkeleton count={columnCount} cardSize={cardSize} gridLayout={gridLayout} />
+      )}
 
       {user?.isBannedFromPosting ? (
         <Col className="items-center py-8">
@@ -478,6 +512,8 @@ export function ProfilePreview(props: {
   isHidden?: boolean
   onUndoHidden?: (userId: string) => void
   displayOptions?: Partial<DisplayOptions>
+  /** Stretch the card to its grid row — the uniform layout's equal tiles. */
+  fillHeight?: boolean
 }) {
   const {
     profile,
@@ -488,6 +524,7 @@ export function ProfilePreview(props: {
     displayOptions,
     hasStar,
     refreshStars,
+    fillHeight,
   } = props
 
   const {
@@ -623,7 +660,12 @@ export function ProfilePreview(props: {
   // If this profile was just hidden, render a compact placeholder with Undo action.
   if (isHidden) {
     return (
-      <div className="block rounded-xl border border-canvas-300 bg-canvas-50 dark:bg-gray-800/50 p-3 text-sm">
+      <div
+        className={clsx(
+          'block rounded-xl border border-canvas-300 bg-canvas-50 dark:bg-gray-800/50 p-3 text-sm',
+          fillHeight && 'h-full',
+        )}
+      >
         <Row className="items-center justify-between gap-2">
           <span className="text-ink-700 dark:text-ink-300">
             {t(
@@ -721,6 +763,7 @@ export function ProfilePreview(props: {
       ref={cardRef}
       className={clsx(
         'relative overflow-hidden rounded-xl bg-canvas-50',
+        fillHeight && 'h-full',
         isLoading && 'scale-[0.94] transition-transform duration-[80ms] ease-out',
         !isLoading && 'transition-transform duration-[120ms] ease-in',
       )}

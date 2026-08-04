@@ -8,7 +8,7 @@
  * The flow, in order:
  *   1. /people, filtered to man / 24-40 / atheist / vegan, near Grenoble
  *   2. no results — which is the honest reason to save a search, and the app's own empty state says so
- *   3. "Get notified for selected filters", and the saved-search modal confirming it
+ *   3. "Get notified" — the empty state's own full-size button, which relabels itself "Saved!"
  *   4. the alert email that arrives (dissolved into — see SearchAlert.tsx on why there is no title card)
  *   5. the match's profile
  *   6. the composer
@@ -25,8 +25,11 @@
  *   npm run capture:alert         # light theme
  *   npm run capture:alert:dark    # dark theme
  *
- * Needs `yarn dev` running and the SHOWCASE=1 seed applied, including the `juliensarr` persona — he is
- * the only profile that matches this search, and without him beat 5 has nobody to open.
+ * Needs `yarn dev:isolated` running — not `yarn dev`. The viewer account is a Firebase *emulator* user
+ * and `scripts/seed.sh` reads its connection details from a local `supabase status`, so neither the
+ * sign-in nor the seed works against the shared remote dev DB. The `juliensarr` persona has to be seeded
+ * before the `after` phase: he is the only profile that matches this search, and without him beat 5 has
+ * nobody to open.
  *
  * Borrows Playwright from the monorepo root by absolute path, deliberately — this package stays
  * Remotion-only. Same trick as capture-search.mjs.
@@ -75,9 +78,9 @@ const OUT_DIR = join(ALERT_DIR, THEME)
  * yet" beat that motivates saving it at all. Both cannot be true of one database at one moment, so the
  * first half is shot while he does not exist and the second after he is seeded:
  *
- *   SHOWCASE_SKIP=juliensarr SHOWCASE=1 ./scripts/dev_db_seed.sh
+ *   SHOWCASE_SKIP=juliensarr SHOWCASE=1 ./scripts/seed.sh
  *   npm run capture:alert -- --phase before
- *   SHOWCASE=1 ./scripts/dev_db_seed.sh
+ *   SHOWCASE=1 ./scripts/seed.sh
  *   npm run capture:alert -- --phase after      # merges both halves into manifest.json
  *
  * Staging the empty state instead — hiding him from the results with the card's own hide control —
@@ -201,11 +204,35 @@ async function main() {
   }
 
   /**
+   * Re-capture the frame currently on hold, overwriting its PNG.
+   *
+   * A tap marker is a viewport coordinate painted onto a specific screenshot, so the two are only
+   * consistent if nothing moved between them. Plenty does: `pickFilter` scrolls each control to the
+   * centre of the panel before pressing it, and the location beat types a city and waits for a results
+   * dropdown — all *after* the held frame was shot. The coordinates then described a viewport the frame
+   * never showed, and every marker in the filter sequence landed high by the scroll delta, on the group
+   * header above the control it was meant to point at.
+   *
+   * Re-shooting is the fix rather than compensating arithmetic: the held frame simply becomes the state
+   * the tap is measured against. When nothing moved it rewrites identical pixels and costs one
+   * screenshot, which is why it is unconditional — a marker that is silently right most of the time is
+   * how this went unnoticed in the first place.
+   */
+  const refreshLast = async () => {
+    const previous = shots[shots.length - 1]
+    if (!previous) return
+    await parkPointer()
+    await page.waitForTimeout(120)
+    await page.screenshot({path: join(OUT_DIR, previous.name)})
+  }
+
+  /**
    * Click something, then capture the result. The tap marker goes on the *previous* frame — the one
    * still showing the pre-click state — because clicking reflows the page, so a position measured
    * before the click does not describe the frame after it. Press, then result.
    */
   const tapAndShoot = async (locator, kind, hold, settleMs = 900) => {
+    await refreshLast()
     const tap = await centreOf(locator)
     const previous = shots[shots.length - 1]
     if (tap && previous) previous.tap = tap
@@ -278,7 +305,9 @@ async function main() {
     )
   }
 
-  const dismiss = page.getByText('Dismiss', {exact: true})
+  // The affordance is an ✕ in the banner's corner (profiles/profiles-home.tsx), so "Dismiss" survives
+  // only as its aria-label — matching on visible text silently found nothing and left the banner in.
+  const dismiss = page.getByLabel('Dismiss', {exact: true})
   if (await dismiss.count()) {
     await dismiss.first().click()
     await page.waitForTimeout(600)
@@ -286,12 +315,44 @@ async function main() {
   await quieten()
   await page.waitForTimeout(1200)
 
+  // One filter button at every width now — it opens the same right-hand sheet on desktop and mobile
+  // (filters/search.tsx). By test id rather than by class: the old `button.lg:hidden` selector described
+  // a mobile/desktop split the redesign removed, and broke silently with it.
+  const openFilterSheet = () =>
+    firstVisible(page.locator('[data-testid="open-filters-button"]'), 'filter button')
+
   if (PHASE === 'before') {
+    // ── 0. Clear the inherited filter state ────────────────────────────────────
+    // Off camera, before the first frame. "Who I'm looking for" seeds the search from the signed-in
+    // viewer's saved preferences, so the app opens already narrowed by three of them.
+    //
+    // This matters more here than it does for the hero clip. The whole point of this one is that a
+    // *specific* four-facet search matches nobody, and the alert email then lists those four facets
+    // back. Inherited preferences would silently join the saved search and turn up in the email as
+    // criteria nothing in the clip ever set — and the "no results" beat would no longer be evidence
+    // that this search is demanding, only that the account is.
+    await (await openFilterSheet()).click()
+    await page.waitForTimeout(900)
+    const reset = page.getByText('Reset filters', {exact: true})
+    if (await reset.count()) {
+      await reset.first().click()
+      await page.waitForTimeout(1600)
+    } else {
+      console.warn('warning: no "Reset filters" control — the clip may open on a pre-filtered list')
+    }
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(1600)
+    // Closing the sheet returns focus to the filter button, which would then wear a focus ring through
+    // the establishing frame.
+    await page.evaluate(() => document.activeElement?.blur())
+    await page.waitForTimeout(200)
+    await quieten()
+
     // ── 1. The unfiltered list ─────────────────────────────────────────────────
     await shoot('idle', HOLD.establish)
 
     // ── 2. Build the search ────────────────────────────────────────────────────
-    const filterButton = await firstVisible(page.locator('button.lg\\:hidden'), 'filter button')
+    const filterButton = await openFilterSheet()
     await tapAndShoot(filterButton, 'filters-open', HOLD.panel)
 
     // Group titles are from filters.tsx: Gender is top level, the other two are nested.
@@ -309,11 +370,17 @@ async function main() {
     // fail for reasons unrelated to the app. Treated as optional: warn and carry on rather than losing
     // the whole capture, since the search is already specific enough without it.
     try {
-      // Headers read as label-plus-current-selection — "Living anywhere", "Any gender" — so the section
-      // is "Living", never "Location", and never bare. Anchoring the regex at the end (/location$/i,
-      // /^living$/i) matched nothing; match the leading word instead.
-      const locationSection = await firstVisible(panel().getByText(/^living/i), 'Living section')
+      // The section is titled "Location" again. It read "Living anywhere" when headers were
+      // label-plus-current-selection; the redesign shows the bare title until something is picked (and
+      // the selection *instead of* the title once something is), so `/^living/i` now matches nothing.
+      const locationSection = await firstVisible(
+        panel().getByText(/^location$/i),
+        'Location section',
+      )
       await locationSection.evaluate((el) => el.scrollIntoView({block: 'center'}))
+      // Let the scroll land before `tapAndShoot` re-shoots the held frame and measures against it —
+      // the other beats already wait 250ms here, and this one was reading a viewport still in motion.
+      await page.waitForTimeout(250)
       await tapAndShoot(locationSection, 'location-open', HOLD.tap, 600)
 
       const cityInput = await firstVisible(
@@ -337,19 +404,45 @@ async function main() {
     await quieten()
     await shoot('no-results', HOLD.empty)
 
+    // Null here is the expected result, not a failure: the count only renders when something matched,
+    // and this beat exists precisely because nothing did. Recorded for the manifest either way.
     count = await page
-      .locator('text=/\\d+ (people|person)/')
+      .locator('[data-testid="people-profile-count"]')
       .first()
       .textContent()
       .catch(() => null)
 
     // ── 4. Save the search ─────────────────────────────────────────────────────
-    const notify = await firstVisible(page.getByText(/get notified/i), 'get-notified button')
+    // The empty state now offers this as a full "Get notified" button in the middle of the page
+    // (profile-grid.tsx), which is where someone who has just hit a dead end is already looking — not
+    // the icon-sized bell in the toolbar. Both are the same `GetNotifiedButton` and both carry the same
+    // aria-label, so neither role nor label tells them apart; only the big one renders visible text,
+    // which is what this matches on.
+    const notify = await firstVisible(
+      page.locator('button').filter({hasText: 'Get notified'}),
+      'get-notified button',
+    )
     await notify.evaluate((el) => el.scrollIntoView({block: 'center'}))
     await page.waitForTimeout(400)
     await quieten()
     await shoot('notify-visible', HOLD.tap)
-    await tapAndShoot(notify, 'saved', HOLD.settle, 2500)
+
+    // 900ms, and the margin is the point. The empty-state button is the one `GetNotifiedButton` that
+    // gets no `onSaved` (profile-grid.tsx), so no confirmation modal opens behind it — the *only*
+    // evidence the save happened is the button relabelling itself "Saved!" with a filled bell, and
+    // `GetNotifiedButton` drops that back after 2000ms. The old 2.5s settle predates this button and
+    // now lands after the reset, which shot a "saved" frame pixel-identical to the one before it: the
+    // clip appeared to reach its payoff and do nothing.
+    await tapAndShoot(notify, 'saved', HOLD.settle, 900)
+    const savedLabel = await page
+      .locator('button')
+      .filter({hasText: /Saved!/})
+      .count()
+    if (!savedLabel) {
+      console.warn(
+        'warning: the "saved" frame did not catch the Saved! state — settle window missed',
+      )
+    }
   }
 
   if (PHASE === 'after') {
@@ -425,9 +518,11 @@ async function main() {
       }
     }
 
-    // Beat one: who and where. Age, gender and city sit together in the profile header.
+    // Beat one: who and where. Age, gender and city sit together in the profile header — now as one
+    // slash-separated editorial line (`profile-primary-info.tsx`), so the age is a bare "32" where it
+    // used to read "32 years old". Each of the three is a single visible node on this page.
     const topSpots = [
-      await highlight(page.getByText(/^32 years old$/), 'Age 24–40'),
+      await highlight(page.getByText(/^32$/), 'Age 24–40'),
       await highlight(page.getByText('Man', {exact: true}), 'Man'),
       await highlight(page.getByText(/^Grenoble, France$/), 'Near Grenoble'),
     ].filter(Boolean)
@@ -470,7 +565,14 @@ async function main() {
 
     // ── 7. Write to him ────────────────────────────────────────────────────────
     // Opens the composer only. Nothing is sent, and the recipient is a fictional persona regardless.
-    const contact = page.getByText(/thoughtful message/i).first()
+    // The CTA is now "Message <first name>" inside the Connect section (profile/connect-actions.tsx),
+    // not the old "Send them a thoughtful message". Scoped to `#connect` deliberately: profile-header.tsx
+    // renders a second SendMessageButton with the same label at the top of the page, far off-screen by
+    // this point in the scroll.
+    const contact = page
+      .locator('#connect')
+      .getByText(/^Message /)
+      .first()
     if (await contact.count()) {
       await contact.evaluate((el) => el.scrollIntoView({block: 'center'}))
       await page.waitForTimeout(700)
@@ -478,7 +580,7 @@ async function main() {
       await shoot('contact-visible', HOLD.panel)
       await tapAndShoot(contact, 'contact-open', HOLD.finale, 2000)
     } else {
-      console.warn('warning: no "Send them a thoughtful message" button — clip ends on the scroll')
+      console.warn('warning: no "Message <name>" button in #connect — clip ends on the scroll')
       await shoot('profile-end', HOLD.finale)
     }
   }

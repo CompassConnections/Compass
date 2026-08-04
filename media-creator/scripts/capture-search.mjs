@@ -19,8 +19,10 @@
  * No hand-made login needed. `SHOWCASE=1` seeding creates viewer@compass.showcase and this signs in as
  * it headlessly, so the whole thing runs unattended.
  *
- * Prerequisites:
- *   yarn dev                      # from the repo root — needs http://localhost:3000
+ * Prerequisites — `dev:isolated`, not `dev`. The viewer account is a Firebase *emulator* user, and
+ * `scripts/seed.sh` reads its connection details from a local `supabase status`, so neither the sign-in
+ * nor the seed works against the shared remote dev DB:
+ *   yarn dev:isolated             # from the repo root — needs http://localhost:3000 and the emulators
  *   SHOWCASE=1 ./scripts/seed.sh  # showcase personas + the viewer account
  *
  * Usage:
@@ -154,6 +156,23 @@ async function main() {
   }
 
   /**
+   * Re-capture the frame currently on hold, overwriting its PNG.
+   *
+   * A tap marker is a viewport coordinate painted onto a specific screenshot, so the two agree only if
+   * nothing moved between them — and `scrollIntoViewIfNeeded` before a press moves things. The marker
+   * then describes a viewport the frame never showed and lands high by the scroll delta. Re-shooting
+   * makes the held frame *be* the state the tap is measured against; when nothing moved it rewrites
+   * identical pixels, which is why it is unconditional.
+   */
+  const refreshLast = async () => {
+    const previous = shots[shots.length - 1]
+    if (!previous) return
+    await parkPointer()
+    await page.waitForTimeout(120)
+    await page.screenshot({path: join(OUT_DIR, previous.name)})
+  }
+
+  /**
    * Click something, then capture the result.
    *
    * The tap marker is attached to the *previous* frame — the one still showing the pre-click state —
@@ -163,6 +182,7 @@ async function main() {
    * before-frame is also the truthful order: press, then result.
    */
   const tapAndShoot = async (locator, kind, hold, settleMs = 900) => {
+    await refreshLast()
     const tap = await centreOf(locator)
     const previous = shots[shots.length - 1]
     if (tap && previous) previous.tap = tap
@@ -189,10 +209,14 @@ async function main() {
   // ── Quieten the page ───────────────────────────────────────────────────────
   // The growth-phase banner is timely copy that would date the clip, and on a phone it costs a third
   // of the screen. Dismiss it rather than crop around it.
-  const dismiss = page.getByText('Dismiss', {exact: true})
+  // The affordance is an ✕ in the banner's corner (profiles/profiles-home.tsx), so "Dismiss" survives
+  // only as its aria-label — matching on visible text silently found nothing and left the banner in.
+  const dismiss = page.getByLabel('Dismiss', {exact: true})
   if (await dismiss.count()) {
     await dismiss.first().click()
     await page.waitForTimeout(600)
+  } else {
+    console.warn('warning: no dismissable banner found — check it is not sitting in frame')
   }
 
   // Animations off so no frame lands mid-transition; the dev badge lives in a shadow-DOM portal, so it
@@ -207,23 +231,84 @@ async function main() {
   await quieten()
   await page.waitForTimeout(1200)
 
+  // One filter button at every width now — it opens the same right-hand sheet on desktop and mobile
+  // (filters/search.tsx). Targeted by test id rather than by class: the old `button.lg:hidden` selector
+  // described the mobile/desktop split that the redesign removed, and broke silently with it.
+  const openFilterSheet = () =>
+    firstVisible(page.locator('[data-testid="open-filters-button"]'), 'filter button')
+
+  // ── 0. Clear the inherited filter state ────────────────────────────────────
+  // Off camera, before the first frame.
+  //
+  // "Who I'm looking for" seeds the search from the signed-in viewer's saved preferences, so the app
+  // opens on a list already narrowed by three of them — a filter badge reading 3, and six people. The
+  // clip is about what filtering *does*, and that argument only lands if the "before" is genuinely
+  // before: an unfiltered list, narrowing to two, on screen. Starting mid-narrowing gave the opening
+  // frame a count the viewer had no reason for and made the beat that follows look like it did nothing.
+  //
+  // Deliberately not a beat of its own. Nobody arriving at Compass presses reset — it is undoing state
+  // this capture happens to inherit from its seeded account, not something the product asks of anyone.
+  await (await openFilterSheet()).click()
+  await page.waitForTimeout(900)
+  const reset = page.getByText('Reset filters', {exact: true})
+  if (await reset.count()) {
+    await reset.first().click()
+    await page.waitForTimeout(1600)
+  } else {
+    console.warn('warning: no "Reset filters" control — the clip may open on a pre-filtered list')
+  }
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(1600)
+  // Drop focus. Closing the sheet returns it to the filter button, which then wears a focus ring
+  // through the establishing frame — an amber halo on a control nobody has touched yet, in the one
+  // frame that also serves as the poster. Only needed here: the later focus ring, on the search box, is
+  // a beat of its own.
+  await page.evaluate(() => document.activeElement?.blur())
+  await page.waitForTimeout(200)
+  await quieten()
+
   // ── 1. The unfiltered list ─────────────────────────────────────────────────
   await shoot('idle', HOLD.establish)
 
   // ── 2. Filter to women ─────────────────────────────────────────────────────
-  // The filter rail collapses to a single icon button on mobile (`lg:hidden` in filters/search.tsx).
-  const filterButton = await firstVisible(page.locator('button.lg\\:hidden'), 'filter button')
+  const filterButton = await openFilterSheet()
   await tapAndShoot(filterButton, 'filters-open', HOLD.panel)
 
-  // Sections start collapsed, so gender has to be opened before "Woman" exists in the DOM. The header
-  // is labelled by its current state ("Any gender" until something is picked), not by the field name.
-  const genderSection = await firstVisible(page.getByText(/gender$/i), 'gender section header')
+  // Sections start collapsed, so gender has to be opened before "Woman" exists in the DOM.
+  //
+  // Targeted by test id, not by text. A `FilterSection` header renders its *selection* in place of its
+  // title once the filter is active, and gender's selection is a row of icons (♀ ♂ ⚧) with no text at
+  // all — so there is nothing to match on for any state but the empty one. The old `/gender$/i` match
+  // broke on exactly that.
+  const genderSection = await firstVisible(
+    page.locator('[data-testid="gender"] button').first(),
+    'gender section header',
+  )
   await tapAndShoot(genderSection, 'gender-open', HOLD.panel)
 
   const woman = await firstVisible(page.getByText('Woman', {exact: true}), 'Woman option')
   await woman.scrollIntoViewIfNeeded()
   await page.waitForTimeout(300)
   await tapAndShoot(woman, 'filter-woman', HOLD.panel, 1800)
+
+  // The beat is only truthful if it ends on women alone, and the failure is silent — with the filters
+  // pre-seeded from the viewer's preferences (before the reset above), this same tap *deselected* Woman
+  // and the clip's payoff rendered as "No profiles found". Each chip is a real (visually hidden)
+  // checkbox, so read the selection rather than infer it from the icon-only section header.
+  const chipChecked = async (label) =>
+    page
+      .locator('label', {has: page.getByText(label, {exact: true})})
+      .locator('input[type="checkbox"]')
+      .first()
+      .isChecked()
+      .catch(() => null)
+  const [womanOn, manOn] = [await chipChecked('Woman'), await chipChecked('Man')]
+  if (womanOn !== true || manOn !== false) {
+    console.warn(
+      `warning: after the tap the gender filter is Woman=${womanOn}, Man=${manOn} — the beat is ` +
+        `meant to narrow to women only. Did the filter reset run?`,
+    )
+  }
 
   // Close the sheet to reveal what the filter did. Escape is the reliable route — the close affordance
   // moves around, and a stray click can land on a filter.
@@ -245,8 +330,10 @@ async function main() {
   await page.waitForTimeout(2500)
   await shoot('result', HOLD.settle)
 
+  // The count is now its own labelled node ("12 people"). Read it by test id: the same string also
+  // appears in the filter sheet's header, so a text regex picks up whichever the DOM lists first.
   const count = await page
-    .locator('text=/\\d+ (people|person)/')
+    .locator('[data-testid="people-profile-count"]')
     .first()
     .textContent()
     .catch(() => null)
@@ -287,7 +374,14 @@ async function main() {
   // ── 6. Contact her ─────────────────────────────────────────────────────────
   // Opens the compose UI only. Nothing is ever sent: no submit is clicked, and the account is a
   // fictional showcase persona regardless.
-  const contact = page.getByText(/thoughtful message/i).first()
+  // The CTA is now "Message <first name>" inside the Connect section (profile/connect-actions.tsx),
+  // not the old "Send them a thoughtful message". Scoped to `#connect` deliberately: profile-header.tsx
+  // renders a second SendMessageButton with the same label at the top of the page, and an unscoped
+  // match would tap that one — off-screen by this point in the scroll.
+  const contact = page
+    .locator('#connect')
+    .getByText(/^Message /)
+    .first()
   if (await contact.count()) {
     // Centre it rather than scrollIntoViewIfNeeded: that stops as soon as the button is technically
     // in the viewport, which parks it flush against the bottom edge underneath the fixed nav bar —
@@ -299,9 +393,7 @@ async function main() {
 
     await tapAndShoot(contact, 'contact-open', HOLD.finale, 2000)
   } else {
-    console.warn(
-      'warning: no "Send them a thoughtful message" button found — clip ends on the scroll',
-    )
+    console.warn('warning: no "Message <name>" button found in #connect — clip ends on the scroll')
     await shoot('profile-end', HOLD.finale)
   }
 

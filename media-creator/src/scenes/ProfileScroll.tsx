@@ -1,13 +1,5 @@
 import React from 'react'
-import {
-  AbsoluteFill,
-  Easing,
-  Img,
-  interpolate,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from 'remotion'
+import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig,} from 'remotion'
 import {colors, fonts, FORMATS} from '../theme'
 
 // A twelve-second silent b-roll scroll of a single profile, made to sit *under* the
@@ -24,19 +16,19 @@ import {colors, fonts, FORMATS} from '../theme'
 //   node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
 // Re-run that after any profile-UI change; update FULL and STOPS below if the page moves.
 
-const USERNAME = 'mhg1'
+const USERNAME = 'martin'
 const DIR = `profile-${USERNAME}`
 const PROFILE_URL = `compassmeet.com/${USERNAME}`
 
 // Pixel dimensions of the full-page PNG as written by the capture script (it shoots
 // at DPR 2, so these are 2× the CSS numbers). We scale by width, so only the ratio
 // matters.
-const FULL = {src: `${DIR}/full.png`, w: 860, h: 8612}
+const FULL = {src: `${DIR}/full.png`, w: 860, h: 10204}
 
 // The page's own top bar, cropped off the head of the shot: it is chrome, not profile,
 // and holding on it would spend the opening beat on nothing. In source-PNG px, so 100
 // here is 50 CSS px.
-const CROP_TOP = 200
+const CROP_TOP = 100
 // Blank canvas below the sign-up button, cropped off the tail so the clip doesn't
 // spend its last beat resting on nothing.
 const CROP_BOTTOM = 8460

@@ -35,8 +35,8 @@ coherent field combinations, real photos, real locations, populated interests/ca
 ### H1 — Hero search demo ✅
 
 The page said "Don't Swipe. / Search." and then never showed a search. It now does, directly under the
-hero: one real mobile session, filter to women → type `meditation` → 10 people narrow to 2 → open Sofia's
-profile → scroll it → write to her. That covers both halves of the pitch (keyword search _and_ filtering)
+hero: one real mobile session, filter to women → type `meditation` → 11 people narrow to 5, then to 2 →
+open Sofia's profile → scroll it → write to her. That covers both halves of the pitch (keyword search _and_ filtering)
 plus the payoff, which a static grid shot cannot.
 
 **Mobile, not desktop.** A desktop capture rendered into a phone-width column puts the app's 14px type at
@@ -52,10 +52,12 @@ debounce schedule and the clip cannot drift from the product.
 
 Two things that bite when scripting this page:
 
-- Both filter UIs are always in the DOM, one hidden by `lg:` classes. Playwright's `.first()` is DOM
-  order, not visibility, so on a phone viewport it returns the _desktop_ control and times out. Hence the
-  `firstVisible()` helper — use it for anything that exists in both layouts.
-- Filter sections start collapsed, so "Any gender" must be expanded before "Woman" exists in the DOM.
+- Playwright's `.first()` is DOM order, not visibility, so anything mounted more than once can hand back
+  an offscreen copy that then times out. Hence the `firstVisible()` helper. (It was written for the
+  mobile/desktop `lg:` split the filter redesign removed, but the hazard outlived the split.)
+- Filter sections start collapsed, so Gender must be expanded before "Woman" exists in the DOM. Target
+  the section by test id: an active `FilterSection` renders its _selection_ in place of its title, and
+  gender's selection is icons only, so there is no text to match on for any state but the empty one.
 
 Each frame carries its own `hold` in the manifest, so pacing lives next to the interaction it describes
 and the Remotion scene stays a dumb sequencer.
@@ -68,6 +70,11 @@ The marker is attached to the frame _before_ the click, and plays over the tail 
 clicking often reflows the page (choosing a gender inserts the "Woman ×" summary row and pushes
 everything down), so a position measured pre-click does not describe the post-click frame and the ripple
 lands on the wrong control; and press-then-result is the truthful order.
+
+The corollary is that nothing may move between the held frame and the measurement either — scrolling a
+control into view before pressing it is enough to put every marker off by the scroll delta. Both capture
+scripts re-shoot the held frame immediately before measuring (`refreshLast`); see A4, where this went
+unnoticed across several renders.
 
 **Smooth scrolling.** The profile scroll is 30 steps of 100px held 3 frames each, not 7 steps of 420px
 held 14. Total distance and duration are about the same, but a large jump followed by stillness reads as
@@ -110,14 +117,38 @@ Two knock-on details:
   a separate cut-short composition; that needed `--frame=-1` to dodge the loop dissolve, and it made
   the poster and the first video frame disagree.)
 
-**Gender beat.** `GenderFilter` auto-expands its full ~20-option list when the _signed-in viewer's own_
-gender is an extended one (`gender-filter.tsx`). The viewer persona is therefore `female`: Woman and Man
-are the two defaults, so the beat shows a short list with a "Show more genders" link rather than a wall
-of checkboxes. Nothing in the capture clicks that link.
+**The filters are reset off camera, before the first frame.** "Who I'm looking for" seeds the search from
+the signed-in viewer's saved preferences, so the app opens on a list already narrowed by three of them —
+a filter badge reading 3, six people. The clip is an argument about what filtering does, and that only
+lands if the "before" is genuinely before. Starting mid-narrowing gave the establishing frame a count the
+viewer had no reason for and made the beat that follows look like it achieved nothing. Reset, the clip
+walks 11 → 5 → 2 on screen.
+
+It is deliberately not a beat of its own: nobody arriving at Compass presses reset. It undoes state this
+capture inherits from its seeded account, not something the product asks of anyone. The script also blurs
+the filter button afterwards — closing the sheet returns focus to it, and an amber focus ring on an
+untouched control would sit in the establishing frame, which is also the poster.
+
+**Gender beat.** Because of that reset the beat selects Woman on an empty filter, which is the obvious
+reading. Watch this one if the filter defaults change again: with preferences pre-applied, Woman and Man
+both arrive selected and this same tap _deselected_ women — the clip's payoff rendered as "No profiles
+found", and nothing failed. The script now asserts the resulting selection (each chip is a real hidden
+checkbox underneath) and warns rather than passing quietly.
+
+`GenderFilter` auto-expands its full ~20-option list when an extended gender is _selected_, or when the
+signed-in viewer's own gender is one (`gender-filter.tsx`). The reset closes the first route and the
+viewer persona's `gender: 'female'` closes the second, so the beat shows Woman, Man and a "Show more
+genders" link rather than a wall of chips. Nothing in the capture clicks that link.
 
 **Query** — `meditation`, matching the home-page copy. Two results, matching for different reasons: Priya
 on her visible _Meditation_ keyword chip, Sofia only through her bio prose. That shows the search reads
 bios, not just tags. `--query` overrides.
+
+**Selectors.** The capture reaches for test ids over text or Tailwind classes wherever the redesign showed
+text to be unstable: `open-filters-button`, the `gender` filter section (its header renders _icons only_
+once active, so there is no text to match), and `people-profile-count`. The banner's "Dismiss" survives
+only as an `aria-label` on an ✕, and the profile CTA is now `Message <name>` inside `#connect` —
+scoped, because `profile-header.tsx` renders a second button with the same label off-screen.
 
 **Scene** — `media-creator/src/scenes/SearchDemo.tsx`, composition `SearchDemo`. `calculateMetadata`
 reads the manifest and derives canvas size _and_ duration from it, so a re-capture with a different query
@@ -410,8 +441,10 @@ It is also the hardest to evidence with a still, because the whole point of it h
 
 1. `/people`, filtered down — Man, 24–40, atheist, vegan, near Grenoble.
 2. **Nobody matches.** Not a compromise — this is the premise. The app's own empty state says it:
-   "No profiles found. Feel free to click on Get Notified…". The clip follows the product's instruction.
-3. Press **Get notified for selected filters**; the saved-search modal confirms it.
+   "No profiles found", over the four facets just set and an offer to be told when that changes.
+3. Press **Get notified** — the full button the empty state puts in the middle of the page, where
+   someone who has just hit a dead end is already looking, not the icon-sized bell up in the toolbar.
+   The button relabels itself **Saved!** and that is the whole confirmation.
 4. **Three days pass** — the interstitial, the one beat the product does not render.
 5. The alert email, describing that saved search and the one person who has since joined.
 6. His profile, then the composer.
@@ -429,6 +462,27 @@ npm run capture:alert -- --phase after         # merges both halves into manifes
 
 Staging the empty state instead — the result card has a hide control — would have been one pass and a
 fiction, and an invisible one to anyone watching. This costs a seed run and stays true.
+
+**Tap markers are a coordinate painted onto a screenshot, so nothing may move between the two.** Plenty
+did: `pickFilter` scrolls each control to the centre of the panel before pressing it, and the location
+beat types a city and waits for a dropdown — all after the held frame was shot. Every marker in the
+filter sequence then sat high by the scroll delta, pointing at the group header above the control it
+meant. Both capture scripts now re-shoot the held frame immediately before measuring (`refreshLast`), so
+the frame _is_ the state the tap describes. It runs unconditionally: when nothing moved it rewrites
+identical pixels, and a marker that is silently right most of the time is how this survived several
+renders.
+
+**The save beat has a 2-second window.** The empty-state button is the one `GetNotifiedButton` that gets
+no `onSaved` callback (`profile-grid.tsx`), so nothing opens behind it — the only evidence the save
+happened is the button relabelling itself, and it reverts after 2000ms. The capture settles for 900ms and
+then asserts the label; the previous 2.5s wait predated this button and shot a "saved" frame pixel-
+identical to the one before it, so the clip reached its payoff and appeared to do nothing.
+
+**The filters are reset off camera first**, for the same reason as H1 but with sharper stakes: this clip
+is an argument that one _specific_ four-facet search matches nobody, and the email then lists those four
+facets back. Preferences inherited from the viewer's account would join the saved search silently, turn
+up in the email as criteria nothing on screen ever set, and make "no results" evidence about the account
+rather than about the search.
 
 `SHOWCASE_SKIP` (in `seed-showcase.ts`) **deletes** the named slugs before skipping them, rather than
 merely not inserting. It has to: seeding is otherwise a no-op for anyone who already exists, which also

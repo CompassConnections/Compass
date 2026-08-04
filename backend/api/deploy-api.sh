@@ -35,16 +35,17 @@ GIT_COMMIT_AUTHOR=$(git log -1 --format='%an')
 GIT_COMMIT_MESSAGE=$(git log -1 --format='%s')
 echo "Git commit message: ${GIT_COMMIT_MESSAGE}"
 
-cat > metadata.json << EOF
-{
-  "git": {
-    "revision": "${GIT_REVISION}",
-    "commitDate": "${GIT_COMMIT_DATE}",
-    "author": "${GIT_COMMIT_AUTHOR}",
-    "message": "${GIT_COMMIT_MESSAGE}"
-  }
-}
-EOF
+# Built with jq, not a heredoc. These are free text straight out of git: a commit message containing a
+# double quote (or a backslash, or a newline) interpolated raw produced invalid JSON, and because
+# metadata.json is compiled as a module the failure surfaced as a wall of TS1005 syntax errors from tsc
+# rather than as anything to do with the deploy. jq escapes each value for us.
+jq -n \
+  --arg revision "$GIT_REVISION" \
+  --arg commitDate "$GIT_COMMIT_DATE" \
+  --arg author "$GIT_COMMIT_AUTHOR" \
+  --arg message "$GIT_COMMIT_MESSAGE" \
+  '{git: {revision: $revision, commitDate: $commitDate, author: $author, message: $message}}' \
+  > metadata.json
 
 TIMESTAMP=$(date +"%s")
 IMAGE_TAG="${TIMESTAMP}-${GIT_REVISION}"

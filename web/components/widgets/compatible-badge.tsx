@@ -81,12 +81,9 @@ export const CompatibilityRing = (props: {
   const t = useT()
 
   const score = clamp(compatibility.score ?? 0, 0, 1)
-  const strokeWidth = sizePx <= 30 ? 2.5 : 3
+  const strokeWidth = sizePx <= 30 ? 1.5 : 2
   const radius = (sizePx - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-
-  const toneClass =
-    score >= 0.75 ? 'text-primary-500' : score >= 0.5 ? 'text-primary-400' : 'text-ink-400'
 
   return (
     <Tooltip text={t('compatibility.tooltip', 'Compatibility score between you two')}>
@@ -115,13 +112,13 @@ export const CompatibilityRing = (props: {
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - score)}
-            className={clsx(toneClass, 'transition-[stroke-dashoffset] duration-500')}
+            className="text-primary-300 transition-[stroke-dashoffset] duration-500"
           />
         </svg>
         <span
           className={clsx(
             // No `dark:` override — the ink scale already flips with the theme.
-            'absolute inset-0 grid place-items-center font-semibold tabular-nums text-ink-800',
+            'absolute inset-0 grid place-items-center font-medium tabular-nums text-ink-600',
             sizePx <= 30 ? 'text-[10px]' : sizePx <= 36 ? 'text-[11px]' : 'text-xs',
           )}
         >

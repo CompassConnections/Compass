@@ -150,7 +150,7 @@ export const ShareCompassEmail = ({
                 <Text style={paragraph}>
                   {t(
                     'email.share.link_profiles',
-                    "The easiest version, and the one I'd do myself: don't recommend Compass to anyone. Just link a few profiles you found interesting and let people read them. Here are three near you to start with —",
+                    'The easiest version: just link a few profiles you found interesting and let people read them. Here are three near you to start with:',
                   )}
                 </Text>
                 {nearbyProfiles.map((p) => (

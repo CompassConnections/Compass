@@ -68,11 +68,23 @@ export const EmptyRoomEmail = ({
             )}
 
             <Text style={paragraph}>
-              {t(
-                'email.empty_room.number',
-                "There isn't really anyone here for you within {radius} of {city} yet — {count} people only.",
-                {radius, city, count: String(nearbyCount)},
-              )}
+              {nearbyCount === 0
+                ? t(
+                    'email.empty_room.number_none',
+                    "There isn't anyone here for you within {radius} of {city} yet — not one person.",
+                    {radius, city},
+                  )
+                : nearbyCount === 1
+                  ? t(
+                      'email.empty_room.number_one',
+                      "There isn't really anyone here for you within {radius} of {city} yet — one person only.",
+                      {radius, city},
+                    )
+                  : t(
+                      'email.empty_room.number',
+                      "There isn't really anyone here for you within {radius} of {city} yet — {count} people only.",
+                      {radius, city, count: String(nearbyCount)},
+                    )}
             </Text>
 
             <Text style={paragraph}>

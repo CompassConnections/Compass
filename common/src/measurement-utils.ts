@@ -33,7 +33,7 @@ export function formatDistance(
     return `${km} km`
   } else {
     // Show in miles
-    return `${distanceInMiles} miles`
+    return `${Math.round(distanceInMiles)} miles`
   }
 }
 

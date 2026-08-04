@@ -158,7 +158,12 @@ const notifyInApp = async (
     isSeen: false,
     sourceType: 'outreach',
     sourceUpdateType: 'created',
-    sourceText: `There are only ${count} members within reach of ${city} so far. The one thing that changes that is someone you bring.`,
+    sourceText:
+      count === 0
+        ? `There is nobody within reach of ${city} so far. The one thing that changes that is someone you bring.`
+        : count === 1
+          ? `There is only one member within reach of ${city} so far. The one thing that changes that is someone you bring.`
+          : `There are only ${count} members within reach of ${city} so far. The one thing that changes that is someone you bring.`,
     isSeenOnHref: '/referrals',
   }
   await insertNotificationToSupabase(notification)

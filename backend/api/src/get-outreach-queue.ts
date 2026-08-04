@@ -47,6 +47,7 @@ type QueueQueryRow = {
   bio_length: number | null
   headline: string | null
   occupation: string | null
+  occupation_title: string | null
   education_level: string | null
   political_beliefs: string[] | null
   diet: string[] | null
@@ -133,6 +134,7 @@ const QUEUE_SQL = `
          p.bio_length,
          p.headline,
          p.occupation,
+         p.occupation_title,
          p.education_level,
          p.political_beliefs,
          p.diet,
@@ -230,7 +232,8 @@ const toOutreachRow = (row: QueueQueryRow, adminId: string): OutreachRow => {
     headline: row.headline,
     photoCount: row.photo_urls?.length ?? 0,
     pinnedUrl: row.pinned_url,
-    occupation: row.occupation,
+    // Either column counts — a member who filled in a job title has said what they do.
+    occupation: row.occupation ?? row.occupation_title,
     educationLevel: row.education_level,
     politicalBeliefs: row.political_beliefs,
     diet: row.diet,

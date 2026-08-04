@@ -106,22 +106,41 @@ runScript(async ({pg}) => {
     : []
   const named = (kind: string) => options.filter((o) => o.kind === kind).map((o) => o.name)
 
-  // The prose answers, not the multiple-choice ones: these are where the specific observation that
-  // Contact #1 needs actually lives.
-  const promptAnswers = await pg.manyOrNone<{question: string; free_response: string | null}>(
-    `select cp.question, af.free_response
-     from compatibility_answers_free af
-              join compatibility_prompts cp on cp.id = af.question_id
-     where af.creator_id = $1
-       and coalesce(af.free_response, '') <> ''
-     order by af.created_time`,
+  /**
+   * Every prompt they answered, chosen option and all.
+   *
+   * The prose lives in `compatibility_answers.explanation`, *not* in `compatibility_answers_free` —
+   * that table holds one row in all of prod and is dead. Reading it made every member look like they
+   * had written nothing, which is the opposite of true for most of them and exactly the evidence
+   * Contact #1 needs.
+   *
+   * `multiple_choice_options` maps label -> index and `multiple_choice` is that index, so the chosen
+   * label is resolved on this side rather than in SQL.
+   */
+  const answerRows = await pg.manyOrNone<{
+    question: string
+    options: Record<string, number> | null
+    choice: number | null
+    explanation: string | null
+  }>(
+    `select cp.question,
+            cp.multiple_choice_options as options,
+            ca.multiple_choice        as choice,
+            ca.explanation
+     from compatibility_answers ca
+              join compatibility_prompts cp on cp.id = ca.question_id
+     where ca.creator_id = $1
+     order by ca.created_time`,
     [user.id],
   )
 
-  const answerCount = await pg.one<{count: string}>(
-    `select count(*) from compatibility_answers where creator_id = $1`,
-    [user.id],
-  )
+  const promptAnswers = answerRows.map((a) => ({
+    question: a.question,
+    answer:
+      Object.entries(a.options ?? {}).find(([, index]) => index === a.choice)?.[0] ??
+      (a.choice === null ? null : String(a.choice)),
+    explanation: a.explanation?.trim() || null,
+  }))
 
   const searches = await pg.manyOrNone<any>(
     `select id, search_name, search_filters, location, created_time, last_notified_at
@@ -193,7 +212,9 @@ runScript(async ({pg}) => {
     headline: profile?.headline ?? null,
     photoCount: profile?.photo_urls?.length ?? 0,
     pinnedUrl: profile?.pinned_url ?? null,
-    occupation: profile?.occupation ?? null,
+    // Either column counts — a member who filled in a job title has said what they do, whichever field
+    // the form put it in.
+    occupation: profile?.occupation ?? profile?.occupation_title ?? null,
     educationLevel: profile?.education_level ?? null,
     politicalBeliefs: profile?.political_beliefs ?? null,
     diet: profile?.diet ?? null,
@@ -202,7 +223,7 @@ runScript(async ({pg}) => {
     prefGender: profile?.pref_gender ?? null,
     interestCount: named('interest').length,
     causeCount: named('cause').length,
-    compatibilityAnswerCount: Number(answerCount.count),
+    compatibilityAnswerCount: promptAnswers.length,
     hasBig5: profile?.big5_openness !== null && profile?.big5_openness !== undefined,
   })
 
@@ -234,6 +255,15 @@ runScript(async ({pg}) => {
   // Whether the local number is even their problem. Most members search far wider than their city,
   // and quoting them a 322km count they never asked about invents a complaint they do not have.
   const searchesLocally = searches.some((s) => !!s.location)
+
+  // The compatibility prompt that asks the question outright. Worth more than the saved-search filter
+  // when it exists: it is them saying it in their own words rather than me inferring it from a filter
+  // they may simply never have set.
+  const geography = promptAnswers.find((a) => /geography is flexible/i.test(a.question))
+  const geographyNote = geography
+    ? `they answered "${geography.question}" with "${geography.answer}"` +
+      (geography.explanation ? ` — "${geography.explanation}"` : '')
+    : null
 
   const out: string[] = [
     `# ${user.name} (@${user.username})`,
@@ -279,11 +309,13 @@ runScript(async ({pg}) => {
     ),
     field(
       'Searching locally?',
-      searchesLocally
-        ? 'yes — a saved search has a location filter, so the local number is fair game'
-        : searches.length
-          ? 'no location filter on any saved search — **do not lead with the local number**'
-          : 'unknown — no saved searches to read it off. Ask before assuming distance is their problem',
+      geographyNote
+        ? geographyNote
+        : searchesLocally
+          ? 'yes — a saved search has a location filter, so the local number is fair game'
+          : searches.length
+            ? 'no location filter on any saved search — **do not lead with the local number**'
+            : 'unknown — no saved searches to read it off. Ask before assuming distance is their problem',
     ),
     field('Banned', user.is_banned_from_posting ? 'yes' : 'no'),
     field('Email', user.email),
@@ -345,7 +377,10 @@ runScript(async ({pg}) => {
       '',
       '### Bio',
       '',
-      profile.bio_text?.trim() || '_empty_',
+      // `bio_text` is the flattened search index — deduplicated and sorted, so it reads as an
+      // alphabetised word salad and makes everyone look incoherent. The bio they actually wrote is the
+      // rich-text `bio` column, and that is the one Contact #1's specific observation has to come from.
+      richTextToString(profile.bio).trim() || '_empty_',
       '',
     )
   }
@@ -360,11 +395,26 @@ runScript(async ({pg}) => {
     '## Prompt answers',
     '',
   )
-  if (!promptAnswers.length) out.push('_None written._', '')
-  for (const a of promptAnswers) {
-    out.push(`**${a.question}**`, '', a.free_response?.trim() ?? '', '')
+  if (!promptAnswers.length) out.push('_None answered._', '')
+  else {
+    // The ones they explained come first and in full: a written answer is the only place on the whole
+    // profile where their voice shows up outside the bio, and it is what Contact #1 is looking for.
+    const written = promptAnswers.filter((a) => a.explanation)
+    const bare = promptAnswers.filter((a) => !a.explanation)
+
+    out.push(
+      field('Answered', `${promptAnswers.length} (${written.length} with something written)`),
+      '',
+    )
+    for (const a of written) {
+      out.push(`**${a.question}** — ${a.answer ?? '—'}`, '', `> ${a.explanation}`, '')
+    }
+    if (bare.length) {
+      out.push('_Answered without an explanation:_', '')
+      for (const a of bare) out.push(`- ${a.question} — ${a.answer ?? '—'}`)
+      out.push('')
+    }
   }
-  out.push(field('Multiple-choice compatibility answers', Number(answerCount.count)), '')
 
   out.push('## Saved searches', '')
   if (!searches.length) {

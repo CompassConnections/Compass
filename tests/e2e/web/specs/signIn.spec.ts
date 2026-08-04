@@ -1,6 +1,5 @@
 import {sleep} from 'common/src/util/time'
 
-import {TEST_USER_DISPLAY_NAME} from '../../utils/seedDatabase'
 import {expect, test} from '../fixtures/signInFixture'
 import {getCardAgeGender, getCardName, getCardSeekingInfo, getCardStar} from '../pages/peoplePage'
 
@@ -17,6 +16,7 @@ test.describe('when given valid input', () => {
   test('should be able to save/favorite people', async ({app, signedOutAccount: account}) => {
     await app.signinWithEmail(account)
     await app.home.clickPeopleLink()
+    await app.people.clearFilters()
     const profile = await app.people.getProfileInfo()
     const star = await getCardStar(profile)
     const name = await getCardName(profile)
@@ -30,6 +30,7 @@ test.describe('when given valid input', () => {
   test.describe('the applied filter should', () => {
     test('update the profile count', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setConnectionTypeFilter(['Collaboration', 'collaboration'])
@@ -57,6 +58,7 @@ test.describe('when given valid input', () => {
      */
     test.skip('show profiles with the correct age', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
       await app.people.setDisplayFilter({filters: {Age: true}})
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
@@ -77,6 +79,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct gender', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setGenderTypeFilter(['Woman', 'female'])
@@ -87,6 +90,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct education level', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setBackgroundFilter({education: ['College', 'some-college']})
@@ -97,6 +101,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct diet', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setLifestyleFilter({diet: ['Vegetarian', 'veg']})
@@ -107,6 +112,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct smoking preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setLifestyleFilter({smoker: 'Yes'})
@@ -120,6 +126,7 @@ test.describe('when given valid input', () => {
       signedInAccount,
     }) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setLifestyleFilter({psychedelics: ['Regularly (weekly+)', 'regularly']})
@@ -130,6 +137,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct cannabis preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setLifestyleFilter({
@@ -142,6 +150,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct political preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setValuesAndBeliefsFilter({political: ['Progressive', 'progressive']})
@@ -152,6 +161,7 @@ test.describe('when given valid input', () => {
 
     test('show profiles with the correct religion preference', async ({app, signedInAccount}) => {
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
 
       const totalProfiles = await app.people.profileCountLocator.textContent()
       await app.people.setValuesAndBeliefsFilter({religious: ['Jewish', 'jewish']})
@@ -161,10 +171,14 @@ test.describe('when given valid input', () => {
     })
   })
 
+  // Each test hides `signedOutAccount` — a profile the fixture seeds and deletes for this test alone —
+  // rather than a permanent seeded member, so the tests neither depend on `seed-test-data` having been
+  // run against the database nor leave a hidden-profile row behind on a shared account.
   test.describe('the hide profile feature', () => {
-    test('should correctly hide a profile', async ({app, signedInAccount}) => {
+    test('should correctly hide a profile', async ({app, signedInAccount, signedOutAccount}) => {
       await app.home.clickPeopleLink()
-      await app.people.useSearch(TEST_USER_DISPLAY_NAME)
+      await app.people.clearFilters()
+      await app.people.useSearch(signedOutAccount.display_name)
       await sleep(1000)
       const profile = await app.people.getProfileInfo()
       if (!profile) throw new Error('Profile not found')
@@ -180,9 +194,10 @@ test.describe('when given valid input', () => {
       ).toBeVisible()
     })
 
-    test('should be reversible using undo', async ({app, signedInAccount}) => {
+    test('should be reversible using undo', async ({app, signedInAccount, signedOutAccount}) => {
       await app.home.clickPeopleLink()
-      await app.people.useSearch(TEST_USER_DISPLAY_NAME)
+      await app.people.clearFilters()
+      await app.people.useSearch(signedOutAccount.display_name)
       await sleep(1000)
       const profile = await app.people.getProfileInfo()
       if (!profile) throw new Error('Profile not found')
@@ -205,9 +220,11 @@ test.describe('when given valid input', () => {
     test('should be reversible using manage hidden profiles feature in settings', async ({
       app,
       signedInAccount,
+      signedOutAccount,
     }) => {
       await app.home.clickPeopleLink()
-      await app.people.useSearch(TEST_USER_DISPLAY_NAME)
+      await app.people.clearFilters()
+      await app.people.useSearch(signedOutAccount.display_name)
       await sleep(1000)
       const profile = await app.people.getProfileInfo()
       if (!profile) throw new Error('Profile not found')
@@ -228,6 +245,7 @@ test.describe('when given valid input', () => {
       await app.settings.unhideProfiles(name)
       await app.settings.clickCloseButton()
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
       const undoProfile = app.people.page.getByRole('heading', {name: `${name}`})
       await expect(undoProfile).toBeVisible()
     })
@@ -264,6 +282,7 @@ test.describe('when given valid input', () => {
       const longMessage = message.repeat(20)
 
       await app.home.clickPeopleLink()
+      await app.people.clearFilters()
       await app.people.useSearch(receiver.display_name)
       await app.people.messageProfile(receiver.display_name, longMessage)
       await app.messages.verifyMessage(longMessage)

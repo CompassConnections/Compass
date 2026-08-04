@@ -22,7 +22,10 @@ export function AddOptionEntry(props: {
     Object.entries(invert(choices)).sort((a, b) => a[0].localeCompare(b[0], locale)),
   )
   return (
-    <Col className={clsx(colClassName)}>
+    // Several of these sections sit in the same form and share option labels (a member can add
+    // "Chess" as both a work area and an interest), so the test id is what lets a locator say
+    // *which* section's "Search or add" field or option chip it means.
+    <Col className={clsx(colClassName)} data-testid={`option-entry-${label}`}>
       {title && <label className={clsx(labelClassName)}>{title}</label>}
       <MultiCheckbox
         choices={sortedChoices}

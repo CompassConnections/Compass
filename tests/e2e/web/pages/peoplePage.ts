@@ -310,6 +310,24 @@ export class PeoplePage {
     await this.resetFilters.click()
   }
 
+  /**
+   * Start from the whole directory rather than from whatever the account happens to be looking for.
+   *
+   * A first visit seeds the search from the member's own "Who I'm looking for" preferences (see
+   * `getLookingForFilters` in web/components/filters/use-filters.ts), and a seeded test account gets a
+   * single random preferred gender, one connection type and a narrow age band — so the People page
+   * frequently opens on "No profiles found", and anything that reads the profile count or picks a card
+   * fails for reasons that have nothing to do with what the test is checking.
+   *
+   * The reset button only renders when something is actually selected, hence the count check.
+   */
+  async clearFilters() {
+    await this.openFilters()
+    if ((await this.resetFilters.count()) > 0) await this.resetFilters.click()
+    await this.closeFilters()
+    await expect(this.profileGrid).toBeVisible()
+  }
+
   async setLookingForFilters() {
     await this.openFilters()
     await expect(this.lookingForCheckbox).toBeVisible()
@@ -517,7 +535,7 @@ export class PeoplePage {
       if (!totalProfiles || !filterdProfiles) return
       await expect(parseInt(totalProfiles)).not.toEqual(parseInt(filterdProfiles))
     } else {
-      const noProfilesFound = await this.page.getByText('No profiles found.', {exact: true})
+      const noProfilesFound = await this.page.getByText('No profiles found', {exact: true})
       await expect(noProfilesFound).toBeVisible()
     }
   }

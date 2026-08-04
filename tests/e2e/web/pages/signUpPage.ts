@@ -79,6 +79,9 @@ export class SignUpPage {
   private readonly jobTitleField: Locator
   private readonly companyField: Locator
   private readonly universityCheckbox: Locator
+  private readonly interestsSection: Locator
+  private readonly causesSection: Locator
+  private readonly workAreaSection: Locator
   private readonly addWorkAreaField: Locator
   private readonly addWorkAreaButton: Locator
   private readonly politicalBeliefDetailsField: Locator
@@ -130,16 +133,23 @@ export class SignUpPage {
     this.neutralOnWantingKids = page.getByRole('radio', {name: 'Neutral'})
     this.agreeOnWantingKids = page.getByRole('radio', {name: 'Agree'})
     this.stronglyAgreeOnWantingKids = page.getByRole('radio', {name: 'Strongly agree'})
-    this.addInterestsField = page.getByRole('textbox', {name: 'Search or add'}).first()
-    this.addInterestsButton = page.getByRole('button', {name: 'Add'}).first()
-    this.addCausesField = page.getByRole('textbox', {name: 'Search or add'}).nth(1)
-    this.addCausesButton = page.getByRole('button', {name: 'Add'}).nth(1)
+    // Scoped to their own section rather than picked off the page by index: Work Area, Causes and
+    // Interests are all `AddOptionEntry`s with an identically-labelled "Search or add" field, and the
+    // positional locators had interests and work the wrong way round — so custom interests were being
+    // typed into Work Area, which is how "Chess" ended up an option in both sections.
+    this.interestsSection = page.getByTestId('option-entry-interests')
+    this.causesSection = page.getByTestId('option-entry-causes')
+    this.workAreaSection = page.getByTestId('option-entry-work')
+    this.addInterestsField = this.interestsSection.getByRole('textbox', {name: 'Search or add'})
+    this.addInterestsButton = this.interestsSection.getByRole('button', {name: 'Add'})
+    this.addCausesField = this.causesSection.getByRole('textbox', {name: 'Search or add'})
+    this.addCausesButton = this.causesSection.getByRole('button', {name: 'Add'})
     this.universityField = page.getByTestId('university')
     this.jobTitleField = page.getByTestId('job-title')
     this.companyField = page.getByTestId('company')
     this.universityCheckbox = page.getByRole('checkbox', {name: 'University'})
-    this.addWorkAreaField = page.getByRole('textbox', {name: 'Search or add'}).nth(2)
-    this.addWorkAreaButton = page.getByRole('button', {name: 'Add'}).nth(2)
+    this.addWorkAreaField = this.workAreaSection.getByRole('textbox', {name: 'Search or add'})
+    this.addWorkAreaButton = this.workAreaSection.getByRole('button', {name: 'Add'})
     this.politicalBeliefDetailsField = page.getByTestId('political-belief-details')
     this.religiousBeliefsDetailsField = page.getByTestId('religious-belief-details')
     this.opennessPersonalitySlider = page.getByRole('slider').first()
@@ -343,20 +353,20 @@ export class SignUpPage {
     if (!interest || interest.length === 0) return
 
     for (let i = 0; i < interest.length; i++) {
-      const checkbox = this.page.getByRole('checkbox', {name: `${interest[i]}`})
+      const checkbox = this.interestsSection.getByRole('checkbox', {name: `${interest[i]}`})
       const isExisting = (await checkbox.count()) > 0
 
       if (isExisting) {
-        await expect(this.page.getByRole('checkbox', {name: `${interest[i]}`})).toBeVisible()
-        await clickCheckbox(this.page.getByRole('checkbox', {name: `${interest[i]}`}))
+        await expect(checkbox).toBeVisible()
+        await clickCheckbox(checkbox)
       } else {
         await expect(this.addInterestsField).toBeVisible()
         await expect(this.addInterestsButton).toBeVisible()
         await this.addInterestsField.fill(interest[i])
         await this.addInterestsButton.click()
       }
-      await expect(this.page.getByRole('checkbox', {name: `${interest[i]}`})).toBeVisible()
-      await expect(this.page.getByRole('checkbox', {name: `${interest[i]}`})).toBeChecked()
+      await expect(checkbox).toBeVisible()
+      await expect(checkbox).toBeChecked()
     }
   }
 
@@ -364,20 +374,20 @@ export class SignUpPage {
     if (!cause || cause?.length === 0) return
 
     for (let i = 0; i < cause.length; i++) {
-      const checkbox = this.page.getByRole('checkbox', {name: `${cause[i]}`})
+      const checkbox = this.causesSection.getByRole('checkbox', {name: `${cause[i]}`})
       const isExisting = (await checkbox.count()) > 0
 
       if (isExisting) {
-        await expect(this.page.getByRole('checkbox', {name: `${cause[i]}`})).toBeVisible()
-        await clickCheckbox(this.page.getByRole('checkbox', {name: `${cause[i]}`}))
+        await expect(checkbox).toBeVisible()
+        await clickCheckbox(checkbox)
       } else {
         await expect(this.addCausesField).toBeVisible()
         await expect(this.addCausesButton).toBeVisible()
         await this.addCausesField.fill(cause[i])
         await this.addCausesButton.click()
       }
-      await expect(this.page.getByRole('checkbox', {name: `${cause[i]}`})).toBeVisible()
-      await expect(this.page.getByRole('checkbox', {name: `${cause[i]}`})).toBeChecked()
+      await expect(checkbox).toBeVisible()
+      await expect(checkbox).toBeChecked()
     }
   }
 
@@ -410,7 +420,7 @@ export class SignUpPage {
     if (!workArea || workArea?.length === 0) return
 
     for (let i = 0; i < workArea.length; i++) {
-      const chip = optionChip(this.page, workArea[i])
+      const chip = optionChip(this.workAreaSection, workArea[i])
       const isExisting = (await chip.count()) > 0
 
       if (isExisting) {
@@ -424,8 +434,8 @@ export class SignUpPage {
         await this.addWorkAreaButton.click()
         await this.page.waitForTimeout(500)
       }
-      await expect(optionChip(this.page, workArea[i])).toBeVisible()
-      await expect(optionChipInput(this.page, workArea[i])).toBeChecked()
+      await expect(chip).toBeVisible()
+      await expect(optionChipInput(this.workAreaSection, workArea[i])).toBeChecked()
     }
   }
 

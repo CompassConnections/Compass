@@ -59,6 +59,14 @@ describe('getProfileCompleteness', () => {
     expect(result.score).toBeLessThan(1)
   })
 
+  it('counts a pinned image as their photo', () => {
+    const noPhotos = {...fullProfile, photoCount: 0}
+    expect(getProfileCompleteness(noPhotos).missing).toEqual(['photo'])
+    expect(
+      getProfileCompleteness({...noPhotos, pinnedUrl: 'https://…/pinned.jpg'}).missing,
+    ).toEqual([])
+  })
+
   it('requires more than a token interest or cause', () => {
     const result = getProfileCompleteness({...fullProfile, interestCount: 1, causeCount: 2})
     expect(result.missing).toEqual(['interests', 'causes'])

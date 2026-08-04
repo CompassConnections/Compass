@@ -114,6 +114,8 @@ export type ProfileCompletenessInput = {
   bioLength: number | null
   headline: string | null
   photoCount: number
+  /** A pinned image counts as their photo — it is what the profile actually shows. */
+  pinnedUrl?: string | null
   occupation: string | null
   educationLevel: string | null
   politicalBeliefs: string[] | null
@@ -145,7 +147,7 @@ export const getProfileCompleteness = (p: ProfileCompletenessInput): ProfileComp
   const checks: [string, boolean][] = [
     ['bio', (p.bioLength ?? 0) >= MIN_USEFUL_BIO_LENGTH],
     ['headline', !!p.headline],
-    ['photo', p.photoCount > 0],
+    ['photo', p.photoCount > 0 || !!p.pinnedUrl],
     ['occupation', !!p.occupation],
     ['education', !!p.educationLevel],
     ['politics', hasAny(p.politicalBeliefs)],

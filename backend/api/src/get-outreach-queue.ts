@@ -54,6 +54,7 @@ type QueueQueryRow = {
   city: string | null
   pref_gender: string[] | null
   photo_urls: string[] | null
+  pinned_url: string | null
   has_big5: boolean
   interest_count: string
   cause_count: string
@@ -139,6 +140,7 @@ const QUEUE_SQL = `
          p.city,
          p.pref_gender,
          p.photo_urls,
+         p.pinned_url,
          (p.big5_openness is not null) as has_big5,
          (select count(*) from profile_interests pi where pi.profile_id = p.id) as interest_count,
          (select count(*) from profile_causes pc where pc.profile_id = p.id) as cause_count,
@@ -227,6 +229,7 @@ const toOutreachRow = (row: QueueQueryRow, adminId: string): OutreachRow => {
     bioLength: row.bio_length,
     headline: row.headline,
     photoCount: row.photo_urls?.length ?? 0,
+    pinnedUrl: row.pinned_url,
     occupation: row.occupation,
     educationLevel: row.education_level,
     politicalBeliefs: row.political_beliefs,

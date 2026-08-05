@@ -497,8 +497,8 @@ export class PeoplePage {
     }
   }
 
+  // Display options live in the toolbar, not the filters panel — no need to open filters first.
   async setDisplayFilter(display: DisplayFilter) {
-    await this.openFilters()
     await expect(this.displayDropdown).toBeVisible()
     await this.displayDropdown.click()
 

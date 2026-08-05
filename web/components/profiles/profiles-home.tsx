@@ -271,8 +271,6 @@ export function ProfilesHome() {
       isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
-      displayOptions={displayOptions}
-      updateDisplayOptions={updateDisplayOptions}
     />
   )
 
@@ -375,6 +373,8 @@ export function ProfilesHome() {
           refreshStars={refreshStars}
           filters={filters}
           updateFilter={updateFilter}
+          displayOptions={displayOptions}
+          updateDisplayOptions={updateDisplayOptions}
           locationFilterProps={locationFilterProps}
           bookmarkedSearches={bookmarkedSearches}
           refreshBookmarkedSearches={refreshBookmarkedSearches}

@@ -4,10 +4,12 @@ import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
+import {DisplayOptions} from 'common/profiles-rendering'
 import {debounce as debounceFn} from 'lodash'
 import {forwardRef, ReactElement, useEffect, useRef, useState} from 'react'
 import {IoFilterSharp} from 'react-icons/io5'
 import {Button} from 'web/components/buttons/button'
+import {DisplayOptionsButton} from 'web/components/filters/display-options-button'
 import {Col} from 'web/components/layout/col'
 import {RightModal} from 'web/components/layout/right-modal'
 import {Row} from 'web/components/layout/row'
@@ -48,6 +50,9 @@ export const Search = forwardRef<
     // so this component's own slide-over shouldn't also open.
     suppressFiltersModal?: boolean
     filtersElement: ReactElement
+    // display props
+    displayOptions: Partial<DisplayOptions>
+    updateDisplayOptions: (newState: Partial<DisplayOptions>) => void
   }
 >((props, ref) => {
   const {
@@ -68,6 +73,8 @@ export const Search = forwardRef<
     highlightFilters,
     highlightSort,
     filtersElement,
+    displayOptions,
+    updateDisplayOptions,
   } = props
 
   const [internalOpenFiltersModal, setInternalOpenFiltersModal] = useState(false)
@@ -200,6 +207,10 @@ export const Search = forwardRef<
               </span>
             )}
           </Button>
+          <DisplayOptionsButton
+            displayOptions={displayOptions}
+            updateDisplayOptions={updateDisplayOptions}
+          />
           <Select
             ref={sortSelectRef}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -211,7 +222,9 @@ export const Search = forwardRef<
             }}
             value={filters.orderBy || 'created_time'}
             className={clsx(
-              '!h-10 w-auto !rounded-full !border-canvas-200 !bg-transparent !shadow-none text-xs text-ink-500',
+              // text-sm, not text-xs: this sits in a row of `sm`-size buttons, and being the lone
+              // smaller control made it read as secondary to them.
+              '!h-10 w-auto !rounded-full !border-canvas-200 !bg-transparent !shadow-none text-sm text-ink-500',
               highlightSort && 'border-primary-500 ring-2 ring-primary-300',
             )}
           >

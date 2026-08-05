@@ -6,7 +6,6 @@ import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
-import {DisplayOptions} from 'common/profiles-rendering'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
 import {
@@ -15,12 +14,9 @@ import {
   countBig5Filters,
   hasAnyBig5Filter,
 } from 'web/components/filters/big5-filter'
-import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {DietFilter, DietFilterText} from 'web/components/filters/diet-filter'
 import {EducationFilter, EducationFilterText} from 'web/components/filters/education-filter'
 import {ExerciseFilter, ExerciseFilterText} from 'web/components/filters/exercise-filter'
-import {FieldToggles} from 'web/components/filters/field-toggles'
-import {GridLayoutSelector} from 'web/components/filters/grid-layout-selector'
 import {HasPhotoFilter} from 'web/components/filters/has-photo-filter'
 import {IncompleteProfilesToggle} from 'web/components/filters/incomplete-profiles-toggle'
 import {InterestFilter, InterestFilterText} from 'web/components/filters/interest-filter'
@@ -223,8 +219,6 @@ function Filters(props: {
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
   choices: Record<OptionTableKey, Record<string, string>>
-  displayOptions: Partial<DisplayOptions>
-  updateDisplayOptions: (newState: Partial<DisplayOptions>) => void
 }) {
   const t = useT()
   const {
@@ -238,8 +232,6 @@ function Filters(props: {
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
-    displayOptions,
-    updateDisplayOptions,
     choices,
   } = props
 
@@ -272,7 +264,7 @@ function Filters(props: {
       />
       <FilterGuide className={'justify-between px-4 py-2'} />
 
-      <Row className="justify-between px-2">
+      <Row className="justify-between px-4">
         <LookingForToggle
           setLookingForFilters={setLookingForFilters}
           youProfile={youProfile}
@@ -876,34 +868,9 @@ function Filters(props: {
           <IncompleteProfilesToggle updateFilter={updateFilter} filters={filters} hidden={false} />
         </Col>
       </FilterGroup>
-
-      <hr className="border-gray-500 my-2 mx-4" />
-
-      {/* Rendering */}
-      <FilterGroup
-        title={t('filter.group.display', 'Display')}
-        openGroup={openGroup}
-        setOpenGroup={setOpenGroup}
-      >
-        <div className="px-4">
-          <CardSizeSelector
-            updateDisplayOptions={updateDisplayOptions}
-            displayOptions={displayOptions}
-          />
-        </div>
-        <div className="px-4 pt-3">
-          <GridLayoutSelector
-            updateDisplayOptions={updateDisplayOptions}
-            displayOptions={displayOptions}
-          />
-        </div>
-        <Col className="p-4">
-          <FieldToggles
-            updateDisplayOptions={updateDisplayOptions}
-            displayOptions={displayOptions}
-          />
-        </Col>
-      </FilterGroup>
+      {/* Display options are deliberately NOT here: they change how the grid renders, not who is in
+          it. They live in the toolbar (`display-options-button.tsx`) so they stay reachable whether
+          or not this panel is open. */}
     </Col>
   )
 }
@@ -1033,8 +1000,6 @@ export function FiltersElement(props: {
   isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
-  displayOptions: Partial<DisplayOptions>
-  updateDisplayOptions: (newState: Partial<DisplayOptions>) => void
 }) {
   const {
     filters,
@@ -1046,8 +1011,6 @@ export function FiltersElement(props: {
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
-    displayOptions,
-    updateDisplayOptions,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   const _choices = useChoicesContext()
@@ -1065,8 +1028,6 @@ export function FiltersElement(props: {
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}
       choices={choices}
-      displayOptions={displayOptions}
-      updateDisplayOptions={updateDisplayOptions}
     />
   )
 }

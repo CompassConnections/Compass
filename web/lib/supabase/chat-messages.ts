@@ -38,6 +38,9 @@ export function updateReactionUI(
   )
 }
 
+// How close to the bottom still counts as "at the bottom" (sub-pixel layout, rounding).
+const BOTTOM_TOLERANCE_PX = 2
+
 export const usePaginatedScrollingMessages = (
   messages: ChatMessage[] | undefined,
   userId: string | undefined,
@@ -49,6 +52,11 @@ export const usePaginatedScrollingMessages = (
   const innerDiv = useRef<HTMLDivElement | null>(null)
   const scrollToOldTop = useRef(false)
   const isLoadingMore = useRef(false)
+  // A scroll-to-bottom we asked for that hasn't landed yet. Smooth scrolling takes a few hundred ms,
+  // and `scrollTop` reads from the middle of that animation look exactly like "the user scrolled up".
+  // That's the case when a channel is restored from localStorage: the cached messages trigger a smooth
+  // scroll, then the fetched ones arrive mid-animation and we'd wrongly decide not to follow them.
+  const pendingScrollToBottom = useRef(false)
   const [prevInnerDivHeight, setPrevInnerDivHeight] = useState<number>()
   const expectedLengthAfterLoad = useRef<number>(0)
   const {ref: topVisibleRef} = useIsVisible(() => {
@@ -64,6 +72,34 @@ export const usePaginatedScrollingMessages = (
   useEffect(() => {
     isLoadingMore.current = false
   }, [messages?.length])
+
+  // Resolve `pendingScrollToBottom`: either the scroll reached the bottom, or the user took over.
+  useEffect(() => {
+    const el = outerDiv.current
+    if (!el) return
+
+    const onScroll = () => {
+      if (!pendingScrollToBottom.current) return
+      if (el.scrollHeight - el.clientHeight - el.scrollTop <= BOTTOM_TOLERANCE_PX) {
+        pendingScrollToBottom.current = false
+      }
+    }
+    // A user gesture cancels the browser's smooth scroll, so it must cancel our intent too — otherwise
+    // scrolling up to read history would get yanked back down by the next message.
+    const onUserScroll = () => {
+      pendingScrollToBottom.current = false
+    }
+
+    el.addEventListener('scroll', onScroll, {passive: true})
+    el.addEventListener('wheel', onUserScroll, {passive: true})
+    el.addEventListener('touchmove', onUserScroll, {passive: true})
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      el.removeEventListener('wheel', onUserScroll)
+      el.removeEventListener('touchmove', onUserScroll)
+    }
+  }, [])
+
   useEffect(() => {
     const outerDivHeight = outerDiv?.current?.clientHeight ?? 0
     const innerDivHeight = innerDiv?.current?.clientHeight ?? 0
@@ -71,12 +107,24 @@ export const usePaginatedScrollingMessages = (
     const difference = prevInnerDivHeight
       ? prevInnerDivHeight - outerDivHeight - outerDivScrollTop
       : 0
-    const isScrolledToBottom = difference <= 0
+    // `difference` is derived from a scrollTop that may belong to a smooth scroll still in flight, so a
+    // scroll-to-bottom we already asked for counts as being at the bottom.
+    const isScrolledToBottom = difference <= 0 || pendingScrollToBottom.current
+
+    const scrollToBottom = (behavior: ScrollBehavior) => {
+      pendingScrollToBottom.current = true
+      outerDiv?.current?.scrollTo({
+        top: innerDivHeight! - outerDivHeight!,
+        left: 0,
+        behavior,
+      })
+    }
 
     if (scrollToOldTop.current && messages?.length > expectedLengthAfterLoad.current) {
       debug('Loaded more messages, holding position')
       // Loaded more messages, scroll to old top position
       const height = innerDivHeight! - prevInnerDivHeight!
+      pendingScrollToBottom.current = false
       outerDiv?.current?.scrollTo({
         top: height,
         left: 0,
@@ -86,22 +134,14 @@ export const usePaginatedScrollingMessages = (
     } else if (!prevInnerDivHeight || isScrolledToBottom || initialScroll.current) {
       if (messages) {
         debug('Scenario 2')
-        outerDiv?.current?.scrollTo({
-          top: innerDivHeight! - outerDivHeight!,
-          left: 0,
-          behavior: prevInnerDivHeight ? 'smooth' : 'auto',
-        })
+        scrollToBottom(prevInnerDivHeight ? 'smooth' : 'auto')
         setShowMessages(true)
         initialScroll.current = false
       }
     } else if (messages[0]?.createdTime > Date.now() - 5000) {
       debug('Sent message')
       // Sent a message, scroll to bottom
-      outerDiv?.current?.scrollTo({
-        top: innerDivHeight! - outerDivHeight!,
-        left: 0,
-        behavior: 'smooth',
-      })
+      scrollToBottom('smooth')
     }
 
     setPrevInnerDivHeight(innerDivHeight)

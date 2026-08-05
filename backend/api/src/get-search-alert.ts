@@ -13,7 +13,8 @@ export const getSearchAlert: APIHandler<'get-search-alert'> = async (props, auth
   const pg = createSupabaseDirectClient()
 
   const send = await pg.oneOrNone<{
-    search_ids: number[]
+    // bigint[] comes back from pg as strings, not numbers.
+    search_ids: string[]
     matched_user_ids: string[]
     created_time: string
   }>(
@@ -33,13 +34,18 @@ export const getSearchAlert: APIHandler<'get-search-alert'> = async (props, auth
       skipId: auth.uid,
       skipCount: true,
       limit: send.matched_user_ids.length,
+      // No filtering here — whether a thin profile belongs in this alert was decided when the alert
+      // was generated, against the search's own toggle. Re-deciding it at read time can only
+      // disagree with what was sent, reporting people as "no longer available" while their profile
+      // is sitting right there.
+      shortBio: true,
     }),
     // A member may have deleted the search since; the alert it produced still stands, it just loses
     // its description.
     pg.manyOrNone<{id: number; search_name: string | null; search_filters: any; location: any}>(
       `select id, search_name, search_filters, location
        from bookmarked_searches
-       where id = any($(searchIds)) and creator_id = $(uid)`,
+       where id = any($(searchIds)::bigint[]) and creator_id = $(uid)`,
       {searchIds: send.search_ids, uid: auth.uid},
     ),
   ])

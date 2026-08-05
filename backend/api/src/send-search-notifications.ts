@@ -52,7 +52,9 @@ const searchProps = (row: SearchRow, userIds: string[]): profileQueryType => {
     ...filters,
     skipId: row.creator_id,
     userId: row.creator_id,
-    shortBio: true,
+    // `shortBio` comes from the search's own "include incomplete profiles" toggle and is deliberately
+    // not overridden: a barely-filled profile is not worth an email unless the member asked to see
+    // those. Forcing it on here also alerted about people the alert page then filtered back out.
     skipCount: true,
     userIds,
   }

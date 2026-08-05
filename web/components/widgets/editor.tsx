@@ -79,6 +79,11 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
     // element itself, so a `text-*` class collides with it at equal specificity.
     size === 'sm' ? 'prose-sm' : 'prose-base',
     size !== 'lg' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
+    // ...but keep a gap between consecutive paragraphs, else multi-paragraph content
+    // (e.g. pasted text) collapses into what reads as single line breaks.
+    // 0.75rem: unmistakably more than a line break (0), still tighter than the full blank line a
+    // double Shift+Enter used to render as.
+    size !== 'lg' && '[&_p+p]:mt-3',
     '[&>p]:prose-li:my-0',
     'prose-h1:text-ink-900 prose-h2:text-ink-900 prose-h3:text-ink-900',
     'prose-strong:font-bold prose-strong:text-ink-700',

@@ -161,6 +161,34 @@ function _cleanDoc(doc: JSONContent) {
 
   let content = [...doc.content]
 
+  // A run of two or more hardBreaks means a paragraph break. It is the only way to express one in
+  // the desktop composer — Enter submits there (see comment-input's handleKeyDown), so Shift+Enter
+  // twice is all you can type — whereas pasting text and pressing Enter on mobile both produce real
+  // paragraphs. Splitting here makes all three sources agree, so they also render with the same
+  // spacing. A lone hardBreak stays a line break; the breaks that caused a split are dropped.
+  const splitOnDoubleHardBreaks = (node: JSONContent): JSONContent[] => {
+    if (node.type !== 'paragraph' || !node.content) return [node]
+
+    const blocks: JSONContent[][] = [[]]
+    let i = 0
+    while (i < node.content.length) {
+      if (node.content[i].type !== 'hardBreak') {
+        blocks[blocks.length - 1].push(node.content[i])
+        i++
+        continue
+      }
+      let end = i
+      while (end < node.content.length && node.content[end].type === 'hardBreak') end++
+      if (end - i >= 2) blocks.push([])
+      else blocks[blocks.length - 1].push(node.content[i])
+      i = end
+    }
+
+    return blocks.map((block) => ({...node, content: block}))
+  }
+
+  content = content.flatMap(splitOnDoubleHardBreaks)
+
   const isEmptyParagraph = (node: JSONContent) =>
     node.type === 'paragraph' && (!node.content || node.content.length === 0)
 

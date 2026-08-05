@@ -403,7 +403,7 @@ function Boilerplate() {
 
   const text = t(
     'press.boilerplate.text',
-    'Compass (compassmeet.com) is a free, open-source directory for finding people who share your values, interests and intentions — friends, partners or collaborators. Instead of swiping through an algorithmic feed, members read and search every profile: by values, interests, politics, or a single keyword. There are no ads, no subscriptions and no venture capital. Compass is built by volunteers, funded by donations, and governed by its members under a public constitution. It was started in Belgium by engineer Martin Braquet.',
+    'Compass (compassmeet.com) is a free, open-source directory for finding people who share your values and intentions — friends, partners or collaborators. Instead of swiping through an algorithmic feed, members read and search every profile: by interests, religion, politics, or a single keyword. There are no ads, no subscriptions and no venture capital. Compass is built by volunteers, funded by donations, and governed by its members under a public constitution. It was started in Belgium by engineer Martin Braquet.',
   )
 
   const onCopy = () => {

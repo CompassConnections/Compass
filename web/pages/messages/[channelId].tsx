@@ -9,6 +9,7 @@ import {cleanDoc, richTextToString} from 'common/util/parse'
 import {DAY_MS, YEAR_MS} from 'common/util/time'
 import dayjs from 'dayjs'
 import {keyBy, uniq} from 'lodash'
+import Link from 'next/link'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -343,23 +344,36 @@ export const PrivateChat = (props: {
           <Avatar size="sm" username="?" noLink />
         )}
         {members && members.length > 0 ? (
-          <span
-            className={clsx(
+          (() => {
+            const nameClassName = clsx(
               'ml-1 cursor-pointer hover:text-primary-600 transition-colors font-medium text-sm text-ink-900',
               noOtherUser && 'italic text-ink-500',
-            )}
-            onClick={() =>
-              members.length === 1 ? router.push(`/${members[0].username}`) : setShowUsers(true)
-            }
-          >
-            {members
-              .map((user) =>
-                user.name ? getFirstName(user.name) : t('messages.deleted_user', 'Deleted user'),
-              )
-              .slice(0, 2)
-              .join(', ')}
-            {members.length > 2 && ` & ${members.length - 2} more`}
-          </span>
+            )
+            const nameContent = (
+              <>
+                {members
+                  .map((user) =>
+                    user.name
+                      ? getFirstName(user.name)
+                      : t('messages.deleted_user', 'Deleted user'),
+                  )
+                  .slice(0, 2)
+                  .join(', ')}
+                {members.length > 2 && ` & ${members.length - 2} more`}
+              </>
+            )
+            // A real anchor for the 1-on-1 case so the browser context menu offers
+            // "Copy link address" / "Open in new tab" instead of doing nothing.
+            return members.length === 1 && members[0].username ? (
+              <Link href={`/${members[0].username}`} className={nameClassName}>
+                {nameContent}
+              </Link>
+            ) : (
+              <span className={nameClassName} onClick={() => setShowUsers(true)}>
+                {nameContent}
+              </span>
+            )
+          })()
         ) : otherUsers === undefined ? null : (
           <span className={'ml-1 italic text-ink-500 text-sm'}>
             {t('messages.deleted_user', 'Deleted user')}

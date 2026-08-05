@@ -22,7 +22,7 @@ module.exports = {
   ],
   silent: true,
   // Each ts-jest worker is a full TS-compiling process; the default (cpus - 1) can spawn enough
-  // of them in parallel to exhaust memory on high-core-count machines.
-  maxWorkers: '50%',
-  workerIdleMemoryLimit: '512MB',
+  // of them in parallel to exhaust memory on high-core-count machines. CI runners only have a
+  // couple of cores, so throttling there just makes the suite slower without saving any memory.
+  ...(process.env.CI ? {} : {maxWorkers: '50%', workerIdleMemoryLimit: '512MB'}),
 }

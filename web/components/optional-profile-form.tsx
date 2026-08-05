@@ -26,6 +26,7 @@ import {
   ROMANTIC_CHOICES,
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
+  VISIBILITY_CHOICES,
 } from 'common/choices'
 import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
@@ -1611,6 +1612,31 @@ export const OptionalProfileUserForm = (props: {
               'profile.optional.accessibility_notes_placeholder',
               'e.g. I use a wheelchair, so step-free venues work best. Happy to answer questions.',
             )}
+          />
+        </Col>
+
+        {/* Last section on purpose: it is the one question that is *about* everything above it, so it
+            reads as "and who gets to see all that" rather than as one more attribute. Until now the
+            only way to change this was a dropdown item on your own profile page, which meant a new
+            member who did not want to be listed publicly had to notice it and untick it after signup —
+            after the profile was already public. */}
+        <Category title={t('profile.optional.category.visibility', 'Who can see this')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.visibility_hint',
+              'Public profiles can be found on the open web and may be announced in a new-member feed in the future. Members-only profiles are visible just to people signed in to Compass. You can change this at any time.',
+            )}
+          </label>
+          <ChoicesToggleGroup
+            currentChoice={profile.visibility ?? 'public'}
+            allowDeselect={false}
+            choicesMap={VISIBILITY_CHOICES}
+            translationPrefix={'profile.visibility'}
+            setChoice={(choice) =>
+              setProfile('visibility', (choice ?? 'public') as ProfileWithoutUser['visibility'])
+            }
           />
         </Col>
 

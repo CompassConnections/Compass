@@ -7,6 +7,13 @@ export const RELATIONSHIP_CHOICES = {
   Relationship: 'relationship',
 } as const
 
+// Values match the `profile_visibility` enum on `profiles`. Labels describe the *audience*, not the
+// setting — "Public" alone reads as a synonym for "on" next to a members-only option.
+export const VISIBILITY_CHOICES = {
+  'Anyone on the web': 'public',
+  'Compass members only': 'member',
+} as const
+
 export const RELATIONSHIP_STATUS_CHOICES = {
   Single: 'single',
   Married: 'married',

@@ -257,7 +257,10 @@ function Filters(props: {
     <Col
       // gap-1 + px-2: sections are cards now, so they need to breathe apart instead of butting
       // together as one undifferentiated list.
-      className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] mt-[calc(var(--filter-offset)+env(safe-area-inset-top))] gap-1 px-2 pt-3 pb-1"
+      // No safe-area-inset-top here: whatever renders this (the mobile filters modal's sticky
+      // header, the desktop docked column) already clears the status bar itself, so adding it
+      // again double-counts the inset and leaves a large gap under the header on Android.
+      className="mb-[calc(var(--filter-offset)+env(safe-area-inset-bottom))] gap-1 px-2 pt-3 pb-1"
       data-testid="people-filters"
     >
       <SelectedFiltersSummary

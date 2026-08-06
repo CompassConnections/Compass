@@ -18,7 +18,7 @@
     "start": "next start",
     "test": "jest --config jest.config.js --passWithNoTests",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit && npx tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
     "@capacitor/app": "7.1.0",
@@ -57,6 +57,7 @@
     "linkifyjs": "4.3.2",
     "lodash": "4.17.23",
     "lucide-react": "0.575.0",
+    "marked": "17.0.5",
     "nanoid": "5.0.9",
     "next": "16.1.7",
     "posthog-js": "1.234.1",

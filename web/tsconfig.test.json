@@ -1,15 +1,21 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    // Use / as the root for tests so path-mapped imports from
-    // ../shared and ../../common are within the configured rootDir.
-    // This avoids TS6059 during ts-jest compilation.
+    // Use the repo root as the root for tests so path-mapped imports from ../common are within the
+    // configured rootDir. This avoids TS6059 during ts-jest compilation.
     "rootDir": "..",
     "baseUrl": ".",
+    // Repeated rather than inherited: `paths` is replaced wholesale, not merged, so `web/*` has to
+    // be restated alongside the mapping this file exists to add.
     "paths": {
-      "common/*": ["../../common/src/*"]
-    }
+      "common/*": ["../common/src/*"],
+      "web/*": ["./*"]
+    },
+    // The parent pins `typeRoots` to this package, but the test-only type packages are hoisted to
+    // the workspace root — without this the editor flags every `describe`/`it`/`expect`.
+    "typeRoots": ["./types", "./node_modules/@types", "../node_modules/@types"],
+    "types": ["jest", "node"]
   },
-  "include": ["tests/**/*.ts", "src/**/*.ts"],
+  "include": ["tests/**/*.ts"],
   "exclude": []
 }

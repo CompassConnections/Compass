@@ -20,12 +20,14 @@ import {MediaModal} from 'web/components/media-modal'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {safeLocalStorage} from 'web/lib/util/local'
 
-import {DEFAULT_PROTOCOL, linkifyUrls, SyncAutolink} from '../editor/autolink'
+import {DEFAULT_PROTOCOL, SyncAutolink} from '../editor/autolink'
 import {EMOJI_ENABLED} from '../editor/emoji/emoji-enabled'
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
 import {BasicImage, DisplayImage} from '../editor/image'
 import {nodeViewMiddleware} from '../editor/nodeview-middleware'
+import {limitPastedSlice} from '../editor/paste-limit'
+import {markdownPasteHtml} from '../editor/paste-markdown'
 import {StickyFormatMenu} from '../editor/sticky-format-menu'
 import {Upload, useUploadMutation} from '../editor/upload-extension'
 import {DisplayMention} from '../editor/user-mention/mention-extension'
@@ -92,6 +94,9 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
   )
 
 export const getEditorLocalStorageKey = (key: string) => `text ${key}`
+
+/** Whether the paste was made with Shift held. ProseMirror tracks it, but doesn't declare it. */
+type PasteModifiers = {input?: {shiftKey?: boolean}}
 
 export function useTextEditor(props: {
   placeholder?: string
@@ -196,7 +201,7 @@ export function useTextEditor(props: {
 
   editor.setOptions({
     editorProps: {
-      handlePaste(_view, event) {
+      handlePaste(view, event) {
         const mediaFiles = getMediaFiles(event.clipboardData)
         if (mediaFiles.length) {
           event.preventDefault()
@@ -204,23 +209,24 @@ export function useTextEditor(props: {
           return true // Prevent image in text/html from getting pasted again
         }
 
-        if (max) {
+        // Shift+paste is the "give it to me literally" gesture; don't read Markdown into it.
+        const literal = (view as unknown as PasteModifiers).input?.shiftKey
+        const markdown = literal ? null : markdownPasteHtml(event.clipboardData)
+        if (markdown) {
           event.preventDefault()
-          const text = event.clipboardData?.getData('text/plain') ?? ''
-          const currentLength = editor.getText().length
-          const available = Math.max(0, max - currentLength)
-          if (available > 0 && text.length > 0) {
-            const croppedText = text.slice(0, available)
-            editor.commands.insertContent(croppedText)
-            // This insert is a command, not a paste transaction, so the on-paste plugin doesn't see
-            // it. Link its URLs here instead.
-            linkifyUrls(editor)
-          }
+          // Back through the editor's own paste pipeline, so this stays a paste as far as the rest
+          // of it is concerned: `transformPasted` still applies `max`, and the linkify-on-paste
+          // plugin still sees it. Called without an event, so this handler no-ops on the way round.
+          view.pasteHTML(markdown)
           return true
         }
 
-        // Otherwise, use default paste handler
+        // Otherwise, use default paste handler: it parses `text/html` off the clipboard, so bullet
+        // and numbered lists, headings, bold/italic, links and tables survive the trip. `max` is
+        // enforced on the parsed slice in `transformPasted` below rather than by cropping the
+        // clipboard's plain text, which is what used to flatten every paste into unformatted text.
       },
+      transformPasted: (slice) => (max ? limitPastedSlice(editor, slice, max) : slice),
       handleDrop(_view, event, _slice, moved) {
         // if dragged from outside
         if (!moved) {

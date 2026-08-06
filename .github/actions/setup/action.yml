@@ -15,7 +15,11 @@ runs:
           backend/shared/node_modules
           backend/email/node_modules
           common/node_modules
-        key: node-modules-${{ hashFiles('**/yarn.lock') }}
+        # The package.json files are part of the key, not just the lockfile: adding a dependency
+        # whose exact version another workspace already pins leaves yarn.lock byte-identical, and
+        # keying on the lockfile alone would then restore a node_modules that never installed it.
+        # node_modules doesn't exist yet at this point, but exclude it so that stays true.
+        key: node-modules-${{ hashFiles('**/yarn.lock', '**/package.json', '!**/node_modules/**') }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4

@@ -75,15 +75,52 @@ is distinguishable from one that does not.
 The `<guid>` deliberately does **not** carry them. Bridges dedupe on the guid, so anything that moves with
 a campaign name would repost every member to every follower.
 
-## Next steps
+## Getting into the fediverse
 
-1. **Point an RSS→ActivityPub bridge at a country feed** and watch the `utm_campaign` numbers. No code —
-   [RSS Parrot](https://rss-parrot.net/) is self-serve and one-way, which is exactly the scope we want: from
-   [@compassmeet@mastodon.social](https://mastodon.social/@compassmeet), post a toot mentioning
-   `@birb@rss-parrot.net` with the feed URL (`https://www.compassmeet.com/feed.xml?country=Italy`), and it
-   replies with the account it created for that feed — which then has to be followed for anything to appear
-   in a timeline. It reads `<description>`, so what members see is exactly the projection above.
-   Prerequisite: the migration applied and web deployed, so the URL actually answers.
-2. Only if that converts: a native read-only actor (WebFinger, actor, outbox, accepting `Follow` and
-   `Undo`, nothing else). Inbound DMs are deliberately out of scope — a federated sender arrives with no
-   email, no profile and no history, which imports the scam problem, and Compass messages are encrypted.
+**No RSS→ActivityPub bridge.** A bridge (RSS Parrot and friends) is one toot and no code, but it fails on
+the two things that decide whether this works: a bridge account cannot post hashtags, which is most of how
+anything is discovered on the fediverse, and its followers belong to the bridge — they cannot be carried
+over to a `@compass@compassmeet.com` actor later. A null result from a bridge would have measured the
+bridge, not the idea.
+
+\*\*Plan: post each new profile from [@compassmeet@mastodon.social](https://mastodon.social/@compassmeet),
+three days after signup.
+
+Why three days rather than on signup:
+
+- Syndication cannot be recalled. Three days is the window in which a member can fill their profile in,
+  notice the setting, switch it off, or go members-only — all before anything leaves the site.
+- A profile at signup is usually empty. About a third of the entries in the live feed have no headline, no
+  city and no keywords; posting those yields "New on Compass: verlish" and helps nobody.
+
+What it would reuse rather than reinvent:
+
+| Piece                      | Existing pattern to follow                                                                            |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Content and privacy levels | `get-profile-feed` — one projection, two transports                                                   |
+| Posting                    | `sendDiscordMessage` in `common/src/discord/core.ts`, but `POST /api/v1/statuses` with a Bearer token |
+| Scheduling                 | `internalOutreachJob` in `backend/api/src/app.ts` (Cloud Scheduler + `x-api-key`)                     |
+| Not posting twice          | the send-ledger pattern from `outreach_sends` / `search_alert_sends`                                  |
+
+Hashtags come from `keywords`, which is why they sit at the `basic` level. Cap them (~3): excessive
+hashtags read as spam on most instances. Mark the account as a bot.
+
+Accepted trade-off: posting from the main `@compassmeet` account rather than a separate bot account means a
+moderation complaint against a profile post lands on the announcement channel too. Deliberate — worth
+revisiting only if volume grows.
+
+## After that: a native actor at `compassmeet.com`
+
+Only worth it once the Mastodon account has followers to inherit — and they _do_ transfer, via
+`alsoKnownAs` + a `Move` activity, which is the reason for posting from an account we own rather than a
+bridge's.
+
+Scope: read-only. WebFinger, an actor document, an outbox, and an inbox that accepts `Follow` and `Undo`
+and ignores everything else. Roughly 500–700 lines hand-rolled, or ~200 with a library like
+[Fedify](https://fedify.dev/) (which brings WebFinger, actor dispatch, HTTP Signatures, a delivery queue
+and NodeInfo). Only `/.well-known/webfinger` has to be served from `compassmeet.com`; the actor, inbox and
+outbox can live on the API, reached through a Vercel rewrite.
+
+A full instance — every member as their own actor — is a different category of undertaking (per-member
+keypairs, inbound replies, remote blocks and reports, moderation duties). If it is ever wanted, run
+GoToSocial or Mastodon alongside rather than write it?

@@ -71,5 +71,8 @@ export const markdownPasteHtml = (data: DataTransfer | null): string | null => {
 
   // `breaks` off: in Markdown a single newline is a soft wrap, and treating it as a hard break
   // turns every wrapped paragraph into a run of short lines.
-  return marked.parse(text, {async: false, gfm: true, breaks: false})
+  const rendered = marked.parse(text, {async: false, gfm: true, breaks: false})
+  // `async: false` makes this a string. Older type definitions can't express that, and paste has to
+  // stay synchronous either way, so narrow rather than cast: a promise means paste as usual.
+  return typeof rendered === 'string' ? rendered : null
 }

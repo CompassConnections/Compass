@@ -7,6 +7,7 @@ import {
   zBoolean,
 } from 'common/api/zod-types'
 import {ChatMessage} from 'common/chat-message'
+import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
 import {BAN_REASONS} from 'common/moderation/ban'
 import {Notification} from 'common/notifications'
 import {MAX_NEXT_ACTION_LENGTH, OUTREACH_STAGES, OutreachRow} from 'common/outreach/outreach'
@@ -1454,6 +1455,27 @@ export const API = (_apiTypeCheck = {
     summary:
       'Save a search on a member’s behalf, built from the preferences already on their profile. Admin only.',
     tag: 'Admin',
+  },
+  'get-profile-feed': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        // Country *name* as stored on `profiles.country` ("Italy"), matched case-insensitively — there
+        // is no country-code column. Per-country feeds matter more than one global one here: the
+        // bottleneck is local density, and a scattered worldwide firehose reads as growth while every
+        // city stays as empty as it was.
+        country: z.string().min(1).optional(),
+        limit: z.coerce.number().int().min(1).max(MAX_FEED_LIMIT).optional(),
+      })
+      .strict(),
+    returns: {} as {items: FeedItem[]},
+    // Rendered into RSS by web's /feed.xml, which no one polls more than a few times an hour.
+    cache: 'public, max-age=600, stale-while-revalidate=3600',
+    summary:
+      'Newest public profiles that allow syndication, projected down to each member’s feed_visibility level.',
+    tag: 'Profiles',
   },
   'get-testimonials': {
     method: 'GET',

@@ -4,8 +4,10 @@ import {
   LockClosedIcon,
   PencilIcon,
 } from '@heroicons/react/24/outline'
+import {feedVisibilityForMembersOnly} from 'common/feed/feed'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
+import {removeUndefinedProps} from 'common/util/object'
 import Router from 'next/router'
 import React from 'react'
 import toast from 'react-hot-toast'
@@ -101,11 +103,18 @@ export function ProfileHeaderActions(props: {
                     <LockClosedIcon className="h-4 w-4" />
                   ),
                 onClick: async () => {
+                  const visibility = profile.visibility === 'member' ? 'public' : 'member'
+                  // Limiting the profile to members also switches the feed off, unless a level was
+                  // deliberately chosen — see feedVisibilityForMembersOnly.
+                  const feedVisibility =
+                    visibility === 'member'
+                      ? feedVisibilityForMembersOnly(profile.feed_visibility)
+                      : undefined
                   toast
                     .promise(
-                      updateProfile({
-                        visibility: profile.visibility === 'member' ? 'public' : 'member',
-                      }),
+                      updateProfile(
+                        removeUndefinedProps({visibility, feed_visibility: feedVisibility}),
+                      ),
                       {
                         loading: 'Loading...',
                         success: 'Success!',

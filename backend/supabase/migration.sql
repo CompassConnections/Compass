@@ -66,4 +66,5 @@ BEGIN;
 \i backend/supabase/migrations/20260803_add_testimonials.sql
 \i backend/supabase/migrations/20260803_add_outreach_sends.sql
 \i backend/supabase/migrations/20260804_add_search_alert_sends.sql
+\i backend/supabase/migrations/20260806_add_feed_visibility_to_profiles.sql
 COMMIT;

@@ -1225,6 +1225,7 @@ export type Database = {
           education_level: string | null
           ethnicity: string[] | null
           exercise: string | null
+          feed_visibility: Database['public']['Enums']['profile_feed_visibility']
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null
@@ -1310,6 +1311,7 @@ export type Database = {
           education_level?: string | null
           ethnicity?: string[] | null
           exercise?: string | null
+          feed_visibility?: Database['public']['Enums']['profile_feed_visibility']
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -1395,6 +1397,7 @@ export type Database = {
           education_level?: string | null
           ethnicity?: string[] | null
           exercise?: string | null
+          feed_visibility?: Database['public']['Enums']['profile_feed_visibility']
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -1913,6 +1916,7 @@ export type Database = {
           education_level: string | null
           ethnicity: string[] | null
           exercise: string | null
+          feed_visibility: Database['public']['Enums']['profile_feed_visibility']
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null
@@ -2039,6 +2043,7 @@ export type Database = {
     }
     Enums: {
       lover_visibility: 'public' | 'member'
+      profile_feed_visibility: 'none' | 'basic' | 'full'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2165,6 +2170,7 @@ export const Constants = {
   public: {
     Enums: {
       lover_visibility: ['public', 'member'],
+      profile_feed_visibility: ['none', 'basic', 'full'],
     },
   },
 } as const

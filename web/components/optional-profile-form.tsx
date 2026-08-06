@@ -11,6 +11,7 @@ import {
   EDUCATION_CHOICES,
   EXERCISE_CHOICES,
   EXTRA_NEUROTYPES,
+  FEED_VISIBILITY_CHOICES,
   GENDERS,
   GENDERS_PLURAL,
   LANGUAGE_CHOICES,
@@ -28,6 +29,7 @@ import {
   SUBSTANCE_PREFERENCE_CHOICES,
   VISIBILITY_CHOICES,
 } from 'common/choices'
+import {DEFAULT_FEED_VISIBILITY, feedVisibilityForMembersOnly} from 'common/feed/feed'
 import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
@@ -1626,7 +1628,7 @@ export const OptionalProfileUserForm = (props: {
           <label className={clsx('guidance')}>
             {t(
               'profile.optional.visibility_hint',
-              'Public profiles can be found on the open web and may be announced in a new-member feed in the future. Members-only profiles are visible just to people signed in to Compass. You can change this at any time.',
+              'Public profiles can be found on the open web. Members-only profiles are visible just to people signed in to Compass. You can change this at any time.',
             )}
           </label>
           <ChoicesToggleGroup
@@ -1634,10 +1636,51 @@ export const OptionalProfileUserForm = (props: {
             allowDeselect={false}
             choicesMap={VISIBILITY_CHOICES}
             translationPrefix={'profile.visibility'}
+            setChoice={(choice) => {
+              const visibility = (choice ?? 'public') as ProfileWithoutUser['visibility']
+              setProfile('visibility', visibility)
+              // Members-only turns the feed off for anyone who has not deliberately chosen a level —
+              // see feedVisibilityForMembersOnly. The control below updates in place, so the change
+              // is visible rather than silent.
+              if (visibility === 'member') {
+                const next = feedVisibilityForMembersOnly(profile.feed_visibility)
+                if (next) setProfile('feed_visibility', next)
+              }
+            }}
+          />
+        </Col>
+
+        {/* Separate from `visibility` because the two questions differ in one way that matters: a page
+            on this site can be taken down, a post that has already been republished elsewhere cannot.
+            So being findable on the web is not treated as consent to being broadcast. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.feed_visibility_hint',
+              'Compass publishes a feed of new public profiles that anyone can follow from a feed reader or the fediverse. Choose how much of yours goes into it. Whatever you pick, the feed never carries your photos.',
+            )}
+          </label>
+          <ChoicesToggleGroup
+            currentChoice={profile.feed_visibility ?? DEFAULT_FEED_VISIBILITY}
+            allowDeselect={false}
+            disabled={profile.visibility === 'member'}
+            choicesMap={FEED_VISIBILITY_CHOICES}
+            translationPrefix={'profile.feed_visibility'}
             setChoice={(choice) =>
-              setProfile('visibility', (choice ?? 'public') as ProfileWithoutUser['visibility'])
+              setProfile(
+                'feed_visibility',
+                (choice ?? DEFAULT_FEED_VISIBILITY) as ProfileWithoutUser['feed_visibility'],
+              )
             }
           />
+          {profile.visibility === 'member' && (
+            <label className={clsx('guidance')}>
+              {t(
+                'profile.optional.feed_visibility_members_only',
+                'The feed only carries public profiles, so nothing of yours is published there while your profile is members-only.',
+              )}
+            </label>
+          )}
         </Col>
 
         <Row className={'justify-end'}>

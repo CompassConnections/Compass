@@ -111,6 +111,16 @@ const nextConfig: NextConfig = {
     }
     return config
   },
+  async rewrites() {
+    // The static-export build (the Android shell) has no server to run the handler, and rewrites are
+    // ignored there anyway — the feed is a web-only surface.
+    if (isAppBuild) {
+      return []
+    }
+    // `/feed.xml` is the URL feed readers and RSS→ActivityPub bridges expect. The handler itself has to
+    // sit under /api to be a real request handler rather than a prerendered page.
+    return [{source: '/feed.xml', destination: '/api/feed.xml'}]
+  },
   async redirects() {
     return [
       {source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false},

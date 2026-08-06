@@ -14,6 +14,16 @@ export const VISIBILITY_CHOICES = {
   'Compass members only': 'member',
 } as const
 
+// Values match the `profile_feed_visibility` enum on `profiles`. This is *not* a second copy of
+// `VISIBILITY_CHOICES`: it answers "how much of a public profile may be republished off-site" (the RSS
+// feed today, ActivityPub later), which is a different question from who may read the profile page.
+// See common/src/feed/feed.ts for what each level carries.
+export const FEED_VISIBILITY_CHOICES = {
+  'Nothing at all': 'none',
+  'Name, city, headline and keywords': 'basic',
+  Everything: 'full',
+} as const
+
 export const RELATIONSHIP_STATUS_CHOICES = {
   Single: 'single',
   Married: 'married',

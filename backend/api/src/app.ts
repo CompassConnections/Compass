@@ -74,6 +74,7 @@ import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getProfileAnswers} from './get-profile-answers'
+import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
 import {getSearchAlert} from './get-search-alert'
 import {getSupabaseToken} from './get-supabase-token'
@@ -640,6 +641,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-testimonial': createTestimonial,
   'update-testimonial-status': updateTestimonialStatus,
   'get-profile-answers': getProfileAnswers,
+  'get-profile-feed': getProfileFeed,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,
   'get-user-journeys': getUserJourneys,

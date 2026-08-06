@@ -111,7 +111,8 @@ Frontend: [`docs/next-js.md`](docs/next-js.md), [`docs/react.md`](docs/react.md)
 Database: [`docs/database-schema.md`](docs/database-schema.md),
 [`docs/database-connection-pooling.md`](docs/database-connection-pooling.md),
 [`docs/performance-optimization.md`](docs/performance-optimization.md).
-Cross-cutting: [`docs/internationalization.md`](docs/internationalization.md),
+Cross-cutting: [`docs/feed.md`](docs/feed.md),
+[`docs/internationalization.md`](docs/internationalization.md),
 [`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).

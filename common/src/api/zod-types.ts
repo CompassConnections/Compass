@@ -1,4 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
+import {FEED_VISIBILITY_LEVELS} from 'common/feed/feed'
 import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
@@ -70,6 +71,10 @@ export const baseProfilesSchema = z.object({
   referred_by_username: z.string().optional().nullable(),
   region_code: z.string().optional().nullable(),
   visibility: z.union([z.literal('public'), z.literal('member')]),
+  // How much of a *public* profile may be republished off-site (RSS today, ActivityPub later).
+  // Optional rather than required like `visibility`: signup does not have to send it, and profiles
+  // created before the column existed fall back to the 'basic' column default.
+  feed_visibility: z.enum(FEED_VISIBILITY_LEVELS).optional(),
   wants_kids_strength: z.number().optional().nullable(),
 })
 

@@ -257,6 +257,16 @@ function MyApp(props: AppProps<PageProps>) {
 
         <meta name="description" content={OG_DESCRIPTION} key="description" />
 
+        {/*Feed autodiscovery: this tag is how readers, and the RSS→ActivityPub bridges, find
+           /feed.xml from any page of the site.*/}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="New Compass profiles"
+          href={`${DEPLOYED_WEB_URL}/feed.xml`}
+          key="rss-feed"
+        />
+
         {/*OG tags (WhatsApp, Facebook, etc.). These are the site-wide default: any page that
            renders <SEO> overrides them by `key`, and pages that don't (the home page among them)
            are previewed with the card below.

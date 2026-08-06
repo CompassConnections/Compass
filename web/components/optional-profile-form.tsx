@@ -551,38 +551,34 @@ export const OptionalProfileUserForm = (props: {
         )}
         {/* The rule that used to sit here (`border border-b`, which draws two) is now owned by
             `Category` itself, so every section boundary is drawn the same way. */}
-        <Category
-          title={t('profile.optional.category.personal_info', 'Personal Information')}
-          className={'mt-0'}
-        />
+        <Category title={t('profile.optional.category.basics', 'Basics')} className={'mt-0'} />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.location', 'Location')}
-          </label>
-          {profile.city ? (
-            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
-              <CityRow
-                city={profileToCity(profile)}
-                onSelect={() => {}}
-                className="pointer-events-none"
-              />
-              <button
-                className="text-ink-700 hover:text-primary-700 text-sm underline"
-                onClick={() => {
-                  setProfileCity(undefined)
-                }}
-              >
-                {t('common.change', 'Change')}
-              </button>
-            </Row>
-          ) : (
-            <CitySearchBox
-              onCitySelected={(city: City | undefined) => {
-                setProfileCity(city)
-              }}
-            />
-          )}
+          <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
+          <Input
+            type="number"
+            className={'!w-24'}
+            placeholder={t('profile.optional.age', 'Age')}
+            value={profile['age'] ?? undefined}
+            min={18}
+            max={100}
+            step={1}
+            error={!!ageError}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const value = e.target.value ? Number(e.target.value) : null
+              if (value !== null && value < 18) {
+                setAgeError(
+                  t('profile.optional.age.error_min', 'You must be at least 18 years old'),
+                )
+              } else if (value !== null && value > 100) {
+                setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
+              } else {
+                setAgeError(null)
+              }
+              setProfile('age', value)
+            }}
+          />
+          {ageError && <p className="text-error text-sm mt-1">{ageError}</p>}
         </Col>
 
         <Row className={'items-center gap-2'}>
@@ -636,105 +632,35 @@ export const OptionalProfileUserForm = (props: {
         </Row>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
-          <Input
-            type="number"
-            className={'!w-24'}
-            placeholder={t('profile.optional.age', 'Age')}
-            value={profile['age'] ?? undefined}
-            min={18}
-            max={100}
-            step={1}
-            error={!!ageError}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value ? Number(e.target.value) : null
-              if (value !== null && value < 18) {
-                setAgeError(
-                  t('profile.optional.age.error_min', 'You must be at least 18 years old'),
-                )
-              } else if (value !== null && value > 100) {
-                setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
-              } else {
-                setAgeError(null)
-              }
-              setProfile('age', value)
-            }}
-          />
-          {ageError && <p className="text-error text-sm mt-1">{ageError}</p>}
+          <label className={clsx(labelClassName)}>
+            {t('profile.optional.location', 'Location')}
+          </label>
+          {profile.city ? (
+            <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
+              <CityRow
+                city={profileToCity(profile)}
+                onSelect={() => {}}
+                className="pointer-events-none"
+              />
+              <button
+                className="text-ink-700 hover:text-primary-700 text-sm underline"
+                onClick={() => {
+                  setProfileCity(undefined)
+                }}
+              >
+                {t('common.change', 'Change')}
+              </button>
+            </Row>
+          ) : (
+            <CitySearchBox
+              onCitySelected={(city: City | undefined) => {
+                setProfileCity(city)
+              }}
+            />
+          )}
         </Col>
 
-        <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.height', 'Height')}</label>
-          <Row className={'gap-2'}>
-            <Col>
-              <span className={clsx(labelClassName, 'mb-1')}>
-                {t('profile.optional.feet', 'Feet')}
-              </span>
-              <Input
-                type="number"
-                data-testid="height-feet"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  const heightInInches = Number(e.target.value || 0) * 12 + (heightInches ?? 0)
-                  setProfile('height_in_inches', heightInInches)
-                }}
-                className={'!w-20'}
-                value={typeof heightFeet === 'number' && heightFeet ? Math.floor(heightFeet) : ''}
-                min={0}
-                step={1}
-              />
-            </Col>
-            <Col>
-              <span className={clsx(labelClassName, 'mb-1')}>
-                {t('profile.optional.inches', 'Inches')}
-              </span>
-              <Input
-                type="number"
-                data-testid="height-inches"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  const heightInInches = Number(e.target.value || 0) + 12 * (heightFeet ?? 0)
-                  setProfile('height_in_inches', heightInInches)
-                }}
-                className={'!w-20'}
-                value={
-                  typeof heightInches === 'number' && heightInches ? Math.floor(heightInches) : ''
-                }
-                min={0}
-                step={1}
-              />
-            </Col>
-            <div className="self-end mb-2 text-ink-700 mx-2">
-              {t('common.or', 'OR').toUpperCase()}
-            </div>
-            <Col>
-              <span className={clsx(labelClassName, 'mb-1')}>
-                {t('profile.optional.centimeters', 'Centimeters')}
-              </span>
-              <Input
-                type="number"
-                data-testid="height-centimeters"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.value === '') {
-                    setProfile('height_in_inches', null)
-                  } else {
-                    // Convert cm to inches
-                    const totalInches = Number(e.target.value) / 2.54
-                    setProfile('height_in_inches', totalInches)
-                  }
-                }}
-                className={'!w-24'}
-                value={
-                  heightFeet !== undefined && profile['height_in_inches']
-                    ? Math.round(profile['height_in_inches'] * 2.54)
-                    : ''
-                }
-                min={0}
-                step={1}
-              />
-            </Col>
-          </Row>
-        </Col>
-
-        {/* Its own section rather than the tail of Personal Information. Photos are a hero field —
+        {/* Its own section rather than the tail of Basics. Photos are a hero field —
             the first thing anyone looks at on the finished profile — and as the last row of a
             section about height and gender they were something you scrolled past on the way
             somewhere else, with no entry in the index to come back to. */}
@@ -1487,6 +1413,83 @@ export const OptionalProfileUserForm = (props: {
               'Drag each slider to set where you see yourself on these traits (0 = low, 100 = high).',
             )}
           </p>
+        </Col>
+
+        {/* Height used to sit in Basics, right under age. It is a filterable attribute, not something
+            anyone describes themselves by first, and up there it was one more number to get past
+            before the fields people actually come to fill. Demographics is where the rest of the
+            checkbox-shaped facts about you live, so it sits with them. */}
+        <Category title={t('profile.optional.category.demographics', 'Demographics')} />
+
+        <Col className={clsx(colClassName)}>
+          <label className={clsx(labelClassName)}>{t('profile.optional.height', 'Height')}</label>
+          <Row className={'gap-2'}>
+            <Col>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.feet', 'Feet')}
+              </span>
+              <Input
+                type="number"
+                data-testid="height-feet"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const heightInInches = Number(e.target.value || 0) * 12 + (heightInches ?? 0)
+                  setProfile('height_in_inches', heightInInches)
+                }}
+                className={'!w-20'}
+                value={typeof heightFeet === 'number' && heightFeet ? Math.floor(heightFeet) : ''}
+                min={0}
+                step={1}
+              />
+            </Col>
+            <Col>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.inches', 'Inches')}
+              </span>
+              <Input
+                type="number"
+                data-testid="height-inches"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const heightInInches = Number(e.target.value || 0) + 12 * (heightFeet ?? 0)
+                  setProfile('height_in_inches', heightInInches)
+                }}
+                className={'!w-20'}
+                value={
+                  typeof heightInches === 'number' && heightInches ? Math.floor(heightInches) : ''
+                }
+                min={0}
+                step={1}
+              />
+            </Col>
+            <div className="self-end mb-2 text-ink-700 mx-2">
+              {t('common.or', 'OR').toUpperCase()}
+            </div>
+            <Col>
+              <span className={clsx(labelClassName, 'mb-1')}>
+                {t('profile.optional.centimeters', 'Centimeters')}
+              </span>
+              <Input
+                type="number"
+                data-testid="height-centimeters"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.value === '') {
+                    setProfile('height_in_inches', null)
+                  } else {
+                    // Convert cm to inches
+                    const totalInches = Number(e.target.value) / 2.54
+                    setProfile('height_in_inches', totalInches)
+                  }
+                }}
+                className={'!w-24'}
+                value={
+                  heightFeet !== undefined && profile['height_in_inches']
+                    ? Math.round(profile['height_in_inches'] * 2.54)
+                    : ''
+                }
+                min={0}
+                step={1}
+              />
+            </Col>
+          </Row>
         </Col>
 
         {/* Ethnicity and where you grew up used to sit at the tail of Personal Information, between

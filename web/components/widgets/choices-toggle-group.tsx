@@ -95,11 +95,18 @@ export function ChoicesToggleGroup<T extends Record<string, string | number | bo
               ? t('common.click_to_clear', 'Click to clear')
               : undefined
           }
-          className={({disabled}) =>
+          // `optionDisabled` covers a single greyed-out choice; `disabled` covers the whole group being
+          // off (the feed level while a profile is members-only). Both are read because Headless UI
+          // only falls back to the group's state when the option's own `disabled` prop is `undefined`,
+          // and `disabledOptions?.includes(...)` returns a hard `false` as soon as that array exists.
+          className={({disabled: optionDisabled}) =>
             clsx(
               pillBase,
-              disabled
-                ? 'border-canvas-200 bg-canvas-100 text-ink-300 cursor-not-allowed'
+              disabled || optionDisabled
+                ? // `!` is load-bearing: `pillBase` sets `cursor-pointer`, and Tailwind emits the two
+                  // cursor utilities in its own fixed order, so without the override the pointer wins
+                  // and a dead control still advertises itself as clickable.
+                  'border-canvas-200 bg-canvas-100 text-ink-300 !cursor-not-allowed'
                 : colorClasses[color],
               toggleClassName,
             )

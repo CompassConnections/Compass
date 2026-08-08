@@ -81,6 +81,35 @@ const editorExtensions = (simple = false): Extensions =>
     Underline,
   ])
 
+/** Wrapper class on every image node — the hook the side-by-side rules below select on. */
+export const IMAGE_NODE_CLASS = 'image'
+
+/**
+ * Every image gets the same height — a fraction of the viewport, so a picture is never so tall it
+ * pushes the text off screen — and keeps its natural width at that height. The nodes are inline
+ * blocks, so a run of images uploaded together fills the first line with as many as fit side by
+ * side and wraps the rest onto the next line, the way a line of text does. Nothing is cropped and
+ * nothing is stretched: a wide banner simply takes more of the line than a portrait photo.
+ *
+ * A run only flows this way when the images are adjacent siblings — a paragraph between two of them
+ * still breaks the line (see the batch insert in `upload-extension`).
+ *
+ * The same rules serve the editor and the read-only renderer, so what you type is what gets shown.
+ * In the editor there is one more element to flatten: tiptap wraps every React node view in its own
+ * `div.react-renderer.node-image`, and that div being block-level is enough to put each image on its
+ * own line no matter how the `.image` wrapper inside it is displayed.
+ */
+const imageRunClass = (size: 'sm' | 'md' | 'lg') =>
+  clsx(
+    '[&_.node-image]:my-0 [&_.node-image]:inline-block [&_.node-image]:align-top',
+    '[&_.image]:my-0 [&_.image]:mb-1 [&_.image]:mr-1 [&_.image]:inline-block [&_.image]:align-top',
+    '[&_.image>button]:cursor-pointer',
+    '[&_.image_img]:my-0 [&_.image_img]:w-auto [&_.image_img]:max-w-full',
+    '[&_.image_img]:object-contain',
+    // The one place the height is set. Chat bubbles are narrow, so their images run shorter.
+    size === 'sm' ? '[&_.image_img]:h-[15vh]' : '[&_.image_img]:h-[30vh]',
+  )
+
 const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
     'prose dark:prose-invert max-w-none leading-relaxed',
@@ -100,6 +129,7 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
     'prose-strong:font-bold prose-strong:text-ink-700',
     'text-ink-600 prose-blockquote:text-teal-700 ',
     'break-anywhere',
+    imageRunClass(size),
   )
 
 export const getEditorLocalStorageKey = (key: string) => `text ${key}`
@@ -146,6 +176,8 @@ export function useTextEditor(props: {
         proseClass(size),
         'outline-none py-[.5em] px-4',
         'prose-img:select-auto',
+        // Image sizing and the side-by-side flow come from `proseClass` above, so the editor and the
+        // read-only rendering can't drift apart.
         '[&_.ProseMirror-selectednode]:outline-dotted [&_*]:outline-primary-300', // selected img, embeds
         'dark:[&_.ProseMirror-gapcursor]:after:border-white', // gap cursor
         className,
@@ -545,20 +577,22 @@ function recurse(node: JSONContent, key: number, ctx: RenderCtx): ReactNode {
     case 'hardBreak':
       return <br key={key} />
     case 'image':
+      // The wrapper (not the button) is what `imageRunClass` matches on, so a run of images has to
+      // be a run of `.image` siblings here exactly as it is in the editor. Sizing lives there too.
       return (
-        <button
-          key={key}
-          type="button"
-          onClick={() => ctx.onMediaClick?.(node.attrs?.src ?? '')}
-          className="cursor-pointer"
-        >
-          <img
-            src={node.attrs?.src}
-            alt={node.attrs?.alt ?? ''}
-            title={node.attrs?.title ?? undefined}
-            className={ctx.size === 'sm' ? 'max-h-32' : ctx.size === 'md' ? 'max-h-64' : undefined}
-          />
-        </button>
+        <span key={key} className={IMAGE_NODE_CLASS}>
+          <button
+            type="button"
+            onClick={() => ctx.onMediaClick?.(node.attrs?.src ?? '')}
+            className="cursor-pointer"
+          >
+            <img
+              src={node.attrs?.src}
+              alt={node.attrs?.alt ?? ''}
+              title={node.attrs?.title ?? undefined}
+            />
+          </button>
+        </span>
       )
     case 'video':
       return (

@@ -45,6 +45,11 @@ export default function ProfileHeroPhoto(props: {
     <div
       className={clsx(
         'border-canvas-300 relative aspect-square w-full flex-none overflow-hidden rounded-xl border',
+        // Stacked above the text, a full-width square is as tall as the screen is wide, which on a
+        // phone pushes everything that says who this is below the fold. Capping the width caps the
+        // height with it (the square follows), so the photo never takes more than 40% of the
+        // viewport. Lifted at `md`, where the width is driven by the text column instead.
+        'max-w-[40dvh] md:max-w-none',
         'md:w-[var(--hero-photo-size)] md:self-start',
         onClick && 'cursor-pointer',
         className,

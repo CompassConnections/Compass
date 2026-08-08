@@ -6,7 +6,7 @@
  * proposal → vote → shipped, verifiable by the reader.
  *
  * Captured against **production**, not a local seed, because the entire point is that this is a real
- * decision. /vote renders for logged-out visitors (`web/pages/vote.tsx` only gates on
+ * decision. /vote renders for logged-out visitors (`web/pages/vote/index.tsx` only gates on
  * `user === undefined`), so no auth is involved and nothing private is on screen — the tally is
  * aggregate counts and the proposer's name, both already public on that page.
  *

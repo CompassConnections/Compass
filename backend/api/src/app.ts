@@ -3,6 +3,7 @@ import {hrtime} from 'node:process'
 
 import {contact} from 'api/contact'
 import {createVote} from 'api/create-vote'
+import {createVoteComment} from 'api/create-vote-comment'
 import {deleteMessage} from 'api/delete-message'
 import {editMessage} from 'api/edit-message'
 import {getChannelMemberships} from 'api/get-channel-memberships'
@@ -27,7 +28,9 @@ import {unhideProfile} from 'api/unhide-profile'
 import {updateCompatibilityQuestionPin} from 'api/update-compatibility-question-pin'
 import {updateConnectionInterests} from 'api/update-connection-interests'
 import {updateOptions} from 'api/update-options'
+import {updateVoteStatus} from 'api/update-vote-status'
 import {vote} from 'api/vote'
+import {getVoteMute, setVoteMute} from 'api/vote-mute'
 import {API, type APIPath} from 'common/api/schema'
 import {APIError, APIErrors, pathWithPrefix} from 'common/api/utils'
 import {sendDiscordMessage} from 'common/discord/core'
@@ -617,6 +620,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-private-user-message-channel': createPrivateUserMessageChannel,
   'create-user-and-profile': createUserAndProfile,
   'create-vote': createVote,
+  'create-vote-comment': createVoteComment,
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
@@ -682,6 +686,9 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'user/by-id/:id/block': blockUser,
   'user/by-id/:id/unblock': unblockUser,
   vote: vote,
+  'set-vote-mute': setVoteMute,
+  'update-vote-status': updateVoteStatus,
+  'get-vote-mute': getVoteMute,
   'validate-username': validateUsernameEndpoint,
   'llm-extract-profile': llmExtractProfileEndpoint,
   'transcribe-audio': transcribeAudio,

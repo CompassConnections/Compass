@@ -12,7 +12,7 @@ type Report = {
 
   // in the case of a comment, the comment's contract id
   parentId?: string
-  parentType?: 'contract' | 'post' | 'user'
+  parentType?: 'contract' | 'post' | 'user' | 'vote'
 }
 
 export type ReportContentTypes = 'user' | 'comment' | 'contract'

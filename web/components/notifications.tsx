@@ -82,6 +82,13 @@ function LoadedNotificationSettings(props: {privateUser: PrivateUser}) {
       question: t('notifications.question.new_search_alerts', 'Alerts from bookmarked searches?'),
     },
     {
+      type: 'comment_on_proposal',
+      question: t(
+        'notifications.question.comment_on_proposal',
+        'New arguments on a proposal you voted on?',
+      ),
+    },
+    {
       type: 'platform_updates',
       question: t(
         'notifications.question.platform_updates',

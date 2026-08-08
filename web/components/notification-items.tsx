@@ -29,6 +29,8 @@ export function NotificationItem(props: {notification: Notification}) {
 
   if (sourceType === 'comment_on_profile') {
     return <CommentOnProfileNotification {...params} />
+  } else if (sourceType === 'comment_on_proposal') {
+    return <CommentOnProposalNotification {...params} />
   } else if (sourceType === 'new_match') {
     return <NewMatchNotification {...params} />
   } else if (reason === 'new_profile_like') {
@@ -101,6 +103,55 @@ export function CommentOnProfileNotification(props: {
         {!isChildOfGroup && (
           <span>{t('notifications.comment.on_your_profile', 'on your profile')}</span>
         )}
+      </div>
+    </NotificationFrame>
+  )
+}
+
+export function CommentOnProposalNotification(props: {
+  notification: Notification
+  highlighted: boolean
+  setHighlighted: (highlighted: boolean) => void
+  isChildOfGroup?: boolean
+}) {
+  const {notification, isChildOfGroup, highlighted, setHighlighted} = props
+  const {sourceUserName, sourceUserUsername, sourceText, sourceTitle, data} = notification
+  const t = useT()
+
+  // The stance is the whole reason this notification is worth interrupting someone for: "argued
+  // against a proposal you voted for" is a reason to go back and re-read; "commented" is not.
+  const stance = data?.stance as string | undefined
+  const action =
+    stance === 'against'
+      ? t('notifications.proposal.argued_against', 'argued against')
+      : stance === 'for'
+        ? t('notifications.proposal.argued_for', 'argued for')
+        : stance === 'both'
+          ? t('notifications.proposal.argued_both', 'argued both sides of')
+          : stance === 'question'
+            ? t('notifications.proposal.asked_about', 'asked about')
+            : stance === 'answer'
+              ? t('notifications.proposal.answered_on', 'answered a question on')
+              : t('notifications.proposal.commented_on', 'commented on')
+
+  return (
+    <NotificationFrame
+      notification={notification}
+      isChildOfGroup={isChildOfGroup}
+      highlighted={highlighted}
+      setHighlighted={setHighlighted}
+      icon={<AvatarNotificationIcon notification={notification} symbol={'🗳️'} />}
+      subtitle={
+        <div className="line-clamp-2">
+          <Linkify text={sourceText} />
+        </div>
+      }
+      link={notification.sourceSlug}
+    >
+      <div className="line-clamp-3">
+        <NotificationUserLink name={sourceUserName} username={sourceUserUsername} /> {action}{' '}
+        <span className="font-semibold">{sourceTitle}</span>
+        {t('notifications.proposal.suffix', ', which you voted on')}
       </div>
     </NotificationFrame>
   )

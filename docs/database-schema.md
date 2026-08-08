@@ -372,6 +372,64 @@ CREATE TABLE profile_comments (
 );
 ```
 
+## Governance Tables
+
+Proposals (`/vote`), the votes cast on them, and their discussion threads.
+
+### Votes / Vote Results Tables
+
+`votes` holds a proposal (title + rich-text description + status); `vote_results` holds one row per
+person per proposal (`choice` in -1/0/1, plus a priority for "for" votes). Both are public-read.
+
+### Vote Comments Table
+
+Discussion on a proposal. Mirrors `profile_comments` (same denormalized author columns) with two
+additions: `vote_id` and `stance`.
+
+```sql
+CREATE TABLE vote_comments (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  vote_id BIGINT NOT NULL REFERENCES votes (id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  reply_to_comment_id BIGINT REFERENCES vote_comments (id) ON DELETE CASCADE,
+  content JSONB NOT NULL,
+  stance TEXT CHECK (
+    stance IN ('for', 'against', 'both', 'question', 'answer')
+  ),
+  created_time TIMESTAMPTZ NOT NULL DEFAULT now (),
+  hidden BOOLEAN NOT NULL DEFAULT FALSE,
+  user_avatar_url TEXT NOT NULL,
+  user_name TEXT NOT NULL,
+  user_username TEXT NOT NULL
+);
+```
+
+`stance` is deliberately independent of the author's row in `vote_results` — someone can argue
+against a proposal they voted for, and the UI shows both side by side.
+
+Threading is one level deep: the API collapses a reply-to-a-reply onto its top-level parent.
+
+### Vote Subscriptions Table
+
+Per-person notification state for a proposal's discussion. Not public-read — the client reads its own
+row through the API.
+
+```sql
+CREATE TABLE vote_subscriptions (
+  user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  vote_id BIGINT NOT NULL REFERENCES votes (id) ON DELETE CASCADE,
+  muted BOOLEAN NOT NULL DEFAULT FALSE,
+  last_notified_time TIMESTAMPTZ,
+  created_time TIMESTAMPTZ NOT NULL DEFAULT now (),
+  PRIMARY KEY (user_id, vote_id)
+);
+```
+
+Everyone who has voted on a proposal is a notification recipient when a new comment lands, so this
+table carries both the opt-out (`muted`) and the once-per-day throttle (`last_notified_time`). The
+throttle lives here rather than being derived from `user_notifications` so it applies to email-only
+recipients too.
+
 ## Events System Tables
 
 ### Events Table

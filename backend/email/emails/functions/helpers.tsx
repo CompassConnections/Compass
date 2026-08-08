@@ -22,6 +22,7 @@ import {createUnsubscribeToken, getUnsubscribeUrlOneClick} from 'shared/unsubscr
 
 import {NewEndorsementEmail} from '../new-endorsement'
 import {NewMessageEmail} from '../new-message'
+import {ProposalCommentEmail} from '../proposal-comment'
 import {Test} from '../test'
 import {sendEmail} from './send-email'
 
@@ -195,6 +196,47 @@ export const sendNewEndorsementEmail = async (
         fromUser={fromUser}
         onUser={onUser}
         endorsementText={text}
+        unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
+        locale={locale}
+      />,
+    ),
+  })
+}
+
+export const sendProposalCommentEmail = async (
+  privateUser: PrivateUser,
+  fromUser: User,
+  toUser: User,
+  params: {proposalId: number; proposalTitle: string; commentText: string; stance?: string},
+) => {
+  const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
+    privateUser,
+    'comment_on_proposal',
+  )
+  if (!privateUser.email || !sendToEmail) return
+
+  const locale = privateUser?.locale
+  const t = createT(locale)
+
+  const subject = t(
+    'email.proposal_comment.subject',
+    'New discussion on a proposal you voted on: {proposalTitle}',
+    {proposalTitle: params.proposalTitle},
+  )
+
+  return await sendEmail({
+    from: fromEmail,
+    subject,
+    to: privateUser.email,
+    html: await render(
+      <ProposalCommentEmail
+        fromUser={fromUser}
+        toUser={toUser}
+        proposalId={params.proposalId}
+        proposalTitle={params.proposalTitle}
+        commentText={params.commentText}
+        stance={params.stance}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
         locale={locale}

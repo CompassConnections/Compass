@@ -1,6 +1,6 @@
 import {type JSONContent} from '@tiptap/core'
+import {MAX_COMMENT_JSON_LENGTH, validateCommentAuthor} from 'api/helpers/comment'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
-import {isSuspiciousId} from 'common/moderation/suspicious'
 import {Notification} from 'common/notifications'
 import {convertComment} from 'common/supabase/comment'
 import {type Row} from 'common/supabase/utils'
@@ -14,7 +14,7 @@ import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {getPrivateUser, getUser} from 'shared/utils'
 import {broadcastUpdatedComment} from 'shared/websockets/helpers'
 
-export const MAX_COMMENT_JSON_LENGTH = 20000
+export {MAX_COMMENT_JSON_LENGTH}
 
 export const createComment: APIHandler<'create-comment'> = async (
   {userId, content: submittedContent, replyToCommentId},
@@ -53,11 +53,7 @@ export const createComment: APIHandler<'create-comment'> = async (
 }
 
 const validateComment = async (userId: string, creatorId: string, content: JSONContent) => {
-  const creator = await getUser(creatorId)
-
-  if (!creator) throw APIErrors.unauthorized('Your account was not found')
-  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
-  if (isSuspiciousId(creator.id)) throw APIErrors.forbidden('Suspicious users cannot send messages')
+  const {creator} = await validateCommentAuthor(creatorId, content)
 
   const otherUser = await getPrivateUser(userId)
   if (!otherUser) throw APIErrors.notFound('Other user not found')
@@ -65,11 +61,6 @@ const validateComment = async (userId: string, creatorId: string, content: JSONC
     throw APIErrors.notFound('User has blocked you')
   }
 
-  if (JSON.stringify(content).length > MAX_COMMENT_JSON_LENGTH) {
-    throw APIErrors.badRequest(
-      `Comment is too long; should be less than ${MAX_COMMENT_JSON_LENGTH} as a JSON string.`,
-    )
-  }
   return {content, creator}
 }
 

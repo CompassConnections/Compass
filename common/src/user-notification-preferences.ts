@@ -14,6 +14,7 @@ export type notification_preference = keyof notification_preferences
 export const NOTIFICATION_PREFERENCE_TYPES = [
   'new_match',
   'new_endorsement',
+  'comment_on_proposal',
   'new_profile_like',
   'new_profile_ship',
   'new_search_alerts',
@@ -39,6 +40,7 @@ void _assertAllPreferenceTypesListed
 export type notification_preferences = {
   new_match: notification_destination_types[]
   new_endorsement: notification_destination_types[]
+  comment_on_proposal: notification_destination_types[]
   new_profile_like: notification_destination_types[]
   new_profile_ship: notification_destination_types[]
   new_search_alerts: notification_destination_types[]
@@ -67,6 +69,8 @@ export const getDefaultNotificationPreferences = (isDev?: boolean) => {
     new_match: constructPref(true, true, true),
     new_search_alerts: constructPref(true, true, true),
     new_endorsement: constructPref(true, true, true),
+    // Browser-only by default: a busy proposal shouldn't turn into an inbox full of email.
+    comment_on_proposal: constructPref(true, false, false),
     new_profile_like: constructPref(true, false, false),
     new_profile_ship: constructPref(true, false, false),
     connection_interest_match: constructPref(true, false, true),

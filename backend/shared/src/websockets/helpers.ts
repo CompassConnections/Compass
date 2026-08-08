@@ -1,4 +1,4 @@
-import {type Comment} from 'common/comment'
+import {type ProfileComment, type VoteComment} from 'common/comment'
 import {type User} from 'common/user'
 
 import {broadcast} from './server'
@@ -12,6 +12,10 @@ export function broadcastUpdatedUser(user: Partial<User> & {id: string}) {
   broadcast(`user/${user.id}`, {user})
 }
 
-export function broadcastUpdatedComment(comment: Comment) {
+export function broadcastUpdatedComment(comment: ProfileComment) {
   broadcast(`user/${comment.onUserId}/comment`, {comment})
+}
+
+export function broadcastUpdatedVoteComment(comment: VoteComment) {
+  broadcast(`vote/${comment.voteId}/comment`, {comment})
 }

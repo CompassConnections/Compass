@@ -7,6 +7,7 @@ import {
   zBoolean,
 } from 'common/api/zod-types'
 import {ChatMessage} from 'common/chat-message'
+import {COMMENT_TYPES} from 'common/comment'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
 import {BAN_REASONS} from 'common/moderation/ban'
 import {Notification} from 'common/notifications'
@@ -29,6 +30,7 @@ import {
 import {PrivateUser, User} from 'common/user'
 import {NOTIFICATION_PREFERENCE_TYPES} from 'common/user-notification-preferences'
 import {arrify} from 'common/util/array'
+import {STANCES, VOTE_STATUSES} from 'common/votes/constants'
 import {z} from 'zod'
 
 import {LikeData, ShipData} from './profile-types'
@@ -351,7 +353,7 @@ export const API = (_apiTypeCheck = {
         contentId: z.string(),
         description: z.string().optional(),
         parentId: z.string().optional(),
-        parentType: z.enum(['contract', 'post', 'user']).optional(),
+        parentType: z.enum(['contract', 'post', 'user', 'vote']).optional(),
       })
       .strict(),
     returns: {} as any,
@@ -904,6 +906,8 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       commentId: z.string(),
       hide: z.boolean(),
+      // Which table the comment lives in. Defaults to 'profile' so existing callers keep working.
+      commentType: z.enum(COMMENT_TYPES).optional(),
     }),
     returns: {} as any,
     summary: 'Hide or unhide a comment',
@@ -1119,6 +1123,55 @@ export const API = (_apiTypeCheck = {
       choice: z.enum(['for', 'abstain', 'against']),
     }),
     summary: 'Cast a vote on an existing poll',
+    tag: 'Votes',
+  },
+  'create-vote-comment': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      voteId: z.number(),
+      content: contentSchema,
+      replyToCommentId: z.string().optional(),
+      stance: z.enum(STANCES).optional(),
+    }),
+    summary: 'Comment on a proposal',
+    tag: 'Votes',
+  },
+  'update-vote-status': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {status: string},
+    props: z.object({
+      voteId: z.number(),
+      status: z.enum(VOTE_STATUSES),
+    }),
+    summary: "Set a proposal's status (admin only)",
+    tag: 'Votes',
+  },
+  'set-vote-mute': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {muted: boolean},
+    props: z.object({
+      voteId: z.number(),
+      muted: z.boolean(),
+    }),
+    summary: 'Mute or unmute notifications for a proposal discussion',
+    tag: 'Votes',
+  },
+  'get-vote-mute': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    returns: {} as {muted: boolean},
+    props: z.object({
+      voteId: z.coerce.number(),
+    }),
+    summary: 'Whether the current user has muted a proposal discussion',
     tag: 'Votes',
   },
   'search-location': {

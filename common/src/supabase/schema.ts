@@ -1713,6 +1713,70 @@ export type Database = {
         }
         Relationships: []
       }
+      vote_comments: {
+        Row: {
+          content: Json
+          created_time: string
+          hidden: boolean
+          id: number
+          reply_to_comment_id: number | null
+          stance: string | null
+          user_avatar_url: string
+          user_id: string
+          user_name: string
+          user_username: string
+          vote_id: number
+        }
+        Insert: {
+          content: Json
+          created_time?: string
+          hidden?: boolean
+          id?: never
+          reply_to_comment_id?: number | null
+          stance?: string | null
+          user_avatar_url: string
+          user_id: string
+          user_name: string
+          user_username: string
+          vote_id: number
+        }
+        Update: {
+          content?: Json
+          created_time?: string
+          hidden?: boolean
+          id?: never
+          reply_to_comment_id?: number | null
+          stance?: string | null
+          user_avatar_url?: string
+          user_id?: string
+          user_name?: string
+          user_username?: string
+          vote_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vote_comments_reply_to_comment_id_fkey'
+            columns: ['reply_to_comment_id']
+            isOneToOne: false
+            referencedRelation: 'vote_comments'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vote_comments_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vote_comments_vote_id_fkey'
+            columns: ['vote_id']
+            isOneToOne: false
+            referencedRelation: 'votes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       vote_results: {
         Row: {
           choice: number
@@ -1748,6 +1812,45 @@ export type Database = {
           },
           {
             foreignKeyName: 'vote_results_vote_id_fkey'
+            columns: ['vote_id']
+            isOneToOne: false
+            referencedRelation: 'votes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      vote_subscriptions: {
+        Row: {
+          created_time: string
+          last_notified_time: string | null
+          muted: boolean
+          user_id: string
+          vote_id: number
+        }
+        Insert: {
+          created_time?: string
+          last_notified_time?: string | null
+          muted?: boolean
+          user_id: string
+          vote_id: number
+        }
+        Update: {
+          created_time?: string
+          last_notified_time?: string | null
+          muted?: boolean
+          user_id?: string
+          vote_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vote_subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vote_subscriptions_vote_id_fkey'
             columns: ['vote_id']
             isOneToOne: false
             referencedRelation: 'votes'
@@ -2007,8 +2110,9 @@ export type Database = {
         }
       }
       get_votes_with_results: {
-        Args: {order_by?: string}
+        Args: {only_vote_id?: number; order_by?: string}
         Returns: {
+          comment_count: number
           created_time: string
           creator_id: string
           description: Json

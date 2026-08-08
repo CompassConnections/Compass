@@ -1016,7 +1016,7 @@ export type Database = {
           id: number
           on_user_id: string
           reply_to_comment_id: number | null
-          user_avatar_url: string
+          user_avatar_url: string | null
           user_id: string
           user_name: string
           user_username: string
@@ -1028,7 +1028,7 @@ export type Database = {
           id?: number
           on_user_id: string
           reply_to_comment_id?: number | null
-          user_avatar_url: string
+          user_avatar_url?: string | null
           user_id: string
           user_name: string
           user_username: string
@@ -1040,7 +1040,7 @@ export type Database = {
           id?: number
           on_user_id?: string
           reply_to_comment_id?: number | null
-          user_avatar_url?: string
+          user_avatar_url?: string | null
           user_id?: string
           user_name?: string
           user_username?: string
@@ -1860,7 +1860,7 @@ export type Database = {
           id: number
           reply_to_comment_id: number | null
           stance: string | null
-          user_avatar_url: string
+          user_avatar_url: string | null
           user_id: string
           user_name: string
           user_username: string
@@ -1873,7 +1873,7 @@ export type Database = {
           id?: never
           reply_to_comment_id?: number | null
           stance?: string | null
-          user_avatar_url: string
+          user_avatar_url?: string | null
           user_id: string
           user_name: string
           user_username: string

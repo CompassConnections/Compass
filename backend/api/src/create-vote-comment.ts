@@ -65,7 +65,9 @@ export const createVoteComment: APIHandler<'create-vote-comment'> = async (
       creator.id,
       creator.name,
       creator.username,
-      creator.avatarUrl,
+      // `User.avatarUrl` is typed `string`, but `users.avatar_url` is nullable — coerced explicitly
+      // so a member without an avatar posts a comment instead of a 500.
+      creator.avatarUrl ?? null,
       content,
       parentId,
       stance ?? null,

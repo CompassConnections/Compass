@@ -70,4 +70,5 @@ BEGIN;
 \i backend/supabase/migrations/20260808_add_vote_comments.sql
 \i backend/supabase/migrations/20260808_extend_vote_comment_stances.sql
 \i backend/supabase/migrations/20260808_vote_top_arguments.sql
+\i backend/supabase/migrations/20260809_vote_comment_avatar_nullable.sql
 COMMIT;

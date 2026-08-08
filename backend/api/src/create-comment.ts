@@ -33,7 +33,9 @@ export const createComment: APIHandler<'create-comment'> = async (
       creator.id,
       creator.name,
       creator.username,
-      creator.avatarUrl,
+      // Nullable in the DB even though `User.avatarUrl` is typed `string` — see the vote-comment
+      // handler for the same coercion.
+      creator.avatarUrl ?? null,
       userId,
       content,
       replyToCommentId,

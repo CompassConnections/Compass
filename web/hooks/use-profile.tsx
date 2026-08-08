@@ -82,6 +82,12 @@ export const useProfileByUser = (user: User | undefined) => {
   return {profile, refreshProfile}
 }
 
+// In-flight requests, keyed by user id. `usePersistentInMemoryState` already shares the *result*
+// between components asking for the same profile, but nothing stopped them all firing the request:
+// N components mounting together produced N identical lookups, and each lookup is four round trips
+// (profile plus interests, causes and work). Same idea as `useGetter`'s cache, one layer down.
+const profilePromises: Record<string, Promise<ProfileWithoutUser | null> | undefined> = {}
+
 export const useProfileByUserId = (userId: string | undefined) => {
   const [profile, setProfile] = usePersistentInMemoryState<ProfileWithoutUser | undefined | null>(
     undefined,
@@ -89,12 +95,16 @@ export const useProfileByUserId = (userId: string | undefined) => {
   )
 
   useEffect(() => {
-    // console.debug('Refreshing profile in useProfileByUserId for', userId, profile);
-    if (userId)
-      getProfileRowWithFrontendSupabase(userId, db).then((profile) => {
-        if (!profile) setProfile(null)
-        else setProfile(profile)
-      })
+    if (!userId) return
+    const pending =
+      profilePromises[userId] ??
+      (profilePromises[userId] = getProfileRowWithFrontendSupabase(userId, db).finally(() => {
+        // Cleared once settled, so this dedupes concurrent callers without becoming a cache that
+        // never refreshes — a later mount still refetches, as it did before.
+        delete profilePromises[userId]
+      }))
+
+    pending.then((profile) => setProfile(profile ?? null))
   }, [userId])
 
   return profile

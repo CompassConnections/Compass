@@ -24,7 +24,6 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {UserLink} from 'web/components/widgets/user-link'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useEvent} from 'web/hooks/use-event'
-import {useProfileByUserId} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {firebaseLogin} from 'web/lib/firebase/users'
@@ -336,6 +335,10 @@ function VoteCommentThread(props: {
   )
 }
 
+// Renders from the denormalized author columns on the comment row and fetches nothing. It used to
+// call useProfileByUserId for `pinned_url`, which on a thread of 28 comments meant 28 profile
+// lookups — 112 requests, all for the same handful of people — to slightly freshen an avatar the
+// comment row already carries. A stale avatar on an old comment is the right trade.
 const VoteCommentRow = memo(function VoteCommentRow(props: {
   comment: VoteComment
   choice: number | undefined
@@ -348,7 +351,6 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
   const ref = useRef<HTMLDivElement>(null)
   const [comment, setComment] = useState(props.comment)
   const {userUsername, userAvatarUrl, userId, hidden} = comment
-  const profile = useProfileByUserId(userId)
   const t = useT()
 
   useEffect(() => {
@@ -367,7 +369,7 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
           <Avatar
             username={userUsername}
             size={isParent ? 'sm' : '2xs'}
-            avatarUrl={profile?.pinned_url ?? userAvatarUrl}
+            avatarUrl={userAvatarUrl}
           />
           {/* The spine starts at the bottom of the parent avatar rather than the top of the row.
               Avatar puts its className on the <img>, which is position:static, so a `z-10` there is

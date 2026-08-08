@@ -392,6 +392,135 @@ describe('loadProfiles', () => {
 
       expect(profiles[0].bio_snippet).toEqual(`${'a'.repeat(600)}…`)
     })
+
+    describe('preamble stripping', () => {
+      const para = (text: string, marks?: {type: string}[]) => ({
+        type: 'paragraph',
+        content: [{type: 'text', text, ...(marks ? {marks} : {})}],
+      })
+      const bold = [{type: 'bold'}]
+
+      const snippetOf = async (content: any[]) => {
+        ;(mockPg.map as jest.Mock).mockResolvedValue([{bio: {type: 'doc', content}} as any])
+        ;(mockPg.one as jest.Mock).mockResolvedValue(1)
+        const {profiles} = await profilesModule.loadProfiles({projection: 'card'})
+        return profiles[0].bio_snippet
+      }
+
+      it('drops an opening editorial note about the document', async () => {
+        const note =
+          '(NOTE: This date-me doc was designed to be read on google docs with comments enabled. ' +
+          'For a smoother experience, read the original here: https://docs.google.com/document/d/1Cuyr3)'
+
+        expect(await snippetOf([para(note), para('I am a software engineer.')])).toEqual(
+          'I am a software engineer.',
+        )
+      })
+
+      it('drops an opening note even when it is not parenthesised', async () => {
+        expect(
+          await snippetOf([para('NOTE: read the original doc instead.'), para('Hi, I am Sam.')]),
+        ).toEqual('Hi, I am Sam.')
+      })
+
+      it('drops a leading bracketed status line', async () => {
+        expect(
+          await snippetOf([para('[profile updated 2 Aug 2026]'), para('Hi, I am Raskia.')]),
+        ).toEqual('Hi, I am Raskia.')
+      })
+
+      it('drops a leading bracketed aside written inline with the first paragraph', async () => {
+        expect(await snippetOf([para('[profile updated 2 Aug 2026] Hi, I am Raskia.')])).toEqual(
+          'Hi, I am Raskia.',
+        )
+      })
+
+      it('drops a leading heading node', async () => {
+        expect(
+          await snippetOf([
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'Introduction'}]},
+            para('I live in Melbourne.'),
+          ]),
+        ).toEqual('I live in Melbourne.')
+      })
+
+      it('drops a bold enumerated heading that is not a heading node', async () => {
+        expect(
+          await snippetOf([para('1. Introduction', bold), para('I live in Melbourne.')]),
+        ).toEqual('I live in Melbourne.')
+      })
+
+      it('drops an "About me" or "Summary" label', async () => {
+        expect(await snippetOf([para('About Me'), para('I am Otito.')])).toEqual('I am Otito.')
+        expect(await snippetOf([para('summary:'), para('I am Otito.')])).toEqual('I am Otito.')
+      })
+
+      it('drops several stacked preliminaries', async () => {
+        expect(
+          await snippetOf([
+            {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: 'My date-me doc'}]},
+            para('[updated 2 Aug 2026]'),
+            para('About me', bold),
+            para('I am Otito.'),
+          ]),
+        ).toEqual('I am Otito.')
+      })
+
+      it('keeps prose that merely starts with a bold phrase or a bracketed word', async () => {
+        expect(
+          await snippetOf([
+            {
+              type: 'paragraph',
+              content: [
+                {type: 'text', text: 'Hi!', marks: bold},
+                {type: 'text', text: " I'm a software engineer in Melbourne."},
+              ],
+            },
+          ]),
+        ).toEqual("Hi! I'm a software engineer in Melbourne.")
+      })
+
+      it('keeps a heading deeper in the bio', async () => {
+        expect(
+          await snippetOf([
+            para('I am Otito.'),
+            {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: 'My values'}]},
+            para('Honesty.'),
+          ]),
+        ).toEqual('I am Otito. My values Honesty.')
+      })
+
+      it('drops preliminary lines separated by hard breaks inside one paragraph', async () => {
+        // The real shape of a bio pasted out of a doc: no paragraph nodes, just hardBreak pairs.
+        const br = {type: 'hardBreak'}
+
+        expect(
+          await snippetOf([
+            {
+              type: 'paragraph',
+              content: [
+                {type: 'text', text: '[profile updated '},
+                {type: 'text', text: '2 Aug 2026', marks: bold},
+                {type: 'text', text: ']'},
+                br,
+                br,
+                {type: 'text', text: '1. Introduction', marks: bold},
+                br,
+                br,
+                {type: 'text', text: 'Hello!'},
+                br,
+                br,
+                {type: 'text', text: 'I am a 30 y/o engineer.'},
+              ],
+            },
+          ]),
+        ).toEqual('Hello! I am a 30 y/o engineer.')
+      })
+
+      it('falls back to the whole bio when it is nothing but a preliminary', async () => {
+        expect(await snippetOf([para('About me')])).toEqual('About me')
+      })
+    })
   })
 
   describe('when ordering by compatibility score', () => {

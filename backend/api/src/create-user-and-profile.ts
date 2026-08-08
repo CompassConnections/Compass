@@ -113,7 +113,7 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       avatar_url: avatarUrl,
       is_banned_from_posting: Boolean(
         (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
-        (ip && bannedIpAddresses.includes(ip)),
+          (ip && bannedIpAddresses.includes(ip)),
       ),
       data: {},
     })

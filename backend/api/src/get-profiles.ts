@@ -217,17 +217,168 @@ const PROFILE_CARD_COLS = [
  */
 const BIO_SNIPPET_CHARS = 600
 
+/** A block whose whole text is bold and no longer than this reads as a heading, not as prose. */
+const HEADING_LIKE_CHARS = 80
+
+/** Openers we treat as an aside, mapped to the closer that ends them. */
+const BRACKET_PAIRS: Record<string, string> = {'(': ')', '[': ']', '{': '}'}
+
+/**
+ * Leading blocks that are pure scaffolding: a section label the bio itself repeats ("About me"), or
+ * an editorial note about the document rather than about the person. Matched case-insensitively
+ * against the block's whole text, so a paragraph merely *starting* with "Note that..." is prose and
+ * survives.
+ */
+const LABEL_BLOCK = /^(about me|summary)\s*[:.]?$/i
+const META_NOTE_BLOCK = /^(note|nb|disclaimer|edit|update|ps)\b\s*[:\-–—]/i
+
+/** Every text node under `node`, in document order. */
+const textNodes = (node: JSONContent): JSONContent[] =>
+  node.type === 'text' ? [node] : (node.content ?? []).flatMap(textNodes)
+
+/**
+ * The block's text with marks flattened. Inline siblings are joined without a separator (a bolded
+ * word mid-sentence is its own text node); anything else — list items, table cells — gets a space so
+ * words from different blocks don't run together.
+ */
+const blockText = (node: JSONContent): string => {
+  if (node.type === 'text') return node.text ?? ''
+  const children = node.content ?? []
+  const parts = children.map(blockText)
+  const separator = children.every((c) => c.type === 'text') ? '' : ' '
+  return parts.join(separator).replace(/\s+/g, ' ').trim()
+}
+
+/** Whether every non-blank text node in the block carries the bold mark. */
+const isAllBold = (node: JSONContent) => {
+  const nodes = textNodes(node).filter((n) => (n.text ?? '').trim())
+  return nodes.length > 0 && nodes.every((n) => n.marks?.some((m) => m.type === 'bold'))
+}
+
+/**
+ * Index of the bracket that closes the one opening `text`, or -1 if `text` doesn't open with a
+ * bracket / never closes it. Nesting is counted so `[updated (2 Aug)]` closes at the last character.
+ */
+const closingBracketIndex = (text: string) => {
+  const open = text[0]
+  const close = BRACKET_PAIRS[open]
+  if (!close) return -1
+  let depth = 0
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === open) depth++
+    else if (text[i] === close && --depth === 0) return i
+  }
+  return -1
+}
+
+/** A block that is nothing but a bracketed aside, e.g. "[profile updated 2 Aug 2026]". */
+const isBracketedBlock = (text: string) => closingBracketIndex(text) === text.length - 1
+
+/**
+ * Drops a bracketed aside that opens the bio inline — the same "[profile updated ...]" preamble, but
+ * written at the head of the first real paragraph instead of on its own line. Repeats, since bios
+ * stack them ("[updated 2 Aug] (he/him) Hi, ...").
+ */
+const stripLeadingBrackets = (text: string) => {
+  let out = text.trim()
+  for (;;) {
+    const end = closingBracketIndex(out)
+    if (end <= 0 || end === out.length - 1) return out
+    out = out.slice(end + 1).trim()
+  }
+}
+
+/**
+ * Whether a *leading* block is preliminary — scaffolding a reader skims past to reach the bio. Only
+ * ever asked about blocks before the first real prose, so a heading deeper in the bio is left alone.
+ */
+const isPreliminaryBlock = (node: JSONContent, text: string) =>
+  !text ||
+  node.type === 'heading' ||
+  isBracketedBlock(text) ||
+  LABEL_BLOCK.test(text) ||
+  META_NOTE_BLOCK.test(text) ||
+  // "1. Introduction" / "Introduction" written as bold prose rather than as a heading node.
+  (isAllBold(node) && text.length <= HEADING_LIKE_CHARS)
+
+/**
+ * At most this many leading lines are dropped. A bio that is heading-shaped all the way down is
+ * more likely to be unusual formatting than to be all preamble, and the snippet should still show
+ * something from the top of it.
+ */
+const MAX_DROPPED_BLOCKS = 5
+
+/**
+ * The visual lines of a block, as pseudo-blocks. Bios pasted from a doc routinely arrive as one
+ * paragraph whose "paragraphs" are `hardBreak` pairs, so the preamble ("[profile updated 2 Aug
+ * 2026]", "1. Introduction") sits inside the same node as the bio itself — splitting here is what
+ * lets {@link isPreliminaryBlock} see those lines at all. Blocks without a hard break are their own
+ * single line.
+ */
+const blockLines = (node: JSONContent): JSONContent[] => {
+  const children = node.content ?? []
+  if (!children.some((c) => c.type === 'hardBreak')) return [node]
+  const lines: JSONContent[] = []
+  let current: JSONContent[] = []
+  for (const child of children) {
+    if (child.type === 'hardBreak') {
+      if (current.length) lines.push({...node, content: current})
+      current = []
+    } else {
+      current.push(child)
+    }
+  }
+  if (current.length) lines.push({...node, content: current})
+  return lines
+}
+
+/**
+ * The bio with its preamble removed: title headings, "About me" labels, bracketed status notes, and
+ * editorial notes about the document itself (Richard's date-me doc opens with a parenthetical about
+ * reading it on Google Docs). Falls back to the untouched document when stripping would leave
+ * nothing — a bio that is *only* a heading is better shown than blanked.
+ *
+ * Scans line by line (see {@link blockLines}) and stops at the first line of real prose, so only a
+ * leading run is ever dropped and a heading further down the bio is left alone.
+ */
+const stripBioPreamble = (bio: JSONContent) => {
+  const blocks = bio?.content
+  if (!Array.isArray(blocks)) return bio
+  let dropped = 0
+  for (let i = 0; i < blocks.length; i++) {
+    const lines = blockLines(blocks[i])
+    let start = 0
+    while (
+      start < lines.length &&
+      dropped < MAX_DROPPED_BLOCKS &&
+      isPreliminaryBlock(lines[start], blockText(lines[start]))
+    ) {
+      start++
+      dropped++
+    }
+    // Prose found in this block: keep its surviving lines and everything after it.
+    const kept = lines.slice(start)
+    if (kept.length) return {...bio, content: [...kept, ...blocks.slice(i + 1)]}
+    // The whole block was preamble — carry the drop count into the next one.
+  }
+  return bio
+}
+
 /**
  * The card renders `parseJsonContentToText(profile.bio)` clamped to a few lines, so shipping the whole
  * rich-text document is wasted. Computed here rather than read from the `bio_text` column: that column
  * is built with `string_agg(DISTINCT ...)` for search, which reorders and dedupes the text nodes — fine
  * for a tsvector, wrong for something a person reads.
+ *
+ * The snippet starts at the first block of actual bio (see {@link stripBioPreamble}) rather than at
+ * the top of the document, so the few lines a card shows aren't spent on a title or a changelog note.
  */
 const toBioSnippet = (bio: unknown) => {
-  const text = parseJsonContentToText(bio as JSONContent)
-    .replace(/\s+/g, ' ')
-    .trim()
-  return text.length > BIO_SNIPPET_CHARS ? `${text.slice(0, BIO_SNIPPET_CHARS)}…` : text
+  const content = bio as JSONContent
+  const stripped = typeof content === 'object' && content ? stripBioPreamble(content) : content
+  const text = stripLeadingBrackets(parseJsonContentToText(stripped).replace(/\s+/g, ' ').trim())
+  const snippet = text || parseJsonContentToText(content).replace(/\s+/g, ' ').trim()
+  return snippet.length > BIO_SNIPPET_CHARS ? `${snippet.slice(0, BIO_SNIPPET_CHARS)}…` : snippet
 }
 
 let profileCols: any
